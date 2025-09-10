@@ -24,13 +24,13 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -45,8 +45,7 @@ import kotlin.reflect.KClass
 class IngridExporterBkg(
     idfExporter: IngridIdfExporterBkg,
     luceneExporter: IngridLuceneExporterBkg,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -68,7 +67,8 @@ class IngridIdfExporterBkg(
     config: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, config, catalogService, documentService, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -137,9 +137,7 @@ class IngridLuceneExporterBkg(
 @Service
 class IngridISOExporterBkg(
     idfExporter: IngridIdfExporterBkg,
-    luceneExporter: IngridLuceneExporterBkg,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterBkg(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -150,9 +148,4 @@ class IngridISOExporterBkg(
         "xml",
         listOf("ingrid-bkg"),
     )
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
-    }
 }

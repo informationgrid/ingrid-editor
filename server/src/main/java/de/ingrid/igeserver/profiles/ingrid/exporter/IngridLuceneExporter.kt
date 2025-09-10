@@ -54,12 +54,10 @@ class IngridLuceneExporter(
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
-) : IgeExporter {
+) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
-    override val typeInfo: ExportTypeInfo
-        get() = ExportTypeInfo(DocumentCategory.DATA, "", "", "", "", "", listOf("ingrid-bkg"))
 
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+    fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val output: TemplateOutput = JsonStringOutput()
         handleFoldersWithoutPublishedChildren(doc)
         val catalog = catalogService.getCatalogById(catalogId)
