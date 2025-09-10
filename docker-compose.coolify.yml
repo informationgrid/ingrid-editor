@@ -9,7 +9,8 @@ services:
       - TZ=Europe/Berlin
       - _JAVA_OPTIONS=-Xmx2g -Dstorage.diskCache.bufferSize=256 -Dspring.profiles.active=elasticsearch,mcloud,test,uvp,ingrid,ingrid-kommunal-st,ingrid-krzn,ingrid-up-sh,ogc-api,csw-t,ogc-distributions-api,ingrid-bast,codelist-repo
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8699
-      - KEYCLOAK_URL=http://${SERVICE_FQDN_KEYCLOAK}/keycloak
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_URL_FRONTEND=http://${SERVICE_FQDN_KEYCLOAK}/keycloak
       - KEYCLOAK_BACKEND_USER=ige
       - KEYCLOAK_BACKEND_USER_PASSWORD=ige
       - DATABASE_HOST=db
