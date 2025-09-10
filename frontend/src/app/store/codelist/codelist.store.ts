@@ -39,7 +39,11 @@ export const CodelistStore = signalStore(
       patchState(store, setEntities(codelists));
     },
     updateCodelist(codelist: Codelist): void {
-      patchState(store, updateEntity({ id: codelist.id, changes: codelist }));
+      if (!store.entityMap()[codelist.id]) {
+        this.addCodelists([codelist]);
+      } else {
+        patchState(store, updateEntity({ id: codelist.id, changes: codelist }));
+      }
     },
 
     getCodelistEntryValueByKey(

@@ -3,8 +3,8 @@
         <mat-selection-list
             class="doc-item"
             [multiple]="false"
-            [class.dense]="denseMode"
-            [class.hide-divider]="hideDivider"
+            [class.dense]="denseMode()"
+            [class.hide-divider]="hideDivider()"
         >
             @for (doc of allDocs; track $any(doc).id; let i = $index) {
                 <mat-list-option
@@ -15,22 +15,22 @@
                     [class.selected]="
                         currentSelection && $any(doc).id === currentSelection.id
                     "
-                    [class.hide-bg-selection]="showSelection"
+                    [class.hide-bg-selection]="showSelection()"
                     [class.disabled]="doc.hasWritePermission === false"
                     [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
                 >
-                    @if (showSelection) {
+                    @if (showSelection()) {
                         <mat-icon
                             [class.invisible]="
                                 currentSelection?.id !== $any(doc).id
                             "
-                            [class.extra-padding]="!showIcons"
+                            [class.extra-padding]="!showIcons()"
                             class="marker mark-color"
                             matListItemIcon
                             svgIcon="baseline-check-24px"
                         ></mat-icon>
                     }
-                    @if (showIcons) {
+                    @if (showIcons()) {
                         <ige-document-icon
                             [doc]="doc"
                             matListItemIcon
@@ -38,7 +38,7 @@
                     }
                     <span matListItemTitle class="doc-item-content">
                         <span class="card-title">{{ doc.title }}</span>
-                        @if (!hideDate) {
+                        @if (!hideDate()) {
                             <span
                                 class="date"
                                 [matTooltip]="
@@ -66,7 +66,7 @@
         (click)="makeSelection(doc)"
     >
         @if (
-            showSelection &&
+            showSelection() &&
             currentSelection &&
             currentSelection.id === $any(doc).id
         ) {
@@ -80,7 +80,7 @@
         <span matListItemTitle>
             <!-- in case we want to style title, we need to add it as innerHTML -->
             <span [innerHTML]="doc.title"></span>
-            @if (!hideDate) {
+            @if (!hideDate()) {
                 <span
                     class="date"
                     [matTooltip]="

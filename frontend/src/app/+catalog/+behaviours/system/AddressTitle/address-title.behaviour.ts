@@ -75,14 +75,92 @@ export class AddressTitleBehaviour extends Plugin {
     this.documentService.registerAddressTitleFunction(null);
   }
 
-  private formatAddressString(obj, formatString) {
-    // Wrap formatString into a function body
-    const formatterFunction = new Function(
-      "address",
-      `return ${formatString};`,
-    );
+  private formatAddressString(address: any, template: string): string {
+    // Remove backticks if present
+    const cleanTemplate = template.replace(/^`|`$/g, "");
 
-    // Safely call the function with the object
-    return formatterFunction(obj);
+    // Replace ${...} expressions with actual values
+    return cleanTemplate.replace(/\$\{([^}]+)\}/g, (match, expression) => {
+      try {
+        // Parse simple expressions safely
+        return this.evaluateExpression(expression.trim(), address);
+      } catch (error) {
+        console.warn(`Failed to evaluate expression: ${expression}`, error);
+        return match; // Return original if evaluation fails
+      }
+    });
+  }
+
+  private evaluateExpression(expression: string, address: any): string {
+    // Handle simple property access and ternary operations
+    if (expression.includes("?")) {
+      return this.evaluateTernary(expression, address);
+    }
+
+    // Handle simple property access
+    const value = this.getNestedProperty(address, expression);
+    return value != null ? String(value) : "";
+  }
+
+  private evaluateTernary(expression: string, address: any): string {
+    const parts = expression.split("?");
+    if (parts.length !== 2) return "";
+
+    const condition = parts[0].trim();
+    const consequences = parts[1].split(":");
+    if (consequences.length !== 2) return "";
+
+    const trueValue = consequences[0].trim();
+    const falseValue = consequences[1].trim();
+
+    // Evaluate condition
+    const conditionResult = this.evaluateCondition(condition, address);
+
+    if (conditionResult) {
+      return this.evaluateValueExpression(trueValue, address);
+    } else {
+      return this.evaluateValueExpression(falseValue, address);
+    }
+  }
+
+  private evaluateCondition(condition: string, address: any): boolean {
+    // Handle simple property existence checks
+    const value = this.getNestedProperty(address, condition);
+    return Boolean(value);
+  }
+
+  private evaluateValueExpression(expression: string, address: any): string {
+    // Handle string concatenation and property access
+    if (expression.includes("+")) {
+      const parts = expression.split("+").map((part) => part.trim());
+      return parts
+        .map((part) => {
+          if (part.startsWith('"') && part.endsWith('"')) {
+            // String literal
+            return part.slice(1, -1);
+          } else {
+            // Property access
+            const value = this.getNestedProperty(address, part);
+            return value != null ? String(value) : "";
+          }
+        })
+        .join("");
+    }
+
+    // Simple property access or string literal
+    if (expression.startsWith('"') && expression.endsWith('"')) {
+      return expression.slice(1, -1);
+    }
+
+    const value = this.getNestedProperty(address, expression);
+    return value != null ? String(value) : "";
+  }
+
+  private getNestedProperty(obj: any, path: string): any {
+    const splittedPath = path.split(".");
+    splittedPath.shift();
+    return splittedPath.reduce((current, key) => {
+      return current && current[key] !== undefined ? current[key] : null;
+    }, obj);
   }
 }

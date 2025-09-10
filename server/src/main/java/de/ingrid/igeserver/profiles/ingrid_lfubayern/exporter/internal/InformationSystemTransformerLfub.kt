@@ -21,10 +21,13 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetTreePathNames
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.utils.getString
 
-class InformationSystemTransformerLfub(transformerConfig: TransformerConfig) : InformationSystemModelTransformer(transformerConfig) {
+class InformationSystemTransformerLfub(transformerConfig: TransformerConfig) :
+    InformationSystemModelTransformer(transformerConfig),
+    IngridModelTransformerLfub {
 
     private val docData = doc.data
 
@@ -35,4 +38,6 @@ class InformationSystemTransformerLfub(transformerConfig: TransformerConfig) : I
     override val datasetUri = docData.getString("dataSetURI")
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
+
+    override val treePathNames: List<String> = lfubGetTreePathNames(documentService, catalogIdentifier, doc)
 }

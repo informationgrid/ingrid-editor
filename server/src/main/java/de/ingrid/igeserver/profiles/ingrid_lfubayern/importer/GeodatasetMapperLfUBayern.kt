@@ -41,7 +41,7 @@ class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoDa
         ?.mapNotNull { it }
         ?.map {
             val entryId = codeListService.getCatalogCodelistKey(catalogId, "20000", it)
-            if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
+            KeyValue(entryId, it, "20000")
         } ?: emptyList()
 
     fun getInternalKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -50,7 +50,7 @@ class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoDa
         ?.mapNotNull { it }
         ?.map {
             val entryId = codeListService.getCatalogCodelistKey(catalogId, "20001", it)
-            if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
+            KeyValue(entryId, it, "20001")
         } ?: emptyList()
 
     fun getInternalComments() = metadata.identificationInfo[0].dataIdentificationInfo?.supplementalInformation?.value ?: ""

@@ -21,10 +21,9 @@ import {
   Component,
   computed,
   ElementRef,
-  EventEmitter,
   input,
-  Output,
   ViewChild,
+  output,
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
@@ -61,8 +60,8 @@ export class FilterSelectComponent {
   placeholder = input<string>();
   hintText = input<string>();
 
-  @Output() optionSelect = new EventEmitter<SelectOptionUi>();
-  @Output() reset = new EventEmitter<string>();
+  readonly optionSelect = output<SelectOptionUi>();
+  readonly reset = output();
 
   @ViewChild("filter") filter: ElementRef;
 
@@ -90,6 +89,7 @@ export class FilterSelectComponent {
 
   resetInput() {
     this.control.reset("");
+    // TODO: The 'emit' function requires a mandatory string argument
     this.reset.emit();
     setTimeout(() => this.filter.nativeElement.blur());
   }

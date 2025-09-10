@@ -67,7 +67,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       configService.hasCatAdminRights() || configService.hasMdAdminRights();
 
     effect(() => {
-      if (!this.isActive()) return;
+      if (!this.isActive() || !this.isPrivileged) return;
 
       this.handleMenuItem(
         this.generalStore.getOpenedDocument(this.forAddress()),

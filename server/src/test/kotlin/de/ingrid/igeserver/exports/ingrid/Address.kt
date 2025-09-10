@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -45,13 +46,15 @@ class Address : ShouldSpec() {
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
 
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
+
     private val codelistHandler = mockk<CodelistHandler>()
     private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
 
     override suspend fun beforeSpec(spec: Spec) {
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
 
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
             val codelistId = secondArg<String>()
@@ -131,7 +134,8 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.person.sample.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.expected.idf.xml"))
+            result shouldBe expectedXml
         }
 
         should("person2Export") {
@@ -141,7 +145,8 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml"))
+            result shouldBe expectedXml
         }
 
         should("organisationExport") {
@@ -151,7 +156,8 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml"))
+            result shouldBe expectedXml
         }
 
         should("export address hierarchy with position name") {

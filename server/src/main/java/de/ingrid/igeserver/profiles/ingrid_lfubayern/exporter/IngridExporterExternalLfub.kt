@@ -21,10 +21,10 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
 import de.ingrid.igeserver.exporter.model.Address
 import de.ingrid.igeserver.exporter.model.AddressModel
-import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
@@ -32,7 +32,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.DataModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -48,8 +47,7 @@ import kotlin.reflect.KClass
 class IngridExporterExternalLfub(
     idfExporter: IngridIdfExporterExternalLfub,
     luceneExporter: IngridLuceneExporterExternalLfub,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -71,7 +69,8 @@ class IngridIdfExporterExternalLfub(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
@@ -131,9 +130,7 @@ class IngridLuceneExporterExternalLfub(
 @Service
 class IngridISOExporterExternalLfub(
     idfExporter: IngridIdfExporterExternalLfub,
-    luceneExporter: IngridLuceneExporterExternalLfub,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterExternalLfub(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -144,11 +141,6 @@ class IngridISOExporterExternalLfub(
         "xml",
         listOf("ingrid-lfubayern"),
     )
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
-    }
 }
 
 private fun anonymizeAddresses(model: IngridModel, uuid: String) {

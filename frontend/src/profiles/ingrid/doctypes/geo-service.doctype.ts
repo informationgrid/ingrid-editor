@@ -254,7 +254,7 @@ export class GeoServiceDoctype extends IngridShared {
               this.addResolutionFields(),
               this.addGroup(
                 null,
-                null,
+              "Weitere Informationen",
                 [
                   this.addTextAreaInline(
                     "systemEnvironment",

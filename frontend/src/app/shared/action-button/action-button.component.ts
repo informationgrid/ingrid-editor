@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, Input, OnInit, input, output } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
@@ -28,11 +28,11 @@ import { MatIcon } from "@angular/material/icon";
   imports: [MatButton, MatIcon],
 })
 export class ActionButtonComponent implements OnInit {
-  @Input() label: string;
-  @Input() disabled: boolean;
-  @Input() icon: string;
+  readonly label = input<string>(undefined);
+  readonly disabled = input<boolean>(undefined);
+  readonly icon = input<string>(undefined);
   @Input() svgIcon: string;
-  @Output() submit = new EventEmitter<void>();
+  readonly submit = output<void>();
 
   constructor() {}
 

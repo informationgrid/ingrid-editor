@@ -92,7 +92,7 @@ export class AutocompleteTypeComponent
 
     const opt = <BackendOption>option;
     if (opt?.key) {
-      return opt.value ?? this.getValueFromOptionKey(opt.key) ?? "???";
+      return this.getValueFromOptionKey(opt.key) ?? opt.value ?? "???";
     }
     return opt && opt.value ? opt.value : "";
   }

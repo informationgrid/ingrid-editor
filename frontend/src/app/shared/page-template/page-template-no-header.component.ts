@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, input } from "@angular/core";
 
 @Component({
   selector: "page-template-no-header",
@@ -27,7 +27,7 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class PageTemplateNoHeaderComponent implements OnInit {
   @Input() label = "";
-  @Input() subLabel = "";
+  readonly subLabel = input("");
 
   constructor() {}
 

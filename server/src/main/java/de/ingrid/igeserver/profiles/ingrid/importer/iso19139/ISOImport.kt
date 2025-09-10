@@ -149,7 +149,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
     protected fun handleAddressReferences(model: GeneralMapper): ArrayNode {
         val outputReferences: TemplateOutput = JsonStringOutput()
-        templateEngine.render("imports/ingrid/address.jte", mapOf("model" to model), outputReferences)
+        templateEngine.render("imports/ingrid/address.jte", mapOf("contacts" to model.getUniquePointOfContacts()), outputReferences)
         return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
     }
 

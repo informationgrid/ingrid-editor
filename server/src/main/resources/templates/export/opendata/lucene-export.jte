@@ -33,9 +33,9 @@
             "communication": [
             @for(var contact : ForSupport.of(entry.get().getContacts()))
                 {
-                    "type": "",
-                    "connection": ""
-                }@if (!entry.isLast()),@endif
+                    "type": "${contact.get().getType()}",
+                    "connection": "${contact.get().getValue()}"
+                }@if (!contact.isLast()),@endif
             @endfor
             ],
             "street": "",

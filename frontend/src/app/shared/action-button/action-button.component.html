@@ -1,8 +1,8 @@
 <button
     mat-button
     color="primary"
-    (click)="submit.next()"
-    [disabled]="disabled"
+    (click)="submit.emit()"
+    [disabled]="disabled()"
 >
     @if (svgIcon) {
         <mat-icon
@@ -10,7 +10,7 @@
             [svgIcon]="svgIcon"
         ></mat-icon>
     } @else {
-        <mat-icon class="material-icons-outlined">{{ icon }}</mat-icon>
+        <mat-icon class="material-icons-outlined">{{ icon() }}</mat-icon>
     }
-    <span>{{ label }}</span>
+    <span>{{ label() }}</span>
 </button>

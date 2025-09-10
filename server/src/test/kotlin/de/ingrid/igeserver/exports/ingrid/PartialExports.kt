@@ -23,6 +23,7 @@ import MockDocument
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -43,6 +44,7 @@ class PartialExports : ShouldSpec() {
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val codelistHandler = mockk<CodelistHandler>()
     private val uploadConfig = mockk<UploadConfig>()
 
@@ -50,7 +52,7 @@ class PartialExports : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService)
+        this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService, this.documentWrapperRepository)
 
         every { codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
             val codelistId = this.secondArg<String>()

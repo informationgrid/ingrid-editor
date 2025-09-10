@@ -144,6 +144,8 @@ class MigrateCodelistIdsIntoDatasets(
     val fieldsKrzn = fieldsAddress + fieldsInGrid + listOf(
         FieldToCodelist(null, "mapLink", "10500"),
     )
+    val fieldsLfUBayern = fieldsAddress + fieldsInGrid.filter { it.arrayField == "references" && it.subField == "urlDataType" } +
+        listOf(FieldToCodelist("references", "urlDataType", "20002"))
 
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: MigrateCodelistIdsIntoDatasets")
@@ -212,6 +214,7 @@ class MigrateCodelistIdsIntoDatasets(
         "ingrid" -> fieldsInGrid
         "ingrid-krzn" -> fieldsKrzn
         "ingrid-hmdk" -> fieldsHmdk
+        "ingrid-lfubayern" -> fieldsLfUBayern
         "uvp" -> fieldsUvp
         "opendata" -> fieldsOpendata
         "test" -> fieldsTest

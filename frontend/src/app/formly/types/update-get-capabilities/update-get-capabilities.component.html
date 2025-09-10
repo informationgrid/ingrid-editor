@@ -1,3 +1,12 @@
-<button mat-stroked-button type="button" color="primary" (click)="showDialog()">
-    Aktualisieren
-</button>
+@if (formState.disabled) {
+    <div class="comment-field">keine Aktualisierung erlaubt</div>
+} @else {
+    <button
+        mat-stroked-button
+        type="button"
+        color="primary"
+        (click)="showDialog()"
+    >
+        Aktualisieren
+    </button>
+}

@@ -49,6 +49,7 @@ export class Configuration {
     public allowOverwriteOnVersionConflict?: boolean,
     public matomoUrl?: string,
     public matomoSiteId?: string,
+    public matomoDisableCookies?: boolean,
   ) {}
 }
 

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -46,6 +47,7 @@ class SpecialisedTask : ShouldSpec() {
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
 
     private val codelistHandler = mockk<CodelistHandler>()
     private val uploadConfig = mockk<UploadConfig>()
@@ -54,7 +56,7 @@ class SpecialisedTask : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -138,7 +140,8 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml"))
+            result shouldBe expectedXml
         }
 
         should("maximalExport") {
@@ -148,7 +151,8 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml"))
+            result shouldBe expectedXml
         }
 
         should("completeExport") {
@@ -158,7 +162,8 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml"))
+            result shouldBe expectedXml
         }
     }
 }

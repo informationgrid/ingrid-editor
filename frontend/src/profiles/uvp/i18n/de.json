@@ -9,8 +9,8 @@
     "application": "UVP",
     "newDocument": "Neues Vorhaben",
     "importDocument": "Vorhaben importieren",
-    "mostRecent": "Zuletzt bearbeitete Vorhaben",
-    "mostRecentPublished": "Zuletzt veröffentlichte Vorhaben",
+    "recentlyModifiedDocs": "Zuletzt bearbeitete Vorhaben",
+    "recentlyPublishedDocs": "Zuletzt veröffentlichte Vorhaben",
     "form": "Vorhaben",
     "formSingular": "Vorhaben"
   },

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -50,7 +50,7 @@ export class UploadTypeComponent
 {
   // TODO: refactor and use direct form control to prevent explicit updates
   upload: LinkType;
-  @Input() document: IgeDocument;
+  readonly document = input<IgeDocument>(undefined);
 
   private defaultValue: LinkType = {
     asLink: true,

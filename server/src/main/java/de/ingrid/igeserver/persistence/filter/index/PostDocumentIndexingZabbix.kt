@@ -28,6 +28,7 @@ import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
+import de.ingrid.mdek.upload.UploadConfig
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -44,13 +45,13 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
+class PostDocumentIndexingZabbix(val uploadConfig: UploadConfig, val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
+
+    private val log = logger()
 
     override val profiles = arrayOf("uvp")
 
     private val xpath = XPathUtils()
-
-    private val log = logger()
 
     override fun invoke(payload: PostIndexPayload, context: Context): PostIndexPayload {
         val catalogIdentifier = context.catalogId
@@ -65,9 +66,14 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
                 val jobDataMap = JobDataMap().apply {
                     put("profile", profile)
                     put("catalogId", catalogIdentifier)
-                    put("data", jacksonObjectMapper().writeValueAsString(data))
+                    put(
+                        "data",
+                        jacksonObjectMapper().writeValueAsString(
+                            getZabbixData(payload, catalogIdentifier),
+                        ),
+                    )
                 }
-                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
+                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, jobPriority = 1, checkRunning = false)
             } catch (ex: Exception) {
                 log.error("Error while scheduling zabbix job for document ${data.uuid} in catalog $catalogIdentifier: ${ex.message}")
                 throw ex
@@ -82,17 +88,17 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
         catalogIdentifier: String,
     ): ZabbixModel.ZabbixData {
         val xmlDocument = convertToDocument(payload)
-
-        val uploadUrl = zabbixService.uploadUrl
-        val documentTitle = xpath.getString(xmlDocument, "//idfMdMetadata/name")
         val uuid = xpath.getString(xmlDocument, "//idfMdMetadata/id")
-        val detailUrl = zabbixService.detailUrl.format(uuid)
-        val addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name")
-        val addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")?.trim()
 
-        val uploadsToAdd = getUploadsToAdd(xmlDocument, uploadUrl)
-
-        return ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, addressName, addressMail, uploadsToAdd)
+        return ZabbixModel.ZabbixData(
+            catalogIdentifier,
+            uuid,
+            documentTitle = xpath.getString(xmlDocument, "//idfMdMetadata/name"),
+            documentURL = zabbixService.detailUrl.format(uuid),
+            addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name"),
+            addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")?.trim(),
+            uploads = getUploadsToAdd(xmlDocument, uploadConfig.uploadExternalUrl),
+        )
     }
 
     private fun convertToDocument(payload: PostIndexPayload): Document {

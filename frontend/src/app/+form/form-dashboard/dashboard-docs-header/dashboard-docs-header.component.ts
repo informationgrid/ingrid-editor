@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
@@ -31,8 +31,8 @@ import { ActionButtonComponent } from "../../../shared/action-button/action-butt
   imports: [TranslocoDirective, ActionButtonComponent],
 })
 export class DashboardDocsHeaderComponent implements OnInit {
-  @Input() canCreateDatasets: boolean;
-  @Input() canImport: boolean;
+  readonly canCreateDatasets = input<boolean>(undefined);
+  readonly canImport = input<boolean>(undefined);
 
   constructor(
     private docEvents: DocEventsService,

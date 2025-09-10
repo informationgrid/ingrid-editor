@@ -284,6 +284,29 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
     }
 
     @Test
+    fun `migrate codelist ids inside documents for LfUBayern`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog-lfubayern")
+        }
+
+        migrationTask.run(jobExecutionContext)
+
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1011",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getPath("references")!!.get(0).apply {
+                    getString("urlDataType.key") shouldBe "27"
+                    getString("urlDataType._codelistId") shouldBe "20002"
+                }
+            }
+    }
+
+    @Test
     fun `when no changes then dataset should not change at all`() {
         every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
             this.put("catalogId", "test_catalog")
@@ -303,9 +326,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
     }
 }
 
-val expectedDataset = string().trimIndent()
-
-private fun string(): String = """{
+val expectedDataset = """{
   "title": "full_geodatendienst",
   "themes": [],
   "service": {
@@ -429,4 +450,5 @@ private fun string(): String = """{
     }
   ],
   "openDataCategories": [], "hvdCategories": [], "topicCategories": []
-}"""
+}
+""".trimIndent()

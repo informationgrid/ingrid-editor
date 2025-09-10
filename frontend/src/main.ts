@@ -32,6 +32,7 @@ import {
   HTTP_INTERCEPTORS,
   HttpClient,
   provideHttpClient,
+  withFetch,
   withInterceptorsFromDi,
   withXsrfConfiguration,
 } from "@angular/common/http";
@@ -146,6 +147,7 @@ import { GermanDateIntl } from "./app/services/german-date.intl";
 import { GeneralStore } from "./app/store/general.store";
 import {
   MatomoInitializerService,
+  MatomoTracker,
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
@@ -364,7 +366,11 @@ bootstrapApplication(AppComponent, {
       withFormlyFieldToggle(),
       withFormlyFieldDatepicker(),
     ]),
-    provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withXsrfConfiguration({}),
+      withFetch(),
+    ),
     // make sure we are authenticated by keycloak before bootstrap
     provideAppInitializer(() => {
       const initializerFn = ConfigLoader(
@@ -376,6 +382,7 @@ bootstrapApplication(AppComponent, {
         inject(TranslocoService),
         inject(GeneralStore),
         inject(MatomoInitializerService),
+        inject(MatomoTracker),
       );
       return initializerFn();
     }),

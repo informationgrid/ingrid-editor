@@ -28,6 +28,36 @@ import de.ingrid.igeserver.exports.prettyFormatXml
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.schema.SchemaUtils
+import java.time.LocalDate
+import java.util.regex.Pattern
+
+/**
+ * Updates the datestamp in the expected XML file to match the current date.
+ * This is needed because the exporter now updates the datestamp to the current date.
+ */
+fun updateDatestampInExpectedXml(xml: String): String {
+    val currentDate = LocalDate.now().toString()
+
+    // Pattern to match only the date content within the datestamp in the XML
+    val datePattern = Pattern.compile("(<gmd:dateStamp>\\s*<gco:Date>)(.*?)(</gco:Date>\\s*</gmd:dateStamp>)")
+    val dateTimePattern = Pattern.compile("(<gmd:dateStamp>\\s*<gco:DateTime>)(.*?)(</gco:DateTime>\\s*</gmd:dateStamp>)")
+
+    var result = xml
+
+    // Replace only the date content, preserving the original XML structure
+    val dateMatcher = datePattern.matcher(result)
+    if (dateMatcher.find()) {
+        result = dateMatcher.replaceAll("$1$currentDate$3")
+    }
+
+    // Replace only the datetime content, preserving the original XML structure
+    val dateTimeMatcher = dateTimePattern.matcher(result)
+    if (dateTimeMatcher.find()) {
+        result = dateTimeMatcher.replaceAll("$1$currentDate$3")
+    }
+
+    return result
+}
 
 fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val result = exportJsonToString(exporter, file, additional)

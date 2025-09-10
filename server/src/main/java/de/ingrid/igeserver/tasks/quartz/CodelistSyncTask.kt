@@ -52,9 +52,9 @@ class CodelistSyncTask(
     }
 
     private val sqlNonArchivedDocuments = """
-        SELECT d.uuid, d.data 
+        SELECT d.id, d.uuid, d.data 
         FROM document d
-        JOIN document_wrapper dw ON d.uuid = dw.uuid
+        JOIN document_wrapper dw ON d.uuid = dw.uuid AND d.catalog_id = dw.catalog_id
         JOIN catalog c ON dw.catalog_id = c.id
         WHERE c.identifier = ?
         AND dw.deleted = 0
@@ -65,17 +65,17 @@ class CodelistSyncTask(
     private val sqlCountNonArchivedDocuments = """
         SELECT COUNT(d.uuid)
         FROM document d
-        JOIN document_wrapper dw ON d.uuid = dw.uuid
+        JOIN document_wrapper dw ON d.uuid = dw.uuid AND d.catalog_id = dw.catalog_id
         JOIN catalog c ON dw.catalog_id = c.id
         WHERE c.identifier = ?
         AND dw.deleted = 0
-        AND d.state != 'ARCHIVED'
+        AND d.state != 'ARCHIVED'    
     """.trimIndent()
 
     private val updateSql = """
         UPDATE document
         SET data = ?::jsonb
-        WHERE uuid = ?
+        WHERE id = ?
     """.trimIndent()
 
     private val batchSize = 100 // Process 100 documents at a time
@@ -105,6 +105,7 @@ class CodelistSyncTask(
                 log.info("Processing batch: offset=$offset, limit=$batchSize")
 
                 val batchCount = jdbcTemplate.query(sqlNonArchivedDocuments, { rs, index ->
+                    val id = rs.getInt("id")
                     val uuid = rs.getString("uuid")
                     val dataJson = rs.getString("data")
                     val dataNode = objectMapper.readTree(dataJson)
@@ -125,7 +126,7 @@ class CodelistSyncTask(
                         val updatedJson = objectMapper.writeValueAsString(dataNode)
                         log.debug("Updating document with UUID: $uuid")
 
-                        jdbcTemplate.update(updateSql, updatedJson, uuid)
+                        jdbcTemplate.update(updateSql, updatedJson, id)
                     }
 
                     if (jsonPaths.isNotEmpty()) {
@@ -170,12 +171,20 @@ class CodelistSyncTask(
             ?: throw ServerException.withReason("Codelist not found for id: $codelistId at path: $path for uuid: $uuid")
 
         if (entryKey == null) {
-            // TODO: check if value is now a codelist-entry
+            codelist.entries?.find { it.fields[catalogLanguage] == node.getString("value") }?.let {
+                (node as ObjectNode).put("key", it.id)
+                return true
+            }
         } else {
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
                 log.info("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid. Converting to free entry")
-                (node as ObjectNode).put("key", null as String?)
+                if (node.getString("value") != null) {
+                    (node as ObjectNode).put("key", null as String?)
+                } else {
+                    log.warn("No value found so we keep the key for now")
+                    return false
+                }
                 return true
             } else if (node.getString("value") != codelistEntryValue) {
                 log.info(
@@ -187,6 +196,9 @@ class CodelistSyncTask(
                 )
                 (node as ObjectNode).put("value", codelistEntryValue)
                 return true
+            } else {
+                log.debug("Codelist entry value unchanged for id: $entryKey at path: $path for uuid: $uuid with value: $codelistEntryValue")
+                return false
             }
         }
         return false

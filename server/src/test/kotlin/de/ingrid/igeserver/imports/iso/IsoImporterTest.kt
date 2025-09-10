@@ -41,6 +41,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.Result
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import de.ingrid.mdek.upload.UploadConfig
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
@@ -117,6 +118,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importGeodataset() {
+        setAdminAuthentication()
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
 
@@ -335,7 +337,8 @@ class IsoImporterTest : AnnotationSpec() {
         nameOrUuid: String,
         expected: String,
     ) {
-        val address = json.find { it.getString("_uuid") == nameOrUuid || it.getString("organization") == nameOrUuid } ?: throw RuntimeException()
+        val address = json.find { it.getString("_uuid") == nameOrUuid || it.getString("organization") == nameOrUuid }
+            ?: throw RuntimeException()
         address.toPrettyString().replace("\r", "").shouldEqualJson(expected)
     }
 
@@ -344,7 +347,8 @@ class IsoImporterTest : AnnotationSpec() {
         name: String,
         types: List<String>,
     ) {
-        val addressUuid = json.find { it.getString("organization") == name }?.getString("_uuid") ?: throw RuntimeException()
+        val addressUuid =
+            json.find { it.getString("organization") == name }?.getString("_uuid") ?: throw RuntimeException()
         val presentTypes = json[0].get("pointOfContact")
             .filter { it.getString("ref") == addressUuid }
             .map { it.getString("type.key") }

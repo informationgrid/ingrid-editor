@@ -23,7 +23,6 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterAddress
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -32,8 +31,7 @@ import org.springframework.stereotype.Service
 class IngridExporterCswWsvAddress(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporterAddress(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporterAddress(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
