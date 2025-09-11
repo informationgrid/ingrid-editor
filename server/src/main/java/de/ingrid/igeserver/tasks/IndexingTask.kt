@@ -33,7 +33,11 @@ import de.ingrid.igeserver.index.IIndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
@@ -46,8 +50,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Date
 import java.util.concurrent.ScheduledFuture
+import kotlin.collections.map
 
 data class ExtendedExporterConfig(
     val target: IIndexManager,
@@ -229,7 +234,7 @@ class IndexingTask(
                         catalogProfile.indexIdField.address
                     } else {
                         catalogProfile.indexIdField.document
-                    }
+                    },
                 )
             }.also {
                 if (it.isEmpty()) log.warn("No exporter found for any category with ID: ${config.exporterId}")

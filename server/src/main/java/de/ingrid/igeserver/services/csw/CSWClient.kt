@@ -20,10 +20,13 @@
 package de.ingrid.igeserver.services.csw
 
 import de.ingrid.utils.ElasticDocument
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
 import org.w3c.dom.Document
@@ -180,7 +183,7 @@ class CSWClient(
     private fun createCswTransactionRequest(xmlDoc: Document, operation: String): String {
         val elementName = if (operation == "Update") "csw:Update" else "csw:Insert"
         return """
-            <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
+            <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="shttp://www.opengis.net/cat/csw/2.0.2">
                 <$elementName>${transformDocumentToString(xmlDoc)}</$elementName>
             </csw:Transaction>
         """.trimIndent()
