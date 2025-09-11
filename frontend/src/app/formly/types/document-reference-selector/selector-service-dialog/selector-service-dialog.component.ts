@@ -83,6 +83,7 @@ export class SelectorServiceDialogComponent {
     if (data.activeRef) {
       setTimeout(() => {
         const node = this.treeStore.getByUuid(data.activeRef);
+        if (node == undefined) return;
         this.initialNode.next(parseInt(node.id.toString()));
       });
     }

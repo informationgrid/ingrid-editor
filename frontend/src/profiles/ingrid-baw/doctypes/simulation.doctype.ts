@@ -40,7 +40,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.addLongTermFileStorageCard("path", {
             docTypeFilter: [],
             label: "Datensatzverweis",
-            allowRedirectToDocument: false,
+            allowRedirectToDocument: true,
             allowMultiSelect: true,
             titleOfDocumentSelectorDialog: "Datei auswählen",
             required: false,
@@ -53,6 +53,18 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           }),
         ]),
 
+        this.addGroup("lfs-single", "LFS-Dateien Single", [
+          this.addLongTermFileStorageCard("path", {
+            docTypeFilter: [],
+            label: "Datensatzverweis",
+            allowRedirectToDocument: false,
+            allowMultiSelect: false,
+            titleOfDocumentSelectorDialog: "Datei auswählen",
+            required: false,
+            hideHeader: true,
+          }),
+        ]),
+
         this.addGroup("docReferences", "Verlinkte Datensätze", [
           this.addDocumentCard("ref", {
             docTypeFilter: [],
@@ -61,11 +73,17 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             allowMultiSelect: true,
             titleOfDocumentSelectorDialog: "Datensatz verlinken",
             required: false,
-            // expressions: {
-            //   hide: (field: FormlyFieldConfig) => {
-            //     return field.form.value.referenceType != "uuidRef";
-            //   },
-            // },
+          }),
+        ]),
+
+        this.addGroup("docReferences", "Verlinkte Datensätze", [
+          this.addDocumentCard("single_ref", {
+            docTypeFilter: [],
+            label: "Datensatzverweis",
+            allowRedirectToDocument: true,
+            allowMultiSelect: false,
+            titleOfDocumentSelectorDialog: "Datensatz verlinken",
+            required: false,
           }),
         ]),
       ]),

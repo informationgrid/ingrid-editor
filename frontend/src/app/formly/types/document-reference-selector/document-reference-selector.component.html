@@ -32,13 +32,6 @@
                         }
                     </div>
                 </div>
-                @if (props.showLayernames) {
-                    <ul style="text-underline: #1a1b1f">
-                        @for (name of item.layerNames; track name) {
-                            <li>{{ name }}</li>
-                        }
-                    </ul>
-                }
             </div>
             @if (formControl.enabled) {
                 <button
@@ -80,7 +73,7 @@
             type="button"
             mat-stroked-button
             color="primary"
-            (click)="showInternalRefDialog()"
+            (click)="showReferenceDialog()"
         >
             {{ titleOfDocumentSelectorDialog }}
         </button>

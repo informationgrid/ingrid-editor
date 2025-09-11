@@ -24,7 +24,6 @@ import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
@@ -39,24 +38,12 @@ import {
 } from "./selector-service-dialog/selector-service-dialog.component";
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
-import { DocumentReference } from "../document-reference-type/document-reference-type.component";
+import { DocumentAbstract } from "../../../store/document/document.model";
 
-interface Reference {
-  layerNames: string[];
-  isExternalRef: boolean;
+interface DocumentReference {
   uuid: string;
-}
-
-export interface SelectedDocumentReference extends Reference {
-  title: string;
-  state: DocumentState;
-  type: string;
-  icon: string;
-}
-
-interface UrlReference extends Reference {
-  title: string;
-  url: string;
+  isExternalRef: boolean;
+  title?: string;
 }
 
 @UntilDestroy()
@@ -81,7 +68,7 @@ export class DocumentReferenceSelectorComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  myModel: (SelectedDocumentReference | UrlReference)[];
+  myModel: (DocumentAbstract | DocumentReference)[];
   allowMultiSelect = false;
   allowRedirectToDocument = false;
   titleOfDocumentSelectorDialog: "Dokument auswählen";
@@ -107,9 +94,9 @@ export class DocumentReferenceSelectorComponent
   }
 
   private async buildModel() {
+    this.refreshing = true;
     this.allowMultiSelect = this.props.allowMultiSelect;
     this.allowRedirectToDocument = this.props.allowRedirectToDocument;
-    this.refreshing = true;
     this.titleOfDocumentSelectorDialog =
       this.props.titleOfDocumentSelectorDialog;
 
@@ -123,16 +110,16 @@ export class DocumentReferenceSelectorComponent
         }),
       );
     } else {
-      if (this.formControl.value?.length > 0) {
-        let item = await this.mapInternalRef(<SelectedDocumentReference>{
-          title: `???`,
-          uuid: this.formControl?.value as string,
-          type: "",
-          icon: "",
-          layerNames: null,
-          isExternalRef: false,
-          state: "W",
-        });
+      if (this.formControl.value == undefined) {
+        this.formControl.setValue(null);
+        this.myModel = [];
+      } else {
+        let item = this.formControl?.value.isExternalRef
+          ? this.formControl?.value
+          : await this.mapInternalRef({
+              uuid: this.formControl?.value as string,
+              isExternalRef: false,
+            });
         this.myModel = [];
         this.myModel.push(item);
       }
@@ -141,7 +128,7 @@ export class DocumentReferenceSelectorComponent
     this.cdr.detectChanges();
   }
 
-  showInternalRefDialog(index?: number | string) {
+  showReferenceDialog(index?: number | string) {
     if (typeof index == "string") {
       index = 0;
     }
@@ -149,8 +136,7 @@ export class DocumentReferenceSelectorComponent
     const data: SelectDatasetData = {
       currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
-      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
-      showLayernames: this.props.showLayernames,
+      showLayernames: false,
       allowMultiSelect: this.props.allowMultiSelect,
       docTypeFilter: this.props.docTypeFilter,
       titleOfDocumentSelectorDialog: this.props.titleOfDocumentSelectorDialog,
@@ -166,11 +152,10 @@ export class DocumentReferenceSelectorComponent
       .subscribe((item: SelectServiceResponse) => {
         if (!item) return;
         this.updateValue(
-          {
+          <DocumentReference>{
+            title: item.isExternalRef ? item.title : undefined,
             uuid: item.uuid,
-            layerNames: item.layerNames,
-            isExternalRef: item.isExternalRef,
-            title: item.title,
+            isExternalRef: item.isExternalRef ?? false,
           },
           index,
         );
@@ -182,62 +167,50 @@ export class DocumentReferenceSelectorComponent
       const isNotNew = index >= 0;
       let docArray: any[] = this.formControl.value;
       if (isNotNew) {
-        docArray.splice(index, 1);
+        docArray.splice(index, 1, item);
+      } else {
+        docArray.push(item);
       }
-      docArray.push(item);
       setTimeout(() => this.formControl.setValue(docArray));
     } else {
-      setTimeout(() => this.formControl.setValue(item.uuid));
+      setTimeout(() =>
+        this.formControl.setValue(
+          item.isExternalRef
+            ? {
+                title: item.title,
+                uuid: item.uuid,
+                isExternalRef: true,
+              }
+            : item.uuid,
+        ),
+      );
     }
     this.props.change?.(this.field);
   }
 
   private async mapInternalRef(
-    item: SelectedDocumentReference,
-  ): Promise<SelectedDocumentReference> {
+    item: DocumentReference,
+  ): Promise<DocumentAbstract | DocumentReference> {
     const treeStore = this.props.treeStore;
     const nodeEntity = treeStore.getByUuid(item.uuid);
     if (nodeEntity) {
-      return this.mapToDocumentReference(nodeEntity, item.layerNames);
+      return nodeEntity;
     }
-
     return await firstValueFrom(
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
-          return this.mapToDocumentReference(
-            doc.documentWithMetadata,
-            item.layerNames,
-          );
+          return this.docService.mapToDocumentAbstracts([doc])[0];
         }),
         catchError((error) => {
           console.error(`UUID not found: ${item.uuid}`, error);
-          return of(<SelectedDocumentReference>{
-            title: `???`,
+          return of({
+            title: item.title ?? `???`,
             uuid: item.uuid,
-            type: "",
-            icon: null,
-            layerNames: null,
-            isExternalRef: false,
-            state: null,
+            isExternalRef: item.isExternalRef,
           });
         }),
       ),
     );
-  }
-
-  private mapToDocumentReference(
-    doc: IgeDocument,
-    layerNames: string[],
-  ): SelectedDocumentReference {
-    return {
-      uuid: doc?._uuid,
-      isExternalRef: false,
-      title: doc?.title,
-      state: doc?._state,
-      type: doc?._type,
-      layerNames: layerNames,
-      icon: doc?.icon,
-    };
   }
 
   private getRefUuids(): string[] {
@@ -246,32 +219,47 @@ export class DocumentReferenceSelectorComponent
         .filter((item: any) => item.uuid)
         .map((item: any) => item.uuid);
     } else {
-      let uuids: string[] = [];
-      uuids.push(this.formControl.value);
-      return uuids;
+      return [
+        typeof this.formControl.value === "string"
+          ? this.formControl.value
+          : this.formControl.value?.uuid,
+      ];
     }
   }
 
   editItem(index: number) {
-    this.showInternalRefDialog(index);
+    this.showReferenceDialog(index);
   }
 
   removeItem(index: number, event: MouseEvent) {
     event.stopImmediatePropagation();
     this.myModel.splice(index, 1);
     this.props.change?.(this.field, event);
-    setTimeout(() => this.formControl.setValue(this.myModel));
+    if (this.myModel.length == 0) {
+      this.formControl.setValue(this.allowMultiSelect ? [] : null);
+    } else {
+      const newJson = this.myModel.map(
+        (item: any) =>
+          <DocumentReference>{
+            title: item.isExternalRef ? item.title : undefined,
+            uuid: item._uuid ?? item.uuid,
+            isExternalRef: item.isExternalRef ?? false,
+          },
+      );
+      setTimeout(() => this.formControl.setValue(newJson));
+    }
   }
 
-  async openReference(item: DocumentReference | UrlReference) {
+  async openReference(item: DocumentAbstract | DocumentReference) {
     if (this.formControl.disabled) return;
 
-    if (item.isExternalRef) {
-      window.open((<UrlReference>item).url, "_blank");
+    if ((item as DocumentReference).isExternalRef) {
+      console.log("Redirect to external source not yet implemented.");
+      // window.open((<UrlReference>item).uuid, "_blank");
     } else {
       return this.router.navigate([
         `${ConfigService.catalogId}/form`,
-        { id: (<DocumentReference>item).uuid },
+        { id: (<DocumentAbstract>item)._uuid },
       ]);
     }
   }
