@@ -24,6 +24,7 @@
                         [value]="initialUrl"
                         matInput
                         placeholder="https://"
+                        (keyup.enter)="analyze(url.value)"
                     />
                 </mat-form-field>
                 <button

@@ -29,6 +29,8 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.exporter.model.GeoElementType
+import de.ingrid.igeserver.exporter.model.GeographicElement
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -259,6 +261,57 @@ open class IngridModelTransformer(
             arsSpatial.ars,
             padARS(arsSpatial.ars!!),
         )
+    }
+
+    fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
+        val geoElements = mutableListOf<GeographicElement>()
+
+        when (ref.type) {
+            "free", "wfsgnde" -> {
+                if (!ref.title.isNullOrEmpty()) {
+                    geoElements.add(
+                        GeographicElement(
+                            type = GeoElementType.DESCRIPTION,
+                            geographicIdentifier = ref.getTitleWithArs()?.let { CharacterStringModel(it, null) },
+                        ),
+                    )
+                }
+
+                if (ref.value != null) {
+                    geoElements.add(
+                        GeographicElement(
+                            type = GeoElementType.BOUNDINGBOX,
+                            boundingBox = ref.value,
+                        ),
+                    )
+                }
+            }
+            "wkt" -> {
+                if (ref.polygon != null) {
+                    geoElements.add(
+                        GeographicElement(
+                            type = GeoElementType.BOUNDINGPOLYGON,
+                            polygon = ref.getWktCoordinatesISO(),
+                        ),
+                    )
+                }
+            }
+        }
+
+        if (!ref.ars.isNullOrEmpty()) {
+            geoElements.add(
+                GeographicElement(
+                    type = GeoElementType.DESCRIPTION,
+                    hasExtentTypeCode = false,
+                    geographicIdentifier = CharacterStringModel(
+                        padARS(ref.ars),
+                        "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}",
+                    ),
+                ),
+            )
+        }
+
+        geoElements
     }
 
     fun padARS(ars: String): String = ars.padEnd(12, '0')
@@ -777,7 +830,7 @@ open class IngridModelTransformer(
 
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
+
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
@@ -1147,8 +1200,7 @@ open class IngridModelTransformer(
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
 
-    // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
-    fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+    open fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse()
 
     fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
         true -> if (codelists.catalogLanguage == "en") {

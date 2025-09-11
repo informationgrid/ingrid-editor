@@ -166,9 +166,13 @@ class CatalogApiController(
             val exportedCatalog: ExportedCatalog = jacksonObjectMapper()
                 .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
                 .readValue(it.toFile())
-            catalogImportService.importCatalog(exportedCatalog)
+            try {
+                catalogImportService.importCatalog(exportedCatalog)
+            } catch (e: Exception) {
+                fileUploadHandler.cleanup(flowIdentifier)
+                throw e
+            }
 
-            fileUploadHandler.cleanup(flowIdentifier)
             return ResponseEntity.ok().build()
         }
 

@@ -17,7 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  input,
+  output,
+  Output,
+  EventEmitter,
+} from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
 
@@ -28,8 +36,8 @@ import { MatButton } from "@angular/material/button";
   imports: [MatProgressSpinner, MatButton],
 })
 export class ResultTableHeaderComponent implements OnInit {
-  @Input() isLoading = false;
-  @Input() totalHits = 0;
+  readonly isLoading = input(false);
+  readonly totalHits = input(0);
   @Output() download = new EventEmitter<void>();
   @Input() showDownloadButton: boolean;
 

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, Input } from "@angular/core";
+import { Component, forwardRef, input } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -66,9 +66,9 @@ import { Router } from "@angular/router";
   ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
-  @Input() label: string;
-  @Input() forAddress = false;
-  @Input() disabled = false;
+  readonly label = input<string>(undefined);
+  readonly forAddress = input(false);
+  readonly disabled = input(false);
 
   public permissionLevel: typeof PermissionLevel = PermissionLevel;
 
@@ -91,7 +91,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       .open(PermissionAddDialogComponent, {
         hasBackdrop: true,
         data: {
-          forAddress: this.forAddress,
+          forAddress: this.forAddress(),
           value: this.val,
           breadcrumb: this.breadcrumb,
         },
@@ -162,13 +162,13 @@ export class PermissionTableComponent implements ControlValueAccessor {
   getDocument(id: number): Promise<IgeDocument> {
     return firstValueFrom(
       this.documentService
-        .load(id, this.forAddress, false)
+        .load(id, this.forAddress(), false)
         .pipe(map((doc) => doc.documentWithMetadata)),
     );
   }
 
   updatePermission(element: any, level: PermissionLevel) {
-    if (this.disabled) return;
+    if (this.disabled()) return;
     element.permission = level;
     this.onChange(this.val);
   }
@@ -193,7 +193,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   openDataset(item: TreePermission) {
-    const basePath = `${ConfigService.catalogId}/${this.forAddress ? "address" : "form"}`;
+    const basePath = `${ConfigService.catalogId}/${this.forAddress() ? "address" : "form"}`;
     this.router.navigate([basePath, { id: item.uuid }]);
   }
 }

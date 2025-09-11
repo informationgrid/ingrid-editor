@@ -56,6 +56,8 @@ class LfuBayernProfile(
 
     override val indexExportFormatID = "indexInGridIDFLfuBayern"
 
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/lfubayern/default-mapping.json")?.readText() ?: ""
+
     init {
         isoImport.profileMapper[ID] = isoImportLfUBayern
     }

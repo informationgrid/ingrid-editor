@@ -25,6 +25,7 @@ import {
   Input,
   OnInit,
   ViewChild,
+  input,
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
@@ -82,8 +83,8 @@ export class HeaderTitleRowComponent implements OnInit {
     this.updateHeaderMenuOptions();
   }
 
-  @Input() disableEdit: boolean;
-  @Input() address: boolean;
+  readonly disableEdit = input<boolean>(undefined);
+  readonly address = input<boolean>(undefined);
 
   @ViewChild("titleInput") titleInput: ElementRef;
   @ViewChild("cfcAutosize") contentFCAutosize: CdkTextareaAutosize;
@@ -120,7 +121,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private updateHeaderMenuOptions() {
     this.moreActions = this.formMenuService.getMenuItems(
-      this.address ? "address" : "dataset",
+      this.address() ? "address" : "dataset",
     );
     this.showMoreActions = this.moreActions.length > 0;
   }

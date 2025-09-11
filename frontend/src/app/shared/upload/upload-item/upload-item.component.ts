@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, input, output } from "@angular/core";
-import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
+import { FlowConfig, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatIcon } from "@angular/material/icon";
@@ -43,7 +43,7 @@ import { SizePipe } from "../../../directives/size.pipe";
 })
 export class UploadItemComponent {
   file = input<TransfersWithErrorInfo>();
-  flow = input<FlowDirective>();
+  flow = input<FlowConfig>();
   showOnlyProgress = input<boolean>(false);
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();

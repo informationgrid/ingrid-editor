@@ -20,12 +20,14 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   forwardRef,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  input,
+  output,
+  EventEmitter,
+  Output,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
 import { Map, Rectangle } from "leaflet";
@@ -112,7 +114,7 @@ export interface FacetUpdate {
 })
 export class FacetsComponent implements OnInit, ControlValueAccessor {
   // TODO: remove input and filter facets from report component
-  @Input() forReports: boolean;
+  readonly forReports = input<boolean>(undefined);
 
   @Input() set facets(value: Facets) {
     if (value) {
@@ -122,7 +124,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     }
   }
 
-  @Input() refreshView: EventEmitter<void>;
+  readonly refreshView = input<EventEmitter<void>>(undefined);
 
   @Output() resetQuery = new EventEmitter<void>();
 
@@ -274,7 +276,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     data.limitTypes = ["free"];
 
     this.dialog
-      .open(SpatialDialogComponent, { data: data })
+      .open(SpatialDialogComponent, {
+        data: data,
+        width: "90%",
+        maxWidth: 1260,
+        minWidth: "min(600px, 100%)",
+      })
       .afterClosed()
       .subscribe((result) => {
         if (result && result.value) this.updateLocation(result);
@@ -341,7 +348,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   private updateFilterGroup() {
     let filter = this.allFacets[this._forAddresses ? "addresses" : "documents"];
-    if (this.forReports)
+    if (this.forReports())
       filter = filter.filter(
         (fg) => !this.researchOnlyFilterIds.includes(fg.id),
       );

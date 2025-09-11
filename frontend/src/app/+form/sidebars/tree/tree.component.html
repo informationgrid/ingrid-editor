@@ -1,12 +1,13 @@
 <div class="header-wrapper" *transloco="let t; read: 'menu'">
-    @if (showHeader) {
+    @if (showHeader()) {
         <ige-tree-header
             [class.invisible]="isDragging && hasWriteToRootPermission"
             (reload)="reloadTree(true).subscribe()"
-            [isAddress]="forAddresses"
-            [showOptions]="showHeaderOptions"
-            [showOnlyFolders]="showOnlyFolders"
-            [showMultiSelectButton]="hasData && showMultiSelectButton"
+            [isAddress]="forAddresses()"
+            [showOptions]="showHeaderOptions()"
+            [showWriteAccessToggle]="showWriteAccessToggle()"
+            [showOnlyFolders]="showOnlyFolders()"
+            [showMultiSelectButton]="hasData && showMultiSelectButton()"
             [showSearch]="hasData"
             [emptySearchResults]="emptySearchResults"
             [checkToggleAll]="selection?.allNodesSelected()"
@@ -15,7 +16,7 @@
             "
             [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled()"
             (toggleAllSelection)="selection?.toggleAllSelection($event)"
-            (toggleView)="toggleView($event)"
+            (toggleWriteAccess)="toggleWriteAccess($event)"
             (edit)="toggleSelectionMode($event)"
             (open)="handleSelection($event)"
         ></ige-tree-header>
@@ -31,7 +32,7 @@
             <div class="zone">
                 <span
                     >Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
-                    {{ forAddresses ? "Adressen" : t("form") }}</span
+                    {{ forAddresses() ? "Adressen" : t("form") }}</span
                 >
             </div>
         </div>
@@ -50,7 +51,7 @@
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node
         *matTreeNodeDef="let node"
-        [draggable]="enableDrag"
+        [draggable]="enableDrag()"
         (dragover)="isDragging && dragManager.handleDragOver($event, node)"
         (drop)="drop($event, node)"
         (dragstart)="handleDragStart($event, node)"
@@ -58,18 +59,18 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="24"
         [class]="node.tags?.join(' ') ?? ''"
-        (click)="!disabledCondition(node) && selectNode(node, $event)"
-        (keydown.enter)="!disabledCondition(node) && selectNode(node, $event)"
+        (click)="!disabledCondition()(node) && selectNode(node, $event)"
+        (keydown.enter)="!disabledCondition()(node) && selectNode(node, $event)"
         [class.drop]="isDragging && dragManager.dragNodeExpandOverNode === node"
         [class.active]="node._id === activeNodeId()"
         [class.expanded]="node.isExpanded"
-        [class.hide]="showOnlyFolders"
+        [class.hide]="showOnlyFolders()"
         [class.readonly]="!node.hasWritePermission"
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
-        [class.disabled]="disabledCondition(node)"
+        [class.disabled]="disabledCondition()(node)"
         cdkMonitorElementFocus
-        [attr.tabindex]="!disabledCondition(node) ? 0 : null"
+        [attr.tabindex]="!disabledCondition()(node) ? 0 : null"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div class="width-100">
@@ -78,14 +79,14 @@
                     mat-icon-button
                     class="toggle"
                     matTreeNodeToggle
-                    [disabled]="!isExpandable(node)"
+                    [disabled]="!isExpandable()(node)"
                     [attr.aria-label]="
                         node.title +
                         ' ' +
                         (node.isExpanded ? 'schließen' : 'öffnen')
                     "
                 >
-                    @if (isExpandable(node)) {
+                    @if (isExpandable()(node)) {
                         <mat-icon class="mat-icon-rtl-mirror expander animated">
                             {{
                                 isLoading === node
@@ -123,7 +124,7 @@
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node
         *matTreeNodeDef="let node; when: isFolder"
-        [draggable]="enableDrag"
+        [draggable]="enableDrag()"
         (drop)="isDragging && drop($event, node)"
         (dragstart)="handleDragStart($event, node)"
         (dragover)="isDragging && dragManager.handleDragOver($event, node)"
@@ -138,11 +139,11 @@
         [class.readonly]="!node.hasWritePermission"
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
-        [class.disabled]="disabledCondition(node)"
+        [class.disabled]="disabledCondition()(node)"
         [class.folder]="node.type === 'FOLDER'"
         [class]="node.tags?.join(' ') ?? ''"
         cdkMonitorElementFocus
-        [attr.tabindex]="!disabledCondition(node) ? 0 : null"
+        [attr.tabindex]="!disabledCondition()(node) ? 0 : null"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div class="width-100">
@@ -152,14 +153,14 @@
                     class="toggle"
                     matTreeNodeToggle
                     tabindex="-1"
-                    [disabled]="!isExpandable(node)"
+                    [disabled]="!isExpandable()(node)"
                     [attr.aria-label]="
                         node.title +
                         ' ' +
                         (node.isExpanded ? 'schließen' : 'öffnen')
                     "
                 >
-                    @if (isExpandable(node)) {
+                    @if (isExpandable()(node)) {
                         <mat-icon class="mat-icon-rtl-mirror expander animated">
                             {{
                                 isLoading === node

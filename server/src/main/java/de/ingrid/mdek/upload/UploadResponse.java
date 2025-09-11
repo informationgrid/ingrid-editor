@@ -52,11 +52,27 @@ public class UploadResponse {
     public UploadResponse(Throwable ex) {
         this.success = false;
         this.errorText = ex.getClass().getSimpleName();
-        this.message = ex.getMessage();
+        this.message = sanitizeErrorMessage(ex.getMessage());
         if (ex instanceof UploadException) {
             this.errorData = ((UploadException)ex).getData();
+            if (this.errorData.containsKey("file")) {
+                this.errorData.put("file", sanitizeErrorMessage((String)this.errorData.get("file")));
+            }
         }
     }
+
+    /**
+     * Remove server paths from exceptions
+     * @param message the string containing path information
+     * @return the sanitized message
+     */
+    private String sanitizeErrorMessage(String message) {
+        if (message == null) return null;
+
+        String pathRegex = "(?:(?:[a-zA-Z]:[\\\\/]|\\\\\\\\|[\\\\/])?(?:[\\w.-]+[\\\\/])+)|(?:[\\w.-]+[\\\\/])+[\\w.-]+\\.\\w+";
+        return message.replaceAll(pathRegex, "[path]/");
+    }
+
 
     /**
      * Set the status property

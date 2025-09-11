@@ -19,11 +19,11 @@
  */
 import {
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  input,
+  output,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
@@ -75,15 +75,15 @@ export class DocumentListItemComponent implements OnInit {
     return this._docs;
   }
   @Input() doc: DocumentAbstract | TreeNode;
-  @Input() denseMode = false;
-  @Input() hideDate = true;
-  @Input() hideDivider = false;
-  @Input() showSelection = false;
-  @Input() showIcons = true;
+  readonly denseMode = input(false);
+  readonly hideDate = input(true);
+  readonly hideDivider = input(false);
+  readonly showSelection = input(false);
+  readonly showIcons = input(true);
   // this is only needed to prevent expression has changed exception and might be removed later
-  @Input() removeSelectionAfter = false;
-  @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;
-  @Output() select = new EventEmitter<DocumentAbstract | TreeNode>();
+  readonly removeSelectionAfter = input(false);
+  readonly setActiveItem = input<Subject<Partial<DocumentAbstract>>>(undefined);
+  readonly select = output<DocumentAbstract | TreeNode>();
 
   @ViewChild(MatSelectionList) list: MatSelectionList;
 
@@ -92,8 +92,9 @@ export class DocumentListItemComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    if (this.setActiveItem) {
-      this.setActiveItem
+    const setActiveItem = this.setActiveItem();
+    if (setActiveItem) {
+      setActiveItem
         .pipe(untilDestroyed(this))
         .subscribe((doc) => this.updateSelectionFromExternal(doc));
     }
@@ -106,11 +107,11 @@ export class DocumentListItemComponent implements OnInit {
   makeSelection(doc: DocumentAbstract | TreeNode) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
-    if (this.removeSelectionAfter && this.list) {
+    if (this.removeSelectionAfter() && this.list) {
       this.list.deselectAll();
     } else {
       this.currentSelection = doc;
     }
-    this.select.next(doc);
+    this.select.emit(doc);
   }
 }

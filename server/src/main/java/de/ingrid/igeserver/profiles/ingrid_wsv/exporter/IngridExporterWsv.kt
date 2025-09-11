@@ -30,7 +30,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -42,8 +41,7 @@ import org.springframework.stereotype.Service
 class IngridExporterWsv(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(

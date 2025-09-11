@@ -19,13 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
-import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -41,8 +39,7 @@ import kotlin.reflect.KClass
 class IngridExporterExternalBast(
     idfExporter: IngridIdfExporterExternalBast,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -64,7 +61,8 @@ class IngridIdfExporterExternalBast(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -82,9 +80,7 @@ class IngridIdfExporterExternalBast(
 @Service
 class IngridISOExporterExternalBast(
     idfExporter: IngridIdfExporterExternalBast,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterExternalBast(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -95,9 +91,4 @@ class IngridISOExporterExternalBast(
         "xml",
         listOf("ingrid-bast"),
     )
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
-    }
 }

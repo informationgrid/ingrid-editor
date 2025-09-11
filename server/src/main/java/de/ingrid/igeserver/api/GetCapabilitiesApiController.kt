@@ -58,10 +58,18 @@ class GetCapabilitiesApiController(
     @PostMapping(value = ["/analyzeGetCapabilities"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun analyzeGetCapabilties(
         principal: Principal,
-        @Parameter(required = true) @RequestBody url: String,
+        @Parameter(required = true) @RequestBody body: GetCapabilitiesAnalyze,
     ): ResponseEntity<CapabilitiesBean> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val response = capabilitiesService.analyzeGetCapabilitiesUrl(principal, catalogId, url)
+        val response = capabilitiesService.analyzeGetCapabilitiesUrl(
+            principal,
+            catalogId,
+            body.url,
+            body.username,
+            body.password,
+        )
         return ResponseEntity.ok(response)
     }
 }
+
+data class GetCapabilitiesAnalyze(val url: String, val username: String? = null, val password: String? = null)

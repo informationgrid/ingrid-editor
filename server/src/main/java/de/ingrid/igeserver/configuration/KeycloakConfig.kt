@@ -85,7 +85,7 @@ internal class KeycloakConfig {
                     sameOrigin = true
                 }
             }
-            authorizeRequests {
+            authorizeHttpRequests {
                 // secure api-routes except a few necessary ones
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)

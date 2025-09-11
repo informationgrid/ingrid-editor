@@ -1,12 +1,12 @@
 @if (columnsMap) {
     <ige-result-table-header
         [totalHits]="totalHits"
-        [isLoading]="isLoading"
+        [isLoading]="isLoading()"
         (download)="downloadTable()"
     ></ige-result-table-header>
     <mat-divider aria-hidden="true"></mat-divider>
     <table
-        [class.disabled]="!isLoading"
+        [class.disabled]="!isLoading()"
         mat-table
         [dataSource]="dataSource"
         matSort
@@ -63,7 +63,7 @@
             </th>
             <td mat-cell *matCellDef="let element" class="settings">
                 <button
-                    [disabled]="isLoading"
+                    [disabled]="isLoading()"
                     mat-icon-button
                     class="table-options menu-button"
                     matTooltip="Bearbeiten"
@@ -91,9 +91,9 @@
             mat-row
             tabindex="0"
             *matRowDef="let row; columns: displayedColumns"
-            [class.readonly]="!row.hasWritePermission || isLoading"
-            (click)="isLoading ? undefined : openDataset(row)"
-            (keyup.enter)="isLoading ? undefined : openDataset(row)"
+            [class.readonly]="!row.hasWritePermission || isLoading()"
+            (click)="isLoading() ? undefined : openDataset(row)"
+            (keyup.enter)="isLoading() ? undefined : openDataset(row)"
             [attr.aria-label]="
                 'Typ: ' +
                 t(row._type) +

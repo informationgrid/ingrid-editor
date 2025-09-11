@@ -1,9 +1,9 @@
 <div
     class="icon-wrapper"
     [matTooltip]="tooltip"
-    [matTooltipShowDelay]="showDelay"
+    [matTooltipShowDelay]="showDelay()"
 >
-    @if (doc) {
+    @if (doc()) {
         <mat-icon
             [ngClass]="['document-icon', documentState]"
             [svgIcon]="iconClass"

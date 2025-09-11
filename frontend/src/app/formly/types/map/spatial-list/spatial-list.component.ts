@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, OnInit, input, output } from "@angular/core";
 import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Observable } from "rxjs";
@@ -68,12 +68,12 @@ export interface SpatialLocationWithColor extends SpatialLocation {
   ],
 })
 export class SpatialListComponent implements OnInit {
-  @Input() locations: Observable<SpatialLocationWithColor[]>;
-  @Input() disabled = false;
+  readonly locations = input<Observable<SpatialLocationWithColor[]>>(undefined);
+  readonly disabled = input(false);
 
-  @Output() selectLocation = new EventEmitter<number>();
-  @Output() edit = new EventEmitter<number>();
-  @Output() remove = new EventEmitter<number>();
+  readonly selectLocation = output<number>();
+  readonly edit = output<number>();
+  readonly remove = output<number>();
 
   typedLocations: { [x: string]: SpatialLocationWithColor[] };
   types: SpatialLocationType[];
@@ -81,7 +81,7 @@ export class SpatialListComponent implements OnInit {
   constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.locations
+    this.locations()
       .pipe(untilDestroyed(this))
       .subscribe((locations) => this.updateLocations(locations));
   }
