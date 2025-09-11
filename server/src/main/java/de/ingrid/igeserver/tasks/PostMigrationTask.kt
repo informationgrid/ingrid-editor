@@ -140,7 +140,10 @@ class PostMigrationTask(
         val migratedBwastr = spatialReference.getPath("bwastr") ?: return spatialReference
         val bwastrId = migratedBwastr.getString("bwastrid") ?: return spatialReference
         val bwastr =
-            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(bwastrId).firstOrNull()
+            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(
+                // if bwastrId ends with "00" replace it with "01" to get the "Hauptstrecke" for general bwastrIds
+                if (bwastrId.endsWith("00")) bwastrId.dropLast(2) + "01" else bwastrId,
+            ).firstOrNull()
         if (bwastr == null) {
             log.warn { "Bwastr not found for id: $bwastrId" }
             return spatialReference
