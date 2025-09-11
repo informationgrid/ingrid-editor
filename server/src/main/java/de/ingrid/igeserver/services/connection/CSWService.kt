@@ -17,16 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.services.connection
 
-import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
+import de.ingrid.igeserver.services.SettingsService
+import de.ingrid.igeserver.services.csw.CSWClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
-import io.ktor.client.request.*
+import io.ktor.client.request.request
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -49,29 +50,27 @@ class CSWService(val settingsService: SettingsService) : IConnection {
             clientMap =
                 cswtServiceConfig.associate { it.id!! to createCSWTClient(it) }
         } catch (e: Exception) {
-            log.error("Could not connect to Elasticsearch", e)
+            log.error("Could not connect to CSW-interface", e)
+            clientMap = emptyMap()
         }
     }
 
-    private fun createCSWTClient(config: CSWConfig): CSWClient {
-        return CSWClient(
-                client = HttpClient(Java) {
-                    if (config.username != null && config.password != null) {
-                        install(Auth) {
-                            basic {
-                                sendWithoutRequest { true }
-                                credentials {
-                                    BasicAuthCredentials(username = config.username, password = config.password)
-                                }
-                            }
+    private fun createCSWTClient(config: CSWConfig): CSWClient = CSWClient(
+        client = HttpClient(Java) {
+            if (config.username != null && config.password != null) {
+                install(Auth) {
+                    basic {
+                        sendWithoutRequest { true }
+                        credentials {
+                            BasicAuthCredentials(username = config.username, password = config.password)
                         }
                     }
-                },
-                config.url,
-                config.name
-        )
-    }
-
+                }
+            }
+        },
+        config.url,
+        config.name,
+    )
 
     fun getClient(index: String): CSWClient = clientMap[index]!!
 
@@ -80,11 +79,10 @@ class CSWService(val settingsService: SettingsService) : IConnection {
             clientMap[id]!!.getClient().request(clientMap[id]!!.getUrl())
             true
         } catch (e: Exception) {
-            log.warn("No connection to CSW Service '${id}': ${e.message}")
+            log.warn("No connection to CSW Service '$id': ${e.message}")
             false
         }
     }
 
     override fun containsId(id: String): Boolean = clientMap[id] != null
-
 }

@@ -42,7 +42,7 @@ class CSWClient(
     }
 
     fun insertOrUpdate(doc: ElasticDocument, catalogId: String, transactionId: String) {
-        val response = doc["idf"].toString()
+        val response = doc["idf"]?.toString() ?: throw RuntimeException("Document ${doc.get("t01_object.id")} does not contain an IDF. Skipping it.")
         val idfXml = documentBuilder.parse(InputSource(StringReader(response)))
         val transformedXml = transformXml(idfXml)
 
@@ -140,7 +140,8 @@ class CSWClient(
             endpoints
         } catch (e: Exception) {
             log.error("Failed to get capabilities: ${e.message}", e)
-            emptyMap() // Or throw an exception if you prefer
+//            emptyMap() // Or throw an exception if you prefer
+            throw RuntimeException("Failed to get capabilities: ${e.message}", e)
         }
     }
 
