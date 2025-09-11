@@ -12,21 +12,21 @@ import org.w3c.dom.Element
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import java.io.StringReader
+import java.io.StringWriter
+import java.text.SimpleDateFormat
+import java.util.*
+import javax.xml.namespace.NamespaceContext
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import java.io.StringWriter
-import java.text.SimpleDateFormat
-import java.util.*
-import javax.xml.namespace.NamespaceContext
 
 class CSWClient(
     private val client: HttpClient,
     private val url: String,
     private val name: String,
-    private val xslResourcePath: String
+    private val xslResourcePath: String,
 ) {
 
     constructor(client: HttpClient, url: String, name: String) : this(client, url, name, "idf_1_0_0_to_iso_metadata.xsl")
@@ -46,7 +46,7 @@ class CSWClient(
         val idfXml = documentBuilder.parse(InputSource(StringReader(response)))
         val transformedXml = transformXml(idfXml)
 
-        transformedXml.addDescriptiveKeywordsWithThesaurus(listOf(catalogId, transactionId), "INGRID - internal system keywords", "2025-01-01" )
+        transformedXml.addDescriptiveKeywordsWithThesaurus(listOf(catalogId, transactionId), "INGRID - internal system keywords", "2025-01-01")
 
         if (recordExists(doc)) {
             val updateRequest = createCswTransactionRequest(transformedXml, "Update")
@@ -97,7 +97,6 @@ class CSWClient(
             } else {
                 log.warn("CSW $operation operation successful, but no TransactionSummary was found in the response. Response: $response")
             }
-
         } catch (e: Exception) {
             log.error("Error parsing $operation response: ${e.message}", e)
         }
@@ -106,7 +105,7 @@ class CSWClient(
     private fun recordExists(doc: ElasticDocument): Boolean = runBlocking {
         val uuid = doc["t01_object.id"]
         try {
-            val response: String = client.get( getOperationEndpoint("GetRecordById", "GET") + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1").bodyAsText()
+            val response: String = client.get(getOperationEndpoint("GetRecordById", "GET") + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1").bodyAsText()
             val cswResponse = documentBuilder.parse(InputSource(StringReader(response)))
             cswResponse.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "BriefRecord").length > 0
         } catch (e: Exception) {
@@ -139,7 +138,6 @@ class CSWClient(
             transactionGet?.let { endpoints["Transaction-GET"] = it.getAttribute("xlink:href") }
 
             endpoints
-
         } catch (e: Exception) {
             log.error("Failed to get capabilities: ${e.message}", e)
             emptyMap() // Or throw an exception if you prefer
@@ -148,7 +146,7 @@ class CSWClient(
 
     private fun executeCswXMLPostRequest(endpoint: String?, request: String): String? = runBlocking {
         try {
-            if (endpoint == null)  throw Exception("Endpoint is null.")
+            if (endpoint == null) throw Exception("Endpoint is null.")
             client.post(endpoint) {
                 contentType(ContentType.Application.Xml)
                 setBody(request)
@@ -168,8 +166,7 @@ class CSWClient(
         """.trimIndent()
     }
 
-    private fun createDeleteRequest(uuid: String): String {
-        return """
+    private fun createDeleteRequest(uuid: String): String = """
             <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:dc="http://purl.org/dc/elements/1.1/" service="CSW" version="2.0.2">
                 <csw:Delete>
                     <csw:Constraint version="1.1.0">
@@ -183,12 +180,9 @@ class CSWClient(
                 
                 </csw:Delete>
             </csw:Transaction>
-        """.trimIndent()
-    }
+    """.trimIndent()
 
-
-    private fun createDeleteStaleRecordsRequest(datasource: String, transactionId: String): String {
-        return """
+    private fun createDeleteStaleRecordsRequest(datasource: String, transactionId: String): String = """
             <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:dc="http://purl.org/dc/elements/1.1/" service="CSW" version="2.0.2">
                 <csw:Delete>
                     <csw:Constraint version="1.1.0">
@@ -210,8 +204,7 @@ class CSWClient(
                 
                 </csw:Delete>
             </csw:Transaction>
-        """.trimIndent()
-    }
+    """.trimIndent()
 
     private fun transformDocumentToString(doc: Document): String {
         val writer = StringWriter()
@@ -238,32 +231,26 @@ class CSWClient(
         val xpath = xpathFactory.newXPath()
 
         xpath.namespaceContext = object : NamespaceContext {
-            override fun getNamespaceURI(prefix: String): String? {
-                return when (prefix) {
-                    "ows" -> "http://www.opengis.net/ows"
-                    "csw" -> "http://www.opengis.net/cat/csw/2.0.2"
-                    "xlink" -> "http://www.w3.org/1999/xlink"
-                    "dc" -> "http://purl.org/dc/elements/1.1/"
-                    "dct" -> "http://purl.org/dc/terms/"
-                    "gmd" -> "http://www.isotc211.org/2005/gmd"
-                    "gml" -> "http://www.opengis.net/gml"
-                    "ogc" -> "http://www.opengis.net/ogc"
-                    "xs" -> "http://www.w3.org/2001/XMLSchema"
-                    "xsi" -> "http://www.w3.org/2001/XMLSchema-instance"
-                    "inspire_ds" -> "http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"
-                    "inspire_common" -> "http://inspire.ec.europa.eu/schemas/common/1.0"
+            override fun getNamespaceURI(prefix: String): String? = when (prefix) {
+                "ows" -> "http://www.opengis.net/ows"
+                "csw" -> "http://www.opengis.net/cat/csw/2.0.2"
+                "xlink" -> "http://www.w3.org/1999/xlink"
+                "dc" -> "http://purl.org/dc/elements/1.1/"
+                "dct" -> "http://purl.org/dc/terms/"
+                "gmd" -> "http://www.isotc211.org/2005/gmd"
+                "gml" -> "http://www.opengis.net/gml"
+                "ogc" -> "http://www.opengis.net/ogc"
+                "xs" -> "http://www.w3.org/2001/XMLSchema"
+                "xsi" -> "http://www.w3.org/2001/XMLSchema-instance"
+                "inspire_ds" -> "http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"
+                "inspire_common" -> "http://inspire.ec.europa.eu/schemas/common/1.0"
 
-                    else -> null
-                }
+                else -> null
             }
 
-            override fun getPrefix(namespaceURI: String): String? {
-                return null
-            }
+            override fun getPrefix(namespaceURI: String): String? = null
 
-            override fun getPrefixes(namespaceURI: String): Iterator<String>? {
-                return null
-            }
+            override fun getPrefixes(namespaceURI: String): Iterator<String>? = null
         }
 
         return xpath.evaluate(expression, this, javax.xml.xpath.XPathConstants.NODESET) as NodeList
@@ -274,7 +261,7 @@ class CSWClient(
         thesaurusTitle: String,
         thesaurusPublicationDate: String, // Format: "yyyy-MM-dd"
         namespacePrefix: String = "gmd",
-        namespaceURI: String = "http://www.isotc211.org/2005/gmd"
+        namespaceURI: String = "http://www.isotc211.org/2005/gmd",
     ) {
         val descriptiveKeywordsElement = createElementNS(namespaceURI, "$namespacePrefix:descriptiveKeywords")
         val mdKeywordsElement = createElementNS(namespaceURI, "$namespacePrefix:MD_Keywords")
@@ -325,16 +312,14 @@ class CSWClient(
         thesaurusNameElement.appendChild(ciCitationElement)
         mdKeywordsElement.appendChild(thesaurusNameElement)
 
-
         descriptiveKeywordsElement.appendChild(mdKeywordsElement)
 
         val identificationInfoElement = evaluateXPath("//gmd:MD_Metadata//gmd:identificationInfo").item(0) as? Element
         if (identificationInfoElement != null) {
-
             // Find the correct position for the new element based on ISO 19139 order
             val possibleSiblingElements = listOf(
-                "gmd:citation", "gmd:abstract", "gmd:purpose", "gmd:credit", "gmd:status", "gmd:pointOfContact", "gmd:resourceMaintenance", "gmd:graphicOverview", "gmd:resourceFormat",  // Elements *before* descriptiveKeywords
-                "gmd:descriptiveKeywords" // descriptiveKeywords can also be placed multiple times
+                "gmd:citation", "gmd:abstract", "gmd:purpose", "gmd:credit", "gmd:status", "gmd:pointOfContact", "gmd:resourceMaintenance", "gmd:graphicOverview", "gmd:resourceFormat", // Elements *before* descriptiveKeywords
+                "gmd:descriptiveKeywords", // descriptiveKeywords can also be placed multiple times
             ).reversed()
 
             var insertionPoint: org.w3c.dom.Node? = null
@@ -353,17 +338,12 @@ class CSWClient(
             } else {
                 identificationInfoElement.appendChild(descriptiveKeywordsElement) // Append if no suitable sibling is found
             }
-
         } else {
             log.error("Error: Could not find gmd:identificationInfo element to append to.")
         }
     }
 
-
-
     fun getClient(): HttpClient = client
     fun getUrl(): String = url
     fun getName(): String = name
-
 }
-
