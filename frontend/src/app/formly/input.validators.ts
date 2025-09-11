@@ -26,7 +26,7 @@ import {
 import { isNotEmptyObject } from "../shared/utils";
 
 export const REGEX_URL =
-  "^(https?://)([0-9a-zA-Z.-]+)\\.([0-9a-z.]{2,6})(:\\d+)?(/.*)?";
+  "^(https?://)(([0-9a-zA-Z.-]+)\\.([0-9a-z.]{2,6})|localhost)(:\\d+)?(/.*)?$";
 
 export function IpValidator(control: UntypedFormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
