@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,9 +18,9 @@
  * limitations under the Licence.
  */
 package de.ingrid.igeserver.index
-import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
@@ -28,8 +28,8 @@ import java.util.*
 
 class CSWIndexer(override val name: String, private val client: CSWClient) : IIndexManager {
 
-    private var transactionId : String = "transaction:" + generateTimeBasedTransactionId()
-    private lateinit var catalogId : String
+    private var transactionId: String = "transaction:" + generateTimeBasedTransactionId()
+    private lateinit var catalogId: String
 
     override fun onFinishIndexAll() {
         client.cleanupOrphans(catalogId, transactionId)
@@ -58,19 +58,15 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     }
 
     override fun updateIPlugInformation(id: String, info: String) {
-
     }
 
     override fun flush() {
     }
 
     override fun deleteIndex(index: String) {
-
     }
 
-    override fun getIndices(filter: String): List<String> {
-        return emptyList()
-    }
+    override fun getIndices(filter: String): List<String> = emptyList()
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         client.delete(id)
@@ -78,14 +74,12 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
 
     override fun indexExists(indexName: String): Boolean = runBlocking { true }
 
-    override fun getCategories(): List<DocumentCategory> {
-        return listOf(DocumentCategory.DATA)
-    }
+    override fun getCategories(): List<DocumentCategory> = listOf(DocumentCategory.DATA)
 
     private fun generateTimeBasedTransactionId(): String {
         val timestamp = Instant.now().toEpochMilli().toString(36) // Base 36 for shorter timestamp
-        val randomUUID = UUID.randomUUID().toString().replace("-", "").substring(0,10) // shorter UUID
+        val randomUUID = UUID.randomUUID().toString().replace("-", "").substring(0, 10) // shorter UUID
 
-        return "${timestamp}-${randomUUID}"
+        return "$timestamp-$randomUUID"
     }
 }

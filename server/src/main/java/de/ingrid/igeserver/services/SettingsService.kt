@@ -21,9 +21,9 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
@@ -87,7 +87,6 @@ class SettingsService(
         addIdIfNeeded(config)
         this.updateItem("cswt", config)
     }
-
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {
         val pd = PlugDescription().apply {
