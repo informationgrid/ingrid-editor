@@ -238,7 +238,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
       allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
       validators: {
         // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
-        hasBAWPointOfContact: this.hasBAWPointOfContact,
+        // deactivated for now as it was deactivated in the production ige classic as well
+        // hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
       },
     });
