@@ -272,9 +272,7 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         autosizeMinRows: options?.autosizeMinRows,
         autosizeMaxRows: options?.autosizeMaxRows,
-        attributes: {
-          style: options?.autosize ? null : "resize:vertical;",
-        },
+        attributes: {},
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,

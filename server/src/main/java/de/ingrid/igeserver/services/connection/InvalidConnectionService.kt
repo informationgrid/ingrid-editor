@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,17 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.services.connection
 
-import org.springframework.boot.context.properties.ConfigurationProperties
+class InvalidConnectionService : IConnection {
+    override fun isConnected(id: String): Boolean = false
 
-@ConfigurationProperties("zabbix")
-data class ZabbixProperties(
-    val detailURLTemplate: String,
-    val apiURL: String,
-    val apiKey: String,
-    val catalogs: List<String>?,
-    val checkDelay: String,
-    val checkCount: Int,
-    val userGroupId: String,
-)
+    override fun containsId(id: String): Boolean = false
+}

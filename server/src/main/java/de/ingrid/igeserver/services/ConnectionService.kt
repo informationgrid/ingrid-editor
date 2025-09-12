@@ -20,25 +20,37 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.index.CSWIndexer
 import de.ingrid.igeserver.index.ElasticIndexer
 import de.ingrid.igeserver.index.IBusIndexer
 import de.ingrid.igeserver.index.IIndexManager
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.services.connection.CSWService
+import de.ingrid.igeserver.services.connection.ElasticsearchService
+import de.ingrid.igeserver.services.connection.IBusService
+import de.ingrid.igeserver.services.connection.IConnection
+import de.ingrid.igeserver.services.connection.InvalidConnectionService
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
 class ConnectionService(
     private val iBusService: IBusService,
     private val elasticsearchService: ElasticsearchService,
+    private val cswService: CSWService,
     private val settingsService: SettingsService,
 ) {
+    private val log = logger()
+
     fun getIndexerForConnection(id: String): IIndexManager = when (val connection = settingsService.getConnectionConfig(id)) {
         is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
         is ElasticConfig -> ElasticIndexer(
             connection.name,
             elasticsearchService.getClient(id),
         )
+        is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
         else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
     }
 
@@ -46,8 +58,11 @@ class ConnectionService(
         iBusService
     } else if (elasticsearchService.containsId(id)) {
         elasticsearchService
+    } else if (cswService.containsId(id)) {
+        cswService
     } else {
-        throw ServerException.withReason("Connection-ID not found: $id")
+        log.warn("Connection-ID not found: $id")
+        InvalidConnectionService()
     }
 
     fun isConnected(id: String): Boolean = getConnectionService(id).isConnected(id)
@@ -55,5 +70,6 @@ class ConnectionService(
     fun setupConnections() {
         iBusService.setupConnections()
         elasticsearchService.setupConnections()
+        cswService.setupConnections()
     }
 }

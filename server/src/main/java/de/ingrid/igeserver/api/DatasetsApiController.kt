@@ -356,34 +356,41 @@ class DatasetsApiController(
         principal: Principal,
         parentId: String?,
         isAddress: Boolean,
-        ignoreRootReadPermission: Boolean?,
+        ignoreRootReadPermission: Boolean,
     ): ResponseEntity<List<DocumentInfo>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isSuperOrCatAdmin = authUtils.isAdmin(principal)
-        val hasRootRead = if (ignoreRootReadPermission == true) {
-            false
-        } else {
-            checkForRootPermissions(
-                sidRetrievalStrategy.getSids(principal as Authentication),
-                listOf(BasePermission.READ),
-            )
-        }
 
-        val childrenInfo = if (
-            parentId == null && !isSuperOrCatAdmin && !hasRootRead
-        ) {
+        // we only return children not filtered by permissions in the following cases
+        //   * get non-root children
+        //   * user is at least catalog administrator
+        //   * user has root-write permission
+        //   * user has root-read permission, and ignoreRootReadPermission is false
+        val isAllowedToGetAllChildren = parentId != null || isSuperOrCatAdmin || (!ignoreRootReadPermission && hasRootReadPermission(principal)) || hasRootWritePermission(principal)
+
+        val childrenInfo = if (isAllowedToGetAllChildren) {
+            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
+        } else {
             // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)
             val userGroups = catalogService.getUser(userName)?.getGroupsForCatalog(catalogId)
             getRootDocsFromGroup(userGroups, isAddress)
-        } else {
-            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
         }
 
         val childDocs = childrenInfo.hits
             .map { mapToDocumentInfo(it, isAddress) }
         return ResponseEntity.ok(childDocs)
     }
+
+    private fun hasRootReadPermission(principal: Principal): Boolean = checkForRootPermissions(
+        sidRetrievalStrategy.getSids(principal as Authentication),
+        listOf(BasePermission.READ),
+    )
+
+    private fun hasRootWritePermission(principal: Principal): Boolean = checkForRootPermissions(
+        sidRetrievalStrategy.getSids(principal as Authentication),
+        listOf(BasePermission.WRITE),
+    )
 
     private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo = DocumentInfo(
         data.wrapper.id!!,

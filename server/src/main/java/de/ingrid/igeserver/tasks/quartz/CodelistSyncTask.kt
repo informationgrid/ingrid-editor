@@ -179,7 +179,12 @@ class CodelistSyncTask(
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
                 log.info("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid. Converting to free entry")
-                (node as ObjectNode).put("key", null as String?)
+                if (node.getString("value") != null) {
+                    (node as ObjectNode).put("key", null as String?)
+                } else {
+                    log.warn("No value found so we keep the key for now")
+                    return false
+                }
                 return true
             } else if (node.getString("value") != codelistEntryValue) {
                 log.info(
