@@ -36,11 +36,12 @@ export const LongTermFileStorageTreeStore = signalStore(
   withEntities<DocumentAbstract>(),
   withMethods((store) => {
     const profileService = inject(ProfileService);
+    const http = inject(HttpClient);
     return {
       ...getTreeStoreMethods()(store),
 
       fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
-        return getLongTermFileStorageChildren(parentId as string).pipe(
+        return getLongTermFileStorageChildren(http, parentId as string).pipe(
           map((docs) => {
             console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
@@ -60,9 +61,9 @@ export const LongTermFileStorageTreeStore = signalStore(
 );
 
 function getLongTermFileStorageChildren(
+  http: HttpClient,
   parentPath: string,
 ): Observable<Partial<DocumentAbstract>[]> {
-  const http = inject(HttpClient);
   const apiUrl = "http://localhost:3001/isibaw/api/list";
   const url = `${apiUrl}?folder=${parentPath}`;
   const fallback: {
