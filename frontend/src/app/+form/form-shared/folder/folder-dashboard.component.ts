@@ -31,7 +31,7 @@ import { CardBoxComponent } from "../../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { GeneralStore } from "../../../store/general.store";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
@@ -49,7 +49,7 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
 })
 export class FolderDashboardComponent {
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   isAddress = input<boolean>();

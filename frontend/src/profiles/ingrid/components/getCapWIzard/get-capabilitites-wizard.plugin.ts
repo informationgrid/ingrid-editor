@@ -35,7 +35,7 @@ import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
-import { TreeStore } from "../../../../app/store/tree/tree.store";
+import { DocumentTreeStore } from "../../../../app/store/tree/document-tree.store";
 import { trimObjectAndRemoveEvilTags } from "../../../../app/shared/utils";
 
 @Injectable({
@@ -60,7 +60,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private documentService = inject(DocumentService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
-  private treeStore = inject(TreeStore);
+  private treeStore = inject(DocumentTreeStore);
   private configService = inject(ConfigService);
 
   constructor() {

@@ -40,7 +40,7 @@ import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { TreeComponent } from "../../../+form/sidebars/tree/tree.component";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 
 @Component({
   selector: "permission-add-dialog",
@@ -62,7 +62,7 @@ import { TreeStore } from "../../../store/tree/tree.store";
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;
 
-  documentTreeStore = inject(TreeStore);
+  documentTreeStore = inject(DocumentTreeStore);
   addressTreeStore = inject(AddressTreeStore);
 
   val: TreePermission[] = [];

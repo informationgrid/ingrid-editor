@@ -39,7 +39,7 @@ import {
 import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import { DocumentAbstract } from "../../store/document/document.model";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { HttpClient } from "@angular/common/http";
@@ -62,7 +62,6 @@ import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
 import { UiStore } from "../../store/ui.store";
-import { TreeStoreLongTermFileStorage } from "../../store/tree/tree.storeLongTermFileStorage";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -80,8 +79,7 @@ export class DocumentService {
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
-  private documentTreeStore = inject(TreeStore);
-  private longTermFileStorageTreeStore = inject(TreeStoreLongTermFileStorage);
+  private documentTreeStore = inject(DocumentTreeStore);
   // TODO: check usefulness
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);

@@ -38,7 +38,7 @@ import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
 import { DocStateNotificationComponent } from "./publish-pending/doc-state-notification.component";
 import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.component";
 import { GeneralStore } from "../../store/general.store";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../services/document/document.service";
 import { DocEventsService } from "../../services/event/doc-events.service";
@@ -71,7 +71,7 @@ export class FormInfoComponent implements OnInit {
   disableTitleEdit = input<boolean>(false);
 
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentService = inject(DocumentService);
   private docEvents = inject(DocEventsService);

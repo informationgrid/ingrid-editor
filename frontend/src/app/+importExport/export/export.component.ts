@@ -58,7 +58,7 @@ import { MatOption } from "@angular/material/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AsyncPipe } from "@angular/common";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 
 @Component({
   selector: "ige-export",
@@ -93,7 +93,7 @@ export class ExportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;
   @ViewChild("treeComponent") treeComponent: TreeComponent;
 
-  documentTreeStore = inject(TreeStore);
+  documentTreeStore = inject(DocumentTreeStore);
 
   selection: any[] = [];
   optionsFormGroup: UntypedFormGroup;

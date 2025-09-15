@@ -27,7 +27,7 @@ import { inject } from "@angular/core";
 import { DocumentDataService } from "../../services/document/document-data.service";
 import { ProfileService } from "../../services/profile.service";
 
-export const TreeStore = signalStore(
+export const DocumentTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store) => {

@@ -27,7 +27,7 @@ import { Subject } from "rxjs";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentService } from "../../../../services/document/document.service";
-import { TreeStore } from "../../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
 
 export interface SelectGeoDatasetData {
   currentRefs: string[];
@@ -49,7 +49,7 @@ export interface SelectServiceResponse {
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectGeoDatasetDialog {
-  documentTreeStore = inject(TreeStore);
+  documentTreeStore = inject(DocumentTreeStore);
   private documentService = inject(DocumentService);
 
   selectedNode: number = null;

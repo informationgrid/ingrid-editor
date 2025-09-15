@@ -27,7 +27,7 @@ import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ProfileService } from "../../services/profile.service";
 
-export const TreeStoreLongTermFileStorage = signalStore(
+export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store, http = inject(HttpClient)) => {

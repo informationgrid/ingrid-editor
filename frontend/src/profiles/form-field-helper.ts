@@ -25,8 +25,8 @@ import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
-import { TreeStoreLongTermFileStorage } from "../app/store/tree/tree.storeLongTermFileStorage";
-import { TreeStore } from "../app/store/tree/tree.store";
+import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
+import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -203,8 +203,8 @@ export interface UnitInputOptions extends InputOptions {
 
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
-  documentTreeStore = inject(TreeStore);
-  treeStoreLongTermFileStorage = inject(TreeStoreLongTermFileStorage);
+  documentTreeStore = inject(DocumentTreeStore);
+  treeStoreLongTermFileStorage = inject(LongTermFileStorageTreeStore);
 
   // remember view components for print view
   protected viewComponents: { [field: string]: Component } = {};

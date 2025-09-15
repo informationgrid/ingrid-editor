@@ -55,7 +55,7 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FakeMatIconRegistry } from "@angular/material/icon/testing";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfigService } from "../../../services/config/config.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -424,8 +424,8 @@ describe("TreeComponent", () => {
   }));
 
   it("should move a root node to a folder", fakeAsync(() => {
-    const store = spectator.inject(TreeStore);
-    const treeStore = spectator.inject(TreeStore);
+    const store = spectator.inject(DocumentTreeStore);
+    const treeStore = spectator.inject(DocumentTreeStore);
     store.set(recentDocuments);
 
     db.getPath.and.returnValue(Promise.resolve([1]));

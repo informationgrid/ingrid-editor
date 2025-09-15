@@ -27,7 +27,7 @@ import {
   Output,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
@@ -51,7 +51,7 @@ export class SidebarComponent implements OnInit {
 
   @Output() dropped = new EventEmitter();
 
-  documentTreeStore = inject(TreeStore);
+  documentTreeStore = inject(DocumentTreeStore);
   addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
