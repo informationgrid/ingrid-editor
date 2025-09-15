@@ -20,7 +20,11 @@
 import { signalStore, withMethods } from "@ngrx/signals";
 import { withEntities } from "@ngrx/signals/entities";
 import { DocumentAbstract } from "../document/document.model";
-import { getTreeStoreMethods } from "../tree/tree.base";
+import {
+  getTreeStoreMethods,
+  TreeStoreMethods,
+  updateTreeStoreDocs,
+} from "../tree/tree.base";
 import { inject } from "@angular/core";
 import { DocumentDataService } from "../../services/document/document-data.service";
 import { ProfileService } from "../../services/profile.service";
@@ -46,10 +50,7 @@ export const AddressTreeStore = signalStore(
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchMoreChildren(
-        parentId: number | string,
-      ): Observable<DocumentAbstract[]> {
-        console.log("GET ADDRESSS children");
+      fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
         return dataService.getChildren(parentId as number, true).pipe(
           map((docs) => {
             (docs as Array<any>).forEach((doc) => {
@@ -59,17 +60,9 @@ export const AddressTreeStore = signalStore(
             });
             return docs as DocumentAbstract[];
           }),
-          tap((docs) => this.updateTreeStoreDocs(parentId as number, docs)),
+          tap((docs) => updateTreeStoreDocs(store, parentId as number, docs)),
         );
       },
-
-      updateTreeStoreDocs(parentId: number, docs: DocumentAbstract[]) {
-        if (parentId === null) {
-          getTreeStoreMethods()(store).set(docs);
-        } else {
-          getTreeStoreMethods()(store).add(docs);
-        }
-      },
-    };
+    } satisfies TreeStoreMethods;
   }),
 );
