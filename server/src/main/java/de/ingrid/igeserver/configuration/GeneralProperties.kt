@@ -28,7 +28,7 @@ data class GeneralProperties(
     val enableCors: Boolean,
     val enableHttps: Boolean,
     val markInsteadOfDelete: Boolean,
-    val host: String,
+    val appUrl: String,
     val externalHelp: String?,
     val instanceId: String = "ige-ng",
     val indexPageSize: Int = 100,

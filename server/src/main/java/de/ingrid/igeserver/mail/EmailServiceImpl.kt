@@ -38,7 +38,7 @@ class EmailServiceImpl(
     private lateinit var contextPath: String
 
     private val appUrl: String get() {
-        return appSettings.host + contextPath
+        return appSettings.appUrl + contextPath
     }
 
     fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
