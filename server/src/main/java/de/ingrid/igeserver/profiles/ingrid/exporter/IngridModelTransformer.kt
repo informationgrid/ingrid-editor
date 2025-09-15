@@ -180,10 +180,10 @@ open class IngridModelTransformer(
     private fun generateBrowseGraphics(
         graphicOverviews: List<GraphicOverview>?,
         datasetUuid: String,
-    ): List<BrowseGraphic> = graphicOverviews?.map {
+    ): List<BrowseGraphic> = graphicOverviews?.mapNotNull {
         BrowseGraphic(
             if (it.fileName.asLink) {
-                it.fileName.uri // TODO encode uri
+                transformUrl(it.fileName.uri) ?: return@mapNotNull null
             } else {
                 getDownloadLink(datasetUuid, it.fileName.uri)
             },
@@ -717,7 +717,7 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {
-        references.filter { it.uuidRef.isNullOrEmpty() }.map {
+        references.filter { it.uuidRef.isNullOrEmpty() }.mapNotNull {
             // if type not in codelist, use "information" #6017
             val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
             val applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de")
@@ -731,7 +731,7 @@ open class IngridModelTransformer(
                     attachedToFieldText,
                 )
             }
-            ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
+            ServiceUrl(it.title, it.url?.let { url -> transformUrl(url) ?: return@mapNotNull null } ?: "", it.explanation, attachedField, applicationProfile, functionValue)
         }
     }
     val referencesWithUuidRefs: List<Reference> by lazy {
@@ -770,27 +770,29 @@ open class IngridModelTransformer(
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServicesAndFileReferences: List<Reference> by lazy {
-        references.map {
+        references.mapNotNull {
             it.urlDataType =
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
+            it.url = it.url?.let { url -> transformUrl(url) ?: return@mapNotNull null }
             it
         } +
-            getCoupledServiceCapabilitiesUrls().map {
+            getCoupledServiceCapabilitiesUrls().mapNotNull {
                 Reference(
                     it.name,
                     KeyValue(null, null),
                     it.description,
-                    it.url,
+                    transformUrl(it.url) ?: return@mapNotNull null,
                     null,
                     null,
                 )
             } +
-            fileReferenceTransferOptions.map {
+            fileReferenceTransferOptions.mapNotNull {
+                val url = transformUrl(it.url) ?: return@mapNotNull null
                 Reference(
-                    it.title ?: it.url,
+                    it.title ?: url,
                     KeyValue("9990", null),
                     null,
-                    it.url,
+                    url,
                     null,
                     KeyValue(it.applicationProfile, null),
                 )
@@ -1131,7 +1133,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
                 json.getString("fileName.value")
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
-                json.getString("fileName.uri")
+                json.getString("fileName.uri")?.let { transformUrl(it) ?: return null }
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
                 json.getDouble("fileName.sizeInBytes"),
             ),
@@ -1212,6 +1214,8 @@ open class IngridModelTransformer(
     }
 
     open val extraContent: String = ""
+
+    open fun transformUrl(url: String?): String? = url
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)

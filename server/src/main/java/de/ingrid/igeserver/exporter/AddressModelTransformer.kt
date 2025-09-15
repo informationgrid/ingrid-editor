@@ -188,8 +188,8 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map {
-            val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
+        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map { uuid ->
+            val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 
@@ -201,7 +201,7 @@ open class AddressModelTransformer(
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
                     if (fileName?.get("asLink")?.booleanValue() == true) {
-                        fileName.get("uri")?.textValue() // TODO encode uri
+                        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
                     } else {
                         "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
                     }
@@ -268,6 +268,8 @@ open class AddressModelTransformer(
         ?: emptyList()
 
     fun getSortHash(): String = DigestUtils.sha1Hex(title)
+
+    open fun transformUrl(url: String?): String? = url
 }
 
 data class ObjectReference(

@@ -28,12 +28,15 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicEleme
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
 
+    fun forRepository() = transformerConfig.tags.contains("forRepository")
+    override fun transformUrl(url: String?): String? = if (forRepository()) transformUrlForDatenrepository(url) else super.transformUrl(url)
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)

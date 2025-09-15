@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -114,6 +116,19 @@ class IngridLuceneExporterBaw(
 ) {
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
+        IngridDocType.ADDRESS -> {
+            AddressModelTransformerBaw(
+                AddressTransformerConfig(
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    null,
+                    data.doc,
+                    documentService = documentService,
+                    uploadConfig = uploadConfig,
+                    data.tags,
+                ),
+            )
+        }
         IngridDocType.DOCUMENT -> {
             getBawModelTransformerClass(data.doc.type)
                 ?.constructors

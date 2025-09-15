@@ -178,7 +178,7 @@ data class Reference(
     val title: String,
     var type: KeyValue,
     val explanation: String?,
-    val url: String?,
+    var url: String?,
     val uuidRef: String?,
     var urlDataType: KeyValue?,
     var uuidRefClass: String? = null,

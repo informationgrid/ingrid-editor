@@ -31,6 +31,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -38,8 +39,8 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 
 class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
-    val forRepository = transformerConfig.tags.contains("forRepository")
-    val baseUrl = if (forRepository) "dl.datenrepository.baw.de" else "dl.datenfinder.baw.de"
+    fun forRepository() = transformerConfig.tags.contains("forRepository")
+    override fun transformUrl(url: String?): String? = if (forRepository()) transformUrlForDatenrepository(url) else super.transformUrl(url)
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -71,8 +72,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
 
-    val orderTitle = if (forRepository) null else doc.data.getString("orderTitle")
-    val orderNumber = if (forRepository) null else doc.data.getString("orderNumber")
+    val orderTitle = if (forRepository()) null else doc.data.getString("orderTitle")
+    val orderNumber = if (forRepository()) null else doc.data.getString("orderNumber")
     val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(
