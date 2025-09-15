@@ -83,7 +83,7 @@ export class FolderDashboardComponent {
     const childrenFromStore = store.getChildren(model.id as number);
     if (childrenFromStore.length === 0 && model._hasChildren) {
       // load children, as they are not in store yet
-      store.fetchMoreChildren(model.id as number);
+      store.fetchChildren(model.id as number);
     }
     this.numChildren = childrenFromStore.length;
     const latestChildren = childrenFromStore

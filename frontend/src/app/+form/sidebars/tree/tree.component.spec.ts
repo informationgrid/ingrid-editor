@@ -424,21 +424,20 @@ describe("TreeComponent", () => {
   }));
 
   it("should move a root node to a folder", fakeAsync(() => {
-    const store = spectator.inject(DocumentTreeStore);
-    const treeStore = spectator.inject(DocumentTreeStore);
-    store.set(recentDocuments);
+    const documentTreeStore = spectator.inject(DocumentTreeStore);
+    documentTreeStore.set(recentDocuments);
 
     db.getPath.and.returnValue(Promise.resolve([1]));
     db.initialData.and.returnValue(of(recentDocuments));
     db.getChildren.and.callFake((parentId) =>
-      of(treeStore.getChildren(parentId)),
+      of(documentTreeStore.getChildren(parentId)),
     );
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);
 
     // store must be updated where getChildren info comes from
-    store.update(1, { _parent: 2 });
+    documentTreeStore.update(1, { _parent: 2 });
     db.treeUpdates.next(
       newNode({ updateType: UpdateType.Move, id: 1, parent: 2 }),
     );

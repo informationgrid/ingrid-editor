@@ -20,7 +20,11 @@
 import { DocumentAbstract } from "../document/document.model";
 import { signalStore, withMethods } from "@ngrx/signals";
 import { withEntities } from "@ngrx/signals/entities";
-import { getTreeStoreMethods } from "./tree.base";
+import {
+  getTreeStoreMethods,
+  TreeStoreMethods,
+  updateTreeStoreDocs,
+} from "./tree.base";
 import { Observable, of } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
@@ -30,16 +34,13 @@ import { ProfileService } from "../../services/profile.service";
 export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
-  withMethods((store, http = inject(HttpClient)) => {
+  withMethods((store) => {
     const profileService = inject(ProfileService);
-
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchMoreChildren(
-        parentId: number | string,
-      ): Observable<DocumentAbstract[]> {
-        return this.getLongTermFileStorageChildren(parentId as string).pipe(
+      fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
+        return getLongTermFileStorageChildren(parentId as string).pipe(
           map((docs) => {
             console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
@@ -50,59 +51,51 @@ export const LongTermFileStorageTreeStore = signalStore(
             return docs as DocumentAbstract[];
           }),
           tap((docs: DocumentAbstract[]) =>
-            this.updateTreeStoreDocs(parentId as number, docs),
+            updateTreeStoreDocs(store, parentId as number, docs),
           ),
         );
       },
-
-      updateTreeStoreDocs(parentId: number, docs: DocumentAbstract[]) {
-        if (parentId === null) {
-          getTreeStoreMethods()(store).set(docs);
-        } else {
-          getTreeStoreMethods()(store).add(docs);
-        }
-      },
-
-      getLongTermFileStorageChildren(
-        parentPath: string,
-      ): Observable<Partial<DocumentAbstract>[]> {
-        // TODO Adapt http request to intranet source e.g. apiUrl, authentication?
-        const apiUrl = "http://localhost:3001/isibaw/api/list";
-        const url = `${apiUrl}?folder=${parentPath}`;
-        const fallback: {
-          name: string;
-          type: "container" | "object" | string;
-        }[] = [
-          { name: "0800", type: "container" },
-          { name: "0701", type: "container" },
-          { name: "0702", type: "container" },
-          { name: "id2name_1.txt", type: "object" },
-          { name: "id2name_2.txt", type: "object" },
-        ];
-        return http
-          .get<{ name: string; type: "container" | "object" | string }[]>(url)
-          .pipe(
-            catchError(() => of(fallback)),
-            map((items) =>
-              items.map((item) => ({
-                id: parentPath ? `${parentPath}/${item.name}` : item.name,
-                _uuid: parentPath ? `${parentPath}/${item.name}` : item.name,
-                _type: item.type === "container" ? "FOLDER" : "BawSimulation",
-                _hasChildren: item.type === "container",
-                title: item.name,
-                icon: item.type === "container" ? "Daten" : "BawSimulation",
-                isAddress: false,
-                _parent: null,
-                _modified: null,
-                _contentModified: null,
-                _pendingDate: null,
-                _tags: null,
-                _state: "P",
-                isExternalRef: true,
-              })),
-            ),
-          );
-      },
-    };
+    } satisfies TreeStoreMethods;
   }),
 );
+
+function getLongTermFileStorageChildren(
+  parentPath: string,
+): Observable<Partial<DocumentAbstract>[]> {
+  const http = inject(HttpClient);
+  const apiUrl = "http://localhost:3001/isibaw/api/list";
+  const url = `${apiUrl}?folder=${parentPath}`;
+  const fallback: {
+    name: string;
+    type: "container" | "object" | string;
+  }[] = [
+    { name: "0800", type: "container" },
+    { name: "0701", type: "container" },
+    { name: "0702", type: "container" },
+    { name: "id2name_1.txt", type: "object" },
+    { name: "id2name_2.txt", type: "object" },
+  ];
+  return http
+    .get<{ name: string; type: "container" | "object" | string }[]>(url)
+    .pipe(
+      catchError(() => of(fallback)),
+      map((items) =>
+        items.map((item) => ({
+          id: parentPath ? `${parentPath}/${item.name}` : item.name,
+          _uuid: parentPath ? `${parentPath}/${item.name}` : item.name,
+          _type: item.type === "container" ? "FOLDER" : "BawSimulation",
+          _hasChildren: item.type === "container",
+          title: item.name,
+          icon: item.type === "container" ? "Daten" : "BawSimulation",
+          isAddress: false,
+          _parent: null,
+          _modified: null,
+          _contentModified: null,
+          _pendingDate: null,
+          _tags: null,
+          _state: "P",
+          isExternalRef: true,
+        })),
+      ),
+    );
+}
