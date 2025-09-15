@@ -685,6 +685,7 @@ export class FormFieldHelper {
         simple: options?.simple,
         useFirstValueInitially: options?.useFirstValueInitially,
       },
+      validators: options?.validators,
       expressions: expressions,
       hooks: options?.hooks,
       resetOnHide: options?.resetOnHide,
