@@ -40,8 +40,8 @@ export const LongTermFileStorageTreeStore = signalStore(
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
-        return getLongTermFileStorageChildren(http, parentId as string).pipe(
+      fetchChildren(parentId: string): Observable<DocumentAbstract[]> {
+        return getLongTermFileStorageChildren(http, parentId).pipe(
           map((docs) => {
             console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
@@ -52,7 +52,7 @@ export const LongTermFileStorageTreeStore = signalStore(
             return docs as DocumentAbstract[];
           }),
           tap((docs: DocumentAbstract[]) =>
-            updateTreeStoreDocs(store, parentId as number, docs),
+            updateTreeStoreDocs(store, null, docs),
           ),
         );
       },

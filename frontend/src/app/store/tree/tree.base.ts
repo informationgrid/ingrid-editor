@@ -124,6 +124,7 @@ export function getTreeStoreMethods() {
     },
 
     fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
+      console.warn("No logic implemented for tree store to fetch children.");
       // Hint: Logic of this function is defined in tree.store files
       return null;
     },

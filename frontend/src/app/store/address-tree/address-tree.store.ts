@@ -50,8 +50,8 @@ export const AddressTreeStore = signalStore(
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
-        return dataService.getChildren(parentId as number, true).pipe(
+      fetchChildren(parentId: number): Observable<DocumentAbstract[]> {
+        return dataService.getChildren(parentId, true).pipe(
           map((docs) => {
             (docs as Array<any>).forEach((doc) => {
               doc.icon = profileService.getDocumentIcon(doc._type);
@@ -60,7 +60,7 @@ export const AddressTreeStore = signalStore(
             });
             return docs as DocumentAbstract[];
           }),
-          tap((docs) => updateTreeStoreDocs(store, parentId as number, docs)),
+          tap((docs) => updateTreeStoreDocs(store, parentId, docs)),
         );
       },
     } satisfies TreeStoreMethods;

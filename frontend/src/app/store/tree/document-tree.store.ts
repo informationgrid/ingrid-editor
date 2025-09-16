@@ -40,8 +40,8 @@ export const DocumentTreeStore = signalStore(
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
-        return dataService.getChildren(parentId as number, false).pipe(
+      fetchChildren(parentId: number): Observable<DocumentAbstract[]> {
+        return dataService.getChildren(parentId, false).pipe(
           map((docs) => {
             (docs as Array<any>).forEach((doc) => {
               doc.icon = profileService.getDocumentIcon(doc._type);
@@ -50,7 +50,7 @@ export const DocumentTreeStore = signalStore(
             });
             return docs as DocumentAbstract[];
           }),
-          tap((docs) => updateTreeStoreDocs(store, parentId as number, docs)),
+          tap((docs) => updateTreeStoreDocs(store, parentId, docs)),
         );
       },
     } satisfies TreeStoreMethods;
