@@ -29,13 +29,11 @@ import { Observable, of } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { ProfileService } from "../../services/profile.service";
 
 export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store) => {
-    const profileService = inject(ProfileService);
     const http = inject(HttpClient);
     return {
       ...getTreeStoreMethods()(store),
@@ -45,7 +43,6 @@ export const LongTermFileStorageTreeStore = signalStore(
           map((docs) => {
             console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
-              doc.icon = profileService.getDocumentIcon(doc._type);
               if (!doc.title) doc.title = "-Kein Titel-";
               doc.isRoot = parentId === null;
             });
@@ -84,10 +81,10 @@ function getLongTermFileStorageChildren(
         items.map((item) => ({
           id: parentPath ? `${parentPath}/${item.name}` : item.name,
           _uuid: parentPath ? `${parentPath}/${item.name}` : item.name,
-          _type: item.type === "container" ? "FOLDER" : "BawSimulation",
+          _type: item.type === "container" ? "FOLDER" : "ExternalFileReference",
           _hasChildren: item.type === "container",
           title: item.name,
-          icon: item.type === "container" ? "Daten" : "BawSimulation",
+          icon: item.type === "container" ? "Daten" : "ExternalFileReference",
           isAddress: false,
           _parent: null,
           _modified: null,
