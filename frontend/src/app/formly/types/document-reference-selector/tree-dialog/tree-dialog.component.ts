@@ -52,11 +52,11 @@ export interface SelectServiceResponse {
 }
 
 @Component({
-  templateUrl: "./selector-service-dialog.component.html",
-  styleUrl: "./selector-service-dialog.component.scss",
+  templateUrl: "./tree-dialog.component.html",
+  styleUrl: "./tree-dialog.component.scss",
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
-export class SelectorServiceDialogComponent {
+export class TreeDialogComponent {
   treeStore;
   private generalStore = inject(GeneralStore);
   selectedNode: number | string = null;

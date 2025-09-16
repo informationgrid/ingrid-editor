@@ -33,9 +33,9 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
   SelectDatasetData,
-  SelectorServiceDialogComponent,
+  TreeDialogComponent,
   SelectServiceResponse,
-} from "./selector-service-dialog/selector-service-dialog.component";
+} from "./tree-dialog/tree-dialog.component";
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
@@ -144,7 +144,7 @@ export class DocumentReferenceSelectorComponent
       hideHeader: this.props.hideHeader,
     };
     this.dialog
-      .open(SelectorServiceDialogComponent, {
+      .open(TreeDialogComponent, {
         minWidth: 400,
         data: data,
       })
