@@ -21,7 +21,6 @@ package de.ingrid.igeserver.mail
 
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.MailProperties
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
@@ -34,18 +33,11 @@ class EmailServiceImpl(
     val appSettings: GeneralProperties,
 ) {
 
-    @Value("\${server.servlet.context-path}")
-    private lateinit var contextPath: String
-
-    private val appUrl: String get() {
-        return appSettings.host + contextPath
-    }
-
     fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.body, firstName, lastName, appUrl),
+            MessageFormat.format(mailProps.body, firstName, lastName, appSettings.appUrl),
         )
     }
 
@@ -53,7 +45,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appUrl, password, login),
+            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appSettings.appUrl, password, login),
         )
     }
 
@@ -61,7 +53,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subjectDeleteUser,
-            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appUrl, login),
+            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appSettings.appUrl, login),
         )
     }
 
@@ -69,7 +61,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subjectResetPassword,
-            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appUrl, password, login),
+            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appSettings.appUrl, password, login),
         )
     }
 

@@ -52,7 +52,7 @@ class InternalCatalogExporter(
     override fun run(catalog: Catalog): RecordCollection = mapCatalogToRecordCollection(catalog)
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
-        val apiHost = generalProperties.host
+        val apiHost = generalProperties.appUrl
         val links = "$apiHost/api/ogc/collections/${catalog.identifier}/items"
         return RecordCollection(
             id = catalog.identifier,

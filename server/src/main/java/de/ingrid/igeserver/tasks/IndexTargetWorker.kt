@@ -230,7 +230,7 @@ class IndexTargetWorker(
                 put("iPlugName", prepareIPlugName(infoId))
                 put("linkedIndex", info.newIndex)
                 put("linkedType", if (forAddress) "address" else "base")
-                put("adminUrl", generalProperties.host)
+                put("adminUrl", generalProperties.appUrl)
                 put("lastHeartbeat", currentDate)
                 put("lastIndexed", currentDate)
                 set<JsonNode>(

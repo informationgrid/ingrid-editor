@@ -31,7 +31,7 @@ class OgcHtmlConverterService(
     private val generalProperties: GeneralProperties,
 ) {
 
-    private val hostnameOgcApi = generalProperties.host + "/api/ogc"
+    private val hostnameOgcApi = generalProperties.appUrl + "/api/ogc"
 
     fun convertObjectNode2Html(doc: ObjectNode, type: String?): String {
         val table = convertFieldToTable(doc)
