@@ -48,8 +48,8 @@
                 <div data-cy="editModeDocument" class="count">
                     {{ dataMap.first }}
                 </div>
-                <div>In Bearbeitung</div>
-                @if (showPercentages && total > 0) {
+                <div>Unveröffentlicht</div>
+                @if (showPercentages() && total > 0) {
                     <div class="count">
                         {{ (dataMap.first / total) * 100 | number: "1.0-0" }}%
                     </div>
@@ -60,7 +60,7 @@
                     {{ dataMap.second }}
                 </div>
                 <div>Veröffentlicht</div>
-                @if (showPercentages && total > 0) {
+                @if (showPercentages() && total > 0) {
                     <div class="count">
                         {{ (dataMap.second / total) * 100 | number: "1.0-0" }}%
                     </div>

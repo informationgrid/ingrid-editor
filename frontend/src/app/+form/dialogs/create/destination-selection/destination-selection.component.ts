@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, inject, input, Input, OnInit, output } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -42,11 +35,11 @@ import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
   imports: [TreeComponent, DocumentListItemComponent],
 })
 export class DestinationSelectionComponent implements OnInit {
-  @Input() forAddress: boolean;
-  @Input() disableRoot = false;
-  @Input() typeToInsert: string;
+  readonly forAddress = input<boolean>(undefined);
+  readonly disableRoot = input(false);
+  readonly typeToInsert = input<string>(undefined);
 
-  @Output() choice = new EventEmitter<number>();
+  readonly choice = output<number>();
 
   documentTreeStore = inject(DocumentTreeStore);
   addressTreeStore = inject(AddressTreeStore);
@@ -69,7 +62,7 @@ export class DestinationSelectionComponent implements OnInit {
     this.rootNode = {
       id: null,
       title: this.translocoService.translate(
-        this.forAddress ? "menu.address" : "menu.form",
+        this.forAddress() ? "menu.address" : "menu.form",
       ),
       icon: "Ordner",
       _type: "FOLDER",
@@ -78,7 +71,7 @@ export class DestinationSelectionComponent implements OnInit {
 
     this.showOnlyFolders =
       this.docBehaviours.showOnlyFoldersInTreeForDestinationSelection(
-        this.forAddress,
+        this.forAddress(),
       );
 
     this.activeListItem.next(this.rootNode);
@@ -87,9 +80,9 @@ export class DestinationSelectionComponent implements OnInit {
   disabledCondition() {
     return (node: TreeNode) => {
       return this.docBehaviours.cannotAddDocumentBelow()(
-        this.forAddress,
+        this.forAddress(),
         node,
-        this.typeToInsert,
+        this.typeToInsert(),
       );
     };
   }
@@ -108,7 +101,7 @@ export class DestinationSelectionComponent implements OnInit {
       this.activeListItem.next(null);
     }
 
-    this.choice.next(this.parent);
+    this.choice.emit(this.parent);
   }
 
   getRootNode() {

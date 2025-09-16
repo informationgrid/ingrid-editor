@@ -156,11 +156,14 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
 
   selectBwastr(entry: BwastrLocatorSearchResponse) {
     this.selectedBwastr = entry;
-    this.value.title = entry.concatName;
-    this.updateTitle.emit(entry.concatName);
+    this.value.title = entry.concat_name;
+    this.updateTitle.emit(entry.concat_name);
 
     this.selectedSection = {
       bwastrid: entry.bwastrid,
+      bwastr_name: entry.bwastr_name,
+      strecken_name: entry.strecken_name,
+      concat_name: entry.concat_name,
       start: entry.start,
       end: entry.end,
     };

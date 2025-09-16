@@ -42,7 +42,10 @@ export interface TreeStoreMethods {
   waitForDocumentInStore(id: string | number, maxTimes?: number): Promise<void>;
   byId(id: number): Promise<DocumentAbstract>;
   // Additional store specific functions
-  fetchChildren(parentId: number | string): Observable<DocumentAbstract[]>;
+  fetchChildren(
+    parentId: number | string,
+    hideReadOnly?: boolean,
+  ): Observable<DocumentAbstract[]>;
 }
 
 export function updateTreeStoreDocs(

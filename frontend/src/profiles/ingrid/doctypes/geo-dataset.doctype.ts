@@ -232,9 +232,9 @@ export class GeoDatasetDoctype extends IngridShared {
             "Raster-/Gridformat",
             [
               this.addSelectInline("type", "Typ", {
-                defaultValue: { key: "basis" },
+                // defaultValue: { key: "basis" },
                 showSearch: true,
-                allowNoValue: false,
+                allowNoValue: true,
                 codelistId: null,
                 options: <SelectOptionUi[]>[
                   {
@@ -251,67 +251,77 @@ export class GeoDatasetDoctype extends IngridShared {
                   },
                 ],
               }),
-              this.addRepeat("axesDimensionProperties", null, {
-                fields: [
-                  this.addSelectInline("name", "Achsenbezeichnung", {
-                    options: this.getCodelistForSelect(
-                      "514",
-                      "gridSpatialRepresentation.axesDimensionProperties.name",
-                    ),
-                    codelistId: "514",
-                    required: true,
-                    showSearch: true,
-                  }),
-                  this.addInputInline("size", "Elementanzahl", {
-                    type: "number",
-                    required: true,
-                  }),
-                  this.addInputInline("resolution", "Auflösung in Meter", {
-                    type: "number",
-                  }),
-                ],
-                wrappers: [],
-                addButtonTitle: "Dimensionseigenschaften hinzufügen",
-              }),
-              this.addGroup(
-                null,
+              this.addGroupSimple(
                 null,
                 [
-                  this.addCheckboxInline(
-                    "transformationParameterAvailability",
-                    "Verfügbarkeit von Transformationsparametern",
-                    { className: "flex-2" },
-                  ),
-                  this.addInputInline(
-                    "numberOfDimensions",
-                    "Anzahl der Dimensionen",
-                    {
-                      type: "number",
-                      expressions: {
-                        "props.required": (field: FormlyFieldConfig) =>
-                          isNotEmptyObject(field.form.value, ["type"]),
-                      },
-                      hasInlineContextHelp: true,
-                      wrappers: ["inline-help", "form-field"],
-                    },
-                  ),
-                  this.addSelectInline("cellGeometry", "Zellengeometrie", {
-                    options: this.getCodelistForSelect(
-                      "509",
-                      "gridSpatialRepresentation.cellGeometry",
-                    ),
-                    codelistId: "509",
-                    showSearch: true,
-                    allowNoValue: true,
-                    expressions: {
-                      "props.required": (field: FormlyFieldConfig) =>
-                        isNotEmptyObject(field.form.value, ["type"]),
-                    },
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
+                  this.addRepeat("axesDimensionProperties", null, {
+                    fields: [
+                      this.addSelectInline("name", "Achsenbezeichnung", {
+                        options: this.getCodelistForSelect(
+                          "514",
+                          "gridSpatialRepresentation.axesDimensionProperties.name",
+                        ),
+                        codelistId: "514",
+                        required: true,
+                        showSearch: true,
+                      }),
+                      this.addInputInline("size", "Elementanzahl", {
+                        type: "number",
+                        required: true,
+                      }),
+                      this.addInputInline("resolution", "Auflösung in Meter", {
+                        type: "number",
+                      }),
+                    ],
+                    wrappers: [],
+                    addButtonTitle: "Dimensionseigenschaften hinzufügen",
                   }),
+                  this.addGroup(
+                    null,
+                    null,
+                    [
+                      this.addCheckboxInline(
+                        "transformationParameterAvailability",
+                        "Verfügbarkeit von Transformationsparametern",
+                        { className: "flex-2" },
+                      ),
+                      this.addInputInline(
+                        "numberOfDimensions",
+                        "Anzahl der Dimensionen",
+                        {
+                          type: "number",
+                          expressions: {
+                            "props.required": (field: FormlyFieldConfig) =>
+                              isNotEmptyObject(field.form.value, ["type"]),
+                          },
+                          hasInlineContextHelp: true,
+                          wrappers: ["inline-help", "form-field"],
+                        },
+                      ),
+                      this.addSelectInline("cellGeometry", "Zellengeometrie", {
+                        options: this.getCodelistForSelect(
+                          "509",
+                          "gridSpatialRepresentation.cellGeometry",
+                        ),
+                        codelistId: "509",
+                        showSearch: true,
+                        allowNoValue: true,
+                        expressions: {
+                          "props.required": (field: FormlyFieldConfig) =>
+                            isNotEmptyObject(field.form.value, ["type"]),
+                        },
+                        hasInlineContextHelp: true,
+                        wrappers: ["inline-help", "form-field"],
+                      }),
+                    ],
+                    { wrappers: [] },
+                  ),
                 ],
-                { wrappers: [] },
+                {
+                  hideExpression: (field: FormlyFieldConfig) =>
+                    field.options.formState.mainModel?.gridSpatialRepresentation
+                      ?.type?.key !== "basis",
+                },
               ),
               this.addGroup(
                 "georectified",

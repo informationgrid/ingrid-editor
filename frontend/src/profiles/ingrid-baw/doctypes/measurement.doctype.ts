@@ -34,25 +34,19 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
-      this.addSection("Messdaten", [
+      this.addSection("Messdaten (Allgemein)", [
         this.getMeasuringMethodFieldConfig(),
-        this.getSpatialityFieldConfig(),
-        this.getMeasuringDepthFieldConfig(),
-        this.common.getTimestepFieldConfig(),
-        this.getFrequencyFieldConfig(),
-        this.getAverageWaterLevelFieldConfig(),
-        this.getZeroLevelFieldConfig(),
-        this.getDrainFieldConfig(),
         this.getGaugeFieldConfig(),
         this.getTargetParametersFieldConfig(),
-        this.getPosAccuracyFieldConfig(),
-        this.getDataQualityDescFieldConfig(),
       ]),
       {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.waterMeasurement(), this.bautechnickMeasurement()],
+          fieldGroup: [this.waterMeasurement(), this.bautechnikMeasurement()],
+        },
+        props: {
+          docType: "Messdaten",
         },
         validators: {
           consistent: (control, field) => {
@@ -70,18 +64,18 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     return fieldConfig;
   };
 
-  bautechnickMeasurement() {
+  bautechnikMeasurement() {
     return {
-      name: "bautechnickMeasurement",
+      name: "bautechnikMeasurement",
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          field.model?.type !== "bautechnickMeasurement",
+          field.model?.type !== "bautechnikMeasurement",
       },
       props: {
-        label: "Bautechnik Messdaten",
+        label: "Messdaten (Bautechnik)",
       },
       fieldGroup: [
-        this.addSection("Bautechnik Messdaten", [
+        this.addSection("Messdaten (Bautechnik)", [
           { key: "type" },
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
             options: [
@@ -103,9 +97,32 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "3D", value: "3D" },
             ],
           }),
-          this.addRepeatList("parameter", "Messparameter (Zielparameter?)", {
+          this.addRepeatList("parameter", "Messparameter", {
             options: [
               { label: "Koordinaten", value: "Koordinaten" },
+              { label: "Bild", value: "Bild" },
+              {
+                label: "Räumliche Verschiebung",
+                value: "Räumliche Verschiebung",
+              },
+              { label: "Strecke / Länge", value: "Strecke / Länge" },
+              {
+                label: "Horizontale Verschiebung",
+                value: "Horizontale Verschiebung",
+              },
+              {
+                label: "Vertikale Verschiebung (Setzung)",
+                value: "Vertikale Verschiebung (Setzung)",
+              },
+              {
+                label: "Bewegung von Riss und Fugen",
+                value: "Bewegung von Riss und Fugen",
+              },
+              { label: "Dehnung", value: "Dehnung" },
+              { label: "Neigung", value: "Neigung" },
+              { label: "Kräfte / Spannungen", value: "Kräfte / Spannungen" },
+              { label: "Wasserstand", value: "Wasserstand" },
+              { label: "Wasserdruck", value: "Wasserdruck" },
               { label: "Temperatur", value: "Temperatur" },
             ],
           }),
@@ -122,12 +139,11 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "waterMeasurement",
       },
       props: {
-        label: "Wasserbau Messdaten",
+        label: "Messdaten (Wasserbau)",
       },
       fieldGroup: [
-        this.addSection("Wasserbau Messdaten", [
+        this.addSection("Messdaten (Wasserbau)", [
           { key: "type" },
-          this.getMeasuringMethodFieldConfig(),
           this.getSpatialityFieldConfig(),
           this.getMeasuringDepthFieldConfig(),
           this.common.getTimestepFieldConfig(),
@@ -135,8 +151,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.getAverageWaterLevelFieldConfig(),
           this.getZeroLevelFieldConfig(),
           this.getDrainFieldConfig(),
-          this.getGaugeFieldConfig(),
-          this.getTargetParametersFieldConfig(),
           this.getPosAccuracyFieldConfig(),
           this.getDataQualityDescFieldConfig(),
         ]),

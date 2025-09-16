@@ -133,7 +133,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             // then it gets special role: pointOfContactMd (key=12)
             val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
             val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) {
-                KeyValue("12", codeListService.getCodelistValue("505", "12", catalogLanguage))
+                KeyValue("12", codeListService.getCodelistValue("505", "12", catalogLanguage), "505")
             } else {
                 mapRoleToContactType(roleIso)
             }
@@ -153,7 +153,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             parentAddressUuid,
                             "InGridOrganisationDoc",
                             communications,
-                            KeyValue(),
+                            KeyValue(_codelistId = "505"),
                             true,
                             organization,
                             address = addressInfo,
@@ -254,11 +254,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
             ?.getOrNull(0)
         val zipCode = address?.postalCode?.value
         val administrativeArea = address?.administrativeArea?.value
-            ?.let { codeListService.getCatalogCodelistKey(catalogId, "6250", it) }
-            ?.let { KeyValue(it) }
+            ?.let { value ->
+                val key = codeListService.getCatalogCodelistKey(catalogId, "6250", value)
+                key?.let { KeyValue(key, value, "6250") }
+            }
         val countryCode = address?.country?.value
             ?.let { UtilsCountryCodelist.getCodeFromShortcut3(it) }
-            ?.let { KeyValue(it.toString()) }
+            ?.let { KeyValue(it.toString(), codeListService.getCodelistValue("6200", it.toString(), catalogLanguage), "6200") }
 
         return if (listOfNotNull(
                 city,
@@ -288,13 +290,14 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val list = mutableListOf<Communication>()
         // Mail addresses
         ciContact?.address?.address?.electronicMailAddress?.mapNotNull { it.value }
-            ?.forEach { list.add(Communication(KeyValue("3"), it)) }
+            ?.forEach { list.add(Communication(KeyValue("3", codeListService.getCodelistValue("4430", "3", "de"), "4430"), it)) }
         // Phone numbers
-        ciContact?.phone?.phone?.voice?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("1"), it)) }
+        ciContact?.phone?.phone?.voice?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("1", codeListService.getCodelistValue("4430", "3", "de"), "4430"), it)) }
         // Fax numbers
-        ciContact?.phone?.phone?.facsimile?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("2"), it)) }
+        ciContact?.phone?.phone?.facsimile?.mapNotNull { it.value }
+            ?.forEach { list.add(Communication(KeyValue("2"), it)) }
         // Homepage
-        ciContact?.onlineResource?.onlineResource?.linkage?.url?.let { list.add(Communication(KeyValue("4"), it)) }
+        ciContact?.onlineResource?.onlineResource?.linkage?.url?.let { list.add(Communication(KeyValue("4", codeListService.getCodelistValue("4430", "3", "de"), "4430"), it)) }
 
         return list
     }
@@ -320,21 +323,24 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun getSalutationKeyValue(value: String): KeyValue? {
+        // TODO: use catalog language
         val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
-        return if (salutationKey == null) null else KeyValue(salutationKey, value)
+        return KeyValue(salutationKey, value.trim(), "4300")
     }
 
     private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
-        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId, value)
+        return KeyValue(entryId, entryId?.let { codeListService.getCodelistValue("505", entryId, catalogLanguage) } ?: value, "505")
     }
 
     fun getAdvProductGroups(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
         ?.map { it.value }
         ?.joinToString(";")
         ?.split(";")
-        ?.mapNotNull { codeListService.getCodeListEntryId("8010", it, "de") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("8010", value, "de")
+            key?.let { KeyValue(key, value, "8010") }
+        } ?: emptyList()
 
     fun getAlternateTitle(): String = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
         ?.map { it.value }
@@ -346,27 +352,35 @@ open class GeneralMapper(val isoData: IsoImportData) {
     fun getThemes(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-        ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, "de") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("6100", value, "de")
+            key?.let { KeyValue(key, value, "6100") }
+        } ?: emptyList()
 
     fun getPriorityDatasets(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "INSPIRE priority data set" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-        ?.map { codeListService.getCodeListEntryId("6350", it, "de") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("6350", value, "de")
+            key?.let { KeyValue(key, value, "6350") }
+        } ?: emptyList()
 
     fun getInVeKoSKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "IACS data" }
         ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
-        ?.map { inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first() }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.map {
+            val key = inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first()
+            key.let { KeyValue(key, it, null) }
+        } ?: emptyList()
 
     fun getHvdCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "High-value dataset categories" }
         ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
         ?.map { it?.removePrefix("http://data.europa.eu/bna/") }
-        ?.map { codeListService.getCodeListEntryId("hvdCategories", it, "de") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("hvdCategories", value, "de")
+            key?.let { KeyValue(key, value, "hvdCategories") }
+        } ?: emptyList()
 
     fun getOpenDataCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.asSequence()
@@ -374,16 +388,20 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.filter { it.keywords?.type?.codelist?.codeListValue == "theme" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
         ?.mapNotNull { it }
-        ?.map { codeListService.getCodeListEntryIdMatchingData("6400", it) }
-        ?.map { KeyValue(it) }
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryIdMatchingData("6400", value)
+            key?.let { KeyValue(key, codeListService.getCodelistValue("6400", key, catalogLanguage), "6400") }
+        }
         ?.toList() ?: emptyList()
 
     fun getSpatialScope(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
         ?.mapNotNull { it }
-        ?.map { codeListService.getCodeListEntryId("6360", it, "de") }
-        ?.map { KeyValue(it) }
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("6360", value, "de")
+            key?.let { KeyValue(key, value, "6360") }
+        }
         ?.getOrNull(0)
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
@@ -394,7 +412,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             } else {
                 it.mdBrowseGraphic?.fileName?.value
             }
-            PreviewGraphic(fileName, it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
+            PreviewGraphic(fileName?.trim(), it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
         } ?: emptyList()
 
     data class PreviewGraphic(
@@ -441,8 +459,10 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
         // if splitSpatialSystems is true, we filter out vertical spatial systems
         ?.filter { splitSpatialSystems.not() || codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", it, "de") == null }
-        ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
-        ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("100", value, "de")
+            key?.let { KeyValue(key, value, "100") }
+        } ?: emptyList()
 
     fun getVerticalSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
@@ -518,15 +538,21 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 return if (uomId == null || min == null || max == null || datumId == null) {
                     null
                 } else {
-                    VerticalExtentModel(uomId, min, max, datumId)
+                    VerticalExtentModel(
+                        KeyValue(uomId, codeListService.getCodelistValue("102", uomId, catalogLanguage), "102"),
+                        min,
+                        max,
+                        KeyValue(datumId, codeListService.getCodelistValue("101", datumId, catalogLanguage), "101"),
+                    )
                 }
             }?.getOrNull<VerticalExtentModel>(0)
     }
 
     fun getLanguage(): KeyValue {
-        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!]
+        val value = metadata.language?.codelist?.codeListValue!!
+        val languageKey = iso639LanguageMapping[value]
             ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
-        return KeyValue(languageKey)
+        return KeyValue(languageKey, codeListService.getCodelistValue("99999999", languageKey, catalogLanguage), "99999999")
     }
 
     fun getLegalDescriptions(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -535,7 +561,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.mapNotNull { it }
         ?.map {
             val entryId = codeListService.getCatalogCodelistKey(catalogId, "1350", it)
-            if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
+            KeyValue(entryId, it, "1350")
         } ?: emptyList()
 
     fun getPurpose() = metadata.identificationInfo[0].identificationInfo?.purpose?.value ?: ""
@@ -545,11 +571,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getTemporalEvents(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
         ?.map {
-            val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "iso")
+            val value = it.date?.dateType?.code?.codeListValue
+            val typeKey = codeListService.getCodeListEntryId("502", value, "iso")
             val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
                 ?: it.date?.date?.date?.let { parseDate(it) }
                 ?: ""
-            Event(KeyValue(typeKey), date)
+            Event(KeyValue(typeKey, typeKey?.let { codeListService.getCodelistValue("502", typeKey, catalogLanguage) } ?: value, "502"), date)
         } ?: emptyList()
 
     private fun parseDateTime(value: String): String = OffsetDateTime.parse(value).toInstant().toString()
@@ -562,13 +589,14 @@ open class GeneralMapper(val isoData: IsoImportData) {
     fun getTimeRelatedInfo(): TimeInfo? {
         val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
         val statusKey = if (status == null) null else codeListService.getCodeListEntryId("523", status, "iso")
+        val statusValue = statusKey?.let { codeListService.getCodelistValue("523", it, catalogLanguage) } ?: status
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.map {
                 val timeValue = it.extent?.extent?.timeInstant?.timePosition
                 val instant = timeValue?.let { parseDateTime(timeValue) }
                 if (instant != null) {
-                    return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
+                    return TimeInfo(instant, KeyValue("at", "am"), KeyValue(statusKey, statusValue, "523"))
                 }
 
                 val period = it.extent?.extent?.timePeriod
@@ -578,7 +606,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     return TimeInfo(
                         period.beginPosition?.value,
                         type,
-                        if (status == null) null else KeyValue(statusKey),
+                        if (status == null) null else KeyValue(statusKey, statusValue, "523"),
                         period.endPosition?.value,
                         typeSince,
                     )
@@ -587,27 +615,27 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey))
+            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey, statusValue, "523"))
     }
 
     private fun determineTemporalType(period: TimePeriod): KeyValue? {
         if (period.beginPosition?.value != null && period.endPosition?.value != null) {
-            return KeyValue("since") // von
+            return KeyValue("since", "seit") // von
         } else if (period.beginPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("until")
+            return KeyValue("until", "bis")
         } else if (period.endPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("since")
+            return KeyValue("since", "seit")
         } else if (period.endPosition?.indeterminatePosition == "now") {
-            return KeyValue("since")
+            return KeyValue("since", "seit")
         }
 
         return null
     }
 
     private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
-        if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate")
-        if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime")
-        if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown")
+        if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate", "bis: genaues Datum")
+        if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime", "bis: gegenwärtig aktuell")
+        if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown", "bis: gegenwärtige Aktualität unklar")
 
         return null
     }
@@ -618,22 +646,22 @@ open class GeneralMapper(val isoData: IsoImportData) {
             it.legalConstraint?.otherConstraints?.map { constraint ->
                 if (constraint.isAnchor) {
                     val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
-                    if (key == null) KeyValue(null, constraint.value) else KeyValue(key)
+                    KeyValue(key, constraint.value, "6010")
                 } else {
-                    KeyValue(null, constraint.value)
+                    KeyValue(null, constraint.value, "6010")
                 }
             } ?: emptyList()
         } ?: emptyList()
 
     fun getUseLimitation(): String = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
-        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value } ?: emptyList() }
+        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value?.trim() } ?: emptyList() }
         ?.joinToString(";") ?: ""
 
     fun getDistributionFormat(): List<DistributionFormat> = metadata.distributionInfo?.mdDistribution?.distributionFormat
         ?.map { it.format }
         ?.mapNotNull {
             val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
-            val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
+            val nameKeyValue = KeyValue(nameKey, it?.name?.value, "1320")
             val result = DistributionFormat(
                 nameKeyValue,
                 it?.version?.value,
@@ -648,6 +676,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             metadata.identificationInfo[0].identificationInfo?.resourceMaintenance?.maintenanceInformation
         val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
         val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "iso")
+        val updateFrequencyValue = updateFrequencyKey?.let { codeListService.getCodelistValue("518", updateFrequencyKey, catalogLanguage) } ?: updateFrequency
         val intervalEncoded = maintenanceInformation?.userDefinedMaintenanceFrequency?.periodDuration
 
         val value = TM_PeriodDurationToTimeAlle().parse(intervalEncoded)
@@ -658,7 +687,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
             ?.mapNotNull { it.value }
             ?.joinToString(";")
 
-        return MaintenanceInterval(value?.toInt(), KeyValue(intervalUnitKey), KeyValue(updateFrequencyKey), description)
+        return MaintenanceInterval(
+            value?.toInt(),
+            intervalUnitKey?.let { KeyValue(intervalUnitKey, intervalUnit, "1230") },
+            updateFrequencyKey?.let { KeyValue(updateFrequencyKey, updateFrequencyValue, "518") },
+            description,
+        )
     }
 
     fun getDigitalTransferOptions(): List<DigitalTransferOption> = metadata.distributionInfo?.mdDistribution?.transferOptions
@@ -668,13 +702,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
             val value = it.offLine?.mdMedium?.name?.code?.codeListValue
             val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
             DigitalTransferOption(
-                KeyValue(nameKey),
+                KeyValue(nameKey, nameKey?.let { codeListService.getCodelistValue("520", it, catalogLanguage) } ?: value, "520"),
                 if (it.transferSize?.value == null) {
                     null
                 } else {
                     UnitField(
                         it.transferSize.value.toString(),
-                        KeyValue("MB"),
+                        KeyValue("MB", "MB"),
                     )
                 },
                 it.offLine?.mdMedium?.mediumNote?.value,
@@ -698,8 +732,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     val fileFormatCode = resource.applicationProfile?.value
                     val typeId =
                         if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
-                    val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
-                    val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
+                    val keyValue = KeyValue(typeId, fileFormatCode, "1320")
+                    val fileName = resource.linkage.url?.substringAfterLast('/')?.trim() ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
                     val fileReferenceLink = FileReferenceLink(
                         asLink = false,
@@ -726,8 +760,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.map { resource ->
                     val value = resource.function?.code?.codeListValue
                     val typeId =
-                        if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
-                    val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
+                        if (value == null) "9999" else codeListService.getCodeListEntryId("2000", value, "iso") ?: "9999"
+                    val keyValue = KeyValue(typeId, codeListService.getCodelistValue("2000", typeId, catalogLanguage), "2000")
                     val applicationValue = resource.applicationProfile?.value
                     val applicationId = if (applicationValue == null) {
                         null
@@ -742,11 +776,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             applicationValue,
                         )
                     }
-                    val applicationFinalValue = when {
-                        applicationValue == null -> null
-                        applicationId == null -> KeyValue(null, applicationValue)
-                        else -> KeyValue(applicationId)
-                    }
+                    val applicationFinalValue = applicationValue?.let { KeyValue(applicationId, applicationValue) }
                     Reference(
                         keyValue,
                         resource.linkage.url,
@@ -769,8 +799,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val specification = it?.specification?.citation?.title?.value ?: return@mapNotNull null
 
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
-                val specificationKeyValue =
-                    if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
+                val specificationKeyValue = KeyValue(specificationEntryId, specification, "6005")
                 val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
                 val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
                     ?: dateObject?.date?.let { parseDate(it) }
@@ -786,16 +815,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun determineConformanceResultPass(value: Boolean?): KeyValue = when (value) {
-        true -> KeyValue("1")
-        false -> KeyValue("2")
-        null -> KeyValue("3")
+        true -> KeyValue("1", codeListService.getCodelistValue("6000", "1", "de"), "6000")
+        false -> KeyValue("2", codeListService.getCodelistValue("6000", "2", "de"), "6000")
+        null -> KeyValue("3", codeListService.getCodelistValue("6000", "3", "de"), "6000")
     }
 
     fun getUseConstraints(): List<UseConstraint> {
         val otherConstraints = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.map { it.legalConstraint }
             ?.filter { it?.useConstraints != null }
-            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() }
+            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value?.trim() } ?: emptyList() }
             ?: emptyList()
 
         val result = mutableListOf<UseConstraint>()
@@ -914,13 +943,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
     private fun convertUserConstraintToKeyValue(text: String?): KeyValue? {
         if (text == null) return null
         val id = codeListService.getCodeListEntryId("6500", text, "de")
-        return if (id == null) KeyValue(null, text) else KeyValue(id)
+        return KeyValue(id, text, "6500")
     }
 
     private fun convertToCatalogKeyValue(codelistId: String, value: String?, language: String = "de"): KeyValue? {
         if (value == null) return null
         val id = codeListService.getCatalogCodelistKey(catalogId, codelistId, value, language)
-        return if (id == null) KeyValue(null, value) else KeyValue(id)
+        return KeyValue(id, value, codelistId)
     }
 
     private fun isJsonString(useConstraint: String?): Boolean {
@@ -1020,10 +1049,10 @@ data class TimeInfo(
 data class Event(val type: KeyValue, val date: String)
 
 data class VerticalExtentModel(
-    val uom: String,
+    val uom: KeyValue,
     val min: Number,
     val max: Number,
-    val datum: String,
+    val datum: KeyValue,
 )
 
 data class SpatialReference(

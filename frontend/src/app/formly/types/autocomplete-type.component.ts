@@ -92,7 +92,7 @@ export class AutocompleteTypeComponent
 
     const opt = <BackendOption>option;
     if (opt?.key) {
-      return opt.value ?? this.getValueFromOptionKey(opt.key) ?? "???";
+      return this.getValueFromOptionKey(opt.key) ?? opt.value ?? "???";
     }
     return opt && opt.value ? opt.value : "";
   }
@@ -101,10 +101,14 @@ export class AutocompleteTypeComponent
     effect(() => {
       // ensure it only runs when parameterOptions are set
       if (this.props.dynamicCodelistId && this.parameterOptions().length > 0) {
-        this.currentCodelistId = this.props.dynamicCodelistId();
-        this.formControl.setValue(
-          this.formControl.value?.value ?? this.formControl.value,
-        );
+        // delay execution, otherwise destroy operation of previously loaded dataset
+        // might lead to an error where the field is not defined anymore
+        setTimeout(() => {
+          this.currentCodelistId = this.props.dynamicCodelistId();
+          this.formControl.setValue(
+            this.formControl.value?.value ?? this.formControl.value,
+          );
+        });
       }
     });
   }

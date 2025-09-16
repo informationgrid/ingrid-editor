@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -36,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
+@Sql(scripts = ["/ogc/data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class OgcRecordsTests : IntegrationTest() {
 
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
@@ -57,8 +60,6 @@ class OgcRecordsTests : IntegrationTest() {
 
     @Before
     fun beforeTest() {
-//        clearAllMocks()
-        execSQL("/ogc/data.sql")
         every {
             mockPrincipal.authorities
         }.returns(listOf(SimpleGrantedAuthority("cat-admin")))

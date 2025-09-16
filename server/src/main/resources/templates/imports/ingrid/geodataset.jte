@@ -69,7 +69,7 @@
                                 "date": "${description.get().getDate()}",
                             @endif
                             @if(description.get().getDateType() != null)
-                                "dateType": { "key": "${description.get().getDateType()}"},
+                                "dateType": @template.imports.ingrid.partial.key-value(item = description.get().getDateType()),
                             @endif
                             @if(description.get().getTitle() != null)
                                 "title": "${description.get().getTitle()}",

@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -80,11 +73,11 @@ import { HelpContextButtonComponent } from "../../../../../help-context-button/h
   ],
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
-  @Input() map: Map;
-  @Input() value: SpatialLocation;
+  readonly map = input<Map>(undefined);
+  readonly value = input<SpatialLocation>(undefined);
 
-  @Output() result = new EventEmitter<SpatialBoundingBox>();
-  @Output() updateTitle = new EventEmitter<string>();
+  readonly result = output<SpatialBoundingBox>();
+  readonly updateTitle = output<string>();
 
   nominatimResult: NominatimResult[] = [];
   searchInput = new UntypedFormControl();
@@ -109,15 +102,16 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
     this.arsControl.valueChanges
       .pipe(untilDestroyed(this), debounceTime(500))
-      .subscribe((ars) => (this.value.ars = ars));
+      .subscribe((ars) => (this.value().ars = ars));
 
-    if (this.value.value) {
-      this.drawAndZoom(this.value.value);
+    const value = this.value();
+    if (value.value) {
+      this.drawAndZoom(value.value);
     } else if (!this.drawnBBox) {
-      this.leafletService.zoomToInitialBox(this.map);
+      this.leafletService.zoomToInitialBox(this.map());
     }
 
-    if (this.value.ars) this.arsControl.setValue(this.value.ars);
+    if (value.ars) this.arsControl.setValue(value.ars);
 
     this.addDrawControls();
   }
@@ -144,7 +138,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
         console.debug("Nominatim:", response);
         this.showNoResult = response.length === 0;
         // @ts-ignore
-        setTimeout(() => (<Map>this.map)._onResize());
+        setTimeout(() => (<Map>this.map())._onResize());
       });
   }
 
@@ -187,12 +181,12 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     );
     this.drawBoundingBox(bounds);
 
-    this.map.fitBounds(bounds);
+    this.map().fitBounds(bounds);
   }
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map);
+    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map());
 
     this.drawnBBox.on("pm:edit", (e) =>
       // @ts-ignore
@@ -203,7 +197,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   private removeDrawnBoundingBox() {
     if (this.drawnBBox) {
       const bbox = this.drawnBBox;
-      setTimeout(() => this.map.removeLayer(bbox), 100);
+      setTimeout(() => this.map().removeLayer(bbox), 100);
       this.drawnBBox = null;
     }
   }
@@ -218,7 +212,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   }
 
   private addDrawControls() {
-    this.map.pm.addControls({
+    this.map().pm.addControls({
       position: "topleft",
       drawCircle: false,
       drawMarker: false,
@@ -229,13 +223,13 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       cutPolygon: false,
       rotateMode: false,
     });
-    this.map.pm.setLang("de");
+    this.map().pm.setLang("de");
 
-    this.map.on("pm:drawstart", () => {
+    this.map().on("pm:drawstart", () => {
       this.removeDrawnBoundingBox();
     });
 
-    this.map.on("pm:create", (createEvent) => {
+    this.map().on("pm:create", (createEvent) => {
       // @ts-ignore
       this.drawnBBox = createEvent.layer;
       // @ts-ignore

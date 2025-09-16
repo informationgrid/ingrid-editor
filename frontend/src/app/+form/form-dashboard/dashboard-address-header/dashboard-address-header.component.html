@@ -1,7 +1,7 @@
 <h1 class="address-header-title text-center">Adressen</h1>
 
 <div class="text-center shortcut">
-    @if (canCreateAddress) {
+    @if (canCreateAddress()) {
         <ige-action-button
             label="Neuer Ordner"
             svgIcon="outline-create_new_folder-24px"
@@ -13,9 +13,9 @@
             (submit)="createNewAddress()"
         ></ige-action-button>
     }
-    @if (canImport) {
+    @if (canImport()) {
         <ige-action-button
-            label="Adressen Import"
+            label="Adressen Importieren"
             icon="import_export"
             (submit)="importDataset()"
         ></ige-action-button>

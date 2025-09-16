@@ -276,9 +276,7 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         autosizeMinRows: options?.autosizeMinRows,
         autosizeMaxRows: options?.autosizeMaxRows,
-        attributes: {
-          style: options?.autosize ? null : "resize:vertical;",
-        },
+        attributes: {},
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
@@ -710,6 +708,7 @@ export class FormFieldHelper {
         simple: options?.simple,
         useFirstValueInitially: options?.useFirstValueInitially,
       },
+      validators: options?.validators,
       expressions: expressions,
       hooks: options?.hooks,
       resetOnHide: options?.resetOnHide,
@@ -977,18 +976,29 @@ export class FormFieldHelper {
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
-    const index = fieldConfig.findIndex((field) => {
-      if (field.key === id) return true;
-    });
+    // Use a queue for breadth-first search
+    const queue: Array<FormlyFieldConfig[]> = [fieldConfig];
 
-    if (index !== -1) return { fieldConfig, index };
+    while (queue.length > 0) {
+      const config = queue.shift();
 
-    let subFound = null;
-    fieldConfig.some((item) => {
-      subFound = this.findFieldElementWithId(item.fieldGroup, id);
-      return subFound;
-    });
-    return subFound;
+      if (!config) continue;
+
+      // Check all fields at current level first
+      const index = config.findIndex((field) => field.key === id);
+      if (index !== -1) {
+        return { fieldConfig: config, index };
+      }
+
+      // Add all child fieldGroups to queue for next level processing
+      config.forEach((item) => {
+        if (item.fieldGroup) {
+          queue.push(item.fieldGroup);
+        }
+      });
+    }
+
+    return null;
   }
 
   // TODO: merge with findFieldElementWithId

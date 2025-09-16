@@ -21,8 +21,10 @@ package de.ingrid.igeserver.catalogTransfer
 
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
 import de.ingrid.igeserver.model.User
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 val catalogInfo =
     mutableMapOf<String?, Any?>(
         "id" to 1,
@@ -95,6 +97,7 @@ val userInfo = listOf(
     ),
 )
 
+@OptIn(ExperimentalTime::class)
 val queries = listOf(
     mutableMapOf<String?, Any?>(
         "id" to 1,
@@ -157,6 +160,7 @@ val documentWrapper = listOf(
     ),
 )
 
+@OptIn(ExperimentalTime::class)
 val document = listOf(
     mutableMapOf<String?, Any?>(
         "id" to 1,

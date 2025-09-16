@@ -84,10 +84,11 @@ fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean
 
 fun checkPublicationTags(
     wrapperTags: List<String>,
-    publicationDocTags: List<String>,
+    transformerTags: List<String>,
 ) {
     val refPublicationDocTags =
         wrapperTags.filter { it == "intranet" || it == "amtsintern" }
+    val publicationDocTags = transformerTags.filter { it == "intranet" || it == "amtsintern" }
 
     val docIsAmtsintern = publicationDocTags.contains("amtsintern")
     val intranetAndRefsNotAmtsintern =

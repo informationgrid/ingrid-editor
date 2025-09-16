@@ -63,6 +63,8 @@ optimized frontend application:
 
 #### Client
 
+Install dependencies: `yarn`
+
 For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please
 run `npm run start-ie11`.
 
@@ -87,7 +89,7 @@ run `npm run start-ie11`.
 
 - Install **frontend packages**
   - Open a shell in root directory of the project
-  - Install _yarn_ if not installed yet: `npm -g i yarn`
+  - Install _yarn_ if not installed yet: `sudo npm -g i yarn`
   - Install packages: `yarn --cwd ./frontend`
 - Create **frontend run configuration**
   - Run > Edit Configurations > + (new configuration) >

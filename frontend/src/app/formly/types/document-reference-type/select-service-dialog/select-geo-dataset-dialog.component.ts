@@ -34,6 +34,8 @@ export interface SelectGeoDatasetData {
   activeRef?: string;
   layerNames?: string[];
   showLayernames: boolean;
+  dialogTitle?: string;
+  docTypeFilter?: string[];
 }
 
 export interface SelectServiceResponse {
@@ -63,6 +65,8 @@ export class SelectGeoDatasetDialog {
   model = { layerNames: [] };
   initialNode = new Subject<number>();
   public showLayernames = false;
+  docTypeFilter: string[] = [];
+  dialogTitle: string;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
@@ -81,13 +85,15 @@ export class SelectGeoDatasetDialog {
       });
     }
     this.model.layerNames = data.layerNames ?? [];
+    this.dialogTitle = data.dialogTitle ?? "Dargestellte Daten";
+    this.docTypeFilter = data.docTypeFilter ?? ["InGridGeoDataset"];
     this.showLayernames = data.showLayernames;
   }
 
   enableOnlyGeoService() {
     return (node: TreeNode) => {
       return (
-        node.type !== "InGridGeoDataset" ||
+        !this.docTypeFilter.includes(node.type) ||
         this.data.currentRefs.indexOf(node._uuid) !== -1
         // (node._uuid === this.data.activeRef && this.data.currentRefs.indexOf(node._uuid) !== -1)
       );

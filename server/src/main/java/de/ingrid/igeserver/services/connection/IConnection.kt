@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.services.connection
 
 interface IConnection {
     fun isConnected(id: String): Boolean

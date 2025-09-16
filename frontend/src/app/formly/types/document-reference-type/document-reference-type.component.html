@@ -69,12 +69,19 @@
 }
 
 @if (!formControl.disabled) {
-    <ige-add-button
-        [matMenuTriggerFor]="menu"
-        [showRequiredError]="
-            showError && formControl.invalid && formControl.errors?.required
-        "
-    ></ige-add-button>
+    @if (onlyInternalRefs) {
+        <ige-add-button (click)="showInternalRefDialog()">
+            [showRequiredError]=" showError && formControl.invalid &&
+            formControl.errors?.required " ></ige-add-button
+        >
+    } @else {
+        <ige-add-button
+            [matMenuTriggerFor]="menu"
+            [showRequiredError]="
+                showError && formControl.invalid && formControl.errors?.required
+            "
+        ></ige-add-button>
+    }
 }
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">

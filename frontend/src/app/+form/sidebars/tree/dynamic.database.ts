@@ -88,7 +88,7 @@ export class DynamicDatabase {
     }
 
     const moreChildren: Observable<DocumentAbstract[]> =
-      this.treeStore.fetchChildren(parentId);
+      this.treeStore.fetchChildren(parentId, this.hideReadOnly);
 
     if (this.hideReadOnly) {
       return moreChildren.pipe(

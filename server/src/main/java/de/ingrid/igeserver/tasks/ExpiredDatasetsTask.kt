@@ -93,22 +93,16 @@ class ExpiredDatasetsTask(
             val notifyDate =
                 expireDate.plusDays(notifyDaysBeforeExpiry.toLong())
             aboutToExpireDatasets =
-                this.getDatasetsEditedBefore(catalog, notifyDate, ExpiryState.INITIAL, expireDate).map {
-                    this.mapToDataset(it)
-                }
+                this.getPublishedDatasetsEditedBefore(catalog, notifyDate, ExpiryState.INITIAL, expireDate)
             log.info("Found ${aboutToExpireDatasets.size} datasets about to expire for catalog ${catalog.name}")
         } else {
             log.info("Notify days before expiry not set for catalog ${catalog.name}")
         }
 
-        var expiredDatasets = this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.TO_BE_EXPIRED).map {
-            this.mapToDataset(it)
-        }
+        var expiredDatasets = this.getPublishedDatasetsEditedBefore(catalog, expireDate, ExpiryState.TO_BE_EXPIRED)
         val repeatExpiredDatasets =
             if (repeatExpiryCheck) {
-                this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.EXPIRED).map {
-                    this.mapToDataset(it)
-                }
+                this.getPublishedDatasetsEditedBefore(catalog, expireDate, ExpiryState.EXPIRED)
             } else {
                 emptyList()
             }
@@ -122,7 +116,7 @@ class ExpiredDatasetsTask(
 
         expiredDatasets = expiredDatasets + repeatExpiredDatasets
 
-        val linkstub = "${appSettings.host}/${catalog.identifier}"
+        val linkstub = "${appSettings.appUrl}/${catalog.identifier}"
         val catalogType = catalog.type
 
         try {
@@ -140,20 +134,23 @@ class ExpiredDatasetsTask(
     }
 
     private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset = ExpiredDataset(
-        dbResponse[0].toString(),
+        dbResponse[0] as Int,
         dbResponse[1].toString(),
-        dbResponse[2].toString(),
-        dbResponse[3] as OffsetDateTime,
+        dbResponse[2] as Int?,
+        dbResponse[3]?.toString(),
         dbResponse[4].toString(),
-        dbResponse[5].toString(),
+        dbResponse[5] as OffsetDateTime,
+        dbResponse[6].toString(),
+        dbResponse[7].toString(),
+        dbResponse[8].toString(),
     )
 
-    private fun getDatasetsEditedBefore(
+    fun getPublishedDatasetsEditedBefore(
         catalog: Catalog,
         date: OffsetDateTime,
-        expiryState: ExpiryState = ExpiryState.INITIAL,
+        expiryState: ExpiryState?,
         limitDate: OffsetDateTime? = null,
-    ): List<Array<Any?>> {
+    ): List<ExpiredDataset> {
         val beginDate = limitDate ?: OffsetDateTime.now()
 
         // differ between querying for EXPIRED (to send another expiry email) or for first expiry email !
@@ -163,17 +160,19 @@ class ExpiredDatasetsTask(
         val expiryFilter =
             if (expiryState == ExpiryState.EXPIRED) {
                 "AND dw.expiry_state = :expiryState AND (dw.last_expiry_time IS NULL OR dw.last_expiry_time < :date)"
-            } else {
+            } else if (expiryState != null) {
                 "AND dw.expiry_state <= :expiryState"
+            } else {
+                ""
             }
 
-        val limitDateFilter = if (limitDate != null) "AND d.modified >= :beginDate" else ""
+        val limitDateFilter = if (limitDate != null) "AND d.contentmodified >= :beginDate" else ""
 
         val query = entityManager.createQuery(
             """
-                SELECT d.uuid, dw.responsibleUser.userId, d.title, d.modified, d.modifiedby, dw.category
-                    FROM DocumentWrapper dw, Document d
-                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
+                SELECT dw.id, d.uuid, ru.id, ru.userId, d.title, d.contentmodified, d.contentmodifiedby, dw.type, dw.category
+                    FROM DocumentWrapper dw LEFT JOIN dw.responsibleUser ru, Document d
+                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.contentmodified < :date 
                     $limitDateFilter
                     $expiryFilter
                     """,
@@ -181,8 +180,8 @@ class ExpiredDatasetsTask(
         query.setParameter("catalog", catalog)
         query.setParameter("date", date)
         if (limitDate != null) query.setParameter("beginDate", beginDate)
-        query.setParameter("expiryState", expiryState.value)
-        return query.resultList as List<Array<Any?>>
+        if (expiryState != null)query.setParameter("expiryState", expiryState.value)
+        return (query.resultList as List<Array<Any?>>).map { mapToDataset(it) }
     }
 
     fun sendExpiryNotificationMails(
@@ -205,11 +204,12 @@ class ExpiredDatasetsTask(
             val output = StringOutput()
 
             val baseTemplate =
-                if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
-
+                if (ExpiryState.EXPIRED == expiryState) "expired-template.jte" else "will-expire-template.jte"
+            val defaultTemplate = "export/$baseTemplate"
+            val profileTemplate = "export/$catalogType/$baseTemplate"
             // check if profile specific template exists, otherwise use default
             val template =
-                if (templateEngine.hasTemplate("$catalogType/$baseTemplate")) "$catalogType/$baseTemplate" else baseTemplate
+                if (templateEngine.hasTemplate(profileTemplate)) profileTemplate else defaultTemplate
             templateEngine.render(
                 template,
                 mapOf(
@@ -234,7 +234,10 @@ class ExpiredDatasetsTask(
     private fun createMailDatasetMap(expiredDatasetList: List<ExpiredDataset>): Map<String, MutableList<ExpiredDataset>> {
         val mailDatasetMap: MutableMap<String, MutableList<ExpiredDataset>> = HashMap()
         for (expDataset in expiredDatasetList) {
-            val login = expDataset.responsibleUserLogin ?: continue
+            val login = expDataset.responsibleUserLogin ?: run {
+                log.warn("Dataset ${expDataset.uuid} has no responsible user. Email notification will be skipped.")
+                continue
+            }
             var datasetList = mailDatasetMap[login]
             if (datasetList == null) {
                 datasetList = ArrayList()
@@ -268,12 +271,15 @@ class ExpiredDatasetsTask(
 }
 
 data class ExpiredDataset(
+    var wrapperId: Int? = null,
     var uuid: String? = null,
+    var responsibleUserId: Int? = null,
     var responsibleUserLogin: String? = null,
     var title: String? = null,
-    var modified: OffsetDateTime? = null,
-    var modifiedBy: String = "",
+    var contentmodified: OffsetDateTime? = null,
+    var contentmodifiedBy: String? = null,
     var type: String = "",
+    var category: String = "",
 )
 
 enum class ExpiryState(val value: Int) {

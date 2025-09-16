@@ -27,19 +27,17 @@ import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
-private const val PROFILE_ID = BawProfile.ID
-
 @Component
 class InGridGeoDatasetTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/baw/geo-dataset_baw.schema.json"
-    override val profiles = arrayOf(PROFILE_ID)
+    override val profiles = arrayOf(BawProfile.ID)
 }
 
 @Component
 class InGridGeoServiceTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
-    override val profiles = arrayOf(PROFILE_ID)
+    override val profiles = arrayOf(BawProfile.ID)
 }
 
 @Component

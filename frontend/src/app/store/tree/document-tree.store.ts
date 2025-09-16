@@ -40,8 +40,11 @@ export const DocumentTreeStore = signalStore(
     return {
       ...getTreeStoreMethods()(store),
 
-      fetchChildren(parentId: number): Observable<DocumentAbstract[]> {
-        return dataService.getChildren(parentId, false).pipe(
+      fetchChildren(
+        parentId: number,
+        hideReadOnly: boolean,
+      ): Observable<DocumentAbstract[]> {
+        return dataService.getChildren(parentId, false, hideReadOnly).pipe(
           map((docs) => {
             (docs as Array<any>).forEach((doc) => {
               doc.icon = profileService.getDocumentIcon(doc._type);

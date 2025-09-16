@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, Input, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit, input } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import {
@@ -60,7 +60,7 @@ import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
   ],
 })
 export class PermissionAddDialogComponent implements OnInit {
-  @Input() forAddress = this.data?.forAddress;
+  readonly forAddress = input(this.data?.forAddress);
 
   documentTreeStore = inject(DocumentTreeStore);
   addressTreeStore = inject(AddressTreeStore);
@@ -93,7 +93,7 @@ export class PermissionAddDialogComponent implements OnInit {
   }
 
   addPermission(option: string) {
-    const store = this.forAddress
+    const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
     const entity = store.entityMap()[this.selection[0]];

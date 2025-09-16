@@ -19,15 +19,21 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.model.ViewComponent
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_baw.importer.ISOImportBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.quickfilter.DocumentTypesBaw
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
@@ -44,6 +50,7 @@ class BawProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportBaw: ISOImportBaw,
+    @JsonIgnore val behaviourService: BehaviourService,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -57,8 +64,22 @@ class BawProfile(
     init {
         isoImport.profileMapper[ID] = isoImportBaw
     }
+
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/baw/default-mapping.json")?.readText() ?: ""
+
     override val indexExportFormatID = "indexInGridIDFBaw"
     private val boundingBoxGermany = """{ "lat1": 47.2701114, "lon1": 5.8663153, "lat2": 55.099161, "lon2": 15.0419309 }"""
+
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = super.getFacetDefinitionsForDocuments().map { if (it.id == "docType") bawTypeFacetGroup else it }.toTypedArray()
+
+    val bawTypeFacetGroup = FacetGroup(
+        "docType",
+        "Datensatztyp",
+        arrayOf(
+            DocumentTypesBaw(),
+        ),
+        viewComponent = ViewComponent.SELECT,
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -94,20 +115,31 @@ class BawProfile(
         }
     }
 
+    override fun initCatalogQueries(catalogId: String) {
+        val behaviours = listOf("plugin.publish").map {
+            Behaviour().apply {
+                name = it
+                active = true
+                data = mapOf("unpublishDisabled" to true)
+            }
+        }
+        behaviourService.save(catalogId, behaviours)
+    }
+
     private fun createBwaStrIds(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "bwastrids"
         catalog = catalogRef
         name = "Bundeswasserstraßen-IDs"
         description = "Zusätzliche IDs, die nicht im BWaStr. Locator vorhanden sind"
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("7000", "7000 Nordsee", """{ "lat1": 53.28, "lon1": 3.34, "lat2": 56.04, "lon2": 9.05 }"""))
-            add(CodelistHandler.toCodelistEntry("8000", "8000 Ostsee", """{ "lat1": 53.68, "lon1": 9.41, "lat2": 55.11, "lon2": 14.82 }"""))
-            add(CodelistHandler.toCodelistEntry("8300", "8300 Ryck"))
-            add(CodelistHandler.toCodelistEntry("9600", "9600 Binnenwasserstraßen", boundingBoxGermany))
-            add(CodelistHandler.toCodelistEntry("9700", "9700 Seewasserstraßen", boundingBoxGermany))
-            add(CodelistHandler.toCodelistEntry("9800", "9800 Bundeswasserstraßen", boundingBoxGermany))
-            add(CodelistHandler.toCodelistEntry("9900", "9900 Sonstige Gewässer", boundingBoxGermany))
-            add(CodelistHandler.toCodelistEntry("9999", "9999 Sonstiger Ortsbezug", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("7000", "Nordsee", """{ "lat1": 53.28, "lon1": 3.34, "lat2": 56.04, "lon2": 9.05 }"""))
+            add(CodelistHandler.toCodelistEntry("8000", "Ostsee", """{ "lat1": 53.68, "lon1": 9.41, "lat2": 55.11, "lon2": 14.82 }"""))
+            add(CodelistHandler.toCodelistEntry("8300", "Ryck"))
+            add(CodelistHandler.toCodelistEntry("9600", "Binnenwasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9700", "Seewasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9800", "Bundeswasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9900", "Sonstige Gewässer", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9999", "Sonstiger Ortsbezug", boundingBoxGermany))
         }
     }
 

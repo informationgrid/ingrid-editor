@@ -115,7 +115,9 @@ val expectedPersonSingle = """
   "_type": "InGridPersonDoc",
   "title": "Besitzername, Besitzervorname",
   "salutation": {
-    "key": "2"
+    "key": "2",
+    "value": "Herr",
+    "_codelistId": "4300"
   },
   "firstName": "Besitzervorname",
   "lastName": "Besitzername",
@@ -131,7 +133,9 @@ val expectedPersonPositionName = """
   "_type": "InGridPersonDoc",
   "title": "Besitzername, Besitzervorname",
   "salutation": {
-    "key": "2"
+    "key": "2",
+    "value": "Herr",
+    "_codelistId": "4300"
   },
   "firstName": "Besitzervorname",
   "lastName": "Besitzername",
@@ -147,7 +151,9 @@ val expectedPersonUnderOrganisation = """
   "_type": "InGridPersonDoc",
   "title": "Besitzername, Besitzervorname",
   "salutation": {
-    "key": "2"
+    "key": "2",
+    "value": "Herr",
+    "_codelistId": "4300"
   },
   "firstName": "Besitzervorname",
   "lastName": "Besitzername",
@@ -164,7 +170,9 @@ val expectedPersonUnderOrganisation2 = """
   "_type": "InGridPersonDoc",
   "title": "Besitzername, Besitzervorname",
   "salutation": {
-    "key": "2"
+    "key": "2",
+    "value": "Herr",
+    "_codelistId": "4300"
   },
   "firstName": "Besitzervorname",
   "lastName": "Besitzername",

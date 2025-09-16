@@ -30,6 +30,8 @@ import { catchError, map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 
+// TODO Adapt http request to intranet source e.g. apiUrl, authentication?
+// TODO apiUrl auslagern nach ?
 export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),

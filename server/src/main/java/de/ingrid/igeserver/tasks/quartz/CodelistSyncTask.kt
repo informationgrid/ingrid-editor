@@ -54,7 +54,7 @@ class CodelistSyncTask(
     private val sqlNonArchivedDocuments = """
         SELECT d.id, d.uuid, d.data 
         FROM document d
-        JOIN document_wrapper dw ON d.uuid = dw.uuid
+        JOIN document_wrapper dw ON d.uuid = dw.uuid AND d.catalog_id = dw.catalog_id
         JOIN catalog c ON dw.catalog_id = c.id
         WHERE c.identifier = ?
         AND dw.deleted = 0
@@ -65,11 +65,11 @@ class CodelistSyncTask(
     private val sqlCountNonArchivedDocuments = """
         SELECT COUNT(d.uuid)
         FROM document d
-        JOIN document_wrapper dw ON d.uuid = dw.uuid
+        JOIN document_wrapper dw ON d.uuid = dw.uuid AND d.catalog_id = dw.catalog_id
         JOIN catalog c ON dw.catalog_id = c.id
         WHERE c.identifier = ?
         AND dw.deleted = 0
-        AND d.state != 'ARCHIVED'
+        AND d.state != 'ARCHIVED'    
     """.trimIndent()
 
     private val updateSql = """
@@ -179,7 +179,12 @@ class CodelistSyncTask(
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
                 log.info("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid. Converting to free entry")
-                (node as ObjectNode).put("key", null as String?)
+                if (node.getString("value") != null) {
+                    (node as ObjectNode).put("key", null as String?)
+                } else {
+                    log.warn("No value found so we keep the key for now")
+                    return false
+                }
                 return true
             } else if (node.getString("value") != codelistEntryValue) {
                 log.info(
@@ -191,6 +196,9 @@ class CodelistSyncTask(
                 )
                 (node as ObjectNode).put("value", codelistEntryValue)
                 return true
+            } else {
+                log.debug("Codelist entry value unchanged for id: $entryKey at path: $path for uuid: $uuid with value: $codelistEntryValue")
+                return false
             }
         }
         return false

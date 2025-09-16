@@ -30,6 +30,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { FormControl } from "@angular/forms";
 
 @Injectable({
   providedIn: "root",
@@ -141,6 +142,16 @@ export class GeoServiceDoctype extends IngridShared {
                       onInit: (field: FormlyFieldConfig) =>
                         this.handleServiceTypeChange(field),
                     },
+                    validators: {
+                      inspireRelevant: {
+                        expression: (ctrl: FormControl) =>
+                          ctrl.root.value?.properties?.isInspireIdentified ===
+                            undefined ||
+                          ["1", "2", "3", "4"].includes(ctrl.value?.key),
+                        message:
+                          "Für INSPIRE-relevante Dienste ist dieser Wert unzulässig",
+                      },
+                    },
                   }),
                   this.addRepeatListInline("version", "Version des Dienstes", {
                     options: this.getServiceVersionOptions,
@@ -244,7 +255,7 @@ export class GeoServiceDoctype extends IngridShared {
             this.addResolutionFields(),
             this.addGroup(
               null,
-              null,
+              "Weitere Informationen",
               [
                 this.addTextAreaInline(
                   "systemEnvironment",

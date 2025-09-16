@@ -11,9 +11,9 @@
 
     <mat-dialog-content>
         <ige-tree
-            [treeStore]="forAddress ? addressTreeStore : documentTreeStore"
+            [treeStore]="forAddress() ? addressTreeStore : documentTreeStore"
             (selected)="selection = $event"
-            [forAddresses]="forAddress"
+            [forAddresses]="forAddress()"
             [disabledCondition]="disableTreeNodes"
             [isExpandable]="isExpandable"
             [setActiveNode]="activeNodeSetter"

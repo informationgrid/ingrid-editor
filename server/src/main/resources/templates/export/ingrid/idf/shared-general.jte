@@ -1062,3 +1062,4 @@ ${contentInfo}
 @if(TransformationTools.hasValue(page.getMapLinkUrl()))
     <idf:mapUrl>${page.getMapLinkUrl()}</idf:mapUrl>
 @endif
+$unsafe{page.getExtraContent()}

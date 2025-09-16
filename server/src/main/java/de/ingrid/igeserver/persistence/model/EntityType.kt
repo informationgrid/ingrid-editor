@@ -55,10 +55,9 @@ abstract class EntityType {
     abstract val className: String
 
     /**
-     * When a document type is inherited then we must name the inherited className.
-     * This is used when getting inherited context help for example
+     * When a document type is inherited, we can set the inherited className.
+     * This is used when getting inherited context help
      */
-    @Deprecated("inherited document types should have the same className!!!", ReplaceWith("null"))
     open fun parentClassName(): String? = null
 
     /**

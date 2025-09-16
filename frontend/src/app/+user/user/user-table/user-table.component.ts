@@ -22,7 +22,6 @@ import {
   Component,
   effect,
   input,
-  Input,
   OnInit,
   output,
   ViewChild,
@@ -78,7 +77,7 @@ export class UserTableComponent
   extends GeneralTable
   implements OnInit, AfterViewInit
 {
-  @Input() tableType: "default" | "simple" | "permission" = "default";
+  readonly tableType = input<"default" | "simple" | "permission">("default");
 
   users = input<User[]>(null);
   query = input<string>("");
@@ -168,7 +167,7 @@ export class UserTableComponent
   }
 
   private getColumnsByViewType(): string[] {
-    switch (this.tableType) {
+    switch (this.tableType()) {
       case "simple":
         return ["role-icon", "firstName"];
       case "permission":

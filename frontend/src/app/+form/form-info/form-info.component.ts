@@ -44,6 +44,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { DocEventsService } from "../../services/event/doc-events.service";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
 import { DatePipe } from "@angular/common";
+import { firstValueFrom } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -125,15 +126,30 @@ export class FormInfoComponent implements OnInit {
     }
   }
 
-  async scrollToTreeNode(nodeId: number) {
-    const route: any[] = [
-      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form"),
-    ];
+  async scrollToTreeNode(nodeId: number): Promise<void> {
+    const baseRoute =
+      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form");
     const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
-    if (nodeId) route.push({ id: store.entityMap()[nodeId]._uuid });
-    return this.router.navigate(route);
+
+    if (!nodeId) {
+      await this.router.navigate([baseRoute]);
+      return;
+    }
+
+    const node = store.entityMap()[nodeId];
+
+    if (node) {
+      // node exists in store
+      await this.router.navigate([baseRoute, { id: node._uuid }]);
+    } else {
+      // node must be loaded for more information
+      const doc = await firstValueFrom(
+        this.documentService.load(nodeId, this.forAddress()),
+      );
+      await this.router.navigate([baseRoute, { id: doc.metadata.uuid }]);
+    }
   }
 
   stopPublish() {

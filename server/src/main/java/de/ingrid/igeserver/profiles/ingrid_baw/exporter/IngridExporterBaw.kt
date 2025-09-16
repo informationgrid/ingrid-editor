@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -50,7 +52,7 @@ class IngridExporterBaw(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "indexInGridIDFBaw",
-        "Ingrid IDF BAW (Elasticsearch)",
+        "Ingrid IDF BAW Datenfinder (Elasticsearch)",
         "Export von Ingrid Dokumenten ins IDF Format für BAW für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
@@ -61,22 +63,27 @@ class IngridExporterBaw(
 }
 
 @Service
-class IngridExporterBawMetaver(
+class IngridExporterBawRepository(
     idfExporter: IngridIdfExporterBaw,
     luceneExporter: IngridLuceneExporterBaw,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridExporterBaw(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexInGridIDFBaw",
-        "Ingrid IDF Metaver (Elasticsearch)",
-        "Export von BAW Ingrid Dokumenten",
+        "indexInGridIDFBawRepository",
+        "Ingrid IDF BAW Datenrepository (Elasticsearch)",
+        "Export von BAW Dokumenten in das Datenrepository",
         "application/json",
         "json",
         listOf("ingrid-baw"),
         isPublic = true,
         useForPublish = true,
     )
+
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        options.tags += "forRepository"
+        return super.run(doc, catalogId, options)
+    }
 }
 
 @Service
@@ -109,6 +116,19 @@ class IngridLuceneExporterBaw(
 ) {
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
+        IngridDocType.ADDRESS -> {
+            AddressModelTransformerBaw(
+                AddressTransformerConfig(
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    null,
+                    data.doc,
+                    documentService = documentService,
+                    uploadConfig = uploadConfig,
+                    data.tags,
+                ),
+            )
+        }
         IngridDocType.DOCUMENT -> {
             getBawModelTransformerClass(data.doc.type)
                 ?.constructors
@@ -140,11 +160,22 @@ class IngridLuceneExporterBaw(
             "export/ingrid/lucene/template-lucene-address.jte",
             getMapper(IngridDocType.ADDRESS, doc, catalog, options),
         )
+        "InGridProject",
+        -> Pair(
+            "export/ingrid-baw/lucene/template-lucene-baw-project.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+        "InGridGeoDataset",
         "BawMeasurement",
         "BawSimulation",
+        -> Pair(
+            "export/ingrid-baw/lucene/template-lucene-baw-geodataset.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+        "InGridGeoService",
         "BawPublication",
         -> Pair(
-            "export/ingrid/lucene/template-lucene.jte",
+            "export/ingrid-baw/lucene/template-lucene-baw.jte",
             getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
         )
         else -> super.getTemplateForDoctype(doc, catalog, options)

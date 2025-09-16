@@ -23,18 +23,15 @@ import {
   InputOptions,
   SelectOptions,
 } from "../../form-field-helper";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
-import { FormStateService } from "../../../app/+form/form-state.service";
 import { timezones } from "./timezones";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  private formStateService = inject(FormStateService);
-
   getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderTitle", "Auftragstitel", {
       required: true,
@@ -78,7 +75,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "verticalSpatialSystems",
       "Raumbezugssystem (Höhe)",
       {
-        asSelect: false,
+        asSelect: true,
         showSearch: true,
         options: doc.getCodelistForSelect("verticalSpatialSystems", "null"),
         codelistId: "verticalSpatialSystems",
@@ -97,7 +94,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getUnitOfMeasurementFieldConfig(doc: IngridShared) {
-    return this.addSelectInline("unitOfMeasurement", "Einheit", {
+    return this.addAutoCompleteInline("unitOfMeasurement", "Einheit", {
       required: true,
       options: doc.getCodelistForSelect("3950020", "null"),
     });
@@ -206,6 +203,30 @@ export class CommonFieldsBaw extends FormFieldHelper {
         pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
           .validators,
       );
+
+    // literature references
+    const referencesPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "references",
+    );
+    this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
+
+    // remove fileReferences
+    const fileReferencesPosition = this.findParentFieldElementWithId(
+      fieldConfig,
+      "fileReferences",
+    );
+    fileReferencesPosition?.fieldConfig.splice(fileReferencesPosition.index, 1);
+
+    //remove parentIdentifier as it is set automatically in baw
+    const parentIdentifierPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "parentIdentifier",
+    );
+    parentIdentifierPosition?.fieldConfig.splice(
+      parentIdentifierPosition.index,
+      1,
+    );
   }
 
   getBAWPointOfContactFieldConfig(
@@ -216,8 +237,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
       // only "Herausgeber" and "Autor"
       allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
       validators: {
-        // TODO: add if needed
         // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
+        // deactivated for now as it was deactivated in the production ige classic as well
         // hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
       },
@@ -307,17 +328,33 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: GeoDatasetDoctypeBaw,
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const alternateTitlePosition = this.findFieldElementWithId(
       fieldConfig,
-      "parentIdentifier",
+      "alternateTitle",
     );
 
     // Auftragsnummer
-    this.addBefore(parentIdentifierPosition, this.getOrderNumberFieldConfig());
+    this.addBefore(alternateTitlePosition, this.getOrderNumberFieldConfig());
     // Auftragstitel
-    this.addBefore(parentIdentifierPosition, this.getOrderTitleFieldConfig());
+    this.addBefore(alternateTitlePosition, this.getOrderTitleFieldConfig());
 
     this.addSharedFields(doc, fieldConfig);
+  }
+
+  getLiteratureReferenceFieldConfig(): FormlyFieldConfig {
+    return this.addGroup(null, "Literatur-Verweise", [
+      <FormlyFieldConfig>{
+        key: "literatureReferences",
+        type: "couplingService",
+        className: "flex-1",
+        props: {
+          label: "Literatur-Verweise",
+          onlyInternalRefs: true,
+          titleOfDocumentSelectorDialog: "Literatur-Datensatz auswählen",
+          docTypeFilter: ["BawPublication"],
+        },
+      },
+    ]);
   }
 
   removeDataQualitySection(
@@ -338,8 +375,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
       // equals "Herausgeber"
       ctrl.value
         ? ctrl.value.some(
-            // TODO: was address.institution (title) in ige classic. refactor or define reserved address.ref
-            // also check if functionality is still needed
             (address) =>
               address.type?.key === "7" &&
               address.ref === "891d8fdf-e6cf-3f61-9ca4-668880483ca8",
@@ -357,12 +392,5 @@ export class CommonFieldsBaw extends FormFieldHelper {
         : false,
     message:
       "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
-  };
-
-  parentIsObject = () => {
-    const metadata = this.formStateService.metadata();
-    return (
-      metadata.parentDocType != null && metadata.parentDocType !== "FOLDER"
-    );
   };
 }

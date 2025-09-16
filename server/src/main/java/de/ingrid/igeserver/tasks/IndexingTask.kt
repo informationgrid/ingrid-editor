@@ -33,6 +33,7 @@ import de.ingrid.igeserver.index.IIndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
@@ -49,8 +50,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Date
 import java.util.concurrent.ScheduledFuture
+import kotlin.collections.map
 
 data class ExtendedExporterConfig(
     val target: IIndexManager,
@@ -75,8 +77,6 @@ class IndexingTask(
 ) : IgeJob() {
 
     override val log = logger()
-
-    private val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
     // This is only needed for iBus connection to make them stop on request
     // The interrupt exception is ignored in the depth of the ingrid communication unfortunately
@@ -200,11 +200,12 @@ class IndexingTask(
     ): List<ExtendedExporterConfig> {
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
+        val cswtConfig = settingsService.getCSWTConfig()
 
         var exportConfigs = catalog.settings.exports
         if (exportConfigs.isEmpty()) {
             val defaultExportFormatId = catalogProfile.indexExportFormatID
-            exportConfigs = getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig)
+            exportConfigs = getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig, cswtConfig)
         }
 
         return exportConfigs.flatMap { config ->
@@ -221,7 +222,7 @@ class IndexingTask(
 
             val target = connectionService.getIndexerForConnection(config.target)
 
-            categories.mapNotNull {
+            (target.getCategories()).mapNotNull {
                 // skip configs where no exporter is defined
                 val exporter = getExporterOrNull(it, config.exporterId) ?: return@mapNotNull null
                 ExtendedExporterConfig(
@@ -249,6 +250,7 @@ class IndexingTask(
         exportFormatId: String,
         ibusConfigs: List<IBusConfig>,
         elasticConfig: List<ElasticConfig>,
+        cswConfig: List<CSWConfig>,
     ): List<ExportConfig> {
         val iBusDefinitions = ibusConfigs.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
@@ -256,7 +258,10 @@ class IndexingTask(
         val elasticDefinitions = elasticConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
-        return iBusDefinitions + elasticDefinitions
+        val cswtDefinitions = cswConfig.map {
+            ExportConfig(it.id!!, exportFormatId, listOf("internet"))
+        }
+        return iBusDefinitions + elasticDefinitions + cswtDefinitions
     }
 
     private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {

@@ -25,14 +25,18 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
 
+    fun forRepository() = transformerConfig.tags.contains("forRepository")
+    override fun transformUrl(url: String?): String? = if (forRepository()) transformUrlForDatenrepository(url) else super.transformUrl(url)
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -40,15 +44,6 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
-
-    override val hierarchyLevelName = "document"
-
-    fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
-        ?.filter { it.getString("type.key") == "1" } // "Handle" type
-        ?.mapNotNull {
-            it.getString("value")
-        }
-        ?: emptyList()
 
     override val spatialSystems =
         super.spatialSystems + (
@@ -60,4 +55,15 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
                     )
                 } ?: emptyList()
             )
+
+    override val extraContent: String by lazy { getBwastrIdfSection(this) }
+
+    override val hierarchyLevelName = "document"
+
+    fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
+        ?.filter { it.getString("type.key") == "1" } // "Handle" type
+        ?.mapNotNull {
+            it.getString("value")
+        }
+        ?: emptyList()
 }

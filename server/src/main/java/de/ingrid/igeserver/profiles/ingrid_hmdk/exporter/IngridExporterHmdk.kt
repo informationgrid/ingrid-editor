@@ -139,7 +139,7 @@ class IngridLuceneExporterHmdk(
 
 @Service
 class IngridISOExporterHmdk(
-    idfExporter: IngridIdfExporterHmdkMetaver,
+    idfExporter: IngridIdfExporterHmdk,
 ) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(

@@ -1,11 +1,11 @@
 <div class="side-padding dlg-field-hero-label">Zielordner wählen</div>
 <!-- FIXME: [hideReadOnly]="true" after completion of #4261 -->
 <ige-tree
-    [treeStore]="forAddress ? addressTreeStore : documentTreeStore"
+    [treeStore]="forAddress() ? addressTreeStore : documentTreeStore"
     [disabledCondition]="disabledCondition()"
     (selected)="updateParent($event, 'Tree')"
     [setActiveNode]="activeTreeNode"
-    [forAddresses]="forAddress"
+    [forAddresses]="forAddress()"
     [showOnlyFolders]="showOnlyFolders"
     [showHeaderOptions]="false"
     [hideReadOnly]="false"
@@ -13,7 +13,7 @@
     [allowMultiSelectionMode]="false"
 ></ige-tree>
 
-@if (!disableRoot) {
+@if (!disableRoot()) {
     <div class="selection-divider"></div>
     <div class="side-padding dlg-field-hero-label">Oder anlegen unter</div>
     <ige-document-list-item
