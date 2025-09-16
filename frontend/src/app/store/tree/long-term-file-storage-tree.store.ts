@@ -86,7 +86,7 @@ function getLongTermFileStorageChildren(
           _type: item.type === "container" ? "FOLDER" : "ExternalFileReference",
           _hasChildren: item.type === "container",
           title: item.name,
-          icon: item.type === "container" ? "Daten" : "ExternalFileReference",
+          icon: item.type === "container" ? null : "ExternalFileReference",
           isAddress: false,
           _parent: null,
           _modified: null,

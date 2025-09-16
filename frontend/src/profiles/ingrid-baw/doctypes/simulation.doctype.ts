@@ -34,61 +34,6 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
 
-    fieldConfig.unshift(
-      this.addSection("Langfristspeicher", [
-        this.addGroup("lfs", "LFS-Dateien", [
-          this.addLongTermFileStorageCard("path", {
-            docTypeFilter: [],
-            label: "Datensatzverweis",
-            allowRedirectToDocument: true,
-            allowMultiSelect: true,
-            titleOfDocumentSelectorDialog: "Datei auswählen",
-            required: false,
-            hideHeader: true,
-            // expressions: {
-            //   hide: (field: FormlyFieldConfig) => {
-            //     return field.form.value.referenceType != "uuidRef";
-            //   },
-            // },
-          }),
-        ]),
-
-        this.addGroup("lfs-single", "LFS-Dateien Single", [
-          this.addLongTermFileStorageCard("path", {
-            docTypeFilter: [],
-            label: "Datensatzverweis",
-            allowRedirectToDocument: false,
-            allowMultiSelect: false,
-            titleOfDocumentSelectorDialog: "Datei auswählen",
-            required: false,
-            hideHeader: true,
-          }),
-        ]),
-
-        this.addGroup("docReferences", "Verlinkte Datensätze", [
-          this.addDocumentCard("ref", {
-            docTypeFilter: [],
-            label: "Datensatzverweis",
-            allowRedirectToDocument: false,
-            allowMultiSelect: true,
-            titleOfDocumentSelectorDialog: "Datensatz verlinken",
-            required: false,
-          }),
-        ]),
-
-        this.addGroup("docReferences", "Verlinkte Datensätze", [
-          this.addDocumentCard("single_ref", {
-            docTypeFilter: [],
-            label: "Datensatzverweis",
-            allowRedirectToDocument: true,
-            allowMultiSelect: false,
-            titleOfDocumentSelectorDialog: "Datensatz verlinken",
-            required: false,
-          }),
-        ]),
-      ]),
-    );
-
     fieldConfig.push(
       this.addSection("Simulationsdaten", [
         this.getSimulationFieldConfig(),
