@@ -6,7 +6,7 @@
 
 !{var page = ((ProjectModelTransformerBaw)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.idf.shared-general(page = page, additionalCitation = @`
+    @template.export.ingrid.idf.shared-general(page = page, additionalIdentificationInfo = @`
         @if( TransformationTools.hasValue(page.getOrderNumber()))
             <gmd:identifier>
                 <gmd:MD_Identifier>

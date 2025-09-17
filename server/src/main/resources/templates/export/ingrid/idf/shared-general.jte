@@ -18,6 +18,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Content additionalIdentificationInfo = null
 @param Content citationEdition = null
 @param Boolean isService = false
 
@@ -785,6 +786,7 @@
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
     </gmd:supplementalInformation>
 @endif
+${additionalIdentificationInfo}
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 ${contentInfo}

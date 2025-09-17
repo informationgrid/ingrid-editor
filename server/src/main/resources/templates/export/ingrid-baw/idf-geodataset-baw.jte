@@ -10,7 +10,7 @@
 
 
 @template.export.ingrid.idf.idf-geodataset(map = map,
-additionalCitation = @`
+additionalIdentificationInfo = @`
     @if(TransformationTools.hasValue(page.getOrderTitle()) && TransformationTools.hasValue(page.getOrderNumber()))
         <gmd:aggregationInfo>
             <gmd:MD_AggregateInformation>

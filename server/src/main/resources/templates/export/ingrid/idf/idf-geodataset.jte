@@ -7,6 +7,7 @@
 
 @param Content extraContent = null
 @param Content additionalCitation = null
+@param Content additionalIdentificationInfo = null
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
@@ -61,7 +62,8 @@
             <gmd:contentInfo uuidref="${ref.getUuidRef()}"></gmd:contentInfo>
         @endfor
         `,
-    additionalCitation = additionalCitation
+    additionalCitation = additionalCitation,
+    additionalIdentificationInfo = additionalIdentificationInfo
     )
     @template.export.ingrid.idf.dataQuality(page = page)
     @for(Citation citation : page.getPortrayalCatalogueCitations())
