@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -41,6 +41,7 @@ import { MatIcon } from "@angular/material/icon";
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { TreeComponent } from "../../../../../+form/sidebars/tree/tree.component";
+import { AddressTreeStore } from "../../../../../store/address-tree/address-tree.store";
 
 export interface ReplaceAddressDialogData {
   source: string;
@@ -68,6 +69,7 @@ export interface ReplaceAddressDialogData {
   ],
 })
 export class ReplaceAddressDialogComponent implements OnInit {
+  addressTreeStore = inject(AddressTreeStore);
   page = 0;
   selectedAddress: string[];
   private readonly source: string;

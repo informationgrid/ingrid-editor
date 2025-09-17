@@ -25,6 +25,8 @@ import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
+import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
+import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -201,6 +203,8 @@ export interface UnitInputOptions extends InputOptions {
 
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
+  documentTreeStore = inject(DocumentTreeStore);
+  treeStoreLongTermFileStorage = inject(LongTermFileStorageTreeStore);
 
   // remember view components for print view
   protected viewComponents: { [field: string]: Component } = {};
@@ -329,7 +333,24 @@ export class FormFieldHelper {
       key: key,
       type: "documentReferenceSelector",
       className: "flex-1",
-      props: { ...options },
+      props: {
+        treeStore: this.documentTreeStore,
+        ...options,
+      },
+      expressions: options.expressions,
+      hooks: options.hooks,
+    };
+  }
+
+  addLongTermFileStorageCard(key: string, options?) {
+    return <FormlyFieldConfig>{
+      key: key,
+      type: "documentReferenceSelector",
+      className: "flex-1",
+      props: {
+        treeStore: this.treeStoreLongTermFileStorage,
+        ...options,
+      },
       expressions: options.expressions,
       hooks: options.hooks,
     };

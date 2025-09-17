@@ -29,7 +29,7 @@ import { ModalService } from "../../../../services/modal/modal.service";
 import { IgeError } from "../../../../models/ige-error";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
-import { TreeStore } from "../../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 
 @Injectable()
@@ -39,7 +39,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   description = "Es dürfen nur leere Ordner gelöscht werden";
   defaultActive = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(

@@ -5,7 +5,8 @@
     "BawSimulation": "Simulationsdaten",
     "BawMeasurement": "Messdaten",
     "InGridInformationSystem": "Software",
-    "PublicationAddressDoc": "Literaturadresse"
+    "PublicationAddressDoc": "Literaturadresse",
+    "ExternalFileReference": "Externe Datei aus Langfristspeicher (LFS)"
   },
   "form": {
     "alternateTitle": "Alternativer Titel",

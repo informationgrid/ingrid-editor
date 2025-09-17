@@ -26,7 +26,7 @@ import {
   FormToolbarService,
   ToolbarItem,
 } from "../../../app/+form/form-shared/toolbar/form-toolbar.service";
-import { TreeStore } from "../../../app/store/tree/tree.store";
+import { DocumentTreeStore } from "../../../app/store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../app/store/address-tree/address-tree.store";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -60,7 +60,7 @@ export class UvpArchiveBehaviour extends Plugin {
   private catalogRouteService = inject(CatalogRoutesService);
   private configService = inject(ConfigService);
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   private archiveUpdateBtn: ToolbarItem = {

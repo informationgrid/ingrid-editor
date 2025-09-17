@@ -20,7 +20,7 @@
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";

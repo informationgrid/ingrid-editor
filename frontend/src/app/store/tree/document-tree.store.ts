@@ -17,31 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
+import { DocumentAbstract } from "../document/document.model";
 import { signalStore, withMethods } from "@ngrx/signals";
 import { withEntities } from "@ngrx/signals/entities";
-import { DocumentAbstract } from "../document/document.model";
 import {
   getTreeStoreMethods,
   TreeStoreMethods,
   updateTreeStoreDocs,
-} from "../tree/tree.base";
+} from "./tree.base";
+import { Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
 import { DocumentDataService } from "../../services/document/document-data.service";
 import { ProfileService } from "../../services/profile.service";
-import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
 
-const initialState = {
-  active: [],
-  openedDocument: null,
-  expandedNodes: [],
-  breadcrumb: [],
-  explicitActiveNode: undefined,
-  scrollPosition: 0,
-  needsReload: false,
-};
-
-export const AddressTreeStore = signalStore(
+export const DocumentTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store) => {
@@ -54,7 +44,7 @@ export const AddressTreeStore = signalStore(
         parentId: number,
         hideReadOnly: boolean,
       ): Observable<DocumentAbstract[]> {
-        return dataService.getChildren(parentId, true, hideReadOnly).pipe(
+        return dataService.getChildren(parentId, false, hideReadOnly).pipe(
           map((docs) => {
             (docs as Array<any>).forEach((doc) => {
               doc.icon = profileService.getDocumentIcon(doc._type);

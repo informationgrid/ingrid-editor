@@ -25,15 +25,13 @@
                     } @else {
                         <ige-document-icon [doc]="item"></ige-document-icon>
                     }
-                    <span>{{ item.title ?? "???" }}</span>
-                </div>
-                @if (props.showLayernames) {
-                    <ul>
-                        @for (name of item.layerNames; track name) {
-                            <li>{{ name }}</li>
+                    <div class="title-content">
+                        <span>{{ item.title ?? "???" }}</span>
+                        @if (item.isExternalRef && item?.uuid?.length) {
+                            <span class="subtitle">{{ item.uuid }}</span>
                         }
-                    </ul>
-                }
+                    </div>
+                </div>
             </div>
             @if (formControl.enabled) {
                 <button
@@ -71,7 +69,12 @@
     }
 
     @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
-        <button mat-button color="primary" (click)="showInternalRefDialog()">
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showReferenceDialog()"
+        >
             {{ titleOfDocumentSelectorDialog }}
         </button>
     }

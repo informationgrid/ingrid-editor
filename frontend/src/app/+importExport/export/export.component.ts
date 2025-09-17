@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnInit, ViewChild } from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -58,6 +58,7 @@ import { MatOption } from "@angular/material/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AsyncPipe } from "@angular/common";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 
 @Component({
   selector: "ige-export",
@@ -91,6 +92,8 @@ import { AsyncPipe } from "@angular/common";
 export class ExportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;
   @ViewChild("treeComponent") treeComponent: TreeComponent;
+
+  documentTreeStore = inject(DocumentTreeStore);
 
   selection: any[] = [];
   optionsFormGroup: UntypedFormGroup;

@@ -129,7 +129,7 @@ export class UploadComponent implements AfterViewInit {
         untilDestroyed(this),
         skip(1), // do not use initial value
         map((result) =>
-          result[1].transfers.map(
+          (result as any)[1].transfers.map(
             (transfer) =>
               new TransfersWithErrorInfo(result[0][transfer.id], transfer),
           ),

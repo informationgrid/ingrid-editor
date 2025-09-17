@@ -44,7 +44,7 @@ import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { ProfileService } from "../../../services/profile.service";
 
 interface Reference {
@@ -91,7 +91,7 @@ export class DocumentReferenceTypeComponent
   extends FieldArrayType
   implements OnInit
 {
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   myModel: (DocumentReference | UrlReference)[];
 
   refreshing = true;
