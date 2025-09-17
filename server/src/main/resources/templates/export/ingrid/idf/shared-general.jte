@@ -18,7 +18,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
-@param Content additionalIdentificationInfo = null
+@param Content aggregateInformation = null
 @param Content citationEdition = null
 @param Boolean isService = false
 
@@ -482,6 +482,7 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
     @endif
+    ${aggregateInformation}
     @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
         <gmd:spatialRepresentationType>
             <gmd:MD_SpatialRepresentationTypeCode
@@ -786,7 +787,6 @@
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
     </gmd:supplementalInformation>
 @endif
-${additionalIdentificationInfo}
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 ${contentInfo}

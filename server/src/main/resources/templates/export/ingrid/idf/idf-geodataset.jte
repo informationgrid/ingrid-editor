@@ -7,7 +7,7 @@
 
 @param Content extraContent = null
 @param Content additionalCitation = null
-@param Content additionalIdentificationInfo = null
+@param Content aggregateInformation = null
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
@@ -63,7 +63,7 @@
         @endfor
         `,
     additionalCitation = additionalCitation,
-    additionalIdentificationInfo = additionalIdentificationInfo
+    aggregateInformation = aggregateInformation
     )
     @template.export.ingrid.idf.dataQuality(page = page)
     @for(Citation citation : page.getPortrayalCatalogueCitations())
