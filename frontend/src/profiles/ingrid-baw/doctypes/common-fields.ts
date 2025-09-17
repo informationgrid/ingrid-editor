@@ -204,11 +204,12 @@ export class CommonFieldsBaw extends FormFieldHelper {
           .validators,
       );
 
-    // literature references
+    // LFS references & literature references
     const referencesPosition = this.findFieldElementWithId(
       fieldConfig,
       "references",
     );
+    this.addAfter(referencesPosition, this.getLfsReferencesFieldConfig());
     this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
 
     // remove fileReferences
@@ -354,6 +355,25 @@ export class CommonFieldsBaw extends FormFieldHelper {
           docTypeFilter: ["BawPublication"],
         },
       },
+    ]);
+  }
+
+  getLfsReferencesFieldConfig(): FormlyFieldConfig {
+    return this.addGroup(null, "LFS-Dateien", [
+      this.addLongTermFileStorageCard("lfsReferences", {
+        docTypeFilter: [],
+        label: "Datensatzverweis",
+        allowRedirectToDocument: true,
+        allowMultiSelect: true,
+        titleOfDocumentSelectorDialog: "Datei auswählen",
+        required: false,
+        hideHeader: true,
+        // expressions: {
+        //   hide: (field: FormlyFieldConfig) => {
+        //     return field.form.value.referenceType != "uuidRef";
+        //   },
+        // },
+      }),
     ]);
   }
 
