@@ -34,6 +34,7 @@ import { clone, JsonDiffMerge } from "../../../shared/utils";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { deepMerge } from "../../../services/utils";
 
 @UntilDestroy()
 @Injectable()
@@ -102,11 +103,18 @@ export class PrintViewPlugin extends Plugin {
       let fields: FormlyFieldConfig[];
       let fieldsPublished = null;
       if (published !== null) {
-        const diff = JsonDiffMerge.jsonDiff(
+        const diffBackward = JsonDiffMerge.jsonDiff(
           current.documentWithMetadata,
           published.documentWithMetadata,
           {},
         );
+        const diffForward = JsonDiffMerge.jsonDiff(
+          published.documentWithMetadata,
+          current.documentWithMetadata,
+          {},
+        );
+        // the actual diff contents are negligible because we only need the changed fields
+        const diff = deepMerge({}, diffBackward, diffForward);
         fields = doctype.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {
