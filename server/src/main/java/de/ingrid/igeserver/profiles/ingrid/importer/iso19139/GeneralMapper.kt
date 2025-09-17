@@ -60,7 +60,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val documentService: DocumentService = isoData.documentService
 
     val uuid = metadata.fileIdentifier?.value
-    val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+    open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
         else -> "InGridGeoDataset"
@@ -800,7 +800,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue = KeyValue(specificationEntryId, specification, "6005")
-                val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
+                val dateObject = it.specification.citation.date?.getOrNull(0)?.date?.date
                 val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
                     ?: dateObject?.date?.let { parseDate(it) }
                     ?: ""

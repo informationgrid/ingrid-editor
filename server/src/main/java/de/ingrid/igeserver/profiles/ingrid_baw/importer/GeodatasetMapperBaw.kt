@@ -24,4 +24,55 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     override val splitSpatialSystems = true
+    override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
+
+    fun getOrderTitle(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
+        ?.mdAggregateInformation?.aggregateDataSetName?.citation?.title?.value
+
+    fun getOrderNumber(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
+        ?.mdAggregateInformation?.aggregateDataSetName?.citation?.identifier?.firstOrNull()?.mdIdentifier?.code?.value
+
+    fun getLiteratureReferences(): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref } ?: emptyList()
+
+    fun getTimestep(): Double? = isoData.data.dataQualityInfo
+        ?.mapNotNull { it.dqDataQuality }
+        ?.flatMap { it.report ?: emptyList() }
+        ?.find { it.dqAccuracyOfATimeMeasurement != null }
+        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDoubleOrNull()
+
+    fun getSimulationParameters(): List<SimulationParameter> = isoData.data.dataQualityInfo
+        ?.mapNotNull { it.dqDataQuality }
+        ?.flatMap { it.report ?: emptyList() }
+        ?.filter { it.dqQuantitativeAttributeAccuracy != null }
+        ?.mapNotNull { report ->
+            val quantitativeReport = report.dqQuantitativeAttributeAccuracy
+            val result = quantitativeReport?.result?.dqQuantitativeResult
+            val name = result?.valueType?.recordType
+            val unit = result?.valueUnit?.unitDefinition?.name
+            val value = result?.value?.firstOrNull()?.value
+            val role = quantitativeReport?.let { qr ->
+                // Try to get role from lineage if available
+                isoData.data.dataQualityInfo
+                    ?.mapNotNull { it.dqDataQuality }
+                    ?.firstOrNull()?.lineage?.liLinage?.source?.firstOrNull()?.liSource?.description?.value
+            }
+
+            if (name != null) {
+                SimulationParameter(
+                    name = name,
+                    role = role,
+                    value = value,
+                    unit = unit,
+                )
+            } else {
+                null
+            }
+        } ?: emptyList()
 }
+
+data class SimulationParameter(
+    val name: String,
+    val role: String?,
+    val value: String?,
+    val unit: String?,
+)

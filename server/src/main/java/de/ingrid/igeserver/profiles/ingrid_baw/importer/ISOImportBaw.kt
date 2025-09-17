@@ -43,10 +43,22 @@ class ISOImportBaw(val codelistHandler: CodelistHandler, @Lazy val documentServi
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
-                ImportProfileData(
-                    "imports/ingrid-baw/geodataset.jte",
-                    GeodatasetMapperBaw(isoData),
-                )
+                return when (hierarchyLevelNameToDocumentType(data.hierarchyLevelName?.get(0)?.value)) {
+                    "BawSimulation" -> ImportProfileData(
+                        "imports/ingrid-baw/simulation.jte",
+                        GeodatasetMapperBaw(isoData),
+                    )
+                    "BawMeasurement" -> ImportProfileData(
+                        "imports/ingrid-baw/measurement.jte",
+                        GeodatasetMapperBaw(isoData),
+                    )
+                    "InGridGeoDataset" -> ImportProfileData(
+                        "imports/ingrid-baw/geodataset.jte",
+                        GeodatasetMapperBaw(isoData),
+                    )
+
+                    else -> throw IllegalArgumentException("Unsupported hierarchyLevelName: ${data.hierarchyLevelName?.get(0)?.value}")
+                }
             }
 
             "service" -> {
