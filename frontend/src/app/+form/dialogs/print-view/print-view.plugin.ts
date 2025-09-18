@@ -34,7 +34,7 @@ import { clone, JsonDiffMerge } from "../../../shared/utils";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { deepMerge } from "../../../services/utils";
+import { cleanObject, deepMerge } from "../../../services/utils";
 
 @UntilDestroy()
 @Injectable()
@@ -108,11 +108,15 @@ export class PrintViewPlugin extends Plugin {
           published.documentWithMetadata,
           {},
         );
-        const diffForward = JsonDiffMerge.jsonDiff(
+        let diffForward = JsonDiffMerge.jsonDiff(
           published.documentWithMetadata,
           current.documentWithMetadata,
           {},
         );
+        // remove "empty" changes - otherwise, a mis-classification can occur
+        // if a previously non-set published field is
+        // first set to a value and saved, and then unset and saved
+        diffForward = cleanObject(diffForward);
         // the actual diff contents are negligible because we only need the changed fields
         const diff = deepMerge({}, diffBackward, diffForward);
         fields = doctype.getFieldsForPrint(diff);
