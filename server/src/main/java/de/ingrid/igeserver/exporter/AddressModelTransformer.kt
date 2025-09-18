@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.checkPublicationTags
@@ -228,7 +229,7 @@ open class AddressModelTransformer(
             )
         }.toMutableList()
 
-    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true)
+    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildren(catalogIdentifier, id, DocumentCategory.ADDRESS, true)
         .hits
         .filter {
             kotlin.runCatching {

@@ -202,7 +202,7 @@ class DocumentService(
             } else {
                 docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
             }
-        } catch (e: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(uuid, null)
         }
     }
@@ -222,7 +222,7 @@ class DocumentService(
             doc.wrapperId = id
 
             return DocumentData(wrapper, doc)
-        } catch (ex: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
     }
@@ -230,9 +230,9 @@ class DocumentService(
     fun getWrapperByDocumentId(id: Int): DocumentWrapper {
         try {
             return docWrapperRepo.findById(id).get()
-        } catch (ex: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
-        } catch (ex: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
     }
@@ -250,35 +250,37 @@ class DocumentService(
             // TODO AW: doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
             return doc
-        } catch (ex: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
-        } catch (ex: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
     }
-
-    // TODO: consolidate function findChildrenDocs and findChildren
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> = findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
     fun findChildren(
         catalogId: String,
         parentId: Int?,
         docCat: DocumentCategory = DocumentCategory.DATA,
+        onlyPublished: Boolean = false,
     ): FindAllResults<DocumentData> {
         val wrappers = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
         } else {
-            docWrapperRepo.findByParent_id(parentId.toInt())
+            docWrapperRepo.findByParent_id(parentId)
         }
 
-        return getDocumentsFromWrappers(wrappers)
+        return getDocumentsFromWrappers(wrappers, onlyPublished)
     }
 
-    fun getDocumentsFromWrappers(wrappers: List<DocumentWrapper>): FindAllResults<DocumentData> {
+    fun getDocumentsFromWrappers(wrappers: List<DocumentWrapper>, onlyPublished: Boolean = false): FindAllResults<DocumentData> {
         if (wrappers.isEmpty()) return FindAllResults(0, emptyList())
 
         val accessibleUuids = wrappers.map { it.uuid }
-        val docs = docRepo.findAllByCatalogAndIsLatestIsTrueAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+        val docs = if (onlyPublished) {
+            docRepo.findAllByCatalogAndStateAndUuidIn(wrappers[0].catalog!!, DocumentState.PUBLISHED, accessibleUuids)
+        } else {
+            docRepo.findAllByCatalogAndIsLatestIsTrueAndUuidIn(wrappers[0].catalog!!, accessibleUuids)
+        }
 
         val docsData = docs.map { DocumentData(wrappers[accessibleUuids.indexOf(it.uuid)], it) }
 
@@ -296,7 +298,7 @@ class DocumentService(
         val docs = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
         } else {
-            docWrapperRepo.findByParent_id(parentId.toInt())
+            docWrapperRepo.findByParent_id(parentId)
         }
 
         return FindAllResults(
@@ -500,7 +502,7 @@ class DocumentService(
                 postWrapper,
                 updatedDoc,
             )
-        } catch (ex: ObjectOptimisticLockingFailureException) {
+        } catch (_: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
                 dbVersion!!,
@@ -621,7 +623,7 @@ class DocumentService(
                 postWrapper,
                 updatedDoc,
             )
-        } catch (ex: ObjectOptimisticLockingFailureException) {
+        } catch (_: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
                 dbVersion!!,
@@ -732,7 +734,8 @@ class DocumentService(
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
-        findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
+        val docCategory = if (isAddress(docData.wrapper)) DocumentCategory.ADDRESS else DocumentCategory.DATA
+        findChildren(catalogId, id, docCategory).hits.forEach {
             deleteRecursively(catalogId, it.wrapper.id!!, filterContext, options)
         }
 
@@ -897,7 +900,7 @@ class DocumentService(
         val wasPublishedBefore = try {
             getLastPublishedDocument(catalogId, docData.document.uuid)
             true
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             false
         }
         val pendingDoc = getPendingDocument(catalogId, docData.document.uuid)

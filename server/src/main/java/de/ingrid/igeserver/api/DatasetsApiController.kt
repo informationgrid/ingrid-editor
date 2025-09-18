@@ -34,6 +34,7 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentInfo
 import de.ingrid.igeserver.services.DocumentService
@@ -290,7 +291,7 @@ class DatasetsApiController(
         isAddress: Boolean,
     ): Long {
         // get all children of parent and save those recursively
-        val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
+        val docs = documentService.findChildren(catalogId, origParentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
         docs.hits.forEach { child ->
             child.let {
@@ -337,7 +338,7 @@ class DatasetsApiController(
         val isAllowedToGetAllChildren = parentId != null || isSuperOrCatAdmin || (!ignoreRootReadPermission && hasRootReadPermission(principal)) || hasRootWritePermission(principal)
 
         val childrenInfo = if (isAllowedToGetAllChildren) {
-            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
+            documentService.findChildren(catalogId, parentId?.toInt(), if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
         } else {
             // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)
