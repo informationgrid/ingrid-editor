@@ -228,7 +228,14 @@ open class AddressModelTransformer(
             )
         }.toMutableList()
 
-    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true).hits
+    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true)
+        .hits
+        .filter {
+            kotlin.runCatching {
+                checkPublicationTags(it.wrapper.tags, tags)
+                true
+            }.getOrElse { false }
+        }
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
         documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
