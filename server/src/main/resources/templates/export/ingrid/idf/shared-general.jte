@@ -572,6 +572,7 @@
                             </gmd:extentTypeCode>
                         @endif
                             <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
                                 @if(ref.getAuthority() != null)
                                     <gmd:authority>
                                         <gmd:CI_Citation>
@@ -591,7 +592,6 @@
                                         </gmd:CI_Citation>
                                     </gmd:authority>
                                 @endif
-                                <gmd:MD_Identifier>
                                     <gmd:code>
                                         @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
                                     </gmd:code>
