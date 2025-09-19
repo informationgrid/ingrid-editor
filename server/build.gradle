@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.2.10'
-    ext.spring_boot_version = '3.5.5'
+    ext.spring_boot_version = '3.5.6'
     ext.kotest_version = '6.0.1'
     ext.jte_version = '3.2.1'
     ext.geotools_version = '33.2'
