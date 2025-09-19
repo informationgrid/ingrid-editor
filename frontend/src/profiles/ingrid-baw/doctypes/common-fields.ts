@@ -29,6 +29,8 @@ import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { timezones } from "./timezones";
+import { ReferenceViewComponent } from "../../ingrid/components/reference-view/reference-view.component";
+import { tap } from "rxjs/operators";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -209,7 +211,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       fieldConfig,
       "references",
     );
-    this.addAfter(referencesPosition, this.getLfsReferencesFieldConfig());
+    this.addAfter(referencesPosition, this.getLfsReferencesFieldConfig(doc));
     this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
 
     // remove fileReferences
@@ -358,23 +360,65 @@ export class CommonFieldsBaw extends FormFieldHelper {
     ]);
   }
 
-  getLfsReferencesFieldConfig(): FormlyFieldConfig {
-    return this.addGroup(null, "LFS-Dateien", [
-      this.addLongTermFileStorageCard("lfsReferences", {
-        docTypeFilter: [],
-        label: "Datensatzverweis",
-        allowRedirectToDocument: true,
-        allowMultiSelect: true,
-        titleOfDocumentSelectorDialog: "Datei auswählen",
-        required: false,
-        hideHeader: true,
-        // expressions: {
-        //   hide: (field: FormlyFieldConfig) => {
-        //     return field.form.value.referenceType != "uuidRef";
-        //   },
-        // },
-      }),
-    ]);
+  getLfsReferencesFieldConfig(doc: IngridShared): FormlyFieldConfig {
+    // TODO Define required fields
+    return this.addRepeatDetailList("lfsReferences", "LFS-Dateien", {
+      viewComponent: ReferenceViewComponent,
+      fields: [
+        this.addLongTermFileStorageCard("file", {
+          docTypeFilter: [],
+          label: "Datensatzverweis",
+          allowRedirectToDocument: false,
+          allowMultiSelect: false,
+          titleOfDocumentSelectorDialog: "Datei auswählen",
+          required: true,
+          hideHeader: true,
+          hooks: {
+            onInit: (field: FormlyFieldConfig) => {
+              return field.options.fieldChanges.pipe(
+                tap((value) => {
+                  const lfsFileTitle = value.value?.title;
+                  // TODO Should the root title be overwritten if the lfs file changes?
+                  const overridingTitle = field.formControl.root.value?.title;
+                  if (lfsFileTitle && !overridingTitle) {
+                    field.formControl.root.patchValue({
+                      title: lfsFileTitle,
+                    });
+                  }
+                }),
+              );
+            },
+          },
+        }),
+        this.addGroupSimple(
+          null,
+          [
+            this.addInputInline("title", "Titel", {
+              required: true,
+              wrappers: ["inline-help", "form-field"],
+              hasInlineContextHelp: true,
+              updateOn: "change",
+            }),
+            this.addAutoCompleteInline(
+              "fileFormat",
+              this.transloco.translate("form.references.fileFormat"),
+              {
+                options: doc.getCodelistForSelect("1320", "null"),
+                codelistId: "1320",
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+                required: true,
+              },
+            ),
+          ],
+          { fieldGroupClassName: "flex-row gap-12" },
+        ),
+        this.addTextAreaInline("description", "Beschreibung", {
+          wrappers: ["inline-help", "form-field"],
+          hasInlineContextHelp: true,
+        }),
+      ],
+    });
   }
 
   removeDataQualitySection(
