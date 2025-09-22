@@ -1080,6 +1080,8 @@ export abstract class IngridShared extends BaseDoctype {
             this.addRepeat("events", "Zeitbezug der Ressource", {
               expressions: {
                 "props.required": this.options.dynamicRequired.events,
+                defaultValue: (field: FormlyFieldConfig) =>
+                  field.props.required ? [{}] : null,
               },
               fields: [
                 this.addDatepicker("referenceDate", null, {
