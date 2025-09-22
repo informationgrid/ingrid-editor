@@ -35,6 +35,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -60,6 +61,7 @@ class IsoImporterTest : AnnotationSpec() {
     private val documentRepository = mockk<DocumentRepository>()
     private val researchService = mockk<ResearchService>()
     private val uploadConfig = mockk<UploadConfig>()
+    private val bwastrLocatorService = mockk<BwastrLocatorService>()
 
     @BeforeAll
     fun beforeAll() {
@@ -103,7 +105,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importGeoservice() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
@@ -118,7 +120,7 @@ class IsoImporterTest : AnnotationSpec() {
     @Test
     fun importGeodataset() {
         setAdminAuthentication()
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
@@ -130,7 +132,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy1() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -154,7 +156,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy2() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -181,7 +183,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy3() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -214,7 +216,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy4() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -247,7 +249,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy5() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -273,7 +275,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy6() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -300,7 +302,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importAddressAsPointOfContactMDAndPointOfContact() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val pointOfContact = """
             <gmd:pointOfContact>
