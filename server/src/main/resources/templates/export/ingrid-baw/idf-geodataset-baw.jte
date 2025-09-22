@@ -117,7 +117,7 @@ extraContent = @`
                                     </gml:UnitDefinition>
                                 </gmd:valueUnit>
                                 <gmd:value>
-                                    <gco:Record xsi:type="xs:double">${page.getTimestep()}</gco:Record>
+                                    <gco:Record>${page.getTimestep()}</gco:Record>
                                 </gmd:value>
                             </gmd:DQ_QuantitativeResult>
                         </gmd:result>

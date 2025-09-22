@@ -19,12 +19,38 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     override val splitSpatialSystems = true
     override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
+
+    override fun getKeywords(): List<String> = super.getKeywords(listOf("BAW-Schlagwortkatalog", "de.baw.codelist.model.dimensionality", "de.baw.codelist.model.method", "de.baw.codelist.model.type"))
+
+    fun getBawKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
+
+    fun getDimensionality(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "de.baw.codelist.model.dimensionality" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(codeListService.getCodeListEntryId("3950000", it, "de"), it, "3950000") }?.firstOrNull()
+
+    private fun getMethods(codelistId: String): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "de.baw.codelist.model.method" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(codeListService.getCodeListEntryId(codelistId, it, "de"), it, codelistId) } ?: emptyList()
+
+    fun getMeasuringMethod(): List<KeyValue> = getMethods("3950011")
+
+    fun getSimProcess(): KeyValue? = getMethods("3950001").firstOrNull()
+
+    fun getSimulationModelTypes(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "de.baw.codelist.model.type" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(codeListService.getCodeListEntryId("3950003", it, "de"), it, "3950003") } ?: emptyList()
 
     fun getOrderTitle(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
         ?.mdAggregateInformation?.aggregateDataSetName?.citation?.title?.value
@@ -38,31 +64,27 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ?.mapNotNull { it.dqDataQuality }
         ?.flatMap { it.report ?: emptyList() }
         ?.find { it.dqAccuracyOfATimeMeasurement != null }
-        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDoubleOrNull()
+        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDouble()
 
     fun getSimulationParameters(): List<SimulationParameter> = isoData.data.dataQualityInfo
-        ?.mapNotNull { it.dqDataQuality }
-        ?.flatMap { it.report ?: emptyList() }
-        ?.filter { it.dqQuantitativeAttributeAccuracy != null }
-        ?.mapNotNull { report ->
-            val quantitativeReport = report.dqQuantitativeAttributeAccuracy
+        ?.filter { it.dqDataQuality?.report?.any { it.dqQuantitativeAttributeAccuracy != null } == true }
+        ?.mapNotNull { dataQualityInfo ->
+            val quantitativeReport = dataQualityInfo.dqDataQuality?.report?.firstOrNull()?.dqQuantitativeAttributeAccuracy
+            val roleValue = dataQualityInfo.dqDataQuality?.lineage?.liLinage?.source?.firstOrNull()?.liSource?.description?.value
+
             val result = quantitativeReport?.result?.dqQuantitativeResult
             val name = result?.valueType?.recordType
-            val unit = result?.valueUnit?.unitDefinition?.name
-            val value = result?.value?.firstOrNull()?.value
-            val role = quantitativeReport?.let { qr ->
-                // Try to get role from lineage if available
-                isoData.data.dataQualityInfo
-                    ?.mapNotNull { it.dqDataQuality }
-                    ?.firstOrNull()?.lineage?.liLinage?.source?.firstOrNull()?.liSource?.description?.value
-            }
 
             if (name != null) {
                 SimulationParameter(
                     name = name,
-                    role = role,
-                    value = value,
-                    unit = unit,
+                    role = if (roleValue != null) {
+                        KeyValue(codeListService.getCodeListEntryId("3950004", roleValue, "de"), roleValue, "3950004")
+                    } else {
+                        null
+                    },
+                    value = result.value.firstOrNull()?.value,
+                    unit = result.valueUnit.unitDefinition?.catalogSymbol,
                 )
             } else {
                 null
@@ -72,7 +94,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
 data class SimulationParameter(
     val name: String,
-    val role: String?,
+    val role: KeyValue?,
     val value: String?,
     val unit: String?,
 )

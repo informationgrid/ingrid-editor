@@ -145,7 +145,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     // Wasserbau Messdaten
     val waterMeasurements = doc.data.getPath("measurementPhases")?.find { it.getString("type") == "waterMeasurement" }
-    val timestep = waterMeasurements?.getDouble("timestep")
+
+    // different place in measurement and simulation doctypes
+    val timestep = waterMeasurements?.getDouble("timestep") ?: doc.data.getDouble("timestep")
     val spatiality = waterMeasurements?.getPath("spatiality")?.mapToKeyValue()?.let { codelists.getValue("3950012", it) }
     val frequency = waterMeasurements?.getDouble("frequency")
     val posAccuracy = waterMeasurements?.getDouble("posAccuracy")
