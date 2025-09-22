@@ -32,6 +32,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
@@ -58,6 +59,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val codeListService: CodelistHandler = isoData.codelistService
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
+    val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
 
     val uuid = metadata.fileIdentifier?.value
     open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
@@ -480,9 +482,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val titleOrArs = geoIdentifierCode?.value
 
                 if (titleOrArs != null) {
+                    val isBwastr = it.geographicDescription.geographicIdentifier.mdIdentifier.authority?.citation?.title?.value == "VV-WSV 1103"
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
-                    // ignore regional key definition, which is identified by an anchor element
-                    if (isAnchorAndRegionKey) {
+                    if (isBwastr) {
+                        references.add(getBwastrSpatial(titleOrArs))
+                    } else if (isAnchorAndRegionKey) {
                         references.add(SpatialReference("free", title = null, ars = titleOrArs))
                     } else {
                         references.add(SpatialReference("free", title = titleOrArs))
@@ -511,6 +515,54 @@ open class GeneralMapper(val isoData: IsoImportData) {
             }
 
         return references
+    }
+
+    private fun getBwastrSpatial(title: String): SpatialReference {
+        val extractedBwastrId: String
+        var start: Double? = null
+        var end: Double? = null
+        if (title.count { it == '-' } == 2) {
+            // like 0108-7-9 (ID-START-END)
+            title.split("-").let {
+                extractedBwastrId = it[0]
+                start = it[1].toDouble()
+                end = it[2].toDouble()
+            }
+        } else {
+            extractedBwastrId = title.replace("[^$0-9]".toRegex(), "")
+        }
+
+        return if (bwastrLocatorService.customBWASTRMap.containsKey(extractedBwastrId)) {
+            val bwastr = bwastrLocatorService.customBWASTRMap[extractedBwastrId]!!
+            SpatialReference(
+                type = "bwastr",
+                bwastr = Bwastr(
+                    bwastrid = bwastr.bwastrid,
+                    bwastr_name = bwastr.bwastr_name,
+                    strecken_name = bwastr.strecken_name,
+                    concat_name = bwastr.concat_name,
+                    start = null,
+                    end = null,
+                ),
+                title = bwastr.concat_name,
+            )
+        } else {
+            val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId
+            val bwastr = bwastrLocatorService.search(idForSearch).firstOrNull()
+                ?: throw ServerException.withReason("Could not find Bwastr with id: $idForSearch")
+            SpatialReference(
+                type = "bwastr",
+                bwastr = Bwastr(
+                    bwastrid = bwastr.bwastrid,
+                    bwastr_name = bwastr.bwastr_name,
+                    strecken_name = bwastr.strecken_name,
+                    concat_name = bwastr.concat_name,
+                    start = end,
+                    end = start,
+                ),
+                title = bwastr.concat_name,
+            )
+        }
     }
 
     val spatialDescription =
@@ -1060,7 +1112,17 @@ data class SpatialReference(
     val title: String?,
     var coordinates: BoundingBox? = null,
     var wkt: String? = null,
+    val bwastr: Bwastr? = null,
     var ars: String? = null,
+)
+
+data class Bwastr(
+    val bwastrid: String?,
+    val bwastr_name: String?,
+    val strecken_name: String?,
+    val concat_name: String?,
+    val start: Double?,
+    val end: Double?,
 )
 
 data class BoundingBox(

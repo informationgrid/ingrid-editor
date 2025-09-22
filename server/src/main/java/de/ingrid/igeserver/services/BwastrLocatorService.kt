@@ -63,6 +63,17 @@ class BwastrLocatorService {
     private val searchBaseUrl = "https://via.bund.de/wsv/bwastr-locator/rest/bwastrinfo/query?searchfield=all&searchterm="
     private val coordinateSearchURL = "https://via.bund.de/wsv/bwastr-locator/rest/geokodierung/query"
 
+    val customBWASTRMap = mapOf(
+        "7000" to BwastrLocatorSearchResponse("7000", "Nordsee", "", "Nordsee", -1.0, -1.0),
+        "8000" to BwastrLocatorSearchResponse("8000", "Ostsee", "", "Ostsee", -1.0, -1.0),
+        "8300" to BwastrLocatorSearchResponse("8300", "Ryck", "", "Ryck", -1.0, -1.0),
+        "9600" to BwastrLocatorSearchResponse("9600", "Binnenwasserstraßen", "", "Binnenwasserstraßen", -1.0, -1.0),
+        "9700" to BwastrLocatorSearchResponse("9700", "Seewasserstraßen", "", "Seewasserstraßen", -1.0, -1.0),
+        "9800" to BwastrLocatorSearchResponse("9800", "Bundeswasserstraßen", "", "Bundeswasserstraßen", -1.0, -1.0),
+        "9900" to BwastrLocatorSearchResponse("9900", "Sonstige Gewässer", "", "Sonstige Gewässer", -1.0, -1.0),
+        "9999" to BwastrLocatorSearchResponse("9999", "Sonstiger Ortsbezug", "", "Sonstiger Ortsbezug", -1.0, -1.0),
+    )
+
     @Cacheable(value = ["bwastrSearchCache"], key = "#term")
     fun search(term: String): List<BwastrLocatorSearchResponse> {
         if (term.isEmpty()) return emptyList()

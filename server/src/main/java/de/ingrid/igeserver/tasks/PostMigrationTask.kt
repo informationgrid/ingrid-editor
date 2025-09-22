@@ -29,7 +29,6 @@ import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
-import de.ingrid.igeserver.services.BwastrLocatorSearchResponse
 import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -102,18 +101,6 @@ class PostMigrationTask(
         return spatialSystem
     }
 
-    val customBWASTRMap = mapOf<String, BwastrLocatorSearchResponse>(
-
-        "7000" to BwastrLocatorSearchResponse("7000", "Nordsee", "", "Nordsee", -1.0, -1.0),
-        "8000" to BwastrLocatorSearchResponse("8000", "Ostsee", "", "Ostsee", -1.0, -1.0),
-        "8300" to BwastrLocatorSearchResponse("8300", "Ryck", "", "Ryck", -1.0, -1.0),
-        "9600" to BwastrLocatorSearchResponse("9600", "Binnenwasserstraßen", "", "Binnenwasserstraßen", -1.0, -1.0),
-        "9700" to BwastrLocatorSearchResponse("9700", "Seewasserstraßen", "", "Seewasserstraßen", -1.0, -1.0),
-        "9800" to BwastrLocatorSearchResponse("9800", "Bundeswasserstraßen", "", "Bundeswasserstraßen", -1.0, -1.0),
-        "9900" to BwastrLocatorSearchResponse("9900", "Sonstige Gewässer", "", "Sonstige Gewässer", -1.0, -1.0),
-        "9999" to BwastrLocatorSearchResponse("9999", "Sonstiger Ortsbezug", "", "Sonstiger Ortsbezug", -1.0, -1.0),
-    )
-
     private fun addBWASTRTitles(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != BawProfile.ID) {
             log.info("Only BAW-Profile catalogs are supported for adding BWASTR-Titles")
@@ -140,7 +127,7 @@ class PostMigrationTask(
         val migratedBwastr = spatialReference.getPath("bwastr") ?: return spatialReference
         val bwastrId = migratedBwastr.getString("bwastrid") ?: return spatialReference
         val bwastr =
-            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(
+            bwastrLocatorService.customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(
                 // if bwastrId ends with "00" replace it with "01" to get the "Hauptstrecke" for general bwastrIds
                 if (bwastrId.endsWith("00")) bwastrId.dropLast(2) + "01" else bwastrId,
             ).firstOrNull()

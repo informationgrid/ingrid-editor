@@ -31,6 +31,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -52,6 +53,7 @@ data class IsoImportData(
     val documentService: DocumentService,
     val addressMaps: MutableMap<String, String>,
     val researchService: ResearchService,
+    val bwastrLocatorService: BwastrLocatorService,
     val uploadConfig: UploadConfig,
     val catalogLanguage: String,
 )
@@ -62,7 +64,7 @@ data class IsoConverterOutput(
 )
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, @Lazy val bwastrLocatorService: BwastrLocatorService, val uploadConfig: UploadConfig) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -81,7 +83,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, uploadConfig, catalogLanguage)
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
