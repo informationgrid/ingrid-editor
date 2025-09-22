@@ -49,7 +49,11 @@ data class VerticalExtent(
 )
 
 data class VerticalCRS(
-    @JacksonXmlProperty(localName = "VerticalCRS") val verticalCRS: VerticalCRSChoice,
+    @JacksonXmlProperty(localName = "VerticalCRS") val verticalCRS: VerticalCRSChoice?,
+    @JacksonXmlProperty(isAttribute = true)
+    val href: String?,
+    @JacksonXmlProperty(isAttribute = true)
+    val title: String?,
 )
 
 data class VerticalCRSChoice(

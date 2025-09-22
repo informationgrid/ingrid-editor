@@ -109,7 +109,13 @@ extraContent = @`
                     <gmd:DQ_AccuracyOfATimeMeasurement>
                         <gmd:result>
                             <gmd:DQ_QuantitativeResult>
-                                <gmd:valueUnit>ss</gmd:valueUnit>
+                                <gmd:valueUnit>
+                                    <gml:UnitDefinition gml:id="unitDefinition_ID_${TransformationTools.getRandomUUID()}">
+                                        <gml:identifier codeSpace=""/>
+                                        <gml:name>second</gml:name>
+                                        <gml:catalogSymbol>s</gml:catalogSymbol>
+                                    </gml:UnitDefinition>
+                                </gmd:valueUnit>
                                 <gmd:value>
                                     <gco:Record xsi:type="xs:double">${page.getTimestep()}</gco:Record>
                                 </gmd:value>
@@ -138,7 +144,12 @@ extraContent = @`
                                     <gco:RecordType>${param.getName()}</gco:RecordType>
                                 </gmd:valueType>
                                 @if(TransformationTools.hasValue(param.getUnit()))
-                                    <gmd:valueUnit>${param.getUnit()}</gmd:valueUnit>
+                                    <gmd:valueUnit>
+                                        <gml:UnitDefinition gml:id="unitDefinition_ID_${TransformationTools.getRandomUUID()}">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:catalogSymbol>${param.getUnit()}</gml:catalogSymbol>
+                                        </gml:UnitDefinition>
+                                    </gmd:valueUnit>
                                 @else
                                     <gmd:valueUnit gco:nilReason="inapplicable"/>
                                 @endif
