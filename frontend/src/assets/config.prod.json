@@ -18,5 +18,6 @@
     "AP4": false,
     "NotForDemo": true,
     "openAISearch": false
-  }
+  },
+  "lfsInterfaceUrl": null
 }

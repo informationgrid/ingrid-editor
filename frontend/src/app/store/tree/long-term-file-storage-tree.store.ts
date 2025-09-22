@@ -25,23 +25,29 @@ import {
   TreeStoreMethods,
   updateTreeStoreDocs,
 } from "./tree.base";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { IgeError } from "../../models/ige-error";
+import { ConfigService } from "../../services/config/config.service";
 
-// TODO Adapt http request to intranet source e.g. apiUrl, authentication?
-// TODO apiUrl auslagern nach ?
 export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store) => {
     const http = inject(HttpClient);
+    const config = inject(ConfigService);
+
     return {
       ...getTreeStoreMethods()(store),
 
       fetchChildren(parentId: string): Observable<DocumentAbstract[]> {
-        return getLongTermFileStorageChildren(http, parentId).pipe(
+        return getLongTermFileStorageChildren(
+          http,
+          config.getConfiguration().lfsInterfaceUrl,
+          parentId,
+        ).pipe(
           map((docs) => {
             console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
@@ -61,12 +67,12 @@ export const LongTermFileStorageTreeStore = signalStore(
 
 function getLongTermFileStorageChildren(
   http: HttpClient,
+  lfsInterfaceUrl: string,
   parentPath: string,
 ): Observable<Partial<DocumentAbstract>[]> {
-  const apiUrl = "http://192.168.0.227:3004/isibaw/api/archiv-combined/list";
-  if (!apiUrl)
+  if (!lfsInterfaceUrl)
     throw new Error("Configuration missing: LFS_INTERFACE_URL is not defined");
-  const url = `${apiUrl}?folder=${parentPath ?? ""}`;
+  const url = `${lfsInterfaceUrl}?folder=${parentPath ?? ""}`;
   return http
     .get<{ name: string; type: "container" | "object" | string }[]>(url)
     .pipe(
