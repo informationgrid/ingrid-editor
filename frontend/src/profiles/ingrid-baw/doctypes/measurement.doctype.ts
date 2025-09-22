@@ -151,7 +151,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.getAverageWaterLevelFieldConfig(),
           this.getZeroLevelFieldConfig(),
           this.getDrainFieldConfig(),
-          this.getPosAccuracyFieldConfig(),
           this.getDataQualityDescFieldConfig(),
         ]),
       ],
@@ -308,15 +307,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
       suffix: {
         text: "s",
       },
-      className: "single-field width-25 right-align",
-      wrappers: ["panel", "form-field", "addons"],
-    });
-  }
-
-  getPosAccuracyFieldConfig(): FormlyFieldConfig {
-    return this.addInput("posAccuracy", "Lagegenauigkeit", {
-      type: "number",
-      suffix: { text: "m" },
       className: "single-field width-25 right-align",
       wrappers: ["panel", "form-field", "addons"],
     });

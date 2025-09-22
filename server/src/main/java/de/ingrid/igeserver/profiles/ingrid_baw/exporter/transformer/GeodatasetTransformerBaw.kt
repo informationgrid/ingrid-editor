@@ -107,8 +107,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         } ?: emptyList(),
     )
 
-    val process = doc.data.getPath("process")?.mapToKeyValue()?.let { codelists.getValue("3950001", it) }
-    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.mapNotNull { codelists.getValue("3950011", it.mapToKeyValue()) } ?: emptyList()
+    val process = doc.data.getPath("process")?.mapToKeyValue()?.let { codelists.getValue("3950001", it) ?: it.value }
+    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.mapNotNull { it.mapToKeyValue() }
+        ?.mapNotNull { codelists.getValue("3950011", it) ?: it.value } ?: emptyList()
 
     // measurementMethod for Messdaten and process for Simulationen
     val method = measuringMethod + (process?.let { listOf(it) } ?: emptyList())
@@ -118,14 +119,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         "2017-01-17",
         showType = true,
         type = "discipline",
-        keywords = process?.let {
-            listOf(
-                KeywordIso(
-                    name = it,
-                    link = null,
-                ),
+        keywords = method.map {
+            KeywordIso(
+                name = it,
+                link = null,
             )
-        } ?: emptyList(),
+        },
     )
 
     val modelType = doc.data.getPath("simulationModelType")?.mapNotNull { codelists.getValue("3950003", it.mapToKeyValue()) } ?: emptyList()
@@ -150,7 +149,6 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val timestep = waterMeasurements?.getDouble("timestep") ?: doc.data.getDouble("timestep")
     val spatiality = waterMeasurements?.getPath("spatiality")?.mapToKeyValue()?.let { codelists.getValue("3950012", it) }
     val frequency = waterMeasurements?.getDouble("frequency")
-    val posAccuracy = waterMeasurements?.getDouble("posAccuracy")
     val measuringDepth = waterMeasurements?.getPath("measuringDepth")?.let { depth ->
         MeasurementDepth(
             value = depth.getString("value"),
@@ -189,7 +187,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         )
     } ?: emptyList()
 
-    val targetParameters = waterMeasurements?.getPath("targetParameters")?.map { param ->
+    val targetParameters = doc.data.getPath("targetParameters")?.map { param ->
         TargetParameter(
             name = param.getPath("name")?.mapToKeyValue()?.let { codelists.getValue("3950021", it) },
             type = param.getPath("type")?.mapToKeyValue()?.let { codelists.getValue("3950014", it) },
