@@ -25,25 +25,30 @@ import {
   TreeStoreMethods,
   updateTreeStoreDocs,
 } from "./tree.base";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { IgeError } from "../../models/ige-error";
+import { ConfigService } from "../../services/config/config.service";
 
-// TODO Adapt http request to intranet source e.g. apiUrl, authentication?
-// TODO apiUrl auslagern nach ?
 export const LongTermFileStorageTreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
   withMethods((store) => {
     const http = inject(HttpClient);
+    const config = inject(ConfigService);
+
     return {
       ...getTreeStoreMethods()(store),
 
       fetchChildren(parentId: string): Observable<DocumentAbstract[]> {
-        return getLongTermFileStorageChildren(http, parentId).pipe(
+        return getLongTermFileStorageChildren(
+          http,
+          config.getConfiguration().lfsInterfaceUrl,
+          parentId,
+        ).pipe(
           map((docs) => {
-            console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
               if (!doc.title) doc.title = "-Kein Titel-";
               doc.isRoot = parentId === null;
@@ -61,24 +66,21 @@ export const LongTermFileStorageTreeStore = signalStore(
 
 function getLongTermFileStorageChildren(
   http: HttpClient,
+  lfsInterfaceUrl: string,
   parentPath: string,
 ): Observable<Partial<DocumentAbstract>[]> {
-  const apiUrl = "http://localhost:3001/isibaw/api/list";
-  const url = `${apiUrl}?folder=${parentPath}`;
-  const fallback: {
-    name: string;
-    type: "container" | "object" | string;
-  }[] = [
-    { name: "0800", type: "container" },
-    { name: "0701", type: "container" },
-    { name: "0702", type: "container" },
-    { name: "id2name_1.txt", type: "object" },
-    { name: "id2name_2.txt", type: "object" },
-  ];
+  if (!lfsInterfaceUrl)
+    throw new Error("Configuration missing: LFS_INTERFACE_URL is not defined");
+  const url = `${lfsInterfaceUrl}?folder=${parentPath ?? ""}`;
   return http
     .get<{ name: string; type: "container" | "object" | string }[]>(url)
     .pipe(
-      catchError(() => of(fallback)),
+      catchError((err) => {
+        throw new IgeError(
+          err,
+          "Abfrage an Langzeitspeicher (LFS) ist fehlgeschlagen.",
+        );
+      }),
       map((items) =>
         items.map((item) => ({
           id: parentPath ? `${parentPath}/${item.name}` : item.name,
