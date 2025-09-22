@@ -63,22 +63,19 @@ function getLongTermFileStorageChildren(
   http: HttpClient,
   parentPath: string,
 ): Observable<Partial<DocumentAbstract>[]> {
-  const apiUrl = "http://localhost:3001/isibaw/api/list";
-  const url = `${apiUrl}?folder=${parentPath}`;
-  const fallback: {
-    name: string;
-    type: "container" | "object" | string;
-  }[] = [
-    { name: "0800", type: "container" },
-    { name: "0701", type: "container" },
-    { name: "0702", type: "container" },
-    { name: "id2name_1.txt", type: "object" },
-    { name: "id2name_2.txt", type: "object" },
-  ];
+  const apiUrl = "http://192.168.0.227:3004/isibaw/api/archiv-combined/list";
+  if (!apiUrl)
+    throw new Error("Configuration missing: LFS_INTERFACE_URL is not defined");
+  const url = `${apiUrl}?folder=${parentPath ?? ""}`;
   return http
     .get<{ name: string; type: "container" | "object" | string }[]>(url)
     .pipe(
-      catchError(() => of(fallback)),
+      catchError((err) => {
+        throw new IgeError(
+          err,
+          "Abfrage an Langzeitspeicher (LFS) ist fehlgeschlagen.",
+        );
+      }),
       map((items) =>
         items.map((item) => ({
           id: parentPath ? `${parentPath}/${item.name}` : item.name,
