@@ -163,12 +163,12 @@ class DatasetsApiControllerTest : AnnotationSpec() {
     }
 
     private fun shouldRequestChildrenWithoutPermissionCheck() {
-        verify(exactly = 1) { documentService.findChildrenDocs(any(), any(), any()) }
+        verify(exactly = 1) { documentService.findChildren(any(), any(), any()) }
         verify(exactly = 0) { aclService.getDatasetIdsSetInGroups(any(), any(), any()) }
     }
 
     private fun shouldRequestChildrenWithPermissionCheck() {
-        verify(exactly = 0) { documentService.findChildrenDocs(any(), any(), any()) }
+        verify(exactly = 0) { documentService.findChildren(any(), any(), any()) }
         verify(exactly = 1) { aclService.getDatasetIdsSetInGroups(any(), any(), any()) }
     }
 }

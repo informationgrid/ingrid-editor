@@ -293,7 +293,7 @@ export class ImportComponent implements OnInit {
 
     // in case the report has not been ready yet
     // TODO: find a better solution
-    if (this.message.report) action();
+    if (this.message?.report) action();
     else if (retries === 3) {
       throw new IgeError("Report was not ready after 3 retries");
     } else {

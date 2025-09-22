@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/constraints/if_publicationHmbTG-hmdk",
+  "type": "object",
+  "if": {
+    "properties": {
+      "properties": {
+        "type": "object",
+        "properties": {
+          "publicationHmbTG": { "const": true }
+        },
+        "required": ["publicationHmbTG"]
+      }
+    },
+    "required": ["properties"]
+  },
+  "then": {
+    "properties": {
+      "openDataCategories": {
+        "type": "array",
+        "minItems": 1
+      },
+      "informationHmbTG": {
+        "type": "array",
+        "minItems": 1
+      },
+      "pointOfContact": {
+        "type": "array",
+        "minItems": 1,
+        "contains": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "object",
+              "properties": {
+                "key": { "const": "10" }
+              },
+              "required": ["key"]
+            }
+          }
+        }
+      }
+    },
+    "anyOf": [
+      {
+        "properties": {
+          "references": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "object",
+                  "required": ["key"],
+                  "properties": {
+                    "key": { "const": "9990" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": ["references"]
+      },
+      {
+        "properties": {
+          "fileReferences": {
+            "type": "array",
+            "minItems": 1
+          }
+        },
+        "required": ["fileReferences"]
+      }
+    ],
+    "required": ["openDataCategories", "informationHmbTG", "pointOfContact"]
+  }
+}

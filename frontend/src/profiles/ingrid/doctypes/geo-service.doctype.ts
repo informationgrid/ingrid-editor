@@ -61,6 +61,8 @@ export class GeoServiceDoctype extends IngridShared {
   constructor() {
     super();
     this.options.dynamicRequired.spatialSystems = () => true;
+    this.options.dynamicRequired.dataFormat = (field) =>
+      field.options.formState.mainModel?.properties?.isInspireIdentified;
     this.options.required.useConstraints = true;
   }
 

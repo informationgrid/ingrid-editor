@@ -374,9 +374,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       ?.filter((field) => !field.props?.hideInPreview);
   }
 
-  private calcIsDifferent(field, diffObj): boolean {
+  private calcIsDifferent(path: string[], diffObj): boolean {
     if (!diffObj) return false;
-    const path = this.getKeyPath(field);
     if (!path.length) return false;
     let diff = diffObj;
     for (const key of path) {
@@ -389,18 +388,24 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return true;
   }
 
-  addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
+  addDifferenceFlags(fields: FormlyFieldConfig[], diffObj, path: any[] = []) {
     fields?.forEach((field) => {
+      let extendedPath = [...path];
+      if (field.key) {
+        extendedPath.push(field.key);
+      }
       if (field.fieldGroup) {
-        this.addDifferenceFlags(field.fieldGroup, diffObj);
+        this.addDifferenceFlags(field.fieldGroup, diffObj, extendedPath);
       }
       if (field.fieldArray) {
         this.addDifferenceFlags(
           (<FormlyFieldConfig>field.fieldArray).fieldGroup,
           diffObj,
+          extendedPath,
         );
       }
-      if (this.calcIsDifferent(field, diffObj)) {
+      // we need to check for field groups because otherwise we would mark the whole group as different too
+      if (this.calcIsDifferent(extendedPath, diffObj) && !field.fieldGroup) {
         field.className = field.className
           ? field.className + " mark-different"
           : "mark-different";
@@ -408,16 +413,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.className = field.className?.replace("mark-different", "");
       }
     });
-  }
-
-  getKeyPath(field): string[] {
-    if (field.parent) {
-      return field.key
-        ? this.getKeyPath(field.parent).concat([field.key.toString()])
-        : this.getKeyPath(field.parent);
-    } else {
-      return field.key ? [field.key.toString()] : [];
-    }
   }
 
   private getFormatterForColumn(

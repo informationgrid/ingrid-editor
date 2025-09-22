@@ -161,6 +161,7 @@ export function removeNullOrEmptyFields(obj: any) {
 /*!
  * JsonDiffMerge Library v1
  * https://debugtopinpoint.wordpress.com/
+ * https://github.com/ryanshane/JsonDiffMerge
  *
  * Ryan Steller
  *

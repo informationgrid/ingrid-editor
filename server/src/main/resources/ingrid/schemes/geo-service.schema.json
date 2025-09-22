@@ -2,6 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/geoservice",
   "type": "object",
-  "$ref": "geo-service-base.schema.json",
+  "allOf": [
+    { "$ref": "geo-service-base.schema.json" },
+    { "$ref": "constraints/if_isInspireIdentified-geo-service.schema.json"},
+    { "$ref": "constraints/if_isOpenData-ingrid.schema.json"},
+    { "$ref": "constraints/if_isAdVCompatible.schema.json"}
+  ],
   "unevaluatedProperties": false
 }

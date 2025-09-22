@@ -101,7 +101,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
         }
     }
     every { documentService.getIncomingReferenceUUIDs(any(), any(), any()) } answers { emptySet() }
-    every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
+    every { documentService.findChildren(any(), any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
 
 fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper = createDocumentWrapper().apply {
