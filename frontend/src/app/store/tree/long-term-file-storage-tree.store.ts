@@ -49,7 +49,6 @@ export const LongTermFileStorageTreeStore = signalStore(
           parentId,
         ).pipe(
           map((docs) => {
-            console.log("document.service get children:", docs);
             (docs as Array<any>).forEach((doc) => {
               if (!doc.title) doc.title = "-Kein Titel-";
               doc.isRoot = parentId === null;
