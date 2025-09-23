@@ -19,9 +19,20 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeoserviceMapperBaw(isoData: IsoImportData) : GeoserviceMapper(isoData) {
     override val splitSpatialSystems = true
+    override fun getKeywords(): List<String> = super.getKeywords(listOf("BAW-Schlagwortkatalog", "de.baw.codelist.model.dimensionality", "de.baw.codelist.model.method", "de.baw.codelist.model.type"))
+
+    val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
+
+    fun getBawKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
+
+    fun getLiteratureReferences(): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref } ?: emptyList()
 }
