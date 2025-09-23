@@ -204,7 +204,7 @@ class JobsApiController(
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
-            put("principal", principal.name)
+            put("principal", authUtils.getUsernameFromPrincipal(principal))
             put("options", jacksonObjectMapper().writeValueAsString(options))
         }
         scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)

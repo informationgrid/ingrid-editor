@@ -376,7 +376,7 @@ open class IngridModelTransformer(
 
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
-            codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
+            codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system: $it")
         val epsgLink = when {
             // string like "EPSG:25832"
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5)}"
