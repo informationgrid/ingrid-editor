@@ -23,124 +23,112 @@ import de.ingrid.igeserver.configuration.ZabbixProperties
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.verify
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.nio.ByteBuffer
-import java.util.concurrent.Flow
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.ByteArrayContent
+import io.ktor.http.content.OutgoingContent
+import io.ktor.http.content.TextContent
+import io.ktor.http.headersOf
 
 class ZabbixServiceTest : ShouldSpec() {
 
     val props = ZabbixProperties("", "https://abc.de", "", emptyList(), "", 0, "")
-    val service = ZabbixService(props)
-    val x = mockkStatic(HttpClient::newBuilder)
-    val httpClientMock = mockk<HttpClient>(relaxed = true)
-    val responseCreateHost = mockk<HttpResponse<String>>()
-    val responseCreateUser = mockk<HttpResponse<String>>()
-    val responseGetHostGroup = mockk<HttpResponse<String>>()
-    val response = mockk<HttpResponse<String>>()
+    private lateinit var service: ZabbixService
+    private lateinit var client: HttpClient
+    private var requestCount: Int = 0
 
     override suspend fun beforeEach(testCase: TestCase) {
         super.beforeEach(testCase)
+        requestCount = 0
     }
 
     init {
 
         should("do nothing when there are no uploads") {
 
-            every { HttpClient.newBuilder().build() } returns httpClientMock
-            every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
-            every { responseGetHostGroup.statusCode() } returns 200
-            every { responseCreateHost.body() } returns """{ "result": { "hostids": [ "1" ] } }"""
-            every { responseCreateHost.statusCode() } returns 200
-            every { responseCreateUser.body() } returns """{ "result": { "userids": [ "1" ] } }"""
-            every { responseCreateUser.statusCode() } returns 200
-            every { response.body() } returns """{ "result": [] }"""
-            every { response.statusCode() } returns 200
-
-            val bodyHandler = HttpResponse.BodyHandlers.ofString()
-            every {
-                httpClientMock.send(any(), bodyHandler)
-            } answers {
-                val requestAsString = getRequestParameter(firstArg())
-                if (requestAsString.contains("hostgroup.get")) {
-                    responseGetHostGroup
-                } else if (requestAsString.contains("host.create")) {
-                    responseCreateHost
-                } else if (requestAsString.contains("user.create")) {
-                    responseCreateUser
-                } else {
-                    response
+            val engine = MockEngine { request ->
+                requestCount++
+                val bodyText = requestBodyAsText(request.body)
+                val payload = when {
+                    bodyText.contains("hostgroup.get") -> """{ "result": [{ "groupid": "1"}] }"""
+                    bodyText.contains("host.create") -> """{ "result": { "hostids": [ "1" ] } }"""
+                    bodyText.contains("user.create") -> """{ "result": { "userids": [ "1" ] } }"""
+                    else -> """{ "result": [] }"""
                 }
+                respond(
+                    content = payload,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf("Content-Type", "application/json"),
+                )
             }
+
+            client = HttpClient(engine)
+            service = ZabbixService(props, client)
 
             val data = prepareZabbixData(emptyList())
             service.addOrUpdateDocument(data)
 
             // requests for document, httptest, hostgroup and host
-            verify(exactly = 6) { httpClientMock.send(any(), bodyHandler) }
+            requestCount shouldBe 6
         }
 
         should("get Problems for a catalog") {
-            every { HttpClient.newBuilder().build() } returns httpClientMock
-            every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
-            every { responseGetHostGroup.statusCode() } returns 200
-            every { response.body() } returns
-                """
+            val engine = MockEngine { request ->
+                requestCount++
+                val bodyText = requestBodyAsText(request.body)
+                val payload =
+                    if (bodyText.contains("hostgroup.get")) {
+                        """{ "result": [{ "groupid": "1"}] }"""
+                    } else {
+                        """
                         {
-                        "jsonrpc": "2.0",
-                        "result": [
+                          "jsonrpc": "2.0",
+                          "result": [
                             {
-                                "eventid": "eventid",
-                                "objectid": "objectid",
-                                "clock": "1701598217",
-                                "name": "Dokument: Name",
-                                "severity": "4",
-                                "tags": [
+                              "eventid": "eventid",
+                              "objectid": "objectid",
+                              "clock": "1701598217",
+                              "name": "Dokument: Name",
+                              "severity": "4",
+                              "tags": [
                                 {"tag": "document name","value": "doc_name"},
                                 {"tag": "document url","value": "doc.url"},
                                 {"tag": "id","value": "doc_uuid"},
                                 {"tag": "name","value": "dataset_name"},
                                 {"tag": "url","value": "dataset.url"}
-                                ]
+                              ]
                             },
                             {
-                                "eventid": "eventid2",
-                                "objectid": "objectid2",
-                                "clock": "1701598000",
-                                "name": "Dokument: Name2",
-                                "severity": "4",
-                                "tags": [
+                              "eventid": "eventid2",
+                              "objectid": "objectid2",
+                              "clock": "1701598000",
+                              "name": "Dokument: Name2",
+                              "severity": "4",
+                              "tags": [
                                 {"tag": "document name","value": "doc_name2"},
                                 {"tag": "document url","value": "doc.url2"},
                                 {"tag": "id","value": "doc_uuid2"},
                                 {"tag": "name","value": "dataset_name2"},
                                 {"tag": "url","value": "dataset.url2"}
-                                ]
+                              ]
                             }
-                        ],
-                        "id": 1
+                          ],
+                          "id": 1
                         }
-                    """
-            every { response.statusCode() } returns 200
-
-            val bodyHandler = HttpResponse.BodyHandlers.ofString()
-            every {
-                httpClientMock.send(any(), bodyHandler)
-            } answers {
-                val requestAsString = getRequestParameter(firstArg())
-                if (requestAsString.contains("hostgroup.get")) {
-                    responseGetHostGroup
-                } else if (requestAsString.contains("host.create")) {
-                    responseCreateHost
-                } else {
-                    response
-                }
+                        """.trimIndent()
+                    }
+                respond(
+                    content = payload,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf("Content-Type", "application/json"),
+                )
             }
+
+            client = HttpClient(engine)
+            service = ZabbixService(props, client)
+
             val problems = service.getProblems("test_catalog")
             problems.size shouldBe 2
             problems[0].eventid shouldBe "eventid"
@@ -156,34 +144,10 @@ class ZabbixServiceTest : ShouldSpec() {
 
     private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData = ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
 
-    private fun getRequestParameter(request: HttpRequest): String {
-        val res = (request.bodyPublisher().get())
-        val sub = Sub()
-        res.subscribe(sub)
-        return sub.value
-    }
-}
-
-class Sub : Flow.Subscriber<ByteBuffer> {
-
-    var value: String = ""
-
-    override fun onSubscribe(subscription: Flow.Subscription) {
-        println("subscribe")
-        subscription.request(100)
-    }
-
-    override fun onNext(item: ByteBuffer) {
-        println("next")
-        println(String(item.array()))
-        value = String(item.array())
-    }
-
-    override fun onError(throwable: Throwable?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onComplete() {
-        print("Finished")
+    private fun requestBodyAsText(body: Any): String = when (body) {
+        is TextContent -> body.text
+        is ByteArrayContent -> body.bytes().decodeToString()
+        is OutgoingContent.ReadChannelContent -> ""
+        else -> ""
     }
 }
