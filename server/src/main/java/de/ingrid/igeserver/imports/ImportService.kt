@@ -114,7 +114,7 @@ class ImportService(
 
     private fun analyzeFileContent(
         fileContent: JsonNode,
-        catalogId: String
+        catalogId: String,
     ): List<DocumentAnalysis?> = if (fileContent is ArrayNode) {
         // if another array is inside it should be internal format with published and draft version
         if (fileContent[0] is ArrayNode) {
