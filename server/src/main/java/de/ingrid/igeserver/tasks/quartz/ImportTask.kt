@@ -35,11 +35,13 @@ import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.FileUploadHandler
-import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import java.security.Principal
 import java.util.*
 
 @Component
@@ -74,7 +76,8 @@ class ImportTask(
         try {
             notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
 
-            val principal = setAdminAuthentication(info.principal ?: "Import", "Task")
+            val principal = info.principal as Authentication
+            SecurityContextHolder.getContext().authentication = info.principal
 
             val report = when (stage) {
                 Stage.ANALYZE -> {
@@ -183,7 +186,7 @@ class ImportTask(
                 getString("infos")?.let { jacksonObjectMapper().readValue(it) } ?: mutableListOf()
             val report: OptimizedImportAnalysis? = getString("report")?.let { jacksonObjectMapper().readValue(it) }
             val options: ImportOptions? = getString("options")?.let { jacksonObjectMapper().readValue(it) }
-            val principal = getString("principal")
+            val principal = get("principal") as Principal
 
             return JobInfo(startTime, profile, catalogId, importFile, report, options, infos, flowIdentifier, principal)
         }
@@ -198,6 +201,6 @@ class ImportTask(
         val options: ImportOptions?,
         val infos: MutableList<String>,
         val flowIdentifier: String?,
-        val principal: String? = null,
+        val principal: Principal,
     )
 }
