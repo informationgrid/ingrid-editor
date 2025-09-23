@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.services.DocumentCategory
 import org.apache.logging.log4j.kotlin.logger
@@ -33,7 +34,7 @@ import java.net.URLDecoder
 @Component
 class OpenDataType : EntityType() {
     override val className = "OpenDataDoc"
-    override val profiles = arrayOf(OpenDataProfile.ID)
+    override val profiles = arrayOf(OpenDataProfile.ID, InGridProfile.ID)
 
     val log = logger()
 

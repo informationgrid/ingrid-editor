@@ -20,6 +20,7 @@
     "profiles/profile-ingrid-lubw.ts",
     "profiles/profile-ingrid-wsv.ts",
     "profiles/profile-opendata.ts",
-    "profiles/profile-bmi.ts"
+    "profiles/profile-bmi.ts",
+    "profiles/profile-ingrid-with-opendata.ts"
   ]
 }
