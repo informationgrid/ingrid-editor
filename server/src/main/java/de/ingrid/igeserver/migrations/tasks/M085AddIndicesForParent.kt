@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 @Service
-@Profile("ingrid")
 class M085AddIndicesForParent : MigrationBase("0.85") {
 
     @Autowired
