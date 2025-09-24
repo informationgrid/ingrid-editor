@@ -80,11 +80,6 @@ export class PublicationDoctypeBaw extends IngridShared {
               this.addInputInline("value", "Identifikator", { required: true }),
             ],
           }),
-          this.addAutocomplete("documentType", "Dokumententyp", {
-            options: this.getCodelistForSelect("3385", "documentType"),
-            codelistId: "3385",
-            className: "optional",
-          }),
         ]),
       ]),
 
