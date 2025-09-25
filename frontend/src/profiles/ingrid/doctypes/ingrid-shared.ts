@@ -1036,47 +1036,46 @@ export abstract class IngridShared extends BaseDoctype {
   addTimeReferenceSection() {
     return this.addSection("Zeitbezug", [
       this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Ressource", {
-          required: true,
-          fields: [
-            this.addDatepicker("referenceDate", null, {
-              fieldLabel: "Datum",
-              required: true,
-              wrappers: ["form-field"],
+        this.addGroupSimple(
+          "event",
+          [
+            this.addDatepickerInline("created", "Erstellung", {
+              className: "width-date-medium",
             }),
-            this.addSelect("referenceDateType", null, {
-              showSearch: true,
-              fieldLabel: "Typ",
-              wrappers: ["form-field"],
-              className: "flex-3",
-              required: true,
-              options: this.getCodelistForSelect(
-                "502",
-                "temporal.events.referenceDateType",
-              ),
-              codelistId: "502",
-            }),
-          ],
-          validators: {
-            ...(this.showInVeKoSField && {
-              invekos: {
-                expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
-                  const invekosValue =
-                    field.options.formState.mainModel?.properties?.invekos?.key;
-                  if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                    return true;
+            this.addDatepickerInline(
+              "firstPublished",
+              "Erstmalige Veröffentlichung",
+              {
+                className: "width-date-medium",
+              },
+            ),
+            this.addDatepickerInline("lastModified", "Letzte Änderung", {
+              className: "width-date-medium",
+              validators: {
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
 
-                  // Mindestens ein Datum vom Typ "revision" muss vorhanden
-                  return ctrl.value?.some(
-                    (item: any) => item.referenceDateType?.key === "3",
-                  );
-                },
-                message:
-                  "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                      // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                      return ctrl.value !== null;
+                    },
+                    message:
+                      "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                  },
+                }),
               },
             }),
-          },
-        }),
+          ],
+          { fieldGroupClassName: "flex-row gap-12" },
+        ),
         this.addGroup(
           null,
           "Durch die Ressource abgedeckte Zeitspanne",
