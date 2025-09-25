@@ -12,12 +12,12 @@
   "matomoUrl": null,
   "matomoSiteId": null,
   "matomoDisableCookies": null,
+  "lfsInterfaceUrl": null,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,
     "AP4": false,
     "NotForDemo": true,
     "openAISearch": false
-  },
-  "lfsInterfaceUrl": null
+  }
 }
