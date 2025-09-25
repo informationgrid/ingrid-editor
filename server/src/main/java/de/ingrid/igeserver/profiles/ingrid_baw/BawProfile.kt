@@ -116,13 +116,19 @@ class BawProfile(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-        val behaviours = listOf("plugin.publish").map {
+        val behaviours = listOf(
             Behaviour().apply {
-                name = it
+                name = "plugin.publish"
                 active = true
                 data = mapOf("unpublishDisabled" to true)
-            }
-        }
+                // set DOI active
+            },
+            Behaviour().apply {
+                name = "plugin.ingrid.doi"
+                active = true
+                data = emptyMap<String, Any?>()
+            },
+        )
         behaviourService.save(catalogId, behaviours)
     }
 
