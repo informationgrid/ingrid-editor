@@ -56,7 +56,7 @@ export const LongTermFileStorageTreeStore = signalStore(
             return docs as DocumentAbstract[];
           }),
           tap((docs: DocumentAbstract[]) =>
-            updateTreeStoreDocs(store, null, docs),
+            updateTreeStoreDocs(store, parentId, docs),
           ),
         );
       },

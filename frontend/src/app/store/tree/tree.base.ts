@@ -50,7 +50,7 @@ export interface TreeStoreMethods {
 
 export function updateTreeStoreDocs(
   store,
-  parentId: number,
+  parentId: number | string,
   docs: DocumentAbstract[],
 ) {
   if (parentId === null) {
@@ -126,10 +126,8 @@ export function getTreeStoreMethods() {
       return store.entityMap()[id];
     },
 
-    fetchChildren(parentId: number | string): Observable<DocumentAbstract[]> {
-      console.warn("No logic implemented for tree store to fetch children.");
-      // Hint: Logic of this function is defined in tree.store files
-      return null;
+    fetchChildren(_parentId: number | string): Observable<DocumentAbstract[]> {
+      throw new Error("No logic implemented for tree store to fetch children.");
     },
   });
 }
