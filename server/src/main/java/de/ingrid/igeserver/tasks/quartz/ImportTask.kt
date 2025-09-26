@@ -106,12 +106,12 @@ class ImportTask(
                         message,
                     )
                     info.analysis.apply { this.importResult = counter }
+                    runCodelistSyncTask(info.catalogId)
                 }
 
                 else -> null
             }
 
-            runCodelistSyncTask(info.catalogId)
             message.apply {
                 this.report = report
                 this.endTime = Date()
