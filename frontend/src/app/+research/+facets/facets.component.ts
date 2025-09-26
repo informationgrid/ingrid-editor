@@ -276,7 +276,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     data.limitTypes = ["free"];
 
     this.dialog
-      .open(SpatialDialogComponent, { data: data })
+      .open(SpatialDialogComponent, {
+        data: data,
+        width: "90%",
+        maxWidth: 1260,
+        minWidth: "min(600px, 100%)",
+      })
       .afterClosed()
       .subscribe((result) => {
         if (result && result.value) this.updateLocation(result);

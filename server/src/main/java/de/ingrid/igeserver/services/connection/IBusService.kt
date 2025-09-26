@@ -17,13 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.services.connection
 
 import de.ingrid.ibus.client.BusClient
 import de.ingrid.ibus.client.BusClientFactory
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.utils.IBus
 import de.ingrid.utils.IPlug
 import de.ingrid.utils.IngridCall

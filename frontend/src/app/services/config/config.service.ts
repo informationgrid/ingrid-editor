@@ -87,20 +87,36 @@ export interface CMSPage {
 }
 
 export interface Connections {
-  connections: (ConnectionInfo | ConnectionInfoElastic)[];
+  connections: GeneralConnectionInfo[];
 }
 
 export interface BackendConnections {
   ibus: ConnectionInfo[];
-  elasticsearch: ConnectionInfo[];
+  elasticsearch: ConnectionInfoElastic[];
+  cswt: ConnectionInfoCswt[];
 }
 
+export type GeneralConnectionInfo =
+  | ConnectionInfo
+  | ConnectionInfoElastic
+  | ConnectionInfoCswt;
+
 export interface ConnectionInfo {
-  _type: "ibus" | "elastic";
+  _type: "ibus";
   id: number;
   name: string;
   ip: string;
   port: number;
+}
+
+export interface ConnectionInfoCswt {
+  _type: "cswt";
+  id: number;
+  name: string;
+  url: string;
+  isSecure: boolean;
+  username: string;
+  password: string;
 }
 
 export interface ConnectionInfoElastic {
@@ -262,7 +278,9 @@ export class ConfigService {
     }
   }
 
-  saveConnectionConfig(value: Connections): Observable<ConnectionInfo[]> {
+  saveConnectionConfig(
+    value: Connections,
+  ): Observable<GeneralConnectionInfo[]> {
     const valueForBackend = this.prepareConnectionsForIBus(value);
     return this.http
       .put<BackendConnections>(
@@ -300,10 +318,15 @@ export class ConfigService {
 
   private prepareConnectionsForIBus(value: Connections): BackendConnections {
     return {
-      ibus: value.connections.filter((item) => item._type === "ibus"),
+      ibus: value.connections.filter(
+        (item) => item._type === "ibus",
+      ) as ConnectionInfo[],
       elasticsearch: value.connections.filter(
         (item) => item._type === "elastic",
-      ),
+      ) as ConnectionInfoElastic[],
+      cswt: value.connections.filter(
+        (item) => item._type === "cswt",
+      ) as ConnectionInfoCswt[],
     };
   }
 
@@ -322,11 +345,20 @@ export class ConfigService {
             return newConn;
           }),
         ),
+        ...this.addType(
+          "cswt",
+          value.cswt.map((conn) => {
+            const newConn = <ConnectionInfoCswt>conn;
+            newConn.isSecure =
+              newConn.username?.length > 0 && newConn.password?.length > 0;
+            return newConn;
+          }),
+        ),
       ],
     };
   }
 
-  private addType(type: "ibus" | "elastic", value: any[]) {
+  private addType(type: "ibus" | "elastic" | "cswt", value: any[]) {
     return (value ?? []).map((item) => {
       item._type = type;
       return item;
@@ -335,6 +367,6 @@ export class ConfigService {
 
   private handleGetConnectionsError(err: any): Observable<BackendConnections> {
     console.error("Das Laden der Verbindungen ist fehlgeschlagen", err);
-    return of({ ibus: [], elasticsearch: [] });
+    return of({ ibus: [], elasticsearch: [], cswt: [] });
   }
 }

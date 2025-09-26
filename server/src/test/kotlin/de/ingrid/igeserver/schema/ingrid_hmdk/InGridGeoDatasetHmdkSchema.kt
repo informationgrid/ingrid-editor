@@ -35,7 +35,31 @@ class InGridGeoDatasetHmdkSchema : AnnotationSpec() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
             "\"properties\": {",
             """"properties": {"publicationHmbTG": true, """,
-        ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)
+        ).replaceFirst(
+            "{",
+            """{ 
+                "informationHmbTG": [{"key": "1"}], 
+                "openDataCategories": [{"key": "5"}],
+                "fileReferences": [
+                    {
+                        "title": "File name",
+                        "link": {
+                            "asLink": false,
+                            "value": "filename.pdf",
+                            "uri": "filename.pdf",
+                            "lastModified": "2025-06-26T08:13:26.284Z",
+                            "sizeInBytes": 429866
+                        },
+                        "format": {
+                            "key": "21",
+                            "value": "PDF",
+                            "_codelistId": "1320"
+                        },
+                        "description": ""
+                    }
+                ],
+            """.trimMargin(),
+        )
         val result = validate(json, schema)
         result.size shouldBe 0
     }

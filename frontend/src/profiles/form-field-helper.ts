@@ -275,9 +275,7 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         autosizeMinRows: options?.autosizeMinRows,
         autosizeMaxRows: options?.autosizeMaxRows,
-        attributes: {
-          style: options?.autosize ? null : "resize:vertical;",
-        },
+        attributes: {},
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
@@ -691,6 +689,7 @@ export class FormFieldHelper {
         simple: options?.simple,
         useFirstValueInitially: options?.useFirstValueInitially,
       },
+      validators: options?.validators,
       expressions: expressions,
       hooks: options?.hooks,
       resetOnHide: options?.resetOnHide,

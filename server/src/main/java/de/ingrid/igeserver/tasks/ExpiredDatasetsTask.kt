@@ -116,7 +116,7 @@ class ExpiredDatasetsTask(
 
         expiredDatasets = expiredDatasets + repeatExpiredDatasets
 
-        val linkstub = "${appSettings.host}/${catalog.identifier}"
+        val linkstub = "${appSettings.appUrl}/${catalog.identifier}"
         val catalogType = catalog.type
 
         try {

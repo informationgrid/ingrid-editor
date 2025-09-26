@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.2.10'
-    ext.spring_boot_version = '3.5.5'
+    ext.spring_boot_version = '3.5.6'
     ext.kotest_version = '6.0.1'
     ext.jte_version = '3.2.1'
     ext.geotools_version = '33.2'
@@ -201,6 +201,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
     testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
+    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_client"
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

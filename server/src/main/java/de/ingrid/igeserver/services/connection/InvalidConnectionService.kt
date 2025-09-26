@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,23 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.services.connection
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
+class InvalidConnectionService : IConnection {
+    override fun isConnected(id: String): Boolean = false
 
-@ConfigurationProperties("app")
-data class GeneralProperties(
-    val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIToken: String? = null,
-    val frontendStacktrace: Boolean = false,
-)
+    override fun containsId(id: String): Boolean = false
+}

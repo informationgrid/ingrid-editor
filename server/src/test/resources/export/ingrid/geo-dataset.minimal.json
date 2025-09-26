@@ -54,7 +54,8 @@
   "distribution": {},
   "spatialScope": null,
   "pointOfContact": [
-    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } },
+    { "ref": "506677eb-9328-4484-9d30-2cecadba353c", "type": { "key": "10" } }
   ],
   "dataQualityInfo": {
     "lineage": { "source": { "processStep": {}, "descriptions": [] } }

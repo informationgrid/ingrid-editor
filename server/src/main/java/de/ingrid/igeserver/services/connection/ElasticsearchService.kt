@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.services.connection
 
 import com.jillesvangurp.ktsearch.BulkItemCallBack
 import com.jillesvangurp.ktsearch.BulkResponse
@@ -30,6 +30,7 @@ import com.jillesvangurp.ktsearch.clusterHealth
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.index.ElasticClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
+import de.ingrid.igeserver.services.SettingsService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.auth.Auth

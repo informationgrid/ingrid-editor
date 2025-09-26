@@ -48,6 +48,7 @@ import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -160,7 +161,7 @@ class JobsApiController(
             if (combinedFile != null) {
                 log.info("All chunks received. Processing file: '${combinedFile.absolutePathString()}'")
 
-                startImportAnalysisTask(profile, catalogId, combinedFile, flowIdentifier, command, jobKey)
+                startImportAnalysisTask(profile, catalogId, combinedFile, flowIdentifier, command, jobKey, principal)
 
                 // Clean up temporary files after scheduling the job
 //                fileUploadHandler.cleanup(flowIdentifier)
@@ -173,7 +174,7 @@ class JobsApiController(
             log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
             file.transferTo(tempFile)
 
-            startImportAnalysisTask(profile, catalogId, tempFile, flowIdentifier, command, jobKey)
+            startImportAnalysisTask(profile, catalogId, tempFile, flowIdentifier, command, jobKey, principal)
         }
 
         return ResponseEntity.ok().build()
@@ -186,6 +187,7 @@ class JobsApiController(
         flowIdentifier: String,
         command: JobCommand,
         jobKey: JobKey,
+        principal: Principal,
     ) {
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
@@ -193,6 +195,7 @@ class JobsApiController(
             put("importFile", combinedFile.absolutePathString())
             put("flowIdentifier", flowIdentifier)
             put("report", null)
+            put("principal", principal)
         }
         scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
     }
@@ -205,6 +208,7 @@ class JobsApiController(
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
+            put("principal", principal)
             put("options", jacksonObjectMapper().writeValueAsString(options))
         }
         scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
