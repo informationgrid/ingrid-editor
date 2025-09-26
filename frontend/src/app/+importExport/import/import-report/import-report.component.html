@@ -1,6 +1,6 @@
 <div>
     Importer:
-    {{ report.importers.join(",") }}
+    {{ report?.importers?.join(",") }}
 </div>
 <div>
     Anzahl Datensätze:
@@ -12,11 +12,11 @@
 </div>
 <div>
     Existierende Datensätze:
-    {{ report.existingDatasets.length }}
+    {{ report.existingDatasets?.length }}
 </div>
 <div>
     Existierende Adressen:
-    {{ report.existingAddresses.length }}
+    {{ report.existingAddresses?.length }}
 </div>
 
 @if (report.importResult) {
