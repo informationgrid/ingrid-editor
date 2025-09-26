@@ -71,7 +71,7 @@ class PublishEmailService(
     }
 
     private fun generateLink(document: Document): String {
-        val url = URI(generalProperties.host).toURL()
+        val url = URI(generalProperties.appUrl).toURL()
         return "<a href='${url.protocol}://${url.host}/trefferanzeige?docuuid=${document.uuid}'>${document.title}</a>"
     }
 
