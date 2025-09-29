@@ -22,6 +22,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 import { DestinationSelectionComponent } from "../create/destination-selection/destination-selection.component";
+import { CopyFilesService } from "./copy-files.service";
 
 export interface PasteDialogOptions {
   buttonText: string;
@@ -46,6 +47,7 @@ export class PasteDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions,
     private config: ConfigService,
     private dlgRef: MatDialogRef<PasteDialogComponent>,
+    private copyFilesService: CopyFilesService,
   ) {}
 
   ngOnInit() {}
@@ -55,6 +57,7 @@ export class PasteDialogComponent implements OnInit {
   }
 
   submit() {
+    this.copyFilesService.startListening();
     this.dlgRef.close({ selection: this.selection, path: this.path });
   }
 }
