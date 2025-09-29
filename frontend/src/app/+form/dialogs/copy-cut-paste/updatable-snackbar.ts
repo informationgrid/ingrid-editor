@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EnvironmentInjector, inject, Type, WritableSignal } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import {
   MAT_SNACK_BAR_DATA,
@@ -54,10 +54,6 @@ import { SnackBarMessageService } from "./snackbar-message.service";
   ],
 })
 export class UpdatableMatSnackBar {
-  // data holds the class of the service to be used
-  private ServiceClass = inject<Type<SnackBarMessageService>>(MAT_SNACK_BAR_DATA);
-  private injector = inject(EnvironmentInjector);
-  // resolve the concrete service class using the injector and the class from data
-  public service = this.injector.get(this.ServiceClass);
+  public service = inject<SnackBarMessageService>(MAT_SNACK_BAR_DATA);
   public snackBarRef = inject(MatSnackBarRef<UpdatableMatSnackBar>);
 }

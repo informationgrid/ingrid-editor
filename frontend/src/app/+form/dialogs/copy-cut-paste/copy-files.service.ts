@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, Type, WritableSignal } from "@angular/core";
+import { Injectable, WritableSignal } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SnackBarMessageService } from "./snackbar-message.service";
 import { ConfigService } from "../../../services/config/config.service";
@@ -47,9 +47,5 @@ export class CopyFilesService extends SnackBarMessageService {
 
   protected getWatchPath() {
     return `/topic/copyFilesStatus/${ConfigService.catalogId}`;
-  }
-
-  protected getImplementingClass(): Type<CopyFilesService> {
-    return CopyFilesService;
   }
 }

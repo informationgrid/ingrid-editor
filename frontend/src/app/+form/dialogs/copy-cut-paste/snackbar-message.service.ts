@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, signal, Type, WritableSignal } from "@angular/core";
+import { effect, inject, signal, WritableSignal } from "@angular/core";
 import { untilDestroyed } from "@ngneat/until-destroy";
 import { map, tap } from "rxjs";
 import { UpdatableMatSnackBar } from "./updatable-snackbar";
@@ -69,7 +69,7 @@ export abstract class SnackBarMessageService {
   private openSnackBar() {
     this.currentSnackBarRef = this.snackBar.openFromComponent(
       UpdatableMatSnackBar,
-      { duration: 0, data: this.getImplementingClass() },
+      { duration: 0, data: this },
     );
     // clear the reference and reset the state when manually dismissed
     this.currentSnackBarRef.afterDismissed().subscribe(() => {
@@ -87,6 +87,4 @@ export abstract class SnackBarMessageService {
   }
 
   protected abstract getWatchPath(): string;
-
-  protected abstract getImplementingClass(): Type<SnackBarMessageService>;
 }
