@@ -373,6 +373,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
           titleOfDocumentSelectorDialog: "Datei auswählen",
           required: true,
           hideHeader: true,
+          urlToMoveResources:
+            this.config.getConfiguration().lfsMoveResourcesUrl,
           hooks: {
             onInit: (field: FormlyFieldConfig) => {
               return field.options.fieldChanges.pipe(

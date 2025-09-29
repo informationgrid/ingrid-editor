@@ -69,5 +69,9 @@ if [[ -n "${LFS_INTERFACE_URL}" ]]; then
   sed -i -r "s@lfsInterfaceUrl\":.*@lfsInterfaceUrl\": \"$LFS_INTERFACE_URL\",@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${LFS_INTERFACE_URL}" ]]; then
+  sed -i -r "s@lfsMoveResourcesUrl\":.*@lfsMoveResourcesUrl\": \"$LFS_MOVE_RESOURCES_URL\",@" /app/resources/static/assets/config.json
+fi
+
 echo "Run original entrypoint command"
 java -cp $( cat /app/jib-classpath-file ) $( cat /app/jib-main-class-file )
