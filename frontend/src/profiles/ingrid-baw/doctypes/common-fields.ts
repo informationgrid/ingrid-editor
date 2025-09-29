@@ -375,6 +375,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
           hideHeader: true,
           urlToMoveResources:
             this.config.getConfiguration().lfsMoveResourcesUrl,
+          explanationHint: this.transloco.translate("form.lfsDescription"),
           hooks: {
             onInit: (field: FormlyFieldConfig) => {
               return field.options.fieldChanges.pipe(
@@ -409,6 +410,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
                 codelistId: "1320",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
+                contextHelpId: "urlDataType",
                 required: false,
               },
             ),

@@ -69,6 +69,9 @@
     }
 
     @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
+        @if (explanationHint) {
+            <p>{{ this.explanationHint }}</p>
+        }
         <button
             type="button"
             mat-stroked-button
