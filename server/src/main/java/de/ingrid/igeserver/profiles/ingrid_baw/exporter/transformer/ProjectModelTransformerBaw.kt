@@ -26,6 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
@@ -55,6 +56,7 @@ open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : Pr
         )
 
     override val extraContent: String by lazy { getBwastrIdfSection(this) }
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getLfsReferences(this)
 
     override val hierarchyLevelName = "project"
 

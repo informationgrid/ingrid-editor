@@ -27,7 +27,9 @@ import de.ingrid.igeserver.exporter.model.GeographicElement
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
@@ -112,6 +114,17 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
         }
         ?: emptyList(),
 )
+
+fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
+    ServiceUrl(
+        name = it.getString("title") ?: "???",
+        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/$path" }) ?: return@mapNotNull null,
+        description = it.getString("explanation"),
+        functionValue = "download",
+        attachedToField = AttachedField("2000", "9900", "Datendownload"),
+        applicationProfile = modelTransformer.codelists.getValue("1320", it.get("fileFormat").mapToKeyValue()),
+    )
+} ?: emptyList()
 
 data class BwastrInfo(
     val title: String,
