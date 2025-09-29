@@ -201,6 +201,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
     testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
+    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_client"
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
