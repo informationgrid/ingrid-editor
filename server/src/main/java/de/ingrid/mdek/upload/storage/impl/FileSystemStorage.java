@@ -19,6 +19,7 @@
  */
 package de.ingrid.mdek.upload.storage.impl;
 
+import de.ingrid.igeserver.tasks.quartz.CopyFilesTask;
 import de.ingrid.mdek.upload.ConflictException;
 import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.ConflictHandling;
@@ -33,6 +34,9 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
+import org.quartz.JobDataMap;
+import org.quartz.JobKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.*;
@@ -109,6 +113,9 @@ public class FileSystemStorage implements Storage {
     private int unsavedRetentionTime = 0;
 
     private List<Validator> validators = new ArrayList<>();
+
+    @Autowired
+    private FileSystemStorageScheduleDelegate schedulerDelegate;
 
     /**
      * Filename validator class
@@ -231,7 +238,7 @@ public class FileSystemStorage implements Storage {
      * @return List<StorageItem>
      * @throws IOException
      */
-    private List<FileSystemItem> listFiles(String catalog, String userID, String docID, String basePath, Scope scope) throws IOException {
+    public List<FileSystemItem> listFiles(String catalog, String userID, String docID, String basePath, Scope scope) throws IOException {
         final List<FileSystemItem> files = new ArrayList<>();
         Path dir = this.getRealPath(catalog, docID, "", basePath);
         if (scope == Scope.UNSAVED) dir = this.getUnsavedPath(catalog, userID, docID, "", basePath);
@@ -867,27 +874,15 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException {
-        var unpublishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.UNPUBLISHED);
-        var archivedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.ARCHIVED);
-        var archivedFilesUnpublished = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.ARCHIVED_UNPUBLISHED);
-        var publishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.PUBLISHED);
-
-        final CopyOption[] copyOptions = {StandardCopyOption.REPLACE_EXISTING};
-
-        Stream.of(unpublishedFiles.stream(), publishedFiles.stream(), archivedFiles.stream(), archivedFilesUnpublished.stream())
-                .flatMap(s -> s)
-                .forEach(f -> {
-                    try {
-                        var existingFile = f.getRealPath();
-
-                        var targetPath = this.getUnpublishedPath(catalog, targetDatasetId, f.getRelativePath(), this.docsDir);
-                        Files.createDirectories(targetPath.getParent());
-                        Files.copy(existingFile, targetPath, copyOptions);
-                    } catch (final IOException ex) {
-                        throw new UncheckedIOException(ex);
-                    }
-                });
+    public void copyToUnpublished(String catalog, String sourceDatasetId, String targetDatasetId) {
+        var jobKey = JobKey.jobKey(CopyFilesTask.JOB_KEY, catalog);
+        var jobDataMap = new JobDataMap();
+        jobDataMap.put("catalogId", catalog);
+        jobDataMap.put("sourceDatasetId", sourceDatasetId);
+        jobDataMap.put("targetDatasetId", targetDatasetId);
+        jobDataMap.put("docsDir", this.docsDir);
+        // we cannot schedule here directly because that needs to be done in a fresh transactional context
+        schedulerDelegate.scheduleCopyFilesJob(jobKey, jobDataMap);
     }
 
     @Override
@@ -1000,7 +995,7 @@ public class FileSystemStorage implements Storage {
      * @param basePath
      * @return Path
      */
-    Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
+    public Path getUnpublishedPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath, UNPUBLISHED_PATH,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
     }
