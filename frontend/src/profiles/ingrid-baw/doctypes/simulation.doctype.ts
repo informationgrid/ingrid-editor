@@ -95,9 +95,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           required: true,
           options: this.getCodelistForSelect("3950004", "null"),
         }),
-        this.addInputInline("value", "Wert/Wertebereich", {
-          required: true,
-        }),
+        this.addInputInline("value", "Wert/Wertebereich"),
         this.addInputInline("unit", "Maßeinheit", {
           required: true,
         }),
