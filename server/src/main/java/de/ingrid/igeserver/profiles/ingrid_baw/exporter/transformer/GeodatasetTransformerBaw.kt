@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.exporter.model.GeographicElement
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -31,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getSubsoilKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getDouble
@@ -48,10 +48,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun getGeographicElements(): List<GeographicElement> = super.getGeographicElements() + getBwastrGeographicElements(this)
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() +
         getBawKeywords(this).keywords.mapNotNull { it.name } +
+        getSubsoilKeywords(this).keywords.mapNotNull { it.name } +
         getSimulationKeywordThesauri().flatMap { t -> t.keywords.mapNotNull { it.name } }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() +
         getBawKeywords(this) +
+        getSubsoilKeywords(this) +
         getSimulationKeywordThesauri()
 
     override val spatialSystems = super.spatialSystems + (
@@ -154,17 +156,13 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val measuringDepth = waterMeasurements?.getPath("measuringDepth")?.let { depth ->
         MeasurementDepth(
             value = depth.getString("value"),
-            crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let {
-                KeyValue(it.key, codelists.getValue("verticalSpatialSystems", it))
-            },
+            crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
         )
     }
     val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.map { level ->
         ZeroLevel(
             value = level.getString("value"),
-            crs = level.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let {
-                KeyValue(it.key, codelists.getValue("verticalSpatialSystems", it))
-            },
+            crs = level.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
             unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
             description = level.getString("description"),
         )
@@ -221,14 +219,14 @@ data class AverageWaterLevel(
 )
 data class ZeroLevel(
     val value: String?,
-    val crs: KeyValue?,
+    val crs: String?,
     val unit: String?,
     val description: String?,
 )
 
 data class MeasurementDepth(
     val value: String?,
-    val crs: KeyValue?,
+    val crs: String?,
 )
 
 data class SimParameter(

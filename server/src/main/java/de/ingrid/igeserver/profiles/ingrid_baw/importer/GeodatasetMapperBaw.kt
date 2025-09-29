@@ -33,6 +33,11 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
         ?.map { KeyValue(it) } ?: emptyList()
 
+    fun getSubsoilKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Baugrunddynamik-Schlagwortkatalog" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
+
     fun getDimensionality(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "de.baw.codelist.model.dimensionality" }
         ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }

@@ -115,6 +115,21 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
         ?: emptyList(),
 )
 
+fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
+    "Baugrunddynamik-Schlagwortkatalog",
+    "2012-01-01",
+    showType = true,
+    type = "discipline",
+    keywords = transformer.doc.data.getPath("keywords.baugrunddynamikKeywords")
+        ?.mapNotNull { it.mapToKeyValue() }
+        ?.map {
+            KeywordIso(
+                name = transformer.codelists.getValue("3950005", it),
+            )
+        }
+        ?: emptyList(),
+)
+
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",

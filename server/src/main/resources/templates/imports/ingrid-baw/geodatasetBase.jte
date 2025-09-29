@@ -24,5 +24,9 @@
         @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
     @endfor
     ],
-    "subsoilKeywords": []
+    "subsoilKeywords": [
+    @for (var entry : ForSupport.of(model.getSubsoilKeywords()))
+        @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
+    @endfor
+    ]
 `)
