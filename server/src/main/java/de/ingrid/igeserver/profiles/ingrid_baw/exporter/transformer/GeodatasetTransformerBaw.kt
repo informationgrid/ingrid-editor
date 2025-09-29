@@ -178,7 +178,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val maxDrain = waterMeasurements?.getString("drain.max")
     val minDrain = waterMeasurements?.getString("drain.min")
 
-    val gauge = waterMeasurements?.getPath("gauge")?.map { device ->
+    val measurementDevices = waterMeasurements?.getPath("gauge")?.map { device ->
         MeasurementDevice(
             name = device.getString("name"),
             id = device.getString("id"),
