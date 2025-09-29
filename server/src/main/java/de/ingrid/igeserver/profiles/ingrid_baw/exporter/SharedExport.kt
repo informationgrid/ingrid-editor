@@ -330,5 +330,5 @@ fun transformUrlForDatenrepository(url: String?): String? {
             .replace("dl.datenfinder.baw.de", "dl.datenrepository.baw.de")
 
     // Only allow URLs that are in the domain whitelist. Return null for other URLs.
-    return if (DOMAIN_WHITELIST.any { url.contains(it) }) cleanUrl else null
+    return if (DOMAIN_WHITELIST.any { cleanUrl.contains(it) }) cleanUrl else null
 }
