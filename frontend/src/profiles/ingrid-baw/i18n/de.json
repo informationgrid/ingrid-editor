@@ -14,6 +14,7 @@
     "spatial": {
       "spatialSystems": "Raumbezugssystem (Lage)"
     },
-    "statement": "Erläuterung zur Herkunft"
+    "statement": "Erläuterung zur Herkunft",
+    "lfsDescription": "In diesem Dialogfeld können Sie bereits archivierte Dateien verknüpfen. Um Dateien in das LFS zu verschieben, verwenden Sie bitte den Button 'Verschiebung vornehmen'. Um Dateien in das Projektarchiv zu verschieben, wenden Sie sich bitte an den Archivar Ihrer Abteilung oder Ihres Referats."
   }
 }

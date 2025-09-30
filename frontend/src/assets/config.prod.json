@@ -13,6 +13,7 @@
   "matomoSiteId": null,
   "matomoDisableCookies": null,
   "lfsInterfaceUrl": null,
+  "lfsMoveResourcesUrl": null,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,

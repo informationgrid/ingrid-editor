@@ -27,6 +27,7 @@ import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
+import { ConfigService } from "../app/services/config/config.service";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -205,6 +206,7 @@ export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
   documentTreeStore = inject(DocumentTreeStore);
   treeStoreLongTermFileStorage = inject(LongTermFileStorageTreeStore);
+  config = inject(ConfigService);
 
   // remember view components for print view
   protected viewComponents: { [field: string]: Component } = {};

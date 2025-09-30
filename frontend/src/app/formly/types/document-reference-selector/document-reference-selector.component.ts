@@ -71,8 +71,10 @@ export class DocumentReferenceSelectorComponent
   myModel: (DocumentAbstract | DocumentReference)[];
   allowMultiSelect = false;
   allowRedirectToDocument = false;
-  titleOfDocumentSelectorDialog: "Dokument auswählen";
+  titleOfDocumentSelectorDialog = "Dokument auswählen";
+  urlToMoveResources = null;
   refreshing = true;
+  explanationHint: string;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -99,6 +101,8 @@ export class DocumentReferenceSelectorComponent
     this.allowRedirectToDocument = this.props.allowRedirectToDocument;
     this.titleOfDocumentSelectorDialog =
       this.props.titleOfDocumentSelectorDialog;
+    this.urlToMoveResources = this.props.urlToMoveResources;
+    this.explanationHint = this.props.explanationHint;
 
     if (this.allowMultiSelect) {
       if (this.formControl.value == undefined) {
