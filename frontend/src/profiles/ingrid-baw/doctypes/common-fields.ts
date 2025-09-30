@@ -29,8 +29,8 @@ import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { timezones } from "./timezones";
-import { ReferenceViewComponent } from "../../ingrid/components/reference-view/reference-view.component";
 import { tap } from "rxjs/operators";
+import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -363,7 +363,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
   getLfsReferencesFieldConfig(doc: IngridShared): FormlyFieldConfig {
     // TODO Define required fields
     return this.addRepeatDetailList("lfsReferences", "LFS-Dateien", {
-      viewComponent: ReferenceViewComponent,
+      viewComponent: LfsViewComponent,
       fields: [
         this.addLongTermFileStorageCard("file", {
           docTypeFilter: [],
