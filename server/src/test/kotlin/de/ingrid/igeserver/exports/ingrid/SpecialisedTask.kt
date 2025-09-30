@@ -22,6 +22,8 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
@@ -34,6 +36,7 @@ import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -53,10 +56,16 @@ class SpecialisedTask : ShouldSpec() {
     private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
+    private lateinit var luceneExporter: IngridIndexExporter
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
+        this.exporter =
+            IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
+        luceneExporter = IngridIndexExporter(
+            exporter,
+            IngridLuceneExporter(codelistHandler, uploadConfig, catalogService, documentService),
+        )
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -127,6 +136,11 @@ class SpecialisedTask : ShouldSpec() {
 //            MockDocument(5, "generalMockedDoc"),
             MockDocument(1700, "Übergeordneter Identifikator"),
         )
+        every { documentService.getParentWrapper(any()) } returns null
+        mockkObject(SpringContext.Companion)
+        every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
+            documentWrapperRepository
+        }
 
         initDocumentMocks(addresses + datasets, documentService)
     }
@@ -140,7 +154,8 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -151,7 +166,8 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -162,8 +178,23 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml"))
             result shouldBe expectedXml
+        }
+
+        should("completeLuceneExport") {
+            var result = exportJsonToJson(luceneExporter, "/export/ingrid/specialisedTask-Document2.json")
+
+            result shouldNotBe null
+            result.replace("\r\n", "\n").contains(
+                """
+    |  "wkt_geo" : {
+    |    "type" : "Point",
+    |    "coordinates" : [ 10, 10 ]
+    |  }
+                """.trimMargin(),
+            )
         }
     }
 }
