@@ -851,7 +851,7 @@ export class DocumentService {
   private getChildrenIfNotDoneYet(
     parent: number,
     isAddress: boolean,
-  ): DocumentAbstract[] {
+  ): Observable<DocumentAbstract[]> {
     if (parent !== null) {
       const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
       const entityMap = store.entityMap();
@@ -864,12 +864,12 @@ export class DocumentService {
           (id) => entityMap[id]._parent === parent,
         );
         if (!hasAnyChildren) {
-          return store.getChildren(parent);
+          return store.fetchChildren(parent, false);
         }
       }
     }
 
-    return [];
+    return of([]);
   }
 
   private preparePath(result: PathResponse[]) {
