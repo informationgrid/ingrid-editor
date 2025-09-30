@@ -49,6 +49,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
         legalBasicsDescriptions: true,
       },
     };
+    this.options.dynamicRequired.spatialReferences = () => false;
     this.options.dynamicRequired.events = undefined;
   }
 
