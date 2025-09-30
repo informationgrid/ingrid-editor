@@ -19,7 +19,7 @@
  */
 import { Injectable, WritableSignal } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { SnackBarMessageService } from "./snackbar-message.service";
+import { SnackBarMessageService } from "../../form-shared/updatable-snackbar/snackbar-message.service";
 import { ConfigService } from "../../../services/config/config.service";
 
 interface CopyFilesMessage {
