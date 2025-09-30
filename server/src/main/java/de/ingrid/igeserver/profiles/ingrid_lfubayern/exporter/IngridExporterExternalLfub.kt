@@ -155,13 +155,8 @@ class IngridISOExporterExternalLfub(
 }
 
 private fun anonymizeAddresses(model: IngridModel, uuid: String) {
-    val anonymousAddress = AddressModel(
-        uuid, "InGridOrganisationDoc", null, null, null, null,
-        null, null, emptyList(), null,
-        Address(null, null, null, null, null, null, null), null, null,
-    )
     model.data.pointOfContact?.forEach {
-        it.ref = anonymousAddress.uuid
+        it.ref = uuid
     }
 }
 
