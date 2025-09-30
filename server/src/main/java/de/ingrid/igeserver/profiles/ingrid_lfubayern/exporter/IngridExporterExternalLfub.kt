@@ -73,6 +73,16 @@ class IngridIdfExporterExternalLfub(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridIDFLfuExternalBayern",
+        "Ingrid IDF LfuBayern External",
+        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-lfubayern"),
+    )
+
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
     override fun getIngridModel(doc: Document, catalogId: String): IngridModel {
