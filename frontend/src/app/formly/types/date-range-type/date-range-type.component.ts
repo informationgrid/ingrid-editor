@@ -76,7 +76,8 @@ interface DateRangeProps extends FormlyFieldProps {
     MatTimepicker,
     MatInput,
   ],
-  providers: [provideNativeDateAdapter()],
+  // TODO: re-enable when localization is fixed
+  // providers: [provideNativeDateAdapter()],
 })
 export class DateRangeTypeComponent
   extends FieldType<FieldTypeConfig<DateRangeProps>>
