@@ -18,6 +18,13 @@
     "dataSourceName": "${catalog.getName()}",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
+    "spatial": {
+        "geometries": [
+        @for(var entry : ForSupport.of(page.getGeometries()))
+            $unsafe{entry.get()}@if (!entry.isLast()),@endif
+        @endfor
+        ]
+    },
     "x1": ${page.getSpatialReferenceComponents(CoordinateType.Lon1)},
     "x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
     "y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
@@ -333,8 +340,8 @@
     ],
 !{var wktJson = page.wktAsGeoJson();}
     @if(wktJson != null)
-    "wkt_geo": ${wktJson.getFirst()},
-    "wkt_geo_text": "${wktJson.getSecond()}",
+    "wkt_geo": $unsafe{wktJson},
+    "wkt_geo_text": "${wktJson}",
     @endif
     "spatial_ref_value.nativekey": [
     @for(var entry : ForSupport.of(page.getSpatialReferenceArs()))

@@ -56,6 +56,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.checkPublicationTags
+import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
@@ -250,7 +251,6 @@ open class IngridModelTransformer(
 
     fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
         ?.let { convertWktToGeoJson(it.wkt!!) }
-        ?.let { Pair(it.replace("\"", "@json@"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }
@@ -337,6 +337,14 @@ open class IngridModelTransformer(
     }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
+
+    fun getGeometries(): List<String> = spatialReferences.mapNotNull { spatial ->
+        when {
+            spatial.value != null -> convertBoundingBoxToGeoJson(spatial.value)
+            spatial.wkt != null -> convertWktToGeoJson(spatial.wkt)
+            else -> null
+        }
+    }
 
     var catalog: Catalog
     var namespace: String
