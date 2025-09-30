@@ -20,8 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
 import de.ingrid.igeserver.exceptions.IndexException
-import de.ingrid.igeserver.exporter.model.Address
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
