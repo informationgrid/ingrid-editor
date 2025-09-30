@@ -155,7 +155,7 @@ private fun anonymizeAddresses(model: IngridModel, uuid: String) {
 }
 
 private fun getUuidAnonymous(catalogId: String) = behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
-    ?: ""
+    ?: throw IndexException.withReason("Could not get anonymous address uuid from behaviour service for catalog $catalogId")
 
 private fun removeOfflineAccessReferences(data: DataModel) {
     data.references = data.references?.filter {
