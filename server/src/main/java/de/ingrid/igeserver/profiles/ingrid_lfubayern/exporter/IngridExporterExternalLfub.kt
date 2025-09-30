@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.model.Address
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.ExportTypeInfo
