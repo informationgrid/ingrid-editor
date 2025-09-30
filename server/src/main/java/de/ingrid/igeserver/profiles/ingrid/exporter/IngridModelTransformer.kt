@@ -1039,7 +1039,8 @@ open class IngridModelTransformer(
     }
 
     private fun getSuperiorReference(): SuperiorReference? {
-        val uuid = data.parentIdentifier ?: return null
+        if (data.parentIdentifier.isNullOrEmpty()) return null
+        val uuid = data.parentIdentifier
         val doc = getLastPublishedDocument(uuid) ?: return null
 
         return SuperiorReference(
