@@ -66,6 +66,16 @@ interface AdditionalInformationSectionOptions {
   extraInfoLangData?: boolean;
 }
 
+export enum IngridClass {
+  "InGridSpecialisedTask" = "0",
+  "InGridGeoDataset" = "1",
+  "InGridPublication" = "2",
+  "InGridGeoService" = "3",
+  "InGridProject" = "4",
+  "InGridDataCollection" = "5",
+  "InGridInformationSystem" = "6",
+}
+
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
   private keywordFieldHint =
@@ -89,11 +99,12 @@ export abstract class IngridShared extends BaseDoctype {
       accessConstraints: (field: FormlyFieldConfig) =>
         field.options.formState.mainModel?.properties?.isInspireIdentified !==
         undefined,
-      openDataCategories: (field: FormlyFieldConfig) => true,
-      spatialReferences: (field: FormlyFieldConfig) => true,
-      spatialSystems: (field: FormlyFieldConfig) => false,
-      dataFormat: (field: FormlyFieldConfig) => false,
-      spatialScope: (field: FormlyFieldConfig) => false,
+      openDataCategories: (_: FormlyFieldConfig) => true,
+      spatialReferences: (_: FormlyFieldConfig) => true,
+      spatialSystems: (_: FormlyFieldConfig) => false,
+      dataFormat: (_: FormlyFieldConfig) => false,
+      spatialScope: (_: FormlyFieldConfig) => false,
+      events: (_: FormlyFieldConfig) => true,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
@@ -106,10 +117,19 @@ export abstract class IngridShared extends BaseDoctype {
       resourceDateType: false,
       extraInfoLangData: false,
       useConstraints: false,
+      description: true,
     },
     hide: {
       openData: false,
+      distribution: false,
+      digitalTransferOptions: false,
+      orderInfo: false,
+      resourceGroup: false,
+      maintenanceInformation: false,
+      temporalStatus: false,
+      legalBasicsDescriptions: false,
     },
+    spatialTypes: ["free", "wkt", "wfsgnde"],
   };
 
   private inspireChangeMessage =
@@ -321,14 +341,23 @@ export abstract class IngridShared extends BaseDoctype {
               className: "optional",
             },
           ),
-          this.addInput("alternateTitle", "Kurzbezeichnung", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          this.addTextArea("description", "Beschreibung", this.id, {
-            required: true,
-            rows: 6,
-          }),
+          this.addInput(
+            "alternateTitle",
+            this.transloco.translate("form.alternateTitle"),
+            {
+              wrappers: ["panel", "form-field"],
+              className: "optional",
+            },
+          ),
+          this.addTextArea(
+            "description",
+            this.transloco.translate("form.description"),
+            this.id,
+            {
+              required: this.options.required.description,
+              rows: 6,
+            },
+          ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
           }),
@@ -918,6 +947,7 @@ export abstract class IngridShared extends BaseDoctype {
         "spatial",
         [
           this.addSpatial("references", "Raumbezug", {
+            limitTypes: this.options.spatialTypes,
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {
@@ -925,16 +955,23 @@ export abstract class IngridShared extends BaseDoctype {
                 this.options.dynamicRequired.spatialReferences(field),
             },
           }),
-          this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
-            asSelect: false,
-            showSearch: true,
-            options: this.getCodelistForSelect("100", "spatial.spatialSystems"),
-            codelistId: "100",
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.spatialSystems(field),
+          this.addRepeatList(
+            "spatialSystems",
+            this.transloco.translate("form.spatial.spatialSystems"),
+            {
+              asSelect: false,
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                "100",
+                "spatial.spatialSystems",
+              ),
+              codelistId: "100",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  this.options.dynamicRequired.spatialSystems(field),
+              },
             },
-          }),
+          ),
           this.addGroup(
             "verticalExtent",
             "Höhe",
@@ -1034,166 +1071,187 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addTimeReferenceSection() {
-    return this.addSection("Zeitbezug", [
-      this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Ressource", {
-          required: true,
-          fields: [
-            this.addDatepicker("referenceDate", null, {
-              fieldLabel: "Datum",
-              required: true,
-              wrappers: ["form-field"],
-            }),
-            this.addSelect("referenceDateType", null, {
-              showSearch: true,
-              fieldLabel: "Typ",
-              wrappers: ["form-field"],
-              className: "flex-3",
-              required: true,
-              options: this.getCodelistForSelect(
-                "502",
-                "temporal.events.referenceDateType",
-              ),
-              codelistId: "502",
-            }),
-          ],
-          validators: {
-            ...(this.showInVeKoSField && {
-              invekos: {
-                expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
-                  const invekosValue =
-                    field.options.formState.mainModel?.properties?.invekos?.key;
-                  if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                    return true;
-
-                  // Mindestens ein Datum vom Typ "revision" muss vorhanden
-                  return ctrl.value?.some(
-                    (item: any) => item.referenceDateType?.key === "3",
-                  );
-                },
-                message:
-                  "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
-              },
-            }),
-          },
-        }),
-        this.addGroup(
-          null,
-          "Durch die Ressource abgedeckte Zeitspanne",
+    return this.addSection(
+      "Zeitbezug",
+      [
+        this.addGroupSimple(
+          "temporal",
           [
-            this.addSelect("resourceDateType", null, {
-              required: this.options.required.resourceDateType,
-              showSearch: true,
-              wrappers: ["form-field"],
-              options: [
-                { label: "am", value: "at" },
-                { label: "bis", value: "till" },
-                { label: "von", value: "since" },
+            this.addRepeat("events", "Zeitbezug der Ressource", {
+              expressions: {
+                "props.required": this.options.dynamicRequired.events,
+                defaultValue: (field: FormlyFieldConfig) =>
+                  field.props.required ? [{}] : null,
+              },
+              fields: [
+                this.addDatepicker("referenceDate", null, {
+                  fieldLabel: "Datum",
+                  required: true,
+                  wrappers: ["form-field"],
+                }),
+                this.addSelect("referenceDateType", null, {
+                  showSearch: true,
+                  fieldLabel: "Typ",
+                  wrappers: ["form-field"],
+                  className: "flex-3",
+                  required: true,
+                  options: this.getCodelistForSelect(
+                    "502",
+                    "temporal.events.referenceDateType",
+                  ),
+                  codelistId: "502",
+                }),
               ],
-            }),
-            this.addSelect("resourceDateTypeSince", null, {
-              required: this.options.required.resourceDateType,
-              showSearch: true,
-              wrappers: ["form-field"],
-              options: [
-                {
-                  label: "bis: gegenwärtige Aktualität unklar",
-                  value: "unknown",
-                },
-                { label: "bis: gegenwärtig aktuell", value: "requestTime" },
-                { label: "bis: genaues Datum", value: "exactDate" },
-              ],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal?.resourceDateType
-                    ?.key !== "since",
-              },
-            }),
-            this.addDatepicker("resourceDate", null, {
-              required: this.options.required.resourceDateType,
-              placeholder: "TT.MM.JJJJ",
-              wrappers: ["form-field"],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal
-                    ?.resourceDateTypeSince?.key === "exactDate",
-              },
-            }),
-            this.addDateRange("resourceRange", null, {
-              required: this.options.required.resourceDateType,
-              wrappers: [],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal
-                    ?.resourceDateTypeSince?.key !== "exactDate",
-              },
-            }),
-          ],
-          {
-            className: this.options.required.resourceDateType ? "" : "optional",
-            required: this.options.required.resourceDateType,
-            contextHelpId: "resourceTime",
-          },
-        ),
-        this.addSelect("status", "Status", {
-          showSearch: true,
-          options: this.getCodelistForSelect("523", "temporal.status"),
-          codelistId: "523",
-          className: "optional",
-        }),
-      ]),
-      this.addGroupSimple("maintenanceInformation", [
-        this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
-          showSearch: true,
-          options: this.getCodelistForSelect(
-            "518",
-            "maintenanceInformation.maintenanceAndUpdateFrequency",
-          ),
-          codelistId: "518",
-          className: "optional",
-        }),
-        this.addGroup(
-          "userDefinedMaintenanceFrequency",
-          "Intervall der Erhebung",
-          [
-            this.addInputInline("number", "Anzahl", {
-              type: "number",
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  isNotEmptyObject(field.form.value),
-              },
               validators: {
-                validation: ["positiveNum"],
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
+
+                      // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                      return ctrl.value?.some(
+                        (item: any) => item.referenceDateType?.key === "3",
+                      );
+                    },
+                    message:
+                      "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                  },
+                }),
               },
             }),
-            this.addSelectInline("unit", "Einheit", {
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "1230",
-                "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
-              ),
-              codelistId: "1230",
-              className: "flex-3",
-              allowNoValue: true,
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  isNotEmptyObject(field.form.value),
+            this.addGroup(
+              null,
+              "Durch die Ressource abgedeckte Zeitspanne",
+              [
+                this.addSelect("resourceDateType", null, {
+                  required: this.options.required.resourceDateType,
+                  showSearch: true,
+                  wrappers: ["form-field"],
+                  className: "width-null",
+                  options: [
+                    { label: "am", value: "at" },
+                    { label: "bis", value: "till" },
+                    { label: "von", value: "since" },
+                  ],
+                }),
+                this.addSelect("resourceDateTypeSince", null, {
+                  required: this.options.required.resourceDateType,
+                  showSearch: true,
+                  wrappers: ["form-field"],
+                  options: [
+                    {
+                      label: "bis: gegenwärtige Aktualität unklar",
+                      value: "unknown",
+                    },
+                    { label: "bis: gegenwärtig aktuell", value: "requestTime" },
+                    { label: "bis: genaues Datum", value: "exactDate" },
+                  ],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateType?.key !== "since",
+                  },
+                }),
+                this.addDatepicker("resourceDate", null, {
+                  required: this.options.required.resourceDateType,
+                  placeholder: "TT.MM.JJJJ",
+                  wrappers: ["form-field"],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateTypeSince?.key === "exactDate",
+                  },
+                }),
+                this.addDateRange("resourceRange", null, {
+                  required: this.options.required.resourceDateType,
+                  wrappers: [],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateTypeSince?.key !== "exactDate",
+                  },
+                }),
+              ],
+              {
+                className: this.options.required.resourceDateType
+                  ? ""
+                  : "optional",
+                required: this.options.required.resourceDateType,
+                contextHelpId: "resourceTime",
               },
-            }),
-          ],
-          {
-            expressions: {
-              className: (field: FormlyFieldConfig) =>
-                isNotEmptyObject(field.form.value) ? "" : "optional",
-            },
-          },
+            ),
+            this.options.hide.temporalStatus
+              ? null
+              : this.addSelect("status", "Status", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect("523", "temporal.status"),
+                  codelistId: "523",
+                  className: "optional",
+                }),
+          ].filter(Boolean),
         ),
-        this.addTextArea("description", "Erläuterungen", "dataset", {
-          className: "optional flex-1",
-          contextHelpId: "maintenanceNote",
-        }),
-      ]),
-    ]);
+        this.options.hide.maintenanceInformation
+          ? null
+          : this.addGroupSimple("maintenanceInformation", [
+              this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
+                showSearch: true,
+                options: this.getCodelistForSelect(
+                  "518",
+                  "maintenanceInformation.maintenanceAndUpdateFrequency",
+                ),
+                codelistId: "518",
+                className: "optional",
+              }),
+              this.addGroup(
+                "userDefinedMaintenanceFrequency",
+                "Intervall der Erhebung",
+                [
+                  this.addInputInline("number", "Anzahl", {
+                    type: "number",
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
+                    },
+                    validators: {
+                      validation: ["positiveNum"],
+                    },
+                  }),
+                  this.addSelectInline("unit", "Einheit", {
+                    showSearch: true,
+                    options: this.getCodelistForSelect(
+                      "1230",
+                      "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
+                    ),
+                    codelistId: "1230",
+                    className: "flex-3",
+                    allowNoValue: true,
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
+                    },
+                  }),
+                ],
+                {
+                  expressions: {
+                    className: (field: FormlyFieldConfig) =>
+                      isNotEmptyObject(field.form.value) ? "" : "optional",
+                  },
+                },
+              ),
+              this.addTextArea("description", "Erläuterungen", "dataset", {
+                className: "optional flex-1",
+                contextHelpId: "maintenanceNote",
+              }),
+            ]),
+      ].filter(Boolean),
+    );
   }
 
   addAdditionalInformationSection(
@@ -1386,163 +1444,181 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addGroupSimple("extraInfo", [
-          this.addRepeatList(
-            "legalBasicsDescriptions",
-            "Rechtliche Grundlagen",
-            {
-              asSelect: false,
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "1350",
-                "extraInfo.legalBasicsDescriptions",
+        this.options.hide.legalBasicsDescriptions
+          ? null
+          : this.addGroupSimple("extraInfo", [
+              this.addRepeatList(
+                "legalBasicsDescriptions",
+                "Rechtliche Grundlagen",
+                {
+                  asSelect: false,
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "1350",
+                    "extraInfo.legalBasicsDescriptions",
+                  ),
+                  codelistId: "1350",
+                  className: "optional",
+                },
               ),
-              codelistId: "1350",
-              className: "optional",
-            },
-          ),
-        ]),
-        this.addGroup(
-          "resource",
-          "Weiteres",
-          [
-            this.addTextAreaInline("purpose", "Herstellungszweck", "dataset", {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-            this.addTextAreaInline(
-              "specificUsage",
-              "Eignung/Nutzung",
-              "dataset",
-              {
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              },
+            ]),
+        this.options.hide.resourceGroup
+          ? null
+          : this.addGroup(
+              "resource",
+              "Weiteres",
+              [
+                this.addTextAreaInline(
+                  "purpose",
+                  "Herstellungszweck",
+                  "dataset",
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+                this.addTextAreaInline(
+                  "specificUsage",
+                  "Eignung/Nutzung",
+                  "dataset",
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+              ],
+              { className: "optional" },
             ),
-          ],
-          { className: "optional" },
-        ),
       ].filter(Boolean),
     );
   }
 
   addAvailabilitySection() {
-    return this.addSection("Verfügbarkeit", [
-      this.addGroupSimple("resource", [
-        this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-          asSelect: false,
-          showSearch: true,
-          options: this.getCodelistForSelect(
-            "6010",
-            "resource.accessConstraints",
-          ),
-          codelistId: "6010",
-          expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.accessConstraints(field),
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-        }),
-        this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          required: this.options.required.useConstraints,
-          expressions: {
-            "props.minLength": (field: FormlyFieldConfig) =>
-              field.props.required ? 1 : undefined,
-            defaultValue: (field: FormlyFieldConfig) =>
-              field.props.required ? [{}] : null,
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-          fields: [
-            this.addAutocomplete("title", null, {
-              required: true,
-              options: this.getCodelistForSelect(
-                "6500",
-                "resource.useConstraints.title",
-              ),
-              fieldLabel: "Lizenz",
-              codelistId: "6500",
-              wrappers: ["form-field"],
-              className: "flex-1",
-            }),
-            this.addInput("source", null, {
-              wrappers: ["form-field"],
-              fieldLabel: "Quelle",
-              className: "flex-1",
-            }),
-          ],
-        }),
-        this.addTextArea(
-          "useLimitation",
-          "Anwendungseinschränkungen",
-          "dataset",
-          {
-            required: this.options.required.useLimitation,
-            className: "optional flex-1",
-          },
-        ),
-      ]),
-      this.addGroupSimple("distribution", [
-        this.addRepeat("format", "Datenformat", {
-          expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.dataFormat(field),
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-          fields: [
-            this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(
-                this.codelistIds.distributionFormat,
-                "distribution.format.name",
-              ),
-              codelistId: this.codelistIds.distributionFormat,
-              required: true,
-            }),
-            this.addInputInline("version", "Version"),
-            this.addInputInline("compression", "Kompressionstechnik"),
-            this.addInputInline("specification", "Spezifikation"),
-          ],
-          validators: {
-            validation: ["notEmptyArray"],
-          },
-        }),
-      ]),
-      this.addRepeat("digitalTransferOptions", "Medienoption", {
-        className: "optional",
-        fields: [
-          this.addSelectInline("name", "Medium", {
+    return this.addSection(
+      "Verfügbarkeit",
+      [
+        this.addGroupSimple("resource", [
+          this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
+            asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(
-              "520",
-              "digitalTransferOptions.name",
+              "6010",
+              "resource.accessConstraints",
             ),
-            codelistId: "520",
+            codelistId: "6010",
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                this.options.dynamicRequired.accessConstraints(field),
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
           }),
-          this.addUnitInputInline("transferSize", "Datenvolumen", {
-            type: "number",
-            className: "right-align",
-            unitOptions: <SelectOption[]>[
-              new SelectOption("MB", "MB"),
-              new SelectOption("GB", "GB"),
-              new SelectOption("TB", "TB"),
+          this.addRepeat("useConstraints", "Nutzungsbedingungen", {
+            required: this.options.required.useConstraints,
+            expressions: {
+              "props.minLength": (field: FormlyFieldConfig) =>
+                field.props.required ? 1 : undefined,
+              defaultValue: (field: FormlyFieldConfig) =>
+                field.props.required ? [{}] : null,
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
+            fields: [
+              this.addAutocomplete("title", null, {
+                required: true,
+                options: this.getCodelistForSelect(
+                  "6500",
+                  "resource.useConstraints.title",
+                ),
+                fieldLabel: "Lizenz",
+                codelistId: "6500",
+                wrappers: ["form-field"],
+                className: "flex-1",
+              }),
+              this.addInput("source", null, {
+                wrappers: ["form-field"],
+                fieldLabel: "Quelle",
+                className: "flex-1",
+              }),
             ],
-            fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
-          this.addInputInline("mediumNote", "Speicherort"),
-        ],
-      }),
-      this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
-        className: "optional flex-1",
-      }),
-    ]);
+          this.addTextArea(
+            "useLimitation",
+            "Anwendungseinschränkungen",
+            "dataset",
+            {
+              required: this.options.required.useLimitation,
+              className: "optional flex-1",
+            },
+          ),
+        ]),
+        this.options.hide.distribution
+          ? null
+          : this.addGroupSimple("distribution", [
+              this.addRepeat("format", "Datenformat", {
+                expressions: {
+                  "props.required": (field: FormlyFieldConfig) =>
+                    this.options.dynamicRequired.dataFormat(field),
+                  className: (field: FormlyFieldConfig) =>
+                    field.props.required ? "" : "optional",
+                },
+                fields: [
+                  this.addAutoCompleteInline("name", "Name", {
+                    options: this.getCodelistForSelect(
+                      this.codelistIds.distributionFormat,
+                      "distribution.format.name",
+                    ),
+                    codelistId: this.codelistIds.distributionFormat,
+                    required: true,
+                  }),
+                  this.addInputInline("version", "Version"),
+                  this.addInputInline("compression", "Kompressionstechnik"),
+                  this.addInputInline("specification", "Spezifikation"),
+                ],
+                validators: {
+                  validation: ["notEmptyArray"],
+                },
+              }),
+            ]),
+        this.options.hide.digitalTransferOptions
+          ? null
+          : this.addRepeat("digitalTransferOptions", "Medienoption", {
+              className: "optional",
+              fields: [
+                this.addSelectInline("name", "Medium", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "520",
+                    "digitalTransferOptions.name",
+                  ),
+                  codelistId: "520",
+                }),
+                this.addUnitInputInline("transferSize", "Datenvolumen", {
+                  type: "number",
+                  className: "right-align",
+                  unitOptions: <SelectOption[]>[
+                    new SelectOption("MB", "MB"),
+                    new SelectOption("GB", "GB"),
+                    new SelectOption("TB", "TB"),
+                  ],
+                  fieldGroup: [{ key: "value" }, { key: "unit" }],
+                }),
+                this.addInputInline("mediumNote", "Speicherort"),
+              ],
+            }),
+        this.options.hide.orderInfo
+          ? null
+          : this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
+              className: "optional flex-1",
+            }),
+      ].filter(Boolean),
+    );
   }
 
-  addLinksSection() {
+  addLinksSection(docClass: IngridClass) {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
-        fields: [this.urlRefFields()],
+        fields: [this.urlRefFields(docClass)],
         viewComponent: ReferenceViewComponent,
         validators: {
           downloadLinkWhenOpenData: {
@@ -1705,7 +1781,7 @@ export abstract class IngridShared extends BaseDoctype {
         wrappers: ["inline-help", "form-field"],
         expressions: {
           "props.required": (field: FormlyFieldConfig) =>
-            field.options.formState.mainModel?.publication?.doi,
+            field.options.formState.mainModel?.publication?.doi?.length > 0,
         },
       }),
       this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
@@ -1717,20 +1793,19 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  protected urlRefFields() {
+  protected urlRefFields(docClass: IngridClass) {
     return this.addGroupSimple(null, [
       { key: "_type" },
       this.addAutoCompleteInline("type", "Typ", {
         required: true,
         options: this.getCodelistForSelect("2000", "references.type").pipe(
           map((data) => {
-            const mappedDoctype = this.mapDocumentTypeToClass(this.id);
             return data.filter(
               (item) =>
                 this.codelistStore
                   .getCodelistEntryByKey("2000", item.value)
                   ?.data?.split(",")
-                  ?.indexOf(mappedDoctype) !== -1,
+                  ?.indexOf(docClass) !== -1,
             );
           }),
         ),
@@ -2095,25 +2170,6 @@ export abstract class IngridShared extends BaseDoctype {
       item.disabled = true;
     }
     return item;
-  }
-
-  private mapDocumentTypeToClass(id: string) {
-    switch (id) {
-      case "InGridSpecialisedTask":
-        return "0";
-      case "InGridGeoDataset":
-        return "1";
-      case "InGridPublication":
-        return "2";
-      case "InGridGeoService":
-        return "3";
-      case "InGridProject":
-        return "4";
-      case "InGridDataCollection":
-        return "5";
-      case "InGridInformationSystem":
-        return "6";
-    }
   }
 
   protected handleInVeKoSBehaviour() {

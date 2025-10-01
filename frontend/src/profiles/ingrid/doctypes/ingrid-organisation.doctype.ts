@@ -27,7 +27,7 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
   id = "InGridOrganisationDoc";
 
   constructor() {
-    super("pointOfContact");
+    super();
     this.options = {
       defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },
       requiredField: { administrativeArea: true },

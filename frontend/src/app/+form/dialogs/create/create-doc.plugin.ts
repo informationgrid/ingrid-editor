@@ -31,7 +31,7 @@ import { TranslocoService } from "@jsverse/transloco";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { take } from "rxjs/operators";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
@@ -45,7 +45,7 @@ export class CreateDocumentPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   isAdmin = this.config.hasCatAdminRights();

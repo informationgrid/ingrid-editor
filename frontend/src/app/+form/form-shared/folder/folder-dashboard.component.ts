@@ -31,7 +31,7 @@ import { CardBoxComponent } from "../../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { GeneralStore } from "../../../store/general.store";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
@@ -49,7 +49,7 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
 })
 export class FolderDashboardComponent {
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   isAddress = input<boolean>();
@@ -63,7 +63,6 @@ export class FolderDashboardComponent {
     configService: ConfigService,
     private docEvents: DocEventsService,
     private router: Router,
-    private docService: DocumentService,
   ) {
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
@@ -84,9 +83,8 @@ export class FolderDashboardComponent {
     const childrenFromStore = store.getChildren(model.id as number);
     if (childrenFromStore.length === 0 && model._hasChildren) {
       // load children, as they are not in store yet
-      this.docService
-        .getChildren(model.id as number, this.isAddress())
-        .subscribe();
+      const hideReadOnly = false;
+      store.fetchChildren(model.id as number, hideReadOnly);
     }
     this.numChildren = childrenFromStore.length;
     const latestChildren = childrenFromStore

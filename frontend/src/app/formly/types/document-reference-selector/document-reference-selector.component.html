@@ -25,15 +25,13 @@
                     } @else {
                         <ige-document-icon [doc]="item"></ige-document-icon>
                     }
-                    <span>{{ item.title ?? "???" }}</span>
-                </div>
-                @if (props.showLayernames) {
-                    <ul>
-                        @for (name of item.layerNames; track name) {
-                            <li>{{ name }}</li>
+                    <div class="title-content">
+                        <span>{{ item.title ?? "???" }}</span>
+                        @if (item.isExternalRef && item?.uuid?.length) {
+                            <span class="subtitle">{{ item.uuid }}</span>
                         }
-                    </ul>
-                }
+                    </div>
+                </div>
             </div>
             @if (formControl.enabled) {
                 <button
@@ -71,8 +69,28 @@
     }
 
     @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
-        <button mat-button color="primary" (click)="showInternalRefDialog()">
+        @if (explanationHint) {
+            <p>{{ this.explanationHint }}</p>
+        }
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showReferenceDialog()"
+        >
             {{ titleOfDocumentSelectorDialog }}
         </button>
+        @if (urlToMoveResources) {
+            <a [href]="urlToMoveResources" target="_blank">
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    class="float-right"
+                >
+                    Verschiebung vornehmen
+                </button>
+            </a>
+        }
     }
 </div>

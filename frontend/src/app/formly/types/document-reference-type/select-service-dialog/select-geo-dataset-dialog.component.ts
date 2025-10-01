@@ -27,13 +27,15 @@ import { Subject } from "rxjs";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentService } from "../../../../services/document/document.service";
-import { TreeStore } from "../../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
 
 export interface SelectGeoDatasetData {
   currentRefs: string[];
   activeRef?: string;
   layerNames?: string[];
   showLayernames: boolean;
+  dialogTitle?: string;
+  docTypeFilter?: string[];
 }
 
 export interface SelectServiceResponse {
@@ -49,8 +51,8 @@ export interface SelectServiceResponse {
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectGeoDatasetDialog {
+  documentTreeStore = inject(DocumentTreeStore);
   private documentService = inject(DocumentService);
-  private documentTreeStore = inject(TreeStore);
 
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [
@@ -63,6 +65,8 @@ export class SelectGeoDatasetDialog {
   model = { layerNames: [] };
   initialNode = new Subject<number>();
   public showLayernames = false;
+  docTypeFilter: string[] = [];
+  dialogTitle: string;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
@@ -81,13 +85,15 @@ export class SelectGeoDatasetDialog {
       });
     }
     this.model.layerNames = data.layerNames ?? [];
+    this.dialogTitle = data.dialogTitle ?? "Dargestellte Daten";
+    this.docTypeFilter = data.docTypeFilter ?? ["InGridGeoDataset"];
     this.showLayernames = data.showLayernames;
   }
 
   enableOnlyGeoService() {
     return (node: TreeNode) => {
       return (
-        node.type !== "InGridGeoDataset" ||
+        !this.docTypeFilter.includes(node.type) ||
         this.data.currentRefs.indexOf(node._uuid) !== -1
         // (node._uuid === this.data.activeRef && this.data.currentRefs.indexOf(node._uuid) !== -1)
       );

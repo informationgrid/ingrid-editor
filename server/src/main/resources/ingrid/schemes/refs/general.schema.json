@@ -84,6 +84,12 @@
             "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
         },
+        "verticalSpatialSystems": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
+        },
         "verticalExtent": {
           "type": "object",
           "unevaluatedProperties": false,
@@ -365,7 +371,7 @@
     },
     "temporal": {
       "type": "object",
-      "unevaluatedProperties": false,
+      "unevaluatedProperties": true,
       "properties": {
         "events": {
           "$ref": "#/definitions/events"

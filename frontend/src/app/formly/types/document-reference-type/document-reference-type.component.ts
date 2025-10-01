@@ -44,7 +44,8 @@ import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
+import { ProfileService } from "../../../services/profile.service";
 
 interface Reference {
   layerNames: string[];
@@ -56,7 +57,7 @@ export interface DocumentReference extends Reference {
   uuid: string;
   state: DocumentState;
   type: string;
-  icon: "Geodatensatz";
+  icon: string;
 }
 
 interface UrlReference extends Reference {
@@ -90,21 +91,25 @@ export class DocumentReferenceTypeComponent
   extends FieldArrayType
   implements OnInit
 {
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   myModel: (DocumentReference | UrlReference)[];
 
   refreshing = true;
+
+  onlyInternalRefs = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
+    private profileService: ProfileService,
   ) {
     super();
   }
 
   ngOnInit() {
+    this.onlyInternalRefs = this.props.onlyInternalRefs;
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -120,6 +125,8 @@ export class DocumentReferenceTypeComponent
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
       layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
       showLayernames: this.props.showLayernames,
+      docTypeFilter: this.props.docTypeFilter,
+      dialogTitle: this.props.titleOfDocumentSelectorDialog,
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {
@@ -261,7 +268,7 @@ export class DocumentReferenceTypeComponent
       state: doc?._state,
       type: doc?._type,
       layerNames: layerNames,
-      icon: "Geodatensatz",
+      icon: this.profileService.getDocumentIcon(doc._type),
     };
   }
 

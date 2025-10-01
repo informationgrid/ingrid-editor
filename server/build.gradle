@@ -285,7 +285,7 @@ tasks.matching { it.name.startsWith("kapt") }.configureEach {
 tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
-    into '../.git/hooks'
+    into gitProperties.dotGitDirectory.dir('./hooks')
 }
 
 kotlin {
@@ -307,8 +307,23 @@ jte {
 }
 
 gitProperties {
-    // define that .git directory is on the same level as the root project
-    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
+    def dotGitFile = rootProject.layout.projectDirectory.file(".git").asFile
+    if (dotGitFile.isFile()) {
+        // .git directory needs to be read from .git file
+        def dotGitFileContent = dotGitFile.text
+        def gitDirLine = dotGitFileContent.readLines().find { it.startsWith("gitdir: ") }
+        if (gitDirLine != null) {
+            def gitDirPath = gitDirLine.substring('gitdir: '.length(), gitDirLine.lastIndexOf('/.git/'))
+            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath+ "/.git")
+        } else {
+            throw new GradleException("No .git directory found in project .git file.")
+        }
+    } else if (dotGitFile.isDirectory()) {
+        // .git directory is on the same level as the root project
+        dotGitDirectory = dotGitFile
+    } else {
+        throw new GradleException("No .git directory found in project root.")
+    }
 }
 
 tasks.named('generateJte') {

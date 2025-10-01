@@ -169,7 +169,8 @@
     "types": {
       "free": "Freie Eingabe",
       "wkt": "Raumbezug (WKT)",
-      "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)"
+      "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)",
+      "bwastr": "Bundeswasserstraßenstrecke"
     }
   },
   "upload": {

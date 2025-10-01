@@ -27,13 +27,17 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.getString
 import jakarta.persistence.EntityManager
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -53,6 +57,7 @@ class PostMigrationTask(
     val fixPathsTask: FixPathsTask,
     val enhanceGroupsTask: EnhanceGroupsTask,
     val saveGroupsTask: SaveGroupsTask,
+    val bwastrLocatorService: BwastrLocatorService,
 ) : DbTriggeredTask(entityManager, transactionManager) {
 
     override val taskKey = "doPostMigrationFor"
@@ -65,6 +70,7 @@ class PostMigrationTask(
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
+        addBWASTRTitles(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
         enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
     }
@@ -95,6 +101,50 @@ class PostMigrationTask(
         return spatialSystem
     }
 
+    private fun addBWASTRTitles(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type != BawProfile.ID) {
+            log.info("Only BAW-Profile catalogs are supported for adding BWASTR-Titles")
+            return
+        }
+        val documents = docRepo.findAllByCatalog_Identifier(catalogIdentifier)
+        codelistHandler.fetchCodelists()
+
+        documents.forEach { doc ->
+            val data = doc.data
+            val spatial = data.get("spatial") as ObjectNode? ?: return@forEach
+            val spatialReferences = spatial.get("references") as ArrayNode? ?: return@forEach
+            if (!spatialReferences.isEmpty) {
+                spatialReferences.map { lookupBwastrTitle(it) }
+                spatial.set<ArrayNode>("references", spatialReferences)
+                data.set<JsonNode>("spatial", spatial)
+                doc.data = data
+                docRepo.save(doc)
+            }
+        }
+    }
+
+    private fun lookupBwastrTitle(spatialReference: JsonNode): JsonNode {
+        val migratedBwastr = spatialReference.getPath("bwastr") ?: return spatialReference
+        val bwastrId = migratedBwastr.getString("bwastrid") ?: return spatialReference
+        val bwastr =
+            bwastrLocatorService.customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(
+                // if bwastrId ends with "00" replace it with "01" to get the "Hauptstrecke" for general bwastrIds
+                if (bwastrId.endsWith("00")) bwastrId.dropLast(2) + "01" else bwastrId,
+            ).firstOrNull()
+        if (bwastr == null) {
+            log.warn { "Bwastr not found for id: $bwastrId" }
+            return spatialReference
+        }
+        (migratedBwastr as ObjectNode)
+            .put("bwastr_name", bwastr.bwastr_name)
+            .put("concat_name", bwastr.concat_name)
+            .put("strecken_name", bwastr.strecken_name)
+        (spatialReference as ObjectNode)
+            .put("title", bwastr.concat_name)
+            .replace("bwastr", migratedBwastr)
+        return spatialReference
+    }
+
     private fun createNewFolderFor(
         migratedObject: DocumentWrapper,
         title: String,
@@ -122,6 +172,10 @@ class PostMigrationTask(
     }
 
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type == BawProfile.ID) {
+            log.info("No restructuring of objects with children for catalogs with BAW-Profile: $catalogIdentifier")
+            return
+        }
         documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,

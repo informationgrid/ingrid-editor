@@ -16,10 +16,12 @@
             <div class="section-title">Auswahl des Dokumentes:</div>
         }
         <ige-tree
+            [treeStore]="treeStore"
             [allowMultiSelectionMode]="false"
             [disabledCondition]="disableTreeNodes()"
             (selected)="selectDatasets($event)"
             [setActiveNode]="initialNode"
+            [showHeader]="!hideHeader"
         ></ige-tree>
     </div>
 </ige-dialog-template>

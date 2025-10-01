@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Observable } from "rxjs";
@@ -31,7 +31,6 @@ import {
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
-import { TreeStore } from "../../../../app/store/tree/tree.store";
 
 @Injectable({ providedIn: "root" })
 export class ConsolidateKeywordsPlugin extends Plugin {
@@ -40,8 +39,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   description =
     "Bereits eingetragene Schlagworte werden neu analysiert und zu den verschiedenen Schlagwortfeldern hinzugefügt. Die Funktion befindet sich im 3-Punkte-Menü des Datensatzes.";
   defaultActive = true;
-
-  private treeStore = inject(TreeStore);
 
   formMenuId: MenuId = "dataset";
   private isPresent = false;

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,13 +17,22 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentAbstract } from "../document/document.model";
-import { signalStore, withMethods } from "@ngrx/signals";
-import { withEntities } from "@ngrx/signals/entities";
-import { getTreeStoreMethods } from "./tree.base";
+package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
-export const TreeStore = signalStore(
-  { providedIn: "root" },
-  withEntities<DocumentAbstract>(),
-  withMethods(getTreeStoreMethods.call(this)),
-);
+fun hierarchyLevelNameToDocumentType(hierarchyLevelName: String?): String = when (hierarchyLevelName) {
+    "Simulation",
+    "Postprocessing",
+    "Preprocessing",
+    "Variante",
+    "Szenario",
+    "Simulationsmodell",
+    "Simulationslauf",
+    "Simulationsdatei",
+    -> "BawSimulation"
+
+    "measurement",
+    "Messdaten",
+    -> "BawMeasurement"
+
+    else -> "InGridGeoDataset"
+}

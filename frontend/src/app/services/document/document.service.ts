@@ -32,7 +32,7 @@ import {
 import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import { DocumentAbstract } from "../../store/document/document.model";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { HttpClient } from "@angular/common/http";
@@ -71,7 +71,7 @@ export class DocumentService {
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   // TODO: check usefulness
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);
@@ -158,24 +158,18 @@ export class DocumentService {
       .subscribe();
   }
 
-  getChildren(
-    parentId: number,
-    isAddress?: boolean,
-    ignoreRootReadPermission?: boolean,
-  ): Observable<DocumentAbstract[]> {
-    return this.dataService
-      .getChildren(parentId, isAddress, ignoreRootReadPermission)
-      .pipe(
-        map((docs) => {
-          docs.forEach((doc) => {
-            doc.icon = this.profileService.getDocumentIcon(doc._type);
-            if (!doc.title) doc.title = "-Kein Titel-";
-            doc.isRoot = parentId === null;
-          });
-          return docs as DocumentAbstract[];
-        }),
-        tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
-      );
+  findIncomingReferences(
+    uuid: string,
+    options?: string[],
+    page?: number,
+    pageSize?: number,
+  ): Observable<ResearchResponse> {
+    return this.dataService.findIncomingReferences(
+      uuid,
+      options,
+      page,
+      pageSize,
+    );
   }
 
   load(
@@ -707,19 +701,6 @@ export class DocumentService {
       .subscribe();
   }
 
-  private updateTreeStoreDocs(
-    isAddress: boolean,
-    parentId: number,
-    docs: DocumentAbstract[],
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
-    if (parentId === null) {
-      store.set(docs);
-    } else {
-      store.add(docs);
-    }
-  }
-
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
@@ -883,7 +864,7 @@ export class DocumentService {
           (id) => entityMap[id]._parent === parent,
         );
         if (!hasAnyChildren) {
-          return this.getChildren(parent, isAddress);
+          return store.fetchChildren(parent, false);
         }
       }
     }

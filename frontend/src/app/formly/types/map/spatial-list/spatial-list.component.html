@@ -1,5 +1,5 @@
-@for (type of types; track type) {
-    @for (location of typedLocations[type]; track location) {
+@for (type of types(); track type) {
+    @for (location of typedLocations()[type]; track location.color) {
         <div
             class="clickable small-padding-right wrapper"
             (click)="selectLocation.emit(location.indexNumber)"
@@ -65,6 +65,18 @@
                     @if (location.type === "wkt") {
                         <div matLine>
                             {{ location.wkt }}
+                        </div>
+                    }
+                    @if (
+                        location.type === "bwastr" &&
+                        location.bwastr?.start != null &&
+                        location.bwastr?.end != null
+                    ) {
+                        <div matLine>
+                            Streckenabschnitt [km]:
+                            <span>{{ location.bwastr.start }}</span>
+                            -
+                            <span>{{ location.bwastr.end }}</span>
                         </div>
                     }
                 </div>

@@ -23,7 +23,7 @@ open class PublicationModelTransformer(transformerConfig: TransformerConfig) : I
 
     override val hierarchyLevelName = "document"
 
-    val publication = data.publication
+    open val publication = data.publication
     val baseDataText = data.publication?.baseDataText
     val publisherOrPlaceholder =
         if (publication?.publisher.isNullOrEmpty()) "Location of the editor" else publication?.publisher

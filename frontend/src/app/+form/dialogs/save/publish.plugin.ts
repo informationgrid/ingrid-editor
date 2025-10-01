@@ -40,7 +40,7 @@ import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
@@ -59,7 +59,7 @@ export class PublishPlugin extends SaveBase {
   eventValidate = "VALIDATE";
 
   private profileService = inject(ProfileService);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(

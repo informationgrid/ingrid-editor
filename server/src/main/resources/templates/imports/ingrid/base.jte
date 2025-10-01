@@ -71,12 +71,24 @@
         , "ars": "${ref.get().getArs()}"
         @elseif(ref.get().getType().equals("wkt"))
         , "wkt": "${ref.get().getWkt()}"
+        @elseif(ref.get().getType().equals("bwastr"))
+        , "bwastr": {
+            "bwastrid": "${ref.get().getBwastr().getBwastrid()}",
+            "bwastr_name": "${ref.get().getBwastr().getBwastr_name()}",
+            "concat_name": "${ref.get().getBwastr().getConcat_name()}",
+            "strecken_name": "${ref.get().getBwastr().getStrecken_name()}",
+            "start": @if(ref.get().getBwastr().getStart() != null)${ref.get().getBwastr().getStart()}@else null @endif,
+            "end": @if(ref.get().getBwastr().getEnd() != null)${ref.get().getBwastr().getEnd()}@else null @endif
+            }
         @endif
 
     }@if (!ref.isLast()),@endif
 @endfor
 ],
 "spatialSystems": @template.imports.ingrid.partial.key-values(list = model.getSpatialSystems()),
+@if(model.getSplitSpatialSystems())
+"verticalSpatialSystems": @template.imports.ingrid.partial.key-values(list = model.getVerticalSpatialSystems()),
+@endif
 @if(model.getVerticalExtent() != null)
     "verticalExtent": {
     "minimumValue": ${model.getVerticalExtent().getMin()},
