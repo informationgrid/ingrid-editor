@@ -26,6 +26,9 @@ import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 import { TableProps } from "../app/formly/types/table/table-type.component";
+import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
+import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
+import { ConfigService } from "../app/services/config/config.service";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -55,6 +58,7 @@ export interface Options {
     "props.maxLength"?;
     "props.hintStart"?;
     "props.description"?;
+    "props.placeholder"?;
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
@@ -203,6 +207,9 @@ export interface UnitInputOptions extends InputOptions {
 
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
+  documentTreeStore = inject(DocumentTreeStore);
+  treeStoreLongTermFileStorage = inject(LongTermFileStorageTreeStore);
+  config = inject(ConfigService);
 
   // remember view components for print view
   protected viewComponents: { [field: string]: Component } = {};
@@ -318,6 +325,7 @@ export class FormFieldHelper {
         required: options?.required,
         allowedTypes: options?.allowedTypes,
         allowedTypesByDoctype: options?.allowedTypesByDoctype,
+        disabledCondition: options?.disabledCondition,
         max: options?.max,
       },
       validators: {
@@ -331,7 +339,24 @@ export class FormFieldHelper {
       key: key,
       type: "documentReferenceSelector",
       className: "flex-1",
-      props: { ...options },
+      props: {
+        treeStore: this.documentTreeStore,
+        ...options,
+      },
+      expressions: options.expressions,
+      hooks: options.hooks,
+    };
+  }
+
+  addLongTermFileStorageCard(key: string, options?) {
+    return <FormlyFieldConfig>{
+      key: key,
+      type: "documentReferenceSelector",
+      className: "flex-1",
+      props: {
+        treeStore: this.treeStoreLongTermFileStorage,
+        ...options,
+      },
       expressions: options.expressions,
       hooks: options.hooks,
     };
@@ -798,6 +823,39 @@ export class FormFieldHelper {
     });
   }
 
+  addTimepicker(id, label, options: any = {}) {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "timepicker",
+      className: options?.className ?? "width-date-small",
+      wrappers:
+        options?.wrappers === undefined
+          ? ["panel", "form-field"]
+          : options?.wrappers,
+      defaultValue: null,
+      props: {
+        label: options?.fieldLabel,
+        externalLabel: label,
+        placeholder: options?.placeholder,
+        appearance: "outline",
+        required: options?.required,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
+      },
+      expressions: expressions,
+      validators: options?.validators,
+    };
+  }
+
+  addTimepickerInline(id, label, options: Options = {}) {
+    return this.addTimepicker(id, null, {
+      fieldLabel: label,
+      wrappers: options?.wrappers ?? ["form-field"],
+      ...options,
+    });
+  }
+
   addDateRange(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -869,6 +927,7 @@ export class FormFieldHelper {
       className: "ige-radios",
       defaultValue: options?.defaultValue ?? null,
       props: {
+        appearance: "outline",
         label: options?.fieldLabel,
         appearance: "outline",
         externalLabel: label,
@@ -882,9 +941,7 @@ export class FormFieldHelper {
     };
   }
 
-  addReferencesForAddress(
-    referenceField: string,
-    uuidField: string = null,
+  addIncomingReferences(
     label = "Zugeordnete Datensätze",
     showOnStart?: boolean,
     showToggleButton?: boolean,
@@ -898,14 +955,13 @@ export class FormFieldHelper {
       className: options?.className,
       props: {
         externalLabel: label,
-        referenceField: referenceField,
-        uuidField: uuidField ?? "ref",
         showOnStart: showOnStart,
         showToggleButton: showToggleButton,
         messageNoReferences: messageNoReferences,
         referencesHint: referencesHint,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        queryOptions: options?.queryOptions,
       },
     };
   }
@@ -930,6 +986,79 @@ export class FormFieldHelper {
     id: string,
     parentId?: string,
     matchesParentId?: boolean,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    // Use a queue for breadth-first search
+    const queue: Array<FormlyFieldConfig[]> = [fieldConfig];
+
+    while (queue.length > 0) {
+      const config = queue.shift();
+
+      if (!config) continue;
+
+      if (config.) {
+        const index = fieldConfig.findIndex((field) => field.key === id);
+
+        if (index !== -1)
+          return { fieldConfig, index, field: fieldConfig[index] };
+      }
+
+      // Check all fields at current level first
+      const index = config.findIndex((field) => field.key === id);
+      if (index !== -1) {
+        return { fieldConfig: config, index };
+      }
+
+      // Add all child fieldGroups to queue for next level processing
+      config.forEach((item) => {
+        if (item.fieldGroup) {
+          queue.push(item.fieldGroup);
+        }
+      });
+    }
+
+    return null;
+  }
+
+  /*
+  findFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+    parentId?: string,
+    matchesParentId?: boolean,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    if (matchesParentId) {
+      const index = fieldConfig.findIndex((field) => {
+        if (field.key === id) return true;
+      });
+
+      if (index !== -1)
+        return { fieldConfig, index, field: fieldConfig[index] };
+    }
+
+    let subFound = null;
+    fieldConfig.some((item) => {
+      subFound = this.findFieldElementWithId(
+        item.fieldGroup,
+        id,
+        parentId,
+        parentId ? item.key === parentId : true,
+      );
+      return subFound;
+    });
+    return subFound;
+  }
+  */
+
+  // TODO: merge with findFieldElementWithId
+  findParentFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+    fieldConfigParent: FormlyFieldConfig[] = null,
+    parentIndex: number = null,
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
@@ -963,20 +1092,34 @@ export class FormFieldHelper {
     });
   }
 
-  addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
+  addAfter(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
+    info.fieldConfig.splice(info.index + 1, 0, ...field);
   }
 
-  addMultipleAfter(info: FieldConfigPosition, fields: FormlyFieldConfig[]) {
-    info.fieldConfig.splice(info.index + 1, 0, ...fields);
+  addBefore(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
+    info.fieldConfig.splice(info.index, 0, ...field);
   }
 
-  addBefore(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index, 0, field);
-  }
-
-  addMultipleBefore(info: FieldConfigPosition, fields: FormlyFieldConfig[]) {
-    info.fieldConfig.splice(info.index, 0, ...fields);
+  /**
+   * Updates or adds validators to a field with the given ID.
+   *
+   * @param id - The ID of the field to update.
+   * @param validators - An object containing the validators to add or update.
+   * @param fieldConfig - The configuration array of form fields.
+   */
+  updateValidators(
+    id: string,
+    validators: {
+      [key: string]: { expression: any; message: string } | string[];
+    },
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    const fieldPosition = this.findFieldElementWithId(fieldConfig, id);
+    const targetField = fieldPosition.fieldConfig[fieldPosition.index];
+    targetField.validators = {
+      ...(targetField.validators ?? {}),
+      ...validators,
+    };
   }
 
   private initExpressions(expressions = {}) {

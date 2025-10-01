@@ -66,6 +66,7 @@ export interface ChooseAddressDialogData {
   allowedTypes: string[];
   allowedTypesByDoctype: { [key: string]: string[] } | null;
   skipToType: boolean;
+  disabledCondition: (node: TreeNode) => boolean | null;
 }
 
 export interface ChooseAddressResponse {
@@ -94,8 +95,8 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  addressTreeStore = inject(AddressTreeStore);
   private codelistStore = inject(CodelistStore);
-  private addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);
@@ -124,7 +125,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.data.disabledCondition != null)
+      this.disabledCondition = this.data.disabledCondition;
     this.codelistService.byId(this.addressTypeCodelistId);
+    // disable the type selection if only one type is allowed for all doctypes
+    this.typeSelectionEnabled.set(!(this.data.allowedTypes?.length === 1));
     this.codelists$
       .pipe(
         untilDestroyed(this),

@@ -25,6 +25,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -44,6 +45,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     private val documentRepository = mockk<DocumentRepository>()
     private val researchService = mockk<ResearchService>()
     private val uploadConfig = mockk<UploadConfig>()
+    private val bwastrLocatorService = mockk<BwastrLocatorService>()
 
     @BeforeAll
     fun beforeAll() {
@@ -62,8 +64,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
 
     @Test
     fun importGeodataset() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
-        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService, researchService, uploadConfig, catalogService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
+        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService, researchService, bwastrLocatorService, uploadConfig, catalogService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 

@@ -59,6 +59,7 @@ export class ReferencedDocumentsTypeComponent
   implements OnInit
 {
   private referencesElement: ElementRef<HTMLElement>;
+  private queryOptions: string[];
 
   @ViewChild("list", { read: ElementRef }) set listElement(
     content: ElementRef<HTMLElement>,
@@ -69,16 +70,6 @@ export class ReferencedDocumentsTypeComponent
   pageSize = 10;
 
   docs: DocumentAbstract[] = [];
-
-  private sql = `SELECT document1.*, document_wrapper.category
-                 FROM document_wrapper
-                        JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                 WHERE document1.is_latest = true
-                   AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceFieldRaw>')
-                   AND EXISTS(SELECT
-                              FROM jsonb_array_elements(data -> '<referenceField>') as s
-                              WHERE (s -> '<uuidField>') = '"<uuid>"')`;
 
   private currentUuid: string;
   totalHits = 0;
@@ -114,6 +105,7 @@ export class ReferencedDocumentsTypeComponent
     this.messageNoReferences =
       this.props.messageNoReferences ??
       "Es existieren keine Referenzen auf diese Adresse";
+    this.queryOptions = this.props.queryOptions ?? [];
     this.isLoading = false;
 
     const reloadEvent = this.documentService.reload$.pipe(
@@ -135,9 +127,10 @@ export class ReferencedDocumentsTypeComponent
 
   searchReferences(uuid: string, page = 1) {
     this.isLoading = true;
-    return this.researchService
-      .searchBySQL(this.prepareSQL(uuid), page, this.pageSize)
+    return this.documentService
+      .findIncomingReferences(uuid, this.queryOptions, page, this.pageSize)
       .pipe(
+        map((response) => this.researchService.mapDocumentIcons(response)),
         tap((response) => (this.totalHits = response.totalHits)),
         map((response) =>
           this.documentService.mapSearchResponseToDocumentAbstracts(
@@ -171,17 +164,6 @@ export class ReferencedDocumentsTypeComponent
       `${ConfigService.catalogId}/form`,
       { id: doc._uuid },
     ]);
-  }
-
-  private prepareSQL(uuid: string): string {
-    return this.sql
-      .replace("<uuid>", uuid)
-      .replace("<uuidField>", this.props.uuidField)
-      .replace(/<referenceFieldRaw>/g, this.props.referenceField)
-      .replace(
-        /<referenceField>/g,
-        this.props.referenceField.replaceAll(".", "' -> '"),
-      );
   }
 
   switchPage(pageEvent: PageEvent) {

@@ -29,8 +29,6 @@ export abstract class OrganisationDoctype extends AddressShared {
 
   options: Partial<AddressOptions> = {};
 
-  private fieldWithAddressReferences: string;
-
   documentFields() {
     return <FormlyFieldConfig[]>[
       this.addSection(
@@ -53,13 +51,12 @@ export abstract class OrganisationDoctype extends AddressShared {
             : []),
         ].filter(Boolean),
       ),
-      this.addReferencesForAddress(this.fieldWithAddressReferences),
+      this.addIncomingReferences(),
     ];
   }
 
-  protected constructor(fieldWithAddressReferences: string) {
+  protected constructor() {
     super();
-    this.fieldWithAddressReferences = fieldWithAddressReferences;
     this.addressType = "organization";
   }
 }

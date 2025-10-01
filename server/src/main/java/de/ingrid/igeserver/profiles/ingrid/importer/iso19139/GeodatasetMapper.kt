@@ -386,7 +386,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val title = KeyValue(titleKey, titleValue, "3555")
                     CatalogInfo(
                         title,
-                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()
@@ -401,7 +401,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val title = KeyValue(titleKey, titleValue, "3535")
                     CatalogInfo(
                         title,
-                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()

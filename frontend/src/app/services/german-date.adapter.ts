@@ -26,9 +26,13 @@ export class GermanDateAdapter extends NativeDateAdapter {
     if (typeof value === "string" && value.indexOf(".") > -1) {
       const str = value.split(".");
 
-      const year = Number(str[2]);
+      let year = Number(str[2]);
       const month = Number(str[1]) - 1;
       const date = Number(str[0]);
+      //  Workaround Passing the year to the constructor causes year numbers <100 to be converted to 19xx.
+      if (year < 100) {
+        year = year + 2000;
+      }
 
       return new Date(year, month, date);
     }
@@ -37,6 +41,20 @@ export class GermanDateAdapter extends NativeDateAdapter {
   }
 
   format(date: Date, displayFormat: Object) {
+    return "hour" in displayFormat
+      ? this._formatOnlyTime(date)
+      : this._formatDateWithoutTime(date);
+  }
+
+  _formatOnlyTime(date: Date) {
+    return (
+      ("0" + date.getHours()).slice(-2) +
+      ":" +
+      ("0" + date.getMinutes()).slice(-2)
+    );
+  }
+
+  _formatDateWithoutTime(date: Date) {
     return (
       ("0" + date.getDate()).slice(-2) +
       "." +

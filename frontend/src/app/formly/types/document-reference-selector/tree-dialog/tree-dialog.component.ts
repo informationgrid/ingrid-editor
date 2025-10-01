@@ -25,7 +25,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
-import { TreeStore } from "../../../../store/tree/tree.store";
 import { GeneralStore } from "../../../../store/general.store";
 
 export interface SelectDatasetData {
@@ -38,6 +37,8 @@ export interface SelectDatasetData {
   allowMultiSelect?: boolean;
   docTypeFilter?: string[];
   titleOfDocumentSelectorDialog?: string;
+  treeStore: any;
+  hideHeader: boolean;
 }
 
 export interface SelectServiceResponse {
@@ -47,17 +48,18 @@ export interface SelectServiceResponse {
   type: string;
   layerNames: string[];
   icon: string;
+  isExternalRef: boolean;
 }
 
 @Component({
-  templateUrl: "./selector-service-dialog.component.html",
-  styleUrl: "./selector-service-dialog.component.scss",
+  templateUrl: "./tree-dialog.component.html",
+  styleUrl: "./tree-dialog.component.scss",
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
-export class SelectorServiceDialogComponent {
+export class TreeDialogComponent {
+  treeStore;
   private generalStore = inject(GeneralStore);
-  private treeStore = inject(TreeStore);
-  selectedNode: number = null;
+  selectedNode: number | string = null;
   field: FormlyFieldConfig[] = [
     {
       key: "layerNames",
@@ -69,15 +71,19 @@ export class SelectorServiceDialogComponent {
   initialNode = new Subject<number>();
   label = "Dokument auswählen";
   docTypeFilter = [];
+  hideHeader = false;
   public showLayernames = false;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) private data: SelectDatasetData,
   ) {
+    this.treeStore = data.treeStore;
+
     if (data.activeRef) {
       setTimeout(() => {
         const node = this.treeStore.getByUuid(data.activeRef);
+        if (node == undefined) return;
         this.initialNode.next(parseInt(node.id.toString()));
       });
     }
@@ -85,6 +91,7 @@ export class SelectorServiceDialogComponent {
     this.showLayernames = data.showLayernames;
     this.docTypeFilter = data.docTypeFilter;
     this.label = data.titleOfDocumentSelectorDialog;
+    this.hideHeader = data.hideHeader;
   }
 
   disableTreeNodes() {
@@ -115,11 +122,12 @@ export class SelectorServiceDialogComponent {
       type: entity._type,
       layerNames: this.form.value.layerNames,
       icon: entity.icon,
+      isExternalRef: entity.isExternalRef ?? false,
     };
     this.dlgRef.close(response);
   }
 
-  selectDatasets(node: number[]) {
+  selectDatasets(node: number[] | string[]) {
     this.selectedNode = node[0];
   }
 }

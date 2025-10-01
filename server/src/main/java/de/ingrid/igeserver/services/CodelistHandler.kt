@@ -40,7 +40,7 @@ class CodelistHandler(
 ) {
 
     companion object {
-        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null, description: String? = null): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null, description: String? = null, iso: String? = null): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
             if (data != null) put("data", data)
             set<JsonNode>(
@@ -48,6 +48,7 @@ class CodelistHandler(
                 jacksonObjectMapper().createObjectNode().apply {
                     put("de", german)
                     if (english != null) put("en", english)
+                    if (iso != null) put("iso", iso)
                 },
             )
             if (description != null) put("description", description)
@@ -118,10 +119,10 @@ class CodelistHandler(
         ?.find { it.id == key }
         ?.fields?.get(language)
 
-    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String, language: String = "de"): String? = getCatalogCodelists(catalogId)
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String?, language: String = "de"): String? = getCatalogCodelists(catalogId)
         .find { it.id == codelistId }
         ?.entries
-        ?.find { it.getField(language) == value }
+        ?.find { value != null && it.getField(language) == value }
         ?.id
 
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? = getCodelists(listOf(codelistId))

@@ -231,6 +231,7 @@ export class AddressTypeComponent
             address: address,
             allowedTypes: this.props.allowedTypes,
             allowedTypesByDoctype: this.props.allowedTypesByDoctype,
+            disabledCondition: this.props.disabledCondition,
             skipToType: skipToType,
           },
           hasBackdrop: true,

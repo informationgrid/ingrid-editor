@@ -58,6 +58,14 @@
                         (result)="updateBoundingBox($event)"
                     ></ige-geothesaurus-wfsgnde>
                 }
+                @case ("bwastr") {
+                    <ige-bwastr-spatial
+                        [map]="leafletReference"
+                        [value]="result"
+                        (updateTitle)="titleInput.setValue($event)"
+                        (result)="updateBwastr($event)"
+                    ></ige-bwastr-spatial>
+                }
             }
         </div>
 
@@ -112,7 +120,11 @@
                 !result.ars &&
                 !result.title) ||
             (view === 'wkt' && !result.wkt) ||
-            (view === 'wfsgnde' && !result.value && !result.title)
+            (view === 'wfsgnde' && !result.value && !result.title) ||
+            (view === 'bwastr' &&
+                !result.bwastr?.bwastrid &&
+                !result.bwastr?.start &&
+                !result.bwastr?.end)
         "
         (click)="returnResult()"
     >

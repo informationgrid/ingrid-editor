@@ -11,6 +11,7 @@
 
     <mat-dialog-content>
         <ige-tree
+            [treeStore]="addressTreeStore"
             [class.hide]="activeStep !== 1"
             (selected)="updateAddressTree($event[0])"
             data-cy="choose-address-tree"

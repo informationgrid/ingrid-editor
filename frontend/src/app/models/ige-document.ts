@@ -39,7 +39,10 @@ export class Metadata {
   docType: string;
 
   // the hierarchical parent of this document
-  parentId: number;
+  parentId?: number;
+
+  // the doctype of the parent document
+  parentDocType?: string;
 
   // the creation date
   created?: string;

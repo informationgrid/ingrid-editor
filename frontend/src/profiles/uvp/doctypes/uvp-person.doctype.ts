@@ -27,7 +27,7 @@ export class UvpPersonDoctype extends PersonDoctype {
   id = "UvpAddressDoc";
 
   constructor() {
-    super("pointOfContact");
+    super();
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },

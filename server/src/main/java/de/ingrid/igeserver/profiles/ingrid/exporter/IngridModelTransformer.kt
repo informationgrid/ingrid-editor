@@ -56,6 +56,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.checkPublicationTags
+import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
@@ -180,10 +181,10 @@ open class IngridModelTransformer(
     private fun generateBrowseGraphics(
         graphicOverviews: List<GraphicOverview>?,
         datasetUuid: String,
-    ): List<BrowseGraphic> = graphicOverviews?.map {
+    ): List<BrowseGraphic> = graphicOverviews?.mapNotNull {
         BrowseGraphic(
             if (it.fileName.asLink) {
-                it.fileName.uri // TODO encode uri
+                transformUrl(it.fileName.uri) ?: return@mapNotNull null
             } else {
                 getDownloadLink(datasetUuid, it.fileName.uri)
             },
@@ -250,7 +251,6 @@ open class IngridModelTransformer(
 
     fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
         ?.let { convertWktToGeoJson(it.wkt!!) }
-        ?.let { Pair(it.replace("\"", "@json@"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }
@@ -263,7 +263,7 @@ open class IngridModelTransformer(
         )
     }
 
-    fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
+    open fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
         val geoElements = mutableListOf<GeographicElement>()
 
         when (ref.type) {
@@ -338,6 +338,14 @@ open class IngridModelTransformer(
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
+    fun getGeometries(): List<String> = spatialReferences.mapNotNull { spatial ->
+        when {
+            spatial.value != null -> convertBoundingBoxToGeoJson(spatial.value)
+            spatial.wkt != null -> convertWktToGeoJson(spatial.wkt)
+            else -> null
+        }
+    }
+
     var catalog: Catalog
     var namespace: String
 
@@ -374,31 +382,26 @@ open class IngridModelTransformer(
 
     open fun getGeometryContexts(): List<GeometryContext> = emptyList()
 
-    val spatialSystems = data.spatial.spatialSystems?.map {
-        val referenceSystem =
-            codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system: $it")
+    open val spatialSystems = data.spatial.spatialSystems?.map { mapToCharacterStringModel("100", it) } ?: emptyList()
+
+    protected fun mapToCharacterStringModel(codelistKey: String, referenceSystemEntry: KeyValue?): CharacterStringModel {
+        val referenceSystem = codelists.getValue(codelistKey, referenceSystemEntry) ?: codelists.getCatalogCodelistValue(codelistKey, referenceSystemEntry)
+            ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
         val epsgLink = when {
-            // string like "EPSG:25832"
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5)}"
-            // string like "EPSG 3857: WGS 84 / Pseudo-Mercator"
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
                 if (endIndex > 0) {
-                    "http://www.opengis.net/def/crs/EPSG/0/${
-                        referenceSystem.substring(
-                            5,
-                            endIndex,
-                        )
-                    }"
+                    "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5, endIndex)}"
                 } else {
                     null
                 }
             }
-            // could not match string
             else -> null
         }
-        CharacterStringModel(referenceSystem, epsgLink)
-    } ?: emptyList()
+        return CharacterStringModel(referenceSystem, epsgLink)
+    }
+
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
@@ -600,7 +603,7 @@ open class IngridModelTransformer(
 
     val contentField: MutableList<String> = mutableListOf()
 
-    private fun mapDocumentType(type: String): String = when (type) {
+    protected open fun mapDocumentType(type: String): String = when (type) {
         "InGridSpecialisedTask" -> "0"
         "InGridGeoDataset" -> "1"
         "InGridPublication" -> "2"
@@ -608,7 +611,7 @@ open class IngridModelTransformer(
         "InGridProject" -> "4"
         "InGridDataCollection" -> "5"
         "InGridInformationSystem" -> "6"
-        else -> throw ServerException.withReason("Could not map document type: ${model.type}")
+        else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
     // geodataservice
@@ -683,7 +686,7 @@ open class IngridModelTransformer(
 
     fun getCapabilitiesUrlsFromService(serviceTypeKey: String): List<String> = if (model.type == "InGridGeoDataset") {
         val doc = getLastPublishedDocument(model.uuid)
-        documentService.getIncomingReferences(doc, catalogIdentifier)
+        documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished"))
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
                 it.type == "InGridGeoService" &&
@@ -722,7 +725,7 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {
-        references.filter { it.uuidRef.isNullOrEmpty() }.map {
+        references.filter { it.uuidRef.isNullOrEmpty() }.mapNotNull {
             // if type not in codelist, use "information" #6017
             val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
             val applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de")
@@ -736,7 +739,7 @@ open class IngridModelTransformer(
                     attachedToFieldText,
                 )
             }
-            ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
+            ServiceUrl(it.title, it.url?.let { url -> transformUrl(url) ?: return@mapNotNull null } ?: "", it.explanation, attachedField, applicationProfile, functionValue)
         }
     }
     val referencesWithUuidRefs: List<Reference> by lazy {
@@ -775,27 +778,29 @@ open class IngridModelTransformer(
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServicesAndFileReferences: List<Reference> by lazy {
-        references.map {
+        references.mapNotNull {
             it.urlDataType =
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
+            it.url = it.url?.let { url -> transformUrl(url) ?: return@mapNotNull null }
             it
         } +
-            getCoupledServiceCapabilitiesUrls().map {
+            getCoupledServiceCapabilitiesUrls().mapNotNull {
                 Reference(
                     it.name,
                     KeyValue(null, null),
                     it.description,
-                    it.url,
+                    transformUrl(it.url) ?: return@mapNotNull null,
                     null,
                     null,
                 )
             } +
-            fileReferenceTransferOptions.map {
+            fileReferenceTransferOptions.mapNotNull {
+                val url = transformUrl(it.url) ?: return@mapNotNull null
                 Reference(
-                    it.title ?: it.url,
+                    it.title ?: url,
                     KeyValue("9990", null),
                     null,
-                    it.url,
+                    url,
                     null,
                     KeyValue(it.applicationProfile, null),
                 )
@@ -828,11 +833,13 @@ open class IngridModelTransformer(
         emptyList()
     }
 
-    val parentIdentifier: String? = data.parentIdentifier
+    open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
 
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
+    fun getPointOfContactWithEmail() = pointOfContact.filter { addressHasEmail(it) }
+    fun getPointOfContactWithoutEmail() = pointOfContact.filter { addressHasEmail(it).not() }
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }
     }
@@ -885,7 +892,7 @@ open class IngridModelTransformer(
         } ?: emptyList()
     }
 
-    private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
+    fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
         val lastPublishedDoc =
             getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
 
@@ -1031,7 +1038,8 @@ open class IngridModelTransformer(
     }
 
     private fun getSuperiorReference(): SuperiorReference? {
-        val uuid = data.parentIdentifier ?: return null
+        if (data.parentIdentifier.isNullOrEmpty()) return null
+        val uuid = data.parentIdentifier
         val doc = getLastPublishedDocument(uuid) ?: return null
 
         return SuperiorReference(
@@ -1134,7 +1142,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
                 json.getString("fileName.value")
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
-                json.getString("fileName.uri")
+                json.getString("fileName.uri")?.let { transformUrl(it) ?: return null }
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
                 json.getDouble("fileName.sizeInBytes"),
             ),
@@ -1144,7 +1152,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = getLastPublishedDocument(model.uuid)
-        return documentService.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
+        return documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished")).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }
@@ -1161,6 +1169,7 @@ open class IngridModelTransformer(
     }
 
     private fun addressIsPointContactMD(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
+    private fun addressHasEmail(it: AddressModelTransformer) = it.emails.isNotEmpty()
 
     private fun addressIsDistributor(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("distributor")
 
@@ -1186,8 +1195,9 @@ open class IngridModelTransformer(
 
     fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
+    open val linkToVerticalCRS = false
     fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
-        it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
+        it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
     } ?: false
 
     private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"
@@ -1211,6 +1221,10 @@ open class IngridModelTransformer(
 
         else -> codelists.getCatalogCodelistValue("6006", result.specification)
     }
+
+    open val extraContent: String = ""
+
+    open fun transformUrl(url: String?): String? = url
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)

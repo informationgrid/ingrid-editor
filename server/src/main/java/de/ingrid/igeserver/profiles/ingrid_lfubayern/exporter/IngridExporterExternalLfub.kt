@@ -19,8 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
-import de.ingrid.igeserver.exporter.model.Address
-import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
@@ -71,6 +70,16 @@ class IngridIdfExporterExternalLfub(
     @Lazy documentService: DocumentService,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
+
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridIDFLfuExternalBayern",
+        "Ingrid IDF LfuBayern External",
+        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-lfubayern"),
+    )
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
@@ -144,18 +153,13 @@ class IngridISOExporterExternalLfub(
 }
 
 private fun anonymizeAddresses(model: IngridModel, uuid: String) {
-    val anonymousAddress = AddressModel(
-        uuid, "InGridOrganisationDoc", null, null, null, null,
-        null, null, emptyList(), null,
-        Address(null, null, null, null, null, null, null), null, null,
-    )
     model.data.pointOfContact?.forEach {
-        it.ref = anonymousAddress.uuid
+        it.ref = uuid
     }
 }
 
 private fun getUuidAnonymous(catalogId: String) = behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
-    ?: ""
+    ?: throw IndexException.withReason("Could not get anonymous address uuid from behaviour service for catalog $catalogId")
 
 private fun removeOfflineAccessReferences(data: DataModel) {
     data.references = data.references?.filter {

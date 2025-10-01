@@ -62,8 +62,7 @@ class OpenDataLuceneExporter(
         val catalog = catalogService.getCatalogById(catalogId)
         val templateData = getTemplateForDoctype(doc, catalog, options)
         templateEngine.render(templateData.first, templateData.second, output)
-        // fix strings that actually should represent JSON (like wkt_geo-field)
-        return output.toString().replace("@json@", "\"")
+        return output.toString()
     }
 
     private fun handleFoldersWithoutPublishedChildrens(doc: Document) {
