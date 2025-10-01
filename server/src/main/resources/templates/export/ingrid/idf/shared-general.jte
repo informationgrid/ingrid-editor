@@ -660,7 +660,7 @@
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
                     @if(page.getLinkToVerticalCRS())
-                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="https://epsg.org/crs/gml/id/${verticalExtent.getDatum().getKey()}/export?format=gml" />
+                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="http://www.opengis.net/def/crs/EPSG/0/${verticalExtent.getDatum().getKey()}" />
                     @else
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
