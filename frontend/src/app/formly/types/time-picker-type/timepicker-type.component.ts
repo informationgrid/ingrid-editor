@@ -40,7 +40,6 @@ import { MatCalendarCellClassFunction } from "@angular/material/datepicker";
 import { MatTimepickerModule } from "@angular/material/timepicker";
 import { MatInputModule } from "@angular/material/input";
 import { ReactiveFormsModule } from "@angular/forms";
-import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 
 interface TimepickerProps extends FormlyFieldProps {
@@ -97,7 +96,6 @@ export interface FormlyTimepickerFieldConfig
     </mat-timepicker>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [provideNativeDateAdapter()],
   imports: [
     MatFormFieldModule,
     MatInputModule,

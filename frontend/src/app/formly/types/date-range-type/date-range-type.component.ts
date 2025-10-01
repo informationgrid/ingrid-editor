@@ -47,7 +47,6 @@ import {
   MatTimepickerToggle,
 } from "@angular/material/timepicker";
 import { MatInput } from "@angular/material/input";
-import { provideNativeDateAdapter } from "@angular/material/core";
 
 interface DateRangeProps extends FormlyFieldProps {
   showTimeInputs: boolean;
@@ -76,8 +75,6 @@ interface DateRangeProps extends FormlyFieldProps {
     MatTimepicker,
     MatInput,
   ],
-  // TODO: re-enable when localization is fixed
-  // providers: [provideNativeDateAdapter()],
 })
 export class DateRangeTypeComponent
   extends FieldType<FieldTypeConfig<DateRangeProps>>

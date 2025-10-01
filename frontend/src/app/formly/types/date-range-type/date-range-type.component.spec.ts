@@ -29,7 +29,6 @@ import {
 } from "@ngx-formly/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { withFormlyMaterial } from "@ngx-formly/material";
-import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("DateRangeTypeComponent", () => {
@@ -45,7 +44,6 @@ describe("DateRangeTypeComponent", () => {
       FormsModule,
     ],
     providers: [
-      provideNativeDateAdapter(),
       provideFormlyCore([
         {
           types: [
