@@ -229,7 +229,7 @@ private fun getBwastrCode(bwastrNode: JsonNode): String? {
     val kmEnd = bwastrNode.getDouble("end")
 
     return if (bwastrId != null && kmStart != null && kmEnd != null) {
-        "$bwastrId-$kmStart-$kmEnd"
+        "${bwastrId.padStart(4,'0')}-$kmStart-$kmEnd"
     } else {
         null
     }
