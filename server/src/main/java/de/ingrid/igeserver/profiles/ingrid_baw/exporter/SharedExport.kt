@@ -25,7 +25,6 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -36,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTr
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.ProjectModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SoftwareModelTransformerBaw
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -52,7 +52,7 @@ fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docTy
     "InGridGeoService" -> GeoserviceTransformerBaw::class
     "BawPublication" -> PublicationModelTransformerBaw::class
     "InGridProject" -> ProjectModelTransformerBaw::class
-    "InGridInformationSystem" -> InformationSystemModelTransformer::class
+    "InGridInformationSystem" -> SoftwareModelTransformerBaw::class
     "PublicationAddressDoc" -> AddressModelTransformerBaw::class
     "InGridOrganisationDoc" -> AddressModelTransformerBaw::class
     "InGridPersonDoc" -> AddressModelTransformerBaw::class

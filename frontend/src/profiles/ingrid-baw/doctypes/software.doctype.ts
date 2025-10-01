@@ -333,7 +333,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
           ],
         },
       ),
-      this.getNotesFieldGroupConfig("hasUsageRights", {
+      this.getNotesFieldGroupConfig("usageRights", {
         expressions: {
           "props.required": (field: FormlyFieldConfig) =>
             this.hasUsageRights(field),
