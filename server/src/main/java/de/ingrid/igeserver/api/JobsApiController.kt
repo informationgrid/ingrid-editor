@@ -137,7 +137,8 @@ class JobsApiController(
         val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
         // Check if this is a chunked upload from flowjs
-        val request = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes() as org.springframework.web.context.request.ServletRequestAttributes
+        val request =
+            org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes() as org.springframework.web.context.request.ServletRequestAttributes
         val flowChunkNumber = request.request.getParameter("flowChunkNumber")?.toIntOrNull() ?: 1
         val flowTotalChunks = request.request.getParameter("flowTotalChunks")?.toIntOrNull() ?: 1
         val flowIdentifier = request.request.getParameter("flowIdentifier") ?: file.originalFilename ?: "unknown"

@@ -11,11 +11,11 @@
                 {{ userInfo.login }}
             </div>
             <div class="side-title">Rolle</div>
-            <div class="side-item">
+            <div class="side-item" *transloco="let t; read: 'roles'">
                 <mat-icon
                     [svgIcon]="this.userService.roleIcon[userInfo.role]"
                 ></mat-icon>
-                {{ getRoleLabel(userInfo.role) }}
+                {{ t(userInfo.role) }}
             </div>
             <div class="side-title">Gruppen</div>
             <div>

@@ -25,6 +25,7 @@ import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
+import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
@@ -32,6 +33,7 @@ import { ConfigService } from "../app/services/config/config.service";
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
   index: number;
+  field: FormlyFieldConfig;
 }
 
 export interface Options {
@@ -63,6 +65,7 @@ export interface Options {
   hideInPreview?: boolean;
   validators?: any;
   asyncValidators?: any;
+  resetOnHide?: boolean;
 }
 
 export interface DatePickerOptions extends Options {
@@ -146,16 +149,16 @@ export interface SelectOptions extends Options {
   useFirstValueInitially?: boolean;
 }
 
-export interface TableOptions extends Options {
-  columns?: any[];
-  batchValidUntil?: string;
-  validators?: any;
-  supportUpload?: boolean;
-  dialog?: any;
-}
+export interface TableOptions extends Options, TableProps {}
 
 export interface CheckboxOptions extends Options {
   fieldLabel?: string;
+  click?: ((field: FormlyFieldConfig, event?: any) => void) | any;
+}
+
+export interface RadioboxOptions extends Options {
+  fieldLabel?: string;
+  options?: any[] | Observable<any[]>;
   click?: ((field: FormlyFieldConfig, event?: any) => void) | any;
 }
 
@@ -271,6 +274,7 @@ export class FormFieldHelper {
       className: options?.className ?? "flex-1",
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
+      resetOnHide: options?.resetOnHide,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -740,6 +744,10 @@ export class FormFieldHelper {
         batchValidUntil: options?.batchValidUntil,
         supportUpload: options?.supportUpload ?? true,
         dialog: options?.dialog,
+        batchActions: options?.batchActions ?? [],
+        allowDuplicate: options?.allowDuplicate,
+        customAddFn: options?.customAddFn,
+        duplicatePostfixField: options?.duplicatePostfixField,
       },
       validators: options?.validators,
       expressions: expressions,
@@ -910,7 +918,7 @@ export class FormFieldHelper {
     });
   }
 
-  addRadioboxes(id, label, options?): FormlyFieldConfig {
+  addRadioboxes(id, label, options?: RadioboxOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -957,45 +965,36 @@ export class FormFieldHelper {
     };
   }
 
-  findFieldElementWithIdPath(
-    fieldConfig: FormlyFieldConfig[],
-    id: string,
-  ): FieldConfigPosition {
-    if (!fieldConfig) return null;
-    let currentFieldConfigPosition = null;
-    id.split(".").forEach((idPart) => {
-      currentFieldConfigPosition = this.findFieldElementWithId(
-        currentFieldConfigPosition?.fieldConfig ?? fieldConfig,
-        idPart,
-      );
-    });
-    return currentFieldConfigPosition;
-  }
-
   findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
+    parentId?: string,
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
     // Use a queue for breadth-first search
-    const queue: Array<FormlyFieldConfig[]> = [fieldConfig];
+    const queue: Array<{ parent: any; config: FormlyFieldConfig[] }> = [
+      { parent: null, config: fieldConfig },
+    ];
 
     while (queue.length > 0) {
-      const config = queue.shift();
+      const item = queue.shift();
 
-      if (!config) continue;
+      if (!item) continue;
 
       // Check all fields at current level first
-      const index = config.findIndex((field) => field.key === id);
-      if (index !== -1) {
-        return { fieldConfig: config, index };
+      const meetsParentCondition = parentId ? item.parent === parentId : true;
+      if (meetsParentCondition) {
+        const index = item.config.findIndex((field) => field.key === id);
+        if (index !== -1) {
+          return { fieldConfig: item.config, index, field: item.config[index] };
+        }
       }
 
       // Add all child fieldGroups to queue for next level processing
-      config.forEach((item) => {
+      item.config.forEach((item) => {
         if (item.fieldGroup) {
-          queue.push(item.fieldGroup);
+          queue.push({ parent: item.key, config: item.fieldGroup });
         }
       });
     }
@@ -1017,7 +1016,11 @@ export class FormFieldHelper {
     });
 
     if (index !== -1)
-      return { fieldConfig: fieldConfigParent, index: parentIndex };
+      return {
+        fieldConfig: fieldConfigParent,
+        index: parentIndex,
+        field: fieldConfig[index],
+      };
 
     let subFound = null;
     fieldConfig.some((item, index) => {
@@ -1030,6 +1033,14 @@ export class FormFieldHelper {
       return subFound;
     });
     return subFound;
+  }
+
+  findSectionWithLabel(fieldConfig: FormlyFieldConfig[], label: string) {
+    if (!fieldConfig) return null;
+
+    return fieldConfig.find((item) => {
+      return item.props?.label === label;
+    });
   }
 
   addAfter(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {

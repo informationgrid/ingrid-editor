@@ -132,6 +132,12 @@ export class CatalogManagementComponent implements OnInit {
           targetUrl: `${this.configService.getConfiguration().backendUrl}catalogs/import`,
           multiple: false,
           autoSubmit: true,
+          options: [
+            {
+              id: "allowUpdate",
+              label: "bestehenden Katalog aktualisieren",
+            },
+          ],
         },
       })
       .afterClosed()

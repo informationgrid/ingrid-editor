@@ -116,7 +116,7 @@ export class UploadComponent implements AfterViewInit {
   private forbiddenCharInName = "<>:'\"%$/|?*";
 
   // parameters to send with the upload information
-  private additionalParameters: any;
+  additionalParameters = input<any>({});
 
   constructor(
     private uploadService: UploadService,
@@ -211,7 +211,7 @@ export class UploadComponent implements AfterViewInit {
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
     flowFiles.forEach(
-      (file) => (file.flowObj.opts.query = { ...this.additionalParameters }),
+      (file) => (file.flowObj.opts.query = { ...this.additionalParameters() }),
     );
   }
 
@@ -239,11 +239,6 @@ export class UploadComponent implements AfterViewInit {
     transfer.success = true;
     this.errors.next(this._errors);
     this.complete.emit();
-  }
-
-  setAdditionalUploadParameter(params: any) {
-    this.additionalParameters = params;
-    this.flow.flowJs.opts.query = params;
   }
 
   private handleUploadError(event: flowjs.FlowEventFromEventName<any>) {
@@ -296,7 +291,7 @@ export class UploadComponent implements AfterViewInit {
       flowFile.name = parameter.altName;
     } else {
       flowFile.flowObj.opts.query = {
-        ...this.additionalParameters,
+        ...this.additionalParameters(),
         ...parameter,
       };
     }

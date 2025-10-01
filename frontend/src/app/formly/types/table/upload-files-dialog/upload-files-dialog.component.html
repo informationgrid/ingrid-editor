@@ -8,6 +8,7 @@
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl()"
+            [additionalParameters]="optionsSelection"
             [infoText]="infoText"
             [allowedUploadTypes]="allowedUploadTypes"
             (chosenFiles)="updateChosenFiles($event)"
@@ -33,6 +34,16 @@
                     einen Moment dauern.
                 </div>
             }
+        }
+        @for (option of options(); track option) {
+            <mat-slide-toggle
+                labelPosition="before"
+                color="accent"
+                class="stretch"
+                (change)="optionsSelection[option.id] = $event.checked"
+            >
+                {{ option.label }}
+            </mat-slide-toggle>
         }
     </ng-container>
 </ige-dialog-template>

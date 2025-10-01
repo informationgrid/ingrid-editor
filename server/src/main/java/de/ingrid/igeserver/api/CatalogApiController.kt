@@ -26,6 +26,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
+import de.ingrid.igeserver.imports.CatalogImportOptions
 import de.ingrid.igeserver.imports.CatalogImportService
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.CatalogConfigRequest
@@ -148,6 +149,7 @@ class CatalogApiController(
         flowTotalSize: Long,
         flowIdentifier: String,
         flowFilename: String,
+        allowUpdate: Boolean,
     ): ResponseEntity<Unit> {
         authUtils.isSuperAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -167,7 +169,7 @@ class CatalogApiController(
                 .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
                 .readValue(it.toFile())
             try {
-                catalogImportService.importCatalog(exportedCatalog)
+                catalogImportService.importCatalog(exportedCatalog, CatalogImportOptions(allowUpdate))
             } catch (e: Exception) {
                 fileUploadHandler.cleanup(flowIdentifier)
                 throw e

@@ -19,58 +19,151 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
+import { FormMenuService } from "../app/+form/form-menu.service";
+import { TranslocoService } from "@jsverse/transloco";
+import { ConfigService } from "../app/services/config/config.service";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
+import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { FieldConfigPosition } from "./form-field-helper";
-import { CommonFieldsLUBW } from "./ingrid-lubw/doctypes/common-fields";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
 
 @Component({
   template: "",
   standalone: true,
 })
 class InGridLUBWComponent extends InGridComponent {
-  common = inject(CommonFieldsLUBW);
+  geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
+  behaviourService = inject(BehaviourService);
+  configService = inject(ConfigService);
+  formMenuService = inject(FormMenuService);
+  translocoService = inject(TranslocoService);
+  protected codelistStore = inject(CodelistStore);
 
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOLUBW";
-    this.modifyFormFieldConfiguration();
+    const isAuthor = this.configService.$userInfo.value.role === "author";
+    // pre-fetch 505 codelist for validation message in addresses
+    this.geoDataset.getCodelistForSelect("505", "");
+    this.modifyFormFieldConfiguration(isAuthor);
+
+    if (isAuthor) {
+      this.geoService.showUpdateGetCapabilities = false;
+      this.disablePlugins([
+        "plugin.newDoc",
+        "plugin.folder",
+        "plugin.copy.cut.paste",
+        "plugin.deleteDocs",
+        "plugin.tags",
+        "plugin.getCapWizard",
+      ]);
+      this.formMenuService.addExcludedMenuItems("publish", [
+        "PUBLISH",
+        "VALIDATE",
+        "UNPUBLISH",
+        "REVERT",
+      ]);
+      this.translocoService.setTranslation(
+        {
+          publish: {
+            confirmMessage:
+              "Mit der Bestätigung dieser Meldung wird der Metadatensatz gespeichert und im Web-Auftritt der RIPS-Metadaten veröffentlicht. Eine automatische Benachrichtigung wird an RIPS-Metadaten@lubw.bwl.de gesendet.",
+          },
+        },
+        "de",
+        { merge: true },
+      );
+      this.replaceHelpLink();
+    }
   }
 
-  private modifyFormFieldConfiguration() {
-    this.geoDataset.manipulateDocumentFields = (
-      fieldConfig: FormlyFieldConfig[],
-    ) => {
-      this.addFields(fieldConfig);
-      return fieldConfig;
-    };
+  private modifyFormFieldConfiguration(isAuthor: boolean) {
+    [
+      this.specialisedTask,
+      this.geoDataset,
+      this.publication,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+    ].forEach((docType) => {
+      const manipulateDocumentFieldsBase = docType.manipulateDocumentFields;
+      docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+        manipulateDocumentFieldsBase(fieldConfig);
+        const contacts = docType.findFieldElementWithId(
+          fieldConfig,
+          "pointOfContact",
+        );
+        contacts.field.props.requiredMessage = () => {
+          const addressTypes = this.getAddressTypesByKeys(["12", "7", "5"]);
+          return `Es müssen insgesamt drei Adressen angegeben werden: '${addressTypes[0]}', '${addressTypes[1]}' und '${addressTypes[2]}'.`;
+        };
+        contacts.field.validators = {
+          threeAddressTypesNeeded: {
+            expression: (ctrl: FormControl) => {
+              const requiredTypes = ["12", "7", "5"];
+              return requiredTypes.every((requiredType) =>
+                ctrl.value
+                  ? ctrl.value.some(
+                      (address: any) => address.type?.key === requiredType,
+                    )
+                  : false,
+              );
+            },
+            message: () => {
+              const addressTypes = this.getAddressTypesByKeys(["12", "7", "5"]);
+              return `Es müssen insgesamt drei Adressen angegeben werden: '${addressTypes[0]}', '${addressTypes[1]}' und '${addressTypes[2]}'.`;
+            },
+          },
+        };
+
+        const keywordsField = docType.findFieldElementWithId(
+          fieldConfig,
+          "keywords",
+        );
+        const analyzeField = keywordsField.fieldConfig.splice(
+          keywordsField.index + 1,
+        );
+        docType.addBefore(keywordsField, analyzeField[0]);
+
+        if (isAuthor) {
+          const freeKeywords = docType.findFieldElementWithId(
+            fieldConfig,
+            "free",
+          );
+          freeKeywords.field.props.hideInputField = true;
+        }
+
+        return fieldConfig;
+      };
+    });
   }
 
-  // dataQualityInfo
-  // lineage
-  // source
-  // descriptions", "Datengrundlage",
-  // processStep
-  // description", "Herstellungsprozess",
-
-  private addFields(fieldConfig: FormlyFieldConfig[]) {
-    const identifierPosition = this.common.findFieldElementWithId(
-      fieldConfig,
-      "identifier",
-    );
-    const processStepPosition = this.common.findFieldElementWithId(
-      fieldConfig,
-      "processStep",
-    );
-
-    this.addAfter(identifierPosition, this.common.getOACFieldConfig());
-    this.addAfter(
-      processStepPosition,
-      this.common.getEnvironmentDescriptionFieldConfig(),
-    );
+  private getAddressTypesByKeys(keys: string[]) {
+    return keys.map((key) => {
+      return this.codelistStore.getCodelistEntryValueByKey(
+        "505",
+        key,
+        ConfigService.catalogId,
+      );
+    });
   }
 
-  private addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
+  private disablePlugins(pluginIds: string[]) {
+    pluginIds.forEach((id) => {
+      this.behaviourService.getBehaviour(id).isActive.set(false);
+    });
+  }
+
+  private replaceHelpLink() {
+    // update external help for authors
+    this.formMenuService.removeMenuItem("settings", "help");
+    this.formMenuService.addMenuItem("settings", {
+      title: "Hilfe",
+      name: "help",
+      link: "https://wissensplattform-umwelt.bwl.de/hilfsmittel_und_hinweise",
+    });
   }
 }
 

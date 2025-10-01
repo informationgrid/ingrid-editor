@@ -138,7 +138,6 @@ class CatalogTransferService(
 
     data class ExportedCatalog(
         var version: String,
-        val allowUpdate: Boolean = false,
         var catalog: MutableMap<String?, Any?>,
         var behaviour: List<MutableMap<String?, Any?>>,
         var codelist: List<MutableMap<String?, Any?>>,

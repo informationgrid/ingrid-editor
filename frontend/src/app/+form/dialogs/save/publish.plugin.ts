@@ -18,11 +18,8 @@
  * limitations under the Licence.
  */
 import { effect, inject, Injectable, signal } from "@angular/core";
-import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { DocumentService } from "../../../services/document/document.service";
 import { Observable, of } from "rxjs";
-import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -42,6 +39,8 @@ import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { FormMenuService } from "../../form-menu.service";
+import { DocumentService } from "../../../services/document/document.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -61,15 +60,12 @@ export class PublishPlugin extends SaveBase {
   private profileService = inject(ProfileService);
   private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private formMenuService = inject(FormMenuService);
+  private transloco = inject(TranslocoService);
+  private modalService = inject(ModalService);
+  private docEvents = inject(DocEventsService);
 
-  constructor(
-    public formToolbarService: FormToolbarService,
-    private modalService: ModalService,
-    public dialog: MatDialog,
-    public documentService: DocumentService,
-    private docEvents: DocEventsService,
-    private transloco: TranslocoService,
-  ) {
+  constructor() {
     super();
     this.fields.push({
       key: "unpublishDisabled",
@@ -116,14 +112,8 @@ export class PublishPlugin extends SaveBase {
     this.formSubscriptions.push(...toolbarEventSubscription);
   }
 
+  // TODO: Menu should be separated into additional plugins, that use FormMenuService to register menu items
   private addToolbarButtons() {
-    // add button to toolbar for publish action
-    this.formToolbarService.addButton({
-      id: "toolBtnPublishSeparator",
-      isSeparator: true,
-      pos: 100,
-    });
-
     const publishMenu = [
       {
         eventId: this.eventPublishId,
@@ -157,13 +147,13 @@ export class PublishPlugin extends SaveBase {
 
     this.formToolbarService.addButton({
       id: "toolBtnPublish",
-      label: "Veröffentlichen",
+      label: this.transloco.translate("publish.buttonLabel"),
       eventId: this.eventPublishId,
       pos: 25,
       align: "right",
       active: signal(false),
       isPrimary: true,
-      menu: publishMenu,
+      menu: this.removeExcludedItems(publishMenu),
     });
   }
 
@@ -226,7 +216,7 @@ export class PublishPlugin extends SaveBase {
     this.modalService.showIgeError(error);
   }
 
-  publish(withoutConfirmation: boolean = false) {
+  private publish(withoutConfirmation: boolean = false) {
     // show confirm dialog
     const message = this.transloco.translate("publish.confirmMessage");
 
@@ -305,7 +295,7 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
-  saveWithData(data, overrideVersion?: number, delay: Date = null) {
+  protected saveWithData(data, overrideVersion?: number, delay: Date = null) {
     const metadata = this.getMetadata();
     this.documentService
       .publish(
@@ -333,7 +323,7 @@ export class PublishPlugin extends SaveBase {
       .subscribe();
   }
 
-  revert() {
+  private revert() {
     const docId = this.getMetadata().wrapperId;
 
     const message =
@@ -373,7 +363,6 @@ export class PublishPlugin extends SaveBase {
     super.unregisterForm();
 
     if (this.isActive()) {
-      this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }
   }
@@ -486,5 +475,10 @@ export class PublishPlugin extends SaveBase {
       if (planned) this.showPlanPublishingDialog();
       else this.publish(event?.data?.withoutConfirmation);
     });
+  }
+
+  private removeExcludedItems(items) {
+    const excludedItems = this.formMenuService.getExcludedMenuItems("publish");
+    return items.filter((item) => !excludedItems.includes(item.eventId));
   }
 }

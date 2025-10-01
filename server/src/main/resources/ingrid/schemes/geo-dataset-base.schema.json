@@ -180,6 +180,19 @@
         }
       }
     },
+    "featureDescription": {
+      "properties": {
+        "citation": {
+          "$ref": "#/definitions/citation"
+        },
+        "featureTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        }
+      }
+    },
     "propertiesGeoDataset": {
       "type": "object",
       "properties": {
@@ -373,15 +386,7 @@
       }
     },
     "featureCatalogueDescription": {
-      "citation": {
-        "$ref": "#/definitions/citation"
-      },
-      "featureTypes": {
-        "type": "array",
-        "items": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        }
-      }
+      "$ref": "#/definitions/featureDescription"
     },
     "extraInfo": {
       "$ref": "refs/general.schema.json#/definitions/extraInfo"

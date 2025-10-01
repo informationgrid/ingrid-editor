@@ -1,6 +1,6 @@
 <ige-dialog-template
-    [label]="titleText"
-    [disabled]="disabled"
+    [label]="titleText()"
+    [disabled]="disabled()"
     (submit)="submit(form.value)"
 >
     <div content>

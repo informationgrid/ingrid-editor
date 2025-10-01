@@ -21,7 +21,9 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
   OnInit,
+  signal,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -77,6 +79,27 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
+export interface TableProps {
+  hidden?: boolean;
+  columns: any[];
+  externalLabel?: string;
+  dialog?: any;
+  supportUpload?: boolean;
+  hasContextHelp?: boolean;
+  required?: boolean;
+  // TODO: should be moved to UVP profile
+  batchValidUntil?: any;
+  batchActions?: any[];
+  allowDuplicate?: boolean;
+  customAddFn?: (
+    allData: any[],
+    item: any,
+    isNew: boolean,
+    index: number,
+  ) => void;
+  duplicatePostfixField?: string;
+}
+
 @UntilDestroy()
 @Component({
   selector: "ige-table-type",
@@ -93,9 +116,7 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
     CdkDropList,
     CdkDrag,
     MatColumnDef,
-    MatHeaderCellDef,
     MatHeaderCell,
-    MatCellDef,
     MatCell,
     CdkDragHandle,
     MatIconButton,
@@ -103,25 +124,43 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    MatHeaderRowDef,
     MatHeaderRow,
-    MatRowDef,
     MatRow,
     AddButtonComponent,
     FormlyValidationMessage,
+    MatRowDef,
+    MatHeaderRowDef,
+    MatCellDef,
+    MatHeaderCellDef,
   ],
 })
 export class TableTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<TableProps>>
   implements OnInit, AfterViewInit
 {
-  readonly preservedValues = {};
-
   dataSource = new MatTableDataSource<any>([]);
-  displayedColumns: string[];
-  displayedColumnsReadOnly: string[];
+  initialColumns = signal<any[]>([]);
+  initialColumnsWithManagement = computed(() => {
+    return [
+      this.batchMode() ? "_select_" : null,
+      ...this.initialColumns(),
+      "_actions_",
+    ].filter(Boolean);
+  });
+  displayedColumns = computed<string[]>(() => {
+    return [
+      this.batchMode() ? "_select_" : null,
+      ...this.initialColumns()
+        .filter((column) => !column.hidden)
+        .map((column) => column.key),
+      "_actions_",
+    ].filter(Boolean);
+  });
+  displayedColumnsReadOnly = computed<string[]>(() =>
+    this.displayedColumns().slice(0, -1),
+  );
   selection = new SelectionModel<any>(true, []);
-  batchMode = false;
+  batchMode = signal<boolean>(false);
   dragDisabled = true;
   formattedCell: Array<any> = [];
 
@@ -139,14 +178,7 @@ export class TableTypeComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.props.columns
-      .filter((column) => !column.hidden)
-      .map((column) => column.key);
-    this.displayedColumns.push("_actions_");
-    this.displayedColumns.forEach(
-      (column) => (this.preservedValues[column] = new WeakMap<any, any>()),
-    );
-    this.displayedColumnsReadOnly = this.displayedColumns.slice(0, -1);
+    this.initialColumns.set(this.props.columns);
 
     this.formControl.valueChanges
       .pipe(
@@ -228,14 +260,22 @@ export class TableTypeComponent
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          if (newEntry) {
-            this.dataSource.data.push(result);
-          } else {
-            this.dataSource.data.splice(index, 1, result);
-          }
-          this.updateTableDataToForm(this.dataSource.data);
+          this.handleItemUpdate(result, newEntry, index);
         }
       });
+  }
+
+  private handleItemUpdate(result: any, newEntry: boolean, index: number) {
+    if (this.props.customAddFn) {
+      this.props.customAddFn(this.dataSource.data, result, newEntry, index);
+    } else {
+      if (newEntry) {
+        this.dataSource.data.push(result);
+      } else {
+        this.dataSource.data.splice(index, 1, result);
+      }
+    }
+    this.updateTableDataToForm(this.dataSource.data);
   }
 
   private updateFormControl(value: any[]) {
@@ -259,15 +299,7 @@ export class TableTypeComponent
   }
 
   toggleBatchMode(forceState?: boolean) {
-    this.batchMode = forceState ?? !this.batchMode;
-
-    if (this.batchMode) {
-      this.displayedColumns.unshift("_select_");
-    } else {
-      this.displayedColumns = this.displayedColumns.filter(
-        (item) => item !== "_select_",
-      );
-    }
+    this.batchMode.set(forceState ?? !this.batchMode());
   }
 
   removeSelectedRows() {
@@ -430,7 +462,7 @@ export class TableTypeComponent
     const uploadKey = this.getUploadFieldKey();
     if (!element[uploadKey].asLink) {
       const options =
-        this.props.columns[this.batchMode ? index - 1 : index].props;
+        this.props.columns[this.batchMode() ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
           this.formStateService.metadata().uuid,
@@ -466,5 +498,29 @@ export class TableTypeComponent
     return this.formControl.value?.every((item) =>
       requiredColumnKeys.every((key) => item[key]),
     );
+  }
+
+  duplicateRow(rowIndex: number) {
+    const value = { ...this.formControl.value[rowIndex] };
+    if (this.props.duplicatePostfixField) {
+      value[this.props.duplicatePostfixField] = this.appendTextWithIndex(
+        this.formControl.value,
+        value[this.props.duplicatePostfixField],
+        this.props.duplicatePostfixField,
+      );
+    }
+    this.handleItemUpdate(value, true, rowIndex);
+  }
+
+  appendTextWithIndex(data: any[], appendedText: string, key: string): string {
+    let index = 1;
+    const text = appendedText;
+
+    while (data.some((item) => item[key] === appendedText)) {
+      appendedText = `${text} - Kopie ${index}`;
+      index++;
+    }
+
+    return appendedText;
   }
 }

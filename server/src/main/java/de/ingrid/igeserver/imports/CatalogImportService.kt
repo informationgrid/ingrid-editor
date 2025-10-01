@@ -38,6 +38,10 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
+data class CatalogImportOptions(
+    val allowUpdate: Boolean = false,
+)
+
 @Service
 class CatalogImportService(
     entityManager: EntityManager,
@@ -49,13 +53,13 @@ class CatalogImportService(
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
-    fun importCatalog(exportedCatalog: ExportedCatalog) {
+    fun importCatalog(exportedCatalog: ExportedCatalog, options: CatalogImportOptions = CatalogImportOptions()) {
         runPreChecks(exportedCatalog)
 
         val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
         val catalogId = try {
             val existingCatalog = catalogService.getCatalogById(catalogIdentifier)
-            if (!exportedCatalog.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists and import file does not allow updates. Add the field '"allowUpdate": true' to the import file in order to update an existing catalog.""")
+            if (!options.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists. In order to update the catalog you need to toggle the button 'bestehenden Katalog aktualisieren'.""")
             existingCatalog.id!!
         } catch (e: EmptyResultDataAccessException) {
             createCatalog(exportedCatalog.catalog)

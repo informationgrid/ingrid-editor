@@ -83,7 +83,7 @@ export abstract class IngridShared extends BaseDoctype {
   http = inject(HttpClient);
   dialog = inject(MatDialog);
   cookieService = inject(CookieService);
-  private snack = inject(MatSnackBar);
+  protected snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
   documentService = inject(DocumentService);
@@ -372,17 +372,7 @@ export abstract class IngridShared extends BaseDoctype {
                         (address: any) => address.type?.key === "12",
                       )
                     : false,
-                message: () =>
-                  this.transloco.translate(
-                    "form.validationMessages.missingContact",
-                    {
-                      type: this.codelistStore.getCodelistEntryValueByKey(
-                        "505",
-                        "12",
-                        ConfigService.catalogId,
-                      ),
-                    },
-                  ),
+                message: this.validateRequiredContactType("12"),
               },
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
@@ -393,17 +383,7 @@ export abstract class IngridShared extends BaseDoctype {
                         (address: any) => address.type?.key === "7",
                       )
                     : false),
-                message: () =>
-                  this.transloco.translate(
-                    "form.validationMessages.missingContact",
-                    {
-                      type: this.codelistStore.getCodelistEntryValueByKey(
-                        "505",
-                        "7",
-                        ConfigService.catalogId,
-                      ),
-                    },
-                  ),
+                message: this.validateRequiredContactType("7"),
               },
               atLeastOneOtherAddress: {
                 expression: (ctrl: FormControl) =>
@@ -430,6 +410,17 @@ export abstract class IngridShared extends BaseDoctype {
         ]),
       ].filter(Boolean),
     );
+  }
+
+  validateRequiredContactType(contactTypeKey: string) {
+    return () =>
+      this.transloco.translate("form.validationMessages.missingContact", {
+        type: this.codelistStore.getCodelistEntryValueByKey(
+          "505",
+          contactTypeKey,
+          ConfigService.catalogId,
+        ),
+      });
   }
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {

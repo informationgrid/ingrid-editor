@@ -17,11 +17,22 @@
     </ng-template>
 
     @if (dataSource?.data?.length > 0) {
-        <div class="table-header flex-row" [attr.data-cy]="key + '-header'">
+        <div
+            class="table-header flex-row justify-content-space-between"
+            [attr.data-cy]="key + '-header'"
+        >
             <ng-container *ngTemplateOutlet="label"></ng-container>
             @if (formControl.enabled) {
-                <div class="flex-1"></div>
-                @if (!batchMode) {
+                @if (batchMode()) {
+                    <button
+                        type="button"
+                        mat-button
+                        (click)="toggleBatchMode()"
+                    >
+                        <mat-icon>done</mat-icon>
+                        Fertig
+                    </button>
+                } @else {
                     <button
                         color="primary"
                         type="button"
@@ -32,22 +43,12 @@
                         Bearbeiten
                     </button>
                 }
-                @if (batchMode) {
-                    <button
-                        type="button"
-                        mat-button
-                        (click)="toggleBatchMode()"
-                    >
-                        <mat-icon>done</mat-icon>
-                        Fertig
-                    </button>
-                }
             }
         </div>
     }
 
     <div [class.padding-bottom]="dataSource?.data?.length > 0">
-        @if (batchMode) {
+        @if (batchMode()) {
             <div class="table-batch-edit-row">
                 <mat-checkbox
                     (change)="$event ? masterToggle() : null"
@@ -58,6 +59,7 @@
                 <button
                     type="button"
                     mat-button
+                    color="primary"
                     (click)="showDeleteEntriesDialog()"
                     [disabled]="selection.isEmpty()"
                 >
@@ -68,11 +70,26 @@
                     <button
                         type="button"
                         mat-button
+                        color="primary"
                         (click)="setValidUntil()"
                         [disabled]="selection.isEmpty()"
                     >
                         <mat-icon>today</mat-icon>
                         Gültig bis ändern
+                    </button>
+                }
+                @for (action of props.batchActions; track action) {
+                    <button
+                        type="button"
+                        mat-button
+                        color="primary"
+                        (click)="action.click(selection.selected, formControl)"
+                        [disabled]="selection.isEmpty()"
+                    >
+                        @if (action.icon) {
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                        }
+                        {{ action.label }}
                     </button>
                 }
             </div>
@@ -94,7 +111,7 @@
             <table
                 mat-table
                 [dataSource]="dataSource"
-                [class.edit-mode]="batchMode"
+                [class.edit-mode]="batchMode()"
                 [attr.data-cy]="key + '-table'"
                 cdkDropList
                 cdkDrag
@@ -102,21 +119,18 @@
                 (cdkDropListDropped)="dragDisabled = true; drop($event)"
             >
                 @for (
-                    column of displayedColumns;
+                    column of initialColumnsWithManagement();
                     track column;
                     let i = $index
                 ) {
-                    <ng-container [matColumnDef]="column">
+                    <ng-container [matColumnDef]="column.key ?? column">
                         @switch (column) {
                             <!-- Select Column -->
                             @case ("_select_") {
                                 <th mat-header-cell *matHeaderCellDef></th>
                                 <td
                                     mat-cell
-                                    *matCellDef="
-                                        let element;
-                                        let rowIndex = index
-                                    "
+                                    *matCellDef="let element"
                                     class="select-controls compact-column"
                                 >
                                     <div class="drag-select-wrapper">
@@ -171,6 +185,15 @@
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                     </button>
                                     <mat-menu #tableRowAction="matMenu">
+                                        @if (props.allowDuplicate) {
+                                            <button
+                                                type="button"
+                                                mat-menu-item
+                                                (click)="duplicateRow(rowIndex)"
+                                            >
+                                                Duplizieren
+                                            </button>
+                                        }
                                         <button
                                             type="button"
                                             mat-menu-item
@@ -190,86 +213,53 @@
                             }
                             <!-- Normal column-->
                             @default {
-                                @if (
-                                    {
-                                        width: props.columns[
-                                            batchMode ? i - 1 : i
-                                        ].width,
-                                    };
-                                    as flex
-                                ) {
-                                    <th
-                                        mat-header-cell
-                                        *matHeaderCellDef
-                                        [class]="
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .class
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    [class]="column.class"
+                                >
+                                    {{ column.label }}
+                                    @if (column.props?.required) {
+                                        <span>*</span>
+                                    }
+                                </th>
+                                <td
+                                    mat-cell
+                                    *matCellDef="
+                                        let element;
+                                        let rowIndex = index
+                                    "
+                                    [class]="column.class ?? 'compact-column'"
+                                    [style.flex-basis]="column.width"
+                                    [style.max-width]="column.width"
+                                >
+                                    <span
+                                        class="vertical_align_center"
+                                        [innerHTML]="
+                                            formattedCell[rowIndex]
+                                                ? (formattedCell[rowIndex][
+                                                      column.key
+                                                  ] ?? element[column.key])
+                                                : element[column.key]
                                         "
-                                    >
-                                        {{
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .label
-                                        }}
-                                        @if (
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .props.required
-                                        ) {
-                                            <span>*</span>
-                                        }
-                                    </th>
-                                    <td
-                                        mat-cell
-                                        *matCellDef="
-                                            let element;
-                                            let rowIndex = index
+                                        (click)="
+                                            handleCellClick(i, element, $event)
                                         "
-                                        [class]="
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .class ?? 'compact-column'
-                                        "
-                                        [style.flex-basis]="flex.width"
-                                        [style.max-width]="flex.width"
-                                    >
-                                        <span
-                                            class="vertical_align_center"
-                                            [innerHTML]="
-                                                formattedCell[rowIndex]
-                                                    ? (formattedCell[rowIndex][
-                                                          column
-                                                      ] ?? element[column])
-                                                    : element[column]
-                                            "
-                                            (click)="
-                                                handleCellClick(
-                                                    i,
-                                                    element,
-                                                    $event
-                                                )
-                                            "
-                                        ></span>
-                                    </td>
-                                }
+                                    ></span>
+                                </td>
                             }
                         }
                     </ng-container>
                 }
-                <tr
-                    mat-header-row
-                    *matHeaderRowDef="
-                        formControl.enabled
-                            ? displayedColumns
-                            : displayedColumnsReadOnly
-                    "
-                ></tr>
+                @let shownColumns =
+                    formControl.enabled
+                        ? displayedColumns()
+                        : displayedColumnsReadOnly();
+                <tr mat-header-row *matHeaderRowDef="shownColumns"></tr>
                 <tr
                     mat-row
-                    *matRowDef="
-                        let row;
-                        columns: formControl.enabled
-                            ? displayedColumns
-                            : displayedColumnsReadOnly
-                    "
-                    (click)="batchMode ? selection.toggle(row) : null"
+                    *matRowDef="let row; columns: shownColumns"
+                    (click)="batchMode() ? selection.toggle(row) : null"
                     [class.disabled]="formControl.disabled"
                     cdkDrag
                     [cdkDragData]="row"

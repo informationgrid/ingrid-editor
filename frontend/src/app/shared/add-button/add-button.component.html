@@ -72,7 +72,8 @@
     <ng-container *transloco="let t">
         @if (showRequiredError()) {
             <mat-error #matError class="error">{{
-                t("form.validationMessages.createOneEntry")
+                requiredMessage()?.() ??
+                    t("form.validationMessages.createOneEntry")
             }}</mat-error>
         }
     </ng-container>

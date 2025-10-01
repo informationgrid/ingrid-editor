@@ -23,6 +23,7 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.MailProperties
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Component
 import java.text.MessageFormat
 
@@ -67,11 +68,23 @@ class EmailServiceImpl(
 
     fun sendEmail(to: String, subject: String, text: String) {
         val message = SimpleMailMessage().apply {
-            from = mailProps.from
-            setTo(to)
+            from = mailProps.from.trim()
+            setTo(to.trim())
             setSubject(subject)
             setText(text)
         }
         email.send(message)
+    }
+
+    fun sendHTMLEmail(to: String, subject: String, text: String) {
+        email.createMimeMessage().apply {
+            MimeMessageHelper(this, false, "utf-8").apply {
+                setFrom(mailProps.from.trim())
+                setTo(to.trim())
+                setSubject(subject)
+                setText(text, true)
+            }
+            email.send(this)
+        }
     }
 }

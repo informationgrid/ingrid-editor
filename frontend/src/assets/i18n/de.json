@@ -81,13 +81,15 @@
   "roles": {
     "cat-admin": "Katalog-Administrator",
     "md-admin": "Metadaten-Administrator",
-    "author": "Autor"
+    "author": "Autor",
+    "ige-super-admin": "Super-Administrator"
   },
   "export": {
     "form": "Daten",
     "formSingular": "Datensatz"
   },
   "publish": {
+    "buttonLabel": "Veröffentlichen",
     "formWithPronoun": "Dieser Datensatz",
     "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },

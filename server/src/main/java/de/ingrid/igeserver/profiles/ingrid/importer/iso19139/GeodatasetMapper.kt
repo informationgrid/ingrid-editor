@@ -84,7 +84,21 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         val idOfIdentifier = identifier?.substringAfterLast("/")
                         val response = isoData.researchService.query(
                             catalogId,
-                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' IN ('$identifier', '$idOfIdentifier')"), null, null, false)),
+                            ResearchQuery(
+                                null,
+                                BoolFilter(
+                                    "AND",
+                                    listOf(
+                                        "document_wrapper.type = 'InGridGeoDataset'",
+                                        "deleted = 0",
+                                        "state = 'PUBLISHED'",
+                                        "data ->> 'identifier' IN ('$identifier', '$idOfIdentifier')",
+                                    ),
+                                    null,
+                                    null,
+                                    false,
+                                ),
+                            ),
                         )
                         return if (response.totalHits == 1) response.hits[0].uuid else null
                     }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,22 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { FormFieldHelper } from "../../form-field-helper";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+package de.ingrid.igeserver.profiles.ingrid_lubw
 
-@Injectable({ providedIn: "root" })
-export class CommonFieldsLUBW extends FormFieldHelper {
-  getOACFieldConfig(): FormlyFieldConfig {
-    return this.addInput("oac", "OAC", {
-      wrappers: ["panel", "form-field"],
-    });
-  }
-  getEnvironmentDescriptionFieldConfig(): FormlyFieldConfig {
-    return this.addTextArea(
-      "environmentDescription",
-      "Produktionsumgebung",
-      "lfub",
-    );
-  }
-}
+import org.springframework.boot.context.properties.ConfigurationProperties
+
+@ConfigurationProperties("profile.ingrid-lubw")
+data class LubwSkdvOkProperties(
+    val publishEmailTo: String = "RIPS-Metadaten@lubw.bwl.de",
+    val publishEmailContent: String = """<ul>
+        <li>Metadatensatz: {0}</li>
+        <li>UUID: {1}</li>
+        <li>Fachredakteur: {2}</li>
+        <li>Wann: {3}</li>
+    </ul>""",
+)

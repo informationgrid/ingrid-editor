@@ -28,7 +28,13 @@ export interface FormularMenuItem {
   disabled?: boolean;
 }
 
-export type MenuId = "address" | "dataset" | "user" | "group" | "settings";
+export type MenuId =
+  | "address"
+  | "dataset"
+  | "user"
+  | "group"
+  | "settings"
+  | "publish";
 
 @Injectable({
   providedIn: "root",
@@ -44,12 +50,11 @@ export class FormMenuService {
         title: "Hilfe",
         name: "help",
         link: this.configService.$userInfo.getValue().externalHelp,
-        action: () => {
-          console.debug("Calling help");
-        },
       },
     ].filter(Boolean) as FormularMenuItem[],
   };
+
+  private excludedMenuItems: Partial<Record<MenuId, string[]>> = {};
 
   constructor(private configService: ConfigService) {}
 
@@ -65,5 +70,16 @@ export class FormMenuService {
     this.menuItems[menuId] = this.menuItems[menuId].filter(
       (item) => item.name !== menuItemName,
     );
+  }
+
+  getExcludedMenuItems(menuId: MenuId): string[] {
+    return this.excludedMenuItems[menuId] || [];
+  }
+
+  addExcludedMenuItems(menuId: MenuId, items: string[]) {
+    if (!this.excludedMenuItems[menuId]) {
+      this.excludedMenuItems[menuId] = [];
+    }
+    this.excludedMenuItems[menuId].push(...items);
   }
 }

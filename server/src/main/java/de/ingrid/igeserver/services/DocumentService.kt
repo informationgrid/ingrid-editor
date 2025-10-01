@@ -599,11 +599,11 @@ class DocumentService(
 
         // run pre-publish pipe(s)
         val prePublishPayload =
-            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
+            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper, publishDate)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
-            val updatedDoc = docRepo.save(preUpdatePayload.document)
+            val updatedDoc = docRepo.save(preUpdatePayload.document).apply { wrapperId = docData.wrapper.id }
             val updatedWrapper = if (publishDate != null) {
                 preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
                 docWrapperRepo.save(preUpdatePayload.wrapper)
