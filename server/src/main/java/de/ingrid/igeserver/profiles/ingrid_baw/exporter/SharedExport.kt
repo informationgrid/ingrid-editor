@@ -281,8 +281,8 @@ private fun extractIdentifiers(data: JsonNode): List<String> = listOfNotNull(
 )
 
 private val addressTypeMapping = mapOf(
-    "10" to "author",
-    "11" to "publisher",
+    "11" to "author",
+    "10" to "publisher",
 )
 
 private fun extractCitedParties(transformer: IngridModelTransformer, data: JsonNode): List<CitedResponsibleParty> = data.getPath("pointOfContact")
