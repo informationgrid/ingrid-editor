@@ -30,6 +30,8 @@ import {
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { withFormlyMaterial } from "@ngx-formly/material";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { DateAdapter, MAT_DATE_FORMATS } from "@angular/material/core";
+import { GermanDateAdapter } from "../../../services/german-date.adapter";
 
 describe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -44,6 +46,14 @@ describe("DateRangeTypeComponent", () => {
       FormsModule,
     ],
     providers: [
+      {
+        provide: DateAdapter,
+        useClass: GermanDateAdapter,
+      },
+      {
+        provide: MAT_DATE_FORMATS,
+        useClass: GermanDateAdapter,
+      },
       provideFormlyCore([
         {
           types: [
