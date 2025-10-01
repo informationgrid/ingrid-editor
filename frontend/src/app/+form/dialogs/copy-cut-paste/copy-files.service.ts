@@ -23,6 +23,9 @@ import { SnackBarMessageService } from "../../form-shared/updatable-snackbar/sna
 import { ConfigService } from "../../../services/config/config.service";
 
 interface CopyFilesMessage {
+  catalogId: string;
+  sourceDatasetId: string;
+  targetDatasetId: string;
   copiedFiles: number;
   totalFiles: number;
   progress: number;
@@ -35,14 +38,18 @@ interface CopyFilesMessage {
 export class CopyFilesService extends SnackBarMessageService {
   status: WritableSignal<CopyFilesMessage>;
 
-  protected updateMessage(data: any) {
+  protected updateMessage(data: CopyFilesMessage) {
     this.message.set(
       `Dateikopierfortschritt: ${data.copiedFiles}/${data.totalFiles} (${data.progress}%)`,
     );
   }
 
+  isCopyInProgress(targetId) {
+    return this.status()?.targetDatasetId == targetId && !this.isDone();
+  }
+
   protected isDone() {
-    return this.status().progress >= 100;
+    return this.status()?.progress >= 100;
   }
 
   protected getWatchPath() {

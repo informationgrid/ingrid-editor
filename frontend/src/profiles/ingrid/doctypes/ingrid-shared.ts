@@ -55,6 +55,7 @@ import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { GeneralStore } from "../../../app/store/general.store";
+import { CopyFilesService } from "../../../app/+form/dialogs/copy-cut-paste/copy-files.service";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -79,6 +80,7 @@ export abstract class IngridShared extends BaseDoctype {
   documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+  private copyFilesService = inject(CopyFilesService);
 
   protected codelistStore = inject(CodelistStore);
   protected generalStore = inject(GeneralStore);
@@ -1651,6 +1653,19 @@ export abstract class IngridShared extends BaseDoctype {
             message:
               "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
           },
+          copyCompleted: {
+            expression: (ctrl: FormControl, field: FormlyFieldConfig): boolean => {
+              // check if copy task is running
+              const metadata = field.options.formState.metadata
+              console.log(metadata);
+              return (
+                !metadata ||
+                !metadata.uuid ||
+                !this.copyFilesService.isCopyInProgress(metadata.uuid)
+              );
+            },
+            message: "Das Kopieren von Dateien ist noch nicht abgeschlossen.",
+          }
         },
       }),
     ]);
