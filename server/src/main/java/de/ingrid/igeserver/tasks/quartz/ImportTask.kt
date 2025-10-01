@@ -108,8 +108,8 @@ class ImportTask(
                         info.options!!,
                         message,
                     )
-                    info.analysis.apply { this.importResult = counter }
                     runCodelistSyncTask(info.catalogId)
+                    info.analysis.apply { this.importResult = counter }
                 }
 
                 else -> null
