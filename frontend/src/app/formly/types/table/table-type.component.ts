@@ -141,7 +141,11 @@ export class TableTypeComponent
   dataSource = new MatTableDataSource<any>([]);
   initialColumns = signal<any[]>([]);
   initialColumnsWithManagement = computed(() => {
-    return ["_select_", ...this.initialColumns(), "_actions_"];
+    return [
+      this.batchMode() ? "_select_" : null,
+      ...this.initialColumns(),
+      "_actions_",
+    ].filter(Boolean);
   });
   displayedColumns = computed<string[]>(() => {
     return [
