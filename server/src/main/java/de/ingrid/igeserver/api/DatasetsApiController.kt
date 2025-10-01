@@ -294,8 +294,7 @@ class DatasetsApiController(
 
         docs.hits.forEach { child ->
             child.let {
-                // clear UUID to create a new one during copy
-                prepareDocumentForCopy(it.document)
+                // add wrapperId from document for further usage
                 it.document.wrapperId = it.wrapper.id
                 createCopyAndHandleSubTree(principal, catalogId, it.document, CopyOptions(parentId, true), isAddress)
             }
