@@ -929,7 +929,6 @@ export class FormFieldHelper {
       props: {
         appearance: "outline",
         label: options?.fieldLabel,
-        appearance: "outline",
         externalLabel: label,
         labelProp: "value",
         valueProp: "id",
@@ -966,92 +965,42 @@ export class FormFieldHelper {
     };
   }
 
-  findFieldElementWithIdPath(
-    fieldConfig: FormlyFieldConfig[],
-    id: string,
-  ): FieldConfigPosition {
-    if (!fieldConfig) return null;
-    let currentFieldConfigPosition = null;
-    id.split(".").forEach((idPart) => {
-      currentFieldConfigPosition = this.findFieldElementWithId(
-        currentFieldConfigPosition?.fieldConfig ?? fieldConfig,
-        idPart,
-      );
-    });
-    return currentFieldConfigPosition;
-  }
-
   findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
     parentId?: string,
-    matchesParentId?: boolean,
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
     // Use a queue for breadth-first search
-    const queue: Array<FormlyFieldConfig[]> = [fieldConfig];
+    const queue: Array<{ parent: any; config: FormlyFieldConfig[] }> = [
+      { parent: null, config: fieldConfig },
+    ];
 
     while (queue.length > 0) {
-      const config = queue.shift();
+      const item = queue.shift();
 
-      if (!config) continue;
-
-      if (config.) {
-        const index = fieldConfig.findIndex((field) => field.key === id);
-
-        if (index !== -1)
-          return { fieldConfig, index, field: fieldConfig[index] };
-      }
+      if (!item) continue;
 
       // Check all fields at current level first
-      const index = config.findIndex((field) => field.key === id);
-      if (index !== -1) {
-        return { fieldConfig: config, index };
+      const meetsParentCondition = parentId ? item.parent === parentId : true;
+      if (meetsParentCondition) {
+        const index = item.config.findIndex((field) => field.key === id);
+        if (index !== -1) {
+          return { fieldConfig: item.config, index, field: item.config[index] };
+        }
       }
 
       // Add all child fieldGroups to queue for next level processing
-      config.forEach((item) => {
+      item.config.forEach((item) => {
         if (item.fieldGroup) {
-          queue.push(item.fieldGroup);
+          queue.push({ parent: item.key, config: item.fieldGroup });
         }
       });
     }
 
     return null;
   }
-
-  /*
-  findFieldElementWithId(
-    fieldConfig: FormlyFieldConfig[],
-    id: string,
-    parentId?: string,
-    matchesParentId?: boolean,
-  ): FieldConfigPosition {
-    if (!fieldConfig) return null;
-
-    if (matchesParentId) {
-      const index = fieldConfig.findIndex((field) => {
-        if (field.key === id) return true;
-      });
-
-      if (index !== -1)
-        return { fieldConfig, index, field: fieldConfig[index] };
-    }
-
-    let subFound = null;
-    fieldConfig.some((item) => {
-      subFound = this.findFieldElementWithId(
-        item.fieldGroup,
-        id,
-        parentId,
-        parentId ? item.key === parentId : true,
-      );
-      return subFound;
-    });
-    return subFound;
-  }
-  */
 
   // TODO: merge with findFieldElementWithId
   findParentFieldElementWithId(
@@ -1062,22 +1011,24 @@ export class FormFieldHelper {
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
-    if (matchesParentId) {
-      const index = fieldConfig.findIndex((field) => {
-        if (field.key === id) return true;
-      });
+    const index = fieldConfig.findIndex((field) => {
+      if (field.key === id) return true;
+    });
 
-      if (index !== -1)
-        return { fieldConfig, index, field: fieldConfig[index] };
-    }
+    if (index !== -1)
+      return {
+        fieldConfig: fieldConfigParent,
+        index: parentIndex,
+        field: fieldConfig[index],
+      };
 
     let subFound = null;
-    fieldConfig.some((item) => {
-      subFound = this.findFieldElementWithId(
+    fieldConfig.some((item, index) => {
+      subFound = this.findParentFieldElementWithId(
         item.fieldGroup,
         id,
-        parentId,
-        parentId ? item.key === parentId : true,
+        fieldConfig,
+        index,
       );
       return subFound;
     });

@@ -57,7 +57,8 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       position.field.props.allowedTypes = ["5", "7", "12"];
     }
 
-    this.addMultipleAfter(position, [
+    this.addAfter(
+      position,
       this.addRepeatList("dataManagement", "Datenführende Stelle", {
         required: true,
         asSelect: true,
@@ -69,7 +70,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         "Hinweise zu Datenführung und Urheberschaft",
         this.id,
       ),
-    ]);
+    );
 
     const positionAccessConstraints = this.findFieldElementWithId(
       fieldConfig,
@@ -100,7 +101,8 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           "Neben 'Es gelten keine Zugriffsbeschränkungen' dürfen keine weiteren Zugriffsbeschränkungen angegeben sein",
       },
     };
-    this.addMultipleBefore(positionAccessConstraints, [
+    this.addBefore(
+      positionAccessConstraints,
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
         options: [
@@ -141,13 +143,14 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           },
         },
       ),
-    ]);
+    );
 
     const positionFachbezug = this.findFieldElementWithId(
       fieldConfig,
       "featureTypes",
     );
-    this.addMultipleAfter(positionFachbezug, [
+    this.addAfter(
+      positionFachbezug,
       this.addSelect("environmentDescription", "Produktionsumgebung", {
         codelistId: "30001",
         options: this.getCodelistForSelect("30001", "environmentDescription"),
@@ -278,7 +281,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         ) =>
           this.addSortedTableEntry(isNew, item, allData, currentIndex, "type"),*/
       }),
-    ]);
+    );
     return fieldConfig;
   };
 
