@@ -303,7 +303,7 @@ private fun extractCitedParties(transformer: IngridModelTransformer, data: JsonN
 private fun createIndividualName(partyData: JsonNode): String? {
     val firstName = partyData.getString("firstName") ?: return null
     val lastName = partyData.getString("lastName") ?: return null
-    return "$firstName, $lastName"
+    return "$lastName, $firstName"
 }
 
 val DOMAIN_WHITELIST = listOf(
