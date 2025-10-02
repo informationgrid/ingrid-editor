@@ -66,6 +66,7 @@ export interface MetadataOption {
   required?: boolean;
   typeOptions: MetadataOptionItems[];
   contextHelpKey?: string;
+  hide?: boolean;
 }
 
 export interface MetadataOptionItems {
@@ -134,7 +135,9 @@ export class MetadataTypeComponent
   }
 
   ngOnInit(): void {
-    this.displayedOptions.set(this.props.availableOptions);
+    this.displayedOptions.set(
+      this.props.availableOptions.filter((option) => !option.hide),
+    );
     this.initForm();
     this.formControl.valueChanges
       .pipe(
@@ -145,7 +148,9 @@ export class MetadataTypeComponent
       .subscribe((value) => {
         const data = value ?? {};
         this.aForm.patchValue({ ...this.cleanForm, ...data }, {});
-        this.displayedOptions.set([...this.props.availableOptions]);
+        this.displayedOptions.set([
+          ...this.props.availableOptions.filter((option) => !option.hide),
+        ]);
         // show short version only when at least one option was chosen
         if (!this.hasValue(data)) this.showShort = false;
         this.hasOptionsSelected = this.hasValue(data);

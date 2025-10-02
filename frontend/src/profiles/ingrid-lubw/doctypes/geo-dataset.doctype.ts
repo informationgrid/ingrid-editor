@@ -38,11 +38,14 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   }
 
   protected metadataOptions(): MetadataOption[] {
-    return [
-      ...super
-        .metadataOptions()
-        .filter((item) => item.contextHelpKey !== "subType"),
-    ];
+    const isAuthor = this.configService.$userInfo.value.role === "author";
+    const options = super.metadataOptions();
+    if (isAuthor) {
+      const subType = options.find((item) => item.contextHelpKey === "subType");
+      subType.hide = true;
+    }
+
+    return options;
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
