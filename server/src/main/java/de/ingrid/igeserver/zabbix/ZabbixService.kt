@@ -392,6 +392,20 @@ class ZabbixService(
         return array.map { it }
     }
 
+    private fun getFromResultArrayAsList(response: JsonNode, field: String): List<String> {
+        val array = response.get("result")
+        val values = mutableListOf<String>()
+
+        for (i in 0 until array.size()) {
+            val hasTags = array.get(i).has("tags") && array.get(i).get("tags").size() > 0
+            if (hasTags) {
+                val value = array.get(i).get(field)?.asText()
+                if (value != null) values.add(value)
+            }
+        }
+        return values
+    }
+
     private fun resultArrayIsEmpty(response: JsonNode) = response.get("result").size() == 0
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
@@ -502,6 +516,14 @@ class ZabbixService(
     private fun createDocumentName(docName: String, docUrl: String): String {
         val hash = createHash(docUrl)
         return shortenString(docName + " " + hash.take(4), 64)
+    }
+
+    fun getHostIds(catalogName: String): List<String> {
+        val groupid = getHostGroupId(catalogName)
+        val jsonHostGet =
+            """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":["hostid","host","name"],"selectTags":"extend","groupids":"$groupid"},"id":1}"""
+        val responseHostGet = requestApi(jsonHostGet)
+        return getFromResultArrayAsList(responseHostGet, "host")
     }
 }
 

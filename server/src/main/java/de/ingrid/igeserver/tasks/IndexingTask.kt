@@ -194,7 +194,7 @@ class IndexingTask(
             .forEach { it.checkAndCreateInformationIndex() }
     }
 
-    private fun getExporterConfigForCatalog(
+    fun getExporterConfigForCatalog(
         catalog: Catalog,
         catalogProfile: CatalogProfile,
     ): List<ExtendedExporterConfig> {
