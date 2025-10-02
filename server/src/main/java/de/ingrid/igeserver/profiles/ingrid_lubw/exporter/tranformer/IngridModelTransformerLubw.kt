@@ -29,7 +29,7 @@ class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridM
 
     private val docData = doc.data
     val oac = getOAC(docData)
-    val environmentDescription = getEnvironmentDescription(docData)
+    val environmentDescription = getEnvironmentDescription(docData, transformerConfig.codelists)
 
     // if the document is a service with "Zugang geschützt" or it is a geoservice or geodataset with access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
     override fun hasAccessConstraints(): Boolean = super.hasAccessConstraints() ||

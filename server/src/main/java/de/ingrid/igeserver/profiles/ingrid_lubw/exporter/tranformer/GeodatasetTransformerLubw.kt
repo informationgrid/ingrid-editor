@@ -33,7 +33,7 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
         if (!super.systemEnvironment.isNullOrEmpty()) {
             super.systemEnvironment
         } else {
-            getEnvironmentDescription(docData)
+            getEnvironmentDescription(docData, transformerConfig.codelists)
         }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = amendLubwDescriptiveKeywords(docData, super.getDescriptiveKeywords())

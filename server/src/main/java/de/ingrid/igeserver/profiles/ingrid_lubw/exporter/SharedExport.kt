@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.profiles.ingrid_lubw.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.GeodataserviceTransformerLubw
@@ -55,4 +57,8 @@ fun amendLubwDescriptiveKeywords(
 
 fun getOAC(docData: JsonNode): String? = docData.getString("oac")
 
-fun getEnvironmentDescription(docData: JsonNode): String? = docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+fun getEnvironmentDescription(docData: JsonNode, codelists: CodelistTransformer): String? {
+    val key = docData.getString("dataQualityInfo.lineage.source.environmentDescription.key")
+    val value = docData.getString("dataQualityInfo.lineage.source.environmentDescription.value")
+    return codelists.getCatalogCodelistValue("30001", KeyValue(key, value))
+}
