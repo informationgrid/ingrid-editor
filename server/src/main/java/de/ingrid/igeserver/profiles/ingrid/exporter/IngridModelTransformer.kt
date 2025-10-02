@@ -493,21 +493,21 @@ open class IngridModelTransformer(
         link = "http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset",
         showType = false,
     )
-    val spatialScopeKeyword = Thesaurus(
-        keywords = data.spatialScope?.let {
+    val spatialScopeKeyword = data.spatialScope?.let {
+        Thesaurus(
+            keywords =
             listOf(
                 KeywordIso(
                     name = codelists.getValue("6360", it),
                     link = codelists.getDataField("6360", it.key, "url"),
                 ),
-            )
-        }
-            ?: emptyList(),
-        date = "2019-05-22",
-        name = "Spatial scope",
-        link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
-        showType = false,
-    )
+            ),
+            date = "2019-05-22",
+            name = "Spatial scope",
+            link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
+            showType = false,
+        )
+    }
 
     val opendataCategoryKeywords = Thesaurus(
         name = "",
@@ -559,7 +559,7 @@ open class IngridModelTransformer(
         if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
     open fun getKeywordsAsList(): List<String> {
-        val allKeywords = listOf(
+        val allKeywords = listOfNotNull(
             inspireRelevantKeyword,
             advCompatibleKeyword,
             opendataCategoryKeywords,
@@ -576,7 +576,7 @@ open class IngridModelTransformer(
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
     }
 
-    open fun getDescriptiveKeywords(): List<Thesaurus> = listOf(
+    open fun getDescriptiveKeywords(): List<Thesaurus> = listOfNotNull(
         inspireKeywords,
         serviceTypeKeywords,
         getFreeKeywords(),
