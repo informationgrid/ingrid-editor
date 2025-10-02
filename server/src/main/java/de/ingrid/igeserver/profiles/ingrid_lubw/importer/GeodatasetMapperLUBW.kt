@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_lubw.importer
 
 import de.ingrid.igeserver.exports.iso.MDDataIdentification
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
@@ -32,5 +33,9 @@ class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ?.find { it.startsWith("oac: ") }
         ?.removePrefix("oac: ")
 
-    fun getEnvironmentDescription(): String? = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
+    fun getEnvironmentDescription(): KeyValue? {
+        val value = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
+        val key = codeListService.getCodeListEntryId("30001", value, isoData.catalogLanguage)
+        return key?.let { KeyValue(key, value, "30001") }
+    }
 }
