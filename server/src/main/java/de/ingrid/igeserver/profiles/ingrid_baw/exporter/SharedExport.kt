@@ -40,7 +40,6 @@ import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
-import org.springframework.dao.EmptyResultDataAccessException
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.reflect.KClass
@@ -83,15 +82,7 @@ fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? = trans
 
 private fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
     val wrapper = transformer.documentService.getWrapperById(transformer.doc.wrapperId!!)
-    if (wrapper.type == "FOLDER" || wrapper.parent == null) return null
-
-    val parentDoc = try {
-        transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, wrapper.getParentUuid()!!)
-    } catch (_: EmptyResultDataAccessException) {
-        // no published document found
-        null
-    }
-    return parentDoc?.data?.getString("identifier")?.let { id -> transformer.addNamespaceIfNeeded(id) }
+    return if (wrapper.parent != null && wrapper.parent?.type != "FOLDER") wrapper.parent?.uuid else null
 }
 
 fun getPlainBawKeywords(transformer: IngridModelTransformer): List<String> = transformer.doc.data.getPath("keywords.bawKeywords")
@@ -133,7 +124,8 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
-        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/$path" }) ?: return@mapNotNull null,
+        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/$path" })
+            ?: return@mapNotNull null,
         description = it.getString("explanation"),
         functionValue = "download",
         attachedToField = AttachedField("2000", "9900", "Datendownload"),
@@ -229,7 +221,7 @@ private fun getBwastrCode(bwastrNode: JsonNode): String? {
     val kmEnd = bwastrNode.getDouble("end")
 
     return if (bwastrId != null && kmStart != null && kmEnd != null) {
-        "${bwastrId.padStart(4,'0')}-$kmStart-$kmEnd"
+        "${bwastrId.padStart(4, '0')}-$kmStart-$kmEnd"
     } else {
         null
     }
