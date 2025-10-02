@@ -34,7 +34,7 @@ import io.ktor.http.headersOf
 
 class ZabbixServiceTest : ShouldSpec() {
 
-    val props = ZabbixProperties("", "https://abc.de", "", emptyList(), "", 0, "")
+    val props = ZabbixProperties("", "https://abc.de", "", emptyList(), "", 0, "", ZabbixProperties.Cleanup("", 20))
     private lateinit var service: ZabbixService
     private lateinit var client: HttpClient
     private var requestCount: Int = 0
