@@ -50,6 +50,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.addOACFieldConfig(fieldConfig);
+    this.addEnvironmentDescriptionFieldConfig(fieldConfig);
 
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
 
@@ -154,10 +155,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     );
     this.addAfter(
       positionFachbezug,
-      this.addSelect("environmentDescription", "Produktionsumgebung", {
-        codelistId: "30001",
-        options: this.getCodelistForSelect("30001", "environmentDescription"),
-      }),
       this.addTable("objectAttributes", "Sachattribute", {
         supportUpload: false,
         allowDuplicate: true,
@@ -287,6 +284,22 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     );
     return fieldConfig;
   };
+
+  private addEnvironmentDescriptionFieldConfig(
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    const processStepPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "processStep",
+    );
+    this.addAfter(
+      processStepPosition,
+      this.addSelect("environmentDescription", "Produktionsumgebung", {
+        codelistId: "30001",
+        options: this.getCodelistForSelect("30001", "environmentDescription"),
+      }),
+    );
+  }
 
   private addSortedTableEntry(
     isNew: boolean,

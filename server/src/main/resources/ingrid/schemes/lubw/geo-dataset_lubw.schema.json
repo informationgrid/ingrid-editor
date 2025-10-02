@@ -17,7 +17,12 @@
               "$ref": "../geo-dataset-base.schema.json#/definitions/dataQualitySource",
               "properties": {
                 "environmentDescription": {
-                  "type": ["null", "string"]
+                  "anyOf": [
+                    { "type": "null" },
+                    {
+                      "$ref": "../../../general.schema.json#/definitions/KeyValue"
+                    }
+                  ]
                 }
               }
             }
@@ -44,12 +49,6 @@
       "unevaluatedProperties": false,
       "$ref": "../geo-dataset-base.schema.json#/definitions/featureDescription",
       "properties": {
-        "environmentDescription": {
-          "anyOf": [
-            { "type": "null" },
-            { "$ref": "../../../general.schema.json#/definitions/KeyValue" }
-          ]
-        },
         "objectAttributes": {
           "type": ["null", "array"]
         },

@@ -35,7 +35,7 @@ class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     fun getEnvironmentDescription(): KeyValue? {
         val value = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
-        val key = codeListService.getCodeListEntryId("30001", value, isoData.catalogLanguage)
+        val key = codeListService.getCatalogCodelistKey(isoData.catalogId, "30001", value, isoData.catalogLanguage)
         return key?.let { KeyValue(key, value, "30001") }
     }
 }
