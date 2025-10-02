@@ -361,6 +361,7 @@ open class IngridModelTransformer(
     open val datasetUri: String? = null
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
+    open val uomMeter = "meter"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
     val metadataLanguage =
         if (data.metadata != null) TransformationTools.getLanguageISO639v2Value(data.metadata.language) else null

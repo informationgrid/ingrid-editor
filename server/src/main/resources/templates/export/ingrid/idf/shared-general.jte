@@ -508,7 +508,7 @@
             <gmd:spatialResolution>
                 <gmd:MD_Resolution>
                     <gmd:distance>
-                        <gco:Distance uom="meter">${resolution.getDistanceMeter()}</gco:Distance>
+                        <gco:Distance uom="${page.getUomMeter()}">${resolution.getDistanceMeter()}</gco:Distance>
                     </gmd:distance>
                 </gmd:MD_Resolution>
             </gmd:spatialResolution>

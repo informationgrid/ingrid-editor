@@ -41,6 +41,7 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     fun forRepository() = transformerConfig.tags.contains("forRepository")
+    override val uomMeter = "m"
     override fun transformUrl(url: String?): String? = if (forRepository()) transformUrlForDatenrepository(url) else super.transformUrl(url)
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
