@@ -46,7 +46,7 @@
                 @case ("wkt") {
                     <ige-wkt-spatial
                         [map]="leafletReference"
-                        [wktString]="data?.location.wkt ?? ''"
+                        [wktString]="data?.location?.wkt ?? ''"
                         (result)="this.result.wkt = $event"
                     ></ige-wkt-spatial>
                 }
