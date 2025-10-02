@@ -70,8 +70,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getLfsReferences(this)
 
     override val hierarchyLevelName = when (doc.type) {
-        "BawMeasurement" -> "measurement"
-        "BawSimulation" -> "Simulation"
+        "BawMeasurement" -> "Messdaten"
+        "BawSimulation" -> "Simulationsdaten"
         else -> super.hierarchyLevelName
     }
 
