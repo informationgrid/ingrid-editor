@@ -26,17 +26,13 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     override val splitSpatialSystems = true
     override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
 
-    override fun getKeywords(): List<String> = super.getKeywords(listOf("BAW-Schlagwortkatalog", "de.baw.codelist.model.dimensionality", "de.baw.codelist.model.method", "de.baw.codelist.model.type"))
+    override fun getKeywords(): List<String> = super.getKeywords(BAW_THESAURI)
 
-    fun getBawKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
-        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-        ?.map { KeyValue(it) } ?: emptyList()
+    fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata)
 
-    fun getSubsoilKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Baugrunddynamik-Schlagwortkatalog" }
-        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-        ?.map { KeyValue(it) } ?: emptyList()
+    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata)
+
+    fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 
     fun getDimensionality(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "de.baw.codelist.model.dimensionality" }
@@ -62,8 +58,6 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     fun getOrderNumber(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
         ?.mdAggregateInformation?.aggregateDataSetName?.citation?.identifier?.firstOrNull()?.mdIdentifier?.code?.value
-
-    fun getLiteratureReferences(): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref } ?: emptyList()
 
     fun getTimestep(): Double? = isoData.data.dataQualityInfo
         ?.mapNotNull { it.dqDataQuality }

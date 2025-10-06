@@ -19,11 +19,24 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
+import de.ingrid.igeserver.exports.iso.MDDataIdentification
+import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.model.KeyValue
+
+val BAW_THESAURI = listOf(
+    "BAW-Schlagwortkatalog",
+    "Baugrunddynamik-Schlagwortkatalog",
+    "de.baw.codelist.model.dimensionality",
+    "de.baw.codelist.model.method",
+    "de.baw.codelist.model.type",
+)
+
 fun hierarchyLevelNameToDocumentType(hierarchyLevelName: String?): String = when (hierarchyLevelName) {
     "Simulation",
     "Postprocessing",
     "Preprocessing",
     "Variante",
+    "Visualisierung",
     "Szenario",
     "Simulationsmodell",
     "Simulationslauf",
@@ -36,3 +49,15 @@ fun hierarchyLevelNameToDocumentType(hierarchyLevelName: String?): String = when
 
     else -> "InGridGeoDataset"
 }
+
+fun getBawKeywords(metadata: Metadata): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+    ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
+    ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+    ?.map { KeyValue(it) } ?: emptyList()
+
+fun getSubsoilKeywords(metadata: Metadata): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+    ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Baugrunddynamik-Schlagwortkatalog" }
+    ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+    ?.map { KeyValue(it) } ?: emptyList()
+
+fun getLiteratureReferences(identificationInfo: MDDataIdentification?): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref } ?: emptyList()
