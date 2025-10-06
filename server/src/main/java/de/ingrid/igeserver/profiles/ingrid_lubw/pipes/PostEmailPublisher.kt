@@ -24,18 +24,17 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.context.annotation.Lazy
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
-/**
- *
- */
+@Profile("ingrid-lubw")
 @Component
 class PostEmailPublisher(
     @Lazy val publishEmailService: PublishEmailService,
     val authUtils: AuthUtils,
 ) : Filter<PostPublishPayload> {
 
-    override val profiles = emptyArray<String>()
+    override val profiles = arrayOf("ingrid-lubw")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
         val isDataset = payload.wrapper.category == "data"
