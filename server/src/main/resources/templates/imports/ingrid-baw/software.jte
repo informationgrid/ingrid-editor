@@ -1,0 +1,27 @@
+@import de.ingrid.igeserver.profiles.ingrid_baw.importer.SoftwareMapperBaw
+@import gg.jte.support.ForSupport
+@param SoftwareMapperBaw model
+
+@template.imports.ingrid.application(model = model, contentInfo = @`
+    ,
+    "literatureReferences": [
+    @for(var uuid : ForSupport.of(model.getLiteratureReferences()))
+        {
+        "uuid": "${uuid.get()}",
+        "isExternalRef": false
+        }@if (!uuid.isLast()),@endif
+    @endfor
+    ]
+`, additionalKeywords = @`
+    ,
+    "bawKeywords":   [
+    @for (var entry : ForSupport.of(model.getBawKeywords()))
+        @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "subsoilKeywords": [
+    @for (var entry : ForSupport.of(model.getSubsoilKeywords()))
+        @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
+    @endfor
+    ]
+`)

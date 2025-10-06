@@ -69,6 +69,13 @@ class ISOImportBaw(val codelistHandler: CodelistHandler, @Lazy val documentServi
                 )
             }
 
+            "application" -> {
+                ImportProfileData(
+                    "imports/ingrid-baw/software.jte",
+                    SoftwareMapperBaw(isoData),
+                )
+            }
+
             else -> null
         }
     }
