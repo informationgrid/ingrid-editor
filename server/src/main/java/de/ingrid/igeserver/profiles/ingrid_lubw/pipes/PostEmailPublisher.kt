@@ -24,7 +24,6 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
