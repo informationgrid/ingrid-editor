@@ -88,8 +88,11 @@ fun convertWktToGeoJson(wkt: String): String {
 
 fun convertBoundingBoxToGeoJson(bbox: SpatialModel.BoundingBoxModel): String {
     // Mapping der Koordinaten: lat1/lon1 = southwest, lat2/lon2 = northeast
-    val wkt =
+    val wkt = if (bbox.lon1 == bbox.lon2 && bbox.lat1 == bbox.lat2) {
+        "POINT(${bbox.lon1} ${bbox.lat1})"
+    } else {
         "POLYGON((${bbox.lon1} ${bbox.lat1}, ${bbox.lon2} ${bbox.lat1}, ${bbox.lon2} ${bbox.lat2}, ${bbox.lon1} ${bbox.lat2}, ${bbox.lon1} ${bbox.lat1}))"
+    }
     return convertWktToGeoJson(wkt)
 }
 
