@@ -518,19 +518,21 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun getBwastrSpatial(title: String): SpatialReference {
-        val extractedBwastrId: String
+        var extractedBwastrId: String
         var start: Double? = null
         var end: Double? = null
-        if (title.count { it == '-' } == 2) {
-            // like 0108-7-9 (ID-START-END)
+        // like 0108-7.665-9 (ID-START-END)
+        if (title.matches("^[0-9]{4}-[0-9]+\\.?[0-9]*-[0-9]+\\.?[0-9]*$".toRegex())) {
             title.split("-").let {
                 extractedBwastrId = it[0]
-                start = it[1].toDouble()
-                end = it[2].toDouble()
+                start = it[1].toDoubleOrNull()
+                end = it[2].toDoubleOrNull()
             }
         } else {
             extractedBwastrId = title.replace("[^$0-9]".toRegex(), "")
         }
+        // remove leading zero
+        extractedBwastrId = extractedBwastrId.removePrefix("0")
 
         return if (bwastrLocatorService.customBWASTRMap.containsKey(extractedBwastrId)) {
             val bwastr = bwastrLocatorService.customBWASTRMap[extractedBwastrId]!!

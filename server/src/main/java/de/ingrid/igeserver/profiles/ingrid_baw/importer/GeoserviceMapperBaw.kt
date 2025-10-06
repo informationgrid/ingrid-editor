@@ -29,9 +29,9 @@ class GeoserviceMapperBaw(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
 
-    fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata)
+    fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata, codeListService)
 
-    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata)
+    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata, codeListService)
 
-    fun getLiteratureReferences(): List<String> = getLiteratureReferences()
+    fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 }

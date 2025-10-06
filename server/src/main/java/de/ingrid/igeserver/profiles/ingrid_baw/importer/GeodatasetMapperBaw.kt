@@ -22,15 +22,16 @@ package de.ingrid.igeserver.profiles.ingrid_baw.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     override val splitSpatialSystems = true
     override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
 
     override fun getKeywords(): List<String> = super.getKeywords(BAW_THESAURI)
 
-    fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata)
+    fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata, codeListService)
 
-    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata)
+    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata, codeListService)
 
     fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 
@@ -63,13 +64,15 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ?.mapNotNull { it.dqDataQuality }
         ?.flatMap { it.report ?: emptyList() }
         ?.find { it.dqAccuracyOfATimeMeasurement != null }
-        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDouble()
+        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDoubleOrNull()
 
     fun getSimulationParameters(): List<SimulationParameter> = isoData.data.dataQualityInfo
         ?.filter { it.dqDataQuality?.report?.any { it.dqQuantitativeAttributeAccuracy != null } == true }
         ?.mapNotNull { dataQualityInfo ->
-            val quantitativeReport = dataQualityInfo.dqDataQuality?.report?.firstOrNull()?.dqQuantitativeAttributeAccuracy
-            val roleValue = dataQualityInfo.dqDataQuality?.lineage?.liLinage?.source?.firstOrNull()?.liSource?.description?.value
+            val quantitativeReport =
+                dataQualityInfo.dqDataQuality?.report?.firstOrNull()?.dqQuantitativeAttributeAccuracy
+            val roleValue =
+                dataQualityInfo.dqDataQuality?.lineage?.liLinage?.source?.firstOrNull()?.liSource?.description?.value
 
             val result = quantitativeReport?.result?.dqQuantitativeResult
             val name = result?.valueType?.recordType

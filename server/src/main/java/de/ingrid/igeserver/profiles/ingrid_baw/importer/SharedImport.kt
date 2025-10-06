@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid_baw.importer
 import de.ingrid.igeserver.exports.iso.MDDataIdentification
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.services.CodelistHandler
 
 val BAW_THESAURI = listOf(
     "BAW-Schlagwortkatalog",
@@ -50,14 +51,20 @@ fun hierarchyLevelNameToDocumentType(hierarchyLevelName: String?): String = when
     else -> "InGridGeoDataset"
 }
 
-fun getBawKeywords(metadata: Metadata): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+fun getBawKeywords(metadata: Metadata, codeListService: CodelistHandler): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
     ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
     ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-    ?.map { KeyValue(it) } ?: emptyList()
+    ?.map { createOrGetCodelistEntry(it, "3950005", codeListService) } ?: emptyList()
 
-fun getSubsoilKeywords(metadata: Metadata): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+fun getSubsoilKeywords(metadata: Metadata, codeListService: CodelistHandler): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
     ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Baugrunddynamik-Schlagwortkatalog" }
     ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-    ?.map { KeyValue(it) } ?: emptyList()
+    ?.map { createOrGetCodelistEntry(it, "3950007", codeListService) } ?: emptyList()
 
-fun getLiteratureReferences(identificationInfo: MDDataIdentification?): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref } ?: emptyList()
+fun getLiteratureReferences(identificationInfo: MDDataIdentification?): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref }
+    ?: emptyList()
+
+fun createOrGetCodelistEntry(potValue: String, codelistId: String, codeListService: CodelistHandler): KeyValue {
+    val key = codeListService.getCodeListEntryId(codelistId, potValue, "de")
+    return KeyValue(key, key?.let { codeListService.getCodelistValue(codelistId, key, "de") } ?: potValue, codelistId)
+}
