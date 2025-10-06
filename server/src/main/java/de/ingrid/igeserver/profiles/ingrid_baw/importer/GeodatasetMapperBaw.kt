@@ -64,7 +64,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ?.mapNotNull { it.dqDataQuality }
         ?.flatMap { it.report ?: emptyList() }
         ?.find { it.dqAccuracyOfATimeMeasurement != null }
-        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.toDoubleOrNull()
+        ?.dqAccuracyOfATimeMeasurement?.result?.dqQuantitativeResult?.value?.firstOrNull()?.value?.value?.toDoubleOrNull()
 
     fun getSimulationParameters(): List<SimulationParameter> = isoData.data.dataQualityInfo
         ?.filter { it.dqDataQuality?.report?.any { it.dqQuantitativeAttributeAccuracy != null } == true }
@@ -85,7 +85,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
                     } else {
                         null
                     },
-                    value = result.value.firstOrNull()?.value,
+                    value = result.value.firstOrNull()?.value?.value,
                     unit = result.valueUnit.unitDefinition?.catalogSymbol,
                 )
             } else {

@@ -135,7 +135,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
 
     fun getQualities(): List<Quality> = metadata.dataQualityInfo
         ?.flatMap { it.dqDataQuality?.report ?: emptyList() }
@@ -338,7 +338,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = KeyValue(nameId, name, info.codelist)
         val parameter = info.element.measureDescription?.value
-        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toDouble()
+        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.value?.toDouble()
         return Quality(info.type, nameKeyValue, value, parameter)
     }
 
@@ -458,7 +458,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
     private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? = metadata.dataQualityInfo
         ?.flatMap {
             it.dqDataQuality?.report
@@ -469,7 +469,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
     private fun getGriddedDataPositionalAccuracy(): Double? = metadata.dataQualityInfo
         ?.flatMap {
             it.dqDataQuality?.report
@@ -479,7 +479,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
 }
 
 data class QualityInfo(
