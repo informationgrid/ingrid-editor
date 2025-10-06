@@ -37,7 +37,7 @@ class PreEmailPublisherPending(
 
 ) : Filter<PrePublishPayload> {
 
-    override val profiles = emptyArray<String>()
+    override val profiles = arrayOf("ingrid-lubw")
 
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val isDataset = payload.wrapper.category == "data"

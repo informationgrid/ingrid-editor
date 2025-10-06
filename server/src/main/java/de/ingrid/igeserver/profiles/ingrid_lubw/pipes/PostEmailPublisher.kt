@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
-@Profile("ingrid-lubw")
 @Component
 class PostEmailPublisher(
     @Lazy val publishEmailService: PublishEmailService,
