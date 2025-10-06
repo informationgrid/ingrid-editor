@@ -67,6 +67,10 @@ class EmailServiceImpl(
     }
 
     fun sendEmail(to: String, subject: String, text: String) {
+        if (mailProps.useHtmlEmails) {
+            sendHTMLEmail(to, subject, text)
+            return
+        }
         val message = SimpleMailMessage().apply {
             from = mailProps.from.trim()
             setTo(to.trim())
