@@ -44,9 +44,9 @@ import io.swagger.v3.oas.models.servers.Server as OpenApiServer
 
 @OpenAPIDefinition(
     info = Info(
-        title = "IGE-NG API",
+        title = "InGrid-Editor API",
         version = "v1",
-        description = "The IGE-NG provides the following REST-APIs",
+        description = "The InGrid-Editor provides the following REST-APIs",
         contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com"),
     ),
 )
