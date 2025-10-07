@@ -400,7 +400,7 @@ class DocumentService(
         val newDocument = docRepo.save(preUpdatePayload.document)
 
         // save wrapper
-        val newWrapper = docWrapperRepo.save(preUpdatePayload.wrapper)
+        val newWrapper = docWrapperRepo.save(preUpdatePayload.wrapper).also { newDocument.wrapperId = it.id }
 
         // create ACL before trying to save since we need the permission
         aclService.createAclForDocument(newWrapper.id!!, preUpdatePayload.wrapper.parent?.id)
