@@ -76,6 +76,13 @@ class ISOImportBaw(val codelistHandler: CodelistHandler, @Lazy val documentServi
                 )
             }
 
+            "nonGeographicDataset" -> {
+                ImportProfileData(
+                    "imports/ingrid-baw/project.jte",
+                    ProjectMapperBaw(isoData),
+                )
+            }
+
             else -> null
         }
     }
