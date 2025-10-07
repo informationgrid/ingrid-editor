@@ -72,6 +72,11 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+        data as String
+        if (data.contains("csw:GetRecordByIdResponse")) {
+            throw ServerException.withReason("CSW-Antworten werden für den Import nicht unterstützt (csw:GetRecordByIdResponse). Bitte stellen Sie ein ISO-XML-Dokument bereit, bei dem gmd:MD_Metadata ein Wurzelelement ist.")
+        }
+
         val xmlDeserializer = XmlMapper(
             JacksonXmlModule().apply {
                 setDefaultUseWrapper(false)
@@ -81,7 +86,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-        val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
+        val finalObject = xmlDeserializer.readValue(data, Metadata::class.java)
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage)
         val output = try {
