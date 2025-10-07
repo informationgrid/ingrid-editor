@@ -52,13 +52,13 @@ class ExpiredZabbixTask(
         zabbixService.activatedCatalogs
             .map { catalogId ->
                 try {
-                    log.debug("Zabbix catalog $catalogId")
+                    log.info("Run ExpiredZabbixTask for catalog $catalogId")
                     val catalog = catalogRepo.findByIdentifier(catalogId)
                     val catalogProfile = catalogService.getCatalogProfile(catalog.type)
                     val configs = indexingTask.getExporterConfigForCatalog(catalog, catalogProfile)
                     findDocuments(catalogId, configs)
                 } catch (e: Exception) {
-                    log.warn("Documents not found in catalog $catalogId")
+                    log.warn("Documents not found in catalog $catalogId", e)
                 }
             }
     }
@@ -86,7 +86,7 @@ class ExpiredZabbixTask(
                     val numExported = page * generalProperties.indexPageSize + publishedDocuments.numberOfElements
                     val isLastPage = numExported.toLong() >= totalHits
                 } while (!isLastPage && !publishedDocuments.isEmpty)
-                log.debug("Found ${docsPublished.size} documents to process in catalog $catalogId")
+                log.info("Found ${docsPublished.size} published documents to process in catalog $catalogId")
 
                 val docsZabbix = zabbixService.getHostIds(catalogId)
                 val docsToDelete = docsZabbix.toMutableList()
@@ -99,7 +99,7 @@ class ExpiredZabbixTask(
                     docsPublished
                         .find { doc == it || !uuidRegex.matches(doc) }
                         ?.let { docsToDelete.remove(doc) }
-                        ?: log.debug("Document $doc not found in catalog $catalogId")
+                        ?: log.info("Zabbix document $doc not found in published documents of catalog $catalogId")
                 }
                 deleteDocuments(catalogId, docsToDelete, docsPublished.size)
             }
@@ -113,10 +113,13 @@ class ExpiredZabbixTask(
                 log.warn("Number of documents to delete (${docsToDelete.size}) exceeds ${zabbixProperties.cleanup.threshold}% of published documents ($totalPublishedDocs) in catalog $catalogId, skipping.")
                 return
             }
-            docsToDelete.forEach { zabbixService.deleteDocument(it) }
-            log.debug("Deleted ${docsToDelete.size} documents from catalog $catalogId")
+            docsToDelete.forEach {
+                zabbixService.deleteDocument(it)
+                log.info("Delete Zabbix document $it for catalog $catalogId")
+            }
+            log.info("Deleted ${docsToDelete.size} Zabbix documents for catalog $catalogId")
         } catch (e: Exception) {
-            log.error("Could not delete documents: ${e.message}")
+            log.error("Could not delete documents: ${e.message}", e)
         }
     }
 }
