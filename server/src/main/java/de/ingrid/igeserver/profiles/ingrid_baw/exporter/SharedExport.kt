@@ -78,9 +78,12 @@ fun mapDocumentTypeBaw(type: String): String? = when (type) {
     else -> null
 }
 
-fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? = transformer.data.parentIdentifier ?: getIdentifierFromParent(transformer)
-
-private fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
+/**
+ * Get the parent identifier of a document.
+ * @param transformer The transformer instance.
+ * @return The uuid of the parent object, or `null` if the document has no parent or the parent is a folder.
+ */
+fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? {
     val wrapper = transformer.documentService.getWrapperById(transformer.doc.wrapperId!!)
     return if (wrapper.parent != null && wrapper.parent?.type != "FOLDER") wrapper.parent?.uuid else null
 }
