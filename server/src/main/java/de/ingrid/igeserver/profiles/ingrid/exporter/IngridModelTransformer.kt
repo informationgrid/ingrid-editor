@@ -389,7 +389,9 @@ open class IngridModelTransformer(
         val referenceSystem = codelists.getValue(codelistKey, referenceSystemEntry) ?: codelists.getCatalogCodelistValue(codelistKey, referenceSystemEntry)
             ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
         val epsgLink = when {
-            referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5)}"
+            // like EPSG:1234 Bla
+            referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
+            // like EPSG 12345: Bla
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
                 if (endIndex > 0) {
