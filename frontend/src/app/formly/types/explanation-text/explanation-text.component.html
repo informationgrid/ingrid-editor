@@ -1,0 +1,16 @@
+<h3>{{ this.props.label }}</h3>
+
+<p>{{ this.props.explanation }}</p>
+
+@if (this.props?.buttonLink) {
+    <a [href]="this.props?.buttonLink" target="_blank">
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            class="float-right"
+        >
+            Verschiebung vornehmen
+        </button>
+    </a>
+}

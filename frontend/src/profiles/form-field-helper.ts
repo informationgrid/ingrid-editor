@@ -106,6 +106,11 @@ export interface RepeatDetailListOptions extends Options {
   viewComponent?: any;
 }
 
+export interface ExplanationTextOptions extends Options {
+  explanation: string;
+  buttonLink?: string;
+}
+
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
@@ -447,6 +452,22 @@ export class FormFieldHelper {
       },
       expressions: expressions,
       validators: options?.validators,
+    };
+  }
+
+  addExplanationText(
+    id,
+    label,
+    options?: ExplanationTextOptions,
+  ): FormlyFieldConfig {
+    return {
+      key: id,
+      type: "explanationText",
+      props: {
+        label: label,
+        explanation: options?.explanation,
+        buttonLink: options?.buttonLink,
+      },
     };
   }
 

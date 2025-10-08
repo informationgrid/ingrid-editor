@@ -69,9 +69,6 @@
     }
 
     @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
-        @if (explanationHint) {
-            <p>{{ this.explanationHint }}</p>
-        }
         <button
             type="button"
             mat-stroked-button
@@ -80,17 +77,5 @@
         >
             {{ titleOfDocumentSelectorDialog }}
         </button>
-        @if (urlToMoveResources) {
-            <a [href]="urlToMoveResources" target="_blank">
-                <button
-                    type="button"
-                    mat-stroked-button
-                    color="primary"
-                    class="float-right"
-                >
-                    Verschiebung vornehmen
-                </button>
-            </a>
-        }
     }
 </div>

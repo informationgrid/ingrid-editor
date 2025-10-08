@@ -154,6 +154,7 @@ import {
 import { AppInjector } from "./app/app_injector";
 import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/timepicker-type.component";
 import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
+import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
 
 if (environment.production) {
   enableProdMode();
@@ -333,6 +334,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "unit-inputPrint",
             component: PrintTypeComponent,
+          },
+          {
+            name: "explanationText",
+            component: ExplanationTextComponent,
           },
         ],
         validators: [

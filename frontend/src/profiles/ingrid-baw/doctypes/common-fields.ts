@@ -361,7 +361,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getLfsReferencesFieldConfig(doc: IngridShared): FormlyFieldConfig {
-    // TODO Define required fields
     return this.addRepeatDetailList("lfsReferences", "LFS-Dateien", {
       viewComponent: LfsViewComponent,
       fields: [
@@ -373,9 +372,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
           titleOfDocumentSelectorDialog: "Datei auswählen",
           required: true,
           hideHeader: true,
-          urlToMoveResources:
-            this.config.getConfiguration().lfsMoveResourcesUrl,
-          explanationHint: this.transloco.translate("form.lfsDescription"),
           hooks: {
             onInit: (field: FormlyFieldConfig) => {
               return field.options.fieldChanges.pipe(
@@ -420,6 +416,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
         this.addTextAreaInline("explanation", "Erläuterung", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
+        }),
+        this.addExplanationText("lfsHint", "Hinweis", {
+          explanation: this.transloco.translate("form.lfsDescription"),
+          buttonLink: this.config.getConfiguration().lfsMoveResourcesUrl,
         }),
       ],
     });
