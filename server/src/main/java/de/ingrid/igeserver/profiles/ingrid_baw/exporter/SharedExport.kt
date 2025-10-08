@@ -114,7 +114,7 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
     "2012-01-01",
     showType = true,
     type = "discipline",
-    keywords = transformer.doc.data.getPath("keywords.baugrunddynamikKeywords")
+    keywords = transformer.doc.data.getPath("keywords.subsoilKeywords")
         ?.mapNotNull { it.mapToKeyValue() }
         ?.map {
             KeywordIso(
