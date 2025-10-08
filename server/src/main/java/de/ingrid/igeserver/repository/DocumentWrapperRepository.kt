@@ -94,7 +94,7 @@ interface DocumentWrapperRepository :
     override fun deleteById(id: Int)
 
     @Modifying
-    @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
+    @PreAuthorize("hasPermission(#wrapperId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     @Query("UPDATE document_wrapper SET deleted = 0 WHERE id = ?1", nativeQuery = true)
     fun undeleteDocument(wrapperId: Int)
 
