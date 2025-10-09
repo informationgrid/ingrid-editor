@@ -118,7 +118,7 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
         ?.mapNotNull { it.mapToKeyValue() }
         ?.map {
             KeywordIso(
-                name = transformer.codelists.getValue("3950005", it),
+                name = transformer.codelists.getValue("3950007", it),
             )
         }
         ?: emptyList(),
