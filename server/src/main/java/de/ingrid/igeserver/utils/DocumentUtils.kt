@@ -55,7 +55,7 @@ fun prepareDocumentWithMetadata(
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
         docData.wrapper.tags,
         docData.wrapper.responsibleUser?.id,
-        docData.wrapper.fingerprint?.maxByOrNull { it.date }?.date.toString(),
+        docData.wrapper.fingerprint?.maxByOrNull { it.date }?.date?.toString(),
         docData.wrapper.hasWritePermission,
         docData.wrapper.hasOnlySubtreeWritePermission,
         docData.wrapper.id!!,
