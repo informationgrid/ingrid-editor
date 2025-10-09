@@ -192,7 +192,7 @@ dependencies {
     implementation "org.apache.jena:apache-jena-libs:5.5.0"
 
     // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
-    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
+    implementation("de.ingrid:dcat-parser:8.1.0")
 
     // Test
     testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
