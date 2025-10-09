@@ -3,6 +3,22 @@
     "enabled": true
   },
   "properties": {
+    "collection.id": {
+      "type": "keyword",
+      "store": true
+    },
+    "collection.name": {
+      "type": "keyword",
+      "store": true
+    },
+    "spatial": {
+      "type": "nested",
+      "properties": {
+        "geometries": {
+          "type": "geo_shape"
+        }
+      }
+    },
     "iPlugId": {
       "type": "keyword",
       "store": true
@@ -50,7 +66,7 @@
       "store": true,
       "fields": {
         "phrase": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "phrase",
           "search_analyzer": "phrase"
         }
@@ -365,12 +381,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
@@ -390,12 +406,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
@@ -407,12 +423,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
