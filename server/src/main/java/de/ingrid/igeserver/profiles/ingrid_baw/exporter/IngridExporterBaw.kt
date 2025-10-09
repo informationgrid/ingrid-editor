@@ -95,6 +95,8 @@ class IngridIdfExporterBaw(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFBaw")
+
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBawModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 
     override fun getTemplateForDoctype(type: String): String = getBawTemplateForDocType(type) ?: super.getTemplateForDoctype(type)

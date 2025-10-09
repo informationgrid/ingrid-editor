@@ -67,6 +67,8 @@ class IngridIdfExporterUPSH(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFUPSH")
+
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getUPSHTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
