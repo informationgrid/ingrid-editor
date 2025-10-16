@@ -33,7 +33,7 @@ export function geometriesFields(
       required: true,
       wrappers: ["panel", "form-field"],
     }),
-    fieldHelper.addInput("description", "Beschreibung", {
+    fieldHelper.addTextArea("description", "Beschreibung", {
       wrappers: ["panel", "form-field"],
     }),
     fieldHelper.addSelect("type", "Geometrietyp", {
