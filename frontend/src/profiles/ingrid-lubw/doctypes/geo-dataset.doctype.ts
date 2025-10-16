@@ -176,6 +176,9 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           {
             key: "description",
             label: "Beschreibung",
+            props: {
+              formatter: (item: string) => item?.replaceAll("\n", "<br>") ?? "",
+            },
           },
           {
             key: "category",
