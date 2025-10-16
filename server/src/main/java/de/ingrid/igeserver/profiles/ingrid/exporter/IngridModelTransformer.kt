@@ -667,8 +667,6 @@ open class IngridModelTransformer(
         }
     } ?: emptyList()
 
-    fun getCoupledResourceIdentifiers() = model.data.service.coupledResources?.map { getCoupledResourceIdentifier(it) } ?: emptyList()
-
     private fun getCoupledResourceIdentifier(
         it: CoupledResource,
     ) = if (it.isExternalRef) {
