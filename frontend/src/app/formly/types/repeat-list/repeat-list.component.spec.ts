@@ -45,7 +45,8 @@ import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 import { RepeatListComponent } from "./repeat-list.component";
-import { fakeAsync, tick } from "@angular/core/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { waitSomeTime } from "../../../../profiles/ingrid/utils/time";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -65,6 +66,7 @@ describe("RepeatListComponent", () => {
       AddButtonComponent,
     ],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideFormlyCore({
@@ -105,46 +107,48 @@ describe("RepeatListComponent", () => {
       input = await loader.getHarness(MatInputHarness);
     });
 
-    it("should add a simple value", fakeAsync(async () => {
-      spectator.detectChanges();
-
+    it("should add a simple value", async () => {
       checkItemCount(0);
       await input.setValue("test-simple");
       await (await input.host()).sendKeys(TestKey.ENTER);
-      detectAsync();
 
+      await waitSomeTime(10);
       checkItemCount(1);
       checkItemContent(0, "test-simple");
       expect(form.value.repeatListSimple).toEqual(["test-simple"]);
-    }));
+    });
 
-    it("should remove a simple value", fakeAsync(async () => {
+    it("should remove a simple value", async () => {
+      spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListSimple: ["item 1"] });
-      detectAsync();
 
+      await waitSomeTime();
       checkItemCount(1);
+
       removeItem(0);
 
+      await waitSomeTime();
       checkItemCount(0);
       expect(form.value.repeatListSimple).toEqual([]);
-    }));
+    });
 
-    it("should show multiple items", fakeAsync(async () => {
+    it("should show multiple items", async () => {
+      spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", {
         repeatListSimple: ["item 1", "item 2", "item 3"],
       });
-      detectAsync();
 
+      await waitSomeTime(10);
       checkItemCount(3);
       checkItemContent(0, "item 1");
       checkItemContent(1, "item 2");
       checkItemContent(2, "item 3");
-
       removeItem(1);
+      await waitSomeTime(10);
       checkItemCount(2);
       checkItemContent(0, "item 1");
       checkItemContent(1, "item 3");
-    }));
+    });
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -193,13 +197,13 @@ describe("RepeatListComponent", () => {
     });
 
     it("should add a codelist value", async () => {
-      spectator.detectChanges();
       checkItemCount(0);
 
-      // TODO: test => await input.focus()
       spectator.dispatchFakeEvent("input", "focusin");
+      await waitSomeTime(10);
       await auto.selectOption({ text: "Eins" });
 
+      await waitSomeTime();
       checkItemCount(1);
       checkItemContent(0, "Eins");
       expect(form.value.repeatListCodelist).toEqual([
@@ -209,16 +213,18 @@ describe("RepeatListComponent", () => {
       checkDisabledOptions([true, false, false]);
     });
 
-    it("should remove an item", fakeAsync(async () => {
+    it("should remove an item", async () => {
+      spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
-      detectAsync();
 
+      await waitSomeTime(10);
       removeItem(0);
 
+      await waitSomeTime();
       checkItemCount(0);
       expect(form.value.repeatListCodelist).toEqual([]);
       checkDisabledOptions([false, false, false]);
-    }));
+    });
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -271,13 +277,15 @@ describe("RepeatListComponent", () => {
     });
 
     it("should add a value", async () => {
-      spectator.detectChanges();
+      await waitSomeTime();
 
       await select.open();
       const options = await select.getOptions();
+      await waitSomeTime();
       expect(options.length).toBe(3);
 
       await select.clickOptions({ text: "Drei" });
+      await waitSomeTime();
       checkItemCount(1);
       checkItemContent(0, "Drei");
       expect(form.value.repeatListCodelist).toEqual([
@@ -335,19 +343,17 @@ describe("RepeatListComponent", () => {
     });
 
     it("should add a value after search", async () => {
-      spectator.detectChanges();
-
+      await spectator.fixture.whenStable();
       expect(spectator.query("mat-spinner")).not.toExist();
       await auto.enterText("remote");
-      // TODO: ChangeDetection not working in test since signal migration: f3343dec3d3959190cbeb5a1f3e13d364c14c6f6
-      //  expect(spectator.query("mat-spinner")).toExist();
-
+      await waitSomeTime(350);
+      expect(spectator.query("mat-spinner")).toExist();
+      await waitSomeTime(400);
       expect((await auto.getOptions()).length).toBe(2);
-
-      spectator.detectChanges();
 
       await auto.selectOption({ text: "remote 2" });
 
+      await waitSomeTime(10);
       checkItemCount(1);
       checkItemContent(0, "remote 2");
       expect(form.value.repeatListCodelist).toEqual([
@@ -356,19 +362,21 @@ describe("RepeatListComponent", () => {
       // checkDisabledOptions([false, false, false]);
     });
 
-    it("should remove a value", fakeAsync(() => {
+    it("should remove a value", async () => {
+      spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", {
         repeatListCodelist: [{ label: "remote 2", other: "b" }],
       });
-      detectAsync();
 
+      await waitSomeTime(10);
       removeItem(0);
 
+      await waitSomeTime();
       checkItemCount(0);
 
       expect(form.value.repeatListCodelist).toEqual([]);
       // checkDisabledOptions([false, false, false]);
-    }));
+    });
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -414,23 +422,26 @@ describe("RepeatListComponent", () => {
     });
 
     it("should show an added value", async () => {
-      spectator.detectChanges();
       checkItemCount(0);
 
       spectator.dispatchFakeEvent("input", "focusin");
+      await waitSomeTime(10);
       await auto.selectOption({ text: "Eins" });
 
+      await waitSomeTime(10);
       checkItemCount(1);
       checkItemContent(0, "Eins");
     });
 
-    it("should remove a chip", fakeAsync(async () => {
+    it("should remove a chip", async () => {
+      spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
-      detectAsync();
 
+      await waitSomeTime(10);
       removeChip(0);
+      await waitSomeTime();
       checkItemCount(0);
-    }));
+    });
   });
 
   function checkDisabledOptions(values: boolean[]) {
@@ -464,11 +475,5 @@ describe("RepeatListComponent", () => {
     ] as HTMLElement;
 
     removeButton.click();
-    detectAsync();
-  }
-
-  function detectAsync() {
-    tick(10);
-    spectator.detectChanges();
   }
 });

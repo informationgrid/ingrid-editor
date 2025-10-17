@@ -71,6 +71,7 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { provideZonelessChangeDetection } from "@angular/core";
+import { waitSomeTime } from "../../../../profiles/ingrid/utils/time";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -142,9 +143,8 @@ describe("TreeComponent", () => {
     expect(spectator.component).toBeDefined();
   });
 
-  it("should show root nodes on startup", () => {
-    spectator.detectChanges();
-
+  it("should show root nodes on startup", async () => {
+    await spectator.fixture.whenStable();
     hasNumberOfTreeNodes(3);
     nodeContainsTitle(0, "Test Document 1");
     nodeContainsTitle(1, "Test Document 2");
@@ -153,15 +153,13 @@ describe("TreeComponent", () => {
 
   it("should show no tree if documents have no profile info set", () => {
     db.initialData.and.returnValue(of([]));
-    spectator.detectChanges();
 
     // find the title element in the DOM using a CSS selector
     hasNumberOfTreeNodes(0);
   });
 
-  it("should add a new root node", () => {
-    spectator.detectChanges();
-
+  it("should add a new root node", async () => {
+    await spectator.fixture.whenStable();
     hasNumberOfTreeNodes(3);
 
     const doc = createDocument({
@@ -176,9 +174,8 @@ describe("TreeComponent", () => {
     expect(spectator.component.dataSource.data.length).toBe(4);
   });
 
-  it("should modify a root node", () => {
-    spectator.detectChanges();
-
+  it("should modify a root node", async () => {
+    await spectator.fixture.whenStable();
     // add a new document via the storage service
     const doc = createDocument({
       id: 12345,
@@ -203,9 +200,8 @@ describe("TreeComponent", () => {
     nodeContainsTitle(3, "modified node");
   });
 
-  it("should delete a root node", () => {
-    spectator.detectChanges();
-
+  it("should delete a root node", async () => {
+    await spectator.fixture.whenStable();
     // remove document via the storage service
     // @ts-ignore
     db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: 2 }] });
@@ -217,7 +213,7 @@ describe("TreeComponent", () => {
     expect(treeNode[1]._id).toBe(3);
   });
 
-  it("should add a new child node", () => {
+  it("should add a new child node", async () => {
     const newChildDocOf3: any = {
       id: 12345,
       _profile: "A",
@@ -233,7 +229,7 @@ describe("TreeComponent", () => {
           throw new Error("Unknown parent: " + id);
       }
     });
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // add a new document via the storage service
     const doc = createDocument(newChildDocOf3);
@@ -248,7 +244,7 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
   });
 
-  it("should modify a child node", () => {
+  it("should modify a child node", async () => {
     const newDoc: any = {
       id: 12345,
       _profile: "A",
@@ -263,7 +259,7 @@ describe("TreeComponent", () => {
           throw new Error("Unknown parent: " + id);
       }
     });
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // add a new document and update it via the storage service
     const doc = createDocument(newDoc);
@@ -287,7 +283,7 @@ describe("TreeComponent", () => {
     nodeContainsTitle(3, "modified child node");
   });
 
-  it("should delete a child node", () => {
+  it("should delete a child node", async () => {
     const newDoc: any = {
       id: 12345,
       _profile: "A",
@@ -295,7 +291,7 @@ describe("TreeComponent", () => {
       _state: "W",
     };
     db.getChildren.and.callFake(() => of([newDoc]));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // add a new document and update it via the storage service
     const doc = createDocument(newDoc);
@@ -311,25 +307,27 @@ describe("TreeComponent", () => {
     // TODO: check if correct node has been removed
   });
 
-  it("should expand a node and load remote children", () => {
+  it("should expand a node and load remote children", async () => {
     const firstModRececentDoc = Object.assign({}, recentDocuments[0]);
     firstModRececentDoc._hasChildren = true;
     db.initialData.and.returnValue(of([firstModRececentDoc]));
     db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     selectNode(0);
 
-    spectator.detectChanges();
+    // await waitSomeTime(10);
 
     hasNumberOfTreeNodes(1);
+
+    await waitSomeTime(3001);
 
     hasNumberOfTreeNodes(3);
   });
 
-  it("should represent all states of a node (published, working, both)", () => {
+  it("should represent all states of a node (published, working, both)", async () => {
     db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     hasNumberOfTreeNodes(3);
     nodeImageHasClass(0, "published");
@@ -341,7 +339,7 @@ describe("TreeComponent", () => {
     nodeImageHasNotClass(2, "published");
   });
 
-  it("should initially expand to a deeply nested node", () => {
+  it("should initially expand to a deeply nested node", async () => {
     db.getPath.and.returnValue(Promise.resolve([1, 2, 3, 4]));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake((id) => {
@@ -358,6 +356,7 @@ describe("TreeComponent", () => {
     });
 
     spectator.component.activeNodeId.set(4);
+    await waitSomeTime();
 
     hasNumberOfTreeNodes(4);
 
@@ -372,9 +371,9 @@ describe("TreeComponent", () => {
 
   xit("should delete a node which has multiple versions (draft, published, ...)", () => {});
 
-  it("should copy a root node to root", () => {
+  it("should copy a root node to root", async () => {
     db.initialData.and.returnValue(of(recentDocuments));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     hasNumberOfTreeNodes(3);
 
@@ -392,10 +391,10 @@ describe("TreeComponent", () => {
 
   xit("should copy a whole tree/folder to root", () => {});
 
-  it("should move a root node to root?", () => {
+  it("should move a root node to root?", async () => {
     db.getPath.and.returnValue(Promise.resolve([1]));
     db.initialData.and.returnValue(of(recentDocuments));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     hasNumberOfTreeNodes(3);
 
@@ -403,13 +402,14 @@ describe("TreeComponent", () => {
       newNode({ updateType: UpdateType.Move, id: 1, parent: null }),
     );
 
+    await spectator.fixture.whenStable();
     hasNumberOfTreeNodes(3);
 
     // new folder should be last
     nodeContainsTitle(0, "Test Document 1");
   });
 
-  it("should move a root node to a folder", () => {
+  it("should move a root node to a folder", async () => {
     const documentTreeStore = spectator.inject(DocumentTreeStore);
     documentTreeStore.set(recentDocuments);
 
@@ -418,7 +418,7 @@ describe("TreeComponent", () => {
     db.getChildren.and.callFake((parentId) =>
       of(documentTreeStore.getChildren(parentId)),
     );
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     hasNumberOfTreeNodes(3);
 
@@ -428,6 +428,7 @@ describe("TreeComponent", () => {
       newNode({ updateType: UpdateType.Move, id: 1, parent: 2 }),
     );
 
+    await waitSomeTime();
     hasNumberOfTreeNodes(3);
 
     // new folder should be last
@@ -443,9 +444,9 @@ describe("TreeComponent", () => {
 
   xit("should move a whole tree/folder to root", () => {});
 
-  it("should select a node when clicking on it", () => {
+  it("should select a node when clicking on it", async () => {
     db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     selectNode(0);
     nodeIsSelected(0);
@@ -468,7 +469,6 @@ describe("TreeComponent", () => {
 
   describe("Multi-Selection", () => {
     beforeEach(() => {
-      spectator.detectChanges();
       spectator.setInput("showMultiSelectButton", true);
     });
 
@@ -513,7 +513,6 @@ describe("TreeComponent", () => {
 
       // ATTENTION: checkbox needs first click event before change events are triggered correctly
       spectator.click('[data-cy="toggle-all-selection"] label');
-      spectator.detectChanges();
       expect(toggleAllSelectionSpy).toHaveBeenCalledWith(true);
 
       // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
@@ -537,31 +536,35 @@ describe("TreeComponent", () => {
       checkSelectionCount(0);
     });
 
-    it("should activate multi-edit mode by using ctrl-key", () => {
+    it("should activate multi-edit mode by using ctrl-key", async () => {
       selectNode(0, "ctrl");
+      await spectator.fixture.whenStable();
 
       expect(spectator.query('[data-cy="toggle-all-selection"]')).toBeVisible();
       checkSelectionCount(1);
       nodesAreMarkedForSelection(0);
     });
 
-    it("should activate multi-edit mode by using shift-key and mark correct nodes", () => {
+    it("should activate multi-edit mode by using shift-key and mark correct nodes", async () => {
       selectNode(1);
       selectNode(2, "shift");
+      await spectator.fixture.whenStable();
 
       expect(spectator.query('[data-cy="toggle-all-selection"]')).toBeVisible();
       checkSelectionCount(2);
       nodesAreMarkedForSelection(1, 2);
 
       selectNode(0, "shift");
+      await spectator.fixture.whenStable();
       checkSelectionCount(2);
       nodesAreMarkedForSelection(0, 1);
     });
 
-    it("should select from root when no node was selected using shift-key", () => {
+    it("should select from root when no node was selected using shift-key", async () => {
       spectator.click('[data-cy="edit-button"]');
 
       selectNode(2, "shift");
+      await spectator.fixture.whenStable();
 
       checkSelectionCount(3);
       nodesAreMarkedForSelection(0, 1, 2);
@@ -622,7 +625,6 @@ describe("TreeComponent", () => {
       firstModRececentDoc._hasChildren = true;
       db.initialData.and.returnValue(of([firstModRececentDoc]));
       db.getChildren.and.returnValue(of(childDocuments1).pipe(delay(2000)));
-      spectator.detectChanges();
 
       selectNode(0);
 
@@ -687,8 +689,6 @@ describe("TreeComponent", () => {
       shiftKey: keyCode === "shift",
     });
     (<HTMLElement>nodes[index]).dispatchEvent(event);
-
-    spectator.detectChanges();
   }
 
   function nodeHasLevel(index: number, level: number) {
