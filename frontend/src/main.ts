@@ -24,6 +24,7 @@ import {
   inject,
   LOCALE_ID,
   provideAppInitializer,
+  provideZonelessChangeDetection,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -162,6 +163,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       KeycloakAngularModule,
       AngularSplitModule,

@@ -62,6 +62,7 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("ConformityDialogComponent", () => {
   let spectator: Spectator<ConformityDialogComponent>;
@@ -94,6 +95,7 @@ describe("ConformityDialogComponent", () => {
       MatAutocompleteModule,
     ],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       { provide: MatDialogRef, useValue: mockMatDialogRef },

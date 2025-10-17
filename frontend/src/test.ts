@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import "zone.js/testing";
 import { getTestBed } from "@angular/core/testing";
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting,
 } from "@angular/platform-browser-dynamic/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
@@ -32,3 +32,6 @@ getTestBed().initTestEnvironment(
     teardown: { destroyAfterEach: false },
   },
 );
+getTestBed().configureTestingModule({
+  providers: [provideZonelessChangeDetection()],
+});

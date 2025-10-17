@@ -31,6 +31,7 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { provideMatomoTesting } from "ngx-matomo-client/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("IndexService", () => {
   let spectator: SpectatorService<IndexService>;
@@ -38,6 +39,7 @@ describe("IndexService", () => {
     service: IndexService,
     imports: [],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       mockProvider(ConfigService, {

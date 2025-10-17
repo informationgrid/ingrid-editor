@@ -40,7 +40,7 @@ import { of, Subject } from "rxjs";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { fakeAsync, tick } from "@angular/core/testing";
+import { tick } from "@angular/core/testing";
 import { UpdateType } from "../../../models/update-type.enum";
 import {
   createDocument,
@@ -70,6 +70,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -115,6 +116,7 @@ describe("TreeComponent", () => {
       DocumentIconComponent,
     ],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       { provide: MatIconRegistry, useClass: FakeMatIconRegistry },
@@ -157,7 +159,7 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(0);
   });
 
-  it("should add a new root node", fakeAsync(() => {
+  it("should add a new root node", () => {
     spectator.detectChanges();
 
     hasNumberOfTreeNodes(3);
@@ -172,9 +174,9 @@ describe("TreeComponent", () => {
 
     hasNumberOfTreeNodes(4);
     expect(spectator.component.dataSource.data.length).toBe(4);
-  }));
+  });
 
-  it("should modify a root node", fakeAsync(() => {
+  it("should modify a root node", () => {
     spectator.detectChanges();
 
     // add a new document via the storage service
@@ -199,9 +201,9 @@ describe("TreeComponent", () => {
 
     // new/modified node should be placed correctly (alphabetically)
     nodeContainsTitle(3, "modified node");
-  }));
+  });
 
-  it("should delete a root node", fakeAsync(() => {
+  it("should delete a root node", () => {
     spectator.detectChanges();
 
     // remove document via the storage service
@@ -213,11 +215,9 @@ describe("TreeComponent", () => {
     const treeNode = spectator.component.dataSource.data;
     expect(treeNode[0]._id).toBe(1);
     expect(treeNode[1]._id).toBe(3);
+  });
 
-    tick(1000);
-  }));
-
-  it("should add a new child node", fakeAsync(() => {
+  it("should add a new child node", () => {
     const newChildDocOf3: any = {
       id: 12345,
       _profile: "A",
@@ -246,11 +246,9 @@ describe("TreeComponent", () => {
     selectNode(2);
 
     hasNumberOfTreeNodes(3);
+  });
 
-    tick(1000);
-  }));
-
-  it("should modify a child node", fakeAsync(() => {
+  it("should modify a child node", () => {
     const newDoc: any = {
       id: 12345,
       _profile: "A",
@@ -287,9 +285,9 @@ describe("TreeComponent", () => {
     nodeContainsTitle(1, "Test Document 2");
     nodeContainsTitle(2, "Test Document 3");
     nodeContainsTitle(3, "modified child node");
-  }));
+  });
 
-  it("should delete a child node", fakeAsync(() => {
+  it("should delete a child node", () => {
     const newDoc: any = {
       id: 12345,
       _profile: "A",
@@ -311,9 +309,9 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
 
     // TODO: check if correct node has been removed
-  }));
+  });
 
-  it("should expand a node and load remote children", fakeAsync(() => {
+  it("should expand a node and load remote children", () => {
     const firstModRececentDoc = Object.assign({}, recentDocuments[0]);
     firstModRececentDoc._hasChildren = true;
     db.initialData.and.returnValue(of([firstModRececentDoc]));
@@ -326,12 +324,10 @@ describe("TreeComponent", () => {
 
     hasNumberOfTreeNodes(1);
 
-    tick(3000);
-
     hasNumberOfTreeNodes(3);
-  }));
+  });
 
-  it("should represent all states of a node (published, working, both)", fakeAsync(() => {
+  it("should represent all states of a node (published, working, both)", () => {
     db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
     spectator.detectChanges();
 
@@ -343,11 +339,9 @@ describe("TreeComponent", () => {
     nodeImageHasClass(2, "workingWithPublished");
     nodeImageHasNotClass(2, "working");
     nodeImageHasNotClass(2, "published");
+  });
 
-    tick(1000);
-  }));
-
-  it("should initially expand to a deeply nested node", fakeAsync(() => {
+  it("should initially expand to a deeply nested node", () => {
     db.getPath.and.returnValue(Promise.resolve([1, 2, 3, 4]));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake((id) => {
@@ -364,9 +358,6 @@ describe("TreeComponent", () => {
     });
 
     spectator.component.activeNodeId.set(4);
-    spectator.detectChanges();
-
-    tick();
 
     hasNumberOfTreeNodes(4);
 
@@ -374,15 +365,14 @@ describe("TreeComponent", () => {
     nodeIsExpanded(1);
     nodeIsExpanded(2);
     nodeContainsTitle(3, "Nested Document");
-    tick(10000);
     nodeIsSelected(3);
-  }));
+  });
 
-  xit("should reload the tree (nodes expanded state remembered?)", fakeAsync(() => {}));
+  xit("should reload the tree (nodes expanded state remembered?)", () => {});
 
-  xit("should delete a node which has multiple versions (draft, published, ...)", fakeAsync(() => {}));
+  xit("should delete a node which has multiple versions (draft, published, ...)", () => {});
 
-  it("should copy a root node to root", fakeAsync(() => {
+  it("should copy a root node to root", () => {
     db.initialData.and.returnValue(of(recentDocuments));
     spectator.detectChanges();
 
@@ -390,21 +380,19 @@ describe("TreeComponent", () => {
 
     db.treeUpdates.next(newNode({ title: "Test Document 4" }));
 
-    tick(5000);
-    spectator.detectChanges();
     hasNumberOfTreeNodes(4);
 
     // new folder should be last
     nodeContainsTitle(3, "Test Document 4");
-  }));
+  });
 
-  xit("should copy a root node to a folder", fakeAsync(() => {}));
+  xit("should copy a root node to a folder", () => {});
 
-  xit("should copy a child node to root", fakeAsync(() => {}));
+  xit("should copy a child node to root", () => {});
 
-  xit("should copy a whole tree/folder to root", fakeAsync(() => {}));
+  xit("should copy a whole tree/folder to root", () => {});
 
-  it("should move a root node to root?", fakeAsync(() => {
+  it("should move a root node to root?", () => {
     db.getPath.and.returnValue(Promise.resolve([1]));
     db.initialData.and.returnValue(of(recentDocuments));
     spectator.detectChanges();
@@ -415,15 +403,13 @@ describe("TreeComponent", () => {
       newNode({ updateType: UpdateType.Move, id: 1, parent: null }),
     );
 
-    tick(5000);
-    spectator.detectChanges();
     hasNumberOfTreeNodes(3);
 
     // new folder should be last
     nodeContainsTitle(0, "Test Document 1");
-  }));
+  });
 
-  it("should move a root node to a folder", fakeAsync(() => {
+  it("should move a root node to a folder", () => {
     const documentTreeStore = spectator.inject(DocumentTreeStore);
     documentTreeStore.set(recentDocuments);
 
@@ -442,8 +428,6 @@ describe("TreeComponent", () => {
       newNode({ updateType: UpdateType.Move, id: 1, parent: 2 }),
     );
 
-    tick(1000);
-    spectator.detectChanges();
     hasNumberOfTreeNodes(3);
 
     // new folder should be last
@@ -453,13 +437,13 @@ describe("TreeComponent", () => {
 
     // nodeIsExpanded(0);
     nodeHasLevel(1, 1);
-  }));
+  });
 
-  xit("should move a child node to root", fakeAsync(() => {}));
+  xit("should move a child node to root", () => {});
 
-  xit("should move a whole tree/folder to root", fakeAsync(() => {}));
+  xit("should move a whole tree/folder to root", () => {});
 
-  it("should select a node when clicking on it", fakeAsync(() => {
+  it("should select a node when clicking on it", () => {
     db.initialData.and.returnValue(of(rootDocumentsWithDifferentStates));
     spectator.detectChanges();
 
@@ -468,21 +452,19 @@ describe("TreeComponent", () => {
     selectNode(1);
     nodeIsSelected(1);
     selectNode(2);
-    spectator.detectChanges();
 
-    tick(10000);
     nodeIsSelected(2);
-  }));
+  });
 
-  xit("should find a node by search", fakeAsync(() => {}));
+  xit("should find a node by search", () => {});
 
-  xit("should show no result info if search did not found anything", fakeAsync(() => {}));
+  xit("should show no result info if search did not found anything", () => {});
 
-  xit("should deselect all nodes when a new one is added (#1722)", fakeAsync(() => {}));
+  xit("should deselect all nodes when a new one is added (#1722)", () => {});
 
-  xit("should add a folder under another folder two levels deeper", fakeAsync(() => {
+  xit("should add a folder under another folder two levels deeper", () => {
     // all folders must not be expanded initially
-  }));
+  });
 
   describe("Multi-Selection", () => {
     beforeEach(() => {
@@ -585,7 +567,7 @@ describe("TreeComponent", () => {
       nodesAreMarkedForSelection(0, 1, 2);
     });
 
-    it("should select multiple nodes and delete them at once", fakeAsync(() => {
+    it("should select multiple nodes and delete them at once", () => {
       spectator.click('[data-cy="edit-button"]');
 
       selectNode(0);
@@ -630,13 +612,11 @@ describe("TreeComponent", () => {
         ],
       });
 
-      tick(1000);
-
       hasNumberOfTreeNodes(1);
       nodeContainsTitle(0, "Test Document 3");
-    }));
+    });
 
-    it("should only select the parent but not its children, when clicking on parent", fakeAsync(() => {
+    it("should only select the parent but not its children, when clicking on parent", () => {
       // preparation
       const firstModRececentDoc = Object.assign({}, recentDocuments[0]);
       firstModRececentDoc._hasChildren = true;
@@ -645,8 +625,6 @@ describe("TreeComponent", () => {
       spectator.detectChanges();
 
       selectNode(0);
-      spectator.detectChanges();
-      tick(3000);
 
       hasNumberOfTreeNodes(3);
 
@@ -662,24 +640,20 @@ describe("TreeComponent", () => {
       // when selecting folder only select singe node
       selectNode(0);
       checkSelectionCount(1);
+    });
 
-      // wait for some timers
-      tick(1000);
-    }));
-
-    it("should remove a deleted node from the selection model", fakeAsync(() => {
+    it("should remove a deleted node from the selection model", () => {
       spectator.click('[data-cy="edit-button"]');
       let selectionModel = spectator.fixture.componentInstance.selection.model;
 
       expect(selectionModel.selected.length).toBe(0);
       selectNode(0);
-      tick(1000);
       expect(selectionModel.selected.length).toBe(1);
       // @ts-ignore
       db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: 1 }] });
 
       expect(selectionModel.selected.length).toBe(0);
-    }));
+    });
 
     xit("should mark a node as selected, after click on a search result of tree", () => {});
   });
@@ -730,9 +704,6 @@ describe("TreeComponent", () => {
     parent?: number,
   ) {
     db.treeUpdates.next({ type: type, data: docs, parent: parent });
-
-    // Fixme: why this timer? Analyze!
-    tick(1000);
   }
 
   // const nodeAtIndex = (index) => spectator.queryAll(".mat-tree-node")[index];
