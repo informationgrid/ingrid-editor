@@ -70,7 +70,7 @@
             id="formRoles"
             class="split-pane-content-secondary container-fluid flex-row"
         >
-            @if (!isLoading) {
+            @if (!isLoading()) {
                 @if (selectedGroup()) {
                     <form
                         [formGroup]="form"
@@ -89,9 +89,11 @@
                                 mat-icon-button
                                 data-cy="btn-expand-header"
                                 class="dark menu-button"
-                                [class.expanded]="showMore"
-                                [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
-                                (click)="this.showMore = !this.showMore"
+                                [class.expanded]="showMore()"
+                                [matTooltip]="
+                                    showMore() ? 'Schließen' : 'Öffnen'
+                                "
+                                (click)="showMore.set(!showMore())"
                             >
                                 <mat-icon class="rotating animated"
                                     >keyboard_arrow_down
@@ -131,7 +133,7 @@
                             </mat-menu>
                         </div>
                         <group-header-more
-                            [showMore]="this.showMore"
+                            [showMore]="showMore()"
                             [group]="selectedGroup()"
                         ></group-header-more>
                         @if (selectedGroup().currentUserIsMember) {

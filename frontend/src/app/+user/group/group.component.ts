@@ -23,6 +23,7 @@ import {
   effect,
   inject,
   OnInit,
+  signal,
   Signal,
 } from "@angular/core";
 import { GroupService } from "../../services/role/group.service";
@@ -117,8 +118,8 @@ export class GroupComponent implements OnInit {
 
   form: UntypedFormGroup;
 
-  isLoading = false;
-  showMore = false;
+  isLoading = signal<boolean>(false);
+  showMore = signal<boolean>(false);
   tableWidth: Signal<number> = this.uiStore.userTableWidth;
   groupUsers: User[];
   query = new FormControl<string>("");
@@ -186,7 +187,7 @@ export class GroupComponent implements OnInit {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.previousGroupId = id;
-        this.isLoading = true;
+        this.isLoading.set(true);
         this.form.disable();
         this.groupService
           .getGroup(id)
@@ -205,7 +206,7 @@ export class GroupComponent implements OnInit {
     this.form.reset(group);
     this.form.markAsPristine();
     if (!group.currentUserIsMember) this.form.enable();
-    this.isLoading = false;
+    this.isLoading.set(false);
     // this.loadGroupUsers(group.id);
     this.groupService.setActive(group.id);
   }
@@ -213,7 +214,7 @@ export class GroupComponent implements OnInit {
   discardGroup(group: Group) {
     this.form.markAsPristine();
     this.form.enable();
-    this.isLoading = false;
+    this.isLoading.set(false);
     this.groupService.forceReload$.next();
     this.groupService.setActive(group.id);
   }

@@ -17,8 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
-import { Observable, of, Subscription } from "rxjs";
+import { Component, computed, OnInit, signal } from "@angular/core";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import {
@@ -40,6 +39,7 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
+import { rxResource } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -56,28 +56,24 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class NewUserDialogComponent implements OnInit {
-  userSub: Subscription;
-  users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
-    tap((users) => (this.noAvailableUsers = users.length === 0)),
-    tap((users) => (this.externalUsers = users)),
-    tap(
-      (users) =>
-        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users)),
-    ),
-  );
-  externalUsers: BackendUser[];
+  users$ = rxResource({
+    stream: () => this.userService.getExternalUsers(),
+  });
+  private externalUsers = computed<BackendUser[]>(() => this.users$.value());
   form: FormGroup;
-  noAvailableUsers = true;
-  importExternal = false;
-  formlyFieldConfig: FormlyFieldConfig[];
+  // private noAvailableUsers = computed<boolean>(() => this.users$.value().length === 0);
+  private importExternal = signal<boolean>(false);
+  formlyFieldConfig = computed<FormlyFieldConfig[]>(() =>
+    this.userService.getNewUserFormFields(this.externalUsers()),
+  );
   options: FormlyFormOptions = {
     formState: {
       showGroups: false,
     },
   };
   model: FrontendUser;
-  loginValue = "";
-  asAdmin: boolean = false;
+  private loginValue = "";
+  asAdmin = signal<boolean>(false);
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
@@ -112,27 +108,27 @@ export class NewUserDialogComponent implements OnInit {
       .valueChanges.pipe(untilDestroyed(this))
       .subscribe((role) => {
         if (typeof role === "string") {
-          this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
+          this.asAdmin.set(role === "ige-super-admin" || role === "cat-admin");
           if (this.asAdmin) this.form.get("groups").reset();
         }
       });
 
-    this.userSub = this.users$.subscribe();
+    // this.userSub.set(this.users$.subscribe());
   }
 
   updateForm(existingLogin: string) {
     if (existingLogin !== this.loginValue) {
-      this.importExternal = false;
+      this.importExternal.set(false);
       this.loginValue = existingLogin;
       const role = this.form.get("role").value;
-      const potentialMatch = this.externalUsers?.filter((user) => {
+      const potentialMatch = this.externalUsers()?.filter((user) => {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
         this.model = new FrontendUser(potentialMatch[0]);
         this.model.role = role;
         this.form.reset(this.model);
-        this.importExternal = true;
+        this.importExternal.set(true);
       }
     }
   }

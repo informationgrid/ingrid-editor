@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, inject, OnInit } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, signal } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -78,7 +78,7 @@ export class TabSearchComponent implements OnInit {
   result: ResearchResponse;
 
   error: string = null;
-  isSearching = false;
+  isSearching = signal<boolean>(false);
 
   facetViewRefresher = new EventEmitter<void>();
 
@@ -119,7 +119,7 @@ export class TabSearchComponent implements OnInit {
   }
 
   startSearch() {
-    this.isSearching = true;
+    this.isSearching.set(true);
     const model = this.form.value;
 
     setTimeout(() => {
@@ -128,7 +128,7 @@ export class TabSearchComponent implements OnInit {
         .pipe(
           catchError((err) => this.handleSearchError(err)),
           // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
-          finalize(() => setTimeout(() => (this.isSearching = false), 300)),
+          finalize(() => setTimeout(() => this.isSearching.set(false), 300)),
         )
         .subscribe((result) => this.updateHits(result));
     });

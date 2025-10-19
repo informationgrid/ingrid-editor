@@ -47,7 +47,7 @@
     <div main-content>
         <ige-result-table
             [result]="result"
-            [isLoading]="isSearching"
+            [isLoading]="isSearching()"
             (updated)="startSearch()"
         ></ige-result-table>
     </div>
