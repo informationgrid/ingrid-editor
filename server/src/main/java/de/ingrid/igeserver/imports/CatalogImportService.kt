@@ -300,16 +300,20 @@ class CatalogImportService(
         data.chunked(chunkSize).forEachIndexed { index, chunk ->
             log.debug("Processing chunk $index with ${chunk.size} entries for table $tableName ...")
 
-            val query = entityManager.createNativeQuery(
-                """
-            INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)}
-            RETURNING id;
-                """.trimIndent(),
-                Tuple::class.java,
-            )
-            populateParameters(query, chunk)
-            val chunkIds = getQueryResultsAsMap(query).map { row -> row["id"] as Int }
-
+            val chunkIds = try {
+                val query = entityManager.createNativeQuery(
+                    """
+                    INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)}
+                    RETURNING id;
+                    """.trimIndent(),
+                    Tuple::class.java,
+                )
+                populateParameters(query, chunk)
+                getQueryResultsAsMap(query).map { row -> row["id"] as Int }
+            } catch (e: Exception) {
+                log.warn("Error while importing data to table $tableName", e)
+                emptyList<Int>()
+            }
             allIds.addAll(chunkIds)
         }
 

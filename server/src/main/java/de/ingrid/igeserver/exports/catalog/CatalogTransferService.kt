@@ -75,32 +75,43 @@ class CatalogTransferService(
             return
         }
 
+        var failedImports = 0
         try {
             // Process data in manageable chunks
             data.chunked(chunkSize).forEachIndexed { index, chunk ->
                 log.debug("Processing chunk $index with ${chunk.size} entries for table $tableName ...")
 
-                try {
-                    ClosableTransaction(transactionManager).use {
-                        val query = entityManager.createNativeQuery(
-                            """
-                        INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)};
-                            """.trimIndent(),
-                        )
-                        populateParameters(query, chunk)
-                        query.executeUpdate()
-                    }
-                } catch (e: ConstraintViolationException) {
-                    if (e.message?.contains("already exists") == true) {
-                        log.warn("Table $tableName already contains data $chunk, skipping import.")
-                    } else {
-                        throw e
+                chunk.forEach { row ->
+                    try {
+                        ClosableTransaction(transactionManager).use {
+                            val query = entityManager.createNativeQuery(
+                                """
+                            INSERT INTO $tableName (${row.keys.joinToString()}) VALUES ${generatePlaceholder(listOf(row))};
+                                """.trimIndent(),
+                            )
+                            populateParameters(query, listOf(row))
+                            query.executeUpdate()
+                        }
+                    } catch (e: ConstraintViolationException) {
+                        failedImports++
+                        if (e.message?.contains("already exists") == true) {
+                            log.warn("Table $tableName already contains data $row, skipping import.")
+                        } else {
+                            log.error("Error while importing row to table $tableName: $row", e)
+                        }
+                    } catch (e: Exception) {
+                        failedImports++
+                        log.error("Unexpected error while importing row to table $tableName: $row", e)
                     }
                 }
             }
         } catch (e: Exception) {
-            log.error("Error while importing data to table $tableName")
+            log.error("Critical error while importing data to table $tableName")
             throw e
+        }
+
+        if (failedImports > 0) {
+            log.warn("Completed import to $tableName with $failedImports failed entries out of ${data.size} total entries")
         }
     }
 
