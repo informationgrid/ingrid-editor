@@ -687,13 +687,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun determineTemporalType(period: TimePeriod): KeyValue? {
         if (period.beginPosition?.value != null && period.endPosition?.value != null) {
-            return KeyValue("since", "seit") // von
+            return KeyValue("since", "von")
         } else if (period.beginPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("until", "bis")
+            return KeyValue("till", "bis")
         } else if (period.endPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("since", "seit")
+            return KeyValue("since", "von")
         } else if (period.endPosition?.indeterminatePosition == "now") {
-            return KeyValue("since", "seit")
+            return KeyValue("since", "von")
         }
 
         return null
