@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, input, output, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  input,
+  output,
+  signal,
+} from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";

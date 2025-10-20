@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnDestroy, OnInit, input, output, signal } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  signal,
+} from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,

@@ -142,7 +142,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   };
 
-  sections: Signal<string[]> = toSignal(this.formularService.sections$, { initialValue: [] });
+  sections: Signal<string[]> = toSignal(this.formularService.sections$, {
+    initialValue: [],
+  });
 
   form = new UntypedFormGroup({});
 
@@ -506,7 +508,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formularService.getSectionsForDoctype(this.fields);
     this.hasOptionalFields.set(
-      this.profileService.getDoctype(doctypeId).hasOptionalFields
+      this.profileService.getDoctype(doctypeId).hasOptionalFields,
     );
   }
 

@@ -43,12 +43,7 @@ import {
   startWith,
   tap,
 } from "rxjs/operators";
-import {
-  merge,
-  Observable,
-  Subject,
-  Subscription,
-} from "rxjs";
+import { merge, Observable, Subject, Subscription } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
