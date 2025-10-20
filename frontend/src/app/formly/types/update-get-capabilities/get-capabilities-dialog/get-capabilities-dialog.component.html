@@ -1,10 +1,7 @@
 <ige-dialog-template
     label="GetCapabilities-Assistent"
     (submit)="submit()"
-    [disabled]="
-        selectionEmpty() ||
-        !validAddressConstraint()
-    "
+    [disabled]="selectionEmpty() || !validAddressConstraint()"
 >
     <ng-container content>
         <div class="flex-col align-items-center">
@@ -121,7 +118,8 @@
                 @if (report()?.boundingBoxes.length > 0) {
                     <mat-list-option value="boundingBoxes">
                         <span matListItemTitle
-                            >Raumbezüge {{ report()?.boundingBoxes.length }}</span
+                            >Raumbezüge
+                            {{ report()?.boundingBoxes.length }}</span
                         >
                         <span>
                             @for (bbox of report()?.boundingBoxes; track bbox) {
@@ -177,7 +175,10 @@
                 @if (report()?.operations.length > 0) {
                     <mat-list-option value="operations">
                         <span matListItemTitle>Operationen</span>
-                        @for (operation of report()?.operations; track operation) {
+                        @for (
+                            operation of report()?.operations;
+                            track operation
+                        ) {
                             <span matListItemLine
                                 >{{ operation.name.value }}:
                                 {{ operation.addressList[0] }}</span
