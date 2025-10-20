@@ -117,8 +117,8 @@
         "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
     @else
         "resourceRange": {
-        "start": "${time.getDate()}",
-        "end": "${time.getUntilDate()}"
+        "start": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
+        "end": @if(time.getUntilDate() == null) null @else "${time.getUntilDate()}"@endif
         },
     @endif
     "resourceDateTypeSince": @template.imports.ingrid.partial.key-value(item = time.getDateTypeSince())
