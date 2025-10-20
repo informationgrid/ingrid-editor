@@ -624,13 +624,26 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.joinToString(";")
 
     fun getTemporalEvents(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
-        ?.map {
+        ?.mapNotNull {
             val value = it.date?.dateType?.code?.codeListValue
             val typeKey = codeListService.getCodeListEntryId("502", value, "iso")
             val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
                 ?: it.date?.date?.date?.let { parseDate(it) }
-                ?: ""
-            Event(KeyValue(typeKey, typeKey?.let { codeListService.getCodelistValue("502", typeKey, catalogLanguage) } ?: value, "502"), date)
+
+            val type = if (typeKey == null && value == null) {
+                null
+            } else {
+                KeyValue(
+                    typeKey,
+                    typeKey?.let { codeListService.getCodelistValue("502", typeKey, catalogLanguage) } ?: value,
+                    "502",
+                )
+            }
+
+            // no extractable information, skip
+            if (type == null && date == null) return@mapNotNull null
+
+            Event(type, date)
         } ?: emptyList()
 
     private fun parseDateTime(value: String): String = OffsetDateTime.parse(value).toInstant().toString()
@@ -1100,7 +1113,7 @@ data class TimeInfo(
     val dateTypeSince: KeyValue? = null,
 )
 
-data class Event(val type: KeyValue, val date: String)
+data class Event(val type: KeyValue?, val date: String?)
 
 data class VerticalExtentModel(
     val uom: KeyValue,

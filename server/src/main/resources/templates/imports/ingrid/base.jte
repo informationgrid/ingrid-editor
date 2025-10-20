@@ -103,7 +103,7 @@
 "events": [
 @for(var event : ForSupport.of(model.getTemporalEvents()))
     {
-        "referenceDate": "${event.get().getDate()}",
+        "referenceDate": @if (event.get().getDate() != null) "${event.get().getDate()}" @else null@endif,
         "referenceDateType": @template.imports.ingrid.partial.key-value(item = event.get().getType())
     }@if (!event.isLast()),@endif
 @endfor
