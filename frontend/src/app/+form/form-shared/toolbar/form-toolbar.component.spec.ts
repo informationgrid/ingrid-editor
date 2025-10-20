@@ -94,6 +94,7 @@ describe("Form-Toolbar", () => {
 
   it("should add a toolbar item through the service", () => {
     const item: ToolbarItem = {
+      type: "button",
       id: "btnToolbarTest",
       tooltip: "TEST_TOOLBAR_ITEM",
       matIconVariable: "remove",
@@ -113,6 +114,7 @@ describe("Form-Toolbar", () => {
 
   it("should add a publish button through the service", () => {
     const item: ToolbarItem = {
+      type: "button",
       id: "btnPublish",
       tooltip: "TEST_TOOLBAR_ITEM",
       matIconVariable: "remove",

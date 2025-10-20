@@ -65,6 +65,7 @@ export class IsoViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnIso",
       tooltip: "ISO Ansicht",
       matSvgVariable: "ISO-Ansicht",

@@ -70,6 +70,7 @@ export class SavePlugin extends SaveBase {
 
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnSave",
       label: "Speichern",
       matIconVariable: "save",

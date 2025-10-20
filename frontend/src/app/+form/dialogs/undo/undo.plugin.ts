@@ -65,12 +65,13 @@ export class UndoPlugin extends Plugin {
   private addToolbarButtons() {
     this.formToolbarService.addButton({
       id: "toolBtnUndoSeparator",
-      isSeparator: true,
+      type: "separator",
       pos: 140,
     });
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnUndo",
       tooltip: "Undo",
       matIconVariable: "undo",
@@ -81,6 +82,7 @@ export class UndoPlugin extends Plugin {
 
     // add button to toolbar for revert action
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnRedo",
       tooltip: "Redo",
       matIconVariable: "redo",

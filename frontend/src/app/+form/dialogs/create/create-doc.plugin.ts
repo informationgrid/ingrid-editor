@@ -96,6 +96,7 @@ export class CreateDocumentPlugin extends Plugin {
       .pipe(take(1))
       .subscribe((tooltipText) => {
         this.toolbarService.addButton({
+          type: "button",
           id: "toolBtnNew",
           tooltip: tooltipText,
           matSvgVariable: "Neuer-Datensatz",

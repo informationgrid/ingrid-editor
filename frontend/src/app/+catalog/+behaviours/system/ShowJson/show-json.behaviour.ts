@@ -50,9 +50,10 @@ export class ShowJsonBehaviour extends Plugin {
     this.formToolbarService.addButton({
       id: "toolBtnShowJsonSeparator",
       pos: 999,
-      isSeparator: true,
+      type: "separator",
     });
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnShowJson",
       tooltip: "JSON anzeigen",
       matIconVariable: "bug_report",

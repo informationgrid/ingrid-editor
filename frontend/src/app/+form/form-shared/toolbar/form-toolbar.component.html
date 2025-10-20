@@ -1,7 +1,7 @@
 <mat-toolbar>
     <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
         @for (button of buttons_left; track button.id) {
-            @if (!button.isSeparator && !button.menu) {
+            @if (button.type === "button" && !button.menu) {
                 <div>
                     <button
                         mat-button
@@ -35,7 +35,7 @@
             }
             <mat-menu #hiddenMenu="matMenu">
                 @for (
-                    menuItem of button.hiddenMenu;
+                    menuItem of $any(button).hiddenMenu;
                     track menuItem;
                     let idx = $index
                 ) {
@@ -50,13 +50,15 @@
                             })
                         "
                         matomoClickCategory="Toolbar"
-                        [matomoClickAction]="'HiddenMenuItem_' + button.eventId"
+                        [matomoClickAction]="
+                            'HiddenMenuItem_' + $any(button).eventId
+                        "
                     >
                         <span>{{ menuItem.label }}</span>
                     </button>
                 }
             </mat-menu>
-            @if (!button.isSeparator && button.menu) {
+            @if (button.type !== "separator" && button.menu) {
                 <button
                     #actionsMenu
                     mat-button
@@ -97,7 +99,7 @@
                     }
                 </mat-menu>
             }
-            @if (button.isSeparator) {
+            @if (button.type === "separator") {
                 <mat-divider
                     class="separator"
                     [vertical]="true"
@@ -110,7 +112,11 @@
 
         <span class="save-buttons">
             @for (button of buttons_right; track button) {
-                @if (!button.isSeparator && !button.label && !button.hidden) {
+                @if (
+                    button.type !== "separator" &&
+                    !button.label &&
+                    !button.hidden
+                ) {
                     <button
                         mat-icon-button
                         [matTooltip]="button.tooltip"
@@ -124,7 +130,12 @@
                         <mat-icon>{{ button.matIconVariable }}</mat-icon>
                     </button>
                 }
-                @if (button.label && !button.isPrimary && !button.hidden) {
+                @if (
+                    button.type === "button" &&
+                    button.label &&
+                    !button.isPrimary &&
+                    !button.hidden
+                ) {
                     <button
                         mat-stroked-button
                         class="toolbar-save-button"
@@ -138,7 +149,12 @@
                         {{ button.label }}
                     </button>
                 }
-                @if (button.label && button.isPrimary && !button.hidden) {
+                @if (
+                    button.type === "button" &&
+                    button.label &&
+                    button.isPrimary &&
+                    !button.hidden
+                ) {
                     <button
                         class="btnPublish"
                         mat-flat-button

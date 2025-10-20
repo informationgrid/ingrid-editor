@@ -95,6 +95,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     super.registerForm();
 
     this.formToolbarService.addButton({
+      type: "button",
       id: this.buttonId,
       tooltip: "GetCapabilities-Assistent",
       matIconVariable: "auto_fix_normal",

@@ -23,7 +23,10 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
 import { DocumentAbstract } from "../../../store/document/document.model";
 
+export type ToolbarItemType = "button" | "separator";
+
 export interface DefaultToolbarItem {
+  type: ToolbarItemType;
   id: string;
   pos: number;
   align?: "right" | "left";
@@ -37,6 +40,7 @@ export interface ToolbarMenuItem {
 }
 
 export interface ToolbarItem extends DefaultToolbarItem {
+  type: "button";
   tooltip?: string;
   matIconVariable?: string;
   matSvgVariable?: string;
@@ -51,7 +55,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
 }
 
 export interface Separator extends DefaultToolbarItem {
-  isSeparator: boolean;
+  type: "separator";
 }
 
 @Injectable({

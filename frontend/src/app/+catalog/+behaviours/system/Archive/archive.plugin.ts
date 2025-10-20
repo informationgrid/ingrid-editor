@@ -111,6 +111,7 @@ export class ArchivePlugin extends Plugin {
     if (this.data.hideForMdAdmins && this.configService.isMdAdmin()) return;
 
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnArchive",
       label: "Archivieren",
       eventId: "ARCHIVE",

@@ -64,6 +64,7 @@ export class UvpArchiveBehaviour extends Plugin {
   private addressTreeStore = inject(AddressTreeStore);
 
   private archiveUpdateBtn: ToolbarItem = {
+    type: "button",
     id: "toolBtnUpdateArchive",
     label: "Im Archiv speichern",
     eventId: "UPDATE_ARCHIVE",
@@ -148,7 +149,7 @@ export class UvpArchiveBehaviour extends Plugin {
 
   unregister() {
     super.unregister();
-    this.removeUVPArchiveTab();
+    // this.removeUVPArchiveTab();
   }
 
   private addUVPArchiveTab() {
@@ -165,25 +166,6 @@ export class UvpArchiveBehaviour extends Plugin {
       },
     };
     this.catalogRouteService.addRoute(route);
-
-    // TODO: only on click, because lazy-loaded
-    /*let routerConfig = [...this.router.config];
-    // @ts-ignore
-    if (!routerConfig[0].children[7]._loadedRoutes) return;
-    // @ts-ignore
-    routerConfig[0].children[7]._loadedRoutes.push(route);
-    this.router.resetConfig(routerConfig);
-    setTimeout(
-      () =>
-        this.router.navigate([
-          `${ConfigService.catalogId}/catalogs/uvp-archive`,
-        ]),
-      2000,
-    );*/
-  }
-
-  private removeUVPArchiveTab() {
-    // this.catalogRouteService.
   }
 
   private setPluginConfig() {

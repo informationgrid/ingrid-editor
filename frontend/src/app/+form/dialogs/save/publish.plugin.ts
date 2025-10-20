@@ -146,6 +146,7 @@ export class PublishPlugin extends SaveBase {
     }
 
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnPublish",
       label: this.transloco.translate("publish.buttonLabel"),
       eventId: this.eventPublishId,
