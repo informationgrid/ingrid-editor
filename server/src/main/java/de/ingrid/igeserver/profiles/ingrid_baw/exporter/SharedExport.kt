@@ -246,8 +246,7 @@ data class CitedResponsibleParty(
 )
 
 fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.mapNotNull {
-    val litDoc =
-        transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, it.getString("uuid")!!)
+    val litDoc = transformer.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
     calcLiteratureAggregate(transformer, litDoc)
 } ?: emptyList()
 

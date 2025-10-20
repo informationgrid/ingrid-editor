@@ -170,7 +170,7 @@
       ],
       "resourceDateType": {
         "key": "since",
-        "value": "seit",
+        "value": "von",
         "_codelistId": null
       },
       "status": {

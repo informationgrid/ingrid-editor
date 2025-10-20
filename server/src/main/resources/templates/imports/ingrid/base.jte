@@ -103,7 +103,7 @@
 "events": [
 @for(var event : ForSupport.of(model.getTemporalEvents()))
     {
-        "referenceDate": "${event.get().getDate()}",
+        "referenceDate": @if (event.get().getDate() != null) "${event.get().getDate()}" @else null@endif,
         "referenceDateType": @template.imports.ingrid.partial.key-value(item = event.get().getType())
     }@if (!event.isLast()),@endif
 @endfor
@@ -113,13 +113,13 @@
     ,
     "resourceDateType": @template.imports.ingrid.partial.key-value(item = time.getType()),
     "status": @template.imports.ingrid.partial.key-value(item = time.getStatus()),
-    @if(time.getUntilDate() == null)
-        "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
-    @else
+    @if(time.getUntilDate() != null && time.getDate() != null)
         "resourceRange": {
-        "start": "${time.getDate()}",
-        "end": "${time.getUntilDate()}"
+        "start": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
+        "end": @if(time.getUntilDate() == null) null @else "${time.getUntilDate()}"@endif
         },
+    @else
+        "resourceDate": @if(time.getDate() != null) "${time.getDate()}" @elseif (time.getUntilDate() != null) "${time.getUntilDate()}" @else null@endif,
     @endif
     "resourceDateTypeSince": @template.imports.ingrid.partial.key-value(item = time.getDateTypeSince())
 @endif
