@@ -1,4 +1,4 @@
-export function waitSomeTime(timeout = 1) {
+export function waitSomeTime(timeout = 10) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(null), timeout);
   });

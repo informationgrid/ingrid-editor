@@ -84,7 +84,7 @@ import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
@@ -142,7 +142,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   };
 
-  sections: Observable<string[]> = this.formularService.sections$;
+  sections: Signal<string[]> = toSignal(this.formularService.sections$, { initialValue: [] });
 
   form = new UntypedFormGroup({});
 
@@ -158,7 +158,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showAllFields: Signal<boolean> = this.uiStore.toggleFieldsButtonShowAll;
 
-  hasOptionalFields = false;
+  hasOptionalFields = signal<boolean>(false);
 
   isLoading = true;
 
@@ -170,8 +170,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = signal<boolean>(false);
-  isStickyHeader = false;
-  numberOfErrors = 0;
+  isStickyHeader = signal<boolean>(false);
+  numberOfErrors = signal<number>(0);
   showValidationErrors = false;
   private errorCounterSubscription: Subscription;
 
@@ -209,7 +209,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           );
           this.form.get(error.name)?.setErrors([{ message: message }]);
         });
-        this.numberOfErrors = serverValidationErrors.length;
+        this.numberOfErrors.set(serverValidationErrors.length);
       }
     });
 
@@ -267,7 +267,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
       .subscribe((doPublish) => {
-        this.numberOfErrors = 0;
+        this.numberOfErrors.set(0);
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
@@ -343,7 +343,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private toggleStickyHeader(show: boolean) {
-    this.isStickyHeader = show;
+    this.isStickyHeader.set(show);
   }
 
   /**
@@ -352,7 +352,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   loadDocument(id: string) {
     this.showValidationErrors = false;
-    this.numberOfErrors = 0;
+    this.numberOfErrors.set(0);
     let previousDocUuid = this.form.value._uuid;
 
     if (id === undefined) {
@@ -505,8 +505,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
     this.formularService.getSectionsForDoctype(this.fields);
-    this.hasOptionalFields =
-      this.profileService.getDoctype(doctypeId).hasOptionalFields;
+    this.hasOptionalFields.set(
+      this.profileService.getDoctype(doctypeId).hasOptionalFields
+    );
   }
 
   /**
@@ -567,7 +568,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         const invalidFields = this.getInvalidControlNames(this.form);
         if (invalidFields.length > 0)
           console.warn("INVALID FIELDS: ", invalidFields);
-        this.numberOfErrors = invalidFields.length;
+        this.numberOfErrors.set(invalidFields.length);
       });
 
     // update form here instead of onInit, because of caching problem, where no onInit method is called

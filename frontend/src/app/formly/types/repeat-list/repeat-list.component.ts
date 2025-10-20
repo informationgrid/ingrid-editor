@@ -44,7 +44,6 @@ import {
   tap,
 } from "rxjs/operators";
 import {
-  BehaviorSubject,
   merge,
   Observable,
   Subject,
@@ -78,7 +77,7 @@ import {
   MatChipRemove,
 } from "@angular/material/chips";
 import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
+import { NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import {
   MatError,
@@ -100,7 +99,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
 
   isErrorState(control: FormControl | null): boolean {
-    if (control?.invalid) return control.invalid && !this.component.hasFocus;
+    if (control?.invalid) return control.invalid && !this.component.hasFocus();
     else return false;
   }
 }
@@ -161,7 +160,6 @@ interface RepeatListProps extends FormlyFieldProps {
     MatHint,
     SearchInputComponent,
     MatProgressSpinner,
-    AsyncPipe,
     FieldToAiraLabelledbyPipe,
     FormlyValidationMessage,
   ],
@@ -191,16 +189,16 @@ export class RepeatListComponent
 
   items = signal<any[]>([]);
 
-  filteredOptions: Observable<SelectOptionUi[]>;
+  filteredOptions = signal<SelectOptionUi[]>([]);
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
   inputControl = new FormControl<string>("");
   filterCtrl: UntypedFormControl;
   searchSub: Subscription;
-  searchResult = new BehaviorSubject<any[]>([]);
+  searchResult = signal<any[]>([]);
   private manualUpdate = new Subject<string>();
-  type: "simple" | "select" | "autocomplete" | "search" = "simple";
-  hasFocus = false;
+  type = signal<"simple" | "select" | "autocomplete" | "search">("simple");
+  hasFocus = signal<boolean>(false);
   matcher = new MyErrorStateMatcher(this);
 
   constructor(private snack: MatSnackBar) {
@@ -222,7 +220,7 @@ export class RepeatListComponent
       });
 
     if (this.props.asSelect) {
-      this.type = "select";
+      this.type.set("select");
       if (this.props.showSearch) {
         this.filterCtrl = new FormControl<string>("");
         this.filterCtrl.valueChanges
@@ -230,7 +228,7 @@ export class RepeatListComponent
           .subscribe((value) => this.manualUpdate.next(value));
       }
     } else if (this.props.restCall) {
-      this.type = "search";
+      this.type.set("search");
       if (!this.props.labelField) this.props.labelField = "label";
       if (!this.props.selectLabelField)
         this.props.selectLabelField = this.props.labelField;
@@ -238,7 +236,7 @@ export class RepeatListComponent
       this.props.asAutocomplete ||
       (this.props.options && !this.props.asSelect && !this.props.restCall)
     ) {
-      this.type = "autocomplete";
+      this.type.set("autocomplete");
       if (!this.props.hint) this.props.hint = "Eingabe mit RETURN bestätigen";
     }
 
@@ -271,7 +269,7 @@ export class RepeatListComponent
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
 
-    if (this.type !== "select") {
+    if (this.type() !== "select") {
       this.formControl.addValidators(
         this.mustBeEmptyValidator(this.inputControl),
       );
@@ -299,24 +297,22 @@ export class RepeatListComponent
         )
         .subscribe((query) => this.search(query));
     } else {
-      this.filteredOptions = merge(
+      merge(
         this.formControl.valueChanges,
         this.inputControl.valueChanges.pipe(
           tap(() => this.formControl.updateValueAndValidity()),
         ),
         this.manualUpdate.asObservable(),
-      ).pipe(
-        untilDestroyed(this),
-        startWith(""),
-        debounceTime(0),
-        filter((value) => value !== undefined && value !== null),
-        map((value) => this._filter(value)),
-        tap((value) => this._markSelected(value)),
-      );
-
-      if (this.type !== "select" && this.type !== "autocomplete") {
-        this.filteredOptions.subscribe();
-      }
+      )
+        .pipe(
+          untilDestroyed(this),
+          startWith(""),
+          debounceTime(0),
+          filter((value) => value !== undefined && value !== null),
+          map((value) => this._filter(value)),
+          tap((value) => this._markSelected(value)),
+        )
+        .subscribe((value) => this.filteredOptions.set(value));
     }
   }
 
@@ -355,12 +351,12 @@ export class RepeatListComponent
 
     this.inputControl.setValue(null);
 
-    if (this.type === "autocomplete") {
+    if (this.type() === "autocomplete") {
       // element successfully added when input was blurred
       // this.autoCompleteEl?.nativeElement?.blur();
       // this.autoComplete?.closePanel();
       // setTimeout(() => this.autoCompleteEl?.nativeElement?.focus());
-    } else if (this.type === "select") {
+    } else if (this.type() === "select") {
       if (this._filter(null)?.length === 0) {
         this.inputControl.disable();
       }
@@ -410,12 +406,12 @@ export class RepeatListComponent
 
   private search(value: string) {
     if (!value || value.length === 0) {
-      this.searchResult.next([]);
+      this.searchResult.set([]);
       return;
     }
     this.searchSub?.unsubscribe();
     this.searchSub = this.props.restCall(value).subscribe((result: any) => {
-      this.searchResult.next(result);
+      this.searchResult.set(result);
     });
   }
 

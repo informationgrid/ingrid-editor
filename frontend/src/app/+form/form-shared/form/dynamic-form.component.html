@@ -49,16 +49,16 @@
                     }
                     @if (formInfoModel !== null) {
                         <ige-quick-navbar
-                            [class.sticky-header]="isStickyHeader"
+                            [class.sticky-header]="isStickyHeader()"
                             [model]="formInfoModel"
-                            [sections]="sections | async"
-                            [numberOfErrors]="numberOfErrors"
-                            [hasOptionalFields]="hasOptionalFields"
+                            [sections]="sections()"
+                            [numberOfErrors]="numberOfErrors()"
+                            [hasOptionalFields]="hasOptionalFields()"
                         ></ige-quick-navbar>
                     }
                     <div
                         class="form-inner"
-                        [class.extra-space-toggle-button]="hasOptionalFields"
+                        [class.extra-space-toggle-button]="hasOptionalFields()"
                         [class.hide]="metadata()?.docType === 'FOLDER'"
                     >
                         <form

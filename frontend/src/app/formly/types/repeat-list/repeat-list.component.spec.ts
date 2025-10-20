@@ -134,9 +134,11 @@ describe("RepeatListComponent", () => {
 
     it("should show multiple items", async () => {
       spectator.fixture.changeDetectorRef.markForCheck();
+      // await spectator.fixture.whenStable();
       spectator.setHostInput("model", {
         repeatListSimple: ["item 1", "item 2", "item 3"],
       });
+      // await spectator.fixture.whenStable();
 
       await waitSomeTime(10);
       checkItemCount(3);
@@ -200,7 +202,7 @@ describe("RepeatListComponent", () => {
       checkItemCount(0);
 
       spectator.dispatchFakeEvent("input", "focusin");
-      await waitSomeTime(10);
+      await waitSomeTime(15);
       await auto.selectOption({ text: "Eins" });
 
       await waitSomeTime();
@@ -425,7 +427,7 @@ describe("RepeatListComponent", () => {
       checkItemCount(0);
 
       spectator.dispatchFakeEvent("input", "focusin");
-      await waitSomeTime(10);
+      await waitSomeTime(15);
       await auto.selectOption({ text: "Eins" });
 
       await waitSomeTime(10);
