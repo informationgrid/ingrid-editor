@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnInit, signal, ViewChild } from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -57,8 +57,8 @@ import { MatFormField } from "@angular/material/form-field";
 import { MatOption } from "@angular/material/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import { AsyncPipe } from "@angular/common";
 import { DocumentTreeStore } from "../../store/tree/document-tree.store";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-export",
@@ -86,7 +86,6 @@ import { DocumentTreeStore } from "../../store/tree/document-tree.store";
     MatCheckbox,
     MatStepperPrevious,
     MatProgressSpinner,
-    AsyncPipe,
   ],
 })
 export class ExportComponent implements OnInit {
@@ -95,20 +94,22 @@ export class ExportComponent implements OnInit {
 
   documentTreeStore = inject(DocumentTreeStore);
 
-  selection: any[] = [];
   optionsFormGroup: UntypedFormGroup;
-  datasetSelected = false;
+  datasetSelected = signal<boolean>(false);
   private selectedIds: number[];
-  exportResult: HttpResponse<Blob>;
-  exportFormats = this.exportService
-    .getExportTypes()
-    .pipe(
-      tap((types) => this.optionsFormGroup.get("format").setValue(types[0])),
-    );
-  path: ShortTreeNode[];
-  showMore = false;
-  showDraftsCheckbox = true;
-  exportFinished = false;
+  exportResult = signal<HttpResponse<Blob> | null>(null);
+  exportFormats = toSignal(
+    this.exportService
+      .getExportTypes()
+      .pipe(
+        tap((types) => this.optionsFormGroup.get("format").setValue(types[0])),
+      ),
+    { initialValue: [] },
+  );
+  path = signal<ShortTreeNode[] | null>(null);
+  showMore = signal<boolean>(false);
+  showDraftsCheckbox = signal<boolean>(true);
+  exportFinished = signal<boolean>(false);
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -129,35 +130,37 @@ export class ExportComponent implements OnInit {
   selectDatasets(ids: number[]) {
     this.selectedIds = ids;
     if (ids.length > 0) {
-      this.datasetSelected = true;
+      this.datasetSelected.set(true);
       // only get path if exactly one dataset is selected
-      ids.length == 1
-        ? this.docService
-            .getPath(ids[0])
-            .subscribe((path) => (this.path = path))
-        : (this.path = null);
+      if (ids.length === 1) {
+        this.docService
+          .getPath(ids[0])
+          .subscribe((path) => this.path.set(path));
+      } else {
+        this.path.set(null);
+      }
     }
   }
 
   runExport() {
     let model = this.optionsFormGroup.value;
     const options = ExchangeService.prepareExportInfo(this.selectedIds, model);
-    this.exportResult = null;
-    this.exportFinished = false;
+    this.exportResult.set(null);
+    this.exportFinished.set(false);
     this.exportService
       .export(options)
       .pipe(
         catchError((error) => this.handleError(error)),
-        finalize(() => (this.exportFinished = true)),
+        finalize(() => this.exportFinished.set(true)),
       )
       .subscribe((response: HttpResponse<Blob>) => {
         console.debug("Export-Result:", response);
-        this.exportResult = response;
+        this.exportResult.set(response);
       });
   }
 
   downloadExport() {
-    this.downloadFile(this.exportResult);
+    this.downloadFile(this.exportResult()!);
   }
 
   private downloadFile(data: HttpResponse<Blob>) {
@@ -178,13 +181,13 @@ export class ExportComponent implements OnInit {
   cancel() {
     this.stepper.selectedIndex = 0;
     this.treeComponent.jumpToNode(null).then(() => {
-      this.datasetSelected = false;
-      this.path = null;
+      this.datasetSelected.set(false);
+      this.path.set(null);
     });
   }
 
   async showPreview() {
-    const data = await this.exportResult.body.text();
+    const data = await this.exportResult()!.body.text();
     this.dialog.open(ConfirmDialogComponent, {
       maxWidth: 700,
       data: {
@@ -226,7 +229,7 @@ export class ExportComponent implements OnInit {
   }
 
   updateDraftsCheckbox($event: MatSelectChange) {
-    this.showDraftsCheckbox = $event.value.type === "internal";
+    this.showDraftsCheckbox.set($event.value.type === "internal");
     // this.optionsFormGroup.get("drafts").setValue(false);
   }
 }

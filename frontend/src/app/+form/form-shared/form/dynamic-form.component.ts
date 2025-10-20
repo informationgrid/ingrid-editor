@@ -26,12 +26,12 @@ import {
   ElementRef,
   HostListener,
   inject,
+  input,
   OnDestroy,
   OnInit,
   Signal,
   signal,
   ViewChild,
-  input,
 } from "@angular/core";
 import {
   FormArray,
@@ -82,7 +82,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
 import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
@@ -106,7 +106,6 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     ReactiveFormsModule,
     FormsModule,
     FolderDashboardComponent,
-    AsyncPipe,
     JsonPipe,
     FormlyForm,
   ],
