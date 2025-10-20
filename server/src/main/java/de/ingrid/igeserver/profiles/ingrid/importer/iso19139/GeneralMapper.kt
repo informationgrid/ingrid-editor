@@ -485,7 +485,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     val isBwastr = it.geographicDescription.geographicIdentifier.mdIdentifier.authority?.citation?.title?.value == "VV-WSV 1103"
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     if (isBwastr) {
-                        references.add(getBwastrSpatial(titleOrArs))
+                        getBwastrSpatial(titleOrArs)?.let { references.add(it) }
                     } else if (isAnchorAndRegionKey) {
                         references.add(SpatialReference("free", title = null, ars = titleOrArs))
                     } else {
@@ -517,7 +517,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return references
     }
 
-    private fun getBwastrSpatial(title: String): SpatialReference {
+    private fun getBwastrSpatial(title: String): SpatialReference? {
         var extractedBwastrId: String
         var start: Double? = null
         var end: Double? = null
@@ -529,6 +529,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 end = it[2].toDoubleOrNull()
             }
         } else {
+            log.warn("Could not extract BWASTR id from title: '$title', trying to extract numbers only.")
             extractedBwastrId = title.replace("[^$0-9]".toRegex(), "")
         }
         // remove leading zero
@@ -551,19 +552,23 @@ open class GeneralMapper(val isoData: IsoImportData) {
         } else {
             val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId
             val bwastr = bwastrLocatorService.search(idForSearch).firstOrNull()
-                ?: throw ServerException.withReason("Could not find Bwastr with id: $idForSearch")
-            SpatialReference(
-                type = "bwastr",
-                bwastr = Bwastr(
-                    bwastrid = bwastr.bwastrid,
-                    bwastr_name = bwastr.bwastr_name,
-                    strecken_name = bwastr.strecken_name,
-                    concat_name = bwastr.concat_name,
-                    start = end,
-                    end = start,
-                ),
-                title = bwastr.concat_name,
-            )
+            return if (bwastr != null) {
+                SpatialReference(
+                    type = "bwastr",
+                    bwastr = Bwastr(
+                        bwastrid = bwastr.bwastrid,
+                        bwastr_name = bwastr.bwastr_name,
+                        strecken_name = bwastr.strecken_name,
+                        concat_name = bwastr.concat_name,
+                        start = end,
+                        end = start,
+                    ),
+                    title = bwastr.concat_name,
+                )
+            } else {
+                log.warn("Could not find BWASTR with id '$extractedBwastrId' in BWASTR Locator Service.")
+                null
+            }
         }
     }
 
