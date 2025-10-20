@@ -23,6 +23,7 @@ import {
   Input,
   ViewChild,
   input,
+  signal,
 } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
@@ -71,12 +72,12 @@ export class ExpirationTableComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = [
+  displayedColumns = signal<string[]>([
     "_type",
     "title",
     "_contentModified",
     "_responsibleUser",
-  ];
+  ]);
 
   constructor(private router: Router) {}
 

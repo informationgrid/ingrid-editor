@@ -119,7 +119,13 @@ export class UrlCheckComponent {
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 
   dataSource = new MatTableDataSource<UrlInfo>([]);
-  displayedColumns = ["_select_", "status", "url", "count", "datasets"];
+  displayedColumns = signal<string[]>([
+    "_select_",
+    "status",
+    "url",
+    "count",
+    "datasets",
+  ]);
   showMore = signal<boolean>(false);
   selection = new SelectionModel<UrlInfo>(false, []);
   isRunning = signal<boolean>(false);

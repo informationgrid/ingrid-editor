@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ViewChild, signal } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
@@ -78,8 +78,8 @@ export class UvpBerichtComponent implements AfterViewInit {
   facetForm = new UntypedFormControl();
   dataSource = new MatTableDataSource([]);
   dataSourceMiscellaneous = new MatTableDataSource([]);
-  displayedColumns = ["eiaNumber", "eiaCategory", "count"];
-  displayedColumnsMiscellaneous = ["type", "value"];
+  displayedColumns = signal<string[]>(["eiaNumber", "eiaCategory", "count"]);
+  displayedColumnsMiscellaneous = signal<string[]>(["type", "value"]);
 
   constructor(private uvpResearchService: UvpResearchService) {
     this.uvpResearchService.initialized$

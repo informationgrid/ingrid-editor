@@ -40,11 +40,11 @@
                 </ng-container>
                 <tr
                     mat-header-row
-                    *matHeaderRowDef="displayedColumnsMiscellaneous"
+                    *matHeaderRowDef="displayedColumnsMiscellaneous()"
                 ></tr>
                 <tr
                     mat-row
-                    *matRowDef="let row; columns: displayedColumnsMiscellaneous"
+                    *matRowDef="let row; columns: displayedColumnsMiscellaneous()"
                 ></tr>
             </table>
         </ige-card-box>
@@ -80,10 +80,10 @@
                         {{ element.count }}
                     </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
                 <tr
                     mat-row
-                    *matRowDef="let row; columns: displayedColumns"
+                    *matRowDef="let row; columns: displayedColumns()"
                 ></tr>
             </table>
         </ige-card-box>

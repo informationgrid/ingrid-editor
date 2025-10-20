@@ -72,7 +72,12 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   public permissionLevel: typeof PermissionLevel = PermissionLevel;
 
-  displayedColumns: string[] = ["type-icon", "title", "permission", "settings"];
+  displayedColumns = signal<string[]>([
+    "type-icon",
+    "title",
+    "permission",
+    "settings",
+  ]);
 
   val: TreePermission[] = [];
   private onChange: (x: any) => {};
