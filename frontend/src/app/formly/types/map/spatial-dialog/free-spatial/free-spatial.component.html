@@ -9,7 +9,7 @@
         ariaLabel="Suche nach Orten"
     ></ige-search-input>
 
-    @if (showWelcome) {
+    @if (showWelcome()) {
         <div class="comment">
             Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
             zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
@@ -26,14 +26,14 @@
         </div>
     }
 
-    @if (showNoResult) {
+    @if (showNoResult()) {
         <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
     }
 
     <div class="result-wrapper">
         <div class="list-wrapper">
             <mat-list dense class="overflow-auto" ngDefaultControl>
-                @for (entry of nominatimResult; track entry) {
+                @for (entry of nominatimResult(); track entry) {
                     <mat-list-item
                         class="clickable"
                         [title]="entry.display_name"

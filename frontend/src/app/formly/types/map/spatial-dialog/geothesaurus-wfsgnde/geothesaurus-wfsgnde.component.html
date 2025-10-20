@@ -10,7 +10,7 @@
         ariaLabel="Suche im Geo-Thesaurus"
     ></ige-search-input>
 
-    @if (showWelcome) {
+    @if (showWelcome()) {
         <div class="padding-vertical comment">
             Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
             zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
@@ -19,14 +19,14 @@
         </div>
     }
 
-    @if (showNoResult) {
+    @if (showNoResult()) {
         <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
     }
 
     <div class="result-wrapper">
         <div class="list-wrapper">
             <mat-list dense class="overflow-auto" ngDefaultControl>
-                @for (entry of geoThesaurusResults; track entry) {
+                @for (entry of geoThesaurusResults(); track entry) {
                     <mat-list-item
                         (click)="handleSelection(entry)"
                         class="clickable"
@@ -45,7 +45,7 @@
                     <mat-divider aria-hidden="true"></mat-divider>
                 }
             </mat-list>
-            @if (hasMoreResults) {
+            @if (hasMoreResults()) {
                 <div class="comment padding">
                     Max. 50 Treffer. Bitte verfeinern Sie die Suche.
                 </div>
