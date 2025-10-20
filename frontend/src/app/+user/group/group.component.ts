@@ -70,6 +70,7 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import { rxResource } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -121,12 +122,23 @@ export class GroupComponent implements OnInit {
   isLoading = signal<boolean>(false);
   showMore = signal<boolean>(false);
   tableWidth: Signal<number> = this.uiStore.userTableWidth;
-  groupUsers: User[];
   query = new FormControl<string>("");
   private previousGroupId: number;
 
   selectedGroup = computed<Group>(() => {
     return this.groupStore.entityMap()[this.activeGroup()];
+  });
+
+  private groupUsers$ = rxResource({
+    stream: () =>
+      this.activeGroup()
+        ? this.groupService.getUsersOfGroup(this.activeGroup())
+        : of([]),
+  });
+  groupUsers = computed<User[]>(() => {
+    return this.groupUsers$
+      .value()
+      .sort((a, b) => a.login.localeCompare(b.login));
   });
 
   constructor(
@@ -143,8 +155,12 @@ export class GroupComponent implements OnInit {
       const activeGroup = this.activeGroup();
       if (activeGroup !== null && this.previousGroupId !== activeGroup) {
         this.loadGroup(activeGroup);
-        this.loadGroupUsers(activeGroup);
       }
+    });
+    effect(() => {
+      const currentUserIsMember = this.selectedGroup()?.currentUserIsMember;
+      if (currentUserIsMember) this.form.get("permissions").disable();
+      else this.form.get("permissions").enable();
     });
   }
 
@@ -370,17 +386,6 @@ export class GroupComponent implements OnInit {
     } else {
       // do nothing
     }
-  }
-
-  private loadGroupUsers(id: number) {
-    this.groupService
-      .getUsersOfGroup(id)
-      .subscribe(
-        (users) =>
-          (this.groupUsers = users.sort((a, b) =>
-            a.login.localeCompare(b.login),
-          )),
-      );
   }
 
   switchToUser(user: User) {

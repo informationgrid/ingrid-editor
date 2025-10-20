@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, input } from "@angular/core";
+import { Component, forwardRef, input, Signal, signal } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -77,7 +77,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   val: TreePermission[] = [];
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
-  breadcrumb: { [x: string]: ShortTreeNode[] } = {};
+  breadcrumb = signal<Record<string, ShortTreeNode[]>>({});
 
   constructor(
     private dialog: MatDialog,
@@ -93,7 +93,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
         data: {
           forAddress: this.forAddress(),
           value: this.val,
-          breadcrumb: this.breadcrumb,
+          breadcrumb: this.breadcrumb(),
         },
       })
       .afterClosed()
@@ -138,10 +138,15 @@ export class PermissionTableComponent implements ControlValueAccessor {
     // if root permission skip
     if (doc.id == null) return;
 
-    if (!this.breadcrumb[doc.id]) {
-      this.documentService
-        .getPath(doc.id)
-        .subscribe((path) => (this.breadcrumb[doc.id] = path.slice(0, -1)));
+    if (!this.breadcrumb()[doc.id]) {
+      this.documentService.getPath(doc.id).subscribe((path) =>
+        this.breadcrumb.update((current) => {
+          return {
+            ...current,
+            [doc.id]: path.slice(0, -1),
+          };
+        }),
+      );
     }
 
     this.getDocument(doc.id).then((igeDoc) => {

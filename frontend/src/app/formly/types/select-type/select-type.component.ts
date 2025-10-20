@@ -139,7 +139,6 @@ export class SelectTypeComponent
   }
 
   private updateSelectField(value: any) {
-    console.log("updateSelectField: ", value);
     if (value === undefined) {
       // if value is undefined, set formControl to null
       this.formControl.setValue(null, { emitEvent: false });

@@ -170,7 +170,6 @@
                             ></textarea>
                         </mat-form-field>
                         <ige-permissions
-                            [disabled]="selectedGroup().currentUserIsMember"
                             [showRootReadSlider]="
                                 userHasRootReadPermission ||
                                 userHasRootWritePermission
@@ -181,14 +180,14 @@
                         <div>
                             <div class="section-title">
                                 Zugeordnete Benutzer
-                                @if (groupUsers) {
-                                    <span>({{ groupUsers.length }})</span>
+                                @if (groupUsers()) {
+                                    <span>({{ groupUsers().length }})</span>
                                 }
                             </div>
                         </div>
                         <mat-divider aria-hidden="true"></mat-divider>
                         <user-table
-                            [users]="groupUsers"
+                            [users]="groupUsers()"
                             tableType="simple"
                             (onUserSelect)="switchToUser($event)"
                         ></user-table>

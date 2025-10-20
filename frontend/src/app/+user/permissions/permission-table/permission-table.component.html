@@ -21,14 +21,16 @@
         <th mat-header-cell *matHeaderCellDef>Bezeichung/Ort</th>
         <td mat-cell *matCellDef="let element">
             <div>{{ element.title }}</div>
-            <div class="td-subtitle">
-                <ige-breadcrumb
-                    class="no-padding disabled"
-                    [path]="breadcrumb[element.id]"
-                    [rootName]="forAddress() ? 'Adressen' : t('form')"
-                    [simplePath]="true"
-                ></ige-breadcrumb>
-            </div>
+            @if (breadcrumb()[element.id]) {
+                <div class="td-subtitle">
+                    <ige-breadcrumb
+                        class="no-padding disabled"
+                        [path]="breadcrumb()[element.id]"
+                        [rootName]="forAddress() ? 'Adressen' : t('form')"
+                        [simplePath]="true"
+                    ></ige-breadcrumb>
+                </div>
+            }
         </td>
     </ng-container>
 

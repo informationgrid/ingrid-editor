@@ -24,6 +24,7 @@ import {
   input,
   OnInit,
   output,
+  signal,
   ViewChild,
 } from "@angular/core";
 import {
@@ -92,7 +93,7 @@ export class UserTableComponent
 
   PERMISSION_LEVEL = PermissionLevel;
 
-  displayedColumns: string[];
+  displayedColumns = signal<string[]>([]);
   dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
 
@@ -163,7 +164,7 @@ export class UserTableComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.getColumnsByViewType();
+    this.displayedColumns.set(this.getColumnsByViewType());
   }
 
   private getColumnsByViewType(): string[] {
