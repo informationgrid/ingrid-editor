@@ -55,9 +55,8 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
   ],
 })
 export class FormToolbarComponent implements OnInit {
-  @ViewChild("hiddenMenuTrigger") hiddenMenuTrigger: MatMenuTrigger;
-  buttons_left: Array<ToolbarItem | Separator> = [];
-  buttons_right: Array<ToolbarItem | Separator> = [];
+  buttons_left = signal<Array<ToolbarItem | Separator>>([]);
+  buttons_right = signal<Array<ToolbarItem | Separator>>([]);
 
   menu = {};
 
@@ -69,8 +68,8 @@ export class FormToolbarComponent implements OnInit {
     private documentService: DocumentService,
   ) {
     formToolbarService.toolbar$.subscribe((buttons) => {
-      this.buttons_left = buttons.filter((b) => b.align !== "right");
-      this.buttons_right = buttons.filter((b) => b.align === "right");
+      this.buttons_left.set(buttons.filter((b) => b.align !== "right"));
+      this.buttons_right.set(buttons.filter((b) => b.align === "right"));
     });
     this.documentService.documentOperationFinished$
       .pipe(takeUntilDestroyed())

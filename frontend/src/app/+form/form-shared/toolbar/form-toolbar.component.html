@@ -1,6 +1,6 @@
 <mat-toolbar>
     <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
-        @for (button of buttons_left; track button.id) {
+        @for (button of buttons_left(); track button.id) {
             @if (button.type === "button" && !button.menu) {
                 <div>
                     <button
@@ -111,7 +111,7 @@
         <div class="flex-1"></div>
 
         <span class="save-buttons">
-            @for (button of buttons_right; track button) {
+            @for (button of buttons_right(); track button) {
                 @if (
                     button.type !== "separator" &&
                     !button.label &&
