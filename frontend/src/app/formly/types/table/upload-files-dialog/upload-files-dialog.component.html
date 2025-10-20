@@ -3,14 +3,14 @@
     contentColor="#f3f3f3"
     (submit)="submit()"
     (cancel)="cancel()"
-    [disabled]="!uploadComplete || extractInProgress"
+    [disabled]="!uploadComplete() || extractInProgress()"
 >
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl()"
-            [additionalParameters]="optionsSelection"
-            [infoText]="infoText"
-            [allowedUploadTypes]="allowedUploadTypes"
+            [additionalParameters]="optionsSelection()"
+            [infoText]="infoText()"
+            [allowedUploadTypes]="allowedUploadTypes()"
             (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"
             (complete)="handleUploadComplete()"
@@ -20,15 +20,15 @@
             [enableFileUploadRename]="enableFileUploadRename()"
         ></ige-file-upload>
 
-        @if (hasExtractZipOption) {
+        @if (hasExtractZipOption()) {
             <mat-slide-toggle
                 labelPosition="before"
                 color="accent"
                 class="stretch"
-                (change)="extractZipFiles = $event.checked"
+                (change)="extractZipFiles.set($event.checked)"
                 >ZIP-Archive nach dem Übernehmen entpacken
             </mat-slide-toggle>
-            @if (extractInProgress) {
+            @if (extractInProgress()) {
                 <div class="no-fields-selected-notice">
                     Die ZIP-Datei wird gerade auf dem Server entpackt. Dies kann
                     einen Moment dauern.
@@ -40,7 +40,7 @@
                 labelPosition="before"
                 color="accent"
                 class="stretch"
-                (change)="optionsSelection[option.id] = $event.checked"
+                (change)="toggleOption(option.id, $event.checked)"
             >
                 {{ option.label }}
             </mat-slide-toggle>

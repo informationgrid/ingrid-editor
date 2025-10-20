@@ -58,7 +58,7 @@ export class FormToolbarComponent implements OnInit {
   buttons_left = signal<Array<ToolbarItem | Separator>>([]);
   buttons_right = signal<Array<ToolbarItem | Separator>>([]);
 
-  menu = {};
+  menu = signal<Record<string, boolean>>({});
 
   isNotReady = signal<boolean>(false);
   private currentFocusedEl: HTMLElement;
@@ -91,5 +91,13 @@ export class FormToolbarComponent implements OnInit {
 
   restoreFocus() {
     if (this.currentFocusedEl) this.currentFocusedEl.focus();
+  }
+
+  openMenu(id: string) {
+    this.menu.update((m) => ({ ...m, [id]: true }));
+  }
+
+  closeMenu(id: string) {
+    this.menu.update((m) => ({ ...m, [id]: false }));
   }
 }

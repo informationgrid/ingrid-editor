@@ -2,14 +2,13 @@
     label="GetCapabilities-Assistent"
     (submit)="submit()"
     [disabled]="
-        !this.selection ||
-        this.selection.selectedOptions.isEmpty() ||
-        !this.validAddressConstraint
+        selectionEmpty() ||
+        !validAddressConstraint()
     "
 >
     <ng-container content>
         <div class="flex-col align-items-center">
-            @if (!validAddressConstraint) {
+            @if (!validAddressConstraint()) {
                 <div class="error-box">
                     Für das Anlegen einer Adresse müssen Sie einen Ordner mit
                     Schreibrechten auswählen
@@ -31,20 +30,20 @@
                     mat-stroked-button
                     color="primary"
                     (click)="analyze(url.value)"
-                    [disabled]="url.value.length === 0 || isAnalyzing"
+                    [disabled]="url.value.length === 0 || isAnalyzing()"
                 >
                     Analyse
                 </button>
             </div>
 
-            @if (isAnalyzing) {
+            @if (isAnalyzing()) {
                 <mat-spinner mode="indeterminate" diameter="48"></mat-spinner>
             }
         </div>
 
-        @if (error) {
+        @if (error()) {
             <mat-error>
-                <div>Es trat ein Fehler auf: {{ error }}</div>
+                <div>Es trat ein Fehler auf: {{ error() }}</div>
                 <div>
                     Bitte geben Sie eine vollständige URL ein, die zu einer
                     Capabilities XML führt.
@@ -52,80 +51,80 @@
             </mat-error>
         }
 
-        @if (report) {
+        @if (report()) {
             <mat-selection-list class="dynamic-height-list-item">
-                @if (report.title) {
+                @if (report()?.title) {
                     <mat-list-option value="title">
                         <div matListItemTitle>Titel</div>
-                        <div matListItemLine>{{ report.title }}</div>
+                        <div matListItemLine>{{ report()?.title }}</div>
                     </mat-list-option>
                 }
-                @if (report.description) {
+                @if (report()?.description) {
                     <mat-list-option value="description" lines="3">
                         <div matListItemTitle>Beschreibung</div>
-                        <span>{{ report.description }}</span>
+                        <span>{{ report()?.description }}</span>
                     </mat-list-option>
                 }
-                @if (report.versions.length > 0) {
+                @if (report()?.versions.length > 0) {
                     <mat-list-option value="versions">
                         <div matListItemTitle>Versionen</div>
-                        @for (version of report.versions; track version) {
+                        @for (version of report()?.versions; track version) {
                             <span matListItemLine>{{ version.value }}</span>
                         }
                     </mat-list-option>
                 }
-                @if (report.fees) {
+                @if (report()?.fees) {
                     <mat-list-option value="fees">
                         <div matListItemTitle>Nutzungsbedingungen</div>
-                        <span matListItemLine>{{ report.fees?.value }}</span>
+                        <span matListItemLine>{{ report()?.fees?.value }}</span>
                     </mat-list-option>
                 }
-                @if (report.accessConstraints.length > 0) {
+                @if (report()?.accessConstraints.length > 0) {
                     <mat-list-option value="accessConstraints">
                         <div matListItemTitle>Zugangsbeschränkungen</div>
                         @for (
-                            constraint of report.accessConstraints;
+                            constraint of report()?.accessConstraints;
                             track constraint
                         ) {
                             <span matListItemLine>{{ constraint.value }}</span>
                         }
                     </mat-list-option>
                 }
-                @if (report.onlineResources.length > 0) {
+                @if (report()?.onlineResources.length > 0) {
                     <mat-list-option value="onlineResources">
                         <div matListItemTitle>Verweise</div>
-                        @for (link of report.onlineResources; track link) {
+                        @for (link of report()?.onlineResources; track link) {
                             <span matListItemLine
                                 >{{ link.url }} ({{ link.type?.value }})</span
                             >
                         }
                     </mat-list-option>
                 }
-                @if (report.resourceLocators.length > 0) {
+                @if (report()?.resourceLocators.length > 0) {
                     <mat-list-option value="resourceLocators">
                         <div matListItemTitle>Verweise zur Ressource</div>
-                        @for (link of report.resourceLocators; track link) {
+                        @for (link of report()?.resourceLocators; track link) {
                             <span matListItemLine
                                 >{{ link.url }} ({{ link.type?.value }})</span
                             >
                         }
                     </mat-list-option>
                 }
-                @if (report.keywords.length > 0) {
+                @if (report()?.keywords.length > 0) {
                     <mat-list-option value="keywords">
                         <div matListItemTitle>Schlagworte</div>
-                        @for (keyword of report.keywords; track keyword) {
+                        @for (keyword of report()?.keywords; track keyword) {
                             <span matListItemLine>{{ keyword }}</span>
                         }
                     </mat-list-option>
                 }
-                @if (report.boundingBoxes.length > 0) {
+                @if (report()?.boundingBoxes.length > 0) {
                     <mat-list-option value="boundingBoxes">
                         <span matListItemTitle
-                            >Raumbezüge {{ report.boundingBoxes.length }}</span
+                            >Raumbezüge {{ report()?.boundingBoxes.length }}</span
                         >
                         <span>
-                            @for (bbox of report.boundingBoxes; track bbox) {
+                            @for (bbox of report()?.boundingBoxes; track bbox) {
                                 @if (bbox.name) {
                                     <span>{{ bbox.name }} => </span>
                                 }
@@ -139,46 +138,46 @@
                         </span>
                     </mat-list-option>
                 }
-                @if (report.spatialReferenceSystems.length > 0) {
+                @if (report()?.spatialReferenceSystems.length > 0) {
                     <mat-list-option value="spatialReferenceSystems">
                         <div matListItemTitle>Koordinatenreferenzsysteme</div>
                         @for (
-                            srs of report.spatialReferenceSystems;
+                            srs of report()?.spatialReferenceSystems;
                             track srs
                         ) {
                             <span matListItemLine>{{ srs.value }}</span>
                         }
                     </mat-list-option>
                 }
-                @if (report.address) {
+                @if (report()?.address) {
                     <mat-list-option value="address">
                         <div matListItemTitle>Adresse</div>
                         <div matListItemLine>
                             {{
-                                report.address.exists
+                                report()?.address.exists
                                     ? "bereits vorhanden"
                                     : "neu"
-                            }}: {{ report.address.firstName }}
-                            {{ report.address.lastName }}
-                            {{ report.address.organization }}
+                            }}: {{ report()?.address.firstName }}
+                            {{ report()?.address.lastName }}
+                            {{ report()?.address.organization }}
                         </div>
-                        @if (report.address?.exists === false) {
+                        @if (report()?.address?.exists === false) {
                             <div matListItemLine>
                                 Wird angelegt unter:
                                 <ige-breadcrumb
-                                    [path]="addressPath"
+                                    [path]="addressPath()"
                                     rootName="Adressen"
                                     [selectable]="false"
-                                    [disableRoot]="!hasWriteRootPermission"
+                                    [disableRoot]="!hasWriteRootPermission()"
                                 ></ige-breadcrumb>
                             </div>
                         }
                     </mat-list-option>
                 }
-                @if (report.operations.length > 0) {
+                @if (report()?.operations.length > 0) {
                     <mat-list-option value="operations">
                         <span matListItemTitle>Operationen</span>
-                        @for (operation of report.operations; track operation) {
+                        @for (operation of report()?.operations; track operation) {
                             <span matListItemLine
                                 >{{ operation.name.value }}:
                                 {{ operation.addressList[0] }}</span
@@ -186,11 +185,11 @@
                         }
                     </mat-list-option>
                 }
-                @if (report.timeReference.length > 0) {
+                @if (report()?.timeReference.length > 0) {
                     <mat-list-option value="timeReference">
                         <div matListItemTitle>Zeitbezug der Resource</div>
                         @for (
-                            timeReference of report.timeReference;
+                            timeReference of report()?.timeReference;
                             track timeReference
                         ) {
                             <div matListItemLine>
@@ -205,18 +204,18 @@
                         }
                     </mat-list-option>
                 }
-                @if (report.timeSpan) {
+                @if (report()?.timeSpan) {
                     <mat-list-option value="timeSpan">
                         <div matListItemTitle>Zeitspannen</div>
-                        Von: {{ report.timeSpan.from | date }} bis:
-                        {{ report.timeSpan.to | date }}
+                        Von: {{ report()?.timeSpan.from | date }} bis:
+                        {{ report()?.timeSpan.to | date }}
                     </mat-list-option>
                 }
-                @if (report.conformities.length > 0) {
+                @if (report()?.conformities.length > 0) {
                     <mat-list-option value="conformities">
                         <div matListItemTitle>Konformitäten</div>
                         @for (
-                            conformity of report.conformities;
+                            conformity of report()?.conformities;
                             track conformity
                         ) {
                             <div matListItemLine>
@@ -231,11 +230,11 @@
                         }
                     </mat-list-option>
                 }
-                @if (report.coupledResources.length > 0) {
+                @if (report()?.coupledResources.length > 0) {
                     <mat-list-option value="coupledResources">
                         <div matListItemTitle>Gekoppelte Daten</div>
                         @for (
-                            coupledResource of report.coupledResources;
+                            coupledResource of report()?.coupledResources;
                             track coupledResource
                         ) {
                             <span matListItemLine
@@ -252,16 +251,16 @@
         }
     </ng-container>
 
-    @if (report) {
+    @if (report()) {
         <ng-container actions>
             <mat-checkbox
                 class="toggle-checkbox"
-                [checked]="allChecked"
+                [checked]="allChecked()"
                 (change)="toggleAll($event.checked)"
             >
                 Alles auswählen
             </mat-checkbox>
-            @if (report.address?.exists === false && addressSelected) {
+            @if (report()?.address?.exists === false && addressSelected()) {
                 <button
                     mat-stroked-button
                     color="primary"

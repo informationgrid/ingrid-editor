@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, signal, ViewChild } from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
 import {
   MatCell,
@@ -94,7 +94,7 @@ import { AsyncPipe, DatePipe } from "@angular/common";
     DatePipe,
   ],
 })
-export class UrlCheckComponent implements OnInit {
+export class UrlCheckComponent {
   private exportService: ExportService = inject(ExportService);
 
   @ViewChild(MatSort, { static: false })
@@ -120,9 +120,9 @@ export class UrlCheckComponent implements OnInit {
 
   dataSource = new MatTableDataSource<UrlInfo>([]);
   displayedColumns = ["_select_", "status", "url", "count", "datasets"];
-  showMore = false;
+  showMore = signal<boolean>(false);
   selection = new SelectionModel<UrlInfo>(false, []);
-  isRunning = false;
+  isRunning = signal<boolean>(false);
 
   statusCodeText = {
     400: "BadRequest",
@@ -134,7 +134,7 @@ export class UrlCheckComponent implements OnInit {
     500: "InternalServerError",
     503: "ServiceUnavailable",
   };
-  analyzedUrls: string = "0";
+  analyzedUrls = signal<string>("0");
 
   constructor(
     private router: Router,
@@ -144,17 +144,13 @@ export class UrlCheckComponent implements OnInit {
     private snack: MatSnackBar,
   ) {}
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {}
-
   start() {
-    this.isRunning = true;
+    this.isRunning.set(true);
     this.urlCheckService.start().subscribe();
   }
 
   stop() {
-    this.urlCheckService.stop().subscribe(() => (this.isRunning = false));
+    this.urlCheckService.stop().subscribe(() => this.isRunning.set(false));
   }
 
   private handleReport(data: UrlLogResult) {
@@ -164,18 +160,18 @@ export class UrlCheckComponent implements OnInit {
   }
 
   private setRunningReport(data: UrlLogResult) {
-    this.isRunning = true;
-    this.analyzedUrls = `${data.progress}%`;
+    this.isRunning.set(true);
+    this.analyzedUrls.set(`${data.progress}%`);
   }
 
   private setCompletedReport(data: UrlLogResult) {
-    setTimeout(() => (this.isRunning = false), 300);
+    setTimeout(() => this.isRunning.set(false), 300);
     this.dataSource.data = data.report?.invalidUrls?.map((url) => ({
       ...url,
       count: url.datasets.length,
       singleDataset: url.datasets.length === 1 ? url.datasets[0].title : null,
     }));
-    this.analyzedUrls = `${data.report?.totalUrls}`;
+    this.analyzedUrls.set(`${data.report?.totalUrls}`);
   }
 
   loadDataset(uuid: string) {
