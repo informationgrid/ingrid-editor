@@ -521,13 +521,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
         var extractedBwastrId: String
         var start: Double? = null
         var end: Double? = null
-        // like 0108-7.665-9 (ID-START-END)
+        // like: "0108-7.665-9"  // (ID-START-END)
         if (title.matches("^[0-9]{4}-[0-9]+\\.?[0-9]*-[0-9]+\\.?[0-9]*$".toRegex())) {
             title.split("-").let {
                 extractedBwastrId = it[0]
                 start = it[1].toDoubleOrNull()
                 end = it[2].toDoubleOrNull()
             }
+        } else if (title.matches("\\[[0-9]{4}]$".toRegex())) {
+            // like: "Main, Hauptstrecke - [0108]"  (Name, Streckenname - [ID])
+            extractedBwastrId = title.substringAfterLast("[").substringBeforeLast("]")
         } else {
             log.warn("Could not extract BWASTR id from title: '$title', trying to extract numbers only.")
             extractedBwastrId = title.replace("[^$0-9]".toRegex(), "")
