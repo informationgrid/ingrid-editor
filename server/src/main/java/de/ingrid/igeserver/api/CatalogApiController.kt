@@ -149,7 +149,7 @@ class CatalogApiController(
         flowTotalSize: Long,
         flowIdentifier: String,
         flowFilename: String,
-        allowUpdate: Boolean,
+        options: CatalogImportOptions,
     ): ResponseEntity<Unit> {
         authUtils.isSuperAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -169,7 +169,7 @@ class CatalogApiController(
                 .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
                 .readValue(it.toFile())
             try {
-                catalogImportService.importCatalog(exportedCatalog, CatalogImportOptions(allowUpdate))
+                catalogImportService.importCatalog(exportedCatalog, options)
             } catch (e: Exception) {
                 fileUploadHandler.cleanup(flowIdentifier)
                 throw e

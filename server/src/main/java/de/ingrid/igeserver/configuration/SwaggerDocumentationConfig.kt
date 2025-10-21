@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.configuration
 
+import de.ingrid.igeserver.api.StringToCatalogImportOptionsConverter
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
@@ -51,7 +52,7 @@ import io.swagger.v3.oas.models.servers.Server as OpenApiServer
     ),
 )
 @Configuration
-class SwaggerDocumentationConfig : WebMvcConfigurer {
+class SwaggerDocumentationConfig(private val stringToCatalogImportOptionsConverter: StringToCatalogImportOptionsConverter) : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
             .allowedMethods(
@@ -132,5 +133,6 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
 
     override fun addFormatters(registry: FormatterRegistry) {
         registry.addConverterFactory(StringToEnumConverterFactory())
+        registry.addConverter(stringToCatalogImportOptionsConverter)
     }
 }

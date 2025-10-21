@@ -49,6 +49,7 @@ import { AuthenticationFactory } from "../../../../security/auth.factory";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { UploadComponent } from "../../../../shared/upload/upload.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { MatButton } from "@angular/material/button";
 
 export interface LinkInfo {
   file: string;
@@ -61,7 +62,12 @@ export interface LinkInfo {
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
-  imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle],
+  imports: [
+    DialogTemplateComponent,
+    UploadComponent,
+    MatSlideToggle,
+    MatButton,
+  ],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];
@@ -86,6 +92,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   enableFileUploadReuse: WritableSignal<boolean> = signal(true);
   enableFileUploadRename: WritableSignal<boolean> = signal(true);
   refreshTimer$: number = null;
+  showOptions = signal<boolean>(false);
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -256,5 +263,14 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       this.uploadComplete = false;
     }
     this.chosenFiles = $event;
+  }
+
+  toggleOption(optionId: string, checked: boolean) {
+    const currentOptions = this.optionsSelection.options ?? {};
+    this.optionsSelection.options = { ...currentOptions, [optionId]: checked };
+  }
+
+  toggleShowOptions() {
+    this.showOptions.update((s) => !s);
   }
 }

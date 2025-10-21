@@ -40,6 +40,12 @@ import org.springframework.transaction.PlatformTransactionManager
 
 data class CatalogImportOptions(
     val allowUpdate: Boolean = false,
+    val importBehaviors: Boolean = true,
+    val importCodelists: Boolean = true,
+    val associateUsersWithCatalog: Boolean = true,
+    val importQueries: Boolean = true,
+    val importDocumentsAndGroups: Boolean = true,
+    val importGroups: Boolean = true,
 )
 
 @Service
@@ -65,25 +71,28 @@ class CatalogImportService(
             createCatalog(exportedCatalog.catalog)
         }
 
-        importBehaviours(exportedCatalog.behaviour, catalogId)
-        importCodelists(exportedCatalog.codelist, catalogId)
+        if (options.importBehaviors) importBehaviours(exportedCatalog.behaviour, catalogId)
+        if (options.importCodelists) importCodelists(exportedCatalog.codelist, catalogId)
 
         val userMigrationMap = importUsers(exportedCatalog.users, exportedCatalog.userInfo, catalogId)
-        addCatalogUserInfo(catalogId, userMigrationMap.values)
+        if (options.associateUsersWithCatalog) addCatalogUserInfo(catalogId, userMigrationMap.values)
 
-        importQueries(exportedCatalog.query, catalogId, userMigrationMap)
+        if (options.importQueries) importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
-        val documentWrapperMigrationMap = importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
-        createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
-        log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
+        if (options.importDocumentsAndGroups) {
+            val documentWrapperMigrationMap =
+                importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
+            createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
+            log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
 
-        importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
+            importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
 
-        val groupMigrationMap = importGroups(exportedCatalog.permissionGroup, catalogId, documentWrapperMigrationMap, userMigrationMap)
-        log.info("Imported ${groupMigrationMap.size} PermissionGroups")
-        assignGroupsToUsers(exportedCatalog.userGroup, groupMigrationMap, userMigrationMap)
-        log.info("Saving groups to set ACLs")
-        saveAllGroupsOfCatalog(exportedCatalog.catalog["identifier"] as String)
+            val groupMigrationMap = importGroups(exportedCatalog.permissionGroup, catalogId, documentWrapperMigrationMap, userMigrationMap)
+            log.info("Imported ${groupMigrationMap.size} PermissionGroups")
+            assignGroupsToUsers(exportedCatalog.userGroup, groupMigrationMap, userMigrationMap)
+            log.info("Saving groups to set ACLs")
+            saveAllGroupsOfCatalog(exportedCatalog.catalog["identifier"] as String)
+        }
         log.info("Finished importing catalog ${exportedCatalog.catalog["identifier"]} with ID $catalogId")
     }
 

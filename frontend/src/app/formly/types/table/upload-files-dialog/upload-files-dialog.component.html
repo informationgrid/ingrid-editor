@@ -35,15 +35,32 @@
                 </div>
             }
         }
-        @for (option of options(); track option) {
-            <mat-slide-toggle
-                labelPosition="before"
-                color="accent"
-                class="stretch"
-                (change)="optionsSelection[option.id] = $event.checked"
-            >
-                {{ option.label }}
-            </mat-slide-toggle>
+        @if (options().length > 0) {
+            <div class="flex-row justify-content-end">
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="toggleShowOptions()"
+                >
+                    Weitere Optionen
+                </button>
+            </div>
+
+            @if (showOptions()) {
+                <div class="flex-col gap-6">
+                    @for (option of options(); track option) {
+                        <mat-slide-toggle
+                            labelPosition="before"
+                            color="accent"
+                            class="stretch"
+                            [checked]="option.checked"
+                            (change)="toggleOption(option.id, $event.checked)"
+                        >
+                            {{ option.label }}
+                        </mat-slide-toggle>
+                    }
+                </div>
+            }
         }
     </ng-container>
 </ige-dialog-template>

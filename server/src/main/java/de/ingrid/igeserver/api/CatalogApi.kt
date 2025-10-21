@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import de.ingrid.igeserver.imports.CatalogImportOptions
 import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import io.swagger.v3.oas.annotations.Hidden
@@ -28,8 +30,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.core.convert.converter.Converter
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -39,6 +43,18 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
+
+@Component
+class StringToCatalogImportOptionsConverter(
+    private val objectMapper: ObjectMapper,
+) : Converter<String, CatalogImportOptions> {
+
+    override fun convert(source: String): CatalogImportOptions = try {
+        objectMapper.readValue(source, CatalogImportOptions::class.java)
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Invalid CatalogImportOptions format: ${e.message}", e)
+    }
+}
 
 @Hidden
 @Tag(name = "Catalogs", description = "Handle catalog requests")
@@ -110,7 +126,7 @@ interface CatalogApi {
         @Parameter @RequestParam("flowTotalSize") flowTotalSize: Long,
         @Parameter @RequestParam("flowIdentifier") flowIdentifier: String,
         @Parameter @RequestParam("flowFilename") flowFilename: String,
-        @Parameter @RequestParam("allowUpdate") allowUpdate: Boolean = false,
+        @Parameter @RequestParam("options") options: CatalogImportOptions = CatalogImportOptions(),
     ): ResponseEntity<Unit>
 
     @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])

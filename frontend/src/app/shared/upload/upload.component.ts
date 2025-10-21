@@ -84,7 +84,7 @@ export class UploadComponent implements AfterViewInit {
   /* allow only specific file types when given */
   readonly allowedUploadTypes = input<string[]>(undefined);
 
-  @Input() infoText: string;
+  infoText = input<string>();
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();
   enableFileUploadRename = input<boolean>();
@@ -210,9 +210,11 @@ export class UploadComponent implements AfterViewInit {
   }
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
-    flowFiles.forEach(
-      (file) => (file.flowObj.opts.query = { ...this.additionalParameters() }),
-    );
+    const params = this.additionalParameters();
+    params.options = params.options
+      ? JSON.stringify(params.options)
+      : undefined;
+    flowFiles.forEach((file) => (file.flowObj.opts.query = { ...params }));
   }
 
   isDragged = false;
@@ -290,8 +292,12 @@ export class UploadComponent implements AfterViewInit {
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {
+      const params = this.additionalParameters();
+      params.options = params.options
+        ? JSON.stringify(params.options)
+        : undefined;
       flowFile.flowObj.opts.query = {
-        ...this.additionalParameters(),
+        ...params,
         ...parameter,
       };
     }
