@@ -40,8 +40,10 @@ import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
+import java.util.Locale
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
@@ -179,16 +181,7 @@ fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
     transformer.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
         GeographicElement(
             type = GeoElementType.DESCRIPTION,
-            geographicIdentifier = (
-                // Use the BWASTR code with start and end as the geographic identifier if available, otherwise fall back to the title
-                getBwastrCode(it.get("bwastr"))
-                    ?: it.getString("title")
-                )?.let { text ->
-                CharacterStringModel(
-                    text,
-                    null,
-                )
-            },
+            geographicIdentifier = CharacterStringModel(getBwastrCode(it.get("bwastr")), null),
             authority = Authority(
                 title = "VV-WSV 1103",
                 date = "2019-05-29",
@@ -218,16 +211,28 @@ fun getBwastrIdfSection(transformer: IngridModelTransformer): String {
     """.trimIndent()
 }
 
-private fun getBwastrCode(bwastrNode: JsonNode): String? {
-    val bwastrId = bwastrNode.getString("bwastrid")
-    val kmStart = bwastrNode.getDouble("start")
-    val kmEnd = bwastrNode.getDouble("end")
+private fun getBwastrCode(bwastrNode: JsonNode): String {
+    val bwastrId = bwastrNode.getString("bwastrid")?.padStart(4, '0') ?: throw IllegalArgumentException("No bwastrid found: $bwastrNode")
+    val kmStart = bwastrNode.getDouble("start")?.let { formatDouble(it) }
+    val kmEnd = bwastrNode.getDouble("end")?.let { formatDouble(it) }
+    val name = bwastrNode.getString("bwastr_name")
+    val strecke = bwastrNode.getString("streckenName")?.let { ", $it" } ?: ""
 
-    return if (bwastrId != null && kmStart != null && kmEnd != null) {
-        "${bwastrId.padStart(4, '0')}-$kmStart-$kmEnd"
+    return if (kmStart != null && kmEnd != null) {
+        "$bwastrId-$kmStart-$kmEnd"
     } else {
-        null
+        "$name$strecke - [$bwastrId]"
     }
+}
+
+// Use NumberFormat to cap at 3 fraction digits and strip trailing zeros/decimal point.
+private fun formatDouble(value: Double?): String? = value?.let {
+    val nf = NumberFormat.getInstance(Locale.ENGLISH).apply {
+        minimumFractionDigits = 0
+        maximumFractionDigits = 3
+        isGroupingUsed = false
+    }
+    nf.format(it)
 }
 
 data class LiteratureAggregate(
