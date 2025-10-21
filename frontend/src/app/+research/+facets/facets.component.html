@@ -56,7 +56,10 @@
                 </div>
             }
             @if (group.viewComponent === "SPATIAL") {
-                <div class="flex-col" [class.invisible]="notExpanded()[group.id]">
+                <div
+                    class="flex-col"
+                    [class.invisible]="notExpanded()[group.id]"
+                >
                     <div #leafletDlg class="flex-1"></div>
                     @if (location()) {
                         <div class="location flex-row">
@@ -157,7 +160,8 @@
                             @if (
                                 form.get(timeGroupId()).get("start").value !==
                                     null ||
-                                form.get(timeGroupId()).get("end").value !== null
+                                form.get(timeGroupId()).get("end").value !==
+                                    null
                             ) {
                                 <button
                                     mat-icon-button
