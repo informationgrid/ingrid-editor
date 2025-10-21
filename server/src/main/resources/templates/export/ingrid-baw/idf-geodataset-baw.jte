@@ -96,6 +96,67 @@ aggregateInformation = @`
         </gmd:aggregationInfo>
     @endfor
 `,
+additionalIdentification = @`
+    <measurementInfo>
+        @for(String method : page.getMeasuringMethod())
+            <MeasurementMethod>
+                <measurementMethod>${method}</measurementMethod>
+            </MeasurementMethod>
+        @endfor
+        @if(TransformationTools.hasValue(page.getSpatiality()))
+            <spatialOrientation>${page.getSpatiality()}</spatialOrientation>
+        @endif
+        @if(page.getMeasuringDepth() != null)
+            <MeasurementDepth>
+                <depth>${page.getMeasuringDepth().getValue()}</depth>
+                <uom>m</uom>
+                <verticalCRS>${page.getMeasuringDepth().getCrs()}</verticalCRS>
+            </MeasurementDepth>
+        @endif
+        @if(TransformationTools.hasValue(page.getFrequency()))
+            <measurementFrequency>${page.getFrequency()}</measurementFrequency>
+        @endif
+        @for(AverageWaterLevel level : page.getAverageWaterLevel())
+            <MeanWaterLevel>
+                <waterLevel>${level.getValue()}</waterLevel>
+                <uom>${level.getUnit()}</uom>
+            </MeanWaterLevel>
+        @endfor
+        @for(ZeroLevel level : page.getZeroLevel())
+            <GaugeDatum>
+                <datum>${level.getValue()}</datum>
+                <uom>${level.getUnit()}</uom>
+                <verticalCRS>${level.getCrs()}</verticalCRS>
+                <description>${level.getDescription()}</description>
+            </GaugeDatum>
+        @endfor
+        @if(TransformationTools.hasValue(page.getMaxDrain()))
+            <maxDischarge>${page.getMaxDrain()}</maxDischarge>
+        @endif
+        @if(TransformationTools.hasValue(page.getMinDrain()))
+            <minDischarge>${page.getMinDrain()}</minDischarge>
+        @endif
+        @for( MeasurementDevice device : page.getMeasurementDevices())
+            <MeasurementDevice>
+                <name>${device.getName()}</name>
+                <id>${device.getId()}</id>
+                <model>${device.getModel()}</model>
+                <description>${device.getDescription()}</description>
+            </MeasurementDevice>
+        @endfor
+        @for(TargetParameter param : page.getTargetParameters())
+            <MeasuredQuantities>
+                <name>${param.getName()}</name>
+                <type>${param.getType()}</type>
+                <uom>${param.getUnit()}</uom>
+                <calculationFormula>${param.getFormula()}</calculationFormula>
+            </MeasuredQuantities>
+        @endfor
+        @if(TransformationTools.hasValue(page.getDataQualityDescription()))
+            <dataQualityDescription>${page.getDataQualityDescription()}</dataQualityDescription>
+        @endif
+    </measurementInfo>
+`,
 extraContent = @`
     @if( TransformationTools.hasValue(page.getTimestep()) )
         <gmd:dataQualityInfo>
@@ -180,64 +241,5 @@ extraContent = @`
             </gmd:DQ_DataQuality>
         </gmd:dataQualityInfo>
     @endfor
-    <measurementInfo>
-    @for(String method : page.getMeasuringMethod())
-        <MeasurementMethod>
-                <measurementMethod>${method}</measurementMethod>
-        </MeasurementMethod>
-    @endfor
-    @if(TransformationTools.hasValue(page.getSpatiality()))
-        <spatialOrientation>${page.getSpatiality()}</spatialOrientation>
-    @endif
-    @if(page.getMeasuringDepth() != null)
-        <MeasurementDepth>
-            <depth>${page.getMeasuringDepth().getValue()}</depth>
-            <uom>m</uom>
-            <verticalCRS>${page.getMeasuringDepth().getCrs()}</verticalCRS>
-        </MeasurementDepth>
-    @endif
-    @if(TransformationTools.hasValue(page.getFrequency()))
-        <measurementFrequency>${page.getFrequency()}</measurementFrequency>
-    @endif
-    @for(AverageWaterLevel level : page.getAverageWaterLevel())
-        <MeanWaterLevel>
-            <waterLevel>${level.getValue()}</waterLevel>
-            <uom>${level.getUnit()}</uom>
-        </MeanWaterLevel>
-    @endfor
-    @for(ZeroLevel level : page.getZeroLevel())
-        <GaugeDatum>
-            <datum>${level.getValue()}</datum>
-            <uom>${level.getUnit()}</uom>
-            <verticalCRS>${level.getCrs()}</verticalCRS>
-            <description>${level.getDescription()}</description>
-        </GaugeDatum>
-    @endfor
-    @if(TransformationTools.hasValue(page.getMaxDrain()))
-        <maxDischarge>${page.getMaxDrain()}</maxDischarge>
-    @endif
-    @if(TransformationTools.hasValue(page.getMinDrain()))
-        <minDischarge>${page.getMinDrain()}</minDischarge>
-    @endif
-    @for( MeasurementDevice device : page.getMeasurementDevices())
-        <MeasurementDevice>
-            <name>${device.getName()}</name>
-            <id>${device.getId()}</id>
-            <model>${device.getModel()}</model>
-            <description>${device.getDescription()}</description>
-        </MeasurementDevice>
-    @endfor
-    @for(TargetParameter param : page.getTargetParameters())
-        <MeasuredQuantities>
-            <name>${param.getName()}</name>
-            <type>${param.getType()}</type>
-            <uom>${param.getUnit()}</uom>
-            <calculationFormula>${param.getFormula()}</calculationFormula>
-        </MeasuredQuantities>
-    @endfor
-    @if(TransformationTools.hasValue(page.getDataQualityDescription()))
-        <dataQualityDescription>${page.getDataQualityDescription()}</dataQualityDescription>
-    @endif
-    </measurementInfo>
 `
 )
