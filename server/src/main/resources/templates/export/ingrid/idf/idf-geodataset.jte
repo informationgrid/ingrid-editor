@@ -7,6 +7,7 @@
 
 @param Content extraContent = null
 @param Content additionalCitation = null
+@param Content additionalIdentification = null
 @param Content aggregateInformation = null
 @param Map<String, Object> map
 
@@ -63,6 +64,7 @@
         @endfor
         `,
     additionalCitation = additionalCitation,
+    additionalIdentification = additionalIdentification,
     aggregateInformation = aggregateInformation
     )
     @template.export.ingrid.idf.dataQuality(page = page)

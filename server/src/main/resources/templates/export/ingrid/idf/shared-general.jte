@@ -21,6 +21,8 @@
 @param Content aggregateInformation = null
 @param Content citationEdition = null
 @param Boolean isService = false
+@param Content additionalIdentification = null
+
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -763,6 +765,7 @@
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
     </gmd:supplementalInformation>
 @endif
+${additionalIdentification}
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 ${contentInfo}
