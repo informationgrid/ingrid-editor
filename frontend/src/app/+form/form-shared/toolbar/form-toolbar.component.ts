@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
   ToolbarItem,
 } from "./form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
 
@@ -54,31 +54,27 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MATOMO_DIRECTIVES,
   ],
 })
-export class FormToolbarComponent implements OnInit {
-  buttons_left = signal<Array<ToolbarItem | Separator>>([]);
-  buttons_right = signal<Array<ToolbarItem | Separator>>([]);
+export class FormToolbarComponent {
+  private formToolbarService = inject(FormToolbarService);
+  private documentService = inject(DocumentService);
+
+  private toolbarButtons = toSignal(this.formToolbarService.toolbar$);
+  buttons_left = computed<Array<ToolbarItem | Separator>>(() =>
+    this.toolbarButtons().filter((b) => b.align !== "right"),
+  );
+  buttons_right = computed<Array<ToolbarItem | Separator>>(() =>
+    this.toolbarButtons().filter((b) => b.align === "right"),
+  );
+
+  finishedOperation = toSignal(
+    this.documentService.documentOperationFinished$,
+    { initialValue: true },
+  );
+  isNotReady = computed<boolean>(() => !this.finishedOperation());
 
   menu = signal<Record<string, boolean>>({});
 
-  isNotReady = signal<boolean>(false);
   private currentFocusedEl: HTMLElement;
-
-  constructor(
-    private formToolbarService: FormToolbarService,
-    private documentService: DocumentService,
-  ) {
-    formToolbarService.toolbar$.subscribe((buttons) => {
-      this.buttons_left.set(buttons.filter((b) => b.align !== "right"));
-      this.buttons_right.set(buttons.filter((b) => b.align === "right"));
-    });
-    this.documentService.documentOperationFinished$
-      .pipe(takeUntilDestroyed())
-      .subscribe((isReady) => {
-        this.isNotReady.set(!isReady);
-      });
-  }
-
-  ngOnInit() {}
 
   sendEvent(id: string, data?: any) {
     this.formToolbarService.sendEvent(id, data);

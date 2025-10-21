@@ -108,6 +108,14 @@ export class GroupComponent implements OnInit {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
+  private fb = inject(UntypedFormBuilder);
+  private dialog = inject(MatDialog);
+  public groupService = inject(GroupService);
+  private configService = inject(ConfigService);
+  public userManagementService = inject(UserManagementService);
+  public userService = inject(UserService);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   activeGroup = this.generalStore.activeGroup;
   groups = this.groupStore.entities;
@@ -130,27 +138,20 @@ export class GroupComponent implements OnInit {
   });
 
   private groupUsers$ = rxResource({
-    stream: () =>
-      this.activeGroup()
-        ? this.groupService.getUsersOfGroup(this.activeGroup())
+    params: () => ({ groupId: this.activeGroup() }),
+    stream: ({ params }) =>
+      params.groupId !== null && params.groupId !== undefined
+        ? this.groupService.getUsersOfGroup(params.groupId)
         : of([]),
   });
-  groupUsers = computed<User[]>(() => {
-    return this.groupUsers$
-      .value()
-      .sort((a, b) => a.login.localeCompare(b.login));
-  });
+  groupUsers = computed<User[]>(
+    () =>
+      this.groupUsers$
+        .value()
+        ?.sort((a, b) => a.login.localeCompare(b.login)) ?? [],
+  );
 
-  constructor(
-    private fb: UntypedFormBuilder,
-    private dialog: MatDialog,
-    public groupService: GroupService,
-    private configService: ConfigService,
-    public userManagementService: UserManagementService,
-    public userService: UserService,
-    private router: Router,
-    private snackBar: MatSnackBar,
-  ) {
+  constructor() {
     effect(() => {
       const activeGroup = this.activeGroup();
       if (activeGroup !== null && this.previousGroupId !== activeGroup) {

@@ -73,7 +73,7 @@ export class DocumentService {
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(DocumentTreeStore);
   // TODO: check usefulness
-  documentOperationFinished$ = new Subject<any>();
+  documentOperationFinished$ = new Subject<boolean>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
 
@@ -178,9 +178,8 @@ export class DocumentService {
     updateStore = true,
     useUuid = false,
   ): Observable<DocumentWithMetadata> {
-    this.documentOperationFinished$.next(false);
+    if (updateStore) this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
-      // map((data) => this.mapDocumentWithMetadata(data)),
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);
@@ -189,7 +188,9 @@ export class DocumentService {
       tap((doc) =>
         this.docEvents.sendAfterLoadAndSet(doc.documentWithMetadata),
       ),
-      finalize(() => this.documentOperationFinished$.next(true)),
+      finalize(() => {
+        if (updateStore) this.documentOperationFinished$.next(true);
+      }),
     );
   }
 

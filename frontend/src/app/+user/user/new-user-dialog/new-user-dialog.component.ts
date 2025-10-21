@@ -61,7 +61,6 @@ export class NewUserDialogComponent implements OnInit {
   });
   private externalUsers = computed<BackendUser[]>(() => this.users$.value());
   form: FormGroup;
-  // private noAvailableUsers = computed<boolean>(() => this.users$.value().length === 0);
   private importExternal = signal<boolean>(false);
   formlyFieldConfig = computed<FormlyFieldConfig[]>(() =>
     this.userService.getNewUserFormFields(this.externalUsers()),
@@ -140,7 +139,7 @@ export class NewUserDialogComponent implements OnInit {
     user.login = user.login.trim();
 
     this.userService
-      .createUser(user, !this.importExternal)
+      .createUser(user, !this.importExternal())
       .pipe(
         filter((user) => user !== undefined),
         catchError((error: IgeError) => {

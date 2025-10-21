@@ -67,9 +67,10 @@ export class FormToolbarService {
 
   private _buttons: Array<ToolbarItem | Separator> = [];
 
-  private toolbarStateFns: {
-    [x: string]: (docs: DocumentAbstract[]) => boolean;
-  } = {};
+  private toolbarStateFns: Record<
+    string,
+    (docs: DocumentAbstract[]) => boolean
+  > = {};
 
   constructor(private docEvents: DocEventsService) {}
 
