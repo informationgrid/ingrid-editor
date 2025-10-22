@@ -1,7 +1,7 @@
 <h3 class="table-title">{{ label() }}</h3>
 <table
     mat-table
-    [dataSource]="val"
+    [dataSource]="datasource()"
     class="dark width-100"
     *transloco="let t; read: 'menu'"
 >

@@ -79,7 +79,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     "settings",
   ]);
 
-  val: TreePermission[] = [];
+  datasource = signal<TreePermission[]>([]);
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
   breadcrumb = signal<Record<string, ShortTreeNode[]>>({});
@@ -97,22 +97,22 @@ export class PermissionTableComponent implements ControlValueAccessor {
         hasBackdrop: true,
         data: {
           forAddress: this.forAddress(),
-          value: this.val,
+          value: this.datasource(),
           breadcrumb: this.breadcrumb(),
         },
       })
       .afterClosed()
-      .subscribe((data) => {
+      .subscribe(async (data) => {
         if (data) {
-          this.val = [...this.val, data];
-          this.addDocInfoToPermission(data);
-          this.onChange(this.val);
+          await this.addDocInfoToPermission(data);
+          this.datasource.update((prev) => [...prev, data]);
+          this.onChange(this.datasource());
         }
       });
   }
 
   removePermission(id: number) {
-    this.value = this.val.filter((entry) => id !== entry.id);
+    this.value = this.datasource().filter((entry) => id !== entry.id);
   }
 
   registerOnChange(fn: any): void {
@@ -128,8 +128,8 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   set value(val: TreePermission[]) {
-    this.val = val ?? [];
-    this.val.forEach((doc) => this.addDocInfoToPermission(doc));
+    this.datasource.set(val ?? []);
+    this.datasource().forEach((doc) => this.addDocInfoToPermission(doc));
 
     if (this.onChange) {
       this.onChange(val);
@@ -139,7 +139,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
   }
 
-  private addDocInfoToPermission(doc: TreePermission) {
+  private async addDocInfoToPermission(doc: TreePermission) {
     // if root permission skip
     if (doc.id == null) return;
 
@@ -154,19 +154,18 @@ export class PermissionTableComponent implements ControlValueAccessor {
       );
     }
 
-    this.getDocument(doc.id).then((igeDoc) => {
-      doc.uuid = igeDoc._uuid;
-      doc.hasWritePermission = igeDoc.hasWritePermission;
-      doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
-      // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
-      doc.isFolder =
-        igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
-      doc.title = igeDoc.title;
-      doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
+    const igeDoc = await this.getDocument(doc.id);
+    doc.uuid = igeDoc._uuid;
+    doc.hasWritePermission = igeDoc.hasWritePermission;
+    doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
+    // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
+    doc.isFolder =
+      igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
+    doc.title = igeDoc.title;
+    doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
 
-      // downgrade permission if rights are not sufficient
-      this.adjustPermission(doc);
-    });
+    // downgrade permission if rights are not sufficient
+    this.adjustPermission(doc);
   }
 
   getDocument(id: number): Promise<IgeDocument> {
@@ -180,7 +179,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   updatePermission(element: any, level: PermissionLevel) {
     if (this.disabled()) return;
     element.permission = level;
-    this.onChange(this.val);
+    this.onChange(this.datasource());
   }
 
   private adjustPermission(doc: TreePermission) {

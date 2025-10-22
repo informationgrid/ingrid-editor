@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit, signal } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -50,10 +50,10 @@ import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/
   ],
 })
 export class IsoViewComponent implements OnInit {
-  isoText: string;
-  isoTextPublished: string;
-  isLoading = true;
-  compareView = false;
+  isoText = signal<string>(undefined);
+  isoTextPublished = signal<string>(undefined);
+  isLoading = signal<boolean>(true);
+  compareView = signal<boolean>(false);
 
   private exportService: ExportService = inject(ExportService);
   private copyToClipboardFn = copyToClipboardFn();
@@ -70,7 +70,7 @@ export class IsoViewComponent implements OnInit {
         of(null),
     ])
       .pipe(
-        tap(() => (this.isLoading = false)),
+        tap(() => this.isLoading.set(false)),
         catchError(() => {
           this.dialogRef.close();
           throw new Error(
@@ -79,8 +79,8 @@ export class IsoViewComponent implements OnInit {
         }),
       )
       .subscribe(async ([current, published]) => {
-        this.isoText = await current.body.text();
-        this.isoTextPublished = await published?.body.text();
+        this.isoText.set(await current.body.text());
+        this.isoTextPublished.set(await published?.body.text());
         if (published) {
           this.calculateDiff();
         }
@@ -88,7 +88,7 @@ export class IsoViewComponent implements OnInit {
   }
 
   calculateDiff() {
-    const diffs = diffLines(this.isoTextPublished, this.isoText);
+    const diffs = diffLines(this.isoTextPublished(), this.isoText());
     let pre = null;
     const diffView = document.getElementById("diffView"),
       fragment = document.createDocumentFragment();
@@ -105,12 +105,12 @@ export class IsoViewComponent implements OnInit {
   }
 
   copy() {
-    this.copyToClipboardFn(this.isoText);
+    this.copyToClipboardFn(this.isoText());
   }
 
   download() {
-    if (this.isoText)
-      this.exportService.exportXml(this.isoText, {
+    if (this.isoText())
+      this.exportService.exportXml(this.isoText(), {
         exportName: this.data.uuid,
       });
   }
