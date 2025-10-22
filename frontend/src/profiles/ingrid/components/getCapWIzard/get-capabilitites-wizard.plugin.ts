@@ -101,7 +101,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       matIconVariable: "auto_fix_normal",
       eventId: this.eventId,
       pos: 11,
-      active: signal(true),
+      active: true,
     });
 
     const toolbarEventSubscription = this.docEvents

@@ -58,12 +58,11 @@ export class FormToolbarComponent {
   private formToolbarService = inject(FormToolbarService);
   private documentService = inject(DocumentService);
 
-  private toolbarButtons = toSignal(this.formToolbarService.toolbar$);
   buttons_left = computed<Array<ToolbarItem | Separator>>(() =>
-    this.toolbarButtons().filter((b) => b.align !== "right"),
+    this.formToolbarService.toolbar$().filter((b) => b.align !== "right"),
   );
   buttons_right = computed<Array<ToolbarItem | Separator>>(() =>
-    this.toolbarButtons().filter((b) => b.align === "right"),
+    this.formToolbarService.toolbar$().filter((b) => b.align === "right"),
   );
 
   finishedOperation = toSignal(

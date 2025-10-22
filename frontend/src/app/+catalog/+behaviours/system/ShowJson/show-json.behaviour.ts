@@ -59,7 +59,7 @@ export class ShowJsonBehaviour extends Plugin {
       matIconVariable: "bug_report",
       eventId: this.eventShowJsonId,
       pos: 1000,
-      active: signal(true),
+      active: true,
     });
 
     // add event handler for revert

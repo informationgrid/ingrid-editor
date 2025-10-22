@@ -78,7 +78,7 @@ export class PrintViewPlugin extends Plugin {
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: signal(false),
+        active: false,
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));

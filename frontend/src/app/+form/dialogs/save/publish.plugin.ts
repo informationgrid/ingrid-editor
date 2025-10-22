@@ -152,7 +152,7 @@ export class PublishPlugin extends SaveBase {
       eventId: this.eventPublishId,
       pos: 25,
       align: "right",
-      active: signal(false),
+      active: false,
       isPrimary: true,
       menu: this.removeExcludedItems(publishMenu),
     });

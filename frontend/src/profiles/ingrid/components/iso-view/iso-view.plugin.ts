@@ -71,7 +71,7 @@ export class IsoViewPlugin extends Plugin {
       matSvgVariable: "ISO-Ansicht",
       eventId: "ISO",
       pos: 80,
-      active: signal(false),
+      active: false,
     });
 
     // react on event when button is clicked

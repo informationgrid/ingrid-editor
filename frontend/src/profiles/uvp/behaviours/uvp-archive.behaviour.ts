@@ -70,25 +70,25 @@ export class UvpArchiveBehaviour extends Plugin {
     eventId: "UPDATE_ARCHIVE",
     pos: 100,
     align: "right",
-    active: signal(true),
+    active: true,
   };
 
   constructor() {
     super();
 
-    if (!DocumentService.archivePluginActive) return;
-
-    this.formToolbarService.setToolbarButtonEnabledFn(
-      "toolBtnRemove",
-      this.disableForAuthorsAndArchivedDocument(),
-    );
-    this.formToolbarService.setToolbarButtonEnabledFn(
-      "toolBtnCopy.copy",
-      this.disableForAuthorsAndArchivedDocument(),
-    );
-    this.setPluginConfig();
-
     effect(() => {
+      if (!DocumentService.archivePluginActive()) return;
+
+      this.formToolbarService.setToolbarButtonEnabledFn(
+        "toolBtnRemove",
+        this.disableForAuthorsAndArchivedDocument(),
+      );
+      this.formToolbarService.setToolbarButtonEnabledFn(
+        "toolBtnCopy.copy",
+        this.disableForAuthorsAndArchivedDocument(),
+      );
+      this.setPluginConfig();
+
       if (!this.isActive() || !this.formRegistered()) return;
       this.toggleUpdateArchiveButton();
     });
@@ -199,12 +199,6 @@ export class UvpArchiveBehaviour extends Plugin {
   }
 
   private toggleUpdateArchiveButton() {
-    const publishBtn = this.formToolbarService.getButtonById(
-      "toolBtnPublish",
-    ) as ToolbarItem;
-    const saveBtn = this.formToolbarService.getButtonById(
-      "toolBtnSave",
-    ) as ToolbarItem;
     const isArchivedDocs = this.activeNodes()
       .map((item) => this.getStore().entityMap()[item])
       .map((doc) => doc?._tags?.includes("archived"));
@@ -212,13 +206,13 @@ export class UvpArchiveBehaviour extends Plugin {
     if (isArchivedDocs.length === 1 && isArchivedDocs[0] === true) {
       if (!this.formToolbarService.getButtonById("toolBtnUpdateArchive")) {
         this.formToolbarService.addButton(this.archiveUpdateBtn);
-        publishBtn.hidden = true;
-        saveBtn.hidden = true;
+        this.formToolbarService.updateHiddenButton("toolBtnPublish", true);
+        this.formToolbarService.updateHiddenButton("toolBtnSave", true);
       }
     } else {
       this.formToolbarService.removeButton("toolBtnUpdateArchive");
-      publishBtn.hidden = false;
-      saveBtn.hidden = false;
+      this.formToolbarService.updateHiddenButton("toolBtnPublish", false);
+      this.formToolbarService.updateHiddenButton("toolBtnSave", false);
     }
   }
 }

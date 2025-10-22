@@ -97,7 +97,7 @@ export class DeleteDocsPlugin extends Plugin {
       matSvgVariable: "outline-delete-24px",
       eventId: "DELETE",
       pos: 100,
-      active: signal(false),
+      active: false,
     });
 
     const store = this.getStore();

@@ -77,7 +77,7 @@ export class UndoPlugin extends Plugin {
       matIconVariable: "undo",
       eventId: this.eventUndoId,
       pos: 150,
-      active: signal(false),
+      active: false,
     });
 
     // add button to toolbar for revert action
@@ -88,7 +88,7 @@ export class UndoPlugin extends Plugin {
       matIconVariable: "redo",
       eventId: this.eventRedoId,
       pos: 160,
-      active: signal(false),
+      active: false,
     });
   }
 

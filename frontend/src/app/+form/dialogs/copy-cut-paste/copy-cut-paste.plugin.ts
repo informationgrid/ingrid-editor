@@ -99,7 +99,7 @@ export class CopyCutPastePlugin extends Plugin {
         matSvgVariable: "Kopieren-Ausschneiden",
         eventId: "COPY",
         pos: 40,
-        active: signal(false),
+        active: false,
         menu: [
           { eventId: "COPY", label: "Kopieren" },
           { eventId: "COPYTREE", label: "Kopieren mit Teilbaum" },

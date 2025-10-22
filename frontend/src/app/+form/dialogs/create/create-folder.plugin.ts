@@ -74,7 +74,7 @@ export class CreateFolderPlugin extends Plugin {
       matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
       pos: 10,
-      active: signal(true),
+      active: true,
     });
 
     // add event handler for revert

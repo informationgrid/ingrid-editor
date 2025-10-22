@@ -76,7 +76,7 @@ export class SavePlugin extends SaveBase {
       matIconVariable: "save",
       eventId: "SAVE",
       pos: 20,
-      active: signal(false),
+      active: false,
       align: "right",
     });
 

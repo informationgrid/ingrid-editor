@@ -40,14 +40,10 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { DocumentService } from "../../../services/document/document.service";
 import { provideMatomoTesting } from "ngx-matomo-client/testing";
-import {
-  provideZonelessChangeDetection,
-  signal,
-  WritableSignal,
-} from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 
 let spectator: Spectator<FormToolbarComponent>;
-const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
+const buttonSignal = signal<Array<ToolbarItem | Separator>>([]);
 const documentOperationFinishedSubject = new Subject<boolean>();
 
 const createHost = createComponentFactory({
@@ -66,7 +62,7 @@ const createHost = createComponentFactory({
   providers: [
     provideZonelessChangeDetection(),
     mockProvider(FormToolbarService, {
-      toolbar$: buttonSubject,
+      toolbar$: buttonSignal,
     }),
     mockProvider(DocumentService, {
       documentOperationFinished$: documentOperationFinishedSubject,
@@ -100,9 +96,9 @@ describe("Form-Toolbar", () => {
       matIconVariable: "remove",
       pos: 1,
       eventId: "TEST_EVENT",
-      active: signal(false),
+      active: false,
     };
-    buttonSubject.next([item]);
+    buttonSignal.set([item]);
     spectator.detectChanges();
 
     // find the title element in the DOM using a CSS selector
@@ -123,9 +119,9 @@ describe("Form-Toolbar", () => {
       isPrimary: true,
       label: "Veröffentlichen",
       align: "right",
-      active: signal(false),
+      active: false,
     };
-    buttonSubject.next([item]);
+    buttonSignal.set([item]);
 
     spectator.detectChanges();
 

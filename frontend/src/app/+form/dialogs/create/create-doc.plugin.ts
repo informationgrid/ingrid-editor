@@ -102,7 +102,7 @@ export class CreateDocumentPlugin extends Plugin {
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: signal(true),
+          active: true,
         });
         this.addNonAdminBehaviour();
       });

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
 import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
@@ -66,7 +66,7 @@ export interface ReloadData {
   providedIn: "root",
 })
 export class DocumentService {
-  static archivePluginActive = false;
+  static archivePluginActive = signal<boolean>(false);
 
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
@@ -91,7 +91,8 @@ export class DocumentService {
 
   static isDocumentArchived(docTags: string[]): boolean {
     return (
-      DocumentService.archivePluginActive && docTags.indexOf("archived") !== -1
+      DocumentService.archivePluginActive() &&
+      docTags.indexOf("archived") !== -1
     );
   }
 
@@ -206,13 +207,9 @@ export class DocumentService {
     address: boolean,
     keepOpenedDocument = false,
   ) {
-    setTimeout(
-      () =>
-        this.generalStore.setActiveTreeNodes(
-          doc ? [doc.id as number] : [],
-          address,
-        ),
-      0,
+    this.generalStore.setActiveTreeNodes(
+      doc ? [doc.id as number] : [],
+      address,
     );
     if (!keepOpenedDocument) {
       if (address) {

@@ -174,7 +174,7 @@ export class HistoryPlugin extends Plugin {
         matSvgVariable: "Vorheriger-Datensatz",
         eventId: this.eventIdPrevious,
         pos: 200,
-        active: signal(false),
+        active: false,
         hiddenMenu: [],
       },
       {
@@ -184,7 +184,7 @@ export class HistoryPlugin extends Plugin {
         matSvgVariable: "Naechster-Datensatz",
         eventId: this.eventIdNext,
         pos: 210,
-        active: signal(false),
+        active: false,
         hiddenMenu: [],
       },
     ];
