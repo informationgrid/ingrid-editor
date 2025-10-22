@@ -26,7 +26,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { catchError, filter, finalize, tap } from "rxjs/operators";
+import { catchError, filter, finalize } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import {
   FormlyFieldConfig,

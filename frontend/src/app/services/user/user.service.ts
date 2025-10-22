@@ -238,10 +238,9 @@ export class UserService {
     if (error.status === 409) {
       if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
-        this.modalService.showJavascriptError(
+        throw new IgeError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
-        return null;
       } else if (errorText.includes(EMAIL_NOT_UNIQUE)) {
         throw new IgeError(
           "Es existiert bereits ein Benutzer mit dieser Mailadresse",
