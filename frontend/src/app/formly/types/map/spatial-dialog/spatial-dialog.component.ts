@@ -135,7 +135,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.titleInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(untilDestroyed(this))
       .subscribe((title) => this.result.update((r) => ({ ...r, title })));
 
     if (this.data?.location) {
