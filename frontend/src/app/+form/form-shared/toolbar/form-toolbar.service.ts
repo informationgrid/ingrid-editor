@@ -75,13 +75,13 @@ export class FormToolbarService {
     this.checkButtonExists(button);
 
     const buttons = this.toolbar$();
-    const pos = buttons.length;
 
-    // mutates signal!
-    buttons.splice(pos, 0, button);
+    buttons.splice(buttons.length, 0, button);
 
     // sort buttons
     buttons.sort((a, b) => (a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1));
+
+    this.toolbar$.set([...buttons]);
   }
 
   private checkButtonExists(button: ToolbarItem | Separator) {
