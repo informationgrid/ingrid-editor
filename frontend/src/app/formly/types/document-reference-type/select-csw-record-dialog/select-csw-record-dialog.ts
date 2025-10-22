@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, signal } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -77,10 +77,10 @@ export class SelectCswRecordDialog implements OnInit {
     Validators.required,
     Validators.pattern(REGEX_URL),
   ]);
-  phase: "analyzing" | "valid" | "invalid";
-  analysis: GetRecordAnalysis;
-  analysisError = null;
-  asAtomDownloadService: boolean;
+  phase = signal<"analyzing" | "valid" | "invalid">(null);
+  analysis = signal<GetRecordAnalysis>(null);
+  analysisError = signal<any>(null);
+  asAtomDownloadService = signal<boolean>(false);
 
   field: FormlyFieldConfig[] = [
     {
@@ -90,17 +90,17 @@ export class SelectCswRecordDialog implements OnInit {
   ];
   form = new FormGroup<any>({});
   model = { layerNames: [] };
-  public showLayernames = false;
+  showLayernames = signal<boolean>(false);
 
   constructor(
     private dlg: MatDialogRef<SelectCswRecordResponse>,
     private docRefService: DocumentReferenceService,
     @Inject(MAT_DIALOG_DATA) data: SelectCswRecordData,
   ) {
-    this.asAtomDownloadService = data.asAtomDownloadService === true;
+    this.asAtomDownloadService.set(data.asAtomDownloadService === true);
     this.model.layerNames = data.layerNames ?? [];
     if (data.url) setTimeout(() => this.urlControl.setValue(data.url));
-    this.showLayernames = data.showLayernames;
+    this.showLayernames.set(data.showLayernames);
   }
 
   ngOnInit(): void {
@@ -109,48 +109,50 @@ export class SelectCswRecordDialog implements OnInit {
         untilDestroyed(this),
         debounceTime(500),
         filter((_) => this.urlControl.valid),
-        tap((_) => (this.phase = "analyzing")),
+        tap((_) => this.phase.set("analyzing")),
       )
       .subscribe((url) => this.analyzeUrl(url));
   }
 
   submit() {
     this.dlg.close(<SelectCswRecordResponse>{
-      title: this.analysis.title,
+      title: this.analysis().title,
       url: this.urlControl.value,
-      identifier: this.analysis.identifier,
-      uuid: this.analysis.uuid,
+      identifier: this.analysis().identifier,
+      uuid: this.analysis().uuid,
       layerNames: this.form.value.layerNames ?? [],
     });
   }
 
   private analyzeUrl(url: string) {
-    this.analysisError = null;
+    this.analysisError.set(null);
     this.docRefService
       .analyzeGetRecordUrl(url)
       .pipe(catchError((err) => this.handleError(err)))
       .subscribe((response: GetRecordAnalysis) => {
-        this.analysis = response;
-        this.phase = response === null ? "invalid" : "valid";
+        this.analysis.set(response);
+        this.phase.set(response === null ? "invalid" : "valid");
         if (response !== null) {
           if (
-            this.asAtomDownloadService &&
+            this.asAtomDownloadService() &&
             response.downloadData.length === 0
           ) {
-            this.phase = "invalid";
-            this.analysisError =
-              "Für ATOM-Download Dienste, müssen in dem externen Datensatz Download-Daten vorhanden sein.";
-          } else this.phase = "valid";
+            this.phase.set("invalid");
+            this.analysisError.set(
+              "Für ATOM-Download Dienste, müssen in dem externen Datensatz Download-Daten vorhanden sein.",
+            );
+          } else this.phase.set("valid");
         } else {
-          this.phase = "invalid";
+          this.phase.set("invalid");
         }
       });
   }
 
   private handleError(err: any): Observable<null> {
-    this.analysisError =
+    this.analysisError.set(
       "Die URL konnte nicht analysiert werden: " +
-      (err.error?.errorText ?? "Unbekannter Fehler");
+        (err.error?.errorText ?? "Unbekannter Fehler"),
+    );
     return of(null);
   }
 }
