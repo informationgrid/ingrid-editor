@@ -54,7 +54,6 @@ const createHost = createComponentFactory({
     MatButtonModule,
     MatMenuModule,
     MatToolbarModule,
-    BrowserAnimationsModule,
     MatTabsModule,
     MatFormFieldModule,
     MatTooltipModule,
@@ -74,12 +73,13 @@ const createHost = createComponentFactory({
 
 describe("Form-Toolbar", () => {
   beforeEach(() => {
+    buttonSignal.set([]);
     spectator = createHost();
   });
 
-  it("should not show any toolbar items after initialization", () => {
+  it("should not show any toolbar items after initialization", async () => {
     // trigger data binding to update the view
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");
@@ -88,7 +88,7 @@ describe("Form-Toolbar", () => {
     expect(buttons.length).toBe(0);
   });
 
-  it("should add a toolbar item through the service", () => {
+  it("should add a toolbar item through the service", async () => {
     const item: ToolbarItem = {
       type: "button",
       id: "btnToolbarTest",
@@ -99,7 +99,7 @@ describe("Form-Toolbar", () => {
       active: false,
     };
     buttonSignal.set([item]);
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");
@@ -108,7 +108,7 @@ describe("Form-Toolbar", () => {
     expect(buttons.length).toBe(1);
   });
 
-  it("should add a publish button through the service", () => {
+  it("should add a publish button through the service", async () => {
     const item: ToolbarItem = {
       type: "button",
       id: "btnPublish",
@@ -123,7 +123,7 @@ describe("Form-Toolbar", () => {
     };
     buttonSignal.set([item]);
 
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");
