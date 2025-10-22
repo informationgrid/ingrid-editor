@@ -108,7 +108,7 @@ export class NewUserDialogComponent implements OnInit {
       .subscribe((role) => {
         if (typeof role === "string") {
           this.asAdmin.set(role === "ige-super-admin" || role === "cat-admin");
-          if (this.asAdmin) this.form.get("groups").reset();
+          if (this.asAdmin()) this.form.get("groups").reset();
         }
       });
 
@@ -158,7 +158,7 @@ export class NewUserDialogComponent implements OnInit {
   }
 
   handleSubmit() {
-    if (this.asAdmin || this.options.formState.showGroups) {
+    if (this.asAdmin() || this.options.formState.showGroups) {
       this.createUser();
       return;
     }

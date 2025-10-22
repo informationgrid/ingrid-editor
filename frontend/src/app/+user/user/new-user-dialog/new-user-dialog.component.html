@@ -2,7 +2,7 @@
     label="Benutzer hinzufügen"
     [disabled]="form.invalid"
     [submitLabel]="
-        asAdmin || options.formState.showGroups ? 'Anlegen' : 'Weiter'
+        asAdmin() || options.formState.showGroups ? 'Anlegen' : 'Weiter'
     "
     (submit)="handleSubmit()"
 >
