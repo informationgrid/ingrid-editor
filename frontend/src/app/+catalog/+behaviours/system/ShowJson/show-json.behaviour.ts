@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { Plugin } from "../../plugin";
@@ -77,11 +77,9 @@ export class ShowJsonBehaviour extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive()) {
-      this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
-      this.formToolbarService.removeButton("toolBtnShowJson");
+    this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
+    this.formToolbarService.removeButton("toolBtnShowJson");
 
-      this.toggleJSONView(false);
-    }
+    this.toggleJSONView(false);
   }
 }

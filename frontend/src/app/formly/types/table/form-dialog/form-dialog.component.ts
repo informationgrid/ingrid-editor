@@ -23,7 +23,7 @@ import {
   FormlyForm,
   FormlyFormOptions,
 } from "@ngx-formly/core";
-import { UntypedFormGroup } from "@angular/forms";
+import { FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
@@ -41,7 +41,7 @@ export interface FormDialogData {
   imports: [DialogTemplateComponent, FormlyForm],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
-  form = new UntypedFormGroup({});
+  form = new FormGroup({});
   titleText = signal<string>("");
   options: FormlyFormOptions = {};
   disabled = signal<boolean>(true);
