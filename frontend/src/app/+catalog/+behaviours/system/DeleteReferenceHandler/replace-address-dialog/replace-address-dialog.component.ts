@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit, signal } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -68,25 +68,21 @@ export interface ReplaceAddressDialogData {
     MatButton,
   ],
 })
-export class ReplaceAddressDialogComponent implements OnInit {
+export class ReplaceAddressDialogComponent {
   addressTreeStore = inject(AddressTreeStore);
-  page = 0;
-  selectedAddress: string[];
+  private documentService = inject(DocumentService);
+  private dialog = inject(MatDialog);
+  page = signal<number>(0);
+  selectedAddress = signal<string[]>([]);
   private readonly source: string;
-  showInfo = true;
+  showInfo = signal<boolean>(true);
   disableTreeNode = (node: TreeNode) =>
     node._uuid === this.source || node.state === "W";
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,
-    private documentService: DocumentService,
-    private dialog: MatDialog,
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData) {
     this.source = data.source;
-    this.showInfo = data.showInfo;
+    this.showInfo.set(data.showInfo);
   }
-
-  ngOnInit(): void {}
 
   replaceAddress() {
     this.openConfirmReplaceAddressDialog()
@@ -95,14 +91,18 @@ export class ReplaceAddressDialogComponent implements OnInit {
         switchMap(() =>
           this.documentService.replaceAddress(
             this.source,
-            this.selectedAddress[0],
+            this.selectedAddress()[0],
           ),
         ),
       )
       .subscribe(() => {
         this.reloadAddress();
-        this.page++;
+        this.increasePage();
       });
+  }
+
+  increasePage() {
+    this.page.update((prev) => prev + 1);
   }
 
   openConfirmReplaceAddressDialog(): Observable<boolean> {

@@ -13,10 +13,10 @@
             [attr.aria-label]="item.title"
         >
             <div
-                [class]="allowRedirectToDocument ? 'clickable' : ''"
-                (click)="allowRedirectToDocument ? openReference(item) : null"
+                [class]="allowRedirectToDocument() ? 'clickable' : ''"
+                (click)="allowRedirectToDocument() ? openReference(item) : null"
                 (keyup.enter)="
-                    allowRedirectToDocument ? openReference(item) : null
+                    allowRedirectToDocument() ? openReference(item) : null
                 "
             >
                 <div class="title">
@@ -64,18 +64,18 @@
         </div>
     }
 
-    @if (refreshing) {
+    @if (refreshing()) {
         <mat-spinner diameter="30"></mat-spinner>
     }
 
-    @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
+    @if (allowMultiSelect() || (!allowMultiSelect() && !myModel?.[0])) {
         <button
             type="button"
             mat-stroked-button
             color="primary"
             (click)="showReferenceDialog()"
         >
-            {{ titleOfDocumentSelectorDialog }}
+            {{ titleOfDocumentSelectorDialog() }}
         </button>
     }
 </div>
