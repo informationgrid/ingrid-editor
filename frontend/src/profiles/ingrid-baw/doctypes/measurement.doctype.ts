@@ -43,7 +43,11 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.waterMeasurement(), this.bautechnikMeasurement()],
+          fieldGroup: [
+            this.waterMeasurement(),
+            // not completed yet
+            // this.bautechnikMeasurement()
+          ],
         },
         props: {
           docType: "Messdaten",
