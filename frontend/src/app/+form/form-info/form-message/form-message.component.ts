@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FormMessageService } from "../../../services/form-message.service";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -51,11 +51,11 @@ export interface FormMessageType {
   imports: [NgClass, MatIcon, MatIconButton],
 })
 export class FormMessageComponent implements OnInit {
-  types: FormMessageType[] = [];
+  private messageService = inject(FormMessageService);
+
+  types = signal<FormMessageType[]>([]);
 
   private defaultDuration = 3000;
-
-  constructor(private messageService: FormMessageService) {}
 
   ngOnInit() {
     this.messageService.message$
@@ -68,7 +68,7 @@ export class FormMessageComponent implements OnInit {
   }
 
   private handleMessage(type: FormMessageType) {
-    this.types.push(type);
+    this.types.update((types) => [...types, type]);
 
     if (type.severity === "info") {
       setTimeout(
@@ -79,11 +79,11 @@ export class FormMessageComponent implements OnInit {
   }
 
   resetMessage(type: FormMessageType) {
-    this.types = this.types.filter((t) => t !== type);
+    this.types.update((types) => types.filter((t) => t !== type));
   }
 
   resetAllMessages() {
-    this.types = [];
+    this.types.set([]);
   }
 
   getIconClass(severity: "info" | "error") {

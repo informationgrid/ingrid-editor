@@ -55,6 +55,8 @@ import { FormlyForm } from "@ngx-formly/core";
   ],
 })
 export class ConnectionManagementComponent implements OnInit {
+  private configService = inject(ConfigService);
+
   form = new FormGroup<any>({});
   fields = inject(ConnectionForm).fields;
   model: any;
@@ -63,7 +65,7 @@ export class ConnectionManagementComponent implements OnInit {
   $connectionStates = signal<any[]>([]);
   private connectionSubscriptions: Subscription[];
 
-  constructor(private configService: ConfigService) {
+  constructor() {
     this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((state) => {
       this.$valid.set(state === "VALID");
     });

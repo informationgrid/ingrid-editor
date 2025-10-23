@@ -120,7 +120,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
 
-  sidebarWidth: number;
+  sidebarWidth = signal<number>(null);
 
   fields: FormlyFieldConfig[] = [];
 
@@ -146,20 +146,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   form = new UntypedFormGroup({});
 
   // initial model for form info header
-  formInfoModel: any = null;
+  formInfoModel = signal<any>(null);
 
   // @ts-ignore
   model: IgeDocument = {};
 
   metadata = this.formStateService.metadata;
 
-  paddingWithHeader: string;
-
   showAllFields: Signal<boolean> = this.uiStore.toggleFieldsButtonShowAll;
 
   hasOptionalFields = signal<boolean>(false);
 
-  isLoading = true;
+  isLoading = this.generalStore.isDocumentLoading;
 
   showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
@@ -194,7 +192,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private docEvents: DocEventsService,
     private translocoService: TranslocoService,
   ) {
-    this.sidebarWidth = this.uiStore.sidebarWidth();
+    this.sidebarWidth.set(this.uiStore.sidebarWidth());
 
     effect(() => {
       const serverValidationErrors = this.generalStore.serverValidationErrors();
@@ -208,10 +206,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         });
         this.numberOfErrors.set(serverValidationErrors.length);
       }
-    });
-
-    effect(() => {
-      this.isLoading = this.generalStore.isDocumentLoading();
     });
 
     effect(() => {
@@ -467,14 +461,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // data is not included in the new form
         // @ts-ignore
         this.model = {};
-        this.formInfoModel = null;
+        this.formInfoModel.set(null);
       }
 
       this.formOptions.resetModel(data.document);
       this.model = data.document;
       this.prepareForm(data.metadata.hasWritePermission && !this.readonly);
 
-      this.formInfoModel = { ...this.model };
+      this.formInfoModel.set({ ...this.model });
 
       this.documentService.setDocLoadingState(false);
     } catch (ex) {

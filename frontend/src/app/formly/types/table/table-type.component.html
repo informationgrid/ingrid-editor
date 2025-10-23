@@ -115,8 +115,8 @@
                 [attr.data-cy]="key + '-table'"
                 cdkDropList
                 cdkDrag
-                [cdkDragDisabled]="dragDisabled"
-                (cdkDropListDropped)="dragDisabled = true; drop($event)"
+                [cdkDragDisabled]="dragDisabled()"
+                (cdkDropListDropped)="dragDisabled.set(true); drop($event)"
             >
                 @for (
                     column of initialColumnsWithManagement();
@@ -136,10 +136,14 @@
                                     <div class="drag-select-wrapper">
                                         <mat-icon
                                             cdkDragHandle
-                                            (touchstart)="dragDisabled = false"
-                                            (touchend)="dragDisabled = true"
-                                            (mousedown)="dragDisabled = false"
-                                            (mouseup)="dragDisabled = true"
+                                            (touchstart)="
+                                                dragDisabled.set(false)
+                                            "
+                                            (touchend)="dragDisabled.set(true)"
+                                            (mousedown)="
+                                                dragDisabled.set(false)
+                                            "
+                                            (mouseup)="dragDisabled.set(true)"
                                         >
                                             drag_indicator
                                         </mat-icon>
@@ -236,8 +240,8 @@
                                     <span
                                         class="vertical_align_center"
                                         [innerHTML]="
-                                            formattedCell[rowIndex]
-                                                ? (formattedCell[rowIndex][
+                                            formattedCell()[rowIndex]
+                                                ? (formattedCell()[rowIndex][
                                                       column.key
                                                   ] ?? element[column.key])
                                                 : element[column.key]
@@ -263,7 +267,7 @@
                     [class.disabled]="formControl.disabled"
                     cdkDrag
                     [cdkDragData]="row"
-                    [cdkDragDisabled]="dragDisabled"
+                    [cdkDragDisabled]="dragDisabled()"
                 ></tr>
             </table>
         }

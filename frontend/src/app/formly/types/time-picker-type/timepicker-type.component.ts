@@ -21,6 +21,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnDestroy,
   TemplateRef,
   Type,
@@ -107,6 +108,8 @@ export class TimepickerTypeComponent
   extends FieldType<FieldTypeConfig<TimepickerProps>>
   implements AfterViewInit, OnDestroy
 {
+  private config = inject(FormlyConfig);
+
   @ViewChild("timepickerToggle", { static: true })
   timepickerToggle!: TemplateRef<any>;
 
@@ -120,10 +123,6 @@ export class TimepickerTypeComponent
     },
   };
   private fieldErrorsObserver!: ReturnType<typeof observe>;
-
-  constructor(private config: FormlyConfig) {
-    super();
-  }
 
   detectChanges() {
     this.options.detectChanges?.(this.field);

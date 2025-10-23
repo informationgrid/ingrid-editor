@@ -7,7 +7,7 @@
     <!--        [useTransition]="true"-->
     <as-split (dragEnd)="rememberSizebarWidth($event)" [gutterSize]="12">
         <!-- exchangable sidebar -->
-        <as-split-area [size]="sidebarWidth" id="sidebar">
+        <as-split-area [size]="sidebarWidth()" id="sidebar">
             <ige-sidebar
                 [address]="address()"
                 (dropped)="handleDrop($event)"
@@ -17,28 +17,26 @@
         <!-- The form -->
         <as-split-area
             #scrollForm
-            [size]="100 - sidebarWidth - (showJson() ? 20 : 0)"
+            [size]="100 - sidebarWidth() - (showJson() ? 20 : 0)"
             id="form"
             class="form-content"
             cdkScrollable
         >
-            @if (isLoading) {
+            @if (isLoading()) {
                 <div class="loading">
                     <div>Lade Dokument ...</div>
                     <mat-spinner [diameter]="30"></mat-spinner>
                 </div>
-            }
-
-            @if (!isLoading) {
+            } @else {
                 @if (fields.length === 0) {
                     <ng-content></ng-content>
                 }
                 <div [class.hide]="fields.length === 0">
-                    @if (formInfoModel !== null) {
+                    @if (formInfoModel() !== null) {
                         <ige-form-info
                             #formInfo
                             [form]="form"
-                            [model]="formInfoModel"
+                            [model]="formInfoModel()"
                             [forAddress]="address()"
                             [disableTitleEdit]="
                                 formOptions.formState.disabled === true ||
@@ -47,10 +45,10 @@
                         >
                         </ige-form-info>
                     }
-                    @if (formInfoModel !== null) {
+                    @if (formInfoModel() !== null) {
                         <ige-quick-navbar
                             [class.sticky-header]="isStickyHeader()"
-                            [model]="formInfoModel"
+                            [model]="formInfoModel()"
                             [sections]="sections()"
                             [numberOfErrors]="numberOfErrors()"
                             [hasOptionalFields]="hasOptionalFields()"
@@ -62,7 +60,6 @@
                         [class.hide]="metadata()?.docType === 'FOLDER'"
                     >
                         <form
-                            [style.padding-top]="paddingWithHeader"
                             [class.hide-optionals]="!showAllFields()"
                             [class.hide]="metadata()?.docType === 'FOLDER'"
                         >

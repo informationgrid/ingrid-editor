@@ -25,6 +25,9 @@ import {
   OnInit,
   ViewChild,
   input,
+  signal,
+  inject,
+  computed,
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
@@ -64,6 +67,9 @@ import { HeaderMoreComponent } from "../header-more/header-more.component";
   ],
 })
 export class HeaderTitleRowComponent implements OnInit {
+  private formMenuService = inject(FormMenuService);
+  private formStateService = inject(FormStateService);
+
   @Input() set form(value: UntypedFormGroup) {
     this._form = value;
   }
@@ -73,12 +79,12 @@ export class HeaderTitleRowComponent implements OnInit {
     this._model = value;
     const metadata = this.formStateService.metadata();
     // @ts-ignore
-    this.doc = {
+    this.doc.set({
       ...value,
       _type: metadata.docType,
       _state: metadata.state,
       _tags: metadata.tags,
-    };
+    });
     this.updateHeaderMenuOptions();
   }
 
@@ -90,36 +96,30 @@ export class HeaderTitleRowComponent implements OnInit {
 
   _form: UntypedFormGroup;
   _model: IgeDocument;
-  showTitleInput = false;
-  showMore = false;
-  showMoreActions = false;
-  doc: DocumentAbstract;
+  showTitleInput = signal<boolean>(false);
+  showMore = signal<boolean>(false);
+  showMoreActions = computed<boolean>(() => this.moreActions().length > 0);
+  doc = signal<DocumentAbstract>(null);
 
-  moreActions: FormularMenuItem[];
-
-  constructor(
-    private formMenuService: FormMenuService,
-    private formStateService: FormStateService,
-  ) {}
+  moreActions = signal<FormularMenuItem[]>([]);
 
   ngOnInit() {
     this.updateHeaderMenuOptions();
   }
 
   editTitle() {
-    this.showTitleInput = !this.showTitleInput;
+    this.showTitleInput.update((prev) => !prev);
     this.contentFCAutosize.resizeToFitContent(true);
     this.titleInput.nativeElement.focus();
   }
 
   toggleMoreInfo() {
-    this.showMore = !this.showMore;
+    this.showMore.update((prev) => !prev);
   }
 
   private updateHeaderMenuOptions() {
-    this.moreActions = this.formMenuService.getMenuItems(
-      this.address() ? "address" : "dataset",
+    this.moreActions.set(
+      this.formMenuService.getMenuItems(this.address() ? "address" : "dataset"),
     );
-    this.showMoreActions = this.moreActions.length > 0;
   }
 }

@@ -17,8 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
-import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
+import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  FormGroup,
+  ReactiveFormsModule,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormDialogData } from "../form-dialog/form-dialog.component";
 import {
@@ -35,11 +39,11 @@ import { DialogTemplateComponent } from "../../../../shared/dialog-template/dial
   imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyForm],
 })
 export class LinkDialogComponent implements OnInit {
-  form = new UntypedFormGroup({});
+  form = new FormGroup({});
 
   options: FormlyFormOptions = {};
 
-  data: FormDialogData = { fields: [], model: null };
+  data = signal<FormDialogData>({ fields: [], model: null });
 
   constructor(
     public dialogRef: MatDialogRef<LinkDialogComponent>,
@@ -47,10 +51,10 @@ export class LinkDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.data = {
+    this.data.set({
       fields: this.adaptFields(),
       model: null,
-    };
+    });
   }
 
   private adaptFields() {

@@ -166,9 +166,6 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
             "dib",
             "bmp",
           ],
-          // currentItems: this.dataSource.data,
-          // uploadFieldKey: this.getUploadFieldKey(),
-          // hasExtractZipOption: true,
         },
       })
       .afterClosed()

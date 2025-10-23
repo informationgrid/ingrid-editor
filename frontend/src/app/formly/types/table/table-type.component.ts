@@ -21,6 +21,7 @@ import {
   AfterViewInit,
   Component,
   computed,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -137,6 +138,11 @@ export class TableTypeComponent
   extends FieldType<FieldTypeConfig<TableProps>>
   implements OnInit, AfterViewInit
 {
+  private dialog = inject(MatDialog);
+  public contextHelpService = inject(ContextHelpService);
+  public configService = inject(ConfigService);
+  private formStateService = inject(FormStateService);
+
   dataSource = new MatTableDataSource<any>([]);
   initialColumns = signal<any[]>([]);
   initialColumnsWithManagement = computed(() => {
@@ -160,20 +166,11 @@ export class TableTypeComponent
   );
   selection = new SelectionModel<any>(true, []);
   batchMode = signal<boolean>(false);
-  dragDisabled = true;
-  formattedCell: Array<any> = [];
+  dragDisabled = signal<boolean>(true);
+  formattedCell = signal<Array<any>>([]);
 
   private profile: string;
   private fieldId: string;
-
-  constructor(
-    private dialog: MatDialog,
-    public contextHelpService: ContextHelpService,
-    public configService: ConfigService,
-    private formStateService: FormStateService,
-  ) {
-    super();
-  }
 
   ngOnInit() {
     this.initialColumns.set(this.props.columns);
@@ -346,7 +343,7 @@ export class TableTypeComponent
   }
 
   private prepareFormattedValues(value: any[]) {
-    this.formattedCell = [];
+    this.formattedCell.set([]);
 
     if (value === null) {
       return;
@@ -356,8 +353,8 @@ export class TableTypeComponent
       .filter((column) => column.props?.formatter)
       .forEach((column) =>
         value?.forEach((row, index) => {
-          this.formattedCell.push({});
-          this.formattedCell[index][column.key] = column.props.formatter(
+          this.formattedCell.update((prev) => [...prev, {}]);
+          this.formattedCell()[index][column.key] = column.props.formatter(
             value[index][column.key],
             this.form,
             value[index],
