@@ -412,10 +412,10 @@
     "t0110_avail_format.name": [],
     "object_types_catalogue.title_key": "",
     "searchterm_value.alternate_term": [],
+    ${extraFields}@if (extraFields != null),@endif
     "content": [
     @for(var entry : ForSupport.of(page.getContentField()))
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ]
-    ${extraFields}
 }
