@@ -11,7 +11,6 @@
 
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
-    ,
     "bwstr-bwastr-id": [
     @for(var entry : ForSupport.of(SharedExportKt.getBwastrInfos(page)))
         "${entry.get().getBwastrId()}"@if (!entry.isLast()),@endif
