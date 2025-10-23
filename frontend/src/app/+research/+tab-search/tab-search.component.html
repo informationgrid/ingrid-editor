@@ -6,7 +6,7 @@
     <ige-facets
         left-side
         formControlName="facets"
-        [facets]="facets"
+        [facets]="facets()"
         [forAddresses]="form.get('type').value === 'selectAddresses'"
         [refreshView]="facetViewRefresher"
         (resetQuery)="resetSearchField()"
@@ -46,7 +46,7 @@
 
     <div main-content>
         <ige-result-table
-            [result]="result"
+            [result]="result()"
             [isLoading]="isSearching()"
             (updated)="startSearch()"
         ></ige-result-table>
