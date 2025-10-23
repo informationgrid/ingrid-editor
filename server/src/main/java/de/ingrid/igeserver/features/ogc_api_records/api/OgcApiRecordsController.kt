@@ -263,7 +263,7 @@ class OgcApiRecordsController(
     )
     fun postDataset(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
-        @RequestHeader allHeaders: Map<String, String>,
+        @RequestHeader("Content-Type") contentType: String,
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Data of record to be stored\n\nFor records in DRAFT state, the request body must include at least the `_type` field (if using JSON) to identify the record type.", required = true) @RequestBody data: String,
@@ -280,8 +280,6 @@ class OgcApiRecordsController(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId", "state"))
         val profile = catalogService.getProfileFromCatalog(collectionId)
-
-        val contentType = allHeaders["content-type"]!!
 
         val options = ImportOptions(
             publish = state == DocState.PUBLISHED,
