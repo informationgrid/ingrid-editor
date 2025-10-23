@@ -40,6 +40,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.security.MessageDigest
+import kotlin.text.contains
 
 const val JSONRPC = "2.0"
 
@@ -104,6 +105,10 @@ class ZabbixService(
         val user = ZabbixModel.User(method = "user.create", params = params)
         val values = jacksonObjectMapper().writeValueAsString(user)
         val response = requestApi(values)
+
+        if (response.get("error")?.get("data")?.asText()?.contains("Invalid email address") == true) {
+            throw IllegalArgumentException("Invalid email address: $addressMail")
+        }
         val userid: String = if (response.has("error")) {
             getUserId(addressMail)
         } else {
