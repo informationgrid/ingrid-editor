@@ -14,7 +14,7 @@
                 color="primary"
                 class="button-square-icon padding-btn"
                 (click)="downloadReport()"
-                [disabled]="!report"
+                [disabled]="!report()"
             >
                 <mat-icon color="primary">download_outline</mat-icon>
                 <span class="btn-title">Bericht herunterladen</span>
