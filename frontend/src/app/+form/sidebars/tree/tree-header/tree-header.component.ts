@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnInit,
-  input,
-  output,
-} from "@angular/core";
+import { Component, Input, OnInit, input, output } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
@@ -85,10 +78,7 @@ export class TreeHeaderComponent implements OnInit {
   query = new UntypedFormControl("");
   searchSub: Subscription;
 
-  constructor(
-    private db: DynamicDatabase,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  constructor(private db: DynamicDatabase) {}
 
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component

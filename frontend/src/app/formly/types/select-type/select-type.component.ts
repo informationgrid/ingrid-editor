@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
   ViewChild,
@@ -78,10 +77,6 @@ export class SelectTypeComponent
   selectOptions: BackendOption[];
   filteredOptions: BackendOption[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
-
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
 
   ngOnInit() {
     if (!this.props.simple && !this.props.compareWith) {
@@ -161,7 +156,6 @@ export class SelectTypeComponent
       // if simple and not multiple, value is an object. set as string
       this.formControl.setValue(value.key);
     }
-    this.cdr.detectChanges();
   }
 
   getSelectAllState(options: any[]): MatPseudoCheckboxState {

@@ -19,7 +19,6 @@
  */
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   computed,
   OnInit,
@@ -169,7 +168,6 @@ export class TableTypeComponent
 
   constructor(
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
     public contextHelpService: ContextHelpService,
     public configService: ConfigService,
     private formStateService: FormStateService,
@@ -189,7 +187,6 @@ export class TableTypeComponent
       )
       .subscribe((value) => {
         this.dataSource = new MatTableDataSource<any>(value || []);
-        this.cdr.detectChanges();
       });
 
     const requiredColumnKeys = this.props.columns
@@ -281,7 +278,6 @@ export class TableTypeComponent
   private updateFormControl(value: any[]) {
     this.formControl.setValue(value);
     this.formControl.markAsDirty();
-    this.cdr.detectChanges();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

@@ -19,7 +19,6 @@
  */
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -44,7 +43,6 @@ import {
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import {
   DocumentWithMetadata,
   IgeDocument,
@@ -187,7 +185,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private formularService: FormularService,
     private formToolbarService: FormToolbarService,
     private documentService: DocumentService,
-    private modalService: ModalService,
     private messageService: FormMessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
@@ -195,7 +192,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private docEvents: DocEventsService,
-    private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
   ) {
     this.sidebarWidth = this.uiStore.sidebarWidth();
@@ -472,9 +468,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // @ts-ignore
         this.model = {};
         this.formInfoModel = null;
-
-        // do change detection to update formly component with new fields and form
-        this.cdr.detectChanges();
       }
 
       this.formOptions.resetModel(data.document);

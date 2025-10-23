@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -99,7 +98,6 @@ export class HeaderTitleRowComponent implements OnInit {
   moreActions: FormularMenuItem[];
 
   constructor(
-    private cdRef: ChangeDetectorRef,
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
   ) {}
@@ -110,7 +108,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   editTitle() {
     this.showTitleInput = !this.showTitleInput;
-    this.cdRef.detectChanges();
     this.contentFCAutosize.resizeToFitContent(true);
     this.titleInput.nativeElement.focus();
   }

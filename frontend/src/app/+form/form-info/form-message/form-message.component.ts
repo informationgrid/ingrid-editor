@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormMessageService } from "../../../services/form-message.service";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -55,10 +55,7 @@ export class FormMessageComponent implements OnInit {
 
   private defaultDuration = 3000;
 
-  constructor(
-    private messageService: FormMessageService,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  constructor(private messageService: FormMessageService) {}
 
   ngOnInit() {
     this.messageService.message$
@@ -79,17 +76,14 @@ export class FormMessageComponent implements OnInit {
         type.duration || this.defaultDuration,
       );
     }
-    this.cdr.markForCheck();
   }
 
   resetMessage(type: FormMessageType) {
     this.types = this.types.filter((t) => t !== type);
-    this.cdr.markForCheck();
   }
 
   resetAllMessages() {
     this.types = [];
-    this.cdr.markForCheck();
   }
 
   getIconClass(severity: "info" | "error") {

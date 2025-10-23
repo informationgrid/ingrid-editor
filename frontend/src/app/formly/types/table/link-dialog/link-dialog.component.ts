@@ -17,13 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnInit,
-} from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormDialogData } from "../form-dialog/form-dialog.component";
@@ -40,7 +34,7 @@ import { DialogTemplateComponent } from "../../../../shared/dialog-template/dial
   styleUrls: ["./link-dialog.component.scss"],
   imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyForm],
 })
-export class LinkDialogComponent implements OnInit, AfterViewInit {
+export class LinkDialogComponent implements OnInit {
   form = new UntypedFormGroup({});
 
   options: FormlyFormOptions = {};
@@ -48,15 +42,9 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   data: FormDialogData = { fields: [], model: null };
 
   constructor(
-    private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<LinkDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private formData: FormDialogData,
   ) {}
-
-  ngAfterViewInit(): void {
-    // prevent expression has changed error for form validity on submit button
-    this.cdr.detectChanges();
-  }
 
   ngOnInit(): void {
     this.data = {

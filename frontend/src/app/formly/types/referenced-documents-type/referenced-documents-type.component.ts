@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import {
-  ChangeDetectorRef,
   Component,
   effect,
   ElementRef,
@@ -85,7 +84,6 @@ export class ReferencedDocumentsTypeComponent
     private researchService: ResearchService,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private cdr: ChangeDetectorRef,
   ) {
     super();
 
@@ -139,7 +137,6 @@ export class ReferencedDocumentsTypeComponent
         ),
         tap((docs) => (this.docs = docs)),
         tap(() => (this.isLoading = false)),
-        tap(() => this.cdr.detectChanges()),
       );
   }
 

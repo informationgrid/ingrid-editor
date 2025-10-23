@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   ElementRef,
@@ -164,7 +163,6 @@ export class TreeComponent implements OnInit {
     private database: DynamicDatabase,
     public treeService: TreeService,
     public configService: ConfigService,
-    private cdr: ChangeDetectorRef,
     private docBehaviour: DocBehavioursService,
   ) {
     this.treeControl.dataNodes = [];
@@ -208,7 +206,6 @@ export class TreeComponent implements OnInit {
         map((data) => data?.length > 0),
         tap((notEmpty) => {
           this.hasData = notEmpty;
-          this.cdr.markForCheck();
         }),
       )
       .subscribe();
@@ -240,7 +237,6 @@ export class TreeComponent implements OnInit {
       )
       .subscribe((nodes) => {
         this.emptySearchResults = nodes;
-        this.cdr.detectChanges();
       });
   }
 
@@ -318,8 +314,6 @@ export class TreeComponent implements OnInit {
         if (this.activeNodeId) {
           this.jumpToNode(this.activeNodeId());
         }
-        // after new data has arrived call change detection
-        this.cdr.detectChanges();
       }),
     );
   }
@@ -571,7 +565,6 @@ export class TreeComponent implements OnInit {
     this.reloadTree().subscribe(() => {
       this.handleActiveNodeSubscription();
       this.initialized = true;
-      this.cdr.detectChanges();
     });
   }
 

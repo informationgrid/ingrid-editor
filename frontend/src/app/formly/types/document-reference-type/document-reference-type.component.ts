@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -99,7 +99,6 @@ export class DocumentReferenceTypeComponent
   onlyInternalRefs = false;
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
@@ -212,7 +211,6 @@ export class DocumentReferenceTypeComponent
       }),
     );
     this.refreshing = false;
-    this.cdr.detectChanges();
   }
 
   private mapExternalRef(item: any): UrlReference {

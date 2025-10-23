@@ -20,7 +20,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnDestroy,
   TemplateRef,
@@ -122,10 +121,7 @@ export class TimepickerTypeComponent
   };
   private fieldErrorsObserver!: ReturnType<typeof observe>;
 
-  constructor(
-    private config: FormlyConfig,
-    private cdRef: ChangeDetectorRef,
-  ) {
+  constructor(private config: FormlyConfig) {
     super();
   }
 
@@ -136,13 +132,6 @@ export class TimepickerTypeComponent
   ngAfterViewInit() {
     this.props[this.props.timepickerOptions.timepickerTogglePosition] =
       this.timepickerToggle;
-    observe<boolean>(
-      this.field,
-      ["props", "timepickerOptions", "opened"],
-      () => {
-        this.cdRef.detectChanges();
-      },
-    );
 
     // temporary fix for https://github.com/angular/components/issues/16761
     if (this.config.getValidatorMessage("matDatepickerParse")) {

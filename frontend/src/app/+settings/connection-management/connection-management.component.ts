@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
@@ -48,7 +47,6 @@ import { FormlyForm } from "@ngx-formly/core";
   selector: "ige-ibus-management",
   templateUrl: "./connection-management.component.html",
   styleUrls: ["./connection-management.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButton,
     ConnectionStateComponent,
@@ -65,10 +63,7 @@ export class ConnectionManagementComponent implements OnInit {
   $connectionStates = signal<any[]>([]);
   private connectionSubscriptions: Subscription[];
 
-  constructor(
-    private configService: ConfigService,
-    private cdr: ChangeDetectorRef,
-  ) {
+  constructor(private configService: ConfigService) {
     this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((state) => {
       this.$valid.set(state === "VALID");
     });
@@ -81,7 +76,7 @@ export class ConnectionManagementComponent implements OnInit {
         tap((config) => this.checkConnectionState(config.connections)),
         tap((config) => (this.model = config)),
       )
-      .subscribe(() => this.cdr.detectChanges());
+      .subscribe();
   }
 
   save() {
