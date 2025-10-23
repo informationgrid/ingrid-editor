@@ -42,16 +42,17 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.getSimulationModelTypeFieldConfig(),
         this.getSimulationParameterFieldConfig(),
       ]),
-      {
-        key: "simulationPhases",
-        type: "bawPhases",
-        fieldArray: {
-          fieldGroup: [this.bautechnikSimulation()],
-        },
-        props: {
-          docType: "Simulationsdaten",
-        },
-      },
+      // not completed yet
+      // {
+      //   key: "simulationPhases",
+      //   type: "bawPhases",
+      //   fieldArray: {
+      //     fieldGroup: [this.bautechnikSimulation()],
+      //   },
+      //   props: {
+      //     docType: "Simulationsdaten",
+      //   },
+      // },
     );
 
     return fieldConfig;
