@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit, signal } from "@angular/core";
+import { Component, inject, Inject, signal } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -38,7 +38,6 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { TreeComponent } from "../../../../../+form/sidebars/tree/tree.component";
 import { AddressTreeStore } from "../../../../../store/address-tree/address-tree.store";
@@ -73,7 +72,7 @@ export class ReplaceAddressDialogComponent {
   private documentService = inject(DocumentService);
   private dialog = inject(MatDialog);
   page = signal<number>(0);
-  selectedAddress = signal<string[]>([]);
+  selectedAddress = signal<string[]>(null);
   private readonly source: string;
   showInfo = signal<boolean>(true);
   disableTreeNode = (node: TreeNode) =>
