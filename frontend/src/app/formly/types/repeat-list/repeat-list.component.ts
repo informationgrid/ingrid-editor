@@ -415,7 +415,9 @@ export class RepeatListComponent
       const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value,
       ).disabled;
-      const optionAlreadySelected = this.model[this.field.key as string]?.some(
+      const optionAlreadySelected = this.model?.[
+        this.field.key as string
+      ]?.some(
         (modelOption: any) =>
           modelOption && (modelOption.key ?? modelOption) === option.value,
       );
