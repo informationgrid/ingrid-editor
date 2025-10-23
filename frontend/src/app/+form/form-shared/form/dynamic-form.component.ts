@@ -485,8 +485,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.documentService.setDocLoadingState(false);
     } catch (ex) {
-      console.error(ex);
-      this.modalService.showJavascriptError(ex);
+      throw new IgeError(ex);
     }
   }
 

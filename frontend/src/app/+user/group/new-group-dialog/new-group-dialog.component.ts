@@ -26,7 +26,6 @@ import {
 } from "@angular/forms";
 import { GroupService } from "../../../services/role/group.service";
 import { Group } from "../../../models/user-group";
-import { ModalService } from "../../../services/modal/modal.service";
 import {
   MatDialogActions,
   MatDialogClose,
@@ -41,6 +40,7 @@ import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../directives/focus.directive";
 import { GroupStore } from "../../../store/group/group.store";
+import { IgeError } from "../../../models/ige-error";
 
 @Component({
   selector: "ige-new-group-dialog",
@@ -72,7 +72,6 @@ export class NewGroupDialogComponent implements OnInit {
 
   constructor(
     private groupService: GroupService,
-    private modalService: ModalService,
     public dialogRef: MatDialogRef<NewGroupDialogComponent>,
   ) {}
 
@@ -84,9 +83,7 @@ export class NewGroupDialogComponent implements OnInit {
       name: this.form.value.name,
     });
     if (this.groups?.filter((group) => group.name === newGroup.name).length) {
-      this.modalService.showJavascriptError(
-        "Es existiert bereits eine Gruppe mit diesem Namen",
-      );
+      throw new IgeError("Es existiert bereits eine Gruppe mit diesem Namen");
     } else {
       this.groupService.createGroup(newGroup).subscribe((group) => {
         this.dialogRef.close(group);
