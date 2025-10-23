@@ -180,16 +180,10 @@ export class PublishPlugin extends SaveBase {
   }
 
   private doValidation(validation: BeforePublishData) {
+    this.checkForAllParentsPublished();
     const formIsInvalid = this.formStateService.getForm().invalid;
-    const allParentsPublished = this.checkForAllParentsPublished();
     const hasOtherErrors = validation.errors.length > 0;
 
-    if (!allParentsPublished) {
-      this.modalService.showJavascriptError(
-        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
-      );
-      return false;
-    }
     if (formIsInvalid || hasOtherErrors) {
       this.showErrorDialog(hasOtherErrors, validation);
       return false;
@@ -399,9 +393,13 @@ export class PublishPlugin extends SaveBase {
     const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
-    return store
+    const success = store
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
+    if (!success)
+      throw new IgeError(
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
+      );
   }
 
   private validateDataset() {
