@@ -112,9 +112,6 @@ export class FormularService {
   }
 
   setAdditionalSections(sections: string[]) {
-    // prevent ExpressionChangedAfterItHasBeenCheckedError
-    setTimeout(() =>
-      this.sections$.next([...this.doctypeSections, ...sections]),
-    );
+    this.sections$.next([...this.doctypeSections, ...sections]);
   }
 }
