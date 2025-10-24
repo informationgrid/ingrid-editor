@@ -16,7 +16,7 @@
         </div>
     </ng-template>
 
-    @if (dataSource?.data?.length > 0) {
+    @if (dataSource()?.data?.length > 0) {
         <div
             class="table-header flex-row justify-content-space-between"
             [attr.data-cy]="key + '-header'"
@@ -47,7 +47,7 @@
         </div>
     }
 
-    <div [class.padding-bottom]="dataSource?.data?.length > 0">
+    <div [class.padding-bottom]="dataSource()?.data?.length > 0">
         @if (batchMode()) {
             <div class="table-batch-edit-row">
                 <mat-checkbox
@@ -107,10 +107,10 @@
             </ige-form-error>
         }
 
-        @if (dataSource?.data?.length > 0) {
+        @if (dataSource()?.data?.length > 0) {
             <table
                 mat-table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource()"
                 [class.edit-mode]="batchMode()"
                 [attr.data-cy]="key + '-table'"
                 cdkDropList
@@ -275,7 +275,7 @@
 
     @if (formControl.enabled) {
         <div class="flex-row">
-            @if (dataSource?.data?.length > 0) {
+            @if (dataSource()?.data?.length > 0) {
                 <ige-form-label></ige-form-label>
             } @else {
                 <div

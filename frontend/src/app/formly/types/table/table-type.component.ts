@@ -27,7 +27,7 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, filter, tap } from "rxjs/operators";
+import { debounceTime, filter, startWith, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -143,7 +143,7 @@ export class TableTypeComponent
   public configService = inject(ConfigService);
   private formStateService = inject(FormStateService);
 
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = signal<MatTableDataSource<any>>(null);
   initialColumns = signal<any[]>([]);
   initialColumnsWithManagement = computed(() => {
     return [
@@ -178,12 +178,13 @@ export class TableTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        startWith(this.formControl.value),
         // distinctUntilChanged(),
         debounceTime(0),
         tap((value) => this.prepareFormattedValues(value)),
       )
       .subscribe((value) => {
-        this.dataSource = new MatTableDataSource<any>(value || []);
+        this.dataSource.set(new MatTableDataSource<any>(value || []));
       });
 
     const requiredColumnKeys = this.props.columns
@@ -207,7 +208,9 @@ export class TableTypeComponent
     // init with formatted values
     this.prepareFormattedValues(this.formControl.value);
 
-    this.dataSource = new MatTableDataSource<any>(this.formControl.value || []);
+    this.dataSource.set(
+      new MatTableDataSource<any>(this.formControl.value || []),
+    );
   }
 
   ngAfterViewInit() {
@@ -226,14 +229,16 @@ export class TableTypeComponent
   }
 
   removeRow(index: number) {
-    this.selection.deselect(this.dataSource.data[index]);
+    this.selection.deselect(this.dataSource().data[index]);
 
-    this.dataSource = new MatTableDataSource<any>(
-      this.dataSource.data.filter((item, indexItem) => indexItem !== index),
+    this.dataSource.set(
+      new MatTableDataSource<any>(
+        this.dataSource().data.filter((item, indexItem) => indexItem !== index),
+      ),
     );
-    this.updateFormControl(this.dataSource.data);
+    this.updateFormControl(this.dataSource().data);
 
-    if (this.dataSource.data.length === 0) {
+    if (this.dataSource().data.length === 0) {
       this.toggleBatchMode(false);
     }
   }
@@ -248,7 +253,7 @@ export class TableTypeComponent
           fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry
             ? null
-            : JSON.parse(JSON.stringify(this.dataSource.data[index])),
+            : JSON.parse(JSON.stringify(this.dataSource().data[index])),
         } as FormDialogData,
       })
       .afterClosed()
@@ -261,15 +266,15 @@ export class TableTypeComponent
 
   private handleItemUpdate(result: any, newEntry: boolean, index: number) {
     if (this.props.customAddFn) {
-      this.props.customAddFn(this.dataSource.data, result, newEntry, index);
+      this.props.customAddFn(this.dataSource().data, result, newEntry, index);
     } else {
       if (newEntry) {
-        this.dataSource.data.push(result);
+        this.dataSource().data.push(result);
       } else {
-        this.dataSource.data.splice(index, 1, result);
+        this.dataSource().data.splice(index, 1, result);
       }
     }
-    this.updateTableDataToForm(this.dataSource.data);
+    this.updateTableDataToForm(this.dataSource().data);
   }
 
   private updateFormControl(value: any[]) {
@@ -280,7 +285,7 @@ export class TableTypeComponent
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.dataSource().data.length;
     return numSelected === numRows;
   }
 
@@ -288,7 +293,7 @@ export class TableTypeComponent
   masterToggle() {
     this.isAllSelected()
       ? this.selection.clear()
-      : this.dataSource.data.forEach((row) => this.selection.select(row));
+      : this.dataSource().data.forEach((row) => this.selection.select(row));
   }
 
   toggleBatchMode(forceState?: boolean) {
@@ -296,7 +301,7 @@ export class TableTypeComponent
   }
 
   removeSelectedRows() {
-    const updated = this.dataSource.data.filter(
+    const updated = this.dataSource().data.filter(
       (row) => !this.selection.selected.includes(row),
     );
     this.updateTableDataToForm(updated);
@@ -335,11 +340,11 @@ export class TableTypeComponent
 
   drop(event: CdkDragDrop<any, any>) {
     moveItemInArray(
-      this.dataSource.data,
+      this.dataSource().data,
       event.previousIndex,
       event.currentIndex,
     );
-    this.updateTableDataToForm(this.dataSource.data);
+    this.updateTableDataToForm(this.dataSource().data);
   }
 
   private prepareFormattedValues(value: any[]) {
@@ -362,6 +367,7 @@ export class TableTypeComponent
           );
         }),
       );
+    this.formattedCell.set([...this.formattedCell()]);
   }
 
   showUploadFilesDialog() {
@@ -369,7 +375,7 @@ export class TableTypeComponent
       .open(UploadFilesDialogComponent, {
         minWidth: "min(700px, 100%)",
         data: {
-          currentItems: this.dataSource.data,
+          currentItems: this.dataSource().data,
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
         },
@@ -386,7 +392,7 @@ export class TableTypeComponent
       .filter((file) => this.isNotInTable(file))
       .forEach((file) => this.addUploadInfoToDatasource(file));
 
-    this.updateTableDataToForm(this.dataSource.data);
+    this.updateTableDataToForm(this.dataSource().data);
   }
 
   private getUploadFieldKey(): string {
@@ -402,17 +408,17 @@ export class TableTypeComponent
       value: file.file,
       uri: file.uri,
     };
-    this.dataSource.data.push(newRow);
+    this.dataSource().data.push(newRow);
   }
 
   private addLinkInfoToDatasource(link: any) {
-    this.dataSource.data.push(link);
+    this.dataSource().data.push(link);
   }
 
   private isNotInTable(file: LinkInfo) {
     const uploadKey = this.getUploadFieldKey();
     return (
-      this.dataSource.data.findIndex(
+      this.dataSource().data.findIndex(
         (tableItem) =>
           !tableItem[uploadKey].asLink && tableItem[uploadKey].uri === file.uri,
       ) === -1
@@ -432,12 +438,12 @@ export class TableTypeComponent
       .pipe(filter((result) => result))
       .subscribe((result) => {
         this.addLinkInfoToDatasource(result);
-        this.updateTableDataToForm(this.dataSource.data);
+        this.updateTableDataToForm(this.dataSource().data);
       });
   }
 
   private updateTableDataToForm(data: any[]) {
-    this.dataSource = new MatTableDataSource<any>(data);
+    this.dataSource.set(new MatTableDataSource<any>(data));
     this.updateFormControl(data);
   }
 
@@ -474,7 +480,7 @@ export class TableTypeComponent
       .subscribe((date) => {
         const dateObj = date === null ? null : new Date(date);
         this.selection.selected.forEach((row) => (row.validUntil = dateObj));
-        this.updateTableDataToForm(this.dataSource.data);
+        this.updateTableDataToForm(this.dataSource().data);
       });
   }
 
