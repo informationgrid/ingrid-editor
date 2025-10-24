@@ -19,6 +19,7 @@
  */
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -190,6 +191,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private docEvents: DocEventsService,
+    private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
   ) {
     this.sidebarWidth.set(this.uiStore.sidebarWidth());
@@ -462,6 +464,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // @ts-ignore
         this.model = {};
         this.formInfoModel.set(null);
+
+        // do change detection to update formly component with new fields and form
+        // THIS IS IMPORTANT OTHERWISE FORM DATA CAN BE CORRUPTED
+        this.cdr.detectChanges();
       }
 
       this.formOptions.resetModel(data.document);
