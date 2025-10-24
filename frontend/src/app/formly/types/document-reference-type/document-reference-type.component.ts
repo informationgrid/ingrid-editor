@@ -104,7 +104,7 @@ export class DocumentReferenceTypeComponent
   onlyInternalRefs = signal<boolean>(false);
 
   ngOnInit() {
-    this.onlyInternalRefs = this.props.onlyInternalRefs;
+    this.onlyInternalRefs.set(this.props.onlyInternalRefs);
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
