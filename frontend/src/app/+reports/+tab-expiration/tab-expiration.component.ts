@@ -21,6 +21,7 @@ import {
   Component,
   computed,
   EventEmitter,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -59,6 +60,11 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   ],
 })
 export class TabExpirationComponent implements OnInit {
+  private researchService = inject(ResearchService);
+  private configService = inject(ConfigService);
+  private catalogService = inject(CatalogService);
+  private router = inject(Router);
+
   currentUserId: number;
   expiryFunctionalityActive = signal<boolean>(false);
 
@@ -75,13 +81,6 @@ export class TabExpirationComponent implements OnInit {
       return this.expiredData();
     }
   });
-
-  constructor(
-    private researchService: ResearchService,
-    private configService: ConfigService,
-    private catalogService: CatalogService,
-    private router: Router,
-  ) {}
 
   ngOnInit(): void {
     this.currentUserId = this.configService.$userInfo?.getValue().id;

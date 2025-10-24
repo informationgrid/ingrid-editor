@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, input, Signal, signal } from "@angular/core";
+import {
+  Component,
+  forwardRef,
+  inject,
+  input,
+  Signal,
+  signal,
+} from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -66,6 +73,11 @@ import { Router } from "@angular/router";
   ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
+  private dialog = inject(MatDialog);
+  private documentService = inject(DocumentService);
+  private profileService = inject(ProfileService);
+  private router = inject(Router);
+
   readonly label = input<string>(undefined);
   readonly forAddress = input(false);
   readonly disabled = input(false);
@@ -83,13 +95,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
   breadcrumb = signal<Record<string, ShortTreeNode[]>>({});
-
-  constructor(
-    private dialog: MatDialog,
-    private documentService: DocumentService,
-    private profileService: ProfileService,
-    private router: Router,
-  ) {}
 
   callAddPermissionDialog() {
     return this.dialog
@@ -128,8 +133,12 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   set value(val: TreePermission[]) {
-    this.datasource.set(val ?? []);
-    this.datasource().forEach((doc) => this.addDocInfoToPermission(doc));
+    const data = val ?? [];
+    Promise.all(data.map((doc) => this.addDocInfoToPermission(doc))).then(
+      (newData) => {
+        this.datasource.set(newData);
+      },
+    );
 
     if (this.onChange) {
       this.onChange(val);
@@ -139,9 +148,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
   }
 
-  private async addDocInfoToPermission(doc: TreePermission) {
+  private async addDocInfoToPermission(
+    doc: TreePermission,
+  ): Promise<TreePermission> {
     // if root permission skip
-    if (doc.id == null) return;
+    if (doc.id == null) return doc;
 
     if (!this.breadcrumb()[doc.id]) {
       this.documentService.getPath(doc.id).subscribe((path) =>
@@ -166,6 +177,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
     // downgrade permission if rights are not sufficient
     this.adjustPermission(doc);
+    return doc;
   }
 
   getDocument(id: number): Promise<IgeDocument> {
