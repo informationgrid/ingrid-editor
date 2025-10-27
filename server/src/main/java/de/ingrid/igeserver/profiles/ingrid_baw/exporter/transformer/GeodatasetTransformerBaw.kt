@@ -156,7 +156,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val frequency = waterMeasurements?.getDouble("frequency")
     val measuringDepth = waterMeasurements?.getPath("measuringDepth")?.let { depth ->
         MeasurementDepth(
-            value = depth.getString("value"),
+            value = depth.getDouble("value"),
             crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
         )
     }
@@ -179,7 +179,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val maxDrain = waterMeasurements?.getString("drain.max")
     val minDrain = waterMeasurements?.getString("drain.min")
 
-    val measurementDevices = waterMeasurements?.getPath("gauge")?.map { device ->
+    val measurementDevices = doc.data.getPath("gauge")?.map { device ->
         MeasurementDevice(
             name = device.getString("name"),
             id = device.getString("id"),
@@ -226,7 +226,7 @@ data class ZeroLevel(
 )
 
 data class MeasurementDepth(
-    val value: String?,
+    val value: Double?,
     val crs: String?,
 )
 
