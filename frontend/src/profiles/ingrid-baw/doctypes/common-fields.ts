@@ -123,7 +123,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
         fieldGroupClassName: "flex-row",
         className: "two-sub-fields",
         hideExpression: (field: FormlyFieldConfig) =>
-          field.model.resourceDateTypeSince?.key === "exactDate",
+          field.model?.resourceDateTypeSince?.key === "exactDate",
       },
     );
 
