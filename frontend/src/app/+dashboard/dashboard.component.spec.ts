@@ -48,7 +48,7 @@ import {
 import { ProfileService } from "../services/profile.service";
 import { DashboardService } from "./dashboard.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { signal } from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 import { CatalogService } from "../+catalog/services/catalog.service";
 
 describe("DashboardComponent", () => {
@@ -70,6 +70,7 @@ describe("DashboardComponent", () => {
     ],
     componentMocks: [QuickSearchComponent],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),

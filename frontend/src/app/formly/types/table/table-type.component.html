@@ -16,7 +16,7 @@
         </div>
     </ng-template>
 
-    @if (dataSource?.data?.length > 0) {
+    @if (dataSource()?.data?.length > 0) {
         <div
             class="table-header flex-row justify-content-space-between"
             [attr.data-cy]="key + '-header'"
@@ -47,7 +47,7 @@
         </div>
     }
 
-    <div [class.padding-bottom]="dataSource?.data?.length > 0">
+    <div [class.padding-bottom]="dataSource()?.data?.length > 0">
         @if (batchMode()) {
             <div class="table-batch-edit-row">
                 <mat-checkbox
@@ -107,16 +107,16 @@
             </ige-form-error>
         }
 
-        @if (dataSource?.data?.length > 0) {
+        @if (dataSource()?.data?.length > 0) {
             <table
                 mat-table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource()"
                 [class.edit-mode]="batchMode()"
                 [attr.data-cy]="key + '-table'"
                 cdkDropList
                 cdkDrag
-                [cdkDragDisabled]="dragDisabled"
-                (cdkDropListDropped)="dragDisabled = true; drop($event)"
+                [cdkDragDisabled]="dragDisabled()"
+                (cdkDropListDropped)="dragDisabled.set(true); drop($event)"
             >
                 @for (
                     column of initialColumnsWithManagement();
@@ -136,10 +136,14 @@
                                     <div class="drag-select-wrapper">
                                         <mat-icon
                                             cdkDragHandle
-                                            (touchstart)="dragDisabled = false"
-                                            (touchend)="dragDisabled = true"
-                                            (mousedown)="dragDisabled = false"
-                                            (mouseup)="dragDisabled = true"
+                                            (touchstart)="
+                                                dragDisabled.set(false)
+                                            "
+                                            (touchend)="dragDisabled.set(true)"
+                                            (mousedown)="
+                                                dragDisabled.set(false)
+                                            "
+                                            (mouseup)="dragDisabled.set(true)"
                                         >
                                             drag_indicator
                                         </mat-icon>
@@ -236,8 +240,8 @@
                                     <span
                                         class="vertical_align_center"
                                         [innerHTML]="
-                                            formattedCell[rowIndex]
-                                                ? (formattedCell[rowIndex][
+                                            formattedCell()[rowIndex]
+                                                ? (formattedCell()[rowIndex][
                                                       column.key
                                                   ] ?? element[column.key])
                                                 : element[column.key]
@@ -263,7 +267,7 @@
                     [class.disabled]="formControl.disabled"
                     cdkDrag
                     [cdkDragData]="row"
-                    [cdkDragDisabled]="dragDisabled"
+                    [cdkDragDisabled]="dragDisabled()"
                 ></tr>
             </table>
         }
@@ -271,7 +275,7 @@
 
     @if (formControl.enabled) {
         <div class="flex-row">
-            @if (dataSource?.data?.length > 0) {
+            @if (dataSource()?.data?.length > 0) {
                 <ige-form-label></ige-form-label>
             } @else {
                 <div

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, signal } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -66,9 +66,9 @@ export class PermissionsDialogComponent implements OnInit {
   id: number;
   // TODO: configure dialog through data, like submit-button - label
   // TODO: also the filtering of the user READ/WRITE to prevent specific logic in component
-  forResponsibility = false;
-  selectedUser: User;
-  users: UserWithDocPermission[];
+  forResponsibility = signal<boolean>(false);
+  selectedUser = signal<User | null>(null);
+  users = signal<UserWithDocPermission[] | null>(null);
   query = new FormControl<string>("");
 
   constructor(
@@ -80,7 +80,7 @@ export class PermissionsDialogComponent implements OnInit {
     public configService: ConfigService,
   ) {
     this.id = data.id;
-    this.forResponsibility = data.forResponsibility;
+    this.forResponsibility.set(data.forResponsibility);
   }
 
   ngOnInit() {
@@ -88,7 +88,7 @@ export class PermissionsDialogComponent implements OnInit {
   }
 
   closeWithSelectedUser() {
-    this.dialogRef.close(this.selectedUser);
+    this.dialogRef.close(this.selectedUser());
   }
 
   private loadPermissionById(id: number) {
@@ -99,21 +99,22 @@ export class PermissionsDialogComponent implements OnInit {
 
   // TODO: this should be controlled by the dialog data!
   private buildTableData(response: any) {
-    this.users = [
+    const tableUsers: UserWithDocPermission[] = [
       ...this.createUsersWithPermission(
         response.canWrite,
         PermissionLevel.WRITE,
       ),
     ];
     // Only add readonly users if the dialog is not for responsibility
-    if (!this.forResponsibility) {
-      this.users.push(
+    if (!this.forResponsibility()) {
+      tableUsers.push(
         ...this.createUsersWithPermission(
           response.canOnlyRead,
           PermissionLevel.READ,
         ),
       );
     }
+    this.users.set(tableUsers);
   }
 
   private createUsersWithPermission(
@@ -126,7 +127,7 @@ export class PermissionsDialogComponent implements OnInit {
   // TODO: this action should be done by the component which called the dialog!
   setAsResponsible() {
     this.documentService
-      .setResponsibleUser(this.id, this.selectedUser.id)
+      .setResponsibleUser(this.id, this.selectedUser()!.id)
       .subscribe(() => {
         this.snackBar.open("Verantwortlicher aktualisiert.");
         this.closeWithSelectedUser();
@@ -134,7 +135,9 @@ export class PermissionsDialogComponent implements OnInit {
   }
 
   handleShowSelectedUser() {
-    if (this.selectedUser?.id === this.configService.$userInfo?.getValue().id) {
+    if (
+      this.selectedUser()?.id === this.configService.$userInfo?.getValue().id
+    ) {
       return this.showSelfSelectWarnDialog();
     }
     this.closeWithSelectedUser();

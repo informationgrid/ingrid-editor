@@ -35,6 +35,7 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  startWith,
   tap,
 } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -98,6 +99,7 @@ export class AddressTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        startWith(this.formControl.value as AddressRef[]),
         debounceTime(0),
         distinctUntilChanged((a: AddressRef[], b: AddressRef[]) =>
           this.compareAddressRefs(a, b),

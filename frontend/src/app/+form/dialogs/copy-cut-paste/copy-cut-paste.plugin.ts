@@ -91,14 +91,15 @@ export class CopyCutPastePlugin extends Plugin {
     super.registerForm();
 
     const buttons: Array<ToolbarItem | Separator> = [
-      { id: "toolBtnCopyCutSeparator", pos: 30, isSeparator: true },
+      { id: "toolBtnCopyCutSeparator", pos: 30, type: "separator" },
       {
+        type: "button",
         id: "toolBtnCopy",
         tooltip: "Kopieren / Verschieben",
         matSvgVariable: "Kopieren-Ausschneiden",
         eventId: "COPY",
         pos: 40,
-        active: signal(false),
+        active: false,
         menu: [
           { eventId: "COPY", label: "Kopieren" },
           { eventId: "COPYTREE", label: "Kopieren mit Teilbaum" },

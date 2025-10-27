@@ -31,6 +31,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("VersionConflictDialogComponent", () => {
   let spectator: Spectator<VersionConflictDialogComponent>;
@@ -42,6 +43,7 @@ describe("VersionConflictDialogComponent", () => {
     component: VersionConflictDialogComponent,
     imports: [MatDialogModule],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
     ],

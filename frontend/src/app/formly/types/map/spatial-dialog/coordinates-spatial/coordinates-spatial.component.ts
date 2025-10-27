@@ -75,7 +75,7 @@ export class CoordinatesSpatialComponent
       .pipe(
         untilDestroyed(this),
         debounceTime(300),
-        tap((value) => this.removeBoundingBoxes()),
+        tap(() => this.removeBoundingBoxes()),
         filter((value) => this.coordinatesValid(value)),
         tap((value) => this.drawCoordinates(value)),
       )
@@ -102,7 +102,7 @@ export class CoordinatesSpatialComponent
     );
   }
 
-  private drawCoordinates(values) {
+  private drawCoordinates(values: any) {
     const coloredBoundingBox = this.leafletService.extendLocationsWithColor([
       {
         title: "",
@@ -115,7 +115,7 @@ export class CoordinatesSpatialComponent
       .then((refs) => (this.boundingBoxes = refs));
   }
 
-  private coordinatesValid(value): boolean {
+  private coordinatesValid(value: any): boolean {
     const valid = value.lat1 && value.lon1 && value.lat2 && value.lon2;
     this.result.emit(valid ? this.form.value : null);
     return valid;

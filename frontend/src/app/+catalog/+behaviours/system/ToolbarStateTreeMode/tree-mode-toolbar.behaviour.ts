@@ -73,21 +73,24 @@ export class TreeModeToolbarBehaviour extends Plugin {
       return;
     }
 
-    this.toolbarService.buttons.forEach((button) =>
-      this.toolbarService.setButtonState(
-        button.id,
-        this.previousState.find((prev) => prev.id === button.id)?.active,
-      ),
-    );
+    this.toolbarService
+      .toolbar$()
+      .forEach((button) =>
+        this.toolbarService.setButtonState(
+          button.id,
+          this.previousState.find((prev) => prev.id === button.id)?.active,
+        ),
+      );
   }
 
   private activateMultiSelectMode() {
-    this.previousState = this.toolbarService.buttons.map((button) => ({
+    this.previousState = this.toolbarService.toolbar$().map((button) => ({
       id: button.id,
-      active: (<ToolbarItem>button).active?.(),
+      active: (<ToolbarItem>button).active,
     }));
 
-    this.toolbarService.buttons
+    this.toolbarService
+      .toolbar$()
       .filter(
         (button) =>
           !this.activeToolbarItemsInMultiSelect.find((id) => button.id === id),

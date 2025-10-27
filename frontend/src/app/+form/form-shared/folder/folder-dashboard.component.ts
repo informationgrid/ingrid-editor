@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, effect, inject, input } from "@angular/core";
+import { Component, effect, inject, input, signal } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
@@ -54,18 +54,22 @@ export class FolderDashboardComponent {
 
   isAddress = input<boolean>();
 
-  canCreateAddress: boolean;
-  canCreateDataset: boolean;
+  canCreateAddress = signal<boolean>(false);
+  canCreateDataset = signal<boolean>(false);
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
-  numChildren: number;
+  numChildren = signal<number>(null);
 
   constructor(
     configService: ConfigService,
     private docEvents: DocEventsService,
     private router: Router,
   ) {
-    this.canCreateAddress = configService.hasPermission("can_create_address");
-    this.canCreateDataset = configService.hasPermission("can_create_dataset");
+    this.canCreateAddress.set(
+      configService.hasPermission("can_create_address"),
+    );
+    this.canCreateDataset.set(
+      configService.hasPermission("can_create_dataset"),
+    );
 
     effect(() => {
       const doc = this.generalStore.getOpenedDocument(this.isAddress());
@@ -86,7 +90,7 @@ export class FolderDashboardComponent {
       const hideReadOnly = false;
       store.fetchChildren(model.id as number, hideReadOnly);
     }
-    this.numChildren = childrenFromStore.length;
+    this.numChildren.set(childrenFromStore.length);
     const latestChildren = childrenFromStore
       .sort(
         (c1, c2) =>

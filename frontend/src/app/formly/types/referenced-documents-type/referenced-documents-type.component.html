@@ -1,5 +1,5 @@
 <div class="spinner-wrapper">
-    @if (showToggleButton && docs.length > 0) {
+    @if (showToggleButton() && docs().length > 0) {
         <button
             mat-stroked-button
             type="button"
@@ -8,44 +8,44 @@
             color="primary"
             aria-label="Zugeordnete Datensätze"
             aria-describedby="toggle-ref-desc"
-            [attr.aria-expanded]="showReferences"
+            [attr.aria-expanded]="showReferences()"
         >
             <span id="toggle-ref-desc"
-                >{{ totalHits }}
-                {{ showReferences ? "Ausblenden" : "Anzeigen" }}</span
+                >{{ totalHits() }}
+                {{ showReferences() ? "Ausblenden" : "Anzeigen" }}</span
             >
         </button>
     }
 
-    @if (isLoading) {
+    @if (isLoading()) {
         <mat-spinner diameter="24"></mat-spinner>
     }
 </div>
 
-@if (showReferences && docs.length > 0) {
-    @if (totalHits > pageSize) {
+@if (showReferences() && docs().length > 0) {
+    @if (totalHits() > pageSize()) {
         <mat-paginator
-            [length]="totalHits"
-            [pageSize]="pageSize"
+            [length]="totalHits()"
+            [pageSize]="pageSize()"
             [hidePageSize]="true"
             (page)="switchPage($event)"
         ></mat-paginator>
     }
     <ige-document-list-item
         #list
-        [docs]="docs"
+        [docs]="docs()"
         [removeSelectionAfter]="true"
         (select)="openReference($event)"
     ></ige-document-list-item>
-    @if (referencesHint && docs.length > 0) {
+    @if (referencesHint() && docs().length > 0) {
         <mat-hint>
-            {{ referencesHint }}
+            {{ referencesHint() }}
         </mat-hint>
     }
 }
 
-@if (docs.length === 0 && !isLoading) {
+@if (docs().length === 0 && !isLoading()) {
     <div data-cy="no-ref-docs-hint" class="no-references">
-        {{ messageNoReferences }}
+        {{ messageNoReferences() }}
     </div>
 }

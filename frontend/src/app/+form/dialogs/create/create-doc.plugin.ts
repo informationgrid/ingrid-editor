@@ -96,12 +96,13 @@ export class CreateDocumentPlugin extends Plugin {
       .pipe(take(1))
       .subscribe((tooltipText) => {
         this.toolbarService.addButton({
+          type: "button",
           id: "toolBtnNew",
           tooltip: tooltipText,
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: signal(true),
+          active: true,
         });
         this.addNonAdminBehaviour();
       });

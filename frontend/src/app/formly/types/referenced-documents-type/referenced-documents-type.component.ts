@@ -18,11 +18,12 @@
  * limitations under the Licence.
  */
 import {
-  ChangeDetectorRef,
   Component,
   effect,
   ElementRef,
+  inject,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
@@ -58,8 +59,10 @@ export class ReferencedDocumentsTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  private referencesElement: ElementRef<HTMLElement>;
-  private queryOptions: string[];
+  private router = inject(Router);
+  private researchService = inject(ResearchService);
+  private documentService = inject(DocumentService);
+  private formStateService = inject(FormStateService);
 
   @ViewChild("list", { read: ElementRef }) set listElement(
     content: ElementRef<HTMLElement>,
@@ -67,31 +70,25 @@ export class ReferencedDocumentsTypeComponent
     if (content) this.referencesElement = content;
   }
 
-  pageSize = 10;
-
-  docs: DocumentAbstract[] = [];
-
+  pageSize = signal<number>(10);
+  docs = signal<DocumentAbstract[]>([]);
+  totalHits = signal<number>(0);
+  showReferences = signal<boolean>(false);
+  showToggleButton = signal<boolean>(false);
+  messageNoReferences = signal<string>(null);
+  referencesHint = signal<string>(null);
+  isLoading = signal<boolean>(true);
+  private firstLoaded: boolean;
   private currentUuid: string;
-  totalHits = 0;
-  showReferences: boolean;
-  showToggleButton: boolean;
-  messageNoReferences: string;
-  referencesHint: string;
-  isLoading: boolean;
-  firstLoaded: boolean;
+  private referencesElement: ElementRef<HTMLElement>;
+  private queryOptions: string[];
 
-  constructor(
-    private router: Router,
-    private researchService: ResearchService,
-    private documentService: DocumentService,
-    private formStateService: FormStateService,
-    private cdr: ChangeDetectorRef,
-  ) {
+  constructor() {
     super();
 
     effect(() => {
       this.currentUuid = this.formStateService.metadata().uuid;
-      this.docs = [];
+      this.docs.set([]);
       this.firstLoaded = true;
       this.searchReferences(this.currentUuid).subscribe();
     });
@@ -99,14 +96,15 @@ export class ReferencedDocumentsTypeComponent
 
   ngOnInit(): void {
     this.currentUuid = this.form.value._uuid;
-    this.showReferences = this.props.showOnStart ?? false;
-    this.showToggleButton = this.props.showToggleButton ?? true;
-    this.referencesHint = this.props.referencesHint ?? null;
-    this.messageNoReferences =
+    this.showReferences.set(this.props.showOnStart ?? false);
+    this.showToggleButton.set(this.props.showToggleButton ?? true);
+    this.referencesHint.set(this.props.referencesHint ?? null);
+    this.messageNoReferences.set(
       this.props.messageNoReferences ??
-      "Es existieren keine Referenzen auf diese Adresse";
+        "Es existieren keine Referenzen auf diese Adresse",
+    );
     this.queryOptions = this.props.queryOptions ?? [];
-    this.isLoading = false;
+    this.isLoading.set(false);
 
     const reloadEvent = this.documentService.reload$.pipe(
       untilDestroyed(this),
@@ -118,7 +116,7 @@ export class ReferencedDocumentsTypeComponent
         untilDestroyed(this),
         startWith(this.currentUuid),
         filter((uuid) => uuid !== undefined),
-        tap(() => (this.docs = [])),
+        tap(() => this.docs.set([])),
         tap(() => (this.firstLoaded = true)),
         switchMap((uuid) => this.searchReferences(uuid)),
       )
@@ -126,27 +124,26 @@ export class ReferencedDocumentsTypeComponent
   }
 
   searchReferences(uuid: string, page = 1) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     return this.documentService
-      .findIncomingReferences(uuid, this.queryOptions, page, this.pageSize)
+      .findIncomingReferences(uuid, this.queryOptions, page, this.pageSize())
       .pipe(
         map((response) => this.researchService.mapDocumentIcons(response)),
-        tap((response) => (this.totalHits = response.totalHits)),
+        tap((response) => this.totalHits.set(response.totalHits)),
         map((response) =>
           this.documentService.mapSearchResponseToDocumentAbstracts(
             response.hits,
           ),
         ),
-        tap((docs) => (this.docs = docs)),
-        tap(() => (this.isLoading = false)),
-        tap(() => this.cdr.detectChanges()),
+        tap((docs) => this.docs.set(docs)),
+        tap(() => this.isLoading.set(false)),
       );
   }
 
   toggleList() {
-    this.showReferences = !this.showReferences;
-    if (this.showReferences && !this.firstLoaded) {
-      this.docs = [];
+    this.showReferences.update((prev) => !prev);
+    if (this.showReferences() && !this.firstLoaded) {
+      this.docs.set([]);
       this.searchReferences(this.currentUuid).subscribe(() =>
         setTimeout(() =>
           this.referencesElement.nativeElement.scrollIntoView({

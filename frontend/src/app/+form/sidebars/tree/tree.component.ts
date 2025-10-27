@@ -19,17 +19,17 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   ElementRef,
+  inject,
+  input,
+  Input,
   OnInit,
+  output,
   signal,
   ViewChild,
   WritableSignal,
-  input,
-  output,
-  Input,
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -97,6 +97,11 @@ export enum TreeActionType {
   ],
 })
 export class TreeComponent implements OnInit {
+  private database = inject(DynamicDatabase);
+  public treeService = inject(TreeService);
+  public configService = inject(ConfigService);
+  private docBehaviour = inject(DocBehavioursService);
+
   @Input() treeStore = null;
 
   readonly forAddresses = input<boolean>(undefined);
@@ -151,22 +156,16 @@ export class TreeComponent implements OnInit {
   activeNodeId: WritableSignal<number> = signal<number>(null);
 
   dataSource: DynamicDataSource;
-  hasData: boolean;
+  hasData = signal<boolean>(false);
 
-  emptySearchResults: TreeNode[] = [];
+  emptySearchResults = signal<TreeNode[]>([]);
 
   dragManager: DragNDropUtils;
-  isDragging = false;
+  isDragging = signal<boolean>(false);
   hasWriteToRootPermission = this.configService.hasWriteRootPermission();
-  initialized = false;
+  initialized = signal<boolean>(false);
 
-  constructor(
-    private database: DynamicDatabase,
-    public treeService: TreeService,
-    public configService: ConfigService,
-    private cdr: ChangeDetectorRef,
-    private docBehaviour: DocBehavioursService,
-  ) {
+  constructor() {
     this.treeControl.dataNodes = [];
     effect(() => {
       this.multiEditMode.emit(this.selection.multiSelectionModeEnabled());
@@ -207,8 +206,7 @@ export class TreeComponent implements OnInit {
         untilDestroyed(this),
         map((data) => data?.length > 0),
         tap((notEmpty) => {
-          this.hasData = notEmpty;
-          this.cdr.markForCheck();
+          this.hasData.set(notEmpty);
         }),
       )
       .subscribe();
@@ -239,8 +237,7 @@ export class TreeComponent implements OnInit {
         map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0)),
       )
       .subscribe((nodes) => {
-        this.emptySearchResults = nodes;
-        this.cdr.detectChanges();
+        this.emptySearchResults.set(nodes);
       });
   }
 
@@ -318,8 +315,6 @@ export class TreeComponent implements OnInit {
         if (this.activeNodeId) {
           this.jumpToNode(this.activeNodeId());
         }
-        // after new data has arrived call change detection
-        this.cdr.detectChanges();
       }),
     );
   }
@@ -570,8 +565,7 @@ export class TreeComponent implements OnInit {
   private handleTreeExpandToInitialNode() {
     this.reloadTree().subscribe(() => {
       this.handleActiveNodeSubscription();
-      this.initialized = true;
-      this.cdr.detectChanges();
+      this.initialized.set(true);
     });
   }
 
@@ -643,12 +637,12 @@ export class TreeComponent implements OnInit {
   handleDragStart($event: DragEvent, node: any) {
     // set flag delayed to correctly initiate dragging of a node
     if (this.enableDrag()) $event.dataTransfer.effectAllowed = "move";
-    setTimeout(() => (this.isDragging = true));
+    setTimeout(() => this.isDragging.set(true));
     this.dragManager.handleDragStart($event, node);
   }
 
   handleDragEnd() {
-    this.isDragging = false;
+    this.isDragging.set(false);
     this.dragManager.handleDragEnd();
   }
 

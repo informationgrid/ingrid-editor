@@ -53,18 +53,22 @@ export class FormDashboardComponent {
     false,
     this.address,
   );
-  canCreateDatasets: boolean;
-  canCreateAddress: boolean;
-  canImport: boolean;
+  canCreateAddress = signal<boolean>(false);
+  canCreateDatasets = signal<boolean>(false);
+  canImport = signal<boolean>(false);
 
   constructor(
     configService: ConfigService,
     private router: Router,
     private dashboardService: DashboardService,
   ) {
-    this.canCreateDatasets = configService.hasPermission("can_create_dataset");
-    this.canCreateAddress = configService.hasPermission("can_create_address");
-    this.canImport = configService.hasPermission("can_import");
+    this.canCreateDatasets.set(
+      configService.hasPermission("can_create_dataset"),
+    );
+    this.canCreateAddress.set(
+      configService.hasPermission("can_create_address"),
+    );
+    this.canImport.set(configService.hasPermission("can_import"));
   }
 
   openDocument(uuid: string) {

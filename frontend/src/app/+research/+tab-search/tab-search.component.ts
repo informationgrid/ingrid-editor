@@ -17,11 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, inject, OnInit } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, signal } from "@angular/core";
 import {
+  FormGroup,
   ReactiveFormsModule,
   UntypedFormBuilder,
-  UntypedFormGroup,
 } from "@angular/forms";
 import { firstValueFrom, of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
@@ -73,16 +73,15 @@ import { toObservable } from "@angular/core/rxjs-interop";
 export class TabSearchComponent implements OnInit {
   private generalStore = inject(GeneralStore);
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  result: ResearchResponse;
+  result = signal<ResearchResponse>(null);
 
-  error: string = null;
-  isSearching = false;
+  isSearching = signal<boolean>(false);
 
   facetViewRefresher = new EventEmitter<void>();
 
-  facets: Facets;
+  facets = signal<Facets>(null);
   private initialValue: any;
   private activeQuery$ = toObservable(this.generalStore.activeQuery);
 
@@ -119,19 +118,17 @@ export class TabSearchComponent implements OnInit {
   }
 
   startSearch() {
-    this.isSearching = true;
+    this.isSearching.set(true);
     const model = this.form.value;
 
-    setTimeout(() => {
-      return this.researchService
-        .search(model.query, { type: model.type, ...model.facets })
-        .pipe(
-          catchError((err) => this.handleSearchError(err)),
-          // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
-          finalize(() => setTimeout(() => (this.isSearching = false), 300)),
-        )
-        .subscribe((result) => this.updateHits(result));
-    });
+    return this.researchService
+      .search(model.query, { type: model.type, ...model.facets })
+      .pipe(
+        catchError((err) => this.handleSearchError(err)),
+        // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
+        finalize(() => setTimeout(() => this.isSearching.set(false), 300)),
+      )
+      .subscribe((result) => this.updateHits(result));
   }
 
   saveQuery() {
@@ -158,13 +155,13 @@ export class TabSearchComponent implements OnInit {
       });
   }
 
-  private handleSearchError(err) {
+  private handleSearchError(err: any) {
     console.warn("Error during search", err);
     return of({ totalHits: 0, hits: [] });
   }
 
   private updateHits(result: ResearchResponse) {
-    this.result = result;
+    this.result.set(result);
   }
 
   private initForm() {
@@ -191,7 +188,7 @@ export class TabSearchComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters))),
+        .pipe(tap((filters) => this.facets.set(filters))),
     );
   }
 

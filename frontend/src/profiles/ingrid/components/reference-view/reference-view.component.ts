@@ -46,9 +46,9 @@ interface ReferenceItemInternal extends ReferenceItem {
   styleUrl: "./reference-view.component.scss",
 })
 export class ReferenceViewComponent {
-  item = input<ReferenceItemUrl | ReferenceItemInternal>();
-
   private router = inject(Router);
+
+  item = input<ReferenceItemUrl | ReferenceItemInternal>();
 
   urlItem = computed<ReferenceItemUrl>(() => {
     if (this.item().referenceType !== "url") return null;

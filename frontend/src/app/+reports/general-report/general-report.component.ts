@@ -97,7 +97,7 @@ export class GeneralReportComponent implements OnInit {
   chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
   private translocoService = inject(TranslocoService);
-  displayedColumns = [
+  displayedColumns = signal<string[]>([
     "icon",
     "title",
     "percentage",
@@ -105,9 +105,8 @@ export class GeneralReportComponent implements OnInit {
     "published",
     "working",
     "allWorking",
-  ];
+  ]);
 
-  facetModel: any;
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
 
@@ -115,7 +114,7 @@ export class GeneralReportComponent implements OnInit {
     type: new UntypedFormControl("selectDocuments"),
     facets: new UntypedFormControl(),
   });
-  facets: Facets;
+  facets = signal<Facets | null>(null);
 
   constructor(
     private profileService: ProfileService,
@@ -191,7 +190,7 @@ export class GeneralReportComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters))),
+        .pipe(tap((filters) => this.facets.set(filters))),
     );
   }
 

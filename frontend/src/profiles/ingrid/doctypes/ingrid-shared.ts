@@ -1832,7 +1832,7 @@ export abstract class IngridShared extends BaseDoctype {
         required: true,
         expressions: {
           hide: (field: FormlyFieldConfig) => {
-            return field.form.value.referenceType != "uuidRef";
+            return field.model.referenceType != "uuidRef";
           },
         },
       }),
@@ -1846,10 +1846,10 @@ export abstract class IngridShared extends BaseDoctype {
             updateOn: "change",
             expressions: {
               hide: (field: FormlyFieldConfig) => {
-                return field.form.value.referenceType != "url";
+                return field.model.referenceType != "url";
               },
               "props.required": (field: FormlyFieldConfig) => {
-                return !field.form.value?.uuidRef;
+                return !field.model?.uuidRef;
               },
               "props.label": (field: FormlyFieldConfig) => {
                 return field.props.disabled
@@ -1877,9 +1877,9 @@ export abstract class IngridShared extends BaseDoctype {
               hasInlineContextHelp: true,
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
-                  field.form.value?.type?.key === "9990", // Datendownload
+                  field.model?.type?.key === "9990", // Datendownload
                 hide: (field: FormlyFieldConfig) => {
-                  return field.form.value.referenceType != "url";
+                  return field.model.referenceType != "url";
                 },
               },
             },

@@ -18,9 +18,9 @@
             <button
                 mat-icon-button
                 class="dark menu-button"
-                [class.expanded]="showMore"
-                [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
-                (click)="showMore = !showMore"
+                [class.expanded]="showMore()"
+                [matTooltip]="showMore() ? 'Schließen' : 'Öffnen'"
+                (click)="showMore.set(!showMore())"
             >
                 <mat-icon class="animated">keyboard_arrow_down</mat-icon>
             </button>
@@ -29,7 +29,7 @@
 
     <section main-content>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
-            <mat-step [completed]="datasetSelected">
+            <mat-step [completed]="datasetSelected()">
                 <ng-template matStepLabel>{{ t("formSingular") }}</ng-template>
                 <ige-tree
                     #treeComponent
@@ -48,7 +48,7 @@
                         mat-flat-button
                         color="primary"
                         matStepperNext
-                        [disabled]="!datasetSelected"
+                        [disabled]="!datasetSelected()"
                     >
                         Weiter
                     </button>
@@ -58,9 +58,9 @@
                 <form [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
 
-                    @if (path) {
+                    @if (path()) {
                         <div class="section-title">Ort</div>
-                        <ige-breadcrumb [path]="path"></ige-breadcrumb>
+                        <ige-breadcrumb [path]="path()"></ige-breadcrumb>
                     }
 
                     <div class="section-title padding-vertical">Format</div>
@@ -73,10 +73,7 @@
                                 formControlName="format"
                                 (selectionChange)="updateDraftsCheckbox($event)"
                             >
-                                @for (
-                                    format of exportFormats | async;
-                                    track format
-                                ) {
+                                @for (format of exportFormats(); track format) {
                                     <mat-option [value]="format">
                                         {{ format.name }}
                                     </mat-option>
@@ -84,7 +81,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    @if (showDraftsCheckbox) {
+                    @if (showDraftsCheckbox()) {
                         <div class="flex-col">
                             <mat-checkbox formControlName="drafts">
                                 Auch Entwürfe exportieren
@@ -126,7 +123,7 @@
                             class="big-icon gray"
                             svgIcon="Fachaufgabe"
                         ></mat-icon>
-                        @if (exportResult?.body?.type === "application/zip") {
+                        @if (exportResult()?.body?.type === "application/zip") {
                             Für ZIP-Dateien gibt es keine Vorschau.
                         } @else {
                             <button mat-stroked-button (click)="showPreview()">
@@ -136,7 +133,7 @@
                     </div>
                 }
 
-                @if (!exportFinished) {
+                @if (!exportFinished()) {
                     <div
                         class="flex-row justify-content-center align-items-center"
                     >
@@ -156,7 +153,7 @@
                         mat-flat-button
                         color="primary"
                         matStepperNext
-                        [disabled]="!exportResult"
+                        [disabled]="!exportResult()"
                         (click)="downloadExport()"
                     >
                         Herunterladen
@@ -186,6 +183,6 @@
     </section>
 </page-template>
 
-@if (exportResult) {
-    <pre>{{ exportResult }}</pre>
+@if (exportResult()) {
+    <pre>{{ exportResult() }}</pre>
 }

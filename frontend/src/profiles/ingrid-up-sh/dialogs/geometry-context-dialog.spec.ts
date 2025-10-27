@@ -39,6 +39,8 @@ import {
 } from "@angular/common/http";
 import { provideFormlyCore } from "@ngx-formly/core";
 import { withFormlyMaterial } from "@ngx-formly/material";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { waitSomeTime } from "../../ingrid/utils/time";
 
 describe("GeometryContextDialogComponent", () => {
   let spectator: Spectator<GeometryContextDialogComponent>;
@@ -48,6 +50,7 @@ describe("GeometryContextDialogComponent", () => {
   const createComponent = createComponentFactory({
     component: GeometryContextDialogComponent,
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideFormlyCore([
@@ -91,6 +94,7 @@ describe("GeometryContextDialogComponent", () => {
   it("should fill a new item of type 'nominal'", async () => {
     await enterCommonData();
     await expectNumInputsForType(select, "nominal", 4);
+    await waitSomeTime();
     expect(spectator.component.form.value).toEqual(
       expectedFormValue("nominal", "nominal"),
     );
@@ -103,6 +107,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(4, "3");
     await setInputValue(5, "5");
 
+    await waitSomeTime();
     expect(spectator.component.form.value).toEqual({
       ...expectedFormValue("ordinal", "ordinal"),
       min: 3,
@@ -118,6 +123,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(5, "5");
     await setInputValue(6, "test-unit");
 
+    await waitSomeTime();
     expect(spectator.component.form.value).toEqual({
       ...expectedFormValue("scalar", "skalar"),
       min: 3,
@@ -130,7 +136,7 @@ describe("GeometryContextDialogComponent", () => {
     await enterCommonData();
 
     await expectNumInputsForType(select, "sonstiges", 4);
-
+    await waitSomeTime();
     expect(spectator.component.form.value).toEqual({
       ...expectedFormValue("other", "sonstiges"),
     });
@@ -143,7 +149,6 @@ describe("GeometryContextDialogComponent", () => {
   ) {
     await select.open();
     await select.clickOptions({ text: type });
-    spectator.detectChanges();
     inputs = await loader.getAllHarnesses(MatInputHarness);
     expect(inputs.length).toBe(expectedInputs);
   }

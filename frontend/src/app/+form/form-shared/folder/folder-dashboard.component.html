@@ -1,5 +1,5 @@
 <div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
-    @if (isAddress() ? canCreateAddress : canCreateDataset) {
+    @if (isAddress() ? canCreateAddress() : canCreateDataset()) {
         <ige-action-button
             label="Neuer Ordner"
             svgIcon="outline-create_new_folder-24px"
@@ -13,7 +13,7 @@
     }
 </div>
 
-@if (numChildren) {
+@if (numChildren()) {
     <div class="flex-row">
         <ige-card-box
             class="flex-1"
@@ -29,7 +29,7 @@
     </div>
 }
 
-@if (numChildren === 0) {
+@if (numChildren() === 0) {
     <div class="banner text-center">
         <div class="circle-wrapper">
             <mat-icon

@@ -26,6 +26,7 @@ import {
   OnInit,
   ViewChild,
   output,
+  signal,
 } from "@angular/core";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {
@@ -108,7 +109,7 @@ export class GroupsTableComponent
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  displayedColumns: string[] = ["role-icon", "name"]; //, "settings"];
+  displayedColumns = signal<string[]>(["role-icon", "name"]); //, "settings"];
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
 

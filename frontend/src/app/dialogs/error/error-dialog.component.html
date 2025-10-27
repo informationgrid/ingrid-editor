@@ -6,15 +6,15 @@
 </div>
 
 <mat-dialog-content data-cy="error-dialog-content">
-    @if (errors.length === 1) {
+    @if (errors().length === 1) {
         <ng-container
             [ngTemplateOutlet]="errorPart"
-            [ngTemplateOutletContext]="{ error: errors[0] }"
+            [ngTemplateOutletContext]="{ error: errors()[0] }"
         ></ng-container>
     }
-    @if (errors.length > 1) {
+    @if (errors().length > 1) {
         <ul>
-            @for (error of errors; track error) {
+            @for (error of errors(); track error) {
                 <li>
                     <ng-container
                         [ngTemplateOutlet]="errorPart"
@@ -35,7 +35,7 @@
         Schließen
     </button>
     <div class="flex-1"></div>
-    @if (errors[0].unhandledException) {
+    @if (errors()[0].unhandledException) {
         <a mat-stroked-button color="primary" href="mailto:{{ supportEmail }}"
             >Bericht senden</a
         >

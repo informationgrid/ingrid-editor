@@ -3,14 +3,14 @@
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>
-        {{ dialogTitle }}
+        {{ dialogTitle() }}
     </h1>
 </div>
 
 <mat-dialog-content>
     <div class="spatial-wrapper flex-row gap-24">
         <div class="flex-col limit-width">
-            @if (types.length > 1) {
+            @if (types().length > 1) {
                 <div class="dlg-field-label required">Typ*</div>
                 <mat-form-field
                     appearance="outline"
@@ -18,11 +18,11 @@
                 >
                     <mat-select
                         (selectionChange)="updateView($event.value)"
-                        [value]="result.type"
+                        [value]="result().type"
                         required
                         aria-label="Typ des Raumbezuges *"
                     >
-                        @for (menuItem of types; track menuItem) {
+                        @for (menuItem of types(); track menuItem) {
                             <mat-option
                                 [value]="menuItem.id"
                                 [attr.data-cy]="menuItem.id"
@@ -34,11 +34,11 @@
                 </mat-form-field>
             }
 
-            @switch (view) {
+            @switch (view()) {
                 @case ("free") {
                     <ige-free-spatial
                         [map]="leafletReference"
-                        [value]="result"
+                        [value]="result()"
                         (updateTitle)="titleInput.setValue($event)"
                         (result)="updateBoundingBox($event)"
                     ></ige-free-spatial>
@@ -47,13 +47,13 @@
                     <ige-wkt-spatial
                         [map]="leafletReference"
                         [wktString]="data?.location?.wkt ?? ''"
-                        (result)="this.result.wkt = $event"
+                        (result)="updateWkt($event)"
                     ></ige-wkt-spatial>
                 }
                 @case ("wfsgnde") {
                     <ige-geothesaurus-wfsgnde
                         [map]="leafletReference"
-                        [value]="result"
+                        [value]="result()"
                         (updateTitle)="titleInput.setValue($event)"
                         (result)="updateBoundingBox($event)"
                     ></ige-geothesaurus-wfsgnde>
@@ -61,7 +61,7 @@
                 @case ("bwastr") {
                     <ige-bwastr-spatial
                         [map]="leafletReference"
-                        [value]="result"
+                        [value]="result()"
                         (updateTitle)="titleInput.setValue($event)"
                         (result)="updateBwastr($event)"
                     ></ige-bwastr-spatial>
@@ -88,11 +88,11 @@
                 aria-label="Die Karte ist eingeschränkt bedienbar, bitte nutzen Sie die Eingabefelder unter der Karte."
                 data-cy="spatial-dialog-map"
             ></div>
-            @if (view === "free") {
+            @if (view() === "free") {
                 <div class="coordinates">
                     <ige-coordinates-spatial
                         [map]="leafletReference"
-                        [coordinates]="result.value"
+                        [coordinates]="result().value"
                         (result)="updateBoundingBox($event)"
                     ></ige-coordinates-spatial>
                 </div>
@@ -115,16 +115,16 @@
         color="primary"
         data-cy="confirm-dialog-save"
         [disabled]="
-            (view === 'free' &&
-                !result.value &&
-                !result.ars &&
-                !result.title) ||
-            (view === 'wkt' && !result.wkt) ||
-            (view === 'wfsgnde' && !result.value && !result.title) ||
-            (view === 'bwastr' &&
-                !result.bwastr?.bwastrid &&
-                !result.bwastr?.start &&
-                !result.bwastr?.end)
+            (view() === 'free' &&
+                !result().value &&
+                !result().ars &&
+                !result().title) ||
+            (view() === 'wkt' && !result().wkt) ||
+            (view() === 'wfsgnde' && !result().value && !result().title) ||
+            (view() === 'bwastr' &&
+                !result().bwastr?.bwastrid &&
+                !result().bwastr?.start &&
+                !result().bwastr?.end)
         "
         (click)="returnResult()"
     >

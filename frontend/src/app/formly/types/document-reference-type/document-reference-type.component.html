@@ -4,7 +4,7 @@
     </ige-form-error>
 }
 
-@for (item of myModel; track item; let i = $index) {
+@for (item of myModel(); track item; let i = $index) {
     <div
         class="item"
         tabindex="0"
@@ -64,12 +64,12 @@
 }
 <!--{{ formControl.value | json }}-->
 
-@if (refreshing) {
+@if (refreshing()) {
     <mat-spinner diameter="30"></mat-spinner>
 }
 
 @if (!formControl.disabled) {
-    @if (onlyInternalRefs) {
+    @if (onlyInternalRefs()) {
         <ige-add-button (click)="showInternalRefDialog()">
             [showRequiredError]=" showError && formControl.invalid &&
             formControl.errors?.required " ></ige-add-button

@@ -26,12 +26,12 @@ import {
   ElementRef,
   HostListener,
   inject,
+  input,
   OnDestroy,
   OnInit,
   Signal,
   signal,
   ViewChild,
-  input,
 } from "@angular/core";
 import {
   FormArray,
@@ -44,7 +44,6 @@ import {
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import {
   DocumentWithMetadata,
   IgeDocument,
@@ -82,9 +81,9 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
@@ -106,7 +105,6 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     ReactiveFormsModule,
     FormsModule,
     FolderDashboardComponent,
-    AsyncPipe,
     JsonPipe,
     FormlyForm,
   ],
@@ -123,7 +121,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
 
-  sidebarWidth: number;
+  sidebarWidth = signal<number>(null);
 
   fields: FormlyFieldConfig[] = [];
 
@@ -142,25 +140,25 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   };
 
-  sections: Observable<string[]> = this.formularService.sections$;
+  sections: Signal<string[]> = toSignal(this.formularService.sections$, {
+    initialValue: [],
+  });
 
   form = new UntypedFormGroup({});
 
   // initial model for form info header
-  formInfoModel: any = null;
+  formInfoModel = signal<any>(null);
 
   // @ts-ignore
   model: IgeDocument = {};
 
   metadata = this.formStateService.metadata;
 
-  paddingWithHeader: string;
-
   showAllFields: Signal<boolean> = this.uiStore.toggleFieldsButtonShowAll;
 
-  hasOptionalFields = false;
+  hasOptionalFields = signal<boolean>(false);
 
-  isLoading = true;
+  isLoading = this.generalStore.isDocumentLoading;
 
   showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
@@ -170,8 +168,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = signal<boolean>(false);
-  isStickyHeader = false;
-  numberOfErrors = 0;
+  isStickyHeader = signal<boolean>(false);
+  numberOfErrors = signal<number>(0);
   showValidationErrors = false;
   private errorCounterSubscription: Subscription;
 
@@ -186,7 +184,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private formularService: FormularService,
     private formToolbarService: FormToolbarService,
     private documentService: DocumentService,
-    private modalService: ModalService,
     private messageService: FormMessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
@@ -197,7 +194,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
   ) {
-    this.sidebarWidth = this.uiStore.sidebarWidth();
+    this.sidebarWidth.set(this.uiStore.sidebarWidth());
 
     effect(() => {
       const serverValidationErrors = this.generalStore.serverValidationErrors();
@@ -209,12 +206,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           );
           this.form.get(error.name)?.setErrors([{ message: message }]);
         });
-        this.numberOfErrors = serverValidationErrors.length;
+        this.numberOfErrors.set(serverValidationErrors.length);
       }
-    });
-
-    effect(() => {
-      this.isLoading = this.generalStore.isDocumentLoading();
     });
 
     effect(() => {
@@ -267,7 +260,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
       .subscribe((doPublish) => {
-        this.numberOfErrors = 0;
+        this.numberOfErrors.set(0);
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
@@ -343,7 +336,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private toggleStickyHeader(show: boolean) {
-    this.isStickyHeader = show;
+    this.isStickyHeader.set(show);
   }
 
   /**
@@ -352,7 +345,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   loadDocument(id: string) {
     this.showValidationErrors = false;
-    this.numberOfErrors = 0;
+    this.numberOfErrors.set(0);
     let previousDocUuid = this.form.value._uuid;
 
     if (id === undefined) {
@@ -470,9 +463,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // data is not included in the new form
         // @ts-ignore
         this.model = {};
-        this.formInfoModel = null;
+        this.formInfoModel.set(null);
 
         // do change detection to update formly component with new fields and form
+        // THIS IS IMPORTANT OTHERWISE FORM DATA CAN BE CORRUPTED
         this.cdr.detectChanges();
       }
 
@@ -480,12 +474,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.model = data.document;
       this.prepareForm(data.metadata.hasWritePermission && !this.readonly);
 
-      this.formInfoModel = { ...this.model };
+      this.formInfoModel.set({ ...this.model });
 
       this.documentService.setDocLoadingState(false);
     } catch (ex) {
-      console.error(ex);
-      this.modalService.showJavascriptError(ex);
+      throw new IgeError(ex);
     }
   }
 
@@ -505,8 +498,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
     this.formularService.getSectionsForDoctype(this.fields);
-    this.hasOptionalFields =
-      this.profileService.getDoctype(doctypeId).hasOptionalFields;
+    this.hasOptionalFields.set(
+      this.profileService.getDoctype(doctypeId).hasOptionalFields,
+    );
   }
 
   /**
@@ -567,7 +561,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         const invalidFields = this.getInvalidControlNames(this.form);
         if (invalidFields.length > 0)
           console.warn("INVALID FIELDS: ", invalidFields);
-        this.numberOfErrors = invalidFields.length;
+        this.numberOfErrors.set(invalidFields.length);
       });
 
     // update form here instead of onInit, because of caching problem, where no onInit method is called

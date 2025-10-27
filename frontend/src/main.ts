@@ -24,6 +24,8 @@ import {
   inject,
   LOCALE_ID,
   provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -162,6 +164,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       KeycloakAngularModule,
       AngularSplitModule,
@@ -435,6 +438,8 @@ bootstrapApplication(AppComponent, {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+    // handle errors outside angular context with errorhandler
+    provideBrowserGlobalErrorListeners(),
     // cache routes
     {
       provide: RouteReuseStrategy,

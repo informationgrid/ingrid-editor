@@ -14,8 +14,8 @@
     </div>
 
     <mat-dialog-content class="hide-tab-header">
-        <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
-            @if (showInfo) {
+        <mat-tab-group [selectedIndex]="page()" animationDuration="0ms">
+            @if (showInfo()) {
                 <mat-tab>
                     <p>{{ t("reference-error") }}</p>
                 </mat-tab>
@@ -31,7 +31,7 @@
                     [treeStore]="addressTreeStore"
                     [forAddresses]="true"
                     [disabledCondition]="disableTreeNode"
-                    (activate)="selectedAddress = $event"
+                    (activate)="selectedAddress.set($event)"
                 ></ige-tree>
             </mat-tab>
             <mat-tab>
@@ -49,34 +49,34 @@
         </mat-tab-group>
     </mat-dialog-content>
     <mat-dialog-actions>
-        @if (page !== (showInfo ? 2 : 1)) {
+        @if (page() !== (showInfo() ? 2 : 1)) {
             <button mat-button mat-dialog-close data-cy="dialog-abort">
                 Abbrechen
             </button>
         }
         <div class="flex-1"></div>
-        @if (showInfo && page === 0) {
+        @if (showInfo() && page() === 0) {
             <button
                 mat-flat-button
                 color="primary"
                 data-cy="dialog-choose-address"
-                (click)="page = page + 1"
+                (click)="increasePage()"
             >
                 Adresse auswählen
             </button>
         }
-        @if (page === (showInfo ? 1 : 0)) {
+        @if (page() === (showInfo() ? 1 : 0)) {
             <button
                 mat-flat-button
                 color="primary"
                 data-cy="dialog-replace-address"
-                [disabled]="!selectedAddress"
+                [disabled]="!selectedAddress()"
                 (click)="replaceAddress()"
             >
                 Adresse ersetzen
             </button>
         }
-        @if (page === (showInfo ? 2 : 1)) {
+        @if (page() === (showInfo() ? 2 : 1)) {
             <button mat-flat-button color="primary" [mat-dialog-close]="true">
                 Schließen
             </button>

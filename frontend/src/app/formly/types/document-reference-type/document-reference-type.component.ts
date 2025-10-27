@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -92,24 +92,19 @@ export class DocumentReferenceTypeComponent
   implements OnInit
 {
   private documentTreeStore = inject(DocumentTreeStore);
-  myModel: (DocumentReference | UrlReference)[];
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private docService = inject(DocumentService);
+  private profileService = inject(ProfileService);
 
-  refreshing = true;
+  myModel = signal<(DocumentReference | UrlReference)[]>([]);
 
-  onlyInternalRefs = false;
+  refreshing = signal<boolean>(true);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private dialog: MatDialog,
-    private router: Router,
-    private docService: DocumentService,
-    private profileService: ProfileService,
-  ) {
-    super();
-  }
+  onlyInternalRefs = signal<boolean>(false);
 
   ngOnInit() {
-    this.onlyInternalRefs = this.props.onlyInternalRefs;
+    this.onlyInternalRefs.set(this.props.onlyInternalRefs);
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -203,16 +198,16 @@ export class DocumentReferenceTypeComponent
   }
 
   private async buildModel() {
-    this.refreshing = true;
-    this.myModel = await Promise.all(
+    this.refreshing.set(true);
+    const model = await Promise.all(
       this.formControl.value.map(async (item: any) => {
         return item.isExternalRef
           ? this.mapExternalRef(item)
           : this.mapInternalRef(item);
       }),
     );
-    this.refreshing = false;
-    this.cdr.detectChanges();
+    this.myModel.set(model);
+    this.refreshing.set(false);
   }
 
   private mapExternalRef(item: any): UrlReference {

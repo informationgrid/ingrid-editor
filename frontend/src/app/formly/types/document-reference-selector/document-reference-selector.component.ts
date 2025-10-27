@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
@@ -33,8 +33,8 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
   SelectDatasetData,
-  TreeDialogComponent,
   SelectServiceResponse,
+  TreeDialogComponent,
 } from "./tree-dialog/tree-dialog.component";
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
@@ -68,20 +68,15 @@ export class DocumentReferenceSelectorComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  myModel: (DocumentAbstract | DocumentReference)[];
-  allowMultiSelect = false;
-  allowRedirectToDocument = false;
-  titleOfDocumentSelectorDialog = "Dokument auswählen";
-  refreshing = true;
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private docService = inject(DocumentService);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private dialog: MatDialog,
-    private router: Router,
-    private docService: DocumentService,
-  ) {
-    super();
-  }
+  myModel: (DocumentAbstract | DocumentReference)[];
+  allowMultiSelect = signal(false);
+  allowRedirectToDocument = signal(false);
+  titleOfDocumentSelectorDialog = signal("Dokument auswählen");
+  refreshing = signal(true);
 
   ngOnInit() {
     this.formControl.valueChanges
@@ -94,13 +89,14 @@ export class DocumentReferenceSelectorComponent
   }
 
   private async buildModel() {
-    this.refreshing = true;
-    this.allowMultiSelect = this.props.allowMultiSelect;
-    this.allowRedirectToDocument = this.props.allowRedirectToDocument;
-    this.titleOfDocumentSelectorDialog =
-      this.props.titleOfDocumentSelectorDialog;
+    this.refreshing.set(true);
+    this.allowMultiSelect.set(!!this.props.allowMultiSelect);
+    this.allowRedirectToDocument.set(!!this.props.allowRedirectToDocument);
+    this.titleOfDocumentSelectorDialog.set(
+      this.props.titleOfDocumentSelectorDialog ?? "Dokument auswählen",
+    );
 
-    if (this.allowMultiSelect) {
+    if (this.allowMultiSelect()) {
       if (this.formControl.value == undefined) {
         this.formControl.setValue([]);
       }
@@ -124,8 +120,7 @@ export class DocumentReferenceSelectorComponent
         this.myModel.push(item);
       }
     }
-    this.refreshing = false;
-    this.cdr.detectChanges();
+    this.refreshing.set(false);
   }
 
   showReferenceDialog(index?: number | string) {
@@ -163,7 +158,7 @@ export class DocumentReferenceSelectorComponent
   }
 
   private updateValue(item: any, index?: number) {
-    if (this.allowMultiSelect) {
+    if (this.allowMultiSelect()) {
       const isNotNew = index >= 0;
       let docArray: any[] = this.formControl.value;
       if (isNotNew) {
@@ -214,7 +209,7 @@ export class DocumentReferenceSelectorComponent
   }
 
   private getRefUuids(): string[] {
-    if (this.allowMultiSelect) {
+    if (this.allowMultiSelect()) {
       return this.formControl.value
         .filter((item: any) => item.uuid)
         .map((item: any) => item.uuid);
@@ -236,7 +231,7 @@ export class DocumentReferenceSelectorComponent
     this.myModel.splice(index, 1);
     this.props.change?.(this.field, event);
     if (this.myModel.length == 0) {
-      this.formControl.setValue(this.allowMultiSelect ? [] : null);
+      this.formControl.setValue(this.allowMultiSelect() ? [] : null);
     } else {
       const newJson = this.myModel.map(
         (item: any) =>

@@ -27,12 +27,14 @@ import { ConfigService, UserInfo } from "./config/config.service";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { ModalService } from "./modal/modal.service";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("ProfileService", () => {
   let spectator: SpectatorService<ProfileService>;
   const createService = createServiceFactory({
     service: ProfileService,
     providers: [
+      provideZonelessChangeDetection(),
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject<UserInfo>({
           assignedCatalogs: [],

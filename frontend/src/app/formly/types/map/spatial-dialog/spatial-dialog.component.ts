@@ -25,6 +25,7 @@ import {
   Inject,
   OnInit,
   ViewChild,
+  signal,
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
@@ -94,29 +95,31 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   private transloco = inject(TranslocoService);
 
-  dialogTitle = this.data?.location?.value
-    ? "Raumbezug bearbeiten"
-    : "Raumbezug hinzufügen";
+  dialogTitle = signal<string>(
+    this.data?.location?.value
+      ? "Raumbezug bearbeiten"
+      : "Raumbezug hinzufügen",
+  );
 
-  result: SpatialLocation = {
+  result = signal<SpatialLocation>({
     value: null,
     title: null,
     type: "free",
     ars: undefined,
-  };
+  });
 
   titleInput = new FormControl<string>("");
 
   leafletReference: Map;
 
   _bbox: any = null;
-  types: LocationType[] = [
+  types = signal<LocationType[]>([
     { id: "free", label: this.transloco.translate("spatial.types.free") },
     { id: "wkt", label: this.transloco.translate("spatial.types.wkt") },
     { id: "wfsgnde", label: this.transloco.translate("spatial.types.wfsgnde") },
     { id: "bwastr", label: this.transloco.translate("spatial.types.bwastr") },
-  ];
-  view: SpatialLocationType;
+  ]);
+  view = signal<SpatialLocationType | null>(null);
 
   constructor(
     private dialogRef: MatDialogRef<SpatialDialogComponent>,
@@ -124,22 +127,22 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     private leafletService: LeafletService,
   ) {
     if (this.data?.limitTypes) {
-      this.types = this.types.filter(
-        (type) => this.data.limitTypes.indexOf(type.id) !== -1,
+      this.types.update((types) =>
+        types.filter((type) => this.data.limitTypes.indexOf(type.id) !== -1),
       );
     }
   }
 
   ngOnInit(): void {
     this.titleInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
-      .subscribe((title) => (this.result.title = title));
+      .pipe(untilDestroyed(this))
+      .subscribe((title) => this.result.update((r) => ({ ...r, title })));
 
     if (this.data?.location) {
       const location = this.data.location;
       this._bbox = location.value;
       this.titleInput.setValue(location.title);
-      this.result = { ...this.result, ...location };
+      this.result.update((r) => ({ ...r, ...location }));
     } else {
       this.titleInput.setValue("Neuer Raumbezug");
     }
@@ -154,26 +157,28 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
   updateBoundingBox(result: SpatialBoundingBox) {
-    this.result.value = result;
+    this.result.update((r) => ({ ...r, value: result }));
   }
 
   updateBwastr(result: BwastrSection) {
-    this.result.bwastr = result;
+    this.result.update((r) => ({ ...r, bwastr: result }));
   }
 
   updateView(viewType: SpatialLocationType) {
-    this.view = viewType;
-    this.result.type = viewType;
+    this.view.set(viewType);
+    this.result.update((r) => ({ ...r, type: viewType }));
     this.titleInput.enable();
-    if (viewType !== "wkt") this.result.wkt = undefined;
-    if (viewType !== "bwastr") this.result.bwastr = undefined;
+    if (viewType !== "wkt")
+      this.result.update((r) => ({ ...r, wkt: undefined }));
+    if (viewType !== "bwastr")
+      this.result.update((r) => ({ ...r, bwastr: undefined }));
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }
     } else {
       if (viewType !== "wfsgnde") {
-        this.result.value = null;
+        this.result.update((r) => ({ ...r, value: null }));
       } else this.titleInput.disable();
       if (this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
@@ -197,7 +202,11 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  updateWkt(wkt: string) {
+    this.result.update((r) => ({ ...r, wkt }));
+  }
+
   returnResult() {
-    this.dialogRef.close(this.result);
+    this.dialogRef.close(this.result());
   }
 }

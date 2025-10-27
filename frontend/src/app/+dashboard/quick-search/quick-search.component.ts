@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, output } from "@angular/core";
+import { Component, OnInit, output, signal } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
@@ -52,10 +52,10 @@ export class QuickSearchComponent implements OnInit {
   readonly selectDoc = output<string>();
   readonly selectAddress = output<string>();
 
-  docs: DocumentAbstract[];
-  addresses: DocumentAbstract[];
-  numDocs: number;
-  numAddresses: number;
+  docs = signal<DocumentAbstract[]>([]);
+  addresses = signal<DocumentAbstract[]>([]);
+  numDocs = signal<number>(0);
+  numAddresses = signal<number>(0);
 
   query = new FormControl<string>("");
   searchSub: Subscription;
@@ -80,8 +80,10 @@ export class QuickSearchComponent implements OnInit {
 
   search(value: string) {
     if (value?.trim()?.length === 0) {
-      this.docs = [];
-      this.addresses = [];
+      this.docs.set([]);
+      this.addresses.set([]);
+      this.numDocs.set(0);
+      this.numAddresses.set(0);
       return;
     }
 
@@ -94,11 +96,11 @@ export class QuickSearchComponent implements OnInit {
         catchError(() => of([this.emptySearchResult, this.emptySearchResult])),
       )
       .subscribe((result) => {
-        this.docs = this.highlightResult(result[0].hits, value);
-        this.numDocs = result[0].totalHits;
+        this.docs.set(this.highlightResult(result[0].hits, value));
+        this.numDocs.set(result[0].totalHits);
 
-        this.addresses = this.highlightResult(result[1].hits, value);
-        this.numAddresses = result[1].totalHits;
+        this.addresses.set(this.highlightResult(result[1].hits, value));
+        this.numAddresses.set(result[1].totalHits);
       });
   }
 

@@ -26,6 +26,7 @@ import {
   ViewChild,
   input,
   output,
+  signal,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {
@@ -121,12 +122,12 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = [
+  displayedColumns = signal<string[]>([
     "_type",
     "title",
     "_contentModified",
     "settings",
-  ];
+  ]);
   columnsMap: SelectOptionUi[] = [
     new SelectOption("_type", "Typ"),
     new SelectOption("title", "Titel"),
