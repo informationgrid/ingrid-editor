@@ -1062,48 +1062,55 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addTimeReferenceSection() {
-    return this.addSection("Zeitbezug", [
-      this.addGroupSimple("temporal", [
+    return this.addSection(
+      "Zeitbezug",
+      [
         this.addGroupSimple(
-          "event",
+          "temporal",
           [
-            this.addDatepickerInline("created", "Erstellung", {
-              className: "width-date-medium",
+            this.addGroupSimple(
+              "event",
+              [
+                this.addDatepickerInline("created", "Erstellung", {
+                  className: "width-date-medium",
                 }),
-            this.addDatepickerInline(
-              "firstPublished",
-              "Erstmalige Veröffentlichung",
-              {
-                className: "width-date-medium",
-              },
-                  ),
-            this.addDatepickerInline("lastModified", "Letzte Änderung", {
-              className: "width-date-medium",
-              validators: {
-                ...(this.showInVeKoSField && {
-                  invekos: {
-                    expression: (
-                      ctrl: FormControl,
-                      field: FormlyFieldConfig,
-                    ) => {
-                      const invekosValue =
-                        field.options.formState.mainModel?.properties?.invekos
-                          ?.key;
-                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                        return true;
+                this.addDatepickerInline(
+                  "firstPublished",
+                  "Erstmalige Veröffentlichung",
+                  {
+                    className: "width-date-medium",
+                  },
+                ),
+                this.addDatepickerInline("lastModified", "Letzte Änderung", {
+                  className: "width-date-medium",
+                  validators: {
+                    ...(this.showInVeKoSField && {
+                      invekos: {
+                        expression: (
+                          ctrl: FormControl,
+                          field: FormlyFieldConfig,
+                        ) => {
+                          const invekosValue =
+                            field.options.formState.mainModel?.properties
+                              ?.invekos?.key;
+                          if (
+                            invekosValue !== "gsaa" &&
+                            invekosValue !== "lpis"
+                          )
+                            return true;
 
-                      // Mindestens ein Datum vom Typ "revision" muss vorhanden
-                      return ctrl.value !== null;
-                    },
-                    message:
-                      "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                          // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                          return ctrl.value !== null;
+                        },
+                        message:
+                          "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                      },
+                    }),
                   },
                 }),
-              },
-            }),
-          ],
-          { fieldGroupClassName: "flex-row gap-12" },
-        ),
+              ],
+              { fieldGroupClassName: "flex-row gap-12" },
+            ),
             this.addGroup(
               null,
               "Durch die Ressource abgedeckte Zeitspanne",
@@ -1178,18 +1185,33 @@ export abstract class IngridShared extends BaseDoctype {
         this.options.hide.maintenanceInformation
           ? null
           : this.addGroupSimple("maintenanceInformation", [
-              this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
-                showSearch: true,
-                options: this.getCodelistForSelect(
-                  "518",
-                  "maintenanceInformation.maintenanceAndUpdateFrequency",
-                ),
-                codelistId: "518",
-                className: "optional",
-              }),
+              this.addSelect(
+                "maintenanceAndUpdateFrequency",
+                "Pflege- und Aktualisierungsintervall",
+                {
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "518",
+                    "maintenanceInformation.maintenanceAndUpdateFrequency",
+                  ),
+                  codelistId: "518",
+                  className: "optional",
+                  change: (field: FormlyFieldConfig) => {
+                    console.log("Change maintenanceAndUpdateFrequency");
+                    const isNotContinuously =
+                      field.form.value.maintenanceAndUpdateFrequency.key !==
+                      "1";
+                    if (isNotContinuously) {
+                      field.form
+                        .get("userDefinedMaintenanceFrequency")
+                        .setValue({ number: null, unit: null });
+                    }
+                  },
+                },
+              ),
               this.addGroup(
                 "userDefinedMaintenanceFrequency",
-                "Intervall der Erhebung",
+                "Benutzerdefiniertes Intervall der Erhebung",
                 [
                   this.addInputInline("number", "Anzahl", {
                     type: "number",
@@ -1199,6 +1221,16 @@ export abstract class IngridShared extends BaseDoctype {
                     },
                     validators: {
                       validation: ["positiveNum"],
+                      continuously: {
+                        expression: (ctrl: FormControl) => {
+                          const frequency = ctrl.root.get(
+                            "maintenanceInformation.maintenanceAndUpdateFrequency",
+                          ).value?.key;
+                          return !ctrl.value || frequency === "1";
+                        },
+                        message:
+                          "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
+                      },
                     },
                   }),
                   this.addSelectInline("unit", "Einheit", {
@@ -1218,8 +1250,17 @@ export abstract class IngridShared extends BaseDoctype {
                 ],
                 {
                   expressions: {
-                    className: (field: FormlyFieldConfig) =>
-                      isNotEmptyObject(field.form.value) ? "" : "optional",
+                    className: (field: FormlyFieldConfig) => {
+                      const notEmpty = isNotEmptyObject(
+                        field.form.value?.userDefinedMaintenanceFrequency,
+                      );
+                      const isNotContinuously =
+                        field.options.formState.mainModel
+                          ?.maintenanceInformation
+                          ?.maintenanceAndUpdateFrequency?.key !== "1";
+                      if (!notEmpty && isNotContinuously) return "hide";
+                      return notEmpty ? "" : "optional";
+                    },
                   },
                 },
               ),

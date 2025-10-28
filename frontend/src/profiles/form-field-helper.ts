@@ -63,7 +63,14 @@ export interface Options {
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
-  validators?: any;
+  validators?: {
+    [x: string]:
+      | {
+          expression: any;
+          message: string | ((a, b: FormlyFieldConfig) => string);
+        }
+      | string[];
+  };
   asyncValidators?: any;
   resetOnHide?: boolean;
 }
