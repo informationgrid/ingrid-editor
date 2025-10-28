@@ -74,13 +74,15 @@ class CswtApiController(
         @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
         @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
+        @Parameter(description = "## Override existing Addresses \n **Custom Parameter** \n\n Whether existing referenced Addresses should be overridden") @RequestParam(value = "overwriteAddresses", required = false) overwriteAddresses: Boolean = true,
+        @Parameter(description = "## Override existing Datasets \n **Custom Parameter** \n\n Whether existing referenced Datasets should be overridden") @RequestParam(value = "overwriteDatasets", required = false) overwriteDatasets: Boolean = true,
     ): ResponseEntity<ByteArray> {
         var transactionResult: CSWTransactionResult
 
         try {
             if (service != "CSW") throw ClientException.withReason("Request parameter 'SERVICE' must be 'CSW'. Value '$service' not supported.")
             if (request != "Transaction") throw ClientException.withReason("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$request' not supported.")
-            apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST", "datasetFolderId", "addressFolderId"))
+            apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST", "datasetFolderId", "addressFolderId", "overwriteAddresses", "overwriteDatasets"))
             apiValidationService.validateCollection(catalog)
             val options = ImportOptions(
                 publish = true,
@@ -94,8 +96,8 @@ class CswtApiController(
                 } else {
                     null
                 },
-                overwriteAddresses = true,
-                overwriteDatasets = true,
+                overwriteAddresses = overwriteAddresses,
+                overwriteDatasets = overwriteDatasets,
             )
             transactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
         } catch (e: IgeException) {
@@ -108,6 +110,6 @@ class CswtApiController(
         }
         val xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
         val statusCode = if (transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
-        return ResponseEntity.status(statusCode!!).body(xmlResponse)
+        return ResponseEntity.status(statusCode).body(xmlResponse)
     }
 }
