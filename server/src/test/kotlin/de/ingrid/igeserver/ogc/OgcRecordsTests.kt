@@ -33,7 +33,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.web.servlet.MockMvc
@@ -44,13 +43,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 @Sql(scripts = ["/ogc/data.sql"], config = SqlConfig(encoding = "UTF-8"))
-@Transactional
-@Rollback
 class OgcRecordsTests : IntegrationTest() {
 
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
