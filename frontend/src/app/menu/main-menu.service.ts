@@ -17,9 +17,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { Route } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
 import { ConfigService } from "../services/config/config.service";
 import { routes } from "../app.router";
 import { UiStore } from "../store/ui.store";
@@ -31,7 +30,8 @@ export class MainMenuService {
   private uiStore = inject(UiStore);
   private _mainRoutes = routes;
 
-  menu$ = new BehaviorSubject<Route[]>(this.mainRoutes);
+  // Signal holding the menu routes
+  menu = signal<Route[]>(this.mainRoutes);
 
   constructor(private config: ConfigService) {}
 

@@ -4,7 +4,7 @@
     aria-label="Hauptmenü"
     role="menu"
 >
-    @for (item of menuItems | async; track item) {
+    @for (item of menuItems(); track item) {
         <a
             mat-list-item
             (click)="gotoPage(item.path)"
