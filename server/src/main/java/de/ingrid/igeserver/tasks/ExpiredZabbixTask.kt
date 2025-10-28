@@ -27,6 +27,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
@@ -49,6 +50,7 @@ class ExpiredZabbixTask(
 
     @Scheduled(cron = "\${zabbix.cleanup.schedule}")
     fun cleanup() {
+        setAdminAuthentication("ExpiredZabbix", "Task")
         zabbixService.activatedCatalogs
             .map { catalogId ->
                 try {
