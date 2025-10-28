@@ -59,6 +59,7 @@ class CodelistSyncTask(
         WHERE c.identifier = ?
         AND dw.deleted = 0
         AND d.state != 'ARCHIVED'
+        ORDER BY d.id
         LIMIT ? OFFSET ?
     """.trimIndent()
 

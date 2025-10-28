@@ -1,6 +1,6 @@
 <ige-dialog-template
     [label]="data?.newEntry ? 'Eintrag hinzufügen' : 'Eintrag bearbeiten'"
-    [disabled]="disabled"
+    [disabled]="disabled()"
     (submit)="submit()"
 >
     <ng-container content>

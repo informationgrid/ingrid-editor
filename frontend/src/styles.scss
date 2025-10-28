@@ -292,6 +292,10 @@ h1 {
   width: 200px;
 }
 
+.width-null {
+  width: 0;
+}
+
 .single-field {
   &.width-50 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.5;

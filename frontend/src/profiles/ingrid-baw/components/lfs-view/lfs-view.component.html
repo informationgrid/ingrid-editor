@@ -1,0 +1,11 @@
+<div class="referenceViewContainer">
+    <div>{{ item().title }}</div>
+
+    <div class="subtitle">{{ item().file.uuid }}</div>
+
+    @if (item().explanation) {
+        <div>
+            {{ item().explanation }}
+        </div>
+    }
+</div>

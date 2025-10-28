@@ -22,7 +22,7 @@
     </div>
 
     <div main-header>
-        @if (aiSearchEnabled) {
+        @if (aiSearchEnabled()) {
             <div class="flex-row gap-12 padding-vertical">
                 <input
                     class="flex-1"
@@ -33,7 +33,7 @@
                 <button
                     mat-flat-button
                     color="primary"
-                    [disabled]="isSearching || request.value === ''"
+                    [disabled]="isSearching() || request.value === ''"
                     (click)="askForSQL(request.value)"
                 >
                     Fragen
@@ -64,7 +64,7 @@
             <button
                 mat-flat-button
                 color="primary"
-                [disabled]="isSearching || sql.value === ''"
+                [disabled]="isSearching() || sql.value === ''"
                 (click)="updateSqlControl(sql.value)"
             >
                 Suchen
@@ -84,8 +84,8 @@
 
     <div main-content>
         <ige-result-table
-            [result]="result"
-            [isLoading]="isSearching"
+            [result]="result()"
+            [isLoading]="isSearching()"
             (updated)="search(sql.value)"
         ></ige-result-table>
     </div>

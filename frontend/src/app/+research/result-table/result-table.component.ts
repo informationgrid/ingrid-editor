@@ -26,6 +26,8 @@ import {
   ViewChild,
   input,
   output,
+  signal,
+  viewChild
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {
@@ -111,7 +113,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   readonly export = output<string>();
   readonly updated = output<void>();
 
-  @ViewChild(MatSort) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
   @ViewChild(MatPaginator, { static: false })
   set paginator(value: MatPaginator) {
@@ -121,12 +123,12 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = [
+  displayedColumns = signal<string[]>([
     "_type",
     "title",
     "_contentModified",
     "settings",
-  ];
+  ]);
   columnsMap: SelectOptionUi[] = [
     new SelectOption("_type", "Typ"),
     new SelectOption("title", "Titel"),
@@ -158,7 +160,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort();
     this.dataSource.paginator = this.paginator;
   }
 

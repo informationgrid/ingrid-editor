@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit, input, output } from "@angular/core";
+import { Component, inject, input, Input, OnInit, output } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -25,6 +25,8 @@ import { DocBehavioursService } from "../../../../services/event/doc-behaviours.
 import { TranslocoService } from "@jsverse/transloco";
 import { TreeComponent } from "../../../sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
+import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
 
 @Component({
   selector: "ige-destination-selection",
@@ -39,6 +41,8 @@ export class DestinationSelectionComponent implements OnInit {
 
   readonly choice = output<number>();
 
+  documentTreeStore = inject(DocumentTreeStore);
+  addressTreeStore = inject(AddressTreeStore);
   parent: number = null;
   rootNode: Partial<DocumentAbstract>;
   activeTreeNode = new BehaviorSubject<number>(null);

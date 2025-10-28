@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.configuration
 
+import de.ingrid.igeserver.api.StringToCatalogImportOptionsConverter
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
@@ -44,14 +45,14 @@ import io.swagger.v3.oas.models.servers.Server as OpenApiServer
 
 @OpenAPIDefinition(
     info = Info(
-        title = "IGE-NG API",
+        title = "InGrid-Editor API",
         version = "v1",
-        description = "The IGE-NG provides the following REST-APIs",
+        description = "The InGrid-Editor provides the following REST-APIs",
         contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com"),
     ),
 )
 @Configuration
-class SwaggerDocumentationConfig : WebMvcConfigurer {
+class SwaggerDocumentationConfig(private val stringToCatalogImportOptionsConverter: StringToCatalogImportOptionsConverter) : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/api/**")
             .allowedMethods(
@@ -132,5 +133,6 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
 
     override fun addFormatters(registry: FormatterRegistry) {
         registry.addConverterFactory(StringToEnumConverterFactory())
+        registry.addConverter(stringToCatalogImportOptionsConverter)
     }
 }

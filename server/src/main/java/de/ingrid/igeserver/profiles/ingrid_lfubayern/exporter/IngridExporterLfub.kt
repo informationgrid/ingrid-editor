@@ -76,6 +76,8 @@ class IngridIdfExporterLfub(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFLfuBayern")
+
     private var xpathUtils: XPathUtils
 
     init {

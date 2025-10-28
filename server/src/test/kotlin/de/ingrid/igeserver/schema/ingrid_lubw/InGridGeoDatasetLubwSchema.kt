@@ -34,7 +34,7 @@ class InGridGeoDatasetLubwSchema : AnnotationSpec() {
             """ { "oac": "my oac", """,
         ).replaceFirst(
             "\"source\": {",
-            """ "source": { "environmentDescription": "lubw env description", """,
+            """ "source": { "environmentDescription": { "key": "1", "value": "lubw env description", "_codelistId": "30001"},""",
         )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0

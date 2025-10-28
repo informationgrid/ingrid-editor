@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, viewChild } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
@@ -56,8 +56,8 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class ZabbixReportComponent implements AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = ["name", "docName", "clock", "settings"];
@@ -74,8 +74,8 @@ export class ZabbixReportComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 
   openDataset(element) {

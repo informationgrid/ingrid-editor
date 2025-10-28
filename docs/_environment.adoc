@@ -199,6 +199,18 @@
 |
 |
 
+|ZABBIX_CLEANUP_SCHEDULE
+|
+|0 0 12 * * *
+
+|ZABBIX_CLEANUP_PATTERN
+|
+|
+
+|ZABBIX_CLEANUP_THRESHOLD
+|
+|20
+
 |===
 
 === System configuration

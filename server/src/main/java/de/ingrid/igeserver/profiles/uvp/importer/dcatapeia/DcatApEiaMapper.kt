@@ -21,9 +21,9 @@ package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.wemove.dcatparser.dcatapde.model.vcard.Kind
-import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
-import com.wemove.dcatparser.dcatapeia.model.dct.Location
+import de.ingrid.dcatparser.dcatapde.model.vcard.Kind
+import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
+import de.ingrid.dcatparser.dcatapeia.model.dct.Location
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue

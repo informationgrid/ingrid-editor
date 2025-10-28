@@ -86,6 +86,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   hasOptionalFields: boolean;
 
+  allowOptionFieldsToggle = true;
+
   addressType: AddressType;
 
   // TODO AW: fieldsMap still used or only intended to have a choice for research-table in the future?
@@ -123,7 +125,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     await this.isInitialized();
 
     this.fields.push(...this.documentFields());
-    this.hasOptionalFields = this.hasOptionals(this.fields);
+    this.hasOptionalFields =
+      this.allowOptionFieldsToggle && this.hasOptionals(this.fields);
     this.addCodelistDefaultValues(this.fields);
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
     // this.getFieldMap(this.fields);

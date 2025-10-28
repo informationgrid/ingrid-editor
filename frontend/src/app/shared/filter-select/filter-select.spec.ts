@@ -28,7 +28,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { createSignal } from "@angular/core/primitives/signals";
-import { InputSignal } from "@angular/core";
+import { InputSignal, provideZonelessChangeDetection } from "@angular/core";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 
 describe("FilterSelectComponent", () => {
@@ -44,6 +44,7 @@ describe("FilterSelectComponent", () => {
       MatButtonModule,
       MatIconTestingModule,
     ],
+    providers: [provideZonelessChangeDetection()],
     detectChanges: false,
   });
 

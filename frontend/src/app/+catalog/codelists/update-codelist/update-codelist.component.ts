@@ -22,7 +22,7 @@ import {
   ElementRef,
   Inject,
   OnInit,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -79,7 +79,7 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
   ],
 })
 export class UpdateCodelistComponent implements OnInit {
-  @ViewChild("contextCodeListContainer") container: ElementRef;
+  readonly container = viewChild<ElementRef>("contextCodeListContainer");
   fields: any[];
   isNew = true;
 

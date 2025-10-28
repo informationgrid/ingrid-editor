@@ -24,6 +24,8 @@ import {
   inject,
   LOCALE_ID,
   provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -152,6 +154,9 @@ import {
   withRouter,
 } from "ngx-matomo-client";
 import { AppInjector } from "./app/app_injector";
+import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/timepicker-type.component";
+import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
+import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
 
 if (environment.production) {
   enableProdMode();
@@ -159,6 +164,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       KeycloakAngularModule,
       AngularSplitModule,
@@ -240,6 +246,10 @@ bootstrapApplication(AppComponent, {
             component: DateRangeTypeComponent,
           },
           {
+            name: "timepicker",
+            component: TimepickerTypeComponent,
+          },
+          {
             name: "upload",
             component: UploadTypeComponent,
           },
@@ -254,6 +264,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "uvpPhases",
             component: UvpSectionsComponent,
+          },
+          {
+            name: "bawPhases",
+            component: BawSectionsComponent,
           },
           {
             name: "referencedDocuments",
@@ -323,6 +337,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "unit-inputPrint",
             component: PrintTypeComponent,
+          },
+          {
+            name: "explanationText",
+            component: ExplanationTextComponent,
           },
         ],
         validators: [
@@ -420,6 +438,8 @@ bootstrapApplication(AppComponent, {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+    // handle errors outside angular context with errorhandler
+    provideBrowserGlobalErrorListeners(),
     // cache routes
     {
       provide: RouteReuseStrategy,

@@ -18,8 +18,11 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Content aggregateInformation = null
 @param Content citationEdition = null
 @param Boolean isService = false
+@param Content additionalIdentification = null
+
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -338,6 +341,8 @@
                 </gmd:identifier>
             @endif
 
+            @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithoutEmail(), wrapperElement = "gmd:citedResponsibleParty")
+
             ${additionalCitation}
 
         </gmd:CI_Citation>
@@ -357,7 +362,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
+    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithEmail(), wrapperElement = "gmd:pointOfContact")
     @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -479,6 +484,7 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
     @endif
+    ${aggregateInformation}
     @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
         <gmd:spatialRepresentationType>
             <gmd:MD_SpatialRepresentationTypeCode
@@ -504,7 +510,7 @@
             <gmd:spatialResolution>
                 <gmd:MD_Resolution>
                     <gmd:distance>
-                        <gco:Distance uom="meter">${resolution.getDistanceMeter()}</gco:Distance>
+                        <gco:Distance uom="${page.getUomMeter()}">${resolution.getDistanceMeter()}</gco:Distance>
                     </gmd:distance>
                 </gmd:MD_Resolution>
             </gmd:spatialResolution>
@@ -568,6 +574,7 @@
                             </gmd:extentTypeCode>
                         @endif
                             <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
                                 @if(ref.getAuthority() != null)
                                     <gmd:authority>
                                         <gmd:CI_Citation>
@@ -587,7 +594,6 @@
                                         </gmd:CI_Citation>
                                     </gmd:authority>
                                 @endif
-                                <gmd:MD_Identifier>
                                     <gmd:code>
                                         @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
                                     </gmd:code>
@@ -655,6 +661,9 @@
                     <gmd:maximumValue>
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
+                    @if(page.getLinkToVerticalCRS())
+                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="http://www.opengis.net/def/crs/EPSG/0/${verticalExtent.getDatum().getKey()}" />
+                    @else
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
                             <gml:identifier codeSpace="" />
@@ -682,35 +691,13 @@
                             </gml:verticalDatum>
                         </gml:VerticalCRS>
                     </gmd:verticalCRS>
+                    @endif
+
                 </gmd:EX_VerticalExtent>
             </gmd:verticalElement>
         @endif
     </gmd:EX_Extent>
 </${page.getExtentType()}>
-@for( String identifier : page.getCoupledResourceIdentifiers() )
-    @for( DisplayOperation operation : page.getOperations() )
-        <srv:coupledResource>
-            <srv:SV_CoupledResource>
-                <srv:operationName>
-                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
-                </srv:operationName>
-                <srv:identifier>
-                    <gco:CharacterString>${identifier}</gco:CharacterString>
-                </srv:identifier>
-            </srv:SV_CoupledResource>
-        </srv:coupledResource>
-    @endfor
-    @if(page.getOperations().isEmpty())
-        <srv:coupledResource>
-            <srv:SV_CoupledResource>
-                <srv:operationName gco:nilReason="missing" />
-                <srv:identifier>
-                    <gco:CharacterString>${identifier}</gco:CharacterString>
-                </srv:identifier>
-            </srv:SV_CoupledResource>
-        </srv:coupledResource>
-    @endif
-@endfor
 @if(isService)
     <srv:couplingType>
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
@@ -778,6 +765,7 @@
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
     </gmd:supplementalInformation>
 @endif
+${additionalIdentification}
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 ${contentInfo}
@@ -1055,3 +1043,4 @@ ${contentInfo}
 @if(TransformationTools.hasValue(page.getMapLinkUrl()))
     <idf:mapUrl>${page.getMapLinkUrl()}</idf:mapUrl>
 @endif
+$unsafe{page.getExtraContent()}

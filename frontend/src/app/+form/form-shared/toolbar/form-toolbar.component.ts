@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
   ToolbarItem,
 } from "./form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
 
@@ -54,32 +54,26 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MATOMO_DIRECTIVES,
   ],
 })
-export class FormToolbarComponent implements OnInit {
-  @ViewChild("hiddenMenuTrigger") hiddenMenuTrigger: MatMenuTrigger;
-  buttons_left: Array<ToolbarItem | Separator> = [];
-  buttons_right: Array<ToolbarItem | Separator> = [];
+export class FormToolbarComponent {
+  private formToolbarService = inject(FormToolbarService);
+  private documentService = inject(DocumentService);
 
-  menu = {};
+  buttons_left = computed<Array<ToolbarItem | Separator>>(() =>
+    this.formToolbarService.toolbar$().filter((b) => b.align !== "right"),
+  );
+  buttons_right = computed<Array<ToolbarItem | Separator>>(() =>
+    this.formToolbarService.toolbar$().filter((b) => b.align === "right"),
+  );
 
-  isNotReady = signal<boolean>(false);
+  finishedOperation = toSignal(
+    this.documentService.documentOperationFinished$,
+    { initialValue: true },
+  );
+  isNotReady = computed<boolean>(() => !this.finishedOperation());
+
+  menu = signal<Record<string, boolean>>({});
+
   private currentFocusedEl: HTMLElement;
-
-  constructor(
-    private formToolbarService: FormToolbarService,
-    private documentService: DocumentService,
-  ) {
-    formToolbarService.toolbar$.subscribe((buttons) => {
-      this.buttons_left = buttons.filter((b) => b.align !== "right");
-      this.buttons_right = buttons.filter((b) => b.align === "right");
-    });
-    this.documentService.documentOperationFinished$
-      .pipe(takeUntilDestroyed())
-      .subscribe((isReady) => {
-        this.isNotReady.set(!isReady);
-      });
-  }
-
-  ngOnInit() {}
 
   sendEvent(id: string, data?: any) {
     this.formToolbarService.sendEvent(id, data);
@@ -94,11 +88,11 @@ export class FormToolbarComponent implements OnInit {
     if (this.currentFocusedEl) this.currentFocusedEl.focus();
   }
 
-  // Set timeout to avoid flash rendering empty hidden menu after selection
-  // https://github.com/angular/components/issues/11929
-  removeHiddenMenu(button) {
-    setTimeout(() => {
-      button.hiddenMenu = null;
-    }, 500);
+  openMenu(id: string) {
+    this.menu.update((m) => ({ ...m, [id]: true }));
+  }
+
+  closeMenu(id: string) {
+    this.menu.update((m) => ({ ...m, [id]: false }));
   }
 }

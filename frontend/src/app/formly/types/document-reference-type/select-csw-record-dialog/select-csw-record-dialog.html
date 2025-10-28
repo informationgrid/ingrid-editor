@@ -1,7 +1,7 @@
 <ige-dialog-template
     label="Externen Datensatz wählen"
     (submit)="submit()"
-    [disabled]="phase !== 'valid' || form.invalid"
+    [disabled]="phase() !== 'valid' || form.invalid"
 >
     <div content>
         @if (showLayernames) {
@@ -24,24 +24,24 @@
             />
             <mat-error>Die URL ist nicht gültig</mat-error>
         </mat-form-field>
-        @if (analysisError) {
-        <ige-form-error> {{ analysisError }}</ige-form-error>
-        } @if (phase === 'analyzing') {
+        @if (analysisError()) {
+        <ige-form-error> {{ analysisError() }}</ige-form-error>
+        } @if (phase() === 'analyzing') {
         <div>
             <span>Die URL wird analysiert</span>
             <div class="dot-pulse"></div>
         </div>
-        } @if (analysis) {
+        } @if (analysis()) {
         <div>
             <div class="section-title">Identifier</div>
-            <div class="space-bottom">{{ analysis.identifier }}</div>
+            <div class="space-bottom">{{ analysis().identifier }}</div>
             <div class="section-title">Titel</div>
-            <div class="space-bottom">{{ analysis.title }}</div>
-            @if (analysis?.downloadData?.length > 0) {
+            <div class="space-bottom">{{ analysis().title }}</div>
+            @if (analysis()?.downloadData?.length > 0) {
             <div class="section-title">Downloads</div>
             }
             <ul>
-                @for (download of analysis?.downloadData; track download) {
+                @for (download of analysis()?.downloadData; track download) {
                 <li>{{ download }}</li>
                 }
             </ul>

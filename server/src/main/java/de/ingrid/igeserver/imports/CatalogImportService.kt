@@ -38,6 +38,16 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
+data class CatalogImportOptions(
+    val allowUpdate: Boolean = false,
+    val importBehaviors: Boolean = true,
+    val importCodelists: Boolean = true,
+    val associateUsersWithCatalog: Boolean = true,
+    val importQueries: Boolean = true,
+    val importDocumentsAndGroups: Boolean = true,
+    val importGroups: Boolean = true,
+)
+
 @Service
 class CatalogImportService(
     entityManager: EntityManager,
@@ -49,37 +59,40 @@ class CatalogImportService(
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
-    fun importCatalog(exportedCatalog: ExportedCatalog) {
+    fun importCatalog(exportedCatalog: ExportedCatalog, options: CatalogImportOptions = CatalogImportOptions()) {
         runPreChecks(exportedCatalog)
 
         val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
         val catalogId = try {
             val existingCatalog = catalogService.getCatalogById(catalogIdentifier)
-            if (!exportedCatalog.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists and import file does not allow updates. Add the field '"allowUpdate": true' to the import file in order to update an existing catalog.""")
+            if (!options.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists. In order to update the catalog you need to toggle the button 'bestehenden Katalog aktualisieren'.""")
             existingCatalog.id!!
         } catch (e: EmptyResultDataAccessException) {
             createCatalog(exportedCatalog.catalog)
         }
 
-        importBehaviours(exportedCatalog.behaviour, catalogId)
-        importCodelists(exportedCatalog.codelist, catalogId)
+        if (options.importBehaviors) importBehaviours(exportedCatalog.behaviour, catalogId)
+        if (options.importCodelists) importCodelists(exportedCatalog.codelist, catalogId)
 
         val userMigrationMap = importUsers(exportedCatalog.users, exportedCatalog.userInfo, catalogId)
-        addCatalogUserInfo(catalogId, userMigrationMap.values)
+        if (options.associateUsersWithCatalog) addCatalogUserInfo(catalogId, userMigrationMap.values)
 
-        importQueries(exportedCatalog.query, catalogId, userMigrationMap)
+        if (options.importQueries) importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
-        val documentWrapperMigrationMap = importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
-        createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
-        log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
+        if (options.importDocumentsAndGroups) {
+            val documentWrapperMigrationMap =
+                importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
+            createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
+            log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
 
-        importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
+            importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
 
-        val groupMigrationMap = importGroups(exportedCatalog.permissionGroup, catalogId, documentWrapperMigrationMap, userMigrationMap)
-        log.info("Imported ${groupMigrationMap.size} PermissionGroups")
-        assignGroupsToUsers(exportedCatalog.userGroup, groupMigrationMap, userMigrationMap)
-        log.info("Saving groups to set ACLs")
-        saveAllGroupsOfCatalog(exportedCatalog.catalog["identifier"] as String)
+            val groupMigrationMap = importGroups(exportedCatalog.permissionGroup, catalogId, documentWrapperMigrationMap, userMigrationMap)
+            log.info("Imported ${groupMigrationMap.size} PermissionGroups")
+            assignGroupsToUsers(exportedCatalog.userGroup, groupMigrationMap, userMigrationMap)
+            log.info("Saving groups to set ACLs")
+            saveAllGroupsOfCatalog(exportedCatalog.catalog["identifier"] as String)
+        }
         log.info("Finished importing catalog ${exportedCatalog.catalog["identifier"]} with ID $catalogId")
     }
 

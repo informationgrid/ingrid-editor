@@ -116,6 +116,7 @@ data class VectorSpatialRepresentation(
     val geometricObjectCount: Int?,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Publication(
     val isbn: String?,
     val pages: String?,
@@ -177,7 +178,7 @@ data class Reference(
     val title: String,
     var type: KeyValue,
     val explanation: String?,
-    val url: String?,
+    var url: String?,
     val uuidRef: String?,
     var urlDataType: KeyValue?,
     var uuidRefClass: String? = null,

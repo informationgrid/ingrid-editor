@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.repository
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentState
 import org.springframework.data.jpa.repository.JpaRepository
@@ -93,7 +94,7 @@ interface DocumentWrapperRepository :
     override fun deleteById(id: Int)
 
     @Modifying
-    @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
+    @PreAuthorize("hasPermission(#wrapperId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     @Query("UPDATE document_wrapper SET deleted = 0 WHERE id = ?1", nativeQuery = true)
     fun undeleteDocument(wrapperId: Int)
 
@@ -104,4 +105,8 @@ interface DocumentWrapperRepository :
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
     fun saveAndFlush(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
+
+    @PreAuthorize("hasPermission(#wrapperId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'READ')")
+    @Query("SELECT doc FROM DocumentWrapper dw JOIN Document doc ON dw.uuid = doc.uuid WHERE dw.id = ?1 AND dw.deleted = 0 ORDER BY doc.modified DESC")
+    fun getAllDocumentVersions(wrapperId: Int): List<Document>
 }

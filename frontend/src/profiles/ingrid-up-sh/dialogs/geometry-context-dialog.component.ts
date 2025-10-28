@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, signal } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -52,7 +52,7 @@ export class GeometryContextDialogComponent implements OnInit {
     { label: "sonstiges", value: "other" },
   ];
 
-  disabled: boolean;
+  disabled = signal<boolean>(true);
 
   fields: FormlyFieldConfig[] = geometryContextFields();
 
@@ -63,10 +63,7 @@ export class GeometryContextDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
-      setTimeout(() => {
-        if (value === "VALID") this.disabled = false;
-        else if (value === "INVALID") this.disabled = true;
-      });
+      this.disabled.set(value !== "VALID");
     });
   }
 

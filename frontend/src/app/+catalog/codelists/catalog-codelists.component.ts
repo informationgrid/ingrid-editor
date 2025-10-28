@@ -105,9 +105,9 @@ export class CatalogCodelistsComponent implements OnInit {
     }
     const list = this.getFilteredCodelists(this.filterCtrlValue());
     if (this.selectedCodelist) {
-      this.selectedCodelist = list.find(
-        (item) => item.id === this.selectedCodelist.id,
-      );
+      this.selectedCodelist = {
+        ...list.find((item) => item.id === this.selectedCodelist.id),
+      };
     }
     return list;
   });
@@ -270,7 +270,10 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
     if (oldId === null) {
-      this.selectedCodelist.entries.push(result);
+      this.selectedCodelist.entries = [
+        ...this.selectedCodelist.entries,
+        result,
+      ];
     } else {
       const index = this.selectedCodelist.entries.findIndex(
         (e) => e.id === oldId,

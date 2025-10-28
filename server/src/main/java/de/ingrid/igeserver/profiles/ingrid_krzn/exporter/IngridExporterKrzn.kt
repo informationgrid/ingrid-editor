@@ -67,6 +67,8 @@ class IngridIdfExporterKrzn(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFKrzn")
+
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 

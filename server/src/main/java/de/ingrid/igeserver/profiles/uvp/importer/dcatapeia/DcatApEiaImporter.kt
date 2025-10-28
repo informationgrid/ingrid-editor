@@ -24,9 +24,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.wemove.dcatparser.dcatapde.model.dcat.Catalog
-import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
-import com.wemove.dcatparser.dcatapeia.serialization.DcatApEiaDeserializer
+import de.ingrid.dcatparser.dcatapde.model.dcat.Catalog
+import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
+import de.ingrid.dcatparser.dcatapeia.serialization.DcatApEiaDeserializer
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo

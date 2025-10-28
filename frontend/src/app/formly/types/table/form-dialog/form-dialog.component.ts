@@ -17,13 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit, signal } from "@angular/core";
 import {
   FormlyFieldConfig,
   FormlyForm,
   FormlyFormOptions,
 } from "@ngx-formly/core";
-import { UntypedFormGroup } from "@angular/forms";
+import { FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
@@ -41,10 +41,10 @@ export interface FormDialogData {
   imports: [DialogTemplateComponent, FormlyForm],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
-  form = new UntypedFormGroup({});
-  titleText: string;
+  form = new FormGroup({});
+  titleText = signal<string>("");
   options: FormlyFormOptions = {};
-  disabled = true;
+  disabled = signal<boolean>(true);
   isExistingEntry: boolean;
 
   constructor(
@@ -52,14 +52,12 @@ export class FormDialogComponent implements OnInit, OnDestroy {
     private dlgRef: MatDialogRef<string>,
   ) {
     this.isExistingEntry = data.model != null;
-    this.titleText = this.isExistingEntry
-      ? "Eintrag bearbeiten"
-      : "Eintrag hinzufügen";
+    this.titleText.set(
+      this.isExistingEntry ? "Eintrag bearbeiten" : "Eintrag hinzufügen",
+    );
     this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
-      setTimeout(() => {
-        if (value === "VALID") this.disabled = false;
-        else if (value === "INVALID") this.disabled = true;
-      });
+      if (value === "VALID") this.disabled.set(false);
+      else if (value === "INVALID") this.disabled.set(true);
     });
   }
 

@@ -22,7 +22,7 @@ import {
   Component,
   Inject,
   OnInit,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -89,8 +89,8 @@ import { MatTooltip } from "@angular/material/tooltip";
   ],
 })
 export class ZabbixReportDialogComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = ["docName", "clock", "resolved", "settings"];
@@ -111,7 +111,7 @@ export class ZabbixReportDialogComponent implements OnInit, AfterViewInit {
       });
   }
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 }

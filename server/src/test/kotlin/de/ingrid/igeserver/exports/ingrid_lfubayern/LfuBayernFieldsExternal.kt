@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridIdfExporterExternalLfub
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
@@ -57,6 +58,12 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
         every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"
         every { codelistHandler.getCatalogCodelistValue(any(), "20001", "2") } returns "intern zwei"
+        every { behaviourService.get(any(), "plugin.lfubayern.anonymous.address") } answers {
+            Behaviour().apply {
+                active = true
+                data = mapOf("uuid" to "ANONYMIZED-1234-1234-1234-UUID")
+            }
+        }
     }
 
     init {

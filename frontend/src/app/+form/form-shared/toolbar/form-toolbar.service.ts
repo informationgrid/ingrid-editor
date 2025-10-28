@@ -17,13 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, WritableSignal } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { Injectable, signal, untracked } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
 import { DocumentAbstract } from "../../../store/document/document.model";
 
+export type ToolbarItemType = "button" | "separator";
+
 export interface DefaultToolbarItem {
+  type: ToolbarItemType;
   id: string;
   pos: number;
   align?: "right" | "left";
@@ -37,12 +39,13 @@ export interface ToolbarMenuItem {
 }
 
 export interface ToolbarItem extends DefaultToolbarItem {
+  type: "button";
   tooltip?: string;
   matIconVariable?: string;
   matSvgVariable?: string;
   cssClasses?: string;
   eventId: string;
-  active?: WritableSignal<boolean>;
+  active?: boolean;
   label?: string;
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
@@ -51,7 +54,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
 }
 
 export interface Separator extends DefaultToolbarItem {
-  isSeparator: boolean;
+  type: "separator";
 }
 
 @Injectable({
@@ -59,37 +62,30 @@ export interface Separator extends DefaultToolbarItem {
 })
 export class FormToolbarService {
   // event when a new button was added
-  toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
+  toolbar$ = signal<Array<ToolbarItem | Separator>>([]);
 
-  private _buttons: Array<ToolbarItem | Separator> = [];
-
-  private toolbarStateFns: {
-    [x: string]: (docs: DocumentAbstract[]) => boolean;
-  } = {};
+  private toolbarStateFns: Record<
+    string,
+    (docs: DocumentAbstract[]) => boolean
+  > = {};
 
   constructor(private docEvents: DocEventsService) {}
-
-  get buttons(): Array<ToolbarItem | Separator> {
-    return this._buttons;
-  }
 
   addButton(button: ToolbarItem | Separator) {
     this.checkButtonExists(button);
 
-    const pos = this._buttons.length;
+    const buttons = this.toolbar$();
 
-    this._buttons.splice(pos, 0, button);
+    buttons.splice(buttons.length, 0, button);
 
     // sort buttons
-    this._buttons.sort((a, b) =>
-      a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1,
-    );
+    buttons.sort((a, b) => (a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1));
 
-    this.toolbar$.next(this.buttons);
+    this.toolbar$.set([...buttons]);
   }
 
   private checkButtonExists(button: ToolbarItem | Separator) {
-    const alreadyExists = this._buttons.find((but) => but.id === button.id);
+    const alreadyExists = this.toolbar$().find((but) => but.id === button.id);
     if (alreadyExists)
       throw new IgeError(
         "Toolbar-Button mit gleicher ID existiert bereits: " +
@@ -100,19 +96,20 @@ export class FormToolbarService {
   }
 
   removeButton(id: string): void {
-    let index = null;
-    this._buttons.some((b, i) => {
-      if (b.id === id) {
-        index = i;
-        return true;
+    untracked(() => {
+      let index = null;
+      this.toolbar$().some((b, i) => {
+        if (b.id === id) {
+          index = i;
+          return true;
+        }
+      });
+
+      if (index !== null) {
+        // mutates signal!
+        this.toolbar$().splice(index, 1);
       }
     });
-
-    if (index !== null) {
-      this._buttons.splice(index, 1);
-    }
-
-    this.toolbar$.next(this.buttons);
   }
 
   sendEvent(id: string, data?: any) {
@@ -126,29 +123,66 @@ export class FormToolbarService {
   }
 
   /**
-   * Set the state of a toolbar button to enabled or disabled.
+   * Set the state of a toolbar button to "enabled" or "disabled".
    * @param id
    * @param active
    */
   setButtonState(id: string, active: boolean) {
-    const button = this.getButtonById(id) as ToolbarItem | null;
-    if (button) button.active?.set(active);
+    // Use untracked to prevent cycles because of plugins, calling this function
+    // in an effect. Since we access the toolbar$-signal and modify it we would
+    // create an infinite loop.
+    untracked(() => {
+      const items = this.toolbar$();
+      let changed = false;
+
+      for (const item of items) {
+        if (item.id === id && item.type === "button") {
+          if (item.active !== active) {
+            item.active = active; // in-place mutation
+            changed = true;
+          }
+          break;
+        }
+      }
+
+      if (changed) {
+        // emit only when there was a real change
+        this.toolbar$.set([...items]);
+      }
+    });
   }
 
   setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {
-    const button = <ToolbarItem>this.getButtonById(id);
-    if (button) {
-      const menuButton = button.menu.find((item) => item.eventId === eventId);
+    untracked(() => {
+      const button = <ToolbarItem>this.getButtonById(id);
+      if (button) {
+        const menuButton = button.menu.find((item) => item.eventId === eventId);
 
-      if (menuButton) {
-        menuButton.active = active;
+        if (menuButton) {
+          const items = this.toolbar$();
+          menuButton.active = active;
+          this.toolbar$.set([...items]);
+        }
       }
-    }
+    });
   }
 
   getButtonById(id: string): DefaultToolbarItem {
-    return this._buttons.find((b) => b.id === id);
+    return this.toolbar$().find((b) => b.id === id);
   }
+
+  updateHiddenButton(id: string, hide: boolean) {
+    untracked(() => {
+      const button = this.getButtonById("toolBtnPublish") as ToolbarItem;
+      if (button) {
+        const items = this.toolbar$();
+        button.hidden = hide;
+        this.toolbar$.set([...items]);
+      } else
+        console.error("Button not found for toggling hidden property: " + id);
+    });
+  }
+
   updateHiddenMenu(id: string, hiddenMenu: Array<ToolbarMenuItem>) {
     const button = <ToolbarItem>this.getButtonById(id);
     if (button) {

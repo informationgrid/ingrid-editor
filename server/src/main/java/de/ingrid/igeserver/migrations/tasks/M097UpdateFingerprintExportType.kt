@@ -50,26 +50,23 @@ class M097UpdateFingerprintExportType : MigrationBase("0.97") {
                             -- Default IngridIDFExporter mapping
                             WHEN elem->>'exportType' = 'indexInGridIDF' THEN
                                 jsonb_set(elem, '{exportType}', '"ingridIDF"')
-                            -- Bast profile with custom IDF exporter
                             WHEN elem->>'exportType' = 'indexInGridIDFBast' THEN
                                 jsonb_set(elem, '{exportType}', '"ingridIDFBast"')
-                            -- External Bast profile with custom IDF exporter
                             WHEN elem->>'exportType' = 'indexInGridIDFExternalBast' THEN
                                 jsonb_set(elem, '{exportType}', '"ingridIDFExternalBast"')
-                            -- External LfuBayern profile with custom IDF exporter
                             WHEN elem->>'exportType' = 'indexInGridIDFLfuExternalBayern' THEN
                                 jsonb_set(elem, '{exportType}', '"ingridIDFLfuExternalBayern"')
-                            -- All other profiles use default IngridIDFExporter (ingridIDF)
                             WHEN elem->>'exportType' = 'indexInGridIDFHmdk' THEN
-                                jsonb_set(elem, '{exportType}', '"ingridIDF"')
+                                jsonb_set(elem, '{exportType}', '"ingridIDFHmdk"')
                             WHEN elem->>'exportType' = 'indexInGridIDFKrzn' THEN
-                                jsonb_set(elem, '{exportType}', '"ingridIDF"')
+                                jsonb_set(elem, '{exportType}', '"ingridIDFKrzn"')
                             WHEN elem->>'exportType' = 'indexInGridIDFLfuBayern' THEN
-                                jsonb_set(elem, '{exportType}', '"ingridIDF"')
+                                jsonb_set(elem, '{exportType}', '"ingridIDFLfuBayern"')
                             WHEN elem->>'exportType' = 'indexInGridIDFLubw' THEN
-                                jsonb_set(elem, '{exportType}', '"ingridIDF"')
+                                jsonb_set(elem, '{exportType}', '"ingridIDFLubw"')
                             WHEN elem->>'exportType' = 'indexInGridIDFUPSH' THEN
-                                jsonb_set(elem, '{exportType}', '"ingridIDF"')
+                                jsonb_set(elem, '{exportType}', '"ingridIDFUPSH"')
+                            -- All other profiles use default IngridIDFExporter (ingridIDF)
                             WHEN elem->>'exportType' = 'indexInGridIDFWsv' THEN
                                 jsonb_set(elem, '{exportType}', '"ingridIDF"')
                             WHEN elem->>'exportType' = 'indexInGridIDFCswWsv' THEN

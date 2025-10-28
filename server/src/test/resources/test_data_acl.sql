@@ -21,11 +21,13 @@ INSERT INTO user_info VALUES (11, 'author1', NULL, '{"recentLogins": [1604100256
 INSERT INTO user_info VALUES (12, 'mdadmin1', NULL, '{"recentLogins": [1604100256021]}', 3);
 INSERT INTO user_info VALUES (13, 'catadmin1', NULL, '{"recentLogins": [1604100256021]}', 2);
 INSERT INTO user_info VALUES (14, 'author2', NULL, '{"recentLogins": [1604100256021]}', 4);
+INSERT INTO user_info VALUES (15, 'authorRootWrite', NULL, '{"recentLogins": [1604100256021]}', 4);
 INSERT INTO catalog_user_info VALUES (100, 10);
 INSERT INTO catalog_user_info VALUES (100, 11);
 INSERT INTO catalog_user_info VALUES (100, 12);
 INSERT INTO catalog_user_info VALUES (100, 13);
 INSERT INTO catalog_user_info VALUES (100, 14);
+INSERT INTO catalog_user_info VALUES (100, 15);
 
 -- documents and wrappers
 
@@ -61,6 +63,9 @@ INSERT INTO document VALUES (1004, 100, '5545bc36-b5e4-3549-b5bf-7513752e8436', 
     0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 'FOLDER', 'Test Folder Older', null,
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
+INSERT INTO document VALUES (2000, 100, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'Test Folder Other', '{}',
     0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 
@@ -163,6 +168,7 @@ INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.ig
 
 -- add documents for protection
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (1, 1, 2000, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (16, 1, 2002, 1, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (2, 1, 2010, 1, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (3, 1, 2100, null, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (4, 1, 2110, 3, 1, true);
@@ -196,3 +202,8 @@ INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, gra
 -- write subtree permission with no read access to parent
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (9, 14, 1, 3, 1, true, true, true);
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (10, 14, 2, 3, 32, true, true, true);
+
+
+-- groups
+INSERT INTO public.permission_group (id, catalog_id, name, description, permissions, data, manager_id) VALUES (1, 100, 'Group with Write-Root', 'Root Write access to tree', '{"rootPermission": "WRITE"}', null, 10);
+INSERT INTO public.user_group VALUES (15, 1);

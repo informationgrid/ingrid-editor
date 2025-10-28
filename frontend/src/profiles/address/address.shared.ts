@@ -36,10 +36,10 @@ export interface AddressOptions {
 }
 
 export abstract class AddressShared extends BaseDoctype {
-  addContact(): FormlyFieldConfig {
+  addContact(required: boolean = true): FormlyFieldConfig {
     return this.addRepeat("contact", "Kontakt", {
       className: "contact",
-      required: true,
+      required: required,
       fields: [
         this.addSelect("type", "Art", {
           fieldLabel: "Art",
@@ -80,7 +80,7 @@ export abstract class AddressShared extends BaseDoctype {
       validators: {
         atLeastEmail: {
           expression: (ctrl: FormControl<any[]>) =>
-            ctrl.value.some((item) => item.type?.key === "3"),
+            !required || ctrl.value.some((item) => item.type?.key === "3"),
           message: "Mindestens ein Eintrag muss vom Typ 'E-Mail' sein",
         },
       },

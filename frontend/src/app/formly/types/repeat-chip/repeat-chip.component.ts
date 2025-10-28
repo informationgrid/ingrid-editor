@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -118,7 +118,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     private dialog: MatDialog,
     private http: HttpClient,
     private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef,
   ) {
     super();
 
@@ -156,7 +155,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
       .subscribe((result) => {
         this.searchResult.next(result);
       });
-    this.cdr.detectChanges();
   }
 
   openDialog() {
@@ -173,7 +171,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
-          this.cdr.detectChanges();
         }
       });
   }

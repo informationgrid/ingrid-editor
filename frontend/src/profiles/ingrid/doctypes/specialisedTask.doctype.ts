@@ -19,7 +19,7 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { IngridClass, IngridShared } from "./ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -45,7 +45,7 @@ export class SpecialisedTaskDoctype extends IngridShared {
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridSpecialisedTask),
     ];
 
     return this.manipulateDocumentFields(fields);

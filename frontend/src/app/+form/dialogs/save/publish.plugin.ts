@@ -18,11 +18,8 @@
  * limitations under the Licence.
  */
 import { effect, inject, Injectable, signal } from "@angular/core";
-import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { DocumentService } from "../../../services/document/document.service";
 import { Observable, of } from "rxjs";
-import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -40,8 +37,10 @@ import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { FormMenuService } from "../../form-menu.service";
+import { DocumentService } from "../../../services/document/document.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -59,17 +58,14 @@ export class PublishPlugin extends SaveBase {
   eventValidate = "VALIDATE";
 
   private profileService = inject(ProfileService);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private formMenuService = inject(FormMenuService);
+  private transloco = inject(TranslocoService);
+  private modalService = inject(ModalService);
+  private docEvents = inject(DocEventsService);
 
-  constructor(
-    public formToolbarService: FormToolbarService,
-    private modalService: ModalService,
-    public dialog: MatDialog,
-    public documentService: DocumentService,
-    private docEvents: DocEventsService,
-    private transloco: TranslocoService,
-  ) {
+  constructor() {
     super();
     this.fields.push({
       key: "unpublishDisabled",
@@ -116,14 +112,8 @@ export class PublishPlugin extends SaveBase {
     this.formSubscriptions.push(...toolbarEventSubscription);
   }
 
+  // TODO: Menu should be separated into additional plugins, that use FormMenuService to register menu items
   private addToolbarButtons() {
-    // add button to toolbar for publish action
-    this.formToolbarService.addButton({
-      id: "toolBtnPublishSeparator",
-      isSeparator: true,
-      pos: 100,
-    });
-
     const publishMenu = [
       {
         eventId: this.eventPublishId,
@@ -156,14 +146,15 @@ export class PublishPlugin extends SaveBase {
     }
 
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnPublish",
-      label: "Veröffentlichen",
+      label: this.transloco.translate("publish.buttonLabel"),
       eventId: this.eventPublishId,
       pos: 25,
       align: "right",
-      active: signal(false),
+      active: false,
       isPrimary: true,
-      menu: publishMenu,
+      menu: this.removeExcludedItems(publishMenu),
     });
   }
 
@@ -189,16 +180,10 @@ export class PublishPlugin extends SaveBase {
   }
 
   private doValidation(validation: BeforePublishData) {
+    this.checkForAllParentsPublished();
     const formIsInvalid = this.formStateService.getForm().invalid;
-    const allParentsPublished = this.checkForAllParentsPublished();
     const hasOtherErrors = validation.errors.length > 0;
 
-    if (!allParentsPublished) {
-      this.modalService.showJavascriptError(
-        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
-      );
-      return false;
-    }
     if (formIsInvalid || hasOtherErrors) {
       this.showErrorDialog(hasOtherErrors, validation);
       return false;
@@ -226,7 +211,7 @@ export class PublishPlugin extends SaveBase {
     this.modalService.showIgeError(error);
   }
 
-  publish(withoutConfirmation: boolean = false) {
+  private publish(withoutConfirmation: boolean = false) {
     // show confirm dialog
     const message = this.transloco.translate("publish.confirmMessage");
 
@@ -305,7 +290,7 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
-  saveWithData(data, overrideVersion?: number, delay: Date = null) {
+  protected saveWithData(data, overrideVersion?: number, delay: Date = null) {
     const metadata = this.getMetadata();
     this.documentService
       .publish(
@@ -333,7 +318,7 @@ export class PublishPlugin extends SaveBase {
       .subscribe();
   }
 
-  revert() {
+  private revert() {
     const docId = this.getMetadata().wrapperId;
 
     const message =
@@ -373,7 +358,6 @@ export class PublishPlugin extends SaveBase {
     super.unregisterForm();
 
     if (this.isActive()) {
-      this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }
   }
@@ -409,9 +393,13 @@ export class PublishPlugin extends SaveBase {
     const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
-    return store
+    const success = store
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
+    if (!success)
+      throw new IgeError(
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
+      );
   }
 
   private validateDataset() {
@@ -486,5 +474,10 @@ export class PublishPlugin extends SaveBase {
       if (planned) this.showPlanPublishingDialog();
       else this.publish(event?.data?.withoutConfirmation);
     });
+  }
+
+  private removeExcludedItems(items) {
+    const excludedItems = this.formMenuService.getExcludedMenuItems("publish");
+    return items.filter((item) => !excludedItems.includes(item.eventId));
   }
 }

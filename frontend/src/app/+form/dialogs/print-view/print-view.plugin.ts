@@ -71,14 +71,14 @@ export class PrintViewPlugin extends Plugin {
 
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
-      // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
       {
+        type: "button",
         id: "toolBtnPrint",
         tooltip: "Vorschau",
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: signal(false),
+        active: false,
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));

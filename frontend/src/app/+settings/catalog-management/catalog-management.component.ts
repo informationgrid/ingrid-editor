@@ -132,6 +132,39 @@ export class CatalogManagementComponent implements OnInit {
           targetUrl: `${this.configService.getConfiguration().backendUrl}catalogs/import`,
           multiple: false,
           autoSubmit: true,
+          infoText:
+            "Wählen Sie die Optionen aus, bevor Sie die zu importierende Katalogdatei auswählen.",
+          options: [
+            {
+              id: "allowUpdate",
+              label: "bestehenden Katalog aktualisieren",
+            },
+            {
+              id: "importBehaviors",
+              label: "Behaviors importieren",
+              checked: true,
+            },
+            {
+              id: "importCodelists",
+              label: "Codelists importieren",
+              checked: true,
+            },
+            {
+              id: "associateUsersWithCatalog",
+              label: "Benutzer mit Katalog verknüpfen",
+              checked: true,
+            },
+            {
+              id: "importQueries",
+              label: "Queries importieren",
+              checked: true,
+            },
+            {
+              id: "importDocumentsAndGroups",
+              label: "Datensätze und Gruppen importieren",
+              checked: true,
+            },
+          ],
         },
       })
       .afterClosed()

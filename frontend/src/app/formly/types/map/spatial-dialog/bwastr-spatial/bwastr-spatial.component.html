@@ -1,0 +1,73 @@
+<div class="bwastr-spatial-wrapper flex-col">
+    <div class="dlg-field-label">Bundeswasserstraße</div>
+    <ige-search-input
+        placeholder="BWaStr-IdNr, -Bezeichnung, Streckenbezeichnung"
+        [query]="searchInput"
+        [searchSub]="searchSubscribe"
+        [withWhiteBorder]="false"
+        minWidth="100%"
+        ariaLabel="Suche im Bundeswasserstraßen-Locator"
+    ></ige-search-input>
+
+    @if (showWelcome) {
+        <div class="padding-vertical comment">
+            Suchen Sie nach einer Bundeswasserstraße im
+            Bundeswasserstraßen-Locator und wählen Sie ein Ergebnis aus.
+        </div>
+    }
+
+    @if (showNoResult) {
+        <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+    }
+
+    <div class="result-wrapper space-bottom">
+        <div class="list-wrapper">
+            <mat-list dense style="overflow: auto" ngDefaultControl>
+                @for (entry of searchResults; track entry) {
+                    <mat-list-item
+                        (click)="selectBwastr(entry)"
+                        class="clickable"
+                        [title]="entry.concat_name"
+                    >
+                        <mat-radio-button
+                            matListItemIcon
+                            [value]="entry"
+                            [checked]="selectedBwastr === entry"
+                            [aria-label]="entry.concat_name"
+                        ></mat-radio-button>
+                        <div matListItemLine>
+                            {{ entry.concat_name }}
+                        </div>
+                    </mat-list-item>
+                    <mat-divider aria-hidden="true"></mat-divider>
+                }
+            </mat-list>
+        </div>
+    </div>
+    <div [formGroup]="limitForm" class="wrapper flex-row gap-6 section-range">
+        <mat-form-field appearance="outline">
+            <mat-label>Von [km]</mat-label>
+            <input
+                formControlName="start"
+                type="number"
+                step="0.1"
+                matInput
+                data-cy="bwastr-start"
+                [min]="selectedSection?.start"
+                [max]="selectedSection?.end"
+            />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Bis [km]</mat-label>
+            <input
+                formControlName="end"
+                type="number"
+                step="0.1"
+                matInput
+                data-cy="bwastr-end"
+                [min]="selectedSection?.start"
+                [max]="selectedSection?.end"
+            />
+        </mat-form-field>
+    </div>
+</div>

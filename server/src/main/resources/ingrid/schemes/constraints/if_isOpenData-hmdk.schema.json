@@ -20,16 +20,6 @@
         "type": "array",
         "minItems": 1
       },
-      "properties": {
-        "type": "object",
-        "properties": {
-          "publicationHmbTG": {
-            "type": "boolean",
-            "const": true
-          }
-        },
-        "required": ["publicationHmbTG"]
-      },
       "pointOfContact": {
         "type": "array",
         "minItems": 1,

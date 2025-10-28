@@ -2,7 +2,7 @@
     label="Benutzer hinzufügen"
     [disabled]="form.invalid"
     [submitLabel]="
-        asAdmin || options.formState.showGroups ? 'Anlegen' : 'Weiter'
+        asAdmin() || options.formState.showGroups ? 'Anlegen' : 'Weiter'
     "
     (submit)="handleSubmit()"
 >
@@ -16,15 +16,14 @@
                 ein neues Login an.
             }
         </div>
-        @if (userSub && !userSub.closed) {
+        @if (users$.isLoading()) {
             <div class="spinner">
                 <mat-spinner></mat-spinner>
             </div>
-        }
-        @if (userSub?.closed) {
+        } @else {
             <formly-form
                 [form]="form"
-                [fields]="formlyFieldConfig"
+                [fields]="formlyFieldConfig()"
                 [model]="model"
                 [options]="options"
             >

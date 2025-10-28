@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -44,7 +44,8 @@ import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
+import { ProfileService } from "../../../services/profile.service";
 
 interface Reference {
   layerNames: string[];
@@ -56,7 +57,7 @@ export interface DocumentReference extends Reference {
   uuid: string;
   state: DocumentState;
   type: string;
-  icon: "Geodatensatz";
+  icon: string;
 }
 
 interface UrlReference extends Reference {
@@ -90,21 +91,20 @@ export class DocumentReferenceTypeComponent
   extends FieldArrayType
   implements OnInit
 {
-  private documentTreeStore = inject(TreeStore);
-  myModel: (DocumentReference | UrlReference)[];
+  private documentTreeStore = inject(DocumentTreeStore);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private docService = inject(DocumentService);
+  private profileService = inject(ProfileService);
 
-  refreshing = true;
+  myModel = signal<(DocumentReference | UrlReference)[]>([]);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private dialog: MatDialog,
-    private router: Router,
-    private docService: DocumentService,
-  ) {
-    super();
-  }
+  refreshing = signal<boolean>(true);
+
+  onlyInternalRefs = signal<boolean>(false);
 
   ngOnInit() {
+    this.onlyInternalRefs.set(this.props.onlyInternalRefs);
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -120,6 +120,8 @@ export class DocumentReferenceTypeComponent
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
       layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
       showLayernames: this.props.showLayernames,
+      docTypeFilter: this.props.docTypeFilter,
+      dialogTitle: this.props.titleOfDocumentSelectorDialog,
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {
@@ -196,16 +198,16 @@ export class DocumentReferenceTypeComponent
   }
 
   private async buildModel() {
-    this.refreshing = true;
-    this.myModel = await Promise.all(
+    this.refreshing.set(true);
+    const model = await Promise.all(
       this.formControl.value.map(async (item: any) => {
         return item.isExternalRef
           ? this.mapExternalRef(item)
           : this.mapInternalRef(item);
       }),
     );
-    this.refreshing = false;
-    this.cdr.detectChanges();
+    this.myModel.set(model);
+    this.refreshing.set(false);
   }
 
   private mapExternalRef(item: any): UrlReference {
@@ -261,7 +263,7 @@ export class DocumentReferenceTypeComponent
       state: doc?._state,
       type: doc?._type,
       layerNames: layerNames,
-      icon: "Geodatensatz",
+      icon: this.profileService.getDocumentIcon(doc._type),
     };
   }
 
