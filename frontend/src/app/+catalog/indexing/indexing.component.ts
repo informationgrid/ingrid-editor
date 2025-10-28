@@ -24,7 +24,7 @@ import {
   inject,
   OnInit,
   signal,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
@@ -67,7 +67,7 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
   ],
 })
 export class IndexingComponent implements OnInit {
-  @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
+  readonly indexContent = viewChild<ElementRef<HTMLElement>>("indexContent");
 
   cronField = new FormControl<string>("");
 
@@ -171,7 +171,7 @@ export class IndexingComponent implements OnInit {
   copyContent(event: MouseEvent) {
     event.preventDefault();
 
-    this.copyToClipboardFn(this.indexContent.nativeElement.innerText, {
+    this.copyToClipboardFn(this.indexContent().nativeElement.innerText, {
       successText: "Log in Zwischenablage kopiert",
     });
   }

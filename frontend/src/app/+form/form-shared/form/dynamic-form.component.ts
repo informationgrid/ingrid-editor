@@ -31,7 +31,7 @@ import {
   OnInit,
   Signal,
   signal,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   FormArray,
@@ -118,8 +118,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private behaviourService = inject(BehaviourService);
   private authService = inject(AuthenticationFactory);
 
-  @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
-  @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
+  readonly scrollForm = viewChild("scrollForm", { read: ElementRef });
+  readonly formInfoRef = viewChild("formInfo", { read: ElementRef });
 
   sidebarWidth = signal<number>(null);
 
@@ -311,12 +311,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initScrollBehavior() {
-    const element = this.scrollForm.nativeElement;
+    const element = this.scrollForm().nativeElement;
     fromEvent(element, "scroll")
       .pipe(
         untilDestroyed(this),
         // debounceTime(10), // do not handle all events
-        filter((_) => this.formInfoRef !== undefined),
+        filter((_) => this.formInfoRef() !== undefined),
         map((): boolean => this.determineToggleState(element.scrollTop)),
         tap((show) => this.toggleStickyHeader(show)),
         debounceTime(300), // update store less frequently
@@ -332,7 +332,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private determineToggleState(top: number) {
     // when we scroll more than the non-sticky area then it should become sticky
-    return top > this.formInfoRef.nativeElement.clientHeight;
+    return top > this.formInfoRef().nativeElement.clientHeight;
   }
 
   private toggleStickyHeader(show: boolean) {
@@ -423,11 +423,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private updateScrollPosition() {
     // form might not be available on first visit
-    setTimeout(() => (this.scrollForm.nativeElement.scrollTop = 0));
+    setTimeout(() => (this.scrollForm().nativeElement.scrollTop = 0));
     const scrollPosition = this.uiStore.scrollPosition();
     if (scrollPosition !== 0) {
       setTimeout(
-        () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
+        () => (this.scrollForm().nativeElement.scrollTop = scrollPosition),
         500,
       );
     }

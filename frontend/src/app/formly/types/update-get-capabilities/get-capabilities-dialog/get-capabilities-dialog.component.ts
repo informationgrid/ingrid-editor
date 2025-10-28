@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, ViewChild, signal } from "@angular/core";
+import { Component, Inject, signal, viewChild } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
 import { Observable, of, Subscription } from "rxjs";
@@ -79,7 +79,7 @@ import { CredentialsDialogComponent } from "../credentials-dialog/credentials-di
   ],
 })
 export class GetCapabilitiesDialogComponent {
-  @ViewChild(MatSelectionList) selection: MatSelectionList;
+  readonly selection = viewChild(MatSelectionList);
 
   report = signal<GetCapabilitiesAnalysis | null>(null);
   error = signal<string | null>(null);
@@ -109,7 +109,7 @@ export class GetCapabilitiesDialogComponent {
   handleSelectionChange() {
     if (this.selectSubsription) this.selectSubsription.unsubscribe();
 
-    this.selectSubsription = this.selection.selectionChange
+    this.selectSubsription = this.selection().selectionChange
       .pipe(untilDestroyed(this))
       .subscribe(() => this.handleAddressConstraint());
   }
@@ -155,7 +155,7 @@ export class GetCapabilitiesDialogComponent {
   }
 
   submit() {
-    const selectedValues = this.selection.selectedOptions.selected.map(
+    const selectedValues = this.selection().selectedOptions.selected.map(
       (item) => item.value,
     );
     selectedValues.push("dataServiceType", "serviceType");
@@ -171,17 +171,17 @@ export class GetCapabilitiesDialogComponent {
 
   toggleAll(checked: boolean) {
     this.allChecked.set(checked);
-    if (checked) this.selection.selectAll();
-    else this.selection.deselectAll();
+    if (checked) this.selection().selectAll();
+    else this.selection().deselectAll();
 
     // we need to manually trigger the following function, since selectAll/deselectAll does not emit selectionChange-event!
     this.handleAddressConstraint();
   }
 
   private handleAddressConstraint() {
-    const isEmpty = this.selection.selectedOptions.isEmpty();
+    const isEmpty = this.selection().selectedOptions.isEmpty();
     this.selectionEmpty.set(isEmpty);
-    const addressSelected = this.selection.selectedOptions.selected.some(
+    const addressSelected = this.selection().selectedOptions.selected.some(
       (item) => item.value === "address",
     );
     this.addressSelected.set(addressSelected);

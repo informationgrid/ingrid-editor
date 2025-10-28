@@ -22,7 +22,7 @@ import {
   Component,
   OnDestroy,
   TemplateRef,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { NgStyle, NgTemplateOutlet } from "@angular/common";
@@ -39,24 +39,26 @@ export class AddonsWrapperComponent
   extends FieldWrapper
   implements AfterViewInit, OnDestroy
 {
-  @ViewChild("matPrefix", { static: true }) matPrefix!: TemplateRef<any>;
-  @ViewChild("matSuffix", { static: true }) matSuffix!: TemplateRef<any>;
+  readonly matPrefix = viewChild.required<TemplateRef<any>>("matPrefix");
+  readonly matSuffix = viewChild.required<TemplateRef<any>>("matSuffix");
 
   ngAfterViewInit() {
-    if (this.matPrefix) {
+    const matPrefix = this.matPrefix();
+    if (matPrefix) {
       if (this.props?.addonLeft?.icon != undefined) {
-        this.props.prefix = this.matSuffix;
+        this.props.prefix = this.matSuffix();
       } else {
-        this.props.textPrefix = this.matPrefix;
+        this.props.textPrefix = matPrefix;
       }
     }
 
-    if (this.matSuffix) {
+    const matSuffix = this.matSuffix();
+    if (matSuffix) {
       this.props._matSuffix = this.props.suffix;
       if (this.props?.addonRight?.icon != undefined) {
-        this.props.suffix = this.matSuffix;
+        this.props.suffix = matSuffix;
       } else {
-        this.props.textSuffix = this.matSuffix;
+        this.props.textSuffix = matSuffix;
       }
     }
   }

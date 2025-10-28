@@ -25,7 +25,7 @@ import {
   OnDestroy,
   TemplateRef,
   Type,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   FieldTypeConfig,
@@ -110,8 +110,7 @@ export class TimepickerTypeComponent
 {
   private config = inject(FormlyConfig);
 
-  @ViewChild("timepickerToggle", { static: true })
-  timepickerToggle!: TemplateRef<any>;
+  readonly timepickerToggle = viewChild.required<TemplateRef<any>>("timepickerToggle");
 
   override defaultOptions = {
     props: {
@@ -130,7 +129,7 @@ export class TimepickerTypeComponent
 
   ngAfterViewInit() {
     this.props[this.props.timepickerOptions.timepickerTogglePosition] =
-      this.timepickerToggle;
+      this.timepickerToggle();
 
     // temporary fix for https://github.com/angular/components/issues/16761
     if (this.config.getValidatorMessage("matDatepickerParse")) {

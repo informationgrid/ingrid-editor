@@ -23,7 +23,7 @@ import {
   inject,
   OnInit,
   signal,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
@@ -93,7 +93,7 @@ import { CdkMonitorFocus } from "@angular/cdk/a11y";
   ],
 })
 export class GeneralReportComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
+  readonly sort = viewChild(MatSort);
   chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
   private translocoService = inject(TranslocoService);

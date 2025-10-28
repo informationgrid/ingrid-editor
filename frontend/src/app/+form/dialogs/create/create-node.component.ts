@@ -28,8 +28,8 @@ import {
   OnInit,
   Signal,
   signal,
-  ViewChild,
   WritableSignal,
+  viewChild
 } from "@angular/core";
 import {
   DocumentService,
@@ -108,7 +108,7 @@ export class CreateNodeComponent implements OnInit {
   private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
-  @ViewChild("contextNodeContainer") container: ElementRef;
+  readonly container = viewChild<ElementRef>("contextNodeContainer");
   title = "Neuen Ordner anlegen";
   parent: WritableSignal<number> = linkedSignal(() => {
     return this.path()[this.path().length - 1]?.id ?? null;

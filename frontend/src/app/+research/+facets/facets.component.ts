@@ -27,7 +27,7 @@ import {
   OnInit,
   Output,
   signal,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { FacetGroup, Facets } from "../research.service";
 import { GeoJSON, Map, Polyline } from "leaflet";
@@ -135,7 +135,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     return this._forAddresses;
   }
 
-  @ViewChild("leafletDlg") leaflet: ElementRef;
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
   filterGroup = signal<FacetGroup[]>([]);
   researchOnlyFilterIds = ["state"];
@@ -207,11 +207,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   initLeaflet() {
-    if (this.leaflet) {
-      this.leaflet.nativeElement.style.minHeight = "200px";
-      this.leaflet.nativeElement.style.minWidth = "200px";
+    const leaflet = this.leaflet();
+    if (leaflet) {
+      leaflet.nativeElement.style.minHeight = "200px";
+      leaflet.nativeElement.style.minWidth = "200px";
       this.leafletReference = this.leafletService.initMap(
-        this.leaflet.nativeElement,
+        leaflet.nativeElement,
         {},
       );
       this.leafletService.zoomToInitialBox(this.leafletReference);

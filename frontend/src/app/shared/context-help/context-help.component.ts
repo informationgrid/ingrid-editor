@@ -23,7 +23,7 @@ import {
   Inject,
   OnDestroy,
   OnInit,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -54,7 +54,7 @@ import { AsyncPipe } from "@angular/common";
   ],
 })
 export class ContextHelpComponent implements OnInit, OnDestroy {
-  @ViewChild("contextHelpContainer") container: ElementRef;
+  readonly container = viewChild<ElementRef>("contextHelpContainer");
 
   title: string;
   description$: Observable<String> = this.data.description$;
@@ -77,9 +77,9 @@ export class ContextHelpComponent implements OnInit, OnDestroy {
 
   checkSize() {
     let newHeight =
-      this.container.nativeElement.parentElement.parentElement.style.height;
+      this.container().nativeElement.parentElement.parentElement.style.height;
     let newWidth =
-      this.container.nativeElement.parentElement.parentElement.style.width;
+      this.container().nativeElement.parentElement.parentElement.style.width;
     if (
       this.initialDimension.width !== newWidth ||
       this.initialDimension.height !== newHeight

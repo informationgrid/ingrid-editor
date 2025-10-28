@@ -24,8 +24,8 @@ import {
   inject,
   Inject,
   OnInit,
-  ViewChild,
   signal,
+  viewChild
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
@@ -91,7 +91,7 @@ interface LocationType {
   ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
-  @ViewChild("leafletDlg") leaflet: ElementRef;
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
   private transloco = inject(TranslocoService);
 
@@ -150,7 +150,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.leafletReference = this.leafletService.initMap(
-      this.leaflet.nativeElement,
+      this.leaflet().nativeElement,
       {},
     );
     setTimeout(() => this.updateView(this.data?.location?.type ?? "free"));
@@ -191,7 +191,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
       // ignore buttons for restricted accessibility
       const buttons =
-        this.leaflet.nativeElement.querySelectorAll('[role="button"]');
+        this.leaflet().nativeElement.querySelectorAll('[role="button"]');
       this.setTabIgnore(buttons);
     });
   }

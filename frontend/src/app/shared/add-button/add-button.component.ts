@@ -24,7 +24,7 @@ import {
   input,
   OnInit,
   output,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
 import { MatButton } from "@angular/material/button";
@@ -69,7 +69,7 @@ export class AddButtonComponent implements OnInit {
 
   // accessibility
   readonly ariaLabelledBy = input<string>(undefined);
-  @ViewChild("matError") matError: ElementRef;
+  readonly matError = viewChild<ElementRef>("matError");
 
   readonly add = output();
 

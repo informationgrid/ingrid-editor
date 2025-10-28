@@ -24,7 +24,7 @@ import {
   OnInit,
   signal,
   TemplateRef,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import {
   FieldTypeConfig,
@@ -164,10 +164,9 @@ export class RepeatListComponent
   implements OnInit
 {
   private codelistStore = inject(CodelistStore);
-  @ViewChild("repeatListInput", { read: ElementRef })
-  autoCompleteEl: ElementRef;
-  @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
-  @ViewChild(MatSelect) selector: MatSelect;
+  readonly autoCompleteEl = viewChild("repeatListInput", { read: ElementRef });
+  readonly autoComplete = viewChild(MatAutocompleteTrigger);
+  readonly selector = viewChild(MatSelect);
 
   onItemClick: (id: number) => void = () => {};
 
@@ -313,8 +312,9 @@ export class RepeatListComponent
 
   addToList(option: SelectOptionUi) {
     // prevent keyboard action on focused select box to automatically add next item to list
-    if (this.selector && !this.selector.panelOpen) {
-      setTimeout(() => this.selector.open());
+    const selector = this.selector();
+    if (selector && !selector.panelOpen) {
+      setTimeout(() => this.selector().open());
       return;
     }
 

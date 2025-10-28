@@ -21,9 +21,9 @@ import {
   Component,
   Input,
   OnInit,
-  ViewChild,
   input,
   output,
+  viewChild
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
@@ -85,7 +85,7 @@ export class DocumentListItemComponent implements OnInit {
   readonly setActiveItem = input<Subject<Partial<DocumentAbstract>>>(undefined);
   readonly select = output<DocumentAbstract | TreeNode>();
 
-  @ViewChild(MatSelectionList) list: MatSelectionList;
+  readonly list = viewChild(MatSelectionList);
 
   currentSelection: Partial<DocumentAbstract>;
 
@@ -107,8 +107,9 @@ export class DocumentListItemComponent implements OnInit {
   makeSelection(doc: DocumentAbstract | TreeNode) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
-    if (this.removeSelectionAfter() && this.list) {
-      this.list.deselectAll();
+    const list = this.list();
+    if (this.removeSelectionAfter() && list) {
+      list.deselectAll();
     } else {
       this.currentSelection = doc;
     }

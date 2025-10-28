@@ -21,12 +21,12 @@ import {
   Component,
   Input,
   OnInit,
-  ViewChild,
   input,
   computed,
   Signal,
   AfterViewInit,
   output,
+  viewChild
 } from "@angular/core";
 import {
   animate,
@@ -93,7 +93,7 @@ export class UploadComponent implements AfterViewInit {
   readonly chosenFiles = output<TransfersWithErrorInfo[]>();
   readonly removeFile = output<string>();
 
-  @ViewChild("flow") flow: FlowConfig;
+  readonly flow = viewChild<FlowConfig>("flow");
 
   target = input.required<string>();
   multiple = input<boolean>();
@@ -124,7 +124,7 @@ export class UploadComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    combineLatest([this.errors, this.flow.transfers$])
+    combineLatest([this.errors, this.flow().transfers$])
       .pipe(
         untilDestroyed(this),
         skip(1), // do not use initial value
@@ -140,13 +140,13 @@ export class UploadComponent implements AfterViewInit {
         this.chosenFiles.emit(result);
       });
 
-    this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
+    this.flow().events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
         if (this.autoupload() && event.type === "filesSubmitted") {
           const flowFiles = <flowjs.FlowFile[]>event.event[0];
           await this.uploadService.updateAuthenticationToken(flowFiles);
           this.resetParametersForSubmittedFiles(flowFiles);
-          this.flow.upload();
+          this.flow().upload();
         } else if (event.type === "fileProgress") {
           await this.uploadService.updateAuthenticationToken([
             (<flowjs.FlowChunk>event.event[1]).fileObj,
@@ -168,7 +168,7 @@ export class UploadComponent implements AfterViewInit {
       }
     });
 
-    this.flow.flowJs.on("filesAdded", (files) => {
+    this.flow().flowJs.on("filesAdded", (files) => {
       const invalidFile = this.validateFileNames(files);
       if (invalidFile != undefined) {
         throw new IgeError(

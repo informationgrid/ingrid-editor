@@ -14,7 +14,7 @@
                 [attr.aria-labelledby]="ariaLabelledBy()"
                 aria-description="hinzufügen"
                 [attr.aria-description]="
-                    matError?.nativeElement?.textContent ?? 'hinzufügen'
+                    matError()?.nativeElement?.textContent ?? 'hinzufügen'
                 "
             >
                 <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
@@ -32,7 +32,7 @@
                 aria-haspopup="dialog"
                 [attr.aria-labelledby]="ariaLabelledBy()"
                 [attr.aria-description]="
-                    matError?.nativeElement?.textContent ?? 'hinzufügen'
+                    matError()?.nativeElement?.textContent ?? 'hinzufügen'
                 "
             >
                 <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
@@ -48,7 +48,7 @@
             [matMenuTriggerFor]="menuOptions"
             [attr.aria-labelledby]="ariaLabelledBy()"
             [attr.aria-description]="
-                matError?.nativeElement?.textContent ?? 'hinzufügen'
+                matError()?.nativeElement?.textContent ?? 'hinzufügen'
             "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>

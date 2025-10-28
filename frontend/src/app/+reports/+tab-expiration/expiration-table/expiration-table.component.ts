@@ -21,9 +21,9 @@ import {
   AfterViewInit,
   Component,
   Input,
-  ViewChild,
   input,
   signal,
+  viewChild
 } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
@@ -68,8 +68,8 @@ export class ExpirationTableComponent implements AfterViewInit {
     this.dataSource.data = docs ?? [];
   }
 
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
   displayedColumns = signal<string[]>([
@@ -92,7 +92,7 @@ export class ExpirationTableComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 }

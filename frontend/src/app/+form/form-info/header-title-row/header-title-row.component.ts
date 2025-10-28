@@ -23,11 +23,11 @@ import {
   ElementRef,
   Input,
   OnInit,
-  ViewChild,
   input,
   signal,
   inject,
   computed,
+  viewChild
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
@@ -91,8 +91,8 @@ export class HeaderTitleRowComponent implements OnInit {
   readonly disableEdit = input<boolean>(undefined);
   readonly address = input<boolean>(undefined);
 
-  @ViewChild("titleInput") titleInput: ElementRef;
-  @ViewChild("cfcAutosize") contentFCAutosize: CdkTextareaAutosize;
+  readonly titleInput = viewChild<ElementRef>("titleInput");
+  readonly contentFCAutosize = viewChild<CdkTextareaAutosize>("cfcAutosize");
 
   _form: UntypedFormGroup;
   _model: IgeDocument;
@@ -109,8 +109,8 @@ export class HeaderTitleRowComponent implements OnInit {
 
   editTitle() {
     this.showTitleInput.update((prev) => !prev);
-    this.contentFCAutosize.resizeToFitContent(true);
-    this.titleInput.nativeElement.focus();
+    this.contentFCAutosize().resizeToFitContent(true);
+    this.titleInput().nativeElement.focus();
   }
 
   toggleMoreInfo() {

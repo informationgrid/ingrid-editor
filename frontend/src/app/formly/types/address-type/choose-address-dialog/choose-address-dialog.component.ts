@@ -25,7 +25,7 @@ import {
   OnDestroy,
   OnInit,
   signal,
-  ViewChild,
+  viewChild
 } from "@angular/core";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -98,7 +98,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   addressTreeStore = inject(AddressTreeStore);
   private codelistStore = inject(CodelistStore);
   private generalStore = inject(GeneralStore);
-  @ViewChild(MatSelect) recentAddressSelect: MatSelect;
+  readonly recentAddressSelect = viewChild(MatSelect);
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
@@ -214,10 +214,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   handleTreeError(error: HttpErrorResponse) {
     console.error(error);
     if (error.error.errorText === "No value present") {
+      const recentAddressSelect = this.recentAddressSelect();
       this.documentService.removeFromRecentlyUsedAddresses(
-        this.recentAddressSelect.value.id,
+        recentAddressSelect.value.id,
       );
-      this.recentAddressSelect.value = null;
+      recentAddressSelect.value = null;
       throw new IgeError(
         "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt.",
       );

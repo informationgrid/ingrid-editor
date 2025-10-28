@@ -28,8 +28,8 @@ import {
   OnInit,
   output,
   signal,
-  ViewChild,
   WritableSignal,
+  viewChild
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -124,8 +124,7 @@ export class TreeComponent implements OnInit {
   readonly multiEditMode = output<any>();
   readonly error = output<HttpErrorResponse>();
 
-  @ViewChild("treeComponent", { read: ElementRef })
-  treeContainerElement: ElementRef;
+  readonly treeContainerElement = viewChild("treeComponent", { read: ElementRef });
 
   /**
    * A function to determine if a tree node should be disabled.
@@ -508,13 +507,13 @@ export class TreeComponent implements OnInit {
 
   private scrollToActiveElement() {
     // TODO: wait till dom node is actually there
-    if (!this.treeContainerElement) {
+    if (!this.treeContainerElement()) {
       console.warn("treeContainerElement is not available");
       return;
     }
 
     const queryFn = () =>
-      this.treeContainerElement.nativeElement.querySelector(
+      this.treeContainerElement().nativeElement.querySelector(
         ".mat-tree-node.active",
       );
 

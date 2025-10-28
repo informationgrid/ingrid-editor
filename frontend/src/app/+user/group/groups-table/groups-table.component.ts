@@ -24,9 +24,9 @@ import {
   input,
   Input,
   OnInit,
-  ViewChild,
   output,
   signal,
+  viewChild,
 } from "@angular/core";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {
@@ -81,10 +81,7 @@ import { MatButton } from "@angular/material/button";
     MatPaginator,
   ],
 })
-export class GroupsTableComponent
-  extends GeneralTable
-  implements OnInit, AfterViewInit
-{
+export class GroupsTableComponent extends GeneralTable implements OnInit {
   @Input()
   set groups(val: Group[]) {
     if (val) this.isLoading.set(false);
@@ -106,8 +103,8 @@ export class GroupsTableComponent
   readonly onGroupSelect = output<Group>();
   readonly onDelete = output<number>();
 
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   displayedColumns = signal<string[]>(["role-icon", "name"]); //, "settings"];
   dataSource = new MatTableDataSource([]);
@@ -142,11 +139,9 @@ export class GroupsTableComponent
     });
   }
 
-  ngOnInit() {}
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+  ngOnInit() {
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 
   select(element: any) {

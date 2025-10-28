@@ -20,31 +20,31 @@
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
 import { SelectionModel } from "@angular/cdk/collections";
-import { signal } from "@angular/core";
+import { Signal, signal } from "@angular/core";
 
 export class GeneralTable {
-  declare paginator: MatPaginator;
+  declare paginator: Signal<MatPaginator>;
   declare dataSource: MatTableDataSource<any>;
   declare selection: SelectionModel<any>;
 
   isLoading = signal<boolean>(true);
 
   updatePaginator(id: any, field: string) {
-    if (this.paginator) {
+    if (this.paginator()) {
       let indexInDatasource = this.dataSource
         .sortData(this.dataSource.filteredData, this.dataSource.sort)
         .findIndex((d) => d[field] === id);
 
       const pageNumber = Math.max(
         0,
-        Math.floor(indexInDatasource / this.paginator.pageSize),
+        Math.floor(indexInDatasource / this.paginator().pageSize),
       );
 
-      this.paginator.pageIndex = pageNumber;
-      this.paginator.page.emit({
+      this.paginator().pageIndex = pageNumber;
+      this.paginator().page.emit({
         pageIndex: pageNumber,
-        pageSize: this.paginator.pageSize,
-        length: this.paginator.length,
+        pageSize: this.paginator().pageSize,
+        length: this.paginator().length,
       });
     }
   }

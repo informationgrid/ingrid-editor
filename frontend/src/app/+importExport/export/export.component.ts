@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, inject, OnInit, signal, viewChild } from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -89,8 +89,8 @@ import { toSignal } from "@angular/core/rxjs-interop";
   ],
 })
 export class ExportComponent implements OnInit {
-  @ViewChild("stepper") stepper: MatStepper;
-  @ViewChild("treeComponent") treeComponent: TreeComponent;
+  readonly stepper = viewChild<MatStepper>("stepper");
+  readonly treeComponent = viewChild<TreeComponent>("treeComponent");
 
   documentTreeStore = inject(DocumentTreeStore);
 
@@ -179,8 +179,8 @@ export class ExportComponent implements OnInit {
   }
 
   cancel() {
-    this.stepper.selectedIndex = 0;
-    this.treeComponent.jumpToNode(null).then(() => {
+    this.stepper().selectedIndex = 0;
+    this.treeComponent().jumpToNode(null).then(() => {
       this.datasetSelected.set(false);
       this.path.set(null);
     });

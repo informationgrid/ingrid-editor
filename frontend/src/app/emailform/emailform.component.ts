@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild, input, output } from "@angular/core";
+import { Component, OnInit, input, output, viewChild } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -43,7 +43,7 @@ export class EmailformComponent implements OnInit {
 
   readonly onClose = output();
 
-  @ViewChild("editForm") emailFormDirective: any;
+  readonly emailFormDirective = viewChild<any>("editForm");
   emailForm: UntypedFormGroup;
 
   constructor(

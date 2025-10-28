@@ -26,7 +26,7 @@ import {
   inject,
   OnDestroy,
   signal,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { GeoJSON, Map, MapOptions, Polyline } from "leaflet";
@@ -76,7 +76,7 @@ export class LeafletTypeComponent
   private leafletService = inject(LeafletService);
   private translocoService = inject(TranslocoService);
 
-  @ViewChild("leaflet") leaflet: ElementRef;
+  readonly leaflet = viewChild<ElementRef>("leaflet");
 
   locationsWithColor = signal<SpatialLocationWithColor[]>([]);
   hasAnyLocations = computed<boolean>(
@@ -91,8 +91,8 @@ export class LeafletTypeComponent
   private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
   ngAfterViewInit() {
-    this.leaflet.nativeElement.style.height = this.props.height + "px";
-    this.leaflet.nativeElement.style.width = "100%";
+    this.leaflet().nativeElement.style.height = this.props.height + "px";
+    this.leaflet().nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
       .pipe(untilDestroyed(this), debounceTime(0), distinctUntilChanged())
@@ -101,7 +101,7 @@ export class LeafletTypeComponent
     try {
       const options: MapOptions = this.props.mapOptions;
       this.leafletReference = this.leafletService.initMap(
-        this.leaflet.nativeElement,
+        this.leaflet().nativeElement,
         { ...options, scrollWheelZoom: false },
       );
 
@@ -183,8 +183,9 @@ export class LeafletTypeComponent
         this.leafletReference.clearAllEventListeners();
         this.leafletReference.remove();
       }
-      if (this.leaflet && this.leaflet.nativeElement.remove) {
-        this.leaflet.nativeElement.remove();
+      const leaflet = this.leaflet();
+      if (leaflet && leaflet.nativeElement.remove) {
+        leaflet.nativeElement.remove();
       }
     } catch (e) {
       console.warn(

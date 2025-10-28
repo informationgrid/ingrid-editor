@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild, signal } from "@angular/core";
+import { Component, OnInit, signal, viewChild } from "@angular/core";
 import {
   AbstractControl,
   FormControl,
@@ -91,8 +91,8 @@ import { ImportReportComponent } from "./import-report/import-report.component";
   ],
 })
 export class ImportComponent implements OnInit {
-  @ViewChild("stepper") stepper: MatStepper;
-  @ViewChild("uploadComponent") uploadComponent: UploadComponent;
+  readonly stepper = viewChild<MatStepper>("stepper");
+  readonly uploadComponent = viewChild<UploadComponent>("uploadComponent");
 
   file: File;
 
@@ -207,7 +207,7 @@ export class ImportComponent implements OnInit {
   }
 
   cancel() {
-    this.stepper.selectedIndex = 0;
+    this.stepper().selectedIndex = 0;
     this.step1Complete = false;
   }
 
