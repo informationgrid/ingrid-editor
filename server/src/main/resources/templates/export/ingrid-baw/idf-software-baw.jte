@@ -75,13 +75,17 @@
                 <hlr>
                     <gco:Boolean>${page.getInstallationHlr()}</gco:Boolean>
                 </hlr>
-                <hlrName>${page.getHlrNames()}</hlrName>
+                @for(String hlrName : page.getHlrNames())
+                    <hlrName>${hlrName}</hlrName>
+                @endfor
             </HLR>
             <Server>
                 <server>
                     <gco:Boolean>${page.getInstallationServer()}</gco:Boolean>
                 </server>
-                <servername>${page.getServerNames()}</servername>
+                @for(String serverName : page.getServerNames())
+                    <servername>${serverName}</servername>
+                @endfor
             </Server>
         </Installationsort>
         <installationsMethode>${page.getInstallationMethod()}</installationsMethode>

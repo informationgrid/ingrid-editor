@@ -86,8 +86,8 @@ open class SoftwareModelTransformerBaw(transformerConfig: TransformerConfig) : I
     val installationLocal = doc.data.getBoolean("installation.local") ?: false
     val installationHlr = doc.data.getBoolean("installation.hlr") ?: false
     val installationServer = doc.data.getBoolean("installation.server") ?: false
-    val hlrNames = doc.data.getPath("hlrNames")?.mapNotNull { codelists.getValue("3950033", it.mapToKeyValue()) }?.joinToString(", ")
-    val serverNames = doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asText() }?.joinToString(", ")
+    val hlrNames = doc.data.getPath("hlrNames")?.mapNotNull { codelists.getValue("3950033", it.mapToKeyValue()) } ?: emptyList()
+    val serverNames = doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
 
     val serviceVersions = doc.data.getPath("serviceVersion")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
 
