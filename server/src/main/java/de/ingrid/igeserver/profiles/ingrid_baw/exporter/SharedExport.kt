@@ -67,8 +67,8 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
+    "InGridInformationSystem" -> "export/ingrid-baw/idf-software-baw.jte"
 //    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
-//    "InGridSoftware" -> "export/ingrid-baw/idf-software-baw.jte"
     else -> null
 }
 

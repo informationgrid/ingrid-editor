@@ -60,111 +60,41 @@ open class SoftwareModelTransformerBaw(transformerConfig: TransformerConfig) : I
                 } ?: emptyList()
             )
 
-    override val extraContent: String by lazy { getBwastrIdfSection(this) + getSoftwareExtraContent() }
-
     override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getLfsReferences(this)
 
-    fun getServiceVersionXML(): String {
-        val versions = doc.data.getPath("serviceVersion")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
-        return """
-            <Version>
-                ${versions.joinToString("\n") { "<version>$it</version>" }}
-            </Version>
-        """.trimIndent()
-    }
+    override val extraContent: String by lazy { getBwastrIdfSection(this) }
 
-    fun getProgrammierspracheXML(): String {
-        val languages = doc.data.getPath("programmingLanguages")?.mapNotNull { codelists.getValue("3950030", it.mapToKeyValue()) } ?: emptyList()
-        return """
-            <Programmiersprache>
-                ${languages.joinToString("\n") { "<programmiersprache>$it</programmiersprache>" }}
-            </Programmiersprache>
-        """
-    }
+    val softwarePurpose = doc.data.getString("purpose")
+    val installationMethod = codelists.getValue("3950032", doc.data.getPath("installationWith")?.mapToKeyValue())
 
-    fun getSoftwareExtraContent(): String = """
-          <software>
-            <einsatzzweck>${doc.data.getString("purpose")}</einsatzzweck>
-            <Nutzerkreis>
-              <baw>
-                <gco:Boolean>${doc.data.getBoolean("userGroup.baw")}</gco:Boolean>
-              </baw>
-              <wsv>
-                <gco:Boolean>${doc.data.getBoolean("userGroup.wsv")}</gco:Boolean>
-              </wsv>
-              <extern>
-                <gco:Boolean>thrrth</gco:Boolean>
-              </extern>
-              <anmerkungen>${doc.data.getString("userGroupNotes")}</anmerkungen>
-            </Nutzerkreis>
-            <ProduktiverEinsatz>
-              <wsvAuftrag>
-                <gco:Boolean>${doc.data.getBoolean("productiveUse.wsv")}</gco:Boolean>
-              </wsvAuftrag>
-              <fUndE>
-                <gco:Boolean>${doc.data.getBoolean("productiveUse.fue")}</gco:Boolean>
-              </fUndE>
-              <andere>
-                <gco:Boolean>${doc.data.getBoolean("productiveUse.other")}</gco:Boolean>
-              </andere>
-              <anmerkungen>${doc.data.getString("productiveUseNotes")}</anmerkungen>
-            </ProduktiverEinsatz>
-            ${getServiceVersionXML()}
-            <ErgaenzungsModul>
-              <ergaenzungsModul>
-                <gco:Boolean>${doc.data.getBoolean("hasSupplementaryModule")}</gco:Boolean>
-              </ergaenzungsModul>
-              <ergaenzteSoftware>${doc.data.getString("nameOfSoftware")}</ergaenzteSoftware>
-            </ErgaenzungsModul>
-            <Betriebssystem>
-              <windows>
-                <gco:Boolean>${doc.data.getBoolean("operatingSystem.windows")}</gco:Boolean>
-              </windows>
-              <linux>
-                <gco:Boolean>${doc.data.getBoolean("operatingSystem.linux")}</gco:Boolean>
-              </linux>
-              <anmerkungen>${doc.data.getString("operatingSystemNotes")}</anmerkungen>
-            </Betriebssystem>
-            ${getProgrammierspracheXML()}
-            <Erstellungsvertrag>
-              <vertragsNummer/>
-              <datum/>
-            </Erstellungsvertrag>
-            <Supportvertrag>
-              <vertragsNummer/>
-              <datum/>
-              <anmerkungen/>
-            </Supportvertrag>
-            <Installationsort>
-              <lokal>
-                <gco:Boolean>${doc.data.getBoolean("installation.local")}</gco:Boolean>
-              </lokal>
-              <HLR>
-                <hlr>
-                  <gco:Boolean>${doc.data.getBoolean("installation.hlr")}</gco:Boolean>
-                </hlr>
-                <hlrName>${doc.data.getPath("hlrNames")?.mapNotNull { codelists.getValue("3950033", it.mapToKeyValue()) }?.joinToString { ", " }}</hlrName>
-              </HLR>
-              <Server>
-                <server>
-                  <gco:Boolean>${doc.data.getBoolean("installation.server")}</gco:Boolean>
-                </server>
-                <servername>${doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asText() }?.joinToString { ", " }}</servername>
-              </Server>
-            </Installationsort>
-            <installationsMethode>${ codelists.getValue("3950032",doc.data.getPath("installationWith")?.mapToKeyValue())}</installationsMethode>
-            <QuellCodeRechte>
-              <baw>
-                <gco:Boolean>${doc.data.getBoolean("resource.hasSourceRights")}</gco:Boolean>
-              </baw>
-              <anmerkungen>${doc.data.getString("resource.sourceRightsNotes")}</anmerkungen>
-            </QuellCodeRechte>
-            <NutzungsRechte>
-              <dritte>
-                <gco:Boolean>${doc.data.getBoolean("resource.hasUsageRights")}</gco:Boolean>
-              </dritte>
-              <anmerkungen>${doc.data.getString("resource.usageRightsNotes")}</anmerkungen>
-            </NutzungsRechte>
-          </software>
-    """.trimIndent()
+    val userGroupBaw = doc.data.getBoolean("userGroup.baw") ?: false
+    val userGroupWsv = doc.data.getBoolean("userGroup.wsv") ?: false
+    val userGroupExtern = doc.data.getBoolean("userGroup.extern") ?: false
+    val userGroupNotes = doc.data.getString("userGroupNotes")
+
+    val productiveUseWsv = doc.data.getBoolean("productiveUse.wsv") ?: false
+    val productiveUseFue = doc.data.getBoolean("productiveUse.fue") ?: false
+    val productiveUseOther = doc.data.getBoolean("productiveUse.other") ?: false
+    val productiveUseNotes = doc.data.getString("productiveUseNotes")
+
+    val hasSupplementaryModule = doc.data.getBoolean("hasSupplementaryModule") ?: false
+    val nameOfSoftware = doc.data.getString("nameOfSoftware")
+    val operatingSystemWindows = doc.data.getBoolean("operatingSystem.windows") ?: false
+    val operatingSystemLinux = doc.data.getBoolean("operatingSystem.linux") ?: false
+    val operatingSystemNotes = doc.data.getString("operatingSystemNotes")
+
+    val installationLocal = doc.data.getBoolean("installation.local") ?: false
+    val installationHlr = doc.data.getBoolean("installation.hlr") ?: false
+    val installationServer = doc.data.getBoolean("installation.server") ?: false
+    val hlrNames = doc.data.getPath("hlrNames")?.mapNotNull { codelists.getValue("3950033", it.mapToKeyValue()) }?.joinToString(", ")
+    val serverNames = doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asText() }?.joinToString(", ")
+
+    val serviceVersions = doc.data.getPath("serviceVersion")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
+
+    val programmingLanguages = doc.data.getPath("programmingLanguages")?.mapNotNull { codelists.getValue("3950030", it.mapToKeyValue()) } ?: emptyList()
+
+    val hasSourceRights = doc.data.getBoolean("resource.hasSourceRights") ?: false
+    val sourceRightsNotes = doc.data.getString("resource.sourceRightsNotes")
+    val hasUsageRights = doc.data.getBoolean("resource.hasUsageRights") ?: false
+    val usageRightsNotes = doc.data.getString("resource.usageRightsNotes")
 }
