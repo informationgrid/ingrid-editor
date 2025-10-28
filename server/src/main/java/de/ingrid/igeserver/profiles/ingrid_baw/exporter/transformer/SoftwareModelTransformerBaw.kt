@@ -91,7 +91,9 @@ open class SoftwareModelTransformerBaw(transformerConfig: TransformerConfig) : I
 
     val serviceVersions = doc.data.getPath("serviceVersion")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
 
-    val programmingLanguages = doc.data.getPath("programmingLanguages")?.mapNotNull { codelists.getValue("3950030", it.mapToKeyValue()) } ?: emptyList()
+    val programmingLanguages = doc.data.getPath("programmingLanguage")?.mapNotNull { codelists.getValue("3950030", it.mapToKeyValue()) } ?: emptyList()
+    val developmentEnvironment = doc.data.getPath("developmentEnvironment")?.mapNotNull { codelists.getValue("3950031", it.mapToKeyValue()) } ?: emptyList()
+    val libraries = doc.data.getPath("libraries")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
 
     val hasSourceRights = doc.data.getBoolean("resource.hasSourceRights") ?: false
     val sourceRightsNotes = doc.data.getString("resource.sourceRightsNotes")

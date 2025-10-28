@@ -57,6 +57,16 @@
                 <programmiersprache>${language}</programmiersprache>
             </Programmiersprache>
         @endfor
+        @for( String environment : page.getDevelopmentEnvironment())
+            <Entwicklungsumgebung>
+                <entwicklungsumgebung>${environment}</entwicklungsumgebung>
+            </Entwicklungsumgebung>
+        @endfor
+        @for( String library : page.getLibraries())
+            <Bibliotheken>
+                <bibliotheken>${library}</bibliotheken>
+            </Bibliotheken>
+        @endfor
         <Installationsort>
             <lokal>
                 <gco:Boolean>${page.getInstallationLocal()}</gco:Boolean>
