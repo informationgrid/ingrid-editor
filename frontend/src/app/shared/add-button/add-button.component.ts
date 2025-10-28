@@ -24,7 +24,7 @@ import {
   input,
   OnInit,
   output,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
 import { MatButton } from "@angular/material/button";

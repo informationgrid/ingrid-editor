@@ -27,7 +27,7 @@ import {
   OnInit,
   Output,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FacetGroup, Facets } from "../research.service";
 import { GeoJSON, Map, Polyline } from "leaflet";

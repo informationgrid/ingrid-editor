@@ -26,7 +26,7 @@ import {
   Signal,
   AfterViewInit,
   output,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import {
   animate,
@@ -140,33 +140,35 @@ export class UploadComponent implements AfterViewInit {
         this.chosenFiles.emit(result);
       });
 
-    this.flow().events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
-      try {
-        if (this.autoupload() && event.type === "filesSubmitted") {
-          const flowFiles = <flowjs.FlowFile[]>event.event[0];
-          await this.uploadService.updateAuthenticationToken(flowFiles);
-          this.resetParametersForSubmittedFiles(flowFiles);
-          this.flow().upload();
-        } else if (event.type === "fileProgress") {
-          await this.uploadService.updateAuthenticationToken([
-            (<flowjs.FlowChunk>event.event[1]).fileObj,
-          ]);
-        } else if (event.type === "fileError") {
-          this.handleUploadError(event.event);
-        } else if (event.type === "fileSuccess") {
-          const messageSuccess = this.getMessageFromResponse(
-            event.event[2].xhr,
-          );
-          const fileIdentifier = this.getFileIdentifier(event.event);
-          this._errors[fileIdentifier] = null;
-          this.errors.next(this._errors);
-          this.complete.emit(messageSuccess);
+    this.flow()
+      .events$.pipe(untilDestroyed(this))
+      .subscribe(async (event) => {
+        try {
+          if (this.autoupload() && event.type === "filesSubmitted") {
+            const flowFiles = <flowjs.FlowFile[]>event.event[0];
+            await this.uploadService.updateAuthenticationToken(flowFiles);
+            this.resetParametersForSubmittedFiles(flowFiles);
+            this.flow().upload();
+          } else if (event.type === "fileProgress") {
+            await this.uploadService.updateAuthenticationToken([
+              (<flowjs.FlowChunk>event.event[1]).fileObj,
+            ]);
+          } else if (event.type === "fileError") {
+            this.handleUploadError(event.event);
+          } else if (event.type === "fileSuccess") {
+            const messageSuccess = this.getMessageFromResponse(
+              event.event[2].xhr,
+            );
+            const fileIdentifier = this.getFileIdentifier(event.event);
+            this._errors[fileIdentifier] = null;
+            this.errors.next(this._errors);
+            this.complete.emit(messageSuccess);
+          }
+        } catch (e) {
+          console.error("Error uploading file", e);
+          throw new IgeError(e);
         }
-      } catch (e) {
-        console.error("Error uploading file", e);
-        throw new IgeError(e);
-      }
-    });
+      });
 
     this.flow().flowJs.on("filesAdded", (files) => {
       const invalidFile = this.validateFileNames(files);

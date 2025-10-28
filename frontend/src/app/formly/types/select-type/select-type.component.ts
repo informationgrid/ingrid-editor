@@ -22,7 +22,7 @@ import {
   Component,
   OnInit,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";

@@ -27,7 +27,7 @@ import {
   input,
   output,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {

@@ -23,7 +23,7 @@ import {
   OnInit,
   input,
   output,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";

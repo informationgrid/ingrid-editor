@@ -25,7 +25,7 @@ import {
   Inject,
   OnInit,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";

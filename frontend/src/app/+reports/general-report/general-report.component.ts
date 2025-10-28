@@ -23,7 +23,7 @@ import {
   inject,
   OnInit,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { MatSort, MatSortHeader } from "@angular/material/sort";

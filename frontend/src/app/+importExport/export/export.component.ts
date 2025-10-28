@@ -180,10 +180,12 @@ export class ExportComponent implements OnInit {
 
   cancel() {
     this.stepper().selectedIndex = 0;
-    this.treeComponent().jumpToNode(null).then(() => {
-      this.datasetSelected.set(false);
-      this.path.set(null);
-    });
+    this.treeComponent()
+      .jumpToNode(null)
+      .then(() => {
+        this.datasetSelected.set(false);
+        this.path.set(null);
+      });
   }
 
   async showPreview() {
