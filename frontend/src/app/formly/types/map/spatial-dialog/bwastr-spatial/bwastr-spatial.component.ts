@@ -25,6 +25,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  signal,
 } from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
@@ -38,9 +39,8 @@ import {
   FormsModule,
   ReactiveFormsModule,
   UntypedFormControl,
-  Validators,
 } from "@angular/forms";
-import { LatLng, LatLngBounds, Map, Polyline } from "leaflet";
+import { Map, Polyline } from "leaflet";
 import { Subscription } from "rxjs";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -50,7 +50,6 @@ import {
 } from "../../spatial-list/spatial-list.component";
 import { LeafletService } from "../../leaflet.service";
 import {
-  BwastrLocatorCoordinatesResponse,
   BwastrLocatorSearchResponse,
   BwastrLocatorService,
 } from "./bwastr-locator.service";
@@ -86,7 +85,7 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
   @Output() result = new EventEmitter<BwastrSection>();
   @Output() updateTitle = new EventEmitter<string>();
 
-  searchResults: BwastrLocatorSearchResponse[];
+  searchResults = signal<BwastrLocatorSearchResponse[]>([]);
   selectedBwastr: BwastrLocatorSearchResponse;
 
   private _selectedSection: BwastrSection;
@@ -103,8 +102,8 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
   private leafletService = inject(LeafletService);
 
   searchInput = new UntypedFormControl();
-  showWelcome = true;
-  showNoResult = false;
+  showNoResult = signal<boolean>(false);
+  showWelcome = signal<boolean>(true);
 
   searchSubscribe: Subscription;
 
@@ -137,20 +136,20 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
     if (this.searchSubscribe) this.searchSubscribe.unsubscribe();
 
     if (query.trim().length === 0) {
-      this.showWelcome = true;
-      this.searchResults = [];
+      this.showWelcome.set(true);
+      this.searchResults.set([]);
       this.selectedSection = null;
       this.value.bwastr = null;
       this.removeDrawnBwastrSection();
       return;
     }
-    this.showWelcome = false;
+    this.showWelcome.set(false);
 
     this.searchSubscribe = this.bwastrLocatorService
       .search(query)
       .subscribe((response: BwastrLocatorSearchResponse[]) => {
-        this.searchResults = response;
-        this.showNoResult = response.length === 0;
+        this.searchResults.set(response);
+        this.showNoResult.set(response.length === 0);
       });
   }
 

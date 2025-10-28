@@ -9,21 +9,21 @@
         ariaLabel="Suche im Bundeswasserstraßen-Locator"
     ></ige-search-input>
 
-    @if (showWelcome) {
+    @if (showWelcome()) {
         <div class="padding-vertical comment">
             Suchen Sie nach einer Bundeswasserstraße im
             Bundeswasserstraßen-Locator und wählen Sie ein Ergebnis aus.
         </div>
     }
 
-    @if (showNoResult) {
+    @if (showNoResult()) {
         <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
     }
 
     <div class="result-wrapper space-bottom">
         <div class="list-wrapper">
             <mat-list dense style="overflow: auto" ngDefaultControl>
-                @for (entry of searchResults; track entry) {
+                @for (entry of searchResults(); track entry) {
                     <mat-list-item
                         (click)="selectBwastr(entry)"
                         class="clickable"
