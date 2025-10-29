@@ -73,6 +73,7 @@ export interface Options {
   };
   asyncValidators?: any;
   resetOnHide?: boolean;
+  hintStart?: string;
 }
 
 export interface DatePickerOptions extends Options {
@@ -214,6 +215,7 @@ export interface AutocompleteOptions extends Options {
 
 export interface UnitInputOptions extends InputOptions {
   unitOptions?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  codelistId?: string;
   fieldGroup?: any;
 }
 
@@ -653,7 +655,7 @@ export class FormFieldHelper {
 
   addUnitInput(id, label, options?: UnitInputOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       id: options?.id,
       type: "unit-input",
@@ -684,7 +686,7 @@ export class FormFieldHelper {
         unitOptions: options?.unitOptions,
       },
       modelOptions: {
-        updateOn: options?.updateOn ?? "blur",
+        updateOn: options?.updateOn ?? "change",
       },
       expressions: {
         ...expressions,
@@ -727,6 +729,7 @@ export class FormFieldHelper {
           options?.placeholder ??
           this.transloco.translate("form.placeholder.choose"),
         label: options?.fieldLabel,
+        hintStart: options?.hintStart,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
         required: options?.required,

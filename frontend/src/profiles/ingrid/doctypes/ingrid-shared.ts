@@ -1178,6 +1178,8 @@ export abstract class IngridShared extends BaseDoctype {
                   showSearch: true,
                   options: this.getCodelistForSelect("523", "temporal.status"),
                   codelistId: "523",
+                  hintStart:
+                    "In welchem Bearbeitungsstadium befindet sich der Datensatz?",
                   className: "optional",
                 }),
           ].filter(Boolean),
@@ -1195,6 +1197,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "maintenanceInformation.maintenanceAndUpdateFrequency",
                   ),
                   codelistId: "518",
+                  hintStart: "Wie oft wird der Datensatz aktualisiert?",
                   className: "optional",
                   change: (field: FormlyFieldConfig) => {
                     console.log("Change maintenanceAndUpdateFrequency");
@@ -1209,46 +1212,21 @@ export abstract class IngridShared extends BaseDoctype {
                   },
                 },
               ),
-              this.addGroup(
+
+              this.addUnitInput(
                 "userDefinedMaintenanceFrequency",
                 "Benutzerdefiniertes Intervall der Erhebung",
-                [
-                  this.addInputInline("number", "Anzahl", {
-                    type: "number",
-                    expressions: {
-                      "props.required": (field: FormlyFieldConfig) =>
-                        isNotEmptyObject(field.form.value),
-                    },
-                    validators: {
-                      validation: ["positiveNum"],
-                      continuously: {
-                        expression: (ctrl: FormControl) => {
-                          const frequency = ctrl.root.get(
-                            "maintenanceInformation.maintenanceAndUpdateFrequency",
-                          ).value?.key;
-                          return !ctrl.value || frequency === "1";
-                        },
-                        message:
-                          "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
-                      },
-                    },
-                  }),
-                  this.addSelectInline("unit", "Einheit", {
-                    showSearch: true,
-                    options: this.getCodelistForSelect(
-                      "1230",
-                      "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
-                    ),
-                    codelistId: "1230",
-                    className: "flex-3",
-                    allowNoValue: true,
-                    expressions: {
-                      "props.required": (field: FormlyFieldConfig) =>
-                        isNotEmptyObject(field.form.value),
-                    },
-                  }),
-                ],
                 {
+                  type: "number",
+                  placeholder: "kein Intervall",
+                  unitOptions: this.getCodelistForSelect(
+                    "1230",
+                    "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
+                  ),
+                  codelistId: "1230",
+                  fieldGroup: [{ key: "number" }, { key: "unit" }],
+                  hintStart:
+                    "Wenn ein Intervall angegeben werden kann, geben Sie das Intervall an, in dem der Datensatz aktualisiert wird.",
                   expressions: {
                     className: (field: FormlyFieldConfig) => {
                       const notEmpty = isNotEmptyObject(
@@ -1259,7 +1237,23 @@ export abstract class IngridShared extends BaseDoctype {
                           ?.maintenanceInformation
                           ?.maintenanceAndUpdateFrequency?.key !== "1";
                       if (!notEmpty && isNotContinuously) return "hide";
-                      return notEmpty ? "" : "optional";
+                      return notEmpty ? "right-align" : "right-align optional";
+                    },
+                  },
+                  validators: {
+                    min: {
+                      expression: (ctrl: FormControl) => ctrl.value.number >= 0,
+                      message: "Der Wert darf nicht negativ sein",
+                    },
+                    continuously: {
+                      expression: (ctrl: FormControl) => {
+                        const frequency = ctrl.root.get(
+                          "maintenanceInformation.maintenanceAndUpdateFrequency",
+                        ).value?.key;
+                        return !ctrl.value?.number || frequency === "1";
+                      },
+                      message:
+                        "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
                     },
                   },
                 },

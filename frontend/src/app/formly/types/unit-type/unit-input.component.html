@@ -6,7 +6,7 @@
     type="number"
     [formControl]="$any(field.fieldGroup[0].formControl)"
 />
-@if (field.fieldGroup[0].formControl.value) {
+@if (field.fieldGroup[0].formControl.value != null) {
     <div
         matSuffix
         [matMenuTriggerFor]="!disabled && suffixMenu"
