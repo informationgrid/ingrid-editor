@@ -29,7 +29,7 @@ import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.servi
 import { DocumentService } from "../../../services/document/document.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
-import { catchError, finalize } from "rxjs/operators";
+import { catchError, finalize, tap } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 
@@ -113,6 +113,12 @@ export class SavePlugin extends SaveBase {
           type: metadata.docType,
         })
         .pipe(
+          tap(() =>
+            this.documentService.updateBreadcrumb(
+              metadata.wrapperId,
+              this.forAddress(),
+            ),
+          ),
           catchError((error) =>
             this.handleError(error, metadata, this.forAddress(), "SAVE"),
           ),

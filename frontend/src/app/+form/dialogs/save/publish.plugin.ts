@@ -302,6 +302,12 @@ export class PublishPlugin extends SaveBase {
         delay,
       )
       .pipe(
+        tap(() =>
+          this.documentService.updateBreadcrumb(
+            metadata.wrapperId,
+            this.forAddress(),
+          ),
+        ),
         catchError((error) =>
           this.handleError(error, metadata, this.forAddress(), "PUBLISH"),
         ),
