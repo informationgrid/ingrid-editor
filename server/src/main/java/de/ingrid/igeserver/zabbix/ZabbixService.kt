@@ -22,6 +22,7 @@ package de.ingrid.igeserver.zabbix
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
@@ -98,6 +99,9 @@ class ZabbixService(
      * @return userId of created user
      */
     private fun createUser(addressMail: String): String {
+        val userid = getUserId(addressMail)
+        if (userid != null) return userid
+
         val passwd = "readOnly"
         val paramsUsergroup = listOf(ZabbixModel.UserGroup(userGroupId))
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
@@ -106,15 +110,11 @@ class ZabbixService(
         val values = jacksonObjectMapper().writeValueAsString(user)
         val response = requestApi(values)
 
+        // check for invalid email address
         if (response.get("error")?.get("data")?.asText()?.contains("Invalid email address") == true) {
-            throw IllegalArgumentException("Invalid email address: $addressMail")
+            throw InvalidParameterException.withInvalidParameters("addressMail")
         }
-        val userid: String = if (response.has("error")) {
-            getUserId(addressMail)
-        } else {
-            getFromResultAsList(response, "userids")[0].asText()
-        }
-        return userid
+        return getFromResultAsList(response, "userids")[0].asText()
     }
 
     data class Action(
@@ -182,11 +182,11 @@ class ZabbixService(
         requestApi(getActionPayload(uuid, updatedUserId))
     }
 
-    private fun getUserId(username: String): String {
+    private fun getUserId(username: String): String? {
         val jsonUserGet =
             """{"jsonrpc":"$JSONRPC","method":"user.get","params":{"output":["userid","username"],"filter":{"username":["$username"]}},"id":1}"""
         val responseUserGet = requestApi(jsonUserGet)
-        return responseUserGet.get("result").get(0).get("userid").asText()
+        return responseUserGet.get("result").get(0)?.get("userid")?.asText()
     }
 
     private fun deleteUser(userid: List<String>) {
@@ -221,11 +221,7 @@ class ZabbixService(
         log.debug("Add document url: $url to host $hostId with name $name and uuid $uuid")
         createWebscenario(uuid, hostId, "Verfahren", url, 2, "page-wrapper")
         createTrigger(uuid, "Verfahren", url)
-        if (!addressMail.isNullOrEmpty()) {
-            // only create notification job when mail is set
-            createUser(addressMail)
-            createAction(uuid, addressMail)
-        }
+        handleNotification(uuid, addressMail)
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url, 1, "")
@@ -529,6 +525,17 @@ class ZabbixService(
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":["hostid","host","name"],"selectTags":"extend","groupids":"$groupid"},"id":1}"""
         val responseHostGet = requestApi(jsonHostGet)
         return getFromResultArrayAsList(responseHostGet, "host")
+    }
+
+    private fun handleNotification(uuid: String, addressMail: String?) {
+        if (!addressMail.isNullOrEmpty()) {
+            try {
+                createUser(addressMail)
+                createAction(uuid, addressMail)
+            } catch (ex: Exception) {
+                log.error("Error creating user for uuid $uuid", ex)
+            }
+        }
     }
 }
 
