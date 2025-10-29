@@ -191,7 +191,9 @@ class MigrateCodelistIdsIntoDatasets(
             }
         } else if (profile.identifier == "uvp") {
             // get uvp number list of catalog
-            val uvpCodelistId = behaviourService.get(catalogIdentifier, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            val uvpCodelistId =
+                behaviourService.getData(catalogIdentifier, "plugin.uvp.eia-number")?.get("uvpCodelist")?.toString()
+                    ?: "9000"
             FieldToCodelist("eiaNumbers", null, uvpCodelistId).let {
                 val sql = getSQL(it, catalogIdentifier)
                 log.debug("Executing SQL: $sql")

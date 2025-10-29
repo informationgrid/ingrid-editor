@@ -178,9 +178,12 @@ export class UvpResearchService {
   }
 
   private initUvpNumber() {
-    const uvpNumber =
-      this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
-        ?.uvpCodelist ?? 9000;
+    const behaviour = this.behaviourService.getBehaviour(
+      "plugin.uvp.eia-number",
+    );
+    const uvpNumber = behaviour?.isActive()
+      ? (behaviour?.data?.uvpCodelist ?? "9000")
+      : "9000";
 
     this.codelists$
       .pipe(

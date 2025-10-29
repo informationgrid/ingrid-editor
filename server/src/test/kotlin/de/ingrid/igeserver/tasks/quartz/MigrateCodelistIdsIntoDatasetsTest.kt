@@ -217,7 +217,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
         }
 
         every {
-            behaviourService.get("test_catalog-uvp", "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString()
+            behaviourService.getData("test_catalog-uvp", "plugin.uvp.eia-number")?.get("uvpCodelist")?.toString()
         } returns "9003"
 
         migrationTask.run(jobExecutionContext)

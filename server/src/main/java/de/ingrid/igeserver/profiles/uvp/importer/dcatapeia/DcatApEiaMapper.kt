@@ -222,7 +222,7 @@ class DcatApEiaMapper(
     val eiaNumbers: List<KeyValue>? by lazy {
         val catalog = catalogService.getCatalogById(catalogId)
         val uvpCodelistId =
-            behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            behaviourService.getData(catalogId, "plugin.uvp.eia-number")?.get("uvpCodelist")?.toString() ?: "9000"
         val eiaNumbers: List<KeyValue>? = dataset.number?.map { value ->
             val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, catalog.settings.config.language ?: "de")
                 ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
