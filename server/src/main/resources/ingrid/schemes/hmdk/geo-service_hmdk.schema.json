@@ -3,7 +3,7 @@
   "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/GeoServiceHmdk",
   "allOf": [
     { "$ref": "../geo-service-base.schema.json" },
-    { "$ref": "../constraints/if_isInspireIdentified-geo-service.schema.json"},
+    { "$ref": "../constraints/if_isInspireIdentifiedConform-geo-service.schema.json"},
     { "$ref": "../constraints/if_isOpenData-hmdk.schema.json"},
     { "$ref": "../constraints/if_isAdVCompatible.schema.json"}
   ],

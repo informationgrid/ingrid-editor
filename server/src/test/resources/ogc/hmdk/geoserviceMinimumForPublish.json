@@ -1,0 +1,145 @@
+{
+  "service": {
+    "type": {
+      "key": "2",
+      "value": "Darstellungsdienste",
+      "_codelistId": "5100"
+    },
+    "version": [],
+    "operations": [
+      {
+        "name": {
+          "key": "1",
+          "value": "GetCapabilities",
+          "_codelistId": "5110"
+        },
+        "methodCall": "https://wemove.com"
+      }
+    ],
+    "resolution": [],
+    "classification": [
+      {
+        "key": "303",
+        "value": "Abonnementdienst",
+        "_codelistId": "5200"
+      }
+    ],
+    "coupledResources": [],
+    "hasAccessConstraints": false
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Neuer Raumbezug",
+        "value": {
+          "lat1": 50.48547354578499,
+          "lat2": 52.214338608258224,
+          "lon1": 8.701171875000002,
+          "lon2": 10.283203125000002
+        }
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "84",
+        "value": "CRS 84: CRS 84 / mathematisch",
+        "_codelistId": "100"
+      }
+    ],
+    "verticalExtent": {
+      "Datum": {
+        "key": "5105",
+        "value": "Baltic Sea",
+        "_codelistId": "101"
+      },
+      "maximumValue": 1,
+      "minimumValue": 1,
+      "unitOfMeasure": {
+        "key": "9001",
+        "value": "Meter",
+        "_codelistId": "102"
+      }
+    }
+  },
+  "keywords": {
+    "free": [],
+    "gemet": [],
+    "umthes": []
+  },
+  "metadata": {
+    "language": {
+      "key": "150",
+      "_codelistId": "99999999"
+    }
+  },
+  "resource": {
+    "useConstraints": [
+      {
+        "title": {
+          "key": "27",
+          "value": "Creative Commons Namensnennung 4.0 International",
+          "_codelistId": "6500"
+        }
+      }
+    ],
+    "accessConstraints": [
+      {
+        "key": "1",
+        "value": "Es gelten keine Zugriffsbeschränkungen",
+        "_codelistId": "6010"
+      }
+    ]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2025-10-21T22:00:00.000Z",
+        "referenceDateType": {
+          "key": "1",
+          "value": "Erstellung",
+          "_codelistId": "502"
+        }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": {
+    "legalBasicsDescriptions": []
+  },
+  "description": "Beschreibung",
+  "distribution": {
+    "format": []
+  },
+  "pointOfContact": [
+    {
+      "ref": "220C6012-1713-44C0-9A33-4E2C24D06966",
+      "type": {
+        "key": "12",
+        "value": "Ansprechpartner MD",
+        "_codelistId": "505"
+      }
+    },
+    {
+      "ref": "220C6012-1713-44C0-9A33-4E2C24D06966",
+      "type": {
+        "key": "7",
+        "value": "Ansprechpartner",
+        "_codelistId": "505"
+      }
+    }
+  ],
+  "advProductGroups": [],
+  "graphicOverviews": [],
+  "openDataCategories": [],
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null
+    }
+  },
+  "title": "validation test geoservice no properties",
+  "_type": "InGridGeoService"
+}
