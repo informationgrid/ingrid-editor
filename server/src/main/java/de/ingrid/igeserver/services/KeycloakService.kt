@@ -114,7 +114,7 @@ class KeycloakService : UserManagementService {
             val usersWithRole = getUsersWithRole(realm)
             val externalUsersWithRole = getUsersFromUserFederation(realm)
             val userInGroupsWithRole = getUsersInGroupsWithRole(realm)
-            return (usersWithRole + externalUsersWithRole + userInGroupsWithRole).toSet()
+            return (usersWithRole + externalUsersWithRole + userInGroupsWithRole).distinctBy { it.login }.toSet()
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
