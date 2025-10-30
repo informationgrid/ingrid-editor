@@ -1,0 +1,156 @@
+{
+  "properties": {
+    "subType": {
+      "key": "5",
+      "value": "Datensatz",
+      "_codelistId": "525"
+    },
+    "isInspireIdentified": "conform"
+  },
+  "themes": [],
+  "spatialScope": null,
+  "spatialRepresentationType": null,
+  "conformanceResult": [],
+  "resource": {
+    "useConstraints": [
+    ],
+    "accessConstraints": [
+    ]
+  },
+  "dataset": {
+    "languages": [
+      "150"
+    ]
+  },
+  "lineage": {
+    "statement": "Fachliche Grundlage"
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Neuer Raumbezug",
+        "value": {
+          "lat1": 50.0923932109388,
+          "lat2": 52.32191088594773,
+          "lon1": 8.701171875000002,
+          "lon2": 11.337890625
+        }
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "84",
+        "value": "CRS 84: CRS 84 / mathematisch",
+        "_codelistId": "100"
+      }
+    ],
+    "verticalExtent": {
+      "Datum": {
+        "key": "5105",
+        "value": "Baltic Sea",
+        "_codelistId": "101"
+      },
+      "maximumValue": 1,
+      "minimumValue": 1,
+      "unitOfMeasure": {
+        "key": "9001",
+        "value": "Meter",
+        "_codelistId": "102"
+      }
+    }
+  },
+  "keywords": {
+    "free": [],
+    "gemet": [],
+    "umthes": []
+  },
+  "metadata": {
+    "language": {
+      "key": "150",
+      "_codelistId": "99999999"
+    },
+    "characterSet": null
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2025-10-21T22:00:00.000Z",
+        "referenceDateType": {
+          "key": "1",
+          "value": "Erstellung",
+          "_codelistId": "502"
+        }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": {
+    "legalBasicsDescriptions": []
+  },
+  "qualities": [],
+  "identifier": "e99a65c2-9154-4940-8af4-34a691f60630",
+  "resolution": [],
+  "dataQuality": {
+    "completenessOmission": {}
+  },
+  "description": "Beschreibung",
+  "distribution": {
+    "format": []
+  },
+  "pointOfContact": [
+    {
+      "ref": "220C6012-1713-44C0-9A33-4E2C24D06966",
+      "type": {
+        "key": "12",
+        "value": "Ansprechpartner MD",
+        "_codelistId": "505"
+      }
+    },
+    {
+      "ref": "220C6012-1713-44C0-9A33-4E2C24D06966",
+      "type": {
+        "key": "7",
+        "value": "Ansprechpartner",
+        "_codelistId": "505"
+      }
+    }
+  ],
+  "dataQualityInfo": {
+    "lineage": {
+      "source": {
+        "processStep": {
+          "description": []
+        }
+      }
+    }
+  },
+  "topicCategories": [
+    {
+      "key": "4",
+      "value": "Atmosphäre",
+      "_codelistId": "527"
+    }
+  ],
+  "advProductGroups": [],
+  "graphicOverviews": [],
+  "openDataCategories": [],
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null
+    }
+  },
+  "portrayalCatalogueInfo": {
+    "citation": []
+  },
+  "featureCatalogueDescription": {
+    "citation": [],
+    "featureTypes": []
+  },
+  "absoluteExternalPositionalAccuracy": {},
+  "title": "validation test with no properties",
+  "_type": "InGridGeoDataset"
+}

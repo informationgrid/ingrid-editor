@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/constraints/if_isInspireIdentified-geo-dataset",
+  "type": "object",
+  "if": {
+    "properties": {
+      "properties": {
+        "type": "object",
+        "properties": {
+          "isInspireIdentified": { "const": "notConform" }
+        },
+        "required": ["isInspireIdentified"]
+      }
+    },
+    "required": ["properties"]
+  },
+  "then": {
+    "properties": {
+      "themes": {
+        "type": "array",
+        "minItems": 1
+      },
+      "spatialScope": {
+        "type": "object"
+      },
+      "distribution": {
+        "type": "object",
+        "required": [
+          "format"
+        ],
+        "properties": {
+          "format": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      },
+      "conformanceResult": {
+        "type": "array",
+        "minItems": 1,
+        "contains": {
+          "type": "object",
+          "required": ["specification", "pass"],
+          "properties": {
+            "specification": {
+              "type": "object",
+              "properties": {
+                "key": { "const": "12" }
+              },
+              "required": ["key"]
+            },
+            "pass": {
+              "type": "object",
+              "properties": {
+                "key": { "const": "2" }
+              },
+              "required": ["key"]
+            }
+          }
+        }
+      },
+      "resource": {
+        "type": "object",
+        "properties": {
+          "accessConstraints": {
+            "type": "array",
+            "minItems": 1
+          }
+        },
+        "required": ["accessConstraints"]
+      }
+    },
+    "required": ["themes", "spatialScope", "distribution", "conformanceResult", "resource"]
+  }
+}
