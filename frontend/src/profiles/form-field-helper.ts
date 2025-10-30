@@ -238,6 +238,16 @@ export class FormFieldHelper {
     };
   }
 
+  addSubSection(label: string, fields: any[]) {
+    return {
+      wrappers: ["sub-section"],
+      props: {
+        label: label,
+      },
+      fieldGroup: fields,
+    };
+  }
+
   addGroup(id: string, label: string, fields: any[], options?) {
     const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
@@ -1107,7 +1117,7 @@ export class FormFieldHelper {
   private initExpressions(expressions = {}) {
     return {
       "props.disabled": (field: FormlyFieldConfig) =>
-        field.options?.formState?.disabled ?? false,
+        field?.options?.formState?.disabled ?? false,
       ...expressions,
     };
   }
