@@ -1,5 +1,20 @@
 # Changelog
 
+## 8.1.1 (31.10.2025)
+
+### Features
+
+* Beschreibungsfeld bei Sachattributen und Geometrien bitte dynamisch skalierbar machen (#8310)
+
+### Bugfixes
+
+* Zabbix-Aufräumjob erzeugt Fehler bei ungültiger Email (#8412)
+* INSPIRE Datensätze markiert mit "nicht konform" in JSON Schema Validierung aufnehmen (#8407)
+* Editor: dateStamp in der ISO-Ansicht korrigieren (#8405)
+* Probleme mit dem CSW-T Import (#8353)
+* Formular kann nicht seitlich gescrollt werden (#8348)
+* Automatisierte Rollenzuweisung im Keycloak funktioniert nicht (#8300)
+    
 ## 8.1.0 (10.10.2025)
 
 ### Features
