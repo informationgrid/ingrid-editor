@@ -1206,14 +1206,10 @@ mat-icon.wide-icon-26px {
   gap: 12px;
 }
 
-.radio-vertical {
+.radio-vertical mat-radio-group {
   display: flex;
   flex-direction: column;
   margin-top: 12px;
-  /*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-  /*mat-radio-button {
-    margin: 5px 0;
-  }*/
 }
 
 .comment {

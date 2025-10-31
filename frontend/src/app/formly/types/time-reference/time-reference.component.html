@@ -1,0 +1,59 @@
+<div class="flex-row gap-24">
+    <div class="flex-col">
+        <div>Von</div>
+        <mat-radio-group class="flex-col">
+            <mat-radio-button value="1">
+                Datum
+                <mat-form-field
+                    appearance="outline"
+                    class=""
+                    data-cy="datepicker-timeref-from"
+                >
+                    <input
+                        matInput
+                        [matDatepicker]="picker_from"
+                        placeholder="Datum auswählen"
+                    />
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker_from"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker_from></mat-datepicker>
+                </mat-form-field>
+            </mat-radio-button>
+            <mat-radio-button value="2">
+                Nicht vorhanden/Unbekannt
+            </mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div class="flex-col">
+        <div>Bis</div>
+        <mat-radio-group class="flex-col">
+            <mat-radio-button value="1">
+                Datum
+                <mat-form-field
+                    appearance="outline"
+                    class=""
+                    data-cy="datepicker-timeref-to"
+                >
+                    <input
+                        matInput
+                        [matDatepicker]="picker_to"
+                        placeholder="Datum auswählen"
+                    />
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker_to"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker_to></mat-datepicker>
+                </mat-form-field>
+            </mat-radio-button>
+            <mat-radio-button value="2">
+                Fortlaufend, aktuell
+            </mat-radio-button>
+            <mat-radio-button value="2">
+                Nicht vorhanden/Unbekannt
+            </mat-radio-button>
+        </mat-radio-group>
+    </div>
+</div>

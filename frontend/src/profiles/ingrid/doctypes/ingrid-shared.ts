@@ -1222,6 +1222,7 @@ export abstract class IngridShared extends BaseDoctype {
         ),
         this.addSubSection("Zeitbezug der Daten im Datensatz", [
           this.addRadioboxes("resourceCoverage", "", {
+            wrappers: [],
             options: [
               {
                 value: "Daten beziehen sich auf einen Zeitraum",
@@ -1246,30 +1247,35 @@ export abstract class IngridShared extends BaseDoctype {
                 field.form.root.get("resourceCoverage")?.value !== "2",
             },
           }),
-          this.addGroup(
-            null,
-            "",
-            [
-              this.addDatepickerInline("resourceDateFrom", null, {
-                required: this.options.required.resourceDateType,
-                placeholder: "TT.MM.JJJJ",
-                fieldLabel: "Von",
-                className: "flex-1",
-              }),
-              this.addDatepickerInline("resourceDateTo", null, {
-                required: this.options.required.resourceDateType,
-                placeholder: "TT.MM.JJJJ",
-                fieldLabel: "Bis",
-                className: "flex-1",
-              }),
-            ],
+          this.addGroupSimple(null, [
             {
-              // fieldGroupClassName: "flex-row gap-12",
-              className: "flex-row gap-12",
-              hideExpression: (field: FormlyFieldConfig) =>
-                field.form.root.get("resourceCoverage")?.value !== "1",
+              type: "time-reference",
+              expressions: {
+                hide: (field: FormlyFieldConfig) =>
+                  field.form.root.get("resourceCoverage")?.value !== "1",
+              },
             },
-          ),
+          ]),
+          //   this.addDatepicker("resourceDateFrom", "Von", {
+          //     required: this.options.required.resourceDateType,
+          //     placeholder: "TT.MM.JJJJ",
+          //     // fieldLabel: "Von",
+          //     // className: "flex-1",
+          //   }),
+          //   this.addDatepicker("resourceDateTo", "Bis", {
+          //     required: this.options.required.resourceDateType,
+          //     placeholder: "TT.MM.JJJJ",
+          //     // fieldLabel: "Bis",
+          //     // className: "flex-1",
+          //   }),
+          // ],
+          // {
+          //   fieldGroupClassName: "flex-row gap-12",
+          //   // className: "flex-row gap-12",
+          //   hideExpression: (field: FormlyFieldConfig) =>
+          //     field.form.root.get("resourceCoverage")?.value !== "1",
+          // },
+          // ),
           // this.addSelect("resourceDateType", null, {
           //   required: this.options.required.resourceDateType,
           //   showSearch: true,

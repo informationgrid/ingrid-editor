@@ -964,8 +964,8 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "radio",
-      wrappers: ["panel", "form-field", "inline-help"],
-      className: "ige-radios",
+      wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
+      className: options?.className ?? "ige-radios",
       defaultValue: options?.defaultValue ?? null,
       props: {
         appearance: "outline",

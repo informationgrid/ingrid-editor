@@ -158,6 +158,7 @@ import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/tim
 import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
 import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
 import { SubSectionWrapper } from "./app/formly/wrapper/sub-section-wrapper.component";
+import { TimeReferenceComponent } from "./app/formly/types/time-reference/time-reference.component";
 
 if (environment.production) {
   enableProdMode();
@@ -293,6 +294,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "metadata",
             component: MetadataTypeComponent,
+          },
+          {
+            name: "time-reference",
+            component: TimeReferenceComponent,
           },
           /* FOR PREVIEW */
           {
