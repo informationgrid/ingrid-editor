@@ -397,11 +397,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.toList() ?: emptyList()
 
     fun getSpatialScope(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value?.trim() == "Spatial scope" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
         ?.mapNotNull { it }
         ?.mapNotNull { value ->
-            val key = codeListService.getCodeListEntryId("6360", value, "de")
+            val key = codeListService.getCodeListEntryId("6360", value.trim(), "de")
             key?.let { KeyValue(key, value, "6360") }
         }
         ?.getOrNull(0)
