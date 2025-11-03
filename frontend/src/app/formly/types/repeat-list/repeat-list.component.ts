@@ -89,6 +89,7 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
+import { BackendOption } from "../../../store/codelist/codelist.model";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -181,7 +182,7 @@ export class RepeatListComponent
     };
   };
 
-  items = signal<any[]>([]);
+  items = signal<BackendOption[]>([]);
 
   filteredOptions = signal<SelectOptionUi[]>([]);
   parameterOptions: SelectOptionUi[];
