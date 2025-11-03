@@ -306,10 +306,17 @@ export class RepeatListComponent
                   .pipe(catchError(() => of([])));
               }
               return remoteCall$.pipe(
-                map((remoteResults: any[]) => [
-                  ...localResults,
-                  ...remoteResults,
-                ]),
+                map((remoteResults: any[]) => {
+                  const localLabels = localResults.map((r) =>
+                    r.label.toLowerCase(),
+                  );
+                  return [
+                    ...localResults,
+                    ...remoteResults.filter(
+                      (r) => !localLabels.includes(r.label.toLowerCase()),
+                    ),
+                  ];
+                }),
               );
             }),
             tap((value) => this._markSelected(value)), // Mark selected based on combined list
