@@ -82,4 +82,11 @@ interface CodelistApi {
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody favorites: List<String>?,
     ): ResponseEntity<Unit>
+
+    @Operation
+    @GetMapping(value = ["/external/{id}/{filter}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getExternalCodelist(
+        @Parameter() @PathVariable id: String,
+        @Parameter() @PathVariable filter: String,
+    ): ResponseEntity<List<String>>
 }
