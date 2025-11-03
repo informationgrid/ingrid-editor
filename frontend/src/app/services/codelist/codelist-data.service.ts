@@ -80,6 +80,12 @@ export class CodelistDataService {
     );
   }
 
+  getExternalCodelist(id: string, filter: string) {
+    return this.http.get<string[]>(
+      this.configuration.backendUrl + "codelist/external/" + id + "/" + filter,
+    );
+  }
+
   syncCodelistValues(migrate: boolean) {
     return this.http.post<void>(
       this.configuration.backendUrl +

@@ -325,6 +325,17 @@ export class CodelistService {
     );
   }
 
+  observeExternal(
+    codelistId: string,
+    filter: string,
+  ): Observable<SelectOptionUi[]> {
+    return this.dataService
+      .getExternalCodelist(codelistId, filter)
+      .pipe(
+        map((labels) => labels.map((label) => new SelectOption(null, label))),
+      );
+  }
+
   observeRaw(codelistId: string): Observable<Codelist> {
     const alreadyInQueue = this.queue.some((item) => item === codelistId);
     const alreadyInStore = this.store.entityMap()[codelistId];

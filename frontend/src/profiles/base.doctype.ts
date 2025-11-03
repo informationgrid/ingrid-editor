@@ -120,6 +120,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.codelistService.observe(codelistId, sortBy);
   }
 
+  getExternalCodelistForSelect(
+    codelistId: string,
+    filter: string,
+  ): Observable<SelectOptionUi[]> {
+    return this.codelistService.observeExternal(codelistId, filter);
+  }
+
   async init(help: string[]): Promise<void> {
     this.helpIds = help;
     await this.isInitialized();
