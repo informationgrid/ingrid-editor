@@ -29,6 +29,7 @@ import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
+import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -119,6 +120,7 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
+  externalOptionsThreshold?: number;
   view?: "chip" | "list";
   restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
@@ -428,6 +430,17 @@ export class FormFieldHelper {
       expressions: expressions,
       validators: options?.validators,
     };
+  }
+
+  addExtendedRepeatList(id, label, options?: RepeatListOptions) {
+    let repeatList = this.addRepeatList(id, label, {
+      ...options,
+      asAutocomplete: true,
+      labelField: "value",
+    });
+    (repeatList.props as RepeatListProps).externalOptionsThreshold =
+      options?.externalOptionsThreshold;
+    return repeatList;
   }
 
   addRepeatDetailList(

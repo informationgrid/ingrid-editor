@@ -36,14 +36,16 @@ import {
   MatAutocompleteTrigger,
 } from "@angular/material/autocomplete";
 import {
+  catchError,
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
   startWith,
+  switchMap,
   tap,
 } from "rxjs/operators";
-import { merge, Observable, Subject, Subscription } from "rxjs";
+import { merge, Observable, of, Subject, Subscription } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -100,7 +102,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 
-interface RepeatListProps extends FormlyFieldProps {
+export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
   showSearch: boolean;
   restCall: any;
@@ -122,6 +124,7 @@ interface RepeatListProps extends FormlyFieldProps {
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
   hideInputField: boolean;
+  externalOptionsThreshold?: number;
 }
 
 @UntilDestroy()
@@ -222,7 +225,7 @@ export class RepeatListComponent
           .pipe(untilDestroyed(this))
           .subscribe((value) => this.manualUpdate.next(value));
       }
-    } else if (this.props.restCall) {
+    } else if (this.props.restCall && !this.props.options) {
       this.type.set("search");
       if (!this.props.labelField) this.props.labelField = "label";
       if (!this.props.selectLabelField)
@@ -282,15 +285,47 @@ export class RepeatListComponent
       });
 
     if (this.props.restCall) {
-      this.inputControl.valueChanges
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(300),
-          tap(() => this.formControl.updateValueAndValidity()),
-          filter((query) => query?.length > 1),
-        )
-        .subscribe((query) => this.search(query));
+      if (this.props.options) {
+        this.inputControl.valueChanges
+          .pipe(
+            untilDestroyed(this),
+            startWith(""),
+            debounceTime(50),
+            tap(() => this.formControl.updateValueAndValidity()),
+          )
+          .pipe(
+            switchMap((query: string) => {
+              const localResults = this._filter(query);
+              let remoteCall$: Observable<any[]> = of([]);
+              if (
+                query &&
+                query.length >= (this.props.externalOptionsThreshold ?? 3)
+              ) {
+                remoteCall$ = this.props
+                  .restCall(query)
+                  .pipe(catchError(() => of([])));
+              }
+              return remoteCall$.pipe(
+                map((remoteResults: any[]) => [
+                  ...localResults,
+                  ...remoteResults,
+                ]),
+              );
+            }),
+            tap((value) => this._markSelected(value)), // Mark selected based on combined list
+          )
+          .subscribe((value) => this.filteredOptions.set(value));
+      } else {
+        this.inputControl.valueChanges
+          .pipe(
+            untilDestroyed(this),
+            startWith(""),
+            debounceTime(300),
+            tap(() => this.formControl.updateValueAndValidity()),
+            filter((query) => query?.length > 1),
+          )
+          .subscribe((query) => this.search(query));
+      }
     } else {
       merge(
         this.formControl.valueChanges,
@@ -339,9 +374,12 @@ export class RepeatListComponent
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label).forBackend(
-      this.props.codelistId,
-    );
+    const prepared =
+      option.value == null
+        ? new SelectOption(null, option.label).forBackend(null)
+        : new SelectOption(option.value, option.label).forBackend(
+            this.props.codelistId,
+          );
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 
@@ -415,12 +453,14 @@ export class RepeatListComponent
     value?.forEach((option) => {
       const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value,
-      ).disabled;
+      )?.disabled;
       const optionAlreadySelected = this.model?.[
         this.field.key as string
       ]?.some(
         (modelOption: any) =>
-          modelOption && (modelOption.key ?? modelOption) === option.value,
+          modelOption &&
+          ((modelOption.key ?? modelOption) === option.value ||
+            modelOption.value === option.label),
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
     });
