@@ -45,7 +45,7 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
-import { merge, Observable, of, Subject, Subscription } from "rxjs";
+import { concat, merge, Observable, of, Subject, Subscription } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -101,6 +101,11 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     else return false;
   }
 }
+
+const LOADING_INDICATOR: SelectOption = new SelectOption(
+  "_LOADING_SPINNER_",
+  "Lädt externe Codelist-Einträge...",
+);
 
 export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
@@ -298,29 +303,29 @@ export class RepeatListComponent
           startWith(""),
           debounceTime(50),
           tap(() => this.formControl.updateValueAndValidity()),
-        )
-        .pipe(
           switchMap((query: string) => {
             const localResults = this._filter(query);
-            let remoteCall$: Observable<any[]> = of([]);
             if (
               query &&
               query.length >= (this.props.externalOptions.threshold ?? 3)
             ) {
-              remoteCall$ = this.props.externalOptions
-                .fetchCodelist(query, 0)
-                .pipe(catchError(() => of([])));
+              const initialStream = of([...localResults, LOADING_INDICATOR]);
+              const remoteCall$: Observable<SelectOptionUi[]> =
+                this.props.externalOptions.fetchCodelist(query, 0).pipe(
+                  catchError(() => of([])),
+                  map((remoteResults) =>
+                    this.props.externalOptions.deduplicate(
+                      localResults,
+                      remoteResults,
+                    ),
+                  ),
+                );
+              return concat(initialStream, remoteCall$);
+            } else {
+              return of(localResults);
             }
-            return remoteCall$.pipe(
-              map((remoteResults) =>
-                this.props.externalOptions.deduplicate(
-                  localResults,
-                  remoteResults,
-                ),
-              ),
-            );
           }),
-          tap((value) => this._markSelected(value)), // Mark selected based on combined list
+          tap((value) => this._markSelected(value)),
         )
         .subscribe((value) => this.filteredOptions.set(value));
     } else if (this.props.restCall) {
