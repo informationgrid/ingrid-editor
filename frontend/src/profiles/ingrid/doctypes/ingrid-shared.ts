@@ -960,11 +960,11 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistCall: (query: string) =>
                   this.getExternalCodelistForSelect("EPSG", query),
                 deduplicate: (options, externalOptions) => {
-                  const localLabels = options.map((r) => r.label.toLowerCase());
+                  const localLabels = options.map((r) => r.label.split(":")[0]);
                   return [
                     ...options,
                     ...externalOptions.filter(
-                      (r) => !localLabels.includes(r.label.toLowerCase()),
+                      (r) => !localLabels.includes(r.label.split(":")[0]),
                     ),
                   ];
                 },
