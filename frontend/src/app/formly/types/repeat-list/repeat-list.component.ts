@@ -125,6 +125,7 @@ export interface RepeatListProps extends FormlyFieldProps {
   convert: (item: any) => string;
   hideInputField: boolean;
   externalOptions?: {
+    fetchCodelist: (query: string, page: number) => Observable<any[]>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
@@ -231,7 +232,7 @@ export class RepeatListComponent
           .pipe(untilDestroyed(this))
           .subscribe((value) => this.manualUpdate.next(value));
       }
-    } else if (this.props.restCall && !this.props.options) {
+    } else if (this.props.restCall) {
       this.type.set("search");
       if (!this.props.labelField) this.props.labelField = "label";
       if (!this.props.selectLabelField)
@@ -290,50 +291,48 @@ export class RepeatListComponent
           : this.inputControl.enable();
       });
 
-    if (this.props.restCall) {
-      if (this.props.options) {
-        this.inputControl.valueChanges
-          .pipe(
-            untilDestroyed(this),
-            startWith(""),
-            debounceTime(50),
-            tap(() => this.formControl.updateValueAndValidity()),
-          )
-          .pipe(
-            switchMap((query: string) => {
-              const localResults = this._filter(query);
-              let remoteCall$: Observable<any[]> = of([]);
-              if (
-                query &&
-                query.length >= (this.props.externalOptions.threshold ?? 3)
-              ) {
-                remoteCall$ = this.props
-                  .restCall(query)
-                  .pipe(catchError(() => of([])));
-              }
-              return remoteCall$.pipe(
-                map((remoteResults) =>
-                  this.props.externalOptions.deduplicate(
-                    localResults,
-                    remoteResults,
-                  ),
+    if (this.props.externalOptions) {
+      this.inputControl.valueChanges
+        .pipe(
+          untilDestroyed(this),
+          startWith(""),
+          debounceTime(50),
+          tap(() => this.formControl.updateValueAndValidity()),
+        )
+        .pipe(
+          switchMap((query: string) => {
+            const localResults = this._filter(query);
+            let remoteCall$: Observable<any[]> = of([]);
+            if (
+              query &&
+              query.length >= (this.props.externalOptions.threshold ?? 3)
+            ) {
+              remoteCall$ = this.props.externalOptions
+                .fetchCodelist(query, 0)
+                .pipe(catchError(() => of([])));
+            }
+            return remoteCall$.pipe(
+              map((remoteResults) =>
+                this.props.externalOptions.deduplicate(
+                  localResults,
+                  remoteResults,
                 ),
-              );
-            }),
-            tap((value) => this._markSelected(value)), // Mark selected based on combined list
-          )
-          .subscribe((value) => this.filteredOptions.set(value));
-      } else {
-        this.inputControl.valueChanges
-          .pipe(
-            untilDestroyed(this),
-            startWith(""),
-            debounceTime(300),
-            tap(() => this.formControl.updateValueAndValidity()),
-            filter((query) => query?.length > 1),
-          )
-          .subscribe((query) => this.search(query));
-      }
+              ),
+            );
+          }),
+          tap((value) => this._markSelected(value)), // Mark selected based on combined list
+        )
+        .subscribe((value) => this.filteredOptions.set(value));
+    } else if (this.props.restCall) {
+      this.inputControl.valueChanges
+        .pipe(
+          untilDestroyed(this),
+          startWith(""),
+          debounceTime(300),
+          tap(() => this.formControl.updateValueAndValidity()),
+          filter((query) => query?.length > 1),
+        )
+        .subscribe((query) => this.search(query));
     } else {
       merge(
         this.formControl.valueChanges,

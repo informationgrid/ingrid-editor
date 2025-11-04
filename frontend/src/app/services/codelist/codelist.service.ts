@@ -328,11 +328,14 @@ export class CodelistService {
   observeExternal(
     codelistId: string,
     filter: string,
+    page: number,
   ): Observable<SelectOptionUi[]> {
     return this.dataService
-      .getExternalCodelist(codelistId, filter)
+      .getExternalCodelist(codelistId, filter, page)
       .pipe(
-        map((labels) => labels.map((label) => new SelectOption(null, label))),
+        map((pagedResult) =>
+          pagedResult.results.map((label) => new SelectOption(null, label)),
+        ),
       );
   }
 

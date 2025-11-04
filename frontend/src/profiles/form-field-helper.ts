@@ -124,7 +124,7 @@ export interface RepeatListOptions extends Options {
   fieldGroupClassName?: string; // TODO: move up
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
   externalOptions?: {
-    codelistCall: (query: string) => Observable<any[]>;
+    fetchCodelist: (query: string, page: number) => Observable<any[]>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
@@ -447,11 +447,9 @@ export class FormFieldHelper {
       ...options,
       asAutocomplete: true,
       labelField: "value",
-      restCall: options.externalOptions?.codelistCall,
     });
     (repeatList.props as RepeatListProps).externalOptions = {
-      deduplicate: options.externalOptions?.deduplicate,
-      threshold: options.externalOptions?.threshold,
+      ...options.externalOptions,
     };
     return repeatList;
   }

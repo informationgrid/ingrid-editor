@@ -20,7 +20,10 @@
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { Injectable } from "@angular/core";
-import { CodelistBackend } from "../../store/codelist/codelist.model";
+import {
+  CodelistBackend,
+  PagedSearchResult,
+} from "../../store/codelist/codelist.model";
 
 @Injectable({
   providedIn: "root",
@@ -80,9 +83,12 @@ export class CodelistDataService {
     );
   }
 
-  getExternalCodelist(id: string, filter: string) {
-    return this.http.get<string[]>(
+  getExternalCodelist(id: string, filter: string, page: number = 0) {
+    return this.http.get<PagedSearchResult>(
       this.configuration.backendUrl + "codelist/external/" + id + "/" + filter,
+      {
+        params: { page: page },
+      },
     );
   }
 

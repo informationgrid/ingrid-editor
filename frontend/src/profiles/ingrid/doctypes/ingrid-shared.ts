@@ -957,8 +957,8 @@ export abstract class IngridShared extends BaseDoctype {
                 "spatial.spatialSystems",
               ),
               externalOptions: {
-                codelistCall: (query: string) =>
-                  this.getExternalCodelistForSelect("EPSG", query),
+                fetchCodelist: (query: string, page: number) =>
+                  this.getExternalCodelistForSelect("EPSG", query, page),
                 deduplicate: (options, externalOptions) => {
                   const localLabels = options.map((r) => r.label.split(":")[0]);
                   return [
