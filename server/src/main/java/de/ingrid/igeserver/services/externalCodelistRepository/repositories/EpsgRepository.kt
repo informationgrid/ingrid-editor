@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.services.externalCodelistRepository.ExternalCodelistRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.net.URI
 import java.net.http.HttpClient
@@ -45,6 +46,7 @@ data class EpsgCodelistEntry(
     val Name: String,
 )
 
+@Service("EPSG")
 open class EpsgRepository : ExternalCodelistRepository {
 
     private val log = logger()

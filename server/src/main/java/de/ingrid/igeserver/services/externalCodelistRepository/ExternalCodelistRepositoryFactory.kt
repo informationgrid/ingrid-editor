@@ -19,11 +19,12 @@
  */
 package de.ingrid.igeserver.services.externalCodelistRepository
 
-import de.ingrid.igeserver.services.externalCodelistRepository.repositories.EpsgRepository
+import org.springframework.stereotype.Service
 
-object ExternalCodelistRepositoryFactory {
-    fun getRepository(repositoryId: String): ExternalCodelistRepository = when (repositoryId) {
-        "EPSG" -> EpsgRepository()
-        else -> throw IllegalArgumentException("Unknown repository ID: $repositoryId")
-    }
+@Service
+class ExternalCodelistRepositoryFactory(
+    private val repositories: Map<String, ExternalCodelistRepository>,
+) {
+    fun getRepository(repositoryId: String): ExternalCodelistRepository = repositories[repositoryId]
+        ?: throw IllegalArgumentException("Unknown repository ID: $repositoryId")
 }

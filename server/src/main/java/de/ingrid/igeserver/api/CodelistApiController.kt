@@ -35,7 +35,9 @@ import java.security.Principal
 
 @RestController
 @RequestMapping("/api/codelist")
-class CodelistApiController : CodelistApi {
+class CodelistApiController(
+    private val externalCodelistRepositoryFactory: ExternalCodelistRepositoryFactory,
+) : CodelistApi {
 
     private val log = logger()
 
@@ -124,7 +126,7 @@ class CodelistApiController : CodelistApi {
     }
 
     override fun getExternalCodelist(id: String, filter: String): ResponseEntity<List<String>> {
-        val codelistRepo = ExternalCodelistRepositoryFactory.getRepository(id)
+        val codelistRepo = externalCodelistRepositoryFactory.getRepository(id)
         val values = codelistRepo.search(filter)
         return ResponseEntity.ok(values)
     }
