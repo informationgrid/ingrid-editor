@@ -1223,6 +1223,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addSubSection("Zeitbezug der Daten im Datensatz", [
           this.addRadioboxes("resourceCoverage", "", {
             wrappers: [],
+            className: "space-bottom-field",
             options: [
               {
                 value: "Daten beziehen sich auf einen Zeitraum",
@@ -1238,24 +1239,31 @@ export abstract class IngridShared extends BaseDoctype {
               },
             ],
           }),
-          this.addDatepicker("resourceDate", null, {
+          this.addDatepicker("resourceDate", "Am", {
             required: this.options.required.resourceDateType,
             placeholder: "TT.MM.JJJJ",
-            fieldLabel: "Am",
+            className: "padding-horizontal",
+            // fieldLabel: "Am",
             expressions: {
               hide: (field: FormlyFieldConfig) =>
                 field.form.root.get("resourceCoverage")?.value !== "2",
             },
           }),
-          this.addGroupSimple(null, [
-            {
-              type: "time-reference",
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.form.root.get("resourceCoverage")?.value !== "1",
+          this.addGroupSimple(
+            null,
+            [
+              {
+                type: "time-reference",
+                expressions: {
+                  hide: (field: FormlyFieldConfig) =>
+                    field.form.root.get("resourceCoverage")?.value !== "1",
+                },
               },
+            ],
+            {
+              className: "padding-horizontal",
             },
-          ]),
+          ),
           //   this.addDatepicker("resourceDateFrom", "Von", {
           //     required: this.options.required.resourceDateType,
           //     placeholder: "TT.MM.JJJJ",

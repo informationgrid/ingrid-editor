@@ -1,19 +1,16 @@
 <div class="flex-row gap-24">
-    <div class="flex-col">
+    <div class="flex-col gap-12 flex-1">
         <div>Von</div>
+        <mat-divider></mat-divider>
         <mat-radio-group class="flex-col">
             <mat-radio-button value="1">
                 Datum
                 <mat-form-field
                     appearance="outline"
-                    class=""
+                    class="date-box width-date-small"
                     data-cy="datepicker-timeref-from"
                 >
-                    <input
-                        matInput
-                        [matDatepicker]="picker_from"
-                        placeholder="Datum auswählen"
-                    />
+                    <input matInput [matDatepicker]="picker_from" />
                     <mat-datepicker-toggle
                         matSuffix
                         [for]="picker_from"
@@ -26,21 +23,18 @@
             </mat-radio-button>
         </mat-radio-group>
     </div>
-    <div class="flex-col">
+    <div class="flex-col gap-12 flex-1">
         <div>Bis</div>
+        <mat-divider></mat-divider>
         <mat-radio-group class="flex-col">
             <mat-radio-button value="1">
                 Datum
                 <mat-form-field
                     appearance="outline"
-                    class=""
+                    class="date-box width-date-small"
                     data-cy="datepicker-timeref-to"
                 >
-                    <input
-                        matInput
-                        [matDatepicker]="picker_to"
-                        placeholder="Datum auswählen"
-                    />
+                    <input matInput [matDatepicker]="picker_to" />
                     <mat-datepicker-toggle
                         matSuffix
                         [for]="picker_to"

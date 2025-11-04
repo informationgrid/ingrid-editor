@@ -29,6 +29,7 @@ import {
 } from "@angular/material/datepicker";
 import { MatInput } from "@angular/material/input";
 import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatDivider } from "@angular/material/divider";
 
 @Component({
   selector: "ige-time-reference-input",
@@ -42,6 +43,7 @@ import { MatFormField, MatSuffix } from "@angular/material/form-field";
     MatFormField,
     MatInput,
     MatSuffix,
+    MatDivider,
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
