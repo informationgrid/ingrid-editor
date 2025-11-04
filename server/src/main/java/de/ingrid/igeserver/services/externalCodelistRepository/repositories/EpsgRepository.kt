@@ -23,11 +23,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.services.externalCodelistRepository.ExternalCodelistRepository
+import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
-import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
@@ -38,6 +39,9 @@ import java.util.concurrent.Executors
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EpsgApiResponse(
     val Results: List<EpsgCodelistEntry>,
+    val Page: Int,
+    val PageSize: Int,
+    val TotalResults: Int,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,31 +55,37 @@ open class EpsgRepository : ExternalCodelistRepository {
 
     private val log = logger()
     private val mapper = jacksonObjectMapper()
-    private val url = "https://apps.epsg.org/api/v1/CoordRefSystem?keywords="
+    private val url = "https://apps.epsg.org/api/v1/CoordRefSystem"
 
     /**
      * Searches the EPSG API for a term and returns a List of string representations of EPSG Codes.
      */
-    @Cacheable(value = ["epsgCodelistCache"], key = "#term")
-    override fun search(term: String): List<String> {
-        val searchUrl = "$url$term*"
+    @Cacheable(value = ["epsgCodelistCache"], key = "{ #term, #page }")
+    override fun search(term: String, page: Int): PagedSearchResult {
+        val params = mapOf(
+            "keywords" to "$term*",
+            "page" to page.toString(),
+        )
 
         try {
-            val inputStream: InputStream = sendRequest("GET", searchUrl) ?: return emptyList()
+            val inputStream: InputStream = sendRequest("GET", this.url, params) ?: return PagedSearchResult.EMPTY
             val jsonString = inputStream.bufferedReader().use { it.readText() }
             val apiResponse = mapper.readValue<EpsgApiResponse>(jsonString)
-            return apiResponse.Results.map { "EPSG ${it.Code}: ${it.Name}" }
+            return PagedSearchResult(
+                apiResponse.Page,
+                (apiResponse.TotalResults + apiResponse.PageSize - 1) / apiResponse.PageSize,
+                apiResponse.Results.map { "EPSG ${it.Code}: ${it.Name}" },
+            )
         } catch (e: Exception) {
             log.warn("Error searching EPSG: ${e.message}")
-            return emptyList()
+            return PagedSearchResult.EMPTY
         }
     }
 
-    private fun sendRequest(method: String, url: String, body: String? = null): InputStream {
+    private fun sendRequest(method: String, url: String, params: Map<String, Any>, body: String? = null): InputStream {
         val executor = Executors.newSingleThreadExecutor()
-        val request = httpRequest(method, url, body)
+        val request = httpRequest(method, url, params, body)
         val http = httpClient(executor)
-
         return http.send(request, HttpResponse.BodyHandlers.ofInputStream()).body()
     }
 
@@ -85,12 +95,15 @@ open class EpsgRepository : ExternalCodelistRepository {
         .executor(executor)
         .build()
 
-    private fun httpRequest(method: String, url: String, body: String?): HttpRequest {
+    private fun httpRequest(method: String, url: String, params: Map<String, Any>, body: String?): HttpRequest {
         val msgBody =
             if (body == null) HttpRequest.BodyPublishers.noBody() else HttpRequest.BodyPublishers.ofString(body)
+        val fullURI = UriComponentsBuilder.fromUriString(url).apply {
+            params.forEach(this::queryParam)
+        }.build().toUri()
         return HttpRequest.newBuilder()
             .method(method, msgBody)
-            .uri(URI.create(url))
+            .uri(fullURI)
             .header("Content-Type", "application/json")
             .timeout(Duration.ofSeconds(60))
             .build()

@@ -19,10 +19,25 @@
  */
 package de.ingrid.igeserver.services.externalCodelistRepository
 
+data class PagedSearchResult(
+    val page: Int,
+    val totalPages: Int,
+    val results: List<String>,
+) {
+    companion object {
+        val EMPTY = PagedSearchResult(
+            page = 0,
+            totalPages = 0,
+            results = emptyList(),
+        )
+    }
+}
+
 interface ExternalCodelistRepository {
     /**
      * @param term The search term.
+     * @param page The search results page that should be returned.
      * @return A list of string representations of found items
      */
-    fun search(term: String): List<String>
+    fun search(term: String, page: Int = 0): PagedSearchResult
 }
