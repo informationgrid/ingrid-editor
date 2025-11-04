@@ -19,7 +19,10 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
-import { SelectOptionUi } from "../app/services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
 import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
@@ -120,7 +123,14 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
-  externalOptionsThreshold?: number;
+  externalOptions?: {
+    codelistCall: (query: string) => Observable<any[]>;
+    deduplicate: (
+      options: SelectOption[],
+      externalOptions: SelectOption[],
+    ) => SelectOption[];
+    threshold?: number;
+  };
   view?: "chip" | "list";
   restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
@@ -432,14 +442,17 @@ export class FormFieldHelper {
     };
   }
 
-  addExtendedRepeatList(id, label, options?: RepeatListOptions) {
+  addExtendedRepeatList(id, label, options: RepeatListOptions) {
     let repeatList = this.addRepeatList(id, label, {
       ...options,
       asAutocomplete: true,
       labelField: "value",
+      restCall: options.externalOptions?.codelistCall,
     });
-    (repeatList.props as RepeatListProps).externalOptionsThreshold =
-      options?.externalOptionsThreshold;
+    (repeatList.props as RepeatListProps).externalOptions = {
+      deduplicate: options.externalOptions?.deduplicate,
+      threshold: options.externalOptions?.threshold,
+    };
     return repeatList;
   }
 

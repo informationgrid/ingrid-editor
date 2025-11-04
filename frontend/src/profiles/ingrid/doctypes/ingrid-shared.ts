@@ -956,9 +956,20 @@ export abstract class IngridShared extends BaseDoctype {
                 "100",
                 "spatial.spatialSystems",
               ),
-              restCall: (query: string) =>
-                this.getExternalCodelistForSelect("EPSG", query),
-              externalOptionsThreshold: 3,
+              externalOptions: {
+                codelistCall: (query: string) =>
+                  this.getExternalCodelistForSelect("EPSG", query),
+                deduplicate: (options, externalOptions) => {
+                  const localLabels = options.map((r) => r.label.toLowerCase());
+                  return [
+                    ...options,
+                    ...externalOptions.filter(
+                      (r) => !localLabels.includes(r.label.toLowerCase()),
+                    ),
+                  ];
+                },
+                threshold: 3,
+              },
               codelistId: "100",
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>

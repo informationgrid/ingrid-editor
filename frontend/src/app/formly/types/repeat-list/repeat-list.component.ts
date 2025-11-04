@@ -124,7 +124,13 @@ export interface RepeatListProps extends FormlyFieldProps {
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
   hideInputField: boolean;
-  externalOptionsThreshold?: number;
+  externalOptions?: {
+    deduplicate: (
+      options: SelectOption[],
+      externalOptions: SelectOption[],
+    ) => SelectOption[];
+    threshold?: number;
+  };
 }
 
 @UntilDestroy()
@@ -299,24 +305,19 @@ export class RepeatListComponent
               let remoteCall$: Observable<any[]> = of([]);
               if (
                 query &&
-                query.length >= (this.props.externalOptionsThreshold ?? 3)
+                query.length >= (this.props.externalOptions.threshold ?? 3)
               ) {
                 remoteCall$ = this.props
                   .restCall(query)
                   .pipe(catchError(() => of([])));
               }
               return remoteCall$.pipe(
-                map((remoteResults: any[]) => {
-                  const localLabels = localResults.map((r) =>
-                    r.label.toLowerCase(),
-                  );
-                  return [
-                    ...localResults,
-                    ...remoteResults.filter(
-                      (r) => !localLabels.includes(r.label.toLowerCase()),
-                    ),
-                  ];
-                }),
+                map((remoteResults) =>
+                  this.props.externalOptions.deduplicate(
+                    localResults,
+                    remoteResults,
+                  ),
+                ),
               );
             }),
             tap((value) => this._markSelected(value)), // Mark selected based on combined list
