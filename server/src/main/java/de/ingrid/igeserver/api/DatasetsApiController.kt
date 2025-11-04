@@ -243,7 +243,8 @@ class DatasetsApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
         val tagsJsonNode: JsonNode = jacksonObjectMapper().valueToTree(tags)
-        auditLog.log("tags", "update", id.toString(), data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
+        val docUuid = docWrapperRepo.getReferenceById(id).uuid
+        auditLog.log("tags", "update", docUuid, data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
         return ResponseEntity.ok(updatedTags)
     }
 

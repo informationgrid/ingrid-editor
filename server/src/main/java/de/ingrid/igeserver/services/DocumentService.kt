@@ -634,9 +634,9 @@ class DocumentService(
 
     fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
-        auditLog.log("tags", "archive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
+        auditLog.log("tags", "archive", doc?.uuid, catalogIdentifier = catalogId, principal = principal)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
         postArchivePipe.runFilters(
             postArchivePayload,
@@ -648,9 +648,9 @@ class DocumentService(
 
     fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
-        auditLog.log("tags", "unarchive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
+        auditLog.log("tags", "unarchive", doc?.uuid, catalogIdentifier = catalogId, principal = principal)
         val postUnarchivePayload = PostUnarchivePayload(wrapperId, doc)
         postUnarchivePipe.runFilters(
             postUnarchivePayload,
