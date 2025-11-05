@@ -86,7 +86,7 @@ export class CatalogManagementComponent implements OnInit {
   });
 
   noAssignedCatalogs = false;
-  showSpinner = false;
+  showSpinner = signal(false);
   currentCatalog: string;
   private currentUserID: string;
   profiles = signal<Profile[]>([]);
@@ -180,7 +180,7 @@ export class CatalogManagementComponent implements OnInit {
   }
 
   private createCatalog(catalog: Catalog) {
-    this.showSpinner = true;
+    this.showSpinner.set(true);
     this.catalogService
       .createCatalog(catalog)
       .pipe(
@@ -188,7 +188,7 @@ export class CatalogManagementComponent implements OnInit {
           this.initCatalogAdminAndReloadCatalogs(response);
           this.switchCatalogIfNoCurrentCatalog(response);
         }),
-        finalize(() => (this.showSpinner = false)),
+        finalize(() => this.showSpinner.set(false)),
         catchError((err) => this.handleCreateError(err)),
       )
       .subscribe();
@@ -212,7 +212,7 @@ export class CatalogManagementComponent implements OnInit {
   }
 
   private handleCreateError(err: Error): Observable<Error> {
-    this.showSpinner = false;
+    this.showSpinner.set(false);
     throw err;
   }
 
