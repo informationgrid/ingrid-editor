@@ -313,83 +313,95 @@ export class RepeatListComponent
       });
 
     if (this.props.externalOptions) {
-      this.inputControl.valueChanges
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(50),
-          tap(() => this.formControl.updateValueAndValidity()),
-          switchMap((query: string) => {
-            const localResults = this._filter(query);
-            if (
-              query &&
-              query.length >= (this.props.externalOptions.threshold ?? 3)
-            ) {
-              const page = 0;
-              const remoteCallCompleted$ = new Observable<SelectOptionUi[]>(
-                (subscriber) => {
-                  const subscription = this.props.externalOptions
-                    .fetchCodelist(query, page)
-                    .pipe(
-                      catchError(() => of([])),
-                      map((remoteResults: PagedSearchResult) =>
-                        this.props.externalOptions.deduplicate(
-                          localResults,
-                          remoteResults.results.map(
-                            (label) => new SelectOption(null, label),
-                          ),
+      this.handleExternalOptions();
+    } else if (this.props.restCall) {
+      this.handleRestCall();
+    } else {
+      this.handleOptions();
+    }
+  }
+
+  handleExternalOptions() {
+    this.inputControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(""),
+        debounceTime(50),
+        tap(() => this.formControl.updateValueAndValidity()),
+        switchMap((query: string) => {
+          const localResults = this._filter(query);
+          if (
+            query &&
+            query.length >= (this.props.externalOptions.threshold ?? 3)
+          ) {
+            const page = 0;
+            const remoteCallCompleted$ = new Observable<SelectOptionUi[]>(
+              (subscriber) => {
+                const subscription = this.props.externalOptions
+                  .fetchCodelist(query, page)
+                  .pipe(
+                    catchError(() => of([])),
+                    map((remoteResults: PagedSearchResult) =>
+                      this.props.externalOptions.deduplicate(
+                        localResults,
+                        remoteResults.results.map(
+                          (label) => new SelectOption(null, label),
                         ),
                       ),
-                    )
-                    .subscribe(subscriber);
-                  return () => subscription.unsubscribe();
-                },
-              );
+                    ),
+                  )
+                  .subscribe(subscriber);
+                return () => subscription.unsubscribe();
+              },
+            );
 
-              const spinnerDelayed$ = timer(LOADING_INDICATOR_DELAY_MS).pipe(
-                map(() => [...localResults, LOADING_INDICATOR]),
-                takeUntil(remoteCallCompleted$),
-              );
-              return concat(
-                of(localResults),
-                spinnerDelayed$,
-                remoteCallCompleted$,
-              );
-            } else {
-              return of(localResults);
-            }
-          }),
-          tap((value) => this._markSelected(value)),
-        )
-        .subscribe((value) => this.filteredOptions.set(value));
-    } else if (this.props.restCall) {
-      this.inputControl.valueChanges
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(300),
-          tap(() => this.formControl.updateValueAndValidity()),
-          filter((query) => query?.length > 1),
-        )
-        .subscribe((query) => this.search(query));
-    } else {
-      merge(
-        this.formControl.valueChanges,
-        this.inputControl.valueChanges.pipe(
-          tap(() => this.formControl.updateValueAndValidity()),
-        ),
-        this.manualUpdate.asObservable(),
+            const spinnerDelayed$ = timer(LOADING_INDICATOR_DELAY_MS).pipe(
+              map(() => [...localResults, LOADING_INDICATOR]),
+              takeUntil(remoteCallCompleted$),
+            );
+            return concat(
+              of(localResults),
+              spinnerDelayed$,
+              remoteCallCompleted$,
+            );
+          } else {
+            return of(localResults);
+          }
+        }),
+        tap((value) => this._markSelected(value)),
       )
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(0),
-          filter((value) => value !== undefined && value !== null),
-          map((value) => this._filter(value)),
-          tap((value) => this._markSelected(value)),
-        )
-        .subscribe((value) => this.filteredOptions.set(value));
-    }
+      .subscribe((value) => this.filteredOptions.set(value));
+  }
+
+  handleRestCall() {
+    this.inputControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(""),
+        debounceTime(300),
+        tap(() => this.formControl.updateValueAndValidity()),
+        filter((query) => query?.length > 1),
+      )
+      .subscribe((query) => this.search(query));
+  }
+
+  handleOptions() {
+    merge(
+      this.formControl.valueChanges,
+      this.inputControl.valueChanges.pipe(
+        tap(() => this.formControl.updateValueAndValidity()),
+      ),
+      this.manualUpdate.asObservable(),
+    )
+      .pipe(
+        untilDestroyed(this),
+        startWith(""),
+        debounceTime(0),
+        filter((value) => value !== undefined && value !== null),
+        map((value) => this._filter(value)),
+        tap((value) => this._markSelected(value)),
+      )
+      .subscribe((value) => this.filteredOptions.set(value));
   }
 
   addToList(option: SelectOptionUi) {
