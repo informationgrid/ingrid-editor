@@ -1,83 +1,156 @@
-<div class="flex-row gap-24">
-    <div class="flex-col gap-12 flex-1">
-        <div>Von</div>
-        <mat-divider></mat-divider>
-        <mat-radio-group class="flex-col">
-            <mat-radio-button value="1" class="no-wrap">
-                Datum
-                <mat-form-field
-                    appearance="outline"
-                    class="date-box width-date-small"
-                    data-cy="datepicker-timeref-from"
-                >
-                    <input matInput [matDatepicker]="picker_from" />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="picker_from"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #picker_from></mat-datepicker>
-                </mat-form-field>
-
-                @if (showTimepicker()) {
-                    <mat-form-field
-                        appearance="outline"
-                        class="date-box width-time-small"
-                        data-cy="timepicker-timeref-from"
-                    >
-                        <input matInput [matTimepicker]="timepicker_from" />
-                        <mat-timepicker-toggle
-                            matIconSuffix
-                            [for]="timepicker_from"
-                        />
-                        <mat-timepicker #timepicker_from />
-                    </mat-form-field>
-                }
+<div [formGroup]="temporalForm">
+    <div class="space-bottom-field">
+        <mat-radio-group class="flex-row" formControlName="type">
+            <mat-radio-button value="range" class="no-wrap">
+                Daten beziehen sich auf einen Zeitraum
             </mat-radio-button>
-            <mat-radio-button value="2">
-                Nicht vorhanden/Unbekannt
+            <mat-radio-button value="at" class="no-wrap">
+                Daten beziehen sich auf ein Datum
+            </mat-radio-button>
+            <mat-radio-button value="none" class="no-wrap">
+                Keine Angabe
             </mat-radio-button>
         </mat-radio-group>
     </div>
-    <div class="flex-col gap-12 flex-1">
-        <div>Bis</div>
-        <mat-divider></mat-divider>
-        <mat-radio-group class="flex-col">
-            <mat-radio-button value="1" class="no-wrap">
-                Datum
-                <mat-form-field
-                    appearance="outline"
-                    class="date-box width-date-small"
-                    data-cy="datepicker-timeref-to"
-                >
-                    <input matInput [matDatepicker]="picker_to" />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="picker_to"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #picker_to></mat-datepicker>
-                </mat-form-field>
 
-                @if (showTimepicker()) {
-                    <mat-form-field
-                        appearance="outline"
-                        class="date-box width-time-small"
-                        data-cy="timepicker-timeref-to"
-                    >
-                        <input matInput [matTimepicker]="timepicker_to" />
-                        <mat-timepicker-toggle
-                            matIconSuffix
-                            [for]="timepicker_to"
-                        />
-                        <mat-timepicker #timepicker_to />
-                    </mat-form-field>
+    @if (temporalForm.get("type")?.value === "at") {
+        <div class="flex-row">
+            <ige-form-label class="required">Am*</ige-form-label>
+            <mat-form-field
+                appearance="outline"
+                class="width-date-small"
+                data-cy="datepicker-timeref-at"
+            >
+                <input
+                    matInput
+                    [matDatepicker]="picker_at"
+                    formControlName="atDate"
+                    [errorStateMatcher]="matcher"
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker_at"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker_at></mat-datepicker>
+                @if (temporalForm.get("atDate").invalid) {
+                    <mat-error>Dieses Feld ist Pflicht</mat-error>
                 }
-            </mat-radio-button>
-            <mat-radio-button value="2">
-                Fortlaufend, aktuell
-            </mat-radio-button>
-            <mat-radio-button value="2">
-                Nicht vorhanden/Unbekannt
-            </mat-radio-button>
-        </mat-radio-group>
-    </div>
+            </mat-form-field>
+        </div>
+    } @else if (temporalForm.get("type")?.value === "range") {
+        <div class="flex-row gap-24">
+            <div class="flex-col gap-12 flex-1">
+                <div>Von</div>
+                <mat-divider></mat-divider>
+                <mat-radio-group
+                    class="flex-col"
+                    formControlName="intervalFrom"
+                >
+                    <mat-radio-button value="date" class="no-wrap">
+                        Datum
+                        <mat-form-field
+                            appearance="outline"
+                            class="date-box width-date-small"
+                            data-cy="datepicker-timeref-from"
+                        >
+                            <input
+                                matInput
+                                [matDatepicker]="picker_from"
+                                formControlName="fromDate"
+                                [errorStateMatcher]="matcher"
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="picker_from"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker #picker_from></mat-datepicker>
+                            @if (temporalForm.get("fromDate").invalid) {
+                                <mat-error>Dieses Feld ist Pflicht</mat-error>
+                            }
+                        </mat-form-field>
+
+                        @if (showTimepicker()) {
+                            <mat-form-field
+                                appearance="outline"
+                                class="date-box width-time-small"
+                                data-cy="timepicker-timeref-from"
+                            >
+                                <input
+                                    matInput
+                                    [matTimepicker]="timepicker_from"
+                                    formControlName="fromTime"
+                                />
+                                <mat-timepicker-toggle
+                                    matIconSuffix
+                                    [for]="timepicker_from"
+                                />
+                                <mat-timepicker #timepicker_from />
+                            </mat-form-field>
+                        }
+                    </mat-radio-button>
+                    <mat-radio-button value="not-available">
+                        Nicht vorhanden/Unbekannt
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="flex-col gap-12 flex-1">
+                <div>Bis</div>
+                <mat-divider></mat-divider>
+                <mat-radio-group class="flex-col" formControlName="intervalTo">
+                    <mat-radio-button value="date" class="no-wrap">
+                        Datum
+                        <mat-form-field
+                            appearance="outline"
+                            class="date-box width-date-small"
+                            data-cy="datepicker-timeref-to"
+                        >
+                            <input
+                                matInput
+                                [matDatepicker]="picker_to"
+                                formControlName="tillDate"
+                                [errorStateMatcher]="matcher"
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="picker_to"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker #picker_to></mat-datepicker>
+                            @if (temporalForm.get("tillDate").invalid) {
+                                <mat-error>Dieses Feld ist Pflicht</mat-error>
+                            }
+                        </mat-form-field>
+
+                        @if (showTimepicker()) {
+                            <mat-form-field
+                                appearance="outline"
+                                class="date-box width-time-small"
+                                data-cy="timepicker-timeref-to"
+                            >
+                                <input
+                                    matInput
+                                    [matTimepicker]="timepicker_to"
+                                    formControlName="tillTime"
+                                />
+                                <mat-timepicker-toggle
+                                    matIconSuffix
+                                    [for]="timepicker_to"
+                                />
+                                <mat-timepicker #timepicker_to />
+                            </mat-form-field>
+                        }
+                    </mat-radio-button>
+                    <mat-radio-button value="continuously">
+                        Fortlaufend, aktuell
+                    </mat-radio-button>
+                    <mat-radio-button value="not-available">
+                        Nicht vorhanden/Unbekannt
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+    }
 </div>
+
+<ige-time-reference-explanation
+    [value]="temporalForm.value"
+></ige-time-reference-explanation>

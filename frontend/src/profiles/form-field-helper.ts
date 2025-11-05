@@ -238,8 +238,9 @@ export class FormFieldHelper {
     };
   }
 
-  addSubSection(label: string, fields: any[]) {
+  addSubSection(id: string, label: string, fields: any[]) {
     return {
+      key: id,
       wrappers: ["sub-section"],
       props: {
         label: label,

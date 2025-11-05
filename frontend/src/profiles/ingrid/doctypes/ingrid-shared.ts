@@ -1066,6 +1066,7 @@ export abstract class IngridShared extends BaseDoctype {
       "Zeitbezug",
       [
         this.addSubSection(
+          null,
           "Aktualität des Datensatzes",
           [
             this.addGroupSimple(
@@ -1146,7 +1147,6 @@ export abstract class IngridShared extends BaseDoctype {
                         hintStart: "Wie oft wird der Datensatz aktualisiert?",
                         className: "optional",
                         change: (field: FormlyFieldConfig) => {
-                          console.log("Change maintenanceAndUpdateFrequency");
                           const isNotContinuously =
                             field.form.value.maintenanceAndUpdateFrequency
                               ?.key !== "1";
@@ -1194,6 +1194,7 @@ export abstract class IngridShared extends BaseDoctype {
                         validators: {
                           min: {
                             expression: (ctrl: FormControl) =>
+                              ctrl.value.number === undefined ||
                               ctrl.value.number >= 0,
                             message: "Der Wert darf nicht negativ sein",
                           },
@@ -1223,45 +1224,57 @@ export abstract class IngridShared extends BaseDoctype {
                 ),
           ].filter(Boolean),
         ),
-        this.addSubSection("Zeitbezug der Daten im Datensatz", [
-          this.addRadioboxes("resourceCoverage", "", {
-            wrappers: ["panel"],
-            className: "space-bottom-field",
-            options: [
-              {
-                value: "Daten beziehen sich auf einen Zeitraum",
-                id: "1",
-              },
-              {
-                value: "Daten beziehen sich auf ein Datum",
-                id: "2",
-              },
-              {
-                value: "Keine Angabe",
-                id: "3",
-              },
-            ],
-          }),
-          this.addDatepicker("resourceDate", "Am", {
-            required: this.options.required.resourceDateType,
-            placeholder: "TT.MM.JJJJ",
-            className: "padding-horizontal",
-            // fieldLabel: "Am",
-            expressions: {
-              hide: (field: FormlyFieldConfig) =>
-                field.form.root.get("resourceCoverage")?.value !== "2",
-            },
-          }),
+        this.addSubSection("temporal", "Zeitbezug der Daten im Datensatz", [
+          // this.addRadioboxes("resourceDateType", "", {
+          //   wrappers: ["panel"],
+          //   className: "space-bottom-field",
+          //   defaultValue: "none",
+          //   options: [
+          //     {
+          //       value: "Daten beziehen sich auf einen Zeitraum",
+          //       id: "range",
+          //     },
+          //     {
+          //       value: "Daten beziehen sich auf ein Datum",
+          //       id: "at",
+          //     },
+          //     {
+          //       value: "Keine Angabe",
+          //       id: "none",
+          //     },
+          //   ],
+          // }),
+          // this.addDatepicker("resourceDate", "Am", {
+          //   required: this.options.required.resourceDateType,
+          //   placeholder: "TT.MM.JJJJ",
+          //   className: "padding-horizontal",
+          //   // fieldLabel: "Am",
+          //   expressions: {
+          //     hide: (field: FormlyFieldConfig) =>
+          //       field.form.root.get("temporal.resourceDateType")?.value !==
+          //       "at",
+          //   },
+          // }),
           {
-            key: "resourceDateRange",
+            key: "data",
             type: "time-reference",
-            wrappers: ["panel"],
+            wrappers: [],
             props: {},
-            expressions: {
-              hide: (field: FormlyFieldConfig) =>
-                field.form.root.get("resourceCoverage")?.value !== "1",
-            },
+            // expressions: {
+            //   hide: (field: FormlyFieldConfig) =>
+            //     field.form.root.get("temporal.resourceDateType")?.value !==
+            //     "range",
+            // },
           },
+          // {
+          //   key: "intervalFrom",
+          // },
+          // {
+          //   key: "intervalTo",
+          // },
+          // {
+          //   key: "resourceRange",
+          // },
         ]),
       ].filter(Boolean),
     );
