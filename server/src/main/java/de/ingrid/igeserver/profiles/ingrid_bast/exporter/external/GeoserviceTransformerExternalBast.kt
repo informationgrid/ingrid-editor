@@ -23,6 +23,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getProjectInfoIdfSection
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
@@ -50,4 +51,6 @@ class GeoserviceTransformerExternalBast(transformerConfig: TransformerConfig) : 
         }
 
     override val digitalTransferOptions = emptyList<DigitalTransferOption>()
+
+    override val extraContent: String by lazy { getProjectInfoIdfSection(doc.data) }
 }

@@ -33,3 +33,14 @@ fun getBastKeywords(docData: ObjectNode): Thesaurus = Thesaurus(
         docData.getString("projectTitle")?.let { KeywordIso(it) },
     ),
 )
+
+fun getProjectInfoIdfSection(docData: ObjectNode): String {
+    val projectNumber = docData.getString("projectNumber") ?: ""
+    val projectTitle = docData.getString("projectTitle") ?: ""
+    return """
+            <idf:additionalDataSection id="projectInfo">
+                <idf:projectNumber>$projectNumber</idf:projectNumber>
+                <idf:projectTitle>$projectTitle</idf:projectTitle>
+            </idf:additionalDataSection>
+    """.trimIndent()
+}
