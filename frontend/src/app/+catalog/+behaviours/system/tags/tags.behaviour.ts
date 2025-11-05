@@ -51,6 +51,23 @@ export class TagsBehaviour extends Plugin {
     private tagsService: TagsService,
   ) {
     super();
+    this.fields.push({
+      key: "defaultPublicationType",
+      type: "radio",
+      defaultValue: "internet",
+      wrappers: ["form-field"],
+      props: {
+        label: "Default Veröffentlichungsrecht für neue Datensätze:",
+        labelProp: "label",
+        valueProp: "value",
+        appearance: "outline",
+        options: [
+          { value: "internet", label: "Internet" },
+          { value: "intranet", label: "Intranet" },
+          { value: "amtsintern", label: "amtsintern" },
+        ],
+      },
+    });
     inject(PluginService).registerPlugin(this);
   }
 
