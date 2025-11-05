@@ -43,9 +43,18 @@ import {
   map,
   startWith,
   switchMap,
+  takeUntil,
   tap,
 } from "rxjs/operators";
-import { concat, merge, Observable, of, Subject, Subscription } from "rxjs";
+import {
+  concat,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  timer,
+} from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -106,6 +115,7 @@ const LOADING_INDICATOR: SelectOption = new SelectOption(
   "_LOADING_SPINNER_",
   "Lädt externe Codelist-Einträge...",
 );
+const LOADING_INDICATOR_DELAY_MS = 200;
 
 export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
@@ -309,18 +319,34 @@ export class RepeatListComponent
               query &&
               query.length >= (this.props.externalOptions.threshold ?? 3)
             ) {
-              const initialStream = of([...localResults, LOADING_INDICATOR]);
-              const remoteCall$: Observable<SelectOptionUi[]> =
-                this.props.externalOptions.fetchCodelist(query, 0).pipe(
-                  catchError(() => of([])),
-                  map((remoteResults) =>
-                    this.props.externalOptions.deduplicate(
-                      localResults,
-                      remoteResults,
-                    ),
-                  ),
-                );
-              return concat(initialStream, remoteCall$);
+              const page = 0;
+              const remoteCallCompleted$ = new Observable<SelectOptionUi[]>(
+                (subscriber) => {
+                  const subscription = this.props.externalOptions
+                    .fetchCodelist(query, page)
+                    .pipe(
+                      catchError(() => of([])),
+                      map((remoteResults) =>
+                        this.props.externalOptions.deduplicate(
+                          localResults,
+                          remoteResults,
+                        ),
+                      ),
+                    )
+                    .subscribe(subscriber);
+                  return () => subscription.unsubscribe();
+                },
+              );
+
+              const spinnerDelayed$ = timer(LOADING_INDICATOR_DELAY_MS).pipe(
+                map(() => [...localResults, LOADING_INDICATOR]),
+                takeUntil(remoteCallCompleted$),
+              );
+              return concat(
+                of(localResults),
+                spinnerDelayed$,
+                remoteCallCompleted$,
+              );
             } else {
               return of(localResults);
             }
