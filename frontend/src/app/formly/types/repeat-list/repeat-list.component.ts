@@ -56,7 +56,6 @@ import {
   timer,
 } from "rxjs";
 import {
-  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
@@ -101,7 +100,10 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
-import { BackendOption } from "../../../store/codelist/codelist.model";
+import {
+  BackendOption,
+  PagedSearchResult,
+} from "../../../store/codelist/codelist.model";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -144,7 +146,7 @@ export interface RepeatListProps extends FormlyFieldProps {
     fetchCodelist: (
       query: string,
       page: number,
-    ) => Observable<ExternalCodelistResult>;
+    ) => Observable<PagedSearchResult>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
@@ -330,10 +332,12 @@ export class RepeatListComponent
                     .fetchCodelist(query, page)
                     .pipe(
                       catchError(() => of([])),
-                      map((remoteResults: ExternalCodelistResult) =>
+                      map((remoteResults: PagedSearchResult) =>
                         this.props.externalOptions.deduplicate(
                           localResults,
-                          remoteResults.options,
+                          remoteResults.results.map(
+                            (label) => new SelectOption(null, label),
+                          ),
                         ),
                       ),
                     )

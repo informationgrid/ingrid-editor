@@ -23,7 +23,6 @@ import { Observable } from "rxjs";
 import {
   CodelistService,
   CodelistSort,
-  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
@@ -34,7 +33,10 @@ import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { Codelist } from "../app/store/codelist/codelist.model";
+import {
+  Codelist,
+  PagedSearchResult,
+} from "../app/store/codelist/codelist.model";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
@@ -125,7 +127,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     codelistId: string,
     filter: string,
     page: number,
-  ): Observable<ExternalCodelistResult> {
+  ): Observable<PagedSearchResult> {
     return this.codelistService.observeExternal(codelistId, filter, page);
   }
 

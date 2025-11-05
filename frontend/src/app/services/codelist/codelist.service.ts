@@ -25,6 +25,7 @@ import {
   CodelistBackend,
   CodelistEntry,
   CodelistEntryBackend,
+  PagedSearchResult,
 } from "../../store/codelist/codelist.model";
 import {
   bufferTime,
@@ -68,12 +69,6 @@ export class SelectOption {
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
   sortkey?: CodelistSort;
-}
-
-export interface ExternalCodelistResult {
-  options: SelectOptionUi[];
-  page: number;
-  totalPages: number;
 }
 
 export type CodelistSort =
@@ -335,16 +330,8 @@ export class CodelistService {
     codelistId: string,
     filter: string,
     page: number,
-  ): Observable<ExternalCodelistResult> {
-    return this.dataService.getExternalCodelist(codelistId, filter, page).pipe(
-      map((pagedResult) => ({
-        options: pagedResult.results.map(
-          (label) => new SelectOption(null, label),
-        ),
-        page: pagedResult.page,
-        totalPages: pagedResult.totalPages,
-      })),
-    );
+  ): Observable<PagedSearchResult> {
+    return this.dataService.getExternalCodelist(codelistId, filter, page);
   }
 
   observeRaw(codelistId: string): Observable<Codelist> {

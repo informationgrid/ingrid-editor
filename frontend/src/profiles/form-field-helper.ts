@@ -20,7 +20,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import {
-  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
@@ -129,7 +128,7 @@ export interface RepeatListOptions extends Options {
     fetchCodelist: (
       query: string,
       page: number,
-    ) => Observable<ExternalCodelistResult>;
+    ) => Observable<PagedSearchResult>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
