@@ -104,6 +104,7 @@ import {
   BackendOption,
   PagedSearchResult,
 } from "../../../store/codelist/codelist.model";
+import { ExternalResultsCache } from "./external-result-cache";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -119,6 +120,7 @@ const LOADING_INDICATOR: SelectOption = new SelectOption(
   "Lädt externe Codelist-Einträge...",
 );
 const LOADING_INDICATOR_DELAY_MS = 200;
+const EMPTY_PAGED_SEARCH_RESULT = { page: 0, totalPages: 0, results: [] };
 
 export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
@@ -196,6 +198,7 @@ export class RepeatListComponent
   implements OnInit
 {
   private codelistStore = inject(CodelistStore);
+  private externalResultsCache: ExternalResultsCache;
   readonly autoCompleteEl = viewChild("repeatListInput", { read: ElementRef });
   readonly autoComplete = viewChild(MatAutocompleteTrigger);
   readonly selector = viewChild(MatSelect);
@@ -313,6 +316,9 @@ export class RepeatListComponent
       });
 
     if (this.props.externalOptions) {
+      this.externalResultsCache = new ExternalResultsCache(
+        this.props.externalOptions.deduplicate,
+      );
       this.handleExternalOptions();
     } else if (this.props.restCall) {
       this.handleRestCall();
@@ -326,41 +332,40 @@ export class RepeatListComponent
       .pipe(
         untilDestroyed(this),
         startWith(""),
-        debounceTime(50),
         tap(() => this.formControl.updateValueAndValidity()),
         switchMap((query: string) => {
           const localResults = this._filter(query);
-          if (
-            query &&
-            query.length >= (this.props.externalOptions.threshold ?? 3)
-          ) {
-            const page = 0;
-            const remoteCallCompleted$ = new Observable<SelectOptionUi[]>(
-              (subscriber) => {
-                const subscription = this.props.externalOptions
-                  .fetchCodelist(query, page)
-                  .pipe(
-                    catchError(() => of([])),
-                    map((remoteResults: PagedSearchResult) =>
-                      this.props.externalOptions.deduplicate(
-                        localResults,
-                        remoteResults.results.map(
-                          (label) => new SelectOption(null, label),
-                        ),
-                      ),
-                    ),
-                  )
-                  .subscribe(subscriber);
-                return () => subscription.unsubscribe();
-              },
+          if (query?.length >= (this.props.externalOptions.threshold ?? 3)) {
+            const cachedFilteredResults =
+              this.externalResultsCache.filter(query);
+            let immediateResults = this.props.externalOptions.deduplicate(
+              localResults,
+              cachedFilteredResults,
+            );
+            // the timer before fetching a codelist from the backend is a simulated debounce, to prevent intermittant requests while a user is still typing
+            const remoteCallCompleted$ = timer(50).pipe(
+              switchMap(() =>
+                this.props.externalOptions.fetchCodelist(query, 0),
+              ),
+              catchError(() => of(EMPTY_PAGED_SEARCH_RESULT)),
+              map((remoteResults: PagedSearchResult) => {
+                const newExternalResults = remoteResults.results.map(
+                  (label) => new SelectOption(null, label),
+                );
+                this.externalResultsCache.updateCache(newExternalResults);
+                return this.props.externalOptions.deduplicate(
+                  localResults,
+                  newExternalResults,
+                );
+              }),
             );
 
             const spinnerDelayed$ = timer(LOADING_INDICATOR_DELAY_MS).pipe(
-              map(() => [...localResults, LOADING_INDICATOR]),
+              map(() => [...immediateResults, LOADING_INDICATOR]),
               takeUntil(remoteCallCompleted$),
             );
             return concat(
-              of(localResults),
+              of(immediateResults),
               spinnerDelayed$,
               remoteCallCompleted$,
             );
