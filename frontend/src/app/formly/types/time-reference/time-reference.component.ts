@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -30,6 +30,11 @@ import {
 import { MatInput } from "@angular/material/input";
 import { MatFormField, MatSuffix } from "@angular/material/form-field";
 import { MatDivider } from "@angular/material/divider";
+import {
+  MatTimepicker,
+  MatTimepickerInput,
+  MatTimepickerToggle,
+} from "@angular/material/timepicker";
 
 @Component({
   selector: "ige-time-reference-input",
@@ -44,6 +49,9 @@ import { MatDivider } from "@angular/material/divider";
     MatInput,
     MatSuffix,
     MatDivider,
+    MatTimepicker,
+    MatTimepickerToggle,
+    MatTimepickerInput,
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
@@ -52,5 +60,9 @@ export class TimeReferenceComponent
   extends FieldType<FieldTypeConfig<any>>
   implements OnInit
 {
-  ngOnInit(): void {}
+  showTimepicker = signal<boolean>(false);
+
+  ngOnInit(): void {
+    if (this.props.showTimepicker) this.showTimepicker.set(true);
+  }
 }

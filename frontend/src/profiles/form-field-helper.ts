@@ -850,6 +850,7 @@ export class FormFieldHelper {
         addonLeft: options?.prefix,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        hintStart: options?.hintStart,
       },
       expressions: expressions,
       validators: options?.validators,

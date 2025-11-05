@@ -3,7 +3,7 @@
         <div>Von</div>
         <mat-divider></mat-divider>
         <mat-radio-group class="flex-col">
-            <mat-radio-button value="1">
+            <mat-radio-button value="1" class="no-wrap">
                 Datum
                 <mat-form-field
                     appearance="outline"
@@ -17,6 +17,21 @@
                     ></mat-datepicker-toggle>
                     <mat-datepicker #picker_from></mat-datepicker>
                 </mat-form-field>
+
+                @if (showTimepicker()) {
+                    <mat-form-field
+                        appearance="outline"
+                        class="date-box width-time-small"
+                        data-cy="timepicker-timeref-from"
+                    >
+                        <input matInput [matTimepicker]="timepicker_from" />
+                        <mat-timepicker-toggle
+                            matIconSuffix
+                            [for]="timepicker_from"
+                        />
+                        <mat-timepicker #timepicker_from />
+                    </mat-form-field>
+                }
             </mat-radio-button>
             <mat-radio-button value="2">
                 Nicht vorhanden/Unbekannt
@@ -27,7 +42,7 @@
         <div>Bis</div>
         <mat-divider></mat-divider>
         <mat-radio-group class="flex-col">
-            <mat-radio-button value="1">
+            <mat-radio-button value="1" class="no-wrap">
                 Datum
                 <mat-form-field
                     appearance="outline"
@@ -41,6 +56,21 @@
                     ></mat-datepicker-toggle>
                     <mat-datepicker #picker_to></mat-datepicker>
                 </mat-form-field>
+
+                @if (showTimepicker()) {
+                    <mat-form-field
+                        appearance="outline"
+                        class="date-box width-time-small"
+                        data-cy="timepicker-timeref-to"
+                    >
+                        <input matInput [matTimepicker]="timepicker_to" />
+                        <mat-timepicker-toggle
+                            matIconSuffix
+                            [for]="timepicker_to"
+                        />
+                        <mat-timepicker #timepicker_to />
+                    </mat-form-field>
+                }
             </mat-radio-button>
             <mat-radio-button value="2">
                 Fortlaufend, aktuell
