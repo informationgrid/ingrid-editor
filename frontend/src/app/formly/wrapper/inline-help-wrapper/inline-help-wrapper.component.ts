@@ -24,7 +24,7 @@ import {
   OnDestroy,
   OnInit,
   TemplateRef,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";

@@ -22,7 +22,7 @@ import {
   Component,
   Inject,
   OnInit,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,

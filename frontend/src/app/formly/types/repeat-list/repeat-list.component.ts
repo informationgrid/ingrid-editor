@@ -24,7 +24,7 @@ import {
   OnInit,
   signal,
   TemplateRef,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import {
   FieldTypeConfig,

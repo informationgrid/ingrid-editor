@@ -23,7 +23,7 @@ import {
   ElementRef,
   input,
   output,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";

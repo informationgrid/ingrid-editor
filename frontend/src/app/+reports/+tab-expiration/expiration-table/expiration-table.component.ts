@@ -23,7 +23,7 @@ import {
   Input,
   input,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";

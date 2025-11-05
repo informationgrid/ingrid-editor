@@ -22,7 +22,7 @@ import {
   Component,
   OnDestroy,
   TemplateRef,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { NgStyle, NgTemplateOutlet } from "@angular/common";

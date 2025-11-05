@@ -109,8 +109,8 @@ export class GetCapabilitiesDialogComponent {
   handleSelectionChange() {
     if (this.selectSubsription) this.selectSubsription.unsubscribe();
 
-    this.selectSubsription = this.selection().selectionChange
-      .pipe(untilDestroyed(this))
+    this.selectSubsription = this.selection()
+      .selectionChange.pipe(untilDestroyed(this))
       .subscribe(() => this.handleAddressConstraint());
   }
 

@@ -29,7 +29,7 @@ import {
   Signal,
   signal,
   WritableSignal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import {
   DocumentService,

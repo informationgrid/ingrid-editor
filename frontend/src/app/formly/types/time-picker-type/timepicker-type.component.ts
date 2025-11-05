@@ -25,7 +25,7 @@ import {
   OnDestroy,
   TemplateRef,
   Type,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import {
   FieldTypeConfig,
@@ -110,7 +110,8 @@ export class TimepickerTypeComponent
 {
   private config = inject(FormlyConfig);
 
-  readonly timepickerToggle = viewChild.required<TemplateRef<any>>("timepickerToggle");
+  readonly timepickerToggle =
+    viewChild.required<TemplateRef<any>>("timepickerToggle");
 
   override defaultOptions = {
     props: {

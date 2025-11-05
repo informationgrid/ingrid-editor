@@ -24,7 +24,7 @@ import {
   inject,
   OnInit,
   signal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";

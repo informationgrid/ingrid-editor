@@ -29,7 +29,7 @@ import {
   output,
   signal,
   WritableSignal,
-  viewChild
+  viewChild,
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -124,7 +124,9 @@ export class TreeComponent implements OnInit {
   readonly multiEditMode = output<any>();
   readonly error = output<HttpErrorResponse>();
 
-  readonly treeContainerElement = viewChild("treeComponent", { read: ElementRef });
+  readonly treeContainerElement = viewChild("treeComponent", {
+    read: ElementRef,
+  });
 
   /**
    * A function to determine if a tree node should be disabled.
