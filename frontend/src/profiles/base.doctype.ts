@@ -23,6 +23,7 @@ import { Observable } from "rxjs";
 import {
   CodelistService,
   CodelistSort,
+  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
@@ -124,7 +125,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     codelistId: string,
     filter: string,
     page: number,
-  ): Observable<SelectOptionUi[]> {
+  ): Observable<ExternalCodelistResult> {
     return this.codelistService.observeExternal(codelistId, filter, page);
   }
 

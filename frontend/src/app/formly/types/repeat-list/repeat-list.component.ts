@@ -56,6 +56,7 @@ import {
   timer,
 } from "rxjs";
 import {
+  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
@@ -140,7 +141,10 @@ export interface RepeatListProps extends FormlyFieldProps {
   convert: (item: any) => string;
   hideInputField: boolean;
   externalOptions?: {
-    fetchCodelist: (query: string, page: number) => Observable<any[]>;
+    fetchCodelist: (
+      query: string,
+      page: number,
+    ) => Observable<ExternalCodelistResult>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
@@ -326,10 +330,10 @@ export class RepeatListComponent
                     .fetchCodelist(query, page)
                     .pipe(
                       catchError(() => of([])),
-                      map((remoteResults) =>
+                      map((remoteResults: ExternalCodelistResult) =>
                         this.props.externalOptions.deduplicate(
                           localResults,
-                          remoteResults,
+                          remoteResults.options,
                         ),
                       ),
                     )

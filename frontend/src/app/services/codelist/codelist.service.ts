@@ -70,6 +70,12 @@ export interface SelectOptionUi extends SelectOption {
   sortkey?: CodelistSort;
 }
 
+export interface ExternalCodelistResult {
+  options: SelectOptionUi[];
+  page: number;
+  totalPages: number;
+}
+
 export type CodelistSort =
   | "NO_SORT"
   | "value"
@@ -329,14 +335,16 @@ export class CodelistService {
     codelistId: string,
     filter: string,
     page: number,
-  ): Observable<SelectOptionUi[]> {
-    return this.dataService
-      .getExternalCodelist(codelistId, filter, page)
-      .pipe(
-        map((pagedResult) =>
-          pagedResult.results.map((label) => new SelectOption(null, label)),
+  ): Observable<ExternalCodelistResult> {
+    return this.dataService.getExternalCodelist(codelistId, filter, page).pipe(
+      map((pagedResult) => ({
+        options: pagedResult.results.map(
+          (label) => new SelectOption(null, label),
         ),
-      );
+        page: pagedResult.page,
+        totalPages: pagedResult.totalPages,
+      })),
+    );
   }
 
   observeRaw(codelistId: string): Observable<Codelist> {

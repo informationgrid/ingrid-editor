@@ -20,6 +20,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import {
+  ExternalCodelistResult,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
@@ -33,6 +34,7 @@ import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-s
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
 import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
+import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -124,7 +126,10 @@ export interface RepeatListOptions extends Options {
   fieldGroupClassName?: string; // TODO: move up
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
   externalOptions?: {
-    fetchCodelist: (query: string, page: number) => Observable<any[]>;
+    fetchCodelist: (
+      query: string,
+      page: number,
+    ) => Observable<ExternalCodelistResult>;
     deduplicate: (
       options: SelectOption[],
       externalOptions: SelectOption[],
