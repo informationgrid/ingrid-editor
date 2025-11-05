@@ -110,38 +110,25 @@ export class CommonFieldsBaw extends FormFieldHelper {
       verticalExtent?: boolean;
     } = {},
   ) {
-    const timeRefPosition = this.findFieldElementWithId(
-      fieldConfig,
-      "resourceDate",
-    );
-
-    const content = timeRefPosition.fieldConfig[timeRefPosition.index];
-    timeRefPosition.fieldConfig[timeRefPosition.index] = this.addGroupSimple(
-      null,
-      [content, this.addTimepickerInline("resourceDate", "Zeit", {})],
-      {
-        fieldGroupClassName: "flex-row",
-        className: "two-sub-fields",
-        hideExpression: (field: FormlyFieldConfig) =>
-          field.model?.resourceDateTypeSince?.key === "exactDate",
-      },
-    );
-
     const timeRefRangePosition = this.findFieldElementWithId(
       fieldConfig,
-      "resourceRange",
+      "resourceDateRange",
     );
-    timeRefRangePosition.fieldConfig[
-      timeRefRangePosition.index
-    ].props.showTimeInputs = true;
+    timeRefRangePosition.field.props.showTimepicker = true;
+
     this.addAfter(
       timeRefRangePosition,
-      this.addSelectInline("resourceTimezone", "Zeitzone", {
+      this.addSelect("resourceTimezone", "Zeitzone", {
+        className: "padding-horizontal",
         options: timezones,
         defaultValue: {
           key: "(GMT+01:00) Berlin",
         },
         showSearch: true,
+        expressions: {
+          hide: (field: FormlyFieldConfig) =>
+            field.form.root.get("resourceCoverage")?.value === "3",
+        },
       }),
     );
 
@@ -425,19 +412,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
   }
 
-  removeDataQualitySection(
-    doc: IngridShared,
-    fieldConfig: FormlyFieldConfig[],
-  ) {
-    const dataQualitySection = doc.findFieldElementWithId(
-      fieldConfig,
-      "dataQuality",
-    );
-    if (dataQualitySection) {
-      fieldConfig.splice(dataQualitySection.index, 1);
-    }
-  }
-
   hasBAWPointOfContact = {
     expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
       // equals "Herausgeber"
@@ -450,15 +424,5 @@ export class CommonFieldsBaw extends FormFieldHelper {
         : false,
     message:
       "Ein Eintrag für die Institution 'Bundesanstalt für Wasserbau' als 'Ansprechpartner' muss vorhanden sein",
-  };
-
-  hasPublicationDate = {
-    expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
-      // equals "Publikation"
-      ctrl.value
-        ? ctrl.value.some((item) => item.referenceDateType?.key === "2")
-        : false,
-    message:
-      "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
   };
 }
