@@ -126,6 +126,14 @@ export class ActivityReportComponent implements AfterViewInit {
             id: "delete",
             label: "Gelöscht",
           },
+          {
+            id: "archive",
+            label: "Archiviert",
+          },
+          {
+            id: "unarchive",
+            label: "Entarchiviert",
+          },
         ],
         combine: null,
         viewComponent: "CHECKBOX",
@@ -159,6 +167,8 @@ export class ActivityReportComponent implements AfterViewInit {
       "publish",
       "unpublish",
       "delete",
+      "archive",
+      "unarchive",
     ].filter((action) => formValue?.actionType[action]);
     this.uvpResearchService
       .getActivityReport(this.startDate, this.endDate, actions)
@@ -191,6 +201,10 @@ export class ActivityReportComponent implements AfterViewInit {
         return "Veröffentlichung zurückgezogen";
       case "delete":
         return "Gelöscht";
+      case "archive":
+        return "Archiviert";
+      case "unarchive":
+        return "Entarchiviert";
       default:
         return action;
     }

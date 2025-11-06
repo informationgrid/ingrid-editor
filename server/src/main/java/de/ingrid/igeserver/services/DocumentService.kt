@@ -66,6 +66,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -635,8 +636,8 @@ class DocumentService(
     fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
 
-        val doc = getLastPublishedDocumentOrNull(wrapperId)
-        auditLog.log("tags", "archive", doc?.uuid, catalogIdentifier = catalogId, principal = principal)
+        val doc = getDocumentByWrapperId(catalogId, wrapperId)
+        auditLog.log("tags", "archive",  target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
         postArchivePipe.runFilters(
             postArchivePayload,
@@ -649,8 +650,8 @@ class DocumentService(
     fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
 
-        val doc = getLastPublishedDocumentOrNull(wrapperId)
-        auditLog.log("tags", "unarchive", doc?.uuid, catalogIdentifier = catalogId, principal = principal)
+        val doc = getDocumentByWrapperId(catalogId, wrapperId)
+        auditLog.log("tags", "unarchive", target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
         val postUnarchivePayload = PostUnarchivePayload(wrapperId, doc)
         postUnarchivePipe.runFilters(
             postUnarchivePayload,
