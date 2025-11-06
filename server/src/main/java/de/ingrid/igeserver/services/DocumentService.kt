@@ -637,7 +637,7 @@ class DocumentService(
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
 
         val doc = getDocumentByWrapperId(catalogId, wrapperId)
-        auditLog.log("tags", "archive",  target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
+        auditLog.log("tags", "archive", target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
         postArchivePipe.runFilters(
             postArchivePayload,
