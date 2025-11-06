@@ -291,16 +291,16 @@
             @if( page.getDateEvents().isEmpty() )
                 <gmd:date gco:nilReason="missing"></gmd:date>
             @else
-                @for(DateEvent event : page.getDateEvents())
+                @for(TypedDateEvent event : page.getDateEvents())
                     <gmd:date>
                         <gmd:CI_Date>
                             <gmd:date>
-                                <gco:DateTime>${page.formatDate(page.getFormatterISO(), event.getReferenceDate())}</gco:DateTime>
+                                <gco:DateTime>${page.formatDate(page.getFormatterISO(), event.getDate())}</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode
                                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode"
-                                        codeListValue="${page.getCodelists().getValue("502", event.getReferenceDateType(), "iso")}" />
+                                        codeListValue="${event.getType()}" />
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
@@ -640,7 +640,7 @@
                     <gmd:extent>
                         @if("at".equals(page.getResourceDateType()))
                             <gml:TimeInstant gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
-                                <gml:timePosition>${page.formatDate(page.getFormatterISO(), page.getData().getTemporal().getResourceDate())}</gml:timePosition>
+                                <gml:timePosition>${page.formatDate(page.getFormatterISO(), page.getData().getTemporal().getData().getResourceDate())}</gml:timePosition>
                             </gml:TimeInstant>
                         @else
                             <gml:TimePeriod gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">

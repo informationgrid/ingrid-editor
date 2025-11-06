@@ -135,7 +135,7 @@ export class TimeReferenceComponent
       fromDate: null as Date | null,
       intervalTo: "not-available",
       tillDate: null as Date | null,
-      timezone: null as string | null,
+      timezone: undefined as string,
     };
     const initial = { ...defaults, ...(this.formControl?.value ?? {}) };
     // this.temporalForm.setValue(initial, { emitEvent: false });
@@ -211,6 +211,10 @@ export class TimeReferenceComponent
       type: value.type,
     };
 
+    if (value.type === "none") {
+      return result;
+    }
+
     if (value.type === "at") {
       result.resourceDate = value.atDate;
       return result;
@@ -276,7 +280,7 @@ export class TimeReferenceComponent
       ? value.fromDate
       : value.intervalTo === "date"
         ? value.tillDate
-        : "undefined";
+        : undefined;
   }
 
   private search(value: string): Partial<SelectOption>[] {
