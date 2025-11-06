@@ -135,23 +135,17 @@
       "description": "Erläuterung"
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "3"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "since"
+      "event": {
+        "lastModified": "2023-06-30T22:00:00.000Z"
       },
-      "resourceDate": "2023-06-30T22:00:00.000Z",
       "status": {
         "key": "6"
       },
-      "resourceDateTypeSince": {
-        "key": "requestTime"
+      "data": {
+        "type": "range",
+        "resourceDate": "2023-06-30T22:00:00.000Z",
+        "intervalFrom": "date",
+        "intervalTo": "continuously"
       }
     },
     "maintenanceInformation": {

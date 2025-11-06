@@ -73,16 +73,16 @@
     "accessConstraints": [{ "key": "6" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2022-09-12T22:00:00.000Z",
-        "referenceDateType": { "key": "1" }
-      }
-    ],
+    "event": {
+      "created": "2022-09-12T22:00:00.000Z"
+    },
     "status": { "key": "5" },
-    "resourceDate": "2022-09-07T22:00:00.000Z",
-    "resourceDateType": { "key": "since" },
-    "resourceDateTypeSince": { "key": "requestTime" }
+    "data": {
+      "type": "range",
+      "resourceDate": "2022-09-07T22:00:00.000Z",
+      "intervalFrom": "date",
+      "intervalTo": "continuously"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "59" }] },
   "orderInfo": "order-info",
