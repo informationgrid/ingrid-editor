@@ -15,10 +15,8 @@ export class TimeReferenceExplanationComponent {
       atDate: Date;
       intervalFrom: string;
       fromDate: Date;
-      fromTime: string;
       intervalTo: string;
       tillDate: Date;
-      tillTime: string;
     }>
   >(undefined);
 
@@ -35,11 +33,19 @@ export class TimeReferenceExplanationComponent {
     }
   }
 
-  private formatDateWithOptionalTime(date?: Date | null, time?: string | null) {
+  private formatDateWithOptionalTime(date?: Date | null) {
     const d = this.formatDate(date);
     if (!d) return "";
-    const t = (time ?? "").trim();
-    return t ? `${d} um ${t} Uhr` : d;
+    if (!date) return "";
+    try {
+      const time = date.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return `${d} um ${time} Uhr`;
+    } catch {
+      return `${d} um Uhr`;
+    }
   }
 
   message = computed(() => {
@@ -62,8 +68,8 @@ export class TimeReferenceExplanationComponent {
       const toIsDate = v.intervalTo === "date";
       const toIsContinuous = v.intervalTo === "continuously";
 
-      const fromStr = this.formatDateWithOptionalTime(v.fromDate, v.fromTime);
-      const toStr = this.formatDateWithOptionalTime(v.tillDate, v.tillTime);
+      const fromStr = this.formatDateWithOptionalTime(v.fromDate);
+      const toStr = this.formatDateWithOptionalTime(v.tillDate);
 
       // Both bounds are dates
       if (fromIsDate && toIsDate) {

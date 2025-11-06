@@ -28,7 +28,6 @@ import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
-import { timezones } from "./timezones";
 import { tap } from "rxjs/operators";
 import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
 
@@ -112,25 +111,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
   ) {
     const timeRefRangePosition = this.findFieldElementWithId(
       fieldConfig,
-      "resourceDateRange",
+      "data",
     );
     timeRefRangePosition.field.props.showTimepicker = true;
-
-    this.addAfter(
-      timeRefRangePosition,
-      this.addSelect("resourceTimezone", "Zeitzone", {
-        className: "padding-horizontal",
-        options: timezones,
-        defaultValue: {
-          key: "(GMT+01:00) Berlin",
-        },
-        showSearch: true,
-        expressions: {
-          hide: (field: FormlyFieldConfig) =>
-            field.form.root.get("resourceCoverage")?.value === "3",
-        },
-      }),
-    );
+    timeRefRangePosition.field.props.showTimezone = true;
 
     const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,

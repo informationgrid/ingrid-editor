@@ -78,7 +78,7 @@
                                 <input
                                     matInput
                                     [matTimepicker]="timepicker_from"
-                                    formControlName="fromTime"
+                                    formControlName="fromDate"
                                 />
                                 <mat-timepicker-toggle
                                     matIconSuffix
@@ -129,7 +129,7 @@
                                 <input
                                     matInput
                                     [matTimepicker]="timepicker_to"
-                                    formControlName="tillTime"
+                                    formControlName="tillDate"
                                 />
                                 <mat-timepicker-toggle
                                     matIconSuffix
@@ -147,6 +147,27 @@
                     </mat-radio-button>
                 </mat-radio-group>
             </div>
+        </div>
+    }
+
+    @if (showTimezone()) {
+        <div class="flex-row">
+            <ige-form-label>Zeitzone</ige-form-label>
+            <mat-form-field appearance="outline">
+                <mat-select formControlName="timezone">
+                    <mat-option>
+                        <ngx-mat-select-search
+                            [formControl]="filterCtrl"
+                        ></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option>- Keine -</mat-option>
+                    @for (timezone of filteredOptions(); track timezone) {
+                        <mat-option [value]="timezone.value">
+                            {{ timezone.label }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
         </div>
     }
 </div>

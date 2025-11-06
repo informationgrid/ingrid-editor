@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { SelectOption } from "../../../app/services/codelist/codelist.service";
+import { SelectOption } from "../../../services/codelist/codelist.service";
 
 export const timezones: Partial<SelectOption>[] = [
   { label: "Pacific/Niue (GMT-11:00)", value: "(GMT-11:00) Niue" },

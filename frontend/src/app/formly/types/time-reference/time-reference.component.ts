@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -25,7 +25,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { FieldType } from "@ngx-formly/material/form-field";
-import { FieldTypeConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
 import {
   MatDatepicker,
@@ -42,8 +42,13 @@ import {
 } from "@angular/material/timepicker";
 import { map, startWith } from "rxjs/operators";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { ErrorStateMatcher } from "@angular/material/core";
+import { ErrorStateMatcher, MatOption } from "@angular/material/core";
 import { TimeReferenceExplanationComponent } from "./time-reference-explanation/time-reference-explanation.component";
+import { MatSelect } from "@angular/material/select";
+import { timezones } from "./timezones";
+import { MatSelectSearchComponent } from "ngx-mat-select-search";
+import { SelectOption } from "../../../services/codelist/codelist.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: TimeReferenceComponent) {}
@@ -52,6 +57,11 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     if (this.component.showError && control?.invalid) return control.invalid;
     else return false;
   }
+}
+
+interface TimeReferenceProps extends FormlyFieldProps {
+  showTimepicker: boolean;
+  showTimezone: boolean;
 }
 
 @Component({
@@ -73,16 +83,23 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     FormLabelComponent,
     MatError,
     TimeReferenceExplanationComponent,
+    MatSelect,
+    MatOption,
+    MatSelectSearchComponent,
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
   standalone: true,
 })
 export class TimeReferenceComponent
-  extends FieldType<FieldTypeConfig<any>>
+  extends FieldType<FieldTypeConfig<TimeReferenceProps>>
   implements OnInit
 {
-  showTimepicker = signal<boolean>(false);
+  private destroyRef = inject(DestroyRef);
+
+  protected readonly showTimepicker = signal<boolean>(false);
+  protected readonly showTimezone = signal<boolean>(false);
+
   temporalForm = new FormGroup({
     type: new FormControl<string | null>(null),
     atDate: new FormControl<Date | null>(null, {
@@ -101,21 +118,24 @@ export class TimeReferenceComponent
       updateOn: "blur",
     }),
     tillTime: new FormControl<string | null>(null),
+    timezone: new FormControl<string | null>(null),
   });
+  public filterCtrl = new FormControl();
+  filteredOptions = signal<Partial<SelectOption>[]>(timezones);
   matcher = new MyErrorStateMatcher(this);
 
   ngOnInit(): void {
     if (this.props.showTimepicker) this.showTimepicker.set(true);
+    if (this.props.showTimezone) this.showTimezone.set(true);
 
     // initialize from current value of Formly control
     const defaults = {
       intervalFrom: "not-available",
       atDate: null as Date | null,
       fromDate: null as Date | null,
-      fromTime: null as string | null,
       intervalTo: "not-available",
       tillDate: null as Date | null,
-      tillTime: null as string | null,
+      timezone: null as string | null,
     };
     const initial = { ...defaults, ...(this.formControl?.value ?? {}) };
     // this.temporalForm.setValue(initial, { emitEvent: false });
@@ -144,6 +164,10 @@ export class TimeReferenceComponent
     this.formControl.addValidators((value) => {
       return this.temporalForm.valid ? null : { someError: true };
     });
+
+    this.filterCtrl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.filteredOptions.set(this.search(value)));
   }
 
   private mapForForm(value: any) {
@@ -159,6 +183,10 @@ export class TimeReferenceComponent
 
     result.intervalFrom = value.intervalFrom;
     result.intervalTo = value.intervalTo;
+
+    if (this.showTimezone) {
+      result.timezone = value.timezone;
+    }
 
     if (isRange) {
       result.fromDate = value.resourceRange.start;
@@ -187,6 +215,10 @@ export class TimeReferenceComponent
       return result;
     }
 
+    if (this.showTimezone) {
+      result.timezone = this.temporalForm.get("timezone")?.value;
+    }
+
     return {
       ...result,
       intervalFrom: value.intervalFrom,
@@ -209,18 +241,24 @@ export class TimeReferenceComponent
       this.temporalForm.get("atDate").enable({ emitEvent: false });
       this.temporalForm.get("fromDate").disable({ emitEvent: false });
       this.temporalForm.get("tillDate").disable({ emitEvent: false });
+      this.temporalForm.get("tillTime").disable({ emitEvent: false });
+      this.temporalForm.get("tillTime").disable({ emitEvent: false });
     } else {
       this.temporalForm.get("atDate").disable({ emitEvent: false });
 
       if (value.intervalFrom === "date") {
         this.temporalForm.get("fromDate").enable({ emitEvent: false });
+        this.temporalForm.get("fromTime").enable({ emitEvent: false });
       } else {
         this.temporalForm.get("fromDate").disable({ emitEvent: false });
+        this.temporalForm.get("fromTime").disable({ emitEvent: false });
       }
       if (value.intervalTo === "date") {
         this.temporalForm.get("tillDate").enable({ emitEvent: false });
+        this.temporalForm.get("tillTime").enable({ emitEvent: false });
       } else {
         this.temporalForm.get("tillDate").disable({ emitEvent: false });
+        this.temporalForm.get("tillTime").disable({ emitEvent: false });
       }
     }
   }
@@ -233,5 +271,12 @@ export class TimeReferenceComponent
       : value.intervalTo === "date"
         ? value.tillDate
         : "undefined";
+  }
+
+  private search(value: string): Partial<SelectOption>[] {
+    let filter = value.toLowerCase();
+    return timezones.filter(
+      (option) => option.label.toLowerCase().indexOf(filter) !== -1,
+    );
   }
 }
