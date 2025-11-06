@@ -72,7 +72,7 @@ export class CatalogManagementComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   activeCatalog = computed(() => {
-    const active = this.catalogStore.entityMap()[this.currentCatalog];
+    const active = this.catalogStore.entityMap()[this.currentCatalog()];
     return active
       ? this.mapProfileTitleToCatalog(active, this.profiles())
       : null;
@@ -81,13 +81,13 @@ export class CatalogManagementComponent implements OnInit {
   nonActiveCatalogs = computed(() => {
     return this.catalogStore
       .entities()
-      .filter((cat) => cat.id !== this.currentCatalog)
+      .filter((cat) => cat.id !== this.currentCatalog())
       .map((cat) => this.mapProfileTitleToCatalog(cat, this.profiles()));
   });
 
-  noAssignedCatalogs = false;
-  showSpinner = signal(false);
-  currentCatalog: string;
+  noAssignedCatalogs = signal<boolean>(false);
+  showSpinner = signal<boolean>(false);
+  currentCatalog = signal<string>(null);
   private currentUserID: string;
   profiles = signal<Profile[]>([]);
 
@@ -106,8 +106,8 @@ export class CatalogManagementComponent implements OnInit {
   ngOnInit() {
     this.configService.$userInfo.subscribe((info) => {
       this.currentUserID = info.login;
-      this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
-      this.currentCatalog = info.currentCatalog?.id;
+      this.noAssignedCatalogs.set(info.assignedCatalogs.length === 0);
+      this.currentCatalog.set(info.currentCatalog?.id);
     });
   }
 
@@ -189,7 +189,6 @@ export class CatalogManagementComponent implements OnInit {
           this.switchCatalogIfNoCurrentCatalog(response);
         }),
         finalize(() => this.showSpinner.set(false)),
-        catchError((err) => this.handleCreateError(err)),
       )
       .subscribe();
   }
@@ -206,14 +205,9 @@ export class CatalogManagementComponent implements OnInit {
   }
 
   private switchCatalogIfNoCurrentCatalog(response: Catalog) {
-    if (!this.currentCatalog) {
+    if (!this.currentCatalog()) {
       this.chooseCatalog(response.id);
     }
-  }
-
-  private handleCreateError(err: Error): Observable<Error> {
-    this.showSpinner.set(false);
-    throw err;
   }
 
   chooseCatalog(id: string) {
