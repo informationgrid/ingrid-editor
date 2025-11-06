@@ -26,6 +26,7 @@ import de.ingrid.igeserver.persistence.filter.PreCreatePayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentState
@@ -43,6 +44,7 @@ class PreDefaultDocumentInitializer(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,
     val catalogService: CatalogService,
+    val behaviourService: BehaviourService,
     var authUtils: AuthUtils,
 ) : Filter<PreCreatePayload> {
 
@@ -94,7 +96,7 @@ class PreDefaultDocumentInitializer(
                 true -> null
                 else -> docWrapperRepo.findById(parentId).get()
             }
-        } catch (ex: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             null
         }
 
@@ -112,6 +114,19 @@ class PreDefaultDocumentInitializer(
 //            archive = mutableSetOf()
             path = newPath
             responsibleUser = catalogService.getDbUserFromPrincipal(context.principal!!)
+            tags = getDefaultTags(context.catalogId)
+        }
+    }
+
+    private fun getDefaultTags(catalogId: String): List<String> {
+        val defaultPublicationType = behaviourService.get(catalogId, "plugin.tags")?.let {
+            if (it.active == true) it.data?.get("defaultPublicationType") as? String else null
+        }
+        return if (defaultPublicationType == null || defaultPublicationType.lowercase() == "internet") {
+            // default is internet which does not need a tag
+            emptyList()
+        } else {
+            listOf(defaultPublicationType)
         }
     }
 }
