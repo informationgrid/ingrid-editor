@@ -195,6 +195,7 @@
         <mat-autocomplete
             #auto="matAutocomplete"
             (optionSelected)="addToList($event.option.value)"
+            (optionsScroll)="onScroll()"
         >
             @for (option of filteredOptions(); track option.label) {
                 @if (option.value === "_LOADING_SPINNER_") {
