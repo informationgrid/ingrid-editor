@@ -104,6 +104,7 @@ open class IngridModelTransformer(
     var superiorReferenceCache: SuperiorReference? = null
 
     var citationURL: String? = null
+    var resourceIdentifier: String? = null
     val data = model.data
     val isFolder = model.type == "FOLDER"
     val purpose = data.resource?.purpose
@@ -868,6 +869,8 @@ open class IngridModelTransformer(
         this.namespace =
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
         this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
+        this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }

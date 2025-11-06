@@ -309,11 +309,11 @@
 
             ${citationEdition}
 
-            @if( page.getModel().getType().equals("InGridGeoDataset") &&  TransformationTools.hasValue(page.getCitationURL()))
+            @if( TransformationTools.hasValue(page.getResourceIdentifier()))
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
-                            <gco:CharacterString>${page.getCitationURL()}</gco:CharacterString>
+                            <gco:CharacterString>${page.getResourceIdentifier()}</gco:CharacterString>
                         </gmd:code>
                     </gmd:MD_Identifier>
                 </gmd:identifier>
