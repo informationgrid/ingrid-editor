@@ -120,12 +120,12 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         data: <PublicationTypeDialogOptions>{
           options: [
             {
-              key: "internet",
-              value: "Veröffentlichen",
+              value: "internet",
+              label: "Veröffentlichen",
             },
             {
-              key: "negative-assessment-not-publish",
-              value: "Nicht veröffentlichen",
+              value: "negative-assessment-not-publish",
+              label: "Nicht veröffentlichen",
             },
           ],
           current: doc._tags,

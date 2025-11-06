@@ -25,7 +25,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatIcon } from "@angular/material/icon";
 
 export interface PublicationTypeDialogOptions {
-  options: { key: string; value: string }[];
+  options: { value: string; label: string }[];
   current: string[];
   title: string;
   helpText: string;
@@ -56,7 +56,7 @@ export class PublicationTypeDialog {
   ) {
     this.currentValue =
       value.current.find((item) =>
-        this.options.find((option) => option.key === item),
+        this.options.find((option) => option.value === item),
       ) ?? "internet";
     if (value.title) this.title = value.title;
     if (value.helpText) this.helpText = value.helpText;

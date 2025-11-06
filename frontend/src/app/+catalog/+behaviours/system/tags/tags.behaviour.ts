@@ -32,6 +32,7 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { TagsService } from "./tags.service";
+import { TranslocoService } from "@jsverse/transloco";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -49,6 +50,7 @@ export class TagsBehaviour extends Plugin {
     private dialog: MatDialog,
     private formStateService: FormStateService,
     private tagsService: TagsService,
+    private translocoService: TranslocoService,
   ) {
     super();
     this.fields.push({
@@ -61,11 +63,7 @@ export class TagsBehaviour extends Plugin {
         labelProp: "label",
         valueProp: "value",
         appearance: "outline",
-        options: [
-          { value: "internet", label: "Internet" },
-          { value: "intranet", label: "Intranet" },
-          { value: "amtsintern", label: "amtsintern" },
-        ],
+        options: this.getPubTagsAsOptions(),
       },
     });
     inject(PluginService).registerPlugin(this);
@@ -119,11 +117,7 @@ export class TagsBehaviour extends Plugin {
     this.dialog
       .open(PublicationTypeDialog, {
         data: <PublicationTypeDialogOptions>{
-          options: [
-            { key: "internet", value: "Internet" },
-            { key: "intranet", value: "Intranet" },
-            { key: "amtsintern", value: "amtsintern" },
-          ],
+          options: this.getPubTagsAsOptions(),
           current: currentDocument._tags ?? "",
           helpText: helpText,
         },
@@ -142,5 +136,14 @@ export class TagsBehaviour extends Plugin {
             });
           }),
       );
+  }
+
+  getPubTagsAsOptions() {
+    return ["internet", "intranet", "amtsintern"].map((tag) => {
+      return {
+        value: tag,
+        label: this.translocoService.translate(`tags.${tag}`),
+      };
+    });
   }
 }
