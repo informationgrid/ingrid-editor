@@ -1225,56 +1225,12 @@ export abstract class IngridShared extends BaseDoctype {
           ].filter(Boolean),
         ),
         this.addSubSection("temporal", "Zeitbezug der Daten im Datensatz", [
-          // this.addRadioboxes("resourceDateType", "", {
-          //   wrappers: ["panel"],
-          //   className: "space-bottom-field",
-          //   defaultValue: "none",
-          //   options: [
-          //     {
-          //       value: "Daten beziehen sich auf einen Zeitraum",
-          //       id: "range",
-          //     },
-          //     {
-          //       value: "Daten beziehen sich auf ein Datum",
-          //       id: "at",
-          //     },
-          //     {
-          //       value: "Keine Angabe",
-          //       id: "none",
-          //     },
-          //   ],
-          // }),
-          // this.addDatepicker("resourceDate", "Am", {
-          //   required: this.options.required.resourceDateType,
-          //   placeholder: "TT.MM.JJJJ",
-          //   className: "padding-horizontal",
-          //   // fieldLabel: "Am",
-          //   expressions: {
-          //     hide: (field: FormlyFieldConfig) =>
-          //       field.form.root.get("temporal.resourceDateType")?.value !==
-          //       "at",
-          //   },
-          // }),
           {
             key: "data",
             type: "time-reference",
             wrappers: [],
             props: {},
-            // expressions: {
-            //   hide: (field: FormlyFieldConfig) =>
-            //     field.form.root.get("temporal.resourceDateType")?.value !==
-            //     "range",
-            // },
           },
-          // {
-          //   key: "intervalFrom",
-          // },
-          // {
-          //   key: "intervalTo",
-          // },
-          // {
-          //   key: "resourceRange",
-          // },
         ]),
       ].filter(Boolean),
     );

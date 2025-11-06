@@ -148,6 +148,7 @@ export class TimeReferenceComponent
         console.log("patching time-ref value with:", next);
         this.temporalForm.patchValue(next, { emitEvent: false });
         this.handleDisabledStates(next);
+        this.handleTimezoneState(next);
       });
 
     // reflect internal form changes into Formly control
@@ -234,6 +235,11 @@ export class TimeReferenceComponent
             resourceDate: this.getDateInFromOrTo(value),
           }),
     };
+  }
+
+  private handleTimezoneState(value: any) {
+    const shouldShow = value.type !== "none";
+    this.showTimezone.set(this.props.showTimezone && shouldShow);
   }
 
   private handleDisabledStates(value: any) {
