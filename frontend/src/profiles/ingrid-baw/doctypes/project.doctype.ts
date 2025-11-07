@@ -43,12 +43,6 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
       this.common.getOrderNumberFieldConfig(),
     );
 
-    this.updateValidators(
-      "events",
-      { hasPublicationDate: this.common.hasPublicationDate },
-      fieldConfig,
-    );
-
     return fieldConfig;
   };
 }
