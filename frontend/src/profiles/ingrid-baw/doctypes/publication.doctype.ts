@@ -113,12 +113,6 @@ export class PublicationDoctypeBaw extends IngridShared {
       this.addRepeatList("orderTitles", "Auftragstitel"),
     );
 
-    this.updateValidators(
-      "events",
-      { hasPublicationDate: this.common.hasPublicationDate },
-      fieldConfig,
-    );
-
     return fieldConfig;
   };
 }

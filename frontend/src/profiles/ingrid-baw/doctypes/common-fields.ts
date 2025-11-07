@@ -451,14 +451,4 @@ export class CommonFieldsBaw extends FormFieldHelper {
     message:
       "Ein Eintrag für die Institution 'Bundesanstalt für Wasserbau' als 'Ansprechpartner' muss vorhanden sein",
   };
-
-  hasPublicationDate = {
-    expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
-      // equals "Publikation"
-      ctrl.value
-        ? ctrl.value.some((item) => item.referenceDateType?.key === "2")
-        : false,
-    message:
-      "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
-  };
 }
