@@ -25,7 +25,6 @@ import {
 } from "../../form-field-helper";
 import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
-import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { timezones } from "./timezones";
@@ -424,31 +423,4 @@ export class CommonFieldsBaw extends FormFieldHelper {
       ],
     });
   }
-
-  removeDataQualitySection(
-    doc: IngridShared,
-    fieldConfig: FormlyFieldConfig[],
-  ) {
-    const dataQualitySection = doc.findFieldElementWithId(
-      fieldConfig,
-      "dataQuality",
-    );
-    if (dataQualitySection) {
-      fieldConfig.splice(dataQualitySection.index, 1);
-    }
-  }
-
-  hasBAWPointOfContact = {
-    expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
-      // equals "Herausgeber"
-      ctrl.value
-        ? ctrl.value.some(
-            (address) =>
-              address.type?.key === "7" &&
-              address.ref === "891d8fdf-e6cf-3f61-9ca4-668880483ca8",
-          )
-        : false,
-    message:
-      "Ein Eintrag für die Institution 'Bundesanstalt für Wasserbau' als 'Ansprechpartner' muss vorhanden sein",
-  };
 }
