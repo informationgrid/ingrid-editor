@@ -631,28 +631,34 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.mapNotNull { it.usage?.specificUsage?.value }
         ?.joinToString(";")
 
-    fun getTemporalEvents(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
+    private fun getTemporalEventsList(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
         ?.mapNotNull {
             val value = it.date?.dateType?.code?.codeListValue
-            val typeKey = codeListService.getCodeListEntryId("502", value, "iso")
             val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
                 ?: it.date?.date?.date?.let { parseDate(it) }
 
-            val type = if (typeKey == null && value == null) {
-                null
-            } else {
-                KeyValue(
-                    typeKey,
-                    typeKey?.let { codeListService.getCodelistValue("502", typeKey, catalogLanguage) } ?: value,
-                    "502",
-                )
-            }
-
             // no extractable information, skip
-            if (type == null && date == null) return@mapNotNull null
+            if (value == null && date == null) return@mapNotNull null
 
-            Event(type, date)
+            Event(value, date)
         } ?: emptyList()
+
+    fun getTemporalEvents(): List<Event> {
+        val events = getTemporalEventsList()
+        val created = events
+            .filter { it.type == "creation" }
+            .sortedBy { it.date }
+            .getOrNull(0)
+        val firstPublished = events
+            .filter { it.type == "publication" }
+            .sortedBy { it.date }
+            .getOrNull(0)
+        val lastModified = events
+            .filter { it.type == "revision" }
+            .sortedByDescending { it.date }
+            .getOrNull(0)
+        return listOfNotNull(created, firstPublished, lastModified)
+    }
 
     private fun parseDateTime(value: String): String = OffsetDateTime.parse(value).toInstant().toString()
 
@@ -671,46 +677,41 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val timeValue = it.extent?.extent?.timeInstant?.timePosition
                 val instant = timeValue?.let { parseDateTime(timeValue) }
                 if (instant != null) {
-                    return TimeInfo(instant, KeyValue("at", "am"), KeyValue(statusKey, statusValue, "523"))
+                    return TimeInfo(instant, "at", KeyValue(statusKey, statusValue, "523"))
                 }
 
                 val period = it.extent?.extent?.timePeriod
                 if (period != null) {
-                    val type = determineTemporalType(period)
-                    val typeSince = determineTemporalTypeSince(period)
+                    val intervalFrom = determineTemporalType(period)
+                    val intervalTo = determineTemporalTypeSince(period)
                     return TimeInfo(
                         period.beginPosition?.value,
-                        type,
+                        "range",
                         if (status == null) null else KeyValue(statusKey, statusValue, "523"),
+                        intervalFrom,
+                        intervalTo,
                         period.endPosition?.value,
-                        typeSince,
                     )
                 }
 
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey, statusValue, "523"))
+            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey, statusValue, "523"), isEmpty = true)
     }
 
-    private fun determineTemporalType(period: TimePeriod): KeyValue? {
-        if (period.beginPosition?.value != null && period.endPosition?.value != null) {
-            return KeyValue("since", "von")
-        } else if (period.beginPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("till", "bis")
-        } else if (period.endPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("since", "von")
-        } else if (period.endPosition?.indeterminatePosition == "now") {
-            return KeyValue("since", "von")
-        }
-
-        return null
+    private fun determineTemporalType(period: TimePeriod): String? = if (period.beginPosition?.value != null) {
+        "date"
+    } else if (period.beginPosition?.indeterminatePosition == "unknown") {
+        "not-available"
+    } else {
+        null
     }
 
-    private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
-        if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate", "bis: genaues Datum")
-        if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime", "bis: gegenwärtig aktuell")
-        if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown", "bis: gegenwärtige Aktualität unklar")
+    private fun determineTemporalTypeSince(period: TimePeriod): String? {
+        if (period.beginPosition?.value != null && period.endPosition?.value != null) return "date"
+        if (period.endPosition?.indeterminatePosition == "now") return "continuously"
+        if (period.endPosition?.indeterminatePosition == "unknown") return "not-available"
 
         return null
     }
@@ -1115,13 +1116,15 @@ data class MaintenanceInterval(
 
 data class TimeInfo(
     val date: String? = null,
-    val type: KeyValue? = null,
+    val type: String? = null,
     var status: KeyValue? = null,
+    val intervalFrom: String? = null,
+    val intervalTo: String? = null,
     val untilDate: String? = null,
-    val dateTypeSince: KeyValue? = null,
+    val isEmpty: Boolean = false,
 )
 
-data class Event(val type: KeyValue?, val date: String?)
+data class Event(val type: String?, val date: String?)
 
 data class VerticalExtentModel(
     val uom: KeyValue,

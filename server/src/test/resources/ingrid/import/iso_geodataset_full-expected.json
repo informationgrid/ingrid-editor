@@ -168,9 +168,9 @@
       },
       "data": {
         "type": "range",
-        "resourceDate": "2016-03-01T00:00:00.000+01:00",
         "intervalFrom": "date",
-        "intervalTo": "continuously"
+        "intervalTo": "continuously",
+        "resourceDate": "2016-03-01T00:00:00.000+01:00"
       }
     },
     "maintenanceInformation": {
