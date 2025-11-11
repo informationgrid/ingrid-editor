@@ -145,7 +145,6 @@ export class TimeReferenceComponent
       .pipe(startWith(this.formControl.value))
       .subscribe((value) => {
         const next = { ...defaults, ...this.mapForForm(value) };
-        console.log("patching time-ref value with:", next);
         this.temporalForm.patchValue(next, { emitEvent: false });
         this.handleDisabledStates(next);
         this.handleTimezoneState(next);

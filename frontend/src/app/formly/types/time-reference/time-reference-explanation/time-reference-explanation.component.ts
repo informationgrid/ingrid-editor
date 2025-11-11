@@ -19,10 +19,14 @@ export class TimeReferenceExplanationComponent {
       tillDate: Date;
     }>
   >(undefined);
+  showTime = input<boolean>(false);
 
   private formatDate(date?: Date | null) {
     if (!date) return "";
     try {
+      if (typeof date === "string") {
+        date = new Date(date);
+      }
       return date.toLocaleDateString("de-DE", {
         year: "numeric",
         month: "long",
@@ -37,14 +41,18 @@ export class TimeReferenceExplanationComponent {
     const d = this.formatDate(date);
     if (!d) return "";
     if (!date) return "";
-    try {
-      const time = date.toLocaleTimeString("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      return `${d} um ${time} Uhr`;
-    } catch {
-      return `${d} um Uhr`;
+    if (this.showTime()) {
+      try {
+        const time = date.toLocaleTimeString("de-DE", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        return `${d} um ${time} Uhr`;
+      } catch {
+        return d;
+      }
+    } else {
+      return d;
     }
   }
 
