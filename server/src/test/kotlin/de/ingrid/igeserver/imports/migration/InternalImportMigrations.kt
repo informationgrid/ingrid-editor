@@ -19,19 +19,23 @@
  */
 import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.imports.internal.InternalImporter
+import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
 
 class InternalImportMigrations : AnnotationSpec() {
 
     @Test
     fun migrateGeodatasetFrom110ToCurrent() {
         val importer = InternalImporter()
-        val result = importer.run("test", getFile("ingrid/import/internal_ingrid_110.json"), mutableMapOf())
-        println(result.toString())
+        val json = importer.run("test", getFile("ingrid/import/internal_ingrid_110.json"), mutableMapOf())
+        println(json.toString())
 
-        result.toPrettyString().shouldEqualJson(
+        json.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/internal_ingrid_110_to_current_expected.json"),
         )
+        val result = SchemaUtils.validate(json.get(0).get(0).toString(), "/ingrid/schemes/geo-dataset.schema.json")
+        result.size shouldBe 0
     }
 }
