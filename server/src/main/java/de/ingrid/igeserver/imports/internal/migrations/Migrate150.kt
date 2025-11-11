@@ -44,7 +44,7 @@ class Migrate150 {
                     docVersion as ObjectNode
                     val docType = docVersion.getString("_type") ?: return@let
                     if (includedTypes.contains(docType)) {
-                        val migratedData = getTemporalOfDocument(docVersion, docType)
+                        val migratedData = getTemporalOfDocument(docVersion)
                         docVersion.set<JsonNode>("temporal", migratedData)
                     }
                 }
@@ -52,7 +52,7 @@ class Migrate150 {
             return documents
         }
 
-        fun getTemporalOfDocument(doc: ObjectNode, docType: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        fun getTemporalOfDocument(doc: ObjectNode): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             val temporal = doc.get("temporal") as? ObjectNode ?: return@apply
 
             // preserve status (even if null)
@@ -76,21 +76,44 @@ class Migrate150 {
             }
             this.set<JsonNode>("event", eventNode)
 
-            // migrate resource date info -> data
             val resourceDate = temporal.get("resourceDate")
-            // Only migrate when resourceDate exists and is not null
-            if (resourceDate != null && !resourceDate.isNull) {
-                val dataNode = jacksonObjectMapper().createObjectNode().apply {
-                    // As per spec: type can be "at" or "range". Legacy has only a single date, so use "at".
+
+            val dataNode = jacksonObjectMapper().createObjectNode().apply {
+                val typeFrom = temporal.get("resourceDateType")?.get("key")?.asText()
+                val typeSince = temporal.get("resourceDateTypeSince")?.get("key")?.asText()
+                if (typeFrom == null) {
+                    put("type", "none")
+                } else if (typeFrom == "at") {
                     put("type", "at")
-                    // With a single instant, set both intervals to "date" so exporter treats it as a point-in-time
-                    put("intervalFrom", "date")
-                    put("intervalTo", "date")
                     set<JsonNode>("resourceDate", resourceDate)
-                    // timezone ignored; resourceRange only set when both intervalFrom and intervalTo are set
+                } else {
+                    val resourceRange = temporal.get("resourceRange")
+                    put("type", "range")
+                    put("intervalFrom", determineIntervalFrom(typeFrom))
+                    put("intervalTo", determineIntervalTo(typeFrom, typeSince))
+                    if (resourceDate != null && !resourceDate.isNull) {
+                        set<JsonNode>("resourceDate", resourceDate)
+                    }
+                    if (resourceRange != null && !resourceRange.isNull) {
+                        set<JsonNode>("resourceRange", resourceRange)
+                    }
                 }
-                this.set<JsonNode>("data", dataNode)
             }
+            this.set<JsonNode>("data", dataNode)
+        }
+
+        private fun determineIntervalFrom(type: String): String = when (type) {
+            "till" -> "not-available"
+            else -> "date"
+        }
+
+        private fun determineIntervalTo(typeFrom: String, typeSince: String?): String = when (typeFrom) {
+            "since" -> when (typeSince) {
+                "exactDate" -> "date"
+                "requestTime" -> "continuously"
+                else -> "not-available"
+            }
+            else -> "not-available"
         }
     }
 }
