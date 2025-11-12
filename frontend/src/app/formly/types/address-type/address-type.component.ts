@@ -178,13 +178,6 @@ export class AddressTypeComponent
     ]);
   }
 
-  // TODO: let ige-form-error handle all error messages
-  getFirstError() {
-    return Object.values(this.formControl.errors).map(
-      (error) => error.message,
-    )[0];
-  }
-
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
     moveItemInArray(
       this.formControl.value,

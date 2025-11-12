@@ -22,7 +22,6 @@ import {
   Component,
   OnInit,
   signal,
-  viewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
@@ -68,8 +67,6 @@ export class SelectTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  readonly formFieldControl = viewChild.required(MatSelect);
-
   public filterCtrl = new FormControl();
 
   defaultOptions = {

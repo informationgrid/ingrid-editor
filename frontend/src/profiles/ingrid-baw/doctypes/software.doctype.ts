@@ -105,13 +105,6 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     );
     spatialSystems.fieldConfig.splice(spatialSystems.index, 1);
 
-    // Zeitbezug
-    const resourceTimeSpan = this.findParentFieldElementWithId(
-      fieldConfig,
-      "resourceDateType",
-    );
-    resourceTimeSpan.fieldConfig.splice(resourceTimeSpan.index, 1);
-
     // Verfügbarkeit
     const useLimitationPosition = this.findFieldElementWithId(
       fieldConfig,

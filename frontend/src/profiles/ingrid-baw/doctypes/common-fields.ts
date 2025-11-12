@@ -27,7 +27,6 @@ import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
-import { timezones } from "./timezones";
 import { tap } from "rxjs/operators";
 import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
 
@@ -109,40 +108,12 @@ export class CommonFieldsBaw extends FormFieldHelper {
       verticalExtent?: boolean;
     } = {},
   ) {
-    const timeRefPosition = this.findFieldElementWithId(
-      fieldConfig,
-      "resourceDate",
-    );
-
-    const content = timeRefPosition.fieldConfig[timeRefPosition.index];
-    timeRefPosition.fieldConfig[timeRefPosition.index] = this.addGroupSimple(
-      null,
-      [content, this.addTimepickerInline("resourceDate", "Zeit", {})],
-      {
-        fieldGroupClassName: "flex-row",
-        className: "two-sub-fields",
-        hideExpression: (field: FormlyFieldConfig) =>
-          field.model?.resourceDateTypeSince?.key === "exactDate",
-      },
-    );
-
     const timeRefRangePosition = this.findFieldElementWithId(
       fieldConfig,
-      "resourceRange",
+      "data",
     );
-    timeRefRangePosition.fieldConfig[
-      timeRefRangePosition.index
-    ].props.showTimeInputs = true;
-    this.addAfter(
-      timeRefRangePosition,
-      this.addSelectInline("resourceTimezone", "Zeitzone", {
-        options: timezones,
-        defaultValue: {
-          key: "(GMT+01:00) Berlin",
-        },
-        showSearch: true,
-      }),
-    );
+    timeRefRangePosition.field.props.showTimepicker = true;
+    timeRefRangePosition.field.props.showTimezone = true;
 
     const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,

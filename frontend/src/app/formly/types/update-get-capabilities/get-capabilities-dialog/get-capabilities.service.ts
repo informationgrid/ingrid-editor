@@ -115,8 +115,7 @@ export class GetCapabilitiesService {
         if (value === "WCS") model.service.explanation = "WCS Service";
       }
 
-      if (key === "timeReference")
-        model.temporal.events = this.mapEvents(value);
+      if (key === "timeReference") model.temporal.event = this.mapEvents(value);
       if (key === "timeSpan")
         model.temporal = {
           ...model.temporal,
@@ -154,14 +153,9 @@ export class GetCapabilitiesService {
   }
 
   private handleDefaultTemporalEvent(model: any) {
-    const currentDateEvent = {
-      referenceDate: new Date(),
-      referenceDateType: { key: "1" },
-    };
-    if (model.temporal.events.length === 0) {
-      model.temporal.events.push(currentDateEvent);
-    } else if (isEmptyObject(model.temporal.events[0])) {
-      model.temporal.events[0] = currentDateEvent;
+    if (!model.temporal.event?.created) {
+      if (!model.temporal.event) model.temporal.event = {};
+      model.temporal.event.created = new Date();
     }
   }
 
@@ -219,12 +213,11 @@ export class GetCapabilitiesService {
   }
 
   private mapEvents(value: any[]) {
-    return value.map((item) => {
-      return {
-        referenceDate: item.date,
-        referenceDateType: { key: item.type + "" },
-      };
-    });
+    return {
+      created: value.find((item) => item.type === "1")?.date,
+      firstPublished: value.find((item) => item.type === "2")?.date,
+      lastModified: value.find((item) => item.type === "3")?.date,
+    };
   }
 
   private mapConformities(value: any[]) {
@@ -385,28 +378,26 @@ export class GetCapabilitiesService {
 
   private mapTimeSpan(value: TimeReference): any {
     const template: any = {
-      resourceDateType: {
-        key: null,
-      },
-      resourceRange: {
-        start: null,
-        end: null,
+      data: {
+        type: "range",
       },
     };
 
     if (value.from && value.to) {
-      template.resourceRange.start = value.from;
-      template.resourceRange.end = value.to;
-      template.resourceDateType.key = "since";
-      template.resourceDateTypeSince = {
-        key: "exactDate",
+      template.data.resourceRange = {
+        start: new Date(value.from),
+        end: new Date(value.to),
       };
+      template.data.intervalFrom = "date";
+      template.data.intervalTo = "date";
     } else if (value.to) {
-      template.resourceDate = value.from;
-      template.resourceDateType.key = "since";
+      template.resourceDate = new Date(value.to);
+      template.data.intervalFrom = "not-available";
+      template.data.intervalTo = "date";
     } else if (value.from) {
-      template.resourceDate = value.from;
-      template.resourceDateType.key = "till";
+      template.resourceDate = new Date(value.from);
+      template.data.intervalFrom = "date";
+      template.data.intervalTo = "not-available";
     }
 
     return template;

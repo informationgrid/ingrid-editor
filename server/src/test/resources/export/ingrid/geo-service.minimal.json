@@ -42,14 +42,10 @@
     "accessConstraints": []
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2022-07-11T22:00:00.000Z",
-        "referenceDateType": { "key": "1" }
-      }
-    ],
-    "status": null,
-    "resourceDateType": null
+    "event": {
+      "created": "2022-07-11T22:00:00.000Z"
+    },
+    "status": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
   "references": [],

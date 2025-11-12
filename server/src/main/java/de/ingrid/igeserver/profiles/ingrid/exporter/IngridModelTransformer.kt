@@ -46,11 +46,13 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Operation
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel.Companion.catalogService
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -66,6 +68,7 @@ import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.text.StringEscapeUtils.escapeJson
+import org.apache.jena.vocabulary.SchemaDO.keywords
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -124,33 +127,32 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
-    val isResourceRangeDefined = data.temporal.resourceRange?.start != null && data.temporal.resourceRange.end != null
-    val resourceDateType = data.temporal.resourceDateType?.key
-    val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
-    val resourceBeginDate =
-        (
-            if (resourceDateType.equals("since")) {
-                data.temporal.resourceDate ?: data.temporal.resourceRange?.start
-            } else {
-                data.temporal.resourceRange?.start
-            }
-            )
-    val resourceEndDate =
-        (
-            if (resourceDateType.equals("till")) {
-                data.temporal.resourceDate
-            } else {
-                data.temporal.resourceRange?.end
-            }
-            )
-    val hasAnyResourceDate = listOf(data.temporal.resourceDate, resourceBeginDate, resourceEndDate).any { it != null }
+    val temporalData = data.temporal.data
+    val isResourceRangeDefined = temporalData?.resourceRange?.start != null && temporalData.resourceRange.end != null && temporalData.intervalFrom == "date" && temporalData.intervalTo == "date"
+    val resourceDateType = temporalData?.type
+
+    val resourceBeginDate = if (isResourceRangeDefined) {
+        temporalData?.resourceRange?.start
+    } else if (temporalData?.intervalFrom == "date") {
+        temporalData.resourceDate
+    } else {
+        null
+    }
+    val resourceEndDate = if (isResourceRangeDefined) {
+        temporalData?.resourceRange?.end
+    } else if (temporalData?.intervalTo == "date") {
+        temporalData.resourceDate
+    } else {
+        null
+    }
+    val hasAnyResourceDate = listOfNotNull(temporalData?.resourceDate, resourceBeginDate, resourceEndDate).size > 0
     val resourceBeginIndeterminatePosition =
-        if (resourceDateType.equals("till")) "indeterminatePosition=\"unknown\"" else ""
+        if (temporalData?.intervalFrom?.equals("not-available") == true) "indeterminatePosition=\"unknown\"" else ""
     val resourceEndIndeterminatePosition =
-        when (resourceDateTypeSince) {
-            "exactDate" -> ""
-            "unknown" -> "indeterminatePosition=\"unknown\""
-            "requestTime" -> "indeterminatePosition=\"now\""
+        when (temporalData?.intervalTo) {
+            "date" -> ""
+            "not-available" -> "indeterminatePosition=\"unknown\""
+            "continuously" -> "indeterminatePosition=\"now\""
             else -> ""
         }
     val maintenanceAndUpdateFrequency =
@@ -411,7 +413,11 @@ open class IngridModelTransformer(
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
-    val dateEvents = data.temporal.events ?: emptyList()
+    val dateEvents = listOf(
+        TypedDateEvent("creation", data.temporal.event?.created),
+        TypedDateEvent("publication", data.temporal.event?.firstPublished),
+        TypedDateEvent("revision", data.temporal.event?.lastModified),
+    ).filter { it.date != null }
 
     val inspireKeywords = Thesaurus(
         keywords = data.themes?.map {

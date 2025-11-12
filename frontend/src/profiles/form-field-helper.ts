@@ -63,9 +63,17 @@ export interface Options {
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
-  validators?: any;
+  validators?: {
+    [x: string]:
+      | {
+          expression: any;
+          message: string | ((a, b: FormlyFieldConfig) => string);
+        }
+      | string[];
+  };
   asyncValidators?: any;
   resetOnHide?: boolean;
+  hintStart?: string;
 }
 
 export interface DatePickerOptions extends Options {
@@ -207,6 +215,7 @@ export interface AutocompleteOptions extends Options {
 
 export interface UnitInputOptions extends InputOptions {
   unitOptions?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  codelistId?: string;
   fieldGroup?: any;
 }
 
@@ -226,6 +235,18 @@ export class FormFieldHelper {
         label: label,
       },
       fieldGroup: fields,
+    };
+  }
+
+  addSubSection(id: string, label: string, fields: any[], options?: any) {
+    return {
+      key: id,
+      wrappers: ["sub-section"],
+      props: {
+        label: label,
+      },
+      fieldGroup: fields,
+      ...options,
     };
   }
 
@@ -646,7 +667,7 @@ export class FormFieldHelper {
 
   addUnitInput(id, label, options?: UnitInputOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       id: options?.id,
       type: "unit-input",
@@ -677,7 +698,7 @@ export class FormFieldHelper {
         unitOptions: options?.unitOptions,
       },
       modelOptions: {
-        updateOn: options?.updateOn ?? "blur",
+        updateOn: options?.updateOn ?? "change",
       },
       expressions: {
         ...expressions,
@@ -720,6 +741,7 @@ export class FormFieldHelper {
           options?.placeholder ??
           this.transloco.translate("form.placeholder.choose"),
         label: options?.fieldLabel,
+        hintStart: options?.hintStart,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
         required: options?.required,
@@ -830,6 +852,7 @@ export class FormFieldHelper {
         addonLeft: options?.prefix,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        hintStart: options?.hintStart,
       },
       expressions: expressions,
       validators: options?.validators,
@@ -944,8 +967,8 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "radio",
-      wrappers: ["panel", "form-field", "inline-help"],
-      className: "ige-radios",
+      wrappers: options?.wrappers ?? ["panel", "form-field", "inline-help"],
+      className: options?.className ?? "ige-radios",
       defaultValue: options?.defaultValue ?? null,
       props: {
         appearance: "outline",
@@ -1097,7 +1120,7 @@ export class FormFieldHelper {
   private initExpressions(expressions = {}) {
     return {
       "props.disabled": (field: FormlyFieldConfig) =>
-        field.options?.formState?.disabled ?? false,
+        field?.options?.formState?.disabled ?? false,
       ...expressions,
     };
   }

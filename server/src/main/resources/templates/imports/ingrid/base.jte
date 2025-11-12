@@ -100,28 +100,39 @@
 "description": "${model.getSpatialDescription()}"
 },
 "temporal": {
-"events": [
+"event": {
 @for(var event : ForSupport.of(model.getTemporalEvents()))
-    {
-        "referenceDate": @if (event.get().getDate() != null) "${event.get().getDate()}" @else null@endif,
-        "referenceDateType": @template.imports.ingrid.partial.key-value(item = event.get().getType())
-    }@if (!event.isLast()),@endif
+    @if ("creation".equals(event.get().getType()))
+        "created": "${event.get().getDate()}"
+    @endif
+    @if ("publication".equals(event.get().getType()))
+        "firstPublished": "${event.get().getDate()}"
+    @endif
+    @if ("revision".equals(event.get().getType()))
+        "lastModified": "${event.get().getDate()}"
+    @endif
+    @if (!event.isLast()),@endif
 @endfor
-]
+}
 !{var time = model.getTimeRelatedInfo();}
 @if(time != null)
     ,
-    "resourceDateType": @template.imports.ingrid.partial.key-value(item = time.getType()),
-    "status": @template.imports.ingrid.partial.key-value(item = time.getStatus()),
-    @if(time.getUntilDate() != null && time.getDate() != null)
-        "resourceRange": {
-        "start": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
-        "end": @if(time.getUntilDate() == null) null @else "${time.getUntilDate()}"@endif
-        },
-    @else
-        "resourceDate": @if(time.getDate() != null) "${time.getDate()}" @elseif (time.getUntilDate() != null) "${time.getUntilDate()}" @else null@endif,
+    "status": @template.imports.ingrid.partial.key-value(item = time.getStatus())
+    @if (!time.isEmpty())
+    , "data": {
+        "type": "${time.getType()}",
+        @if (time.getIntervalFrom() != null) "intervalFrom": "${time.getIntervalFrom()}",@endif
+        @if (time.getIntervalTo() != null) "intervalTo": "${time.getIntervalTo()}",@endif
+        @if(time.getUntilDate() != null && time.getDate() != null)
+            "resourceRange": {
+                "start":@if(time.getDate() == null) null@else "${time.getDate()}"@endif,
+                "end":@if(time.getUntilDate() == null) null@else "${time.getUntilDate()}"@endif
+            }
+        @else
+            "resourceDate":@if(time.getDate() != null) "${time.getDate()}"@elseif (time.getUntilDate() != null) "${time.getUntilDate()}"@else null@endif
+        @endif
+    }
     @endif
-    "resourceDateTypeSince": @template.imports.ingrid.partial.key-value(item = time.getDateTypeSince())
 @endif
 },
 "maintenanceInformation": {
