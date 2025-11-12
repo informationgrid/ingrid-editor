@@ -49,6 +49,7 @@ import { timezones } from "./timezones";
 import { MatSelectSearchComponent } from "ngx-mat-select-search";
 import { SelectOption } from "../../../services/codelist/codelist.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: TimeReferenceComponent) {}
@@ -86,6 +87,7 @@ interface TimeReferenceProps extends FormlyFieldProps {
     MatSelect,
     MatOption,
     MatSelectSearchComponent,
+    FormErrorComponent,
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
@@ -101,7 +103,7 @@ export class TimeReferenceComponent
   protected readonly showTimezone = signal<boolean>(false);
 
   temporalForm = new FormGroup({
-    type: new FormControl<string | null>(null),
+    type: new FormControl<string | null>(null, Validators.required),
     atDate: new FormControl<Date | null>(null, {
       validators: Validators.required,
       updateOn: "blur",

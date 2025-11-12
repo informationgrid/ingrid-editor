@@ -1,4 +1,4 @@
-<div [formGroup]="temporalForm">
+<div [formGroup]="temporalForm" [class.required]="props.required">
     <div class="space-bottom-field">
         <mat-radio-group class="flex-row" formControlName="type">
             <mat-radio-button value="range" class="no-wrap">
@@ -13,6 +13,11 @@
                 </mat-radio-button>
             }
         </mat-radio-group>
+        @if (showError && temporalForm.get("type")?.invalid) {
+            <ige-form-error>
+                Es muss eine Option gewählt werden
+            </ige-form-error>
+        }
     </div>
 
     @if (temporalForm.get("type")?.value === "at") {

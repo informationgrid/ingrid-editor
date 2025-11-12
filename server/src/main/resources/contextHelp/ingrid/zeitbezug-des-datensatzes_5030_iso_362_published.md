@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: created
+id: firstPublished
 docType:
   - InGridDataCollection
   - InGridGeoDataset
