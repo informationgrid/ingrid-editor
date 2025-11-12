@@ -2,7 +2,7 @@
     <ige-dialog-template
         label="Link angeben"
         [formGroup]="form"
-        [disabled]="form.invalid"
+        [disabled]="!valid()"
         (submit)="submit()"
     >
         <ng-container content>

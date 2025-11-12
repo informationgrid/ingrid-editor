@@ -31,6 +31,7 @@ import {
   FormlyFormOptions,
 } from "@ngx-formly/core";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-link-dialog",
@@ -44,11 +45,16 @@ export class LinkDialogComponent implements OnInit {
   options: FormlyFormOptions = {};
 
   data = signal<FormDialogData>({ fields: [], model: null });
+  valid = signal<boolean>(false);
 
   constructor(
     public dialogRef: MatDialogRef<LinkDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private formData: FormDialogData,
-  ) {}
+  ) {
+    this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((state) => {
+      this.valid.set(state === "VALID");
+    });
+  }
 
   ngOnInit(): void {
     this.data.set({
