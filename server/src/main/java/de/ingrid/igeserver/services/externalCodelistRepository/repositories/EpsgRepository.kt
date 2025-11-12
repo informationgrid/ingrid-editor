@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.services.externalCodelistRepository.ExternalCodelistRepository
 import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
@@ -51,11 +52,12 @@ data class EpsgCodelistEntry(
 )
 
 @Service("EPSG")
-open class EpsgRepository : ExternalCodelistRepository {
+open class EpsgRepository(
+    @Value("\${codelist.external.epsgUrl}") val epsgUrl: String,
+) : ExternalCodelistRepository {
 
     private val log = logger()
     private val mapper = jacksonObjectMapper()
-    private val url = "https://apps.epsg.org/api/v1/CoordRefSystem"
 
     /**
      * Searches the EPSG API for a term and returns a List of string representations of EPSG Codes.
@@ -68,7 +70,7 @@ open class EpsgRepository : ExternalCodelistRepository {
         )
 
         try {
-            val inputStream: InputStream = sendRequest("GET", this.url, params) ?: return PagedSearchResult.EMPTY
+            val inputStream: InputStream = sendRequest("GET", this.epsgUrl, params) ?: return PagedSearchResult.EMPTY
             val jsonString = inputStream.bufferedReader().use { it.readText() }
             val apiResponse = mapper.readValue<EpsgApiResponse>(jsonString)
             return PagedSearchResult(
