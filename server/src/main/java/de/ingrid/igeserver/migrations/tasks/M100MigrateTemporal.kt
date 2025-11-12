@@ -54,7 +54,7 @@ class M100MigrateTemporal : MigrationBase("0.100") {
             setAdminAuthentication("Migration", "Task")
             do {
                 val documents =
-                    entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.state != "ARCHIVED" ORDER BY id""")
+                    entityManager.createQuery("""SELECT doc FROM Document doc JOIN doc.catalog cat JOIN DocumentWrapper wrapper ON wrapper.uuid = doc.uuid AND wrapper.catalog.id = cat.id WHERE doc.state != "ARCHIVED" AND cat.identifier LIKE 'ingrid%' AND wrapper.category = 'data' ORDER BY doc.id""")
                         .setFirstResult((page - 1) * pageSize)
                         .setMaxResults(pageSize)
                         .resultList
