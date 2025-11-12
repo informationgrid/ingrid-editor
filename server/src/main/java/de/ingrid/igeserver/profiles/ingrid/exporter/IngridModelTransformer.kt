@@ -61,6 +61,7 @@ import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
@@ -382,7 +383,8 @@ open class IngridModelTransformer(
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
 
-    open fun getGeometryContexts(): List<GeometryContext> = emptyList()
+    fun getGeometryContexts(): List<GeometryContext> = doc.data.get("geometryContext")
+        ?.map { convertToGeometryContext(it) } ?: emptyList()
 
     open val spatialSystems = data.spatial.spatialSystems?.map { mapToCharacterStringModel("100", it) } ?: emptyList()
 
@@ -1229,6 +1231,33 @@ open class IngridModelTransformer(
     open val extraContent: String = ""
 
     open fun transformUrl(url: String?): String? = url
+
+    private fun convertToGeometryContext(item: JsonNode): GeometryContext {
+        val featureType = mapGeometryContextFeatureType(item.getStringOrEmpty("featureType.key"))
+        return GeometryContext(
+            item.getStringOrEmpty("geometryType"),
+            item.getStringOrEmpty("name"),
+            featureType,
+            if (featureType == "OtherFeature") "OtherFeatureAttribute" else "RegularFeatureAttribute",
+            if (featureType == "OtherFeature") "attributeContent" else "attributeCode",
+            item.getStringOrEmpty("dataType"),
+            item.getStringOrEmpty("description"),
+            item.get("attributes")?.asIterable()?.map {
+                GeometryContextAttribute(it.getStringOrEmpty("key"), it.getStringOrEmpty("value"))
+            } ?: emptyList(),
+            item.getDouble("min"),
+            item.getDouble("max"),
+            item.getString("unit"),
+        )
+    }
+
+    private fun mapGeometryContextFeatureType(type: String): String = when (type) {
+        "nominal" -> "NominalFeature"
+        "ordinal" -> "OrdinalFeature"
+        "scalar" -> "ScalarFeature"
+        "other" -> "OtherFeature"
+        else -> "OtherFeature"
+    }
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)

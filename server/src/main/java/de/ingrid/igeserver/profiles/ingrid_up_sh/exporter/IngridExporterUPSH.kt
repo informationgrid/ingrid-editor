@@ -21,27 +21,22 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import kotlin.reflect.KClass
 
 @Service
 class IngridExporterUPSH(
     idfExporter: IngridIdfExporterUPSH,
-    luceneExporter: IngridLuceneExporterUPSH,
+    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
 ) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
@@ -68,59 +63,4 @@ class IngridIdfExporterUPSH(
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override val typeInfo = super.typeInfo.copy(type = "ingridIDFUPSH")
-
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getUPSHTransformer(docType) ?: super.getModelTransformerClass(docType)
-}
-
-@Service
-class IngridLuceneExporterUPSH(
-    codelistHandler: CodelistHandler,
-    uploadConfig: UploadConfig,
-    catalogService: CatalogService,
-    @Lazy documentService: DocumentService,
-) : IngridLuceneExporter(
-    codelistHandler,
-    uploadConfig,
-    catalogService,
-    documentService,
-) {
-
-    override fun getTransformer(data: TransformerData): Any = when (data.type) {
-        IngridDocType.DOCUMENT -> {
-            getUPSHTransformer(data.doc.type)
-                ?.constructors
-                ?.first()
-                ?.call(
-                    TransformerConfig(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        uploadConfig,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService,
-                        data.tags,
-                    ),
-                ) ?: super.getTransformer(data)
-        }
-
-        else -> super.getTransformer(data)
-    }
-}
-
-@Service
-class IngridISOExporterUPSH(
-    idfExporter: IngridIdfExporterUPSH,
-) : IngridISOExporter(idfExporter) {
-
-    override val typeInfo = ExportTypeInfo(
-        DocumentCategory.DATA,
-        "ingridISOUPSH",
-        "ISO 19139 UPSH",
-        "Export von UPSH Dokumenten in ISO für die Vorschau im Editor.",
-        "text/xml",
-        "xml",
-        listOf("ingrid-up-sh"),
-    )
 }
