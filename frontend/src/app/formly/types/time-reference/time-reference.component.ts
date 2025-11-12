@@ -168,6 +168,17 @@ export class TimeReferenceComponent
     this.filterCtrl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.filteredOptions.set(this.search(value)));
+
+    this.formControl.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.formControl.disabled) {
+          this.temporalForm.disable({ emitEvent: false });
+        } else {
+          this.temporalForm.enable({ emitEvent: false });
+          this.handleDisabledStates(this.temporalForm.value);
+        }
+      });
   }
 
   private mapForForm(value: any) {
