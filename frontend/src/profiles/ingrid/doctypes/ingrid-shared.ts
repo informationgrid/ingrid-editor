@@ -1072,48 +1072,74 @@ export abstract class IngridShared extends BaseDoctype {
             this.addGroupSimple(
               "temporal",
               [
-                this.addGroupSimple("event", [
-                  this.addDatepicker("created", "Erstellung", {
-                    hintStart:
-                      "Wann wurde der Datensatz ursprünglich erstellt?",
-                    className: "width-date-medium",
-                  }),
-                  this.addDatepicker(
-                    "firstPublished",
-                    "Erstmalige Veröffentlichung",
-                    {
+                this.addSubSection(
+                  "event",
+                  "",
+                  [
+                    this.addDatepicker("created", "Erstellung", {
                       hintStart:
-                        "Wann wurde der Datensatz erstmalig veröffentlicht?",
-                    },
-                  ),
-                  this.addDatepicker("lastModified", "Letzte Änderung", {
-                    hintStart: "Wann wurde der Datensatz zuletzt geändert?",
-                    validators: {
-                      ...(this.showInVeKoSField && {
-                        invekos: {
-                          expression: (
-                            ctrl: FormControl,
-                            field: FormlyFieldConfig,
-                          ) => {
-                            const invekosValue =
-                              field.options.formState.mainModel?.properties
-                                ?.invekos?.key;
-                            if (
-                              invekosValue !== "gsaa" &&
-                              invekosValue !== "lpis"
-                            )
-                              return true;
+                        "Wann wurde der Datensatz ursprünglich erstellt?",
+                      className: "width-date-medium",
+                    }),
+                    this.addDatepicker(
+                      "firstPublished",
+                      "Erstmalige Veröffentlichung",
+                      {
+                        hintStart:
+                          "Wann wurde der Datensatz erstmalig veröffentlicht?",
+                      },
+                    ),
+                    this.addDatepicker("lastModified", "Letzte Änderung", {
+                      hintStart: "Wann wurde der Datensatz zuletzt geändert?",
+                      className: "ige-date-picker space-bottom-field-flex",
+                      validators: {
+                        ...(this.showInVeKoSField && {
+                          invekos: {
+                            expression: (
+                              ctrl: FormControl,
+                              field: FormlyFieldConfig,
+                            ) => {
+                              const invekosValue =
+                                field.options.formState.mainModel?.properties
+                                  ?.invekos?.key;
+                              if (
+                                invekosValue !== "gsaa" &&
+                                invekosValue !== "lpis"
+                              )
+                                return true;
 
-                            // Mindestens ein Datum vom Typ "revision" muss vorhanden
-                            return ctrl.value !== null;
+                              // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                              return ctrl.value !== null;
+                            },
+                            message:
+                              "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
                           },
-                          message:
-                            "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                        }),
+                      },
+                    }),
+                  ],
+                  {
+                    props: { hasValidation: true, hideDivider: true },
+                    className: "eventGroup required",
+                    validators: {
+                      oneDateRequired: {
+                        expression: (
+                          ctrl: FormControl,
+                          field: FormlyFieldConfig,
+                        ) => {
+                          const event = ctrl.value;
+                          return (
+                            event?.created !== null ||
+                            event?.firstPublished !== null ||
+                            event?.lastModified !== null
+                          );
                         },
-                      }),
+                        message:
+                          "Es muss entweder ein Datum der Erstellung, der erstmaligen Veröffentlichung oder der letzten Änderung angegeben werden",
+                      },
                     },
-                  }),
-                ]),
+                  },
+                ),
                 this.options.hide.temporalStatus
                   ? null
                   : this.addSelect("status", "Status", {
@@ -1229,7 +1255,9 @@ export abstract class IngridShared extends BaseDoctype {
             key: "data",
             type: "time-reference",
             wrappers: [],
-            props: {},
+            props: {
+              required: this.options.required.resourceDateType,
+            },
           },
         ]),
       ].filter(Boolean),

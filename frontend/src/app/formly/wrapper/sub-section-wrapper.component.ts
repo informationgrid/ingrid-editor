@@ -18,20 +18,28 @@
  * limitations under the Licence.
  */
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
-import { FieldWrapper } from "@ngx-formly/core";
+import { FieldWrapper, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDivider } from "@angular/material/divider";
+import { FormErrorComponent } from "../../+form/form-shared/ige-form-error/form-error.component";
 
 @Component({
   selector: "ige-sub-section-wrapper",
   template: `
-    <mat-divider aria-hidden="true"></mat-divider>
+    @if (!props.hideDivider) {
+      <mat-divider aria-hidden="true"></mat-divider>
+    }
     @if (props.label) {
       <h4 role="heading">{{ props.label }}</h4>
+    }
+    @if (showError && props.hasValidation && field.form.invalid) {
+      <ige-form-error>
+        <formly-validation-message [field]="field"></formly-validation-message>
+      </ige-form-error>
     }
     <ng-container #fieldComponent></ng-container>
   `,
   styleUrls: ["./sub-section-wrapper.component.scss"],
-  imports: [MatDivider],
+  imports: [MatDivider, FormErrorComponent, FormlyValidationMessage],
 })
 export class SubSectionWrapper extends FieldWrapper {
   @ViewChild("fieldComponent", { read: ViewContainerRef, static: true })
