@@ -40,7 +40,7 @@ import {
 import { provideFormlyCore } from "@ngx-formly/core";
 import { withFormlyMaterial } from "@ngx-formly/material";
 import { provideZonelessChangeDetection } from "@angular/core";
-import { waitSomeTime } from "../../ingrid/utils/time";
+import { waitSomeTime } from "../../utils/time";
 
 describe("GeometryContextDialogComponent", () => {
   let spectator: Spectator<GeometryContextDialogComponent>;
