@@ -63,14 +63,34 @@ class Migrate150 {
             // migrate events -> event
             val eventNode = jacksonObjectMapper().createObjectNode()
             val events = temporal.get("events") as? ArrayNode
+            var createdDate: String? = null
+            var firstPublished: String? = null
+            var lastModified: String? = null
             events?.forEach { e ->
                 val date = e.get("referenceDate")
                 val typeKey = e.get("referenceDateType")?.get("key")?.asText()
                 if (date != null && typeKey != null) {
                     when (typeKey) {
-                        "1" -> eventNode.set<JsonNode>("created", date)
-                        "2" -> eventNode.set<JsonNode>("firstPublished", date)
-                        "3" -> eventNode.set<JsonNode>("lastModified", date)
+                        "1" -> {
+                            if (createdDate == null || (date.asText() < createdDate)) {
+                                createdDate = date.asText()
+                                eventNode.set<JsonNode>("created", date)
+                            }
+                        }
+
+                        "2" -> {
+                            if (firstPublished == null || (date.asText() < firstPublished)) {
+                                firstPublished = date.asText()
+                                eventNode.set<JsonNode>("firstPublished", date)
+                            }
+                        }
+
+                        "3" -> {
+                            if (lastModified == null || (date.asText() > lastModified)) {
+                                lastModified = date.asText()
+                                eventNode.set<JsonNode>("lastModified", date)
+                            }
+                        }
                     }
                 }
             }
