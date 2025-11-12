@@ -765,9 +765,15 @@ open class IngridModelTransformer(
         }
     }
 
+    val ogcLandingPage: String by lazy {
+        val operationWithLandingPage = data.service.operations?.firstOrNull({ it.name?.value == "LandingPage" })
+        operationWithLandingPage?.methodCall ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
+    }
+
     val ogcServiceVersion: List<ServiceVersion> by lazy {
         val versions = data.service.version ?: emptyList()
         versions.filter({ it.value == "OGC API-Feature" }).map {
+
             ServiceVersion(
                 key = it.key,
                 value = it.value,

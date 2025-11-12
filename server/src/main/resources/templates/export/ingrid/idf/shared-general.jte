@@ -987,7 +987,7 @@ ${contentInfo}
                         <gmd:onLine>
                             <gmd:CI_OnlineResource>
                                 <gmd:linkage>
-                                    <gmd:URL>https://ogc-api.geobasis-bb.de/basemap-bebb</gmd:URL>
+                                    <gmd:URL>${page.getOgcLandingPage()}</gmd:URL>
                                 </gmd:linkage>
                                 <gmd:protocol>
                                     <gmx:Anchor xlink:href="http://www.opengis.net/def/docs/17-069r3">OGC API-Features</gmx:Anchor>
