@@ -29,6 +29,7 @@ import {
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { dataOrigin } from "./geo-dataset.dataOrigin";
+import { GeometryContextDialogComponent } from "../dialogs/geometry-context/geometry-context-dialog.component";
 
 @Injectable({
   providedIn: "root",
@@ -57,6 +58,9 @@ export class GeoDatasetDoctype extends IngridShared {
     },
     validators: {
       identifier: null,
+    },
+    hide: {
+      geometryContext: true,
     },
   };
 
@@ -229,6 +233,49 @@ export class GeoDatasetDoctype extends IngridShared {
                 ),
             },
           }),
+          this.geodatasetOptions.hide.geometryContext
+            ? null
+            : this.addTable("geometryContext", "Geometry-Kontext", {
+                supportUpload: false,
+                dialog: GeometryContextDialogComponent,
+                columns: [
+                  {
+                    key: "geometryType",
+                    label: "Geometrie-Typ",
+                    props: { required: true },
+                  },
+                  {
+                    key: "name",
+                    label: "Name",
+                    props: { required: true },
+                  },
+                  {
+                    key: "featureType",
+                    label: "Feature-Typ",
+                    props: {
+                      required: true,
+                      formatter: (item: any) =>
+                        GeometryContextDialogComponent.featureTypeOptions.find(
+                          (option) => option.value === item.key,
+                        )?.label ?? item.key,
+                    },
+                  },
+                  {
+                    key: "dataType",
+                    label: "Daten-Typ/-Klasse",
+                    props: { required: true },
+                  },
+                  {
+                    key: "description",
+                    label: "Beschreibung",
+                    props: { required: true },
+                  },
+                  {
+                    key: "min",
+                    hidden: true,
+                  },
+                ],
+              }),
           this.addGroup(
             "gridSpatialRepresentation",
             "Raster-/Gridformat",

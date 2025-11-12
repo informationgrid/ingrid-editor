@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormFieldHelper } from "../../form-field-helper";
+import { FormFieldHelper } from "../../../form-field-helper";
 import { GeometryContextDialogComponent } from "./geometry-context-dialog.component";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
