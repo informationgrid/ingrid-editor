@@ -45,6 +45,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Operation
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceVersion
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
@@ -764,6 +765,17 @@ open class IngridModelTransformer(
         }
     }
 
+    val ogcServiceVersion: List<ServiceVersion> by lazy {
+        val versions = data.service.version ?: emptyList()
+        versions.filter({ it.value == "OGC API-Feature" }).map {
+            ServiceVersion(
+                key = it.key,
+                value = it.value,
+                codelistId = it._codelistId,
+            )
+        }
+    }
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass =
             getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL"))
@@ -1192,6 +1204,7 @@ open class IngridModelTransformer(
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
+        ogcServiceVersion.isNotEmpty() ||
         // TODO Refactor after usage clarification #6322
         // || serviceUrls.isNotEmpty()
         // || getCoupledServiceUrls().isNotEmpty()
