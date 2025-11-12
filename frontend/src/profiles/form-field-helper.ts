@@ -542,6 +542,7 @@ export class FormFieldHelper {
         showBorder: options?.showBorder,
         addButtonTitle: options?.addButtonTitle,
         noDrag: options?.noDrag,
+        attributes: { "data-cy": `repeat-${id}` },
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -618,8 +619,7 @@ export class FormFieldHelper {
         animation: options?.animation,
         placeholder: options?.placeholder,
         hideInPreview: options?.hideInPreview ?? false,
-        // [attributes] must be defined first for assigning values, e.g. aria-labelledby below.
-        attributes: {},
+        attributes: { "data-cy": `input-${id}` },
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
