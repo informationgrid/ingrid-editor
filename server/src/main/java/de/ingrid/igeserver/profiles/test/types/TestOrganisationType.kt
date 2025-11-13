@@ -32,7 +32,7 @@ class TestOrganisationType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplat
 
     override val category = DocumentCategory.ADDRESS.value
 
-    override val referenceFieldInDocuments = "addresses"
+    override val referenceFieldsInDocuments = listOf("addresses")
 
     val log = logger()
 }

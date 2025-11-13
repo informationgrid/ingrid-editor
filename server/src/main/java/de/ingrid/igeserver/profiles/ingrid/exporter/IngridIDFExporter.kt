@@ -50,6 +50,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.w3c.dom.Node
 import java.time.OffsetDateTime
 import kotlin.reflect.KClass
@@ -92,6 +93,7 @@ class IngridIDFExporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
+    @Transactional
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
@@ -120,7 +122,7 @@ class IngridIDFExporter(
         return idf
     }
 
-    private fun getTemplateForDoctype(type: String): String = when (type) {
+    fun getTemplateForDoctype(type: String): String = when (type) {
         "InGridSpecialisedTask" -> "export/ingrid/idf/idf-specialisedTask.jte"
         "InGridGeoDataset" -> "export/ingrid/idf/idf-geodataset.jte"
         "InGridPublication" -> "export/ingrid/idf/idf-publication.jte"
@@ -136,15 +138,13 @@ class IngridIDFExporter(
     }
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
-        val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
-
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress) {
+        return if (isAddress(json)) {
             transformerClass.constructors.first().call(
                 AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, exportOptions.tags),
             )
@@ -164,6 +164,8 @@ class IngridIDFExporter(
             )
         }
     }
+
+    fun isAddress(json: Document): Boolean = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
 
     fun getIngridModel(doc: Document, catalogId: String): IngridModel = mapper.convertValue(doc, IngridModel::class.java)
 

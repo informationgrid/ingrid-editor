@@ -30,7 +30,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@jsverse/transloco";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
@@ -43,7 +43,7 @@ export class CreateFolderPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   eventCreateFolderId = "CREATE_FOLDER";
@@ -68,12 +68,13 @@ export class CreateFolderPlugin extends Plugin {
 
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnFolder",
       tooltip: "Ordner erstellen",
       matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
       pos: 10,
-      active: signal(true),
+      active: true,
     });
 
     // add event handler for revert

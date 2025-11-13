@@ -29,8 +29,6 @@ export class PersonDoctype extends AddressShared {
 
   options: Partial<AddressOptions> = {};
 
-  private fieldWithAddressReferences: string;
-
   documentFields() {
     return <FormlyFieldConfig[]>[
       this.addSection(
@@ -117,13 +115,12 @@ export class PersonDoctype extends AddressShared {
             : []),
         ].filter(Boolean),
       ),
-      this.addReferencesForAddress(this.fieldWithAddressReferences),
+      this.addIncomingReferences(),
     ];
   }
 
-  constructor(fieldWithAddressReferences: string) {
+  constructor() {
     super();
-    this.fieldWithAddressReferences = fieldWithAddressReferences;
     this.addressType = "person";
   }
 }

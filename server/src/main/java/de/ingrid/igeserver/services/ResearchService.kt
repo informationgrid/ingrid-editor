@@ -205,11 +205,13 @@ class ResearchService(
             clauses.clauses.map { checkForPublishedSearch(it) }
         } else {
             clauses.value
-                ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
+                ?.map { value -> checkForPublishedSearch(value) } ?: listOf()
         }
 
         return filterString.any { it }
     }
+
+    private fun checkForPublishedSearch(sql: String?) = sql?.replace(" ", "")?.contains(".state='PUBLISHED'") ?: false
 
     private fun checkForArchivedSearch(clauses: BoolFilter?): Boolean {
         if (clauses == null) {
@@ -328,7 +330,10 @@ class ResearchService(
         var finalQuery = ""
         try {
             assertValidQuery(sqlQuery)
-            val catalogQuery = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
+            var catalogQuery = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
+            // if we don't look explicitly for published state then look by default for latest version
+            if (!checkForPublishedSearch(catalogQuery)) catalogQuery += " AND is_latest = true"
+
             finalQuery = addAdditionalSelectsToQuery(catalogQuery)
 
             val termAsParameters = emptyList<String>()
@@ -381,7 +386,6 @@ class ResearchService(
 
     private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
         val notDeletedFilter = "deleted = 0"
-        val isLatestFilter = "is_latest = true"
 
         val selectIndex = getSelectIndex(sqlQuery)
         var finalQuery = ""
@@ -399,7 +403,6 @@ class ResearchService(
             WHERE sql_query.catalog_id = catalog.id AND sql_query.wrapper_catalog_id = catalog.id
                 AND catalog.identifier = '$catalogId' 
                 AND $notDeletedFilter 
-                AND $isLatestFilter
         """.trimIndent()
     }
 }

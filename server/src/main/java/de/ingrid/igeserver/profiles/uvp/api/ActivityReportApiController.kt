@@ -74,7 +74,8 @@ class ActivityReportApiController(
             message->>'actor' as actor,
             message->>'action' as action
         FROM audit_log LEFT JOIN document ON message#>'{data,pointOfContact}'->0->>'ref' = document.uuid
-        WHERE message @> '{"cat": "data-history","catalogIdentifier": "$catalogIdentifier"}'
+        WHERE message->>'catalogIdentifier' = '$catalogIdentifier'
+          AND message->>'cat' IN ('data-history', 'tags')
           AND message#>>'{data,_type}' NOT IN ('UvpOrganisationDoc', 'UvpAddressDoc', 'FOLDER')
           AND (document.catalog_id=$catalogId OR document.catalog_id IS NULL)
           ${activityQueryOptions.from?.let { "AND timestamp >= '$it'" } ?: ""}

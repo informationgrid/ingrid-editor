@@ -23,9 +23,10 @@ import {
 } from "./form-message.component";
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { MatIconModule } from "@angular/material/icon";
-import { fakeAsync, tick } from "@angular/core/testing";
+import { tick } from "@angular/core/testing";
 import { FormMessageService } from "../../../services/form-message.service";
 import { MatButtonModule } from "@angular/material/button";
+import { waitSomeTime } from "../../../../profiles/ingrid/utils/time";
 
 describe("FormMessageComponent", () => {
   const INFO_MESSAGE: FormMessageType = {
@@ -53,17 +54,17 @@ describe("FormMessageComponent", () => {
     expect(spectator.component).toBeTruthy();
   });
 
-  it("should be hidden if no message was received", () => {
-    spectator.detectChanges();
+  it("should be hidden if no message was received", async () => {
+    await spectator.fixture.whenStable();
     const wrapper = spectator.query(".wrapper");
     expect(wrapper).not.toExist();
   });
 
-  it("should show info message", () => {
+  it("should show info message", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(INFO_MESSAGE);
 
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     const wrapper = spectator.query(".wrapper");
     expect(wrapper).toExist();
@@ -71,23 +72,19 @@ describe("FormMessageComponent", () => {
     expect(wrapper).toHaveClass("info");
   });
 
-  it("should hide an info message after 3s", fakeAsync(() => {
+  it("should hide an info message after 3s", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(INFO_MESSAGE);
-
-    spectator.detectChanges();
-    tick(3000);
-    spectator.detectChanges();
+    await waitSomeTime(3010);
 
     const wrapper = spectator.query(".wrapper");
     expect(wrapper).not.toExist();
-  }));
+  });
 
-  it("should show an error message", () => {
+  it("should show an error message", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(ERROR_MESSAGE);
-
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     const wrapper = spectator.query(".wrapper");
     expect(wrapper).toExist();
@@ -95,17 +92,15 @@ describe("FormMessageComponent", () => {
     expect(wrapper).toHaveClass("error");
   });
 
-  it("should not hide an error message after 3s", fakeAsync(() => {
+  it("should not hide an error message after 3s", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(ERROR_MESSAGE);
-
-    spectator.detectChanges();
-    tick(3000);
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     const wrapper = spectator.query(".wrapper");
+    await waitSomeTime(3010);
     expect(wrapper).toExist();
-  }));
+  });
 
   xit("should jump to next and previous error", () => {});
 

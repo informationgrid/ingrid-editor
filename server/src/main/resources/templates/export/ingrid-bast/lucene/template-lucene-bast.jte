@@ -6,6 +6,5 @@
 
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
-    ,
     "distributor": "${page.getDistributorName()}"
 `)

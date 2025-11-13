@@ -166,23 +166,25 @@ export class HistoryPlugin extends Plugin {
 
   private addToolbarButtons() {
     const buttons: Array<ToolbarItem | Separator> = [
-      { id: "toolBtnNewSeparator", pos: 190, isSeparator: true },
+      { id: "toolBtnNewSeparator", pos: 190, type: "separator" },
       {
+        type: "button",
         id: "toolBtnPreviousInHistory",
         tooltip: "Springe zum letzten Dokument",
         matSvgVariable: "Vorheriger-Datensatz",
         eventId: this.eventIdPrevious,
         pos: 200,
-        active: signal(false),
+        active: false,
         hiddenMenu: [],
       },
       {
+        type: "button",
         id: "toolBtnNextInHistory",
         tooltip: "Springe zum nächsten Dokument",
         matSvgVariable: "Naechster-Datensatz",
         eventId: this.eventIdNext,
         pos: 210,
-        active: signal(false),
+        active: false,
         hiddenMenu: [],
       },
     ];

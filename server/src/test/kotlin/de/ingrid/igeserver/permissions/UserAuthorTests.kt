@@ -25,11 +25,15 @@ import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.services.DocumentService
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.web.servlet.MockMvc
@@ -39,9 +43,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.transaction.support.TransactionTemplate
 
 @Suppress("ktlint:standard:function-naming")
-class UserAuthorTests(val mockMvc: MockMvc) : IntegrationTest() {
+class UserAuthorTests(
+    val mockMvc: MockMvc,
+    val documentService: DocumentService,
+    val transactionTemplate: TransactionTemplate,
+) : IntegrationTest() {
 
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
 
@@ -224,5 +233,51 @@ class UserAuthorTests(val mockMvc: MockMvc) : IntegrationTest() {
                 .content(jacksonObjectMapper().writeValueAsString("test_catalog_2"))
                 .principal(mockPrincipal),
         ).andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `author without root write permission cannot delete from dataset on root`() {
+        mockMvc.perform(
+            delete("/api/datasets/2000")
+                .principal(mockPrincipal),
+        ).andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `author with root write permission can delete from dataset on root`() {
+        every { mockPrincipal.authorities } returns listOf(
+            SimpleGrantedAuthority("author"),
+            SimpleGrantedAuthority("SPECIAL_write_root"),
+        )
+        every { mockPrincipal.principal } returns "authorRootWrite"
+        mockMvc.perform(
+            delete("/api/datasets/2000")
+                .principal(mockPrincipal),
+        ).andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `author with root write permission can recover dataset on root`() {
+        every { mockPrincipal.authorities } returns listOf(
+            SimpleGrantedAuthority("author"),
+            SimpleGrantedAuthority("SPECIAL_write_root"),
+        )
+        every { mockPrincipal.principal } returns "authorRootWrite"
+        transactionTemplate.execute {
+            assertDoesNotThrow {
+                documentService.recoverDocument(2000)
+            }
+        }
+    }
+
+    @Test
+    fun `author without root write permission cannot recover dataset on root`() {
+        every { mockPrincipal.authorities } returns listOf(SimpleGrantedAuthority("author"))
+        every { mockPrincipal.principal } returns "authorRootWrite"
+        transactionTemplate.execute {
+            assertThrows<AuthorizationDeniedException> {
+                documentService.recoverDocument(2000)
+            }
+        }
     }
 }

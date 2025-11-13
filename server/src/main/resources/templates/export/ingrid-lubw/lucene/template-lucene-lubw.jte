@@ -7,7 +7,6 @@
 
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
-,
     @if(page.getEnvironmentDescription() != null)
         "environmentDescription": "${page.getEnvironmentDescription()}",
     @endif

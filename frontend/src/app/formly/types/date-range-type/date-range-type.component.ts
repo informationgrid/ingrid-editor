@@ -21,11 +21,16 @@ import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyFieldProps,
+  FormlyValidationMessage,
+} from "@ngx-formly/core";
 import { debounceTime } from "rxjs/operators";
 import {
   MatError,
   MatFormField,
+  MatFormFieldAppearance,
   MatLabel,
   MatSuffix,
 } from "@angular/material/form-field";
@@ -36,6 +41,17 @@ import {
   MatEndDate,
   MatStartDate,
 } from "@angular/material/datepicker";
+import {
+  MatTimepicker,
+  MatTimepickerInput,
+  MatTimepickerToggle,
+} from "@angular/material/timepicker";
+import { MatInput } from "@angular/material/input";
+
+interface DateRangeProps extends FormlyFieldProps {
+  showTimeInputs: boolean;
+  appearance: MatFormFieldAppearance;
+}
 
 @UntilDestroy()
 @Component({
@@ -54,10 +70,14 @@ import {
     MatDateRangePicker,
     MatError,
     FormlyValidationMessage,
+    MatTimepickerInput,
+    MatTimepickerToggle,
+    MatTimepicker,
+    MatInput,
   ],
 })
 export class DateRangeTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<DateRangeProps>>
   implements OnInit
 {
   rangeFormGroup = new FormGroup({
@@ -121,8 +141,10 @@ export class DateRangeTypeComponent
   }
 
   updateFormControl() {
-    this.formControl.setValue(this.rangeFormGroup.value);
-    this.formControl.markAsTouched();
-    this.formControl.markAsDirty();
+    setTimeout(() => {
+      this.formControl.setValue(this.rangeFormGroup.value);
+      this.formControl.markAsTouched();
+      this.formControl.markAsDirty();
+    });
   }
 }

@@ -1,4 +1,5 @@
 <ige-tree
+    [treeStore]="address() ? addressTreeStore : documentTreeStore"
     [showReloadButton]="true"
     [showWriteAccessToggle]="showWriteAccessToggle()"
     [update]="updateTree"

@@ -29,6 +29,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-bmi"));
     case "ingrid-bast":
       return from(import("./profile-ingrid-bast"));
+    case "ingrid-baw":
+      return from(import("./profile-ingrid-baw"));
     case "ingrid-hmdk":
       return from(import("./profile-ingrid-hmdk"));
     case "ingrid-kommunal-st":
@@ -51,5 +53,7 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-test"));
     case "ingrid-with-opendata":
       return from(import("./profile-ingrid-with-opendata"));
+    default:
+      throw new Error(`Profile ${profileId} not found`);
   }
 }

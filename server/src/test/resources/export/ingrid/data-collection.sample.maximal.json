@@ -117,23 +117,17 @@
       "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "2"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "since"
+      "event": {
+        "firstPublished": "2023-06-30T22:00:00.000Z"
       },
-      "resourceDate": "2023-06-30T22:00:00.000Z",
       "status": {
         "key": "5"
       },
-      "resourceDateTypeSince": {
-        "key": "unknown"
+      "data": {
+        "type": "range",
+        "resourceDate": "2023-06-30T22:00:00.000Z",
+        "intervalFrom": "date",
+        "intervalTo": "not-available"
       }
     },
     "maintenanceInformation": {

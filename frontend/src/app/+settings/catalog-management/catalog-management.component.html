@@ -17,7 +17,7 @@
                 </div>
             </div>
         }
-        @if (noAssignedCatalogs) {
+        @if (noAssignedCatalogs()) {
             <p>
                 Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem
                 Katalog angehören, können Sie zusätzliche Operationen ausführen.
@@ -49,7 +49,7 @@
                 </div>
             }
 
-            @if (showSpinner) {
+            @if (showSpinner()) {
                 <mat-spinner diameter="50"></mat-spinner>
             }
         </div>
@@ -60,7 +60,7 @@
             appearance="outlined"
             class="hover-elevate"
             [attr.data-cy]="cat.label"
-            [class.selected]="cat.id === currentCatalog"
+            [class.selected]="cat.id === currentCatalog()"
         >
             <mat-card-content>
                 <div class="header">

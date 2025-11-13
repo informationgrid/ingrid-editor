@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -80,7 +80,7 @@ export class MessagesManagementComponent implements OnInit {
   messages: MessageFormatBackend[] = [];
   dataSourceAllCatalog = new MatTableDataSource<MessageFormatBackend>([]);
   dataSourceCurrentCatalog = new MatTableDataSource<MessageFormatBackend>([]);
-  displayedColumns: string[] = ["text", "_expires", "_actions_"];
+  displayedColumns = signal<string[]>(["text", "_expires", "_actions_"]);
   constructor(
     private messageService: MessageService,
     private dialog: MatDialog,

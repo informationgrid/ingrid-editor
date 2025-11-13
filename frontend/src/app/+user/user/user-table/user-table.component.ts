@@ -24,7 +24,8 @@ import {
   input,
   OnInit,
   output,
-  ViewChild,
+  signal,
+  viewChild,
 } from "@angular/core";
 import {
   FrontendUser,
@@ -87,12 +88,12 @@ export class UserTableComponent
 
   onUserSelect = output<User>({});
 
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   PERMISSION_LEVEL = PermissionLevel;
 
-  displayedColumns: string[];
+  displayedColumns = signal<string[]>([]);
   dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
 
@@ -147,7 +148,7 @@ export class UserTableComponent
     effect(() => {
       this.dataSource.filter = this.query();
       // reset paginator if the filter has changed
-      this.paginator?.firstPage();
+      this.paginator()?.firstPage();
     });
   }
 
@@ -163,7 +164,7 @@ export class UserTableComponent
   }
 
   ngOnInit() {
-    this.displayedColumns = this.getColumnsByViewType();
+    this.displayedColumns.set(this.getColumnsByViewType());
   }
 
   private getColumnsByViewType(): string[] {
@@ -178,8 +179,8 @@ export class UserTableComponent
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 
   select(element) {

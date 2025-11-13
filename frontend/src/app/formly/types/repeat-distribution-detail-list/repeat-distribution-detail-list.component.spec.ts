@@ -25,6 +25,7 @@ import {
   FormlyForm,
   provideFormlyCore,
 } from "@ngx-formly/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("RepeatDistributionDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -32,6 +33,7 @@ describe("RepeatDistributionDetailListComponent", () => {
     component: FormlyForm,
     imports: [RepeatDistributionDetailListComponent],
     providers: [
+      provideZonelessChangeDetection(),
       provideFormlyCore({
         types: [
           {

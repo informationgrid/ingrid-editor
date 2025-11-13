@@ -101,50 +101,7 @@ class ImportService(
                 .flatMapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    if (fileContent is ArrayNode) {
-                        // if another array is inside it should be internal format with published and draft version
-                        if (fileContent[0] is ArrayNode) {
-                            val publishedVersion = fileContent[0][0]
-                            val draftVersion = fileContent[0][1]
-                            val result = mutableListOf(
-                                if (!publishedVersion.isNull) {
-                                    analyzeDoc(
-                                        catalogId,
-                                        publishedVersion,
-                                        forcePublish = true,
-                                        isLatest = false,
-                                    )
-                                } else {
-                                    null
-                                },
-                                if (!draftVersion.isNull) {
-                                    analyzeDoc(
-                                        catalogId,
-                                        draftVersion,
-                                        forcePublish = false,
-                                        isLatest = true,
-                                        isDraftAndPublished = !publishedVersion.isNull,
-                                    )
-                                } else {
-                                    null
-                                },
-                            )
-
-                            // handle remaining items as references
-                            if (fileContent.size() > 1) {
-                                fileContent.forEachIndexed { index1, fileContent1 ->
-                                    if (index1 != 0) {
-                                        result.add(analyzeDoc(catalogId, fileContent1, true, true))
-                                    }
-                                }
-                            }
-                            result
-                        } else {
-                            fileContent.map { analyzeDoc(catalogId, it) }
-                        }
-                    } else {
-                        listOf(analyzeDoc(catalogId, fileContent))
-                    }
+                    analyzeFileContent(fileContent, catalogId)
                 }
                 .filterNotNull()
                 .distinctBy { it.document.uuid }
@@ -153,6 +110,54 @@ class ImportService(
 
         val fileContent = file.readText(Charsets.UTF_8)
         return prepareImportAnalysis(profile, catalogId, type, fileContent)
+    }
+
+    private fun analyzeFileContent(
+        fileContent: JsonNode,
+        catalogId: String,
+    ): List<DocumentAnalysis?> = if (fileContent is ArrayNode) {
+        // if another array is inside it should be internal format with published and draft version
+        if (fileContent[0] is ArrayNode) {
+            val publishedVersion = fileContent[0][0]
+            val draftVersion = fileContent[0][1]
+            val result = mutableListOf(
+                if (!publishedVersion.isNull) {
+                    analyzeDoc(
+                        catalogId,
+                        publishedVersion,
+                        forcePublish = true,
+                        isLatest = false,
+                    )
+                } else {
+                    null
+                },
+                if (!draftVersion.isNull) {
+                    analyzeDoc(
+                        catalogId,
+                        draftVersion,
+                        forcePublish = false,
+                        isLatest = true,
+                        isDraftAndPublished = !publishedVersion.isNull,
+                    )
+                } else {
+                    null
+                },
+            )
+
+            // handle remaining items as references
+            if (fileContent.size() > 1) {
+                fileContent.forEachIndexed { index1, fileContent1 ->
+                    if (index1 != 0) {
+                        result.add(analyzeDoc(catalogId, fileContent1, true, true))
+                    }
+                }
+            }
+            result
+        } else {
+            fileContent.map { analyzeDoc(catalogId, it) }
+        }
+    } else {
+        listOf(analyzeDoc(catalogId, fileContent))
     }
 
     fun prepareImportAnalysis(

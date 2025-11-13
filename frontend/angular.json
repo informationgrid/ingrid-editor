@@ -16,7 +16,6 @@
             },
             "index": "src/index.html",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": ["src/polyfills.ts"],
             "allowedCommonJsDependencies": [
               "leaflet",
               "@flowjs/flow.js",
@@ -133,7 +132,6 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "src/tsconfig.spec.json",
 
             "stylePreprocessorOptions": {

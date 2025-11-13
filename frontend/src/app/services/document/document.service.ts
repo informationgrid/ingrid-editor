@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
 import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
@@ -32,7 +32,7 @@ import {
 import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import { DocumentAbstract } from "../../store/document/document.model";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { HttpClient } from "@angular/common/http";
@@ -66,14 +66,14 @@ export interface ReloadData {
   providedIn: "root",
 })
 export class DocumentService {
-  static archivePluginActive = false;
+  static archivePluginActive = signal<boolean>(false);
 
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   // TODO: check usefulness
-  documentOperationFinished$ = new Subject<any>();
+  documentOperationFinished$ = new Subject<boolean>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
 
@@ -91,7 +91,8 @@ export class DocumentService {
 
   static isDocumentArchived(docTags: string[]): boolean {
     return (
-      DocumentService.archivePluginActive && docTags.indexOf("archived") !== -1
+      DocumentService.archivePluginActive() &&
+      docTags.indexOf("archived") !== -1
     );
   }
 
@@ -158,24 +159,18 @@ export class DocumentService {
       .subscribe();
   }
 
-  getChildren(
-    parentId: number,
-    isAddress?: boolean,
-    ignoreRootReadPermission?: boolean,
-  ): Observable<DocumentAbstract[]> {
-    return this.dataService
-      .getChildren(parentId, isAddress, ignoreRootReadPermission)
-      .pipe(
-        map((docs) => {
-          docs.forEach((doc) => {
-            doc.icon = this.profileService.getDocumentIcon(doc._type);
-            if (!doc.title) doc.title = "-Kein Titel-";
-            doc.isRoot = parentId === null;
-          });
-          return docs as DocumentAbstract[];
-        }),
-        tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
-      );
+  findIncomingReferences(
+    uuid: string,
+    options?: string[],
+    page?: number,
+    pageSize?: number,
+  ): Observable<ResearchResponse> {
+    return this.dataService.findIncomingReferences(
+      uuid,
+      options,
+      page,
+      pageSize,
+    );
   }
 
   load(
@@ -184,9 +179,8 @@ export class DocumentService {
     updateStore = true,
     useUuid = false,
   ): Observable<DocumentWithMetadata> {
-    this.documentOperationFinished$.next(false);
+    if (updateStore) this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
-      // map((data) => this.mapDocumentWithMetadata(data)),
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);
@@ -195,7 +189,9 @@ export class DocumentService {
       tap((doc) =>
         this.docEvents.sendAfterLoadAndSet(doc.documentWithMetadata),
       ),
-      finalize(() => this.documentOperationFinished$.next(true)),
+      finalize(() => {
+        if (updateStore) this.documentOperationFinished$.next(true);
+      }),
     );
   }
 
@@ -211,13 +207,9 @@ export class DocumentService {
     address: boolean,
     keepOpenedDocument = false,
   ) {
-    setTimeout(
-      () =>
-        this.generalStore.setActiveTreeNodes(
-          doc ? [doc.id as number] : [],
-          address,
-        ),
-      0,
+    this.generalStore.setActiveTreeNodes(
+      doc ? [doc.id as number] : [],
+      address,
     );
     if (!keepOpenedDocument) {
       if (address) {
@@ -355,7 +347,7 @@ export class DocumentService {
       filter((response) => response !== null && response !== undefined),
       tap(() => {
         if (!publishDate)
-          this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
+          this.messageService.sendInfo("Der Datensatz wurde veröffentlicht.");
       }),
       tap((json) =>
         // @ts-ignore
@@ -707,19 +699,6 @@ export class DocumentService {
       .subscribe();
   }
 
-  private updateTreeStoreDocs(
-    isAddress: boolean,
-    parentId: number,
-    docs: DocumentAbstract[],
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
-    if (parentId === null) {
-      store.set(docs);
-    } else {
-      store.add(docs);
-    }
-  }
-
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
@@ -883,7 +862,7 @@ export class DocumentService {
           (id) => entityMap[id]._parent === parent,
         );
         if (!hasAnyChildren) {
-          return this.getChildren(parent, isAddress);
+          return store.fetchChildren(parent, false);
         }
       }
     }

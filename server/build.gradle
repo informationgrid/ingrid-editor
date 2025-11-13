@@ -192,7 +192,7 @@ dependencies {
     implementation "org.apache.jena:apache-jena-libs:5.5.0"
 
     // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
-    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
+    implementation("de.ingrid:dcat-parser:8.1.0")
 
     // Test
     testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
@@ -201,6 +201,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
     testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
+    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_client"
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -284,7 +285,7 @@ tasks.matching { it.name.startsWith("kapt") }.configureEach {
 tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
-    into '../.git/hooks'
+    into gitProperties.dotGitDirectory.dir('./hooks')
 }
 
 kotlin {
@@ -306,8 +307,23 @@ jte {
 }
 
 gitProperties {
-    // define that .git directory is on the same level as the root project
-    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
+    def dotGitFile = rootProject.layout.projectDirectory.file(".git").asFile
+    if (dotGitFile.isFile()) {
+        // .git directory needs to be read from .git file
+        def dotGitFileContent = dotGitFile.text
+        def gitDirLine = dotGitFileContent.readLines().find { it.startsWith("gitdir: ") }
+        if (gitDirLine != null) {
+            def gitDirPath = gitDirLine.substring('gitdir: '.length(), gitDirLine.lastIndexOf('/.git/'))
+            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath+ "/.git")
+        } else {
+            throw new GradleException("No .git directory found in project .git file.")
+        }
+    } else if (dotGitFile.isDirectory()) {
+        // .git directory is on the same level as the root project
+        dotGitDirectory = dotGitFile
+    } else {
+        throw new GradleException("No .git directory found in project root.")
+    }
 }
 
 tasks.named('generateJte') {

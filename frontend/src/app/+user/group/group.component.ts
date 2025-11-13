@@ -23,6 +23,7 @@ import {
   effect,
   inject,
   OnInit,
+  signal,
   Signal,
 } from "@angular/core";
 import { GroupService } from "../../services/role/group.service";
@@ -69,6 +70,7 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import { rxResource } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -106,6 +108,14 @@ export class GroupComponent implements OnInit {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
+  private fb = inject(UntypedFormBuilder);
+  private dialog = inject(MatDialog);
+  public groupService = inject(GroupService);
+  private configService = inject(ConfigService);
+  public userManagementService = inject(UserManagementService);
+  public userService = inject(UserService);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   activeGroup = this.generalStore.activeGroup;
   groups = this.groupStore.entities;
@@ -117,10 +127,9 @@ export class GroupComponent implements OnInit {
 
   form: UntypedFormGroup;
 
-  isLoading = false;
-  showMore = false;
+  isLoading = signal<boolean>(false);
+  showMore = signal<boolean>(false);
   tableWidth: Signal<number> = this.uiStore.userTableWidth;
-  groupUsers: User[];
   query = new FormControl<string>("");
   private previousGroupId: number;
 
@@ -128,22 +137,31 @@ export class GroupComponent implements OnInit {
     return this.groupStore.entityMap()[this.activeGroup()];
   });
 
-  constructor(
-    private fb: UntypedFormBuilder,
-    private dialog: MatDialog,
-    public groupService: GroupService,
-    private configService: ConfigService,
-    public userManagementService: UserManagementService,
-    public userService: UserService,
-    private router: Router,
-    private snackBar: MatSnackBar,
-  ) {
+  private groupUsers$ = rxResource({
+    params: () => ({ groupId: this.activeGroup() }),
+    stream: ({ params }) =>
+      params.groupId !== null && params.groupId !== undefined
+        ? this.groupService.getUsersOfGroup(params.groupId)
+        : of([]),
+  });
+  groupUsers = computed<User[]>(
+    () =>
+      this.groupUsers$
+        .value()
+        ?.sort((a, b) => a.login.localeCompare(b.login)) ?? [],
+  );
+
+  constructor() {
     effect(() => {
       const activeGroup = this.activeGroup();
       if (activeGroup !== null && this.previousGroupId !== activeGroup) {
         this.loadGroup(activeGroup);
-        this.loadGroupUsers(activeGroup);
       }
+    });
+    effect(() => {
+      const currentUserIsMember = this.selectedGroup()?.currentUserIsMember;
+      if (currentUserIsMember) this.form.get("permissions").disable();
+      else this.form.get("permissions").enable();
     });
   }
 
@@ -186,7 +204,7 @@ export class GroupComponent implements OnInit {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.previousGroupId = id;
-        this.isLoading = true;
+        this.isLoading.set(true);
         this.form.disable();
         this.groupService
           .getGroup(id)
@@ -205,7 +223,7 @@ export class GroupComponent implements OnInit {
     this.form.reset(group);
     this.form.markAsPristine();
     if (!group.currentUserIsMember) this.form.enable();
-    this.isLoading = false;
+    this.isLoading.set(false);
     // this.loadGroupUsers(group.id);
     this.groupService.setActive(group.id);
   }
@@ -213,7 +231,7 @@ export class GroupComponent implements OnInit {
   discardGroup(group: Group) {
     this.form.markAsPristine();
     this.form.enable();
-    this.isLoading = false;
+    this.isLoading.set(false);
     this.groupService.forceReload$.next();
     this.groupService.setActive(group.id);
   }
@@ -369,17 +387,6 @@ export class GroupComponent implements OnInit {
     } else {
       // do nothing
     }
-  }
-
-  private loadGroupUsers(id: number) {
-    this.groupService
-      .getUsersOfGroup(id)
-      .subscribe(
-        (users) =>
-          (this.groupUsers = users.sort((a, b) =>
-            a.login.localeCompare(b.login),
-          )),
-      );
   }
 
   switchToUser(user: User) {

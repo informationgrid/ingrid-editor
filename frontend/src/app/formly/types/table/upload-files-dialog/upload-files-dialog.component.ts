@@ -49,6 +49,7 @@ import { AuthenticationFactory } from "../../../../security/auth.factory";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { UploadComponent } from "../../../../shared/upload/upload.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { MatButton } from "@angular/material/button";
 
 export interface LinkInfo {
   file: string;
@@ -61,20 +62,27 @@ export interface LinkInfo {
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
-  imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle],
+  imports: [
+    DialogTemplateComponent,
+    UploadComponent,
+    MatSlideToggle,
+    MatButton,
+  ],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: WritableSignal<string> = signal("");
   docUuid = null;
-  uploadComplete = false;
-  allowedUploadTypes: string[];
+  uploadComplete = signal<boolean>(false);
+  allowedUploadTypes = signal<string[] | undefined>(undefined);
+  options = signal<any[]>([]);
+  optionsSelection = signal<any>({});
 
   // zip extraction
-  hasExtractZipOption: boolean;
-  extractZipFiles = false;
-  extractInProgress = false;
-  infoText;
+  hasExtractZipOption = signal<boolean>(false);
+  extractZipFiles = signal<boolean>(false);
+  extractInProgress = signal<boolean>(false);
+  infoText = signal<string | undefined>(undefined);
   autoSubmit: boolean;
   multiple: WritableSignal<boolean> = signal(true);
   dialogTitle = computed(() =>
@@ -84,6 +92,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   enableFileUploadReuse: WritableSignal<boolean> = signal(true);
   enableFileUploadRename: WritableSignal<boolean> = signal(true);
   refreshTimer$: number = null;
+  showOptions = signal<boolean>(false);
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -105,6 +114,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       multiple?: boolean;
       autoSubmit?: boolean;
       targetUrl?: string;
+      options?: any[];
     },
   ) {
     this.docUuid = formStateService.metadata()?.uuid;
@@ -113,14 +123,15 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
         `${configService.getConfiguration().backendUrl}upload/${this.docUuid}`,
     );
 
-    this.allowedUploadTypes = data.allowedUploadTypes;
-    this.hasExtractZipOption = data.hasExtractZipOption;
-    this.infoText = data.infoText;
+    this.allowedUploadTypes.set(data.allowedUploadTypes);
+    this.hasExtractZipOption.set(!!data.hasExtractZipOption);
+    this.infoText.set(data.infoText as string | undefined);
     this.autoSubmit = data.autoSubmit ?? false;
     this.multiple.set(data.multiple ?? true);
     this.enableFileUploadOverride.set(data.enableFileUploadOverride ?? true);
     this.enableFileUploadReuse.set(data.enableFileUploadReuse ?? true);
     this.enableFileUploadRename.set(data.enableFileUploadRename ?? true);
+    this.options.set(data.options ?? []);
   }
 
   ngOnInit(): void {
@@ -146,7 +157,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    if (this.extractZipFiles) {
+    if (this.extractZipFiles()) {
       this.extractAndCloseDialog();
     } else {
       this.dlgRef.close(this.getSuccessfulUploadedFiles());
@@ -164,7 +175,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   }
 
   private extractAndCloseDialog(option?: ExtractOption) {
-    this.extractInProgress = true;
+    this.extractInProgress.set(true);
     forkJoin(
       this.chosenFiles.map((file) => {
         return this.uploadService.extractUploadedFilesOnServer(
@@ -210,16 +221,8 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     return ([] as T[]).concat(...arr);
   }
 
-  private fileExistsInTable(fileId: string): boolean {
-    return (
-      this.data.currentItems.find(
-        (item) => item[this.data.uploadFieldKey].value === fileId,
-      ) !== undefined
-    );
-  }
-
   private handleExtractError(error: any): Observable<any> {
-    this.extractInProgress = false;
+    this.extractInProgress.set(false);
     if (error.status === 409) {
       return this.dialog
         .open(ConfirmDialogComponent, {
@@ -248,7 +251,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   }
 
   handleUploadComplete() {
-    this.uploadComplete = true;
+    this.uploadComplete.set(true);
     if (this.autoSubmit) {
       this.submit();
     }
@@ -257,8 +260,16 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   updateChosenFiles($event: TransfersWithErrorInfo[]) {
     // update completed uploads only for new uploads and ignore if upload only was updated or removed
     if (this.chosenFiles.length < $event.length || $event.length === 0) {
-      this.uploadComplete = false;
+      this.uploadComplete.set(false);
     }
     this.chosenFiles = $event;
+  }
+
+  toggleOption(optionId: string, checked: boolean) {
+    this.optionsSelection.update((o) => ({ ...o, [optionId]: checked }));
+  }
+
+  toggleShowOptions() {
+    this.showOptions.update((s) => !s);
   }
 }

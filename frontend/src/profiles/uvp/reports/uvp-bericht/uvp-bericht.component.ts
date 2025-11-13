@@ -17,10 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, signal, viewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
-import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatSort, MatSortModule } from "@angular/material/sort";
@@ -31,6 +31,7 @@ import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.compo
 import { FacetsComponent } from "../../../../app/+research/+facets/facets.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
+import { Facets } from "../../../../app/+research/research.service";
 
 @UntilDestroy()
 @Component({
@@ -49,14 +50,14 @@ import { MatButton } from "@angular/material/button";
   ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  report: UvpReport;
-  averageDuration: string;
+  readonly sort = viewChild(MatSort);
+  report = signal<UvpReport>(null);
+  private averageDuration: string;
 
-  startDate: string;
-  endDate: string;
+  private startDate: string;
+  private endDate: string;
 
-  facets = {
+  facets: Facets = {
     addresses: [],
     documents: [
       {
@@ -75,11 +76,11 @@ export class UvpBerichtComponent implements AfterViewInit {
       },
     ],
   };
-  facetForm = new UntypedFormControl();
+  facetForm = new FormControl();
   dataSource = new MatTableDataSource([]);
   dataSourceMiscellaneous = new MatTableDataSource([]);
-  displayedColumns = ["eiaNumber", "eiaCategory", "count"];
-  displayedColumnsMiscellaneous = ["type", "value"];
+  displayedColumns = signal<string[]>(["eiaNumber", "eiaCategory", "count"]);
+  displayedColumnsMiscellaneous = signal<string[]>(["type", "value"]);
 
   constructor(private uvpResearchService: UvpResearchService) {
     this.uvpResearchService.initialized$
@@ -96,7 +97,7 @@ export class UvpBerichtComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort();
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case "eiaNumber": {
@@ -144,7 +145,7 @@ export class UvpBerichtComponent implements AfterViewInit {
   }
 
   updateReport(report: UvpReport) {
-    this.report = report;
+    this.report.set(report);
     this.averageDuration = this.uvpResearchService.convertAverageDuration(
       report.averageProcedureDuration,
     );
@@ -174,7 +175,7 @@ export class UvpBerichtComponent implements AfterViewInit {
   downloadReport() {
     let fileText =
       "UVP Nummer; UVP-G Kategorie; Anzahl; Abgeschlossene Vorhaben; Positive Vorprüfungen; Negative Vorprüfungen; Durchschnittliche Verfahrensdauer\n";
-    fileText += `;;;${this.report.procedureCount};${this.report.positivePreliminaryAssessments};${this.report.negativePreliminaryAssessments};${this.averageDuration}\n`;
+    fileText += `;;;${this.report().procedureCount};${this.report().positivePreliminaryAssessments};${this.report().negativePreliminaryAssessments};${this.averageDuration}\n`;
     this.dataSource.data.forEach((row) => {
       fileText += `${row.eiaNumber};${row.eiaCategory};${row.count}\n`;
     });

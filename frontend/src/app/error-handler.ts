@@ -84,7 +84,9 @@ export class GlobalErrorHandler implements ErrorHandler {
       e.setMessage(message, detail);
       this.modalService.showIgeError(e);
     } else {
-      this.modalService.showJavascriptError(error.message, error.stack);
+      const igeError = new IgeError(error);
+      igeError.stacktrace = error.stack;
+      this.modalService.showIgeError(igeError);
     }
   }
 

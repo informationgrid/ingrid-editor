@@ -35,14 +35,10 @@
     "accessConstraints": []
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2021-12-08T23:00:00.000Z",
-        "referenceDateType": { "key": "3" }
-      }
-    ],
-    "status": null,
-    "resourceDateType": null
+    "event": {
+      "lastModified": "2021-12-08T23:00:00.000Z"
+    },
+    "status": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
   "qualities": [],

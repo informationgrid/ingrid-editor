@@ -1,0 +1,60 @@
+@use "src/variables" as vars;
+
+.padding-btn {
+  padding: 0 10px !important;
+}
+
+.steps {
+  position: relative;
+  margin: 1px;
+}
+
+.menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.mark {
+}
+
+.section-wrapper {
+  display: flex;
+  align-items: baseline;
+
+  h3 {
+    width: 272px;
+    color: vars.$ige-primary;
+    margin-top: 0;
+    font-weight: normal;
+    font-size: 24px;
+    cursor: default;
+  }
+}
+
+.add-button {
+  margin-bottom: 24px;
+}
+
+.elevated {
+  margin: -5px;
+  padding: 5px;
+
+  &.menu-button {
+    margin: 0;
+    padding: 0;
+    top: 5px;
+    right: 5px;
+  }
+}
+
+.mat-divider {
+  border: 0;
+  height: 4px !important;
+  background: linear-gradient(
+    90deg,
+    vars.$ige-background-bar,
+    vars.$ige-background
+  );
+  margin: 40px -24px 20px -36px;
+}

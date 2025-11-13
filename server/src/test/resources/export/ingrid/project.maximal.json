@@ -42,15 +42,14 @@
     "accessConstraints": [{ "key": "6" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2023-01-31T23:00:00.000Z",
-        "referenceDateType": { "key": "2" }
-      }
-    ],
+    "event": {
+      "firstPublished": "2023-01-31T23:00:00.000Z"
+    },
     "status": { "key": "2" },
-    "resourceDate": "2023-02-12T23:00:00.000Z",
-    "resourceDateType": { "key": "at" }
+    "data": {
+      "type": "at",
+      "resourceDate": "2023-02-12T23:00:00.000Z"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "61" }] },
   "orderInfo": "order",

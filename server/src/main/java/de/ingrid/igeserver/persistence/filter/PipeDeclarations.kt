@@ -27,6 +27,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.utils.ElasticDocument
 import org.springframework.stereotype.Component
+import java.util.*
 
 /**
  * Declarations of persistence related payloads
@@ -126,6 +127,7 @@ open class PrePublishPayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
+    val publishDate: Date? = null,
 ) : PrePersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**

@@ -61,7 +61,8 @@ class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
     }
 
     fun addAndSendMessageError(message: IndexMessage, ex: Exception?, errorPrefix: String = "") {
-        val errorMessage = ex?.message?.let { errorPrefix + it } ?: errorPrefix
+        val errorMessage = ex?.message?.let { errorPrefix + it }
+            ?: """$errorPrefix: ${ex?.toString()} with cause ${ex?.cause?.toString()}"""
         log.error(errorMessage, ex)
         sendMessage(message.apply { errors.add(errorMessage) })
     }

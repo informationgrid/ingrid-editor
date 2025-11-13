@@ -29,14 +29,10 @@
   "metadata": { "language": { "key": "103" } },
   "resource": { "useConstraints": [], "accessConstraints": [] },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2020-12-12T23:00:00.000Z",
-        "referenceDateType": { "key": "2" }
-      }
-    ],
-    "status": null,
-    "resourceDateType": null
+    "event": {
+      "firstPublished": "2020-12-12T23:00:00.000Z"
+    },
+    "status": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
   "references": [],

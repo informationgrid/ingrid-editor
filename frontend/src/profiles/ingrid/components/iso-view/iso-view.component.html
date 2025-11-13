@@ -5,12 +5,12 @@
 >
     <ng-container header>
         <div class="flex-1"></div>
-        @if (isoTextPublished) {
+        @if (isoTextPublished()) {
             <mat-button-toggle-group
                 name="compareView"
                 value="false"
                 aria-label="Ansicht"
-                (change)="this.compareView = !this.compareView"
+                (change)="this.compareView.set(!this.compareView())"
             >
                 <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
                 <mat-button-toggle value="true"
@@ -20,13 +20,13 @@
         }
     </ng-container>
     <div content id="print-content" class="preview-dialog">
-        @if (isLoading) {
+        @if (isLoading()) {
             <div class="flex-row justify-content-center">
                 <mat-spinner></mat-spinner>
             </div>
         }
-        <pre [hidden]="compareView">{{ isoText }}</pre>
-        <div [hidden]="!compareView" id="diffView"></div>
+        <pre [hidden]="compareView()">{{ isoText() }}</pre>
+        <div [hidden]="!compareView()" id="diffView"></div>
     </div>
 
     <ng-container actions>

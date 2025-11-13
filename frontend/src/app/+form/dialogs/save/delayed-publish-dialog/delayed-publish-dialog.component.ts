@@ -31,7 +31,6 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { ModalService } from "../../../../services/modal/modal.service";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import {
@@ -46,6 +45,7 @@ import {
   MatDatepickerToggle,
 } from "@angular/material/datepicker";
 import { FocusDirective } from "../../../../directives/focus.directive";
+import { IgeError } from "../../../../models/ige-error";
 
 @Component({
   selector: "delayed-publish-dialog",
@@ -75,10 +75,7 @@ export class DelayedPublishDialogComponent implements OnInit {
   });
   minDate: Date;
 
-  constructor(
-    private modalService: ModalService,
-    public dialogRef: MatDialogRef<DelayedPublishDialogComponent>,
-  ) {}
+  constructor(public dialogRef: MatDialogRef<DelayedPublishDialogComponent>) {}
 
   ngOnInit(): void {
     this.minDate = new Date();
@@ -88,10 +85,9 @@ export class DelayedPublishDialogComponent implements OnInit {
   setDateAndPublish() {
     const delayDate = this.form.get("date").value;
     if (delayDate < new Date()) {
-      this.modalService.showJavascriptError(
+      throw new IgeError(
         "Das Datum liegt in der Vergangenheit. Bitte wählen Sie ein anderes Datum.",
       );
-      return;
     }
     this.dialogRef.close(delayDate);
   }

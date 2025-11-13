@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetTreePathIDF
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetTreePathNames
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.utils.getString
@@ -40,4 +41,6 @@ class InformationSystemTransformerLfub(transformerConfig: TransformerConfig) :
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 
     override val treePathNames: List<String> = lfubGetTreePathNames(documentService, catalogIdentifier, doc)
+
+    override val extraContent: String by lazy { lfubGetTreePathIDF(this) }
 }

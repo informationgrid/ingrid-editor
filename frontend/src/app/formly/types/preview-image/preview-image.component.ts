@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatButtonModule } from "@angular/material/button";
@@ -74,7 +74,6 @@ import { FormStateService } from "../../../+form/form-state.service";
 export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private dialog = inject(MatDialog);
   private uploadService = inject(UploadService);
-  private cdr = inject(ChangeDetectorRef);
   private messageService = inject(FormMessageService);
   private translocoService = inject(TranslocoService);
   private formStateService = inject(FormStateService);
@@ -127,7 +126,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     },
   ];
 
-  imageLinks: any = [];
+  imageLinks = signal<any>({});
 
   ngOnInit(): void {
     this.formControl.valueChanges
@@ -143,7 +142,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         tap(() => {
           // we need to reset the imageLinks so when we open another document
           // we do not start to access the previous images
-          this.imageLinks = [];
+          this.imageLinks.set([]);
         }),
       )
       .subscribe((value) => this.createImageLinkUris(value));
@@ -167,9 +166,6 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
             "dib",
             "bmp",
           ],
-          // currentItems: this.dataSource.data,
-          // uploadFieldKey: this.getUploadFieldKey(),
-          // hasExtractZipOption: true,
         },
       })
       .afterClosed()
@@ -232,13 +228,13 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       const uri = item.fileName?.uri;
 
       if (item.fileName?.asLink) {
-        this.imageLinks[uri] = uri;
+        this.imageLinks()[uri] = uri;
+        this.imageLinks.set({ ...this.imageLinks() });
         return;
       }
 
       this.updateTemporaryImageUrl(uri);
     });
-    this.cdr.detectChanges();
   }
 
   private updateTemporaryImageUrl(uri: string) {
@@ -255,12 +251,13 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           return of(error);
         }),
       )
-      .subscribe(() => this.cdr.detectChanges());
+      .subscribe();
   }
 
   private addUploadUri(uri: string, hash: String) {
-    return (this.imageLinks[uri] =
-      `${ConfigService.backendApiUrl}upload/download/${hash}`);
+    this.imageLinks()[uri] =
+      `${ConfigService.backendApiUrl}upload/download/${hash}`;
+    this.imageLinks.set({ ...this.imageLinks() });
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
@@ -283,8 +280,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
    */
   prepareForDrag(filename: any, index: number) {
     if (filename.asLink) return;
-    this.imageLinks[filename.uri] = this.getBase64StringFromImage(index);
-    this.cdr.detectChanges();
+    this.imageLinks()[filename.uri] = this.getBase64StringFromImage(index);
+    this.imageLinks.set({ ...this.imageLinks() });
   }
 
   private getBase64StringFromImage(

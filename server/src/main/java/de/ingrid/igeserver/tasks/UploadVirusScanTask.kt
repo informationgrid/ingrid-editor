@@ -40,8 +40,8 @@ class UploadVirusScanTask(
     private val uploadSettings: UploadConfig,
 ) {
     val log = logger()
-    val emailReportSubject = "[IGE-NG] Virus Scan Report"
-    val emailErrorReportSubject = "[IGE-NG] Virus Scan ERROR"
+    val emailReportSubject = "[InGrid-Editor] Virus Scan Report"
+    val emailErrorReportSubject = "[InGrid-Editor] Virus Scan ERROR"
     val virusscanValidatorName = "virusscan"
 
     @Scheduled(cron = "\${upload.virusscan.schedule}")

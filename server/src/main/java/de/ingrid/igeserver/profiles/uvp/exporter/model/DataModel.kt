@@ -53,7 +53,8 @@ data class DataModel(
 
     fun convertEiaNumbers(catalogId: String) {
         uvpNumbers = eiaNumbers?.mapNotNull {
-            val uvpCodelistId = behaviourService?.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            val uvpCodelistId =
+                behaviourService?.getData(catalogId, "plugin.uvp.eia-number")?.get("uvpCodelist")?.toString() ?: "9000"
             val entry = codelistHandler?.getCodelistEntry(uvpCodelistId, it.key!!)
             if (entry != null) {
                 val codeValue = entry.fields["de"] ?: "???"

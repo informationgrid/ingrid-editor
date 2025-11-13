@@ -441,8 +441,15 @@ data class UnitDefinition(
 )
 
 data class Record(
-    @JacksonXmlProperty(localName = "Record") val value: String?,
+    @JacksonXmlProperty(localName = "Record") val value: RecordWithType?,
 )
+
+data class RecordWithType(
+    @JacksonXmlProperty(isAttribute = true, namespace = "xsi") var type: String? = null,
+) {
+    @JacksonXmlText val value: String? = null
+}
+
 data class RecordAsCharacterString(
     @JacksonXmlProperty(localName = "Record") val value: CharacterString?,
 )

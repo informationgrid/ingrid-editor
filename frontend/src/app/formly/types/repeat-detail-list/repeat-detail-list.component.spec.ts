@@ -26,6 +26,7 @@ import {
   provideFormlyCore,
 } from "@ngx-formly/core";
 import { getTranslocoModule } from "../../../transloco-testing.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("RepeatDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -33,6 +34,7 @@ describe("RepeatDetailListComponent", () => {
     component: FormlyForm,
     imports: [RepeatDetailListComponent, getTranslocoModule()],
     providers: [
+      provideZonelessChangeDetection(),
       provideFormlyCore({
         types: [
           {

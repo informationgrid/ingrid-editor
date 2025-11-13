@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  signal,
+} from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -79,10 +86,10 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   readonly result = output<SpatialBoundingBox>();
   readonly updateTitle = output<string>();
 
-  nominatimResult: NominatimResult[] = [];
+  nominatimResult = signal<NominatimResult[]>([]);
   searchInput = new UntypedFormControl();
-  showNoResult = false;
-  showWelcome = true;
+  showNoResult = signal<boolean>(false);
+  showWelcome = signal<boolean>(true);
 
   drawnBBox: Rectangle;
   spatialSelection: NominatimResult = null;
@@ -122,11 +129,11 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   searchLocation(query: string) {
     if (query.trim().length === 0) {
-      this.showWelcome = true;
-      this.nominatimResult = [];
+      this.showWelcome.set(true);
+      this.nominatimResult.set([]);
       return;
     }
-    this.showWelcome = false;
+    this.showWelcome.set(false);
 
     this.searchSubscribe = this.nominatimService
       .search(query)
@@ -134,9 +141,9 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
         response = response
           .filter((item) => item.type !== "city")
           .map((item) => FreeSpatialComponent.addTypeToDisplayName(item));
-        this.nominatimResult = response;
+        this.nominatimResult.set(response);
         console.debug("Nominatim:", response);
-        this.showNoResult = response.length === 0;
+        this.showNoResult.set(response.length === 0);
         // @ts-ignore
         setTimeout(() => (<Map>this.map())._onResize());
       });

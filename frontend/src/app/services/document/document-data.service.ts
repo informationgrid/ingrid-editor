@@ -20,13 +20,14 @@
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";
 import { map } from "rxjs/operators";
 import { SaveOptions } from "./document.service";
 import { DocumentAbstract } from "../../store/document/document.model";
+import { ResearchResponse } from "../../+research/research.service";
 
 @Injectable({
   providedIn: "root",
@@ -266,5 +267,21 @@ export class DocumentDataService {
       params += "ignoreRootReadPermission=true";
     }
     return params;
+  }
+
+  findIncomingReferences(
+    uuid: string,
+    options: string[],
+    page: number,
+    pageSize: number,
+  ): Observable<ResearchResponse> {
+    let paging = "";
+    if (page && pageSize) {
+      paging = `?page=${page}&pageSize=${pageSize}`;
+    }
+    return this.http.post<ResearchResponse>(
+      `${this.configuration.backendUrl}datasets/${uuid}/accessibleReferences${paging}`,
+      options,
+    );
   }
 }

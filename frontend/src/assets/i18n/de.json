@@ -81,13 +81,15 @@
   "roles": {
     "cat-admin": "Katalog-Administrator",
     "md-admin": "Metadaten-Administrator",
-    "author": "Autor"
+    "author": "Autor",
+    "ige-super-admin": "Super-Administrator"
   },
   "export": {
     "form": "Daten",
     "formSingular": "Datensatz"
   },
   "publish": {
+    "buttonLabel": "Veröffentlichen",
     "formWithPronoun": "Dieser Datensatz",
     "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },
@@ -108,6 +110,15 @@
     "intranet": "Intranet",
     "amtsintern": "amtsintern",
     "archived": "archiviert"
+  },
+  "dataset-events": {
+    "create": "Erstellt",
+    "update": "Aktualisiert",
+    "publish": "Veröffentlicht",
+    "unpublish": "Veröffentlichung zurückgezogen",
+    "delete": "Gelöscht",
+    "archive": "Archiviert",
+    "unarchive": "Aus dem Archiv wiederhergestellt"
   },
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",
@@ -169,7 +180,8 @@
     "types": {
       "free": "Freie Eingabe",
       "wkt": "Raumbezug (WKT)",
-      "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)"
+      "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)",
+      "bwastr": "Bundeswasserstraßenstrecke"
     }
   },
   "upload": {

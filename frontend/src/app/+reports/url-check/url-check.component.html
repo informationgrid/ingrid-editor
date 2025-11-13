@@ -18,11 +18,11 @@
     <div main-header>
         <ige-job-handler-header
             [message]="liveLog | async"
-            [isRunning]="isRunning"
-            (showMore)="showMore = $event"
+            [isRunning]="isRunning()"
+            (showMore)="showMore.set($event)"
         >
             <div class="report-btn">
-                @if (!isRunning) {
+                @if (!isRunning()) {
                     <button mat-flat-button color="primary" (click)="start()">
                         Prüfung starten
                     </button>
@@ -35,7 +35,7 @@
         </ige-job-handler-header>
     </div>
 
-    <div status class="status" [class.hide]="!showMore">
+    <div status class="status" [class.hide]="!showMore()">
         @if (liveLog | async; as log) {
             <div>
                 <div>
@@ -46,7 +46,7 @@
                 </div>
                 <br />
                 @if (log.endTime) {
-                    <div>Analysierte URLs: {{ analyzedUrls }}</div>
+                    <div>Analysierte URLs: {{ analyzedUrls() }}</div>
                 }
                 @if (log.errors?.length > 0) {
                     <div>
@@ -171,10 +171,13 @@
                             }
                         </td>
                     </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr
+                        mat-header-row
+                        *matHeaderRowDef="displayedColumns()"
+                    ></tr>
                     <tr
                         mat-row
-                        *matRowDef="let row; columns: displayedColumns"
+                        *matRowDef="let row; columns: displayedColumns()"
                         (click)="selection.toggle(row)"
                     ></tr>
                 </table>
@@ -220,7 +223,7 @@
             </div>
         </div>
     } @else {
-        @if (!isRunning) {
+        @if (!isRunning()) {
             <div main-content>
                 Bei der letzten Überprüfung wurden keine ungültigen URLs
                 festgestellt.

@@ -27,7 +27,7 @@ export class TestOrganisationDoctype extends OrganisationDoctype {
   id = "OrganisationDoc";
 
   constructor() {
-    super("addresses");
+    super();
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },

@@ -1,12 +1,12 @@
 @if (address()) {
     <dashboard-address-header
-        [canCreateAddress]="canCreateAddress"
-        [canImport]="canImport"
+        [canCreateAddress]="canCreateAddress()"
+        [canImport]="canImport()"
     ></dashboard-address-header>
 } @else {
     <dashboard-docs-header
-        [canCreateDatasets]="canCreateDatasets"
-        [canImport]="canImport"
+        [canCreateDatasets]="canCreateDatasets()"
+        [canImport]="canImport()"
     ></dashboard-docs-header>
 }
 

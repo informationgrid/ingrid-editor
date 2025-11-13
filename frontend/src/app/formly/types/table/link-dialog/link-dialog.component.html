@@ -1,8 +1,8 @@
-@if (data.fields.length > 0) {
+@if (data().fields.length > 0) {
     <ige-dialog-template
         label="Link angeben"
         [formGroup]="form"
-        [disabled]="form.invalid"
+        [disabled]="!valid()"
         (submit)="submit()"
     >
         <ng-container content>
@@ -12,8 +12,8 @@
             </div>
             <formly-form
                 [form]="form"
-                [fields]="data.fields"
-                [model]="data.model"
+                [fields]="data().fields"
+                [model]="data().model"
                 [options]="options"
             ></formly-form>
         </ng-container>

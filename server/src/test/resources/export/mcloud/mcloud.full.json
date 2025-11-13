@@ -11,18 +11,10 @@
       }
     }
   ],
-  "keywords": [
-    "eins",
-    "zwei",
-    "drei"
-  ],
+  "keywords": ["eins", "zwei", "drei"],
   "accessRights": "Nutzung",
-  "mCloudCategories": [
-    "railway"
-  ],
-  "DCATThemes": [
-    "TRAN"
-  ],
+  "mCloudCategories": ["railway"],
+  "DCATThemes": ["TRAN"],
   "distributions": [
     {
       "title": "linkTitel",

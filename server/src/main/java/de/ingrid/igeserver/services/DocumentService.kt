@@ -66,6 +66,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -400,7 +401,7 @@ class DocumentService(
         val newDocument = docRepo.save(preUpdatePayload.document)
 
         // save wrapper
-        val newWrapper = docWrapperRepo.save(preUpdatePayload.wrapper)
+        val newWrapper = docWrapperRepo.save(preUpdatePayload.wrapper).also { newDocument.wrapperId = it.id }
 
         // create ACL before trying to save since we need the permission
         aclService.createAclForDocument(newWrapper.id!!, preUpdatePayload.wrapper.parent?.id)
@@ -599,11 +600,11 @@ class DocumentService(
 
         // run pre-publish pipe(s)
         val prePublishPayload =
-            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
+            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper, publishDate)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
-            val updatedDoc = docRepo.save(preUpdatePayload.document)
+            val updatedDoc = docRepo.save(preUpdatePayload.document).apply { wrapperId = docData.wrapper.id }
             val updatedWrapper = if (publishDate != null) {
                 preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
                 docWrapperRepo.save(preUpdatePayload.wrapper)
@@ -634,9 +635,9 @@ class DocumentService(
 
     fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
-        auditLog.log("tags", "archive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
-        val doc = getLastPublishedDocumentOrNull(wrapperId)
+        val doc = getDocumentByWrapperId(catalogId, wrapperId)
+        auditLog.log("tags", "archive", target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
         postArchivePipe.runFilters(
             postArchivePayload,
@@ -648,9 +649,9 @@ class DocumentService(
 
     fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
-        auditLog.log("tags", "unarchive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
-        val doc = getLastPublishedDocumentOrNull(wrapperId)
+        val doc = getDocumentByWrapperId(catalogId, wrapperId)
+        auditLog.log("tags", "unarchive", target = doc.uuid, data = getRawJsonFromDocument(doc, includeMetadataForExport = true), catalogIdentifier = catalogId, principal = principal)
         val postUnarchivePayload = PostUnarchivePayload(wrapperId, doc)
         postUnarchivePipe.runFilters(
             postUnarchivePayload,
@@ -977,20 +978,21 @@ class DocumentService(
         val profile = document.catalog!!.type
         val catalogProfile = catalogService.getCatalogProfile(profile)
         val docType = getDocumentType(document.type, profile, catalogProfile.parentProfile)
-        return docType.getReferenceIds(document).toSet()
+        return docType.getReferenceUUIDs(document).toSet()
     }
 
     /**
      * Get all document UUIDs which reference this document
      */
-    fun getIncomingReferences(
+    fun getIncomingReferenceUUIDs(
         document: Document?,
         catalogId: String,
+        options: List<String>,
     ): Set<String> {
         if (document == null) return setOf()
         val profile = catalogService.getProfileFromCatalog(catalogId)
         val docType = getDocumentType(document.type, profile.identifier, profile.parentProfile)
-        return docType.getIncomingReferenceIds(document).toSet()
+        return docType.getIncomingReferenceUUIDs(document, options).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {

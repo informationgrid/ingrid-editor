@@ -113,10 +113,10 @@
         </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
     <tr
         mat-row
-        *matRowDef="let row; columns: displayedColumns"
+        *matRowDef="let row; columns: displayedColumns()"
         (click)="row.readOnly || select(row)"
         [class.selected]="selection.isSelected(row)"
         [class.disabled]="row.readOnly"
@@ -147,13 +147,15 @@
 
 <!-- role legends -->
 @if (tableType() == "default") {
-    <div class="legend">
+    <div class="legend" *transloco="let t; read: 'roles'">
         <mat-icon svgIcon="author"></mat-icon>
-        <span> Autor </span>
+        <span> {{ t("author") }} </span>
         <mat-icon svgIcon="meta-admin"></mat-icon>
-        <span> Metadaten-Admin </span>
+        <span> {{ t("md-admin") }} </span>
         <mat-icon svgIcon="catalog-admin"></mat-icon>
-        <span> Katalog-Admin </span>
+        <span>
+            {{ t("cat-admin") }}
+        </span>
     </div>
 }
 

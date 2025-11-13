@@ -388,9 +388,18 @@
             }
           }
         ],
+        "resourceDateType": {
+          "key": "since",
+          "value": "von",
+          "_codelistId": null
+        },
+        "resourceDate": "2025-11-12T23:00:00.000Z",
         "status": null,
-        "resourceDate": null,
-        "resourceDateType": null
+        "resourceDateTypeSince": {
+          "key": "requestTime",
+          "value": "bis: gegenwärtig aktuell",
+          "_codelistId": null
+        }
       },
       "extraInfo": {
         "legalBasicsDescriptions": []

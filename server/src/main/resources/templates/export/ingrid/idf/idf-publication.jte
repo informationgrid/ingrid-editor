@@ -1,8 +1,10 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
 @import java.util.Map
+@import gg.jte.Content
 
 @param Map<String, Object> map
+@param Content additionalCitation
 
 !{var page = ((PublicationModelTransformer)map.get("model"));}
 !{var publication = page.getPublication();}
@@ -125,6 +127,7 @@
                 @endif
             @endif
         @endif
+        ${additionalCitation}
     `)
     @if(TransformationTools.hasValue(page.getBaseDataText()))
         <gmd:dataQualityInfo>

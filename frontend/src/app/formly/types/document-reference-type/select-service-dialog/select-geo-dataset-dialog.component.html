@@ -1,5 +1,5 @@
 <ige-dialog-template
-    label="Dargestellte Daten"
+    label="{{ dialogTitle }}"
     (submit)="submit()"
     [disabled]="selectedNode === null || form.invalid"
 >
@@ -16,6 +16,7 @@
             <div class="section-title">Auswahl des Geodatensatzes:</div>
         }
         <ige-tree
+            [treeStore]="documentTreeStore"
             [allowMultiSelectionMode]="false"
             [disabledCondition]="enableOnlyGeoService()"
             (selected)="selectDatasets($event)"

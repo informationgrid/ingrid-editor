@@ -32,7 +32,7 @@
                 <gmd:result>
                     <gmd:DQ_QuantitativeResult>
                         <gmd:valueUnit>
-                            <gml:UnitDefinition gml:id="unitDefinition_ID_d9654c07-5c27-4ab8-8260-60995d63c2c7">
+                            <gml:UnitDefinition gml:id="unitDefinition_ID_${TransformationTools.getRandomUUID()}">
                                 <gml:identifier codeSpace=""/>
                                 <gml:name>percent</gml:name>
                                 <gml:quantityType>completeness omission</gml:quantityType>
@@ -66,7 +66,7 @@
                 <gmd:result>
                     <gmd:DQ_QuantitativeResult>
                         <gmd:valueUnit>
-                            <gml:UnitDefinition gml:id="unitDefinition_ID_8696c492-8846-41e0-b848-7178203c448e">
+                            <gml:UnitDefinition gml:id="unitDefinition_ID_${TransformationTools.getRandomUUID()}">
                                 <gml:identifier codeSpace=""/>
                                 <gml:name>meter</gml:name>
                                 <gml:quantityType>absolute external positional accuracy, vertical accuracy</gml:quantityType>
@@ -97,7 +97,7 @@
                 <gmd:result>
                     <gmd:DQ_QuantitativeResult>
                         <gmd:valueUnit>
-                            <gml:UnitDefinition gml:id="unitDefinition_ID_3edd1913-769e-4ab9-a31d-17854572f198">
+                            <gml:UnitDefinition gml:id="unitDefinition_ID_${TransformationTools.getRandomUUID()}">
                                 <gml:identifier codeSpace=""/>
                                 <gml:name>meter</gml:name>
                                 <gml:quantityType>absolute external positional accuracy</gml:quantityType>

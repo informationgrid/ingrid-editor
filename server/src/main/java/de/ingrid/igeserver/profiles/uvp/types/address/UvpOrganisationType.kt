@@ -32,7 +32,7 @@ class UvpOrganisationType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate
 
     override val category = DocumentCategory.ADDRESS.value
 
-    override val referenceFieldInDocuments = "pointOfContact"
+    override val referenceFieldsInDocuments = listOf("pointOfContact")
 
     val log = logger()
 }

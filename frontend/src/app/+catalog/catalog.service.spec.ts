@@ -35,6 +35,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("CatalogService", () => {
   let spectator: SpectatorService<CatalogService>;
@@ -42,6 +43,7 @@ describe("CatalogService", () => {
     service: CatalogService,
     imports: [MatSnackBarModule],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       mockProvider(ConfigService, {
