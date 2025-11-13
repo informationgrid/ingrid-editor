@@ -151,7 +151,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     }
 
     private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? = profileMapper[profile]?.let { mapper ->
-        mapper.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
+        mapper.handle(isoData)?.let {
             val output: TemplateOutput = JsonStringOutput()
             templateEngine.render(it.template, it.mapper, output)
 

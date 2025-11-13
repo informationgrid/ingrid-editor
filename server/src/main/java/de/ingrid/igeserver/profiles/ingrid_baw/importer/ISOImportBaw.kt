@@ -19,32 +19,19 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
-import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.igeserver.services.BwastrLocatorService
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.ResearchService
-import de.ingrid.mdek.upload.UploadConfig
-import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportBaw(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, @Lazy val bwastrLocatorService: BwastrLocatorService, @Lazy val catalogService: CatalogService, val uploadConfig: UploadConfig) : ISOImportProfile {
+class ISOImportBaw : ISOImportProfile {
     override fun handle(
-        catalogId: String,
-        data: Metadata,
-        addressMaps: MutableMap<String, String>,
+        isoData: IsoImportData,
     ): ImportProfileData? {
-        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage)
-
-        return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        return when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
-                return when (hierarchyLevelNameToDocumentType(data.hierarchyLevelName?.get(0)?.value)) {
+                return when (hierarchyLevelNameToDocumentType(isoData.data.hierarchyLevelName?.get(0)?.value)) {
                     "BawSimulation" -> ImportProfileData(
                         "imports/ingrid-baw/simulation.jte",
                         GeodatasetMapperBaw(isoData),
@@ -58,7 +45,7 @@ class ISOImportBaw(val codelistHandler: CodelistHandler, @Lazy val documentServi
                         GeodatasetMapperBaw(isoData),
                     )
 
-                    else -> throw IllegalArgumentException("Unsupported hierarchyLevelName: ${data.hierarchyLevelName?.get(0)?.value}")
+                    else -> throw IllegalArgumentException("Unsupported hierarchyLevelName: ${isoData.data.hierarchyLevelName?.get(0)?.value}")
                 }
             }
 
