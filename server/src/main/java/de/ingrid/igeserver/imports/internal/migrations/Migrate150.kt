@@ -24,10 +24,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
+import org.apache.logging.log4j.kotlin.logger
 
 class Migrate150 {
 
     companion object {
+        private val log = logger()
+
         private val includedTypes = listOf(
             "InGridGeoDataset",
             "InGridDataCollection",
@@ -36,6 +39,8 @@ class Migrate150 {
             "InGridPublication",
             "InGridProject",
             "InGridSpecialisedTask",
+            "BawMeasurement",
+            "BawSimulation",
         )
 
         fun migrate(documents: JsonNode): JsonNode {
@@ -92,6 +97,8 @@ class Migrate150 {
                             }
                         }
                     }
+                } else if (date != null) {
+                    log.warn("Found event without referenceDateType: $date in document ${doc.getString("_id")}")
                 }
             }
             this.set<JsonNode>("event", eventNode)
