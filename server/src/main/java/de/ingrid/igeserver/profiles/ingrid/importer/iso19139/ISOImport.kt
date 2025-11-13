@@ -56,11 +56,16 @@ data class IsoImportData(
     val bwastrLocatorService: BwastrLocatorService,
     val uploadConfig: UploadConfig,
     val catalogLanguage: String,
+    val importSettings: ImportSettings,
 )
 
 data class IsoConverterOutput(
     val document: String,
     val references: ArrayNode,
+)
+
+data class ImportSettings(
+    val importGeometryContext: Boolean,
 )
 
 @Service
@@ -88,7 +93,9 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
         val finalObject = xmlDeserializer.readValue(data, Metadata::class.java)
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage)
+        val defaultImportSettings = ImportSettings(importGeometryContext = false)
+
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage, defaultImportSettings)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
@@ -153,7 +160,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? = profileMapper[profile]?.let { mapper ->
         mapper.handle(isoData)?.let {
             val output: TemplateOutput = JsonStringOutput()
-            templateEngine.render(it.template, it.mapper, output)
+            templateEngine.render(it.template, mapOf("model" to it.mapper), output)
 
             IsoConverterOutput(
                 output.toString(),

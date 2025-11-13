@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.importer
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportSettings
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import org.springframework.stereotype.Service
 
@@ -29,9 +30,11 @@ import org.springframework.stereotype.Service
 class ISOImportUPSH : ISOImportProfile {
     override fun handle(isoData: IsoImportData): ImportProfileData? = when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "dataset" -> {
+            val upshIsoData = isoData.copy(importSettings = ImportSettings(importGeometryContext = true))
+
             ImportProfileData(
-                "imports/ingrid-up-sh/geodataset.jte",
-                GeodatasetMapper(isoData),
+                "imports/ingrid/geodataset.jte",
+                GeodatasetMapper(upshIsoData),
             )
         }
 

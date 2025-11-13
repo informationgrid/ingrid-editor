@@ -60,6 +60,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
     val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
+    val importSettings = isoData.importSettings
 
     val uuid = metadata.fileIdentifier?.value
     open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
