@@ -29,7 +29,7 @@ import de.ingrid.igeserver.imports.expectedPersonPositionName
 import de.ingrid.igeserver.imports.expectedPersonSingle
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
-import de.ingrid.igeserver.imports.minimalMetadata
+import de.ingrid.igeserver.imports.minimalServiceMetadata
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -135,7 +135,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
@@ -159,7 +159,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
@@ -186,7 +186,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
@@ -219,7 +219,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
@@ -252,7 +252,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
@@ -278,7 +278,7 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
 
         val data = addPointOfContact(
-            minimalMetadata,
+            minimalServiceMetadata,
             """
                 <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="febad8bb-626c-4d54-b415-d957adf3b4bb">
@@ -317,7 +317,7 @@ class IsoImporterTest : AnnotationSpec() {
             </gmd:pointOfContact>
         """.trimIndent()
 
-        val data = addPointOfContact(minimalMetadata, pointOfContact)
+        val data = addPointOfContact(minimalServiceMetadata, pointOfContact)
         val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact)
         assertPointOfContactHasTypes(result, "Objektbesitzer Institut", listOf("7", "12"))

@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.imports.iso
 
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.imports.minimalMetadata
+import de.ingrid.igeserver.imports.minimalDatasetMetadata
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportUPSH
@@ -110,15 +110,16 @@ class IsoImporterGeometryContextTest : AnnotationSpec() {
     }
 
     private fun minimalDatasetWithGeometryContext(): String {
-        // Start from the shared minimal metadata so that contact and other base fields are present
-        // 1) Switch hierarchy level from service -> dataset
-        var xml = minimalMetadata.replace(
-            "codeListValue=\"service\">service",
-            "codeListValue=\"dataset\">dataset",
-        )
+        // Build from the shared minimal dataset metadata so all required fields are present
+        var xml = minimalDatasetMetadata
+        // append before end tag
+        val mdEnd = xml.indexOf("</gmd:MD_Metadata>")
+        xml = xml.take(mdEnd) + geometryContextXml + xml.substring(mdEnd)
+        return xml
+    }
 
-        // 2) Insert the geometry context block before identificationInfo
-        val geomCtx = """
+    // Insert the geometry context block before identificationInfo
+    val geometryContextXml = """
             <gmd:spatialRepresentationInfo>
                 <igctx:MD_GeometryContext gco:isoType="AbstractMD_SpatialRepresentation_Type">
                     <igctx:geometryType>
@@ -172,43 +173,5 @@ class IsoImporterGeometryContextTest : AnnotationSpec() {
                     </igctx:geometricFeature>
                 </igctx:MD_GeometryContext>
             </gmd:spatialRepresentationInfo>
-        """.trimIndent()
-
-        val identInfoStart = xml.indexOf("<gmd:identificationInfo>")
-        if (identInfoStart > -1) {
-            xml = xml.substring(0, identInfoStart) + geomCtx + xml.substring(identInfoStart)
-        } else {
-            // fallback: append before end tag
-            val mdEnd = xml.indexOf("</gmd:MD_Metadata>")
-            xml = xml.substring(0, mdEnd) + geomCtx + xml.substring(mdEnd)
-        }
-
-        // 3) Replace the service identification with a minimal dataset identification including language
-        val idStart = xml.indexOf("<gmd:identificationInfo>")
-        val idEnd = xml.indexOf("</gmd:identificationInfo>")
-        if (idStart != -1 && idEnd != -1) {
-            val newIdentification = """
-                <gmd:identificationInfo>
-                    <gmd:MD_DataIdentification>
-                        <gmd:citation>
-                            <gmd:CI_Citation>
-                                <gmd:title>
-                                    <gco:CharacterString>Test Dataset</gco:CharacterString>
-                                </gmd:title>
-                            </gmd:CI_Citation>
-                        </gmd:citation>
-                        <gmd:abstract>
-                            <gco:CharacterString>Some abstract</gco:CharacterString>
-                        </gmd:abstract>
-                        <gmd:language>
-                            <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
-                        </gmd:language>
-                    </gmd:MD_DataIdentification>
-                </gmd:identificationInfo>
-            """.trimIndent()
-            xml = xml.substring(0, idStart) + newIdentification + xml.substring(idEnd + "</gmd:identificationInfo>".length)
-        }
-
-        return xml
-    }
+    """.trimIndent()
 }
