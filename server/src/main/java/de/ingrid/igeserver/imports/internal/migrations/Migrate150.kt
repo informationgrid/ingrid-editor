@@ -60,6 +60,9 @@ class Migrate150 {
         fun getTemporalOfDocument(doc: ObjectNode): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             val temporal = doc.get("temporal") as? ObjectNode ?: return@apply
 
+            // in case migration was already done -> return
+            if (temporal.get("data") != null) return temporal
+
             // preserve status (even if null)
             temporal.get("status")?.let { statusNode ->
                 this.set<JsonNode>("status", statusNode)
@@ -74,7 +77,7 @@ class Migrate150 {
             events?.forEach { e ->
                 val date = e.get("referenceDate")
                 val typeKey = e.get("referenceDateType")?.get("key")?.asText()
-                if (date != null && typeKey != null) {
+                if (!date.isNull && date != null && typeKey != null) {
                     when (typeKey) {
                         "1" -> {
                             if (createdDate == null || (date.asText() < createdDate)) {
@@ -97,8 +100,8 @@ class Migrate150 {
                             }
                         }
                     }
-                } else if (date != null) {
-                    log.warn("Found event without referenceDateType: $date in document ${doc.getString("_id")}")
+                } else if (!date.isNull && date != null && typeKey == null) {
+                    log.warn("Found event without referenceDateType: $date in document ${doc.getString("_uuid")}")
                 }
             }
             this.set<JsonNode>("event", eventNode)
