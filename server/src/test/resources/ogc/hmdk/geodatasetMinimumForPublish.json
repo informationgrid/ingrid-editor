@@ -7,9 +7,7 @@
     }
   },
   "dataset": {
-    "languages": [
-      "150"
-    ]
+    "languages": ["150"]
   },
   "lineage": {
     "statement": "Fachliche Grundlage"
@@ -80,16 +78,9 @@
     ]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2025-10-21T22:00:00.000Z",
-        "referenceDateType": {
-          "key": "1",
-          "value": "Erstellung",
-          "_codelistId": "502"
-        }
-      }
-    ],
+    "event": {
+      "created": "2025-10-21T22:00:00.000Z"
+    },
     "status": null,
     "resourceDateType": null
   },
