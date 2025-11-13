@@ -1,74 +1,50 @@
-@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataModelTransformer
+@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataModelTransformerAdditional
 @import gg.jte.support.ForSupport
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var model = ((OpenDataModelTransformer)map.get("model"));}
+!{var model = ((OpenDataModelTransformerAdditional)map.get("model"));}
 
 {
-    "id": "${model.getUuid() }",
-    "created": "${model.getCreated() }",
+    "uuid": "${model.getUuid() }",
+    "title": "${model.getTitle() }",
+    "parent.object_node.obj_uuid": "${model.getHierarchyParent()}",
+    "description": "${model.getDescription() }",
+    "landingPage": "${model.getLandingPage() }",
+    "theme": [
+        @for(var entry : ForSupport.of(model.getThemes()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+    ],
     "issued": "${model.getCreated() }",
     "modified": "${model.getModified() }",
-    "title": "${model.getTitle() }",
-    "description": "${model.getDescription() }",
-
-    "dcat": {
-        "landingPage": "${model.getLandingPage() }"
-    },
-
-    "contacts": [
-        @for(var entry : ForSupport.of(model.getAddresses()))
+    "accrual_periodicity": "${model.getPeriodicity() }",
+    "keywords": [
+        @for(var entry : ForSupport.of(model.getKeywords()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+    ],
+    "contact": [
+    @for(var entry : ForSupport.of(model.getAddresses()))
         {
-            "role": "${entry.get().getType()}",
-            "title": "${entry.get().getOrganisation()}",
-            "communications": [
-                @for(var contact : ForSupport.of(entry.get().getContacts()))
+            "type": "${entry.get().getType()}",
+            "organization": "${entry.get().getOrganisation()}",
+            "communication": [
+            @for(var contact : ForSupport.of(entry.get().getContacts()))
                 {
                     "type": "${contact.get().getType()}",
-                    "value": "${contact.get().getValue()}"
+                    "connection": "${contact.get().getValue()}"
                 }@if (!contact.isLast()),@endif
             @endfor
             ],
             "street": "",
-            "zipcode": "",
+            "zip-code": "",
             "city": "",
             "country": ""
         }@if (!entry.isLast()),@endif
     @endfor
     ],
-
-    "keywords": [
-        @for(var entry : ForSupport.of(model.getKeywords()))
-        {
-            "term": "${entry.get()}",
-            "id": "${entry.get()}",
-            "source": "${entry.get()}"
-        }@if (!entry.isLast()),@endif
-        @endfor
-    ],
-
-    "spatial": {
-        "type": "geometrycollection",
-        "geometries": [
-            @for(var entry : ForSupport.of(model.getSpatials()))
-            {
-                "type": "",
-                "coordinates": ""
-            }@if (!entry.isLast()),@endif
-            @endfor
-        ]
-    },
-    "spatial_text": [
-    @for(var entry : ForSupport.of(model.getSpatialTitles()))
-        "${entry.get()}"@if (!entry.isLast()),@endif
-    @endfor
-    ],
-    "parent.object_node.obj_uuid": "${model.getHierarchyParent()}",
-
-    "accrual_periodicity": "${model.getPeriodicity() }",
-
     "legal_basis": "${model.getLegalBasis() }",
     "distribution": [
     @for(var download : ForSupport.of(model.getDistributions()))
@@ -95,7 +71,22 @@
         "issued": "${model.getCreated() }",
         "modified": "${model.getModified() }"
     },
-
+    "spatial": {
+        "type": "geometrycollection",
+        "geometries": [
+            @for(var entry : ForSupport.of(model.getSpatials()))
+                {
+                    "type": "",
+                    "coordinates": ""
+                }@if (!entry.isLast()),@endif
+            @endfor
+        ]
+    },
+    "spatial_text": [
+        @for(var entry : ForSupport.of(model.getSpatialTitles()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+    ],
     "ars": [
        @for(var entry : ForSupport.of(model.getArs()))
            "${entry.get()}"@if (!entry.isLast()),@endif
