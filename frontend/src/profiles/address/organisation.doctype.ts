@@ -30,7 +30,7 @@ export abstract class OrganisationDoctype extends AddressShared {
   options: Partial<AddressOptions> = {};
 
   documentFields() {
-    return <FormlyFieldConfig[]>[
+    const fields = <FormlyFieldConfig[]>[
       this.addSection(
         "Organisationsdaten",
         [
@@ -53,6 +53,7 @@ export abstract class OrganisationDoctype extends AddressShared {
       ),
       this.addIncomingReferences(),
     ];
+    return this.manipulateDocumentFields(fields);
   }
 
   protected constructor() {

@@ -18,14 +18,14 @@
  * limitations under the Licence.
  */
 import { inject, Injectable } from "@angular/core";
-import { IngridOrganisationDoctype } from "../../ingrid/doctypes/ingrid-organisation.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsNLPV } from "./common-fields";
+import { IngridPersonDoctype } from "../../ingrid/doctypes/ingrid-person.doctype";
 
 @Injectable({
   providedIn: "root",
 })
-export class NLPVOrganisationDoctype extends IngridOrganisationDoctype {
+export class NLPVPersonDoctype extends IngridPersonDoctype {
   common = inject(CommonFieldsNLPV);
 
   constructor() {

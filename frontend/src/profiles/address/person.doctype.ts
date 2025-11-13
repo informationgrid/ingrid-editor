@@ -30,7 +30,7 @@ export class PersonDoctype extends AddressShared {
   options: Partial<AddressOptions> = {};
 
   documentFields() {
-    return <FormlyFieldConfig[]>[
+    const fields = <FormlyFieldConfig[]>[
       this.addSection(
         "Persönliche Daten",
         [
@@ -117,6 +117,7 @@ export class PersonDoctype extends AddressShared {
       ),
       this.addIncomingReferences(),
     ];
+    return this.manipulateDocumentFields(fields);
   }
 
   constructor() {

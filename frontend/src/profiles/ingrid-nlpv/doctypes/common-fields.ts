@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,23 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
-import { IngridOrganisationDoctype } from "../../ingrid/doctypes/ingrid-organisation.doctype";
+import { FormFieldHelper } from "../../form-field-helper";
+import { Injectable } from "@angular/core";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CommonFieldsNLPV } from "./common-fields";
 
-@Injectable({
-  providedIn: "root",
-})
-export class NLPVOrganisationDoctype extends IngridOrganisationDoctype {
-  common = inject(CommonFieldsNLPV);
-
-  constructor() {
-    super();
+@Injectable({ providedIn: "root" })
+export class CommonFieldsNLPV extends FormFieldHelper {
+  addImages(fieldConfig: FormlyFieldConfig[]) {
+    fieldConfig
+      .find((field) => field.props.label === "Organisationsdaten")
+      .fieldGroup.push(
+        this.addPreviewImage("images", "Bilder", {
+          className: "optional",
+        }),
+      );
   }
-
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    this.common.addImages(fieldConfig);
-    return fieldConfig;
-  };
 }
