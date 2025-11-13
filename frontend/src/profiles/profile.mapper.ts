@@ -43,6 +43,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-ingrid-lubw"));
     case "ingrid-up-sh":
       return from(import("./profile-ingrid-up-sh"));
+    case "ingrid-nlpv":
+      return from(import("./profile-ingrid-nlpv"));
     case "ingrid-wsv":
       return from(import("./profile-ingrid-wsv"));
     case "mcloud":
