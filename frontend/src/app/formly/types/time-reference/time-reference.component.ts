@@ -132,6 +132,7 @@ export class TimeReferenceComponent
 
     // initialize from current value of Formly control
     const defaults = {
+      type: null,
       intervalFrom: "not-available",
       atDate: null as Date | null,
       fromDate: null as Date | null,
@@ -139,8 +140,6 @@ export class TimeReferenceComponent
       tillDate: null as Date | null,
       timezone: undefined as string,
     };
-    const initial = { ...defaults, ...(this.formControl?.value ?? {}) };
-    // this.temporalForm.setValue(initial, { emitEvent: false });
 
     // reflect external Formly control changes into inner form
     this.formControl?.valueChanges
@@ -194,8 +193,8 @@ export class TimeReferenceComponent
       return result;
     }
 
-    result.intervalFrom = value.intervalFrom;
-    result.intervalTo = value.intervalTo;
+    result.intervalFrom = value.intervalFrom ?? "not-available";
+    result.intervalTo = value.intervalTo ?? "not-available";
 
     if (this.showTimezone) {
       result.timezone = value.timezone;

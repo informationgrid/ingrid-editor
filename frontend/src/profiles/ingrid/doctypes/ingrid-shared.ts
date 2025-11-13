@@ -1255,6 +1255,7 @@ export abstract class IngridShared extends BaseDoctype {
             key: "data",
             type: "time-reference",
             wrappers: [],
+            defaultValue: { type: "none" },
             props: {
               required: this.options.required.resourceDateType,
             },
