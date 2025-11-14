@@ -180,9 +180,15 @@ open class AddressModelTransformer(
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
-    val contactsComTypeKeys = displayAddress.data.get("contact")?.map { it.get("type")?.getString("key") } ?: emptyList()
-    val contactsComTypeValues = displayAddress.data.get("contact")?.map { it.get("type")?.mapToKeyValue() } ?: emptyList()
-    val contactsComConnections = displayAddress.data.get("contact")?.map { it.getString("connection") } ?: emptyList()
+    val allCommunications = displayAddress.data.get("contact")?.map {
+        KeyValue(
+            it.get("type")?.getString("key"),
+            it.getString("connection"),
+        )
+    } ?: emptyList()
+    val contactsComTypeKeys = allCommunications.map { it.key }
+    val contactsComTypeValues = allCommunications.map { KeyValue(it.key) }
+    val contactsComConnections = allCommunications.map { it.value }
 
     /**
      * Get all published objects with references to this address.

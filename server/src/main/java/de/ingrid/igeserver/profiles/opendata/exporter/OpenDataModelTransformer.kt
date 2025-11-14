@@ -20,31 +20,23 @@
 package de.ingrid.igeserver.profiles.opendata.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exporter.AddressModelTransformer
-import de.ingrid.igeserver.exporter.AddressTransformerConfig
-import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.log
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
-import de.ingrid.mdek.upload.UploadConfig
-import java.time.OffsetDateTime
 
 class OpenDataModelTransformer(
-    val doc: Document,
-    val codelistHandler: CodelistHandler,
-    val catalogId: String,
-    val uploadConfig: UploadConfig,
-    val documentService: DocumentService,
+    val transformerConfig: OpenDataTransformerConfig,
 ) {
+    val addressExporter = AddressExport(transformerConfig)
+    val catalogId = transformerConfig.catalogIdentifier
+    val codelistTransformer = transformerConfig.codelists
+    val uploadConfig = transformerConfig.uploadConfig
+    val documentService = transformerConfig.documentService
+    val tags = transformerConfig.tags
+    val doc = transformerConfig.doc
 
     fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
         Distribution(
@@ -59,82 +51,43 @@ class OpenDataModelTransformer(
             mapAvailability(dist.getStringOrEmpty("availability.key")),
         )
     } ?: emptyList()
+
     fun getHierarchyParent() = doc.data.getString("_parent") ?: ""
     fun getUuid() = doc.uuid
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getString("description") ?: ""
     fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
     fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull {
-        codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
+        codelistTransformer.codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
     } ?: emptyList()
 
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
     fun getPeriodicity() = "" // doc.data.getmodified.toString()
     fun getKeywords() = emptyList<String>() + getThemes()
-    fun getAddresses() = doc.data.get("addresses").map {
-        val address = toAddressModelTransformer(AddressRefModel(KeyValue(it.getString("type.key")), it.getString("ref")))
-        AddressInfo(
-            mapAddressType(it.getString("type.key") ?: ""),
-            address?.getOrganization() ?: "",
-            (
-                (address?.emails?.map { ContactSimple("E-Mail", it) } ?: emptyList()) +
-                    (address?.telephones?.map { ContactSimple("Telefon", it) } ?: emptyList()) +
-                    (address?.faxes?.map { ContactSimple("Fax", it) } ?: emptyList()) +
-                    (address?.homepage?.let { ContactSimple("URL", it) })
-                ).filterNotNull(),
-        )
-    }
-
-    private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
-        val lastPublishedDoc =
-            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
-
-        // filter out addresses with wrong tags
-        if (lastPublishedDoc != null) {
-            runCatching {
-                checkPublicationTags(
-                    documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags,
-                    emptyList(),
-                )
-            }
-                .onFailure { return null }
-        }
-
-        // if no lastPublishedDoc is found, create a dummy address with the type "null-address"
-        val doc = lastPublishedDoc ?: Document().apply {
-            data = jacksonObjectMapper().createObjectNode()
-            type = "null-address"
-            modified = OffsetDateTime.now()
-            wrapperId = -1
-        }
-        return AddressModelTransformer(
-            AddressTransformerConfig(
-                catalogId,
-                CodelistTransformer(codelistHandler, catalogId, "de"),
-                // Map pointOfContactMD type to pointOfContact for ISO Exports
-                it.type,
-                doc,
-                documentService,
-                uploadConfig,
-                emptyList(), // tags,
+    fun getAddresses() = doc.data.get("addresses").mapNotNull {
+        addressExporter.toAddressModelTransformer(
+            AddressRefModel(
+                KeyValue(it.getString("type.key")),
+                it.getString("ref"),
             ),
         )
     }
 
-    fun getLastPublishedDocument(uuid: String): Document? = try {
-        documentService.getLastPublishedDocument(catalogId, uuid, forExport = true)
-    } catch (e: Exception) {
-        log.warn("Could not get last published document: $uuid")
-        null
-    }
-
-    private fun mapAddressType(typeKey: String): String = when (typeKey) {
+    fun mapAddressType(typeKey: String): String = when (typeKey) {
         "2" -> "maintainer"
         "6" -> "originator"
         "7" -> "contactPoint"
         "10" -> "publisher"
         "11" -> "creator"
+        else -> "???"
+    }
+
+    fun mapCommunicationTyp(type: String): String = when (type) {
+        "1" -> "tel"
+        "2" -> "fax"
+        "3" -> "email"
+        "4" -> "url"
         else -> "???"
     }
 
@@ -155,14 +108,14 @@ class OpenDataModelTransformer(
 
     private fun mapAvailability(key: String?): String {
         if (key == null) return ""
-        return codelistHandler.getCatalogCodelistValue(catalogId, "20005", key) ?: ""
+        return codelistTransformer.getCatalogCodelistValue("20005", KeyValue(key)) ?: ""
     }
 
     private fun mapLicense(licenseKey: String?): License? {
         if (licenseKey.isNullOrEmpty()) return null
-        val value = codelistHandler.getCatalogCodelistValue(catalogId, "20004", licenseKey)
+        val value = codelistTransformer.getCatalogCodelistValue("20004", KeyValue(licenseKey))
         return License(licenseKey, value!!)
     }
 
-    private fun mapLanguage(it: JsonNode): String? = codelistHandler.getCatalogCodelistValue(catalogId, "20007", it.getString("key")!!)
+    private fun mapLanguage(it: JsonNode): String? = codelistTransformer.getCatalogCodelistValue("20007", KeyValue(it.getString("key")!!))
 }

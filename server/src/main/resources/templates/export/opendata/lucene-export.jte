@@ -7,7 +7,7 @@
 !{var model = ((OpenDataModelTransformer)map.get("model"));}
 
 {
-    "id": "${model.getUuid() }",
+"id": "${model.getUuid() }",
     "created": "${model.getCreated() }",
     "issued": "${model.getCreated() }",
     "modified": "${model.getModified() }",
@@ -21,20 +21,20 @@
     "contacts": [
         @for(var entry : ForSupport.of(model.getAddresses()))
         {
-            "role": "${entry.get().getType()}",
-            "title": "${entry.get().getOrganisation()}",
+            "role": "${model.mapAddressType(entry.get().getRelationType().getKey())}",
+            "title": "${entry.get().getTitle()}",
             "communications": [
-                @for(var contact : ForSupport.of(entry.get().getContacts()))
+            @for(var contact : ForSupport.of(entry.get().getAllCommunications()))
                 {
-                    "type": "${contact.get().getType()}",
+                "type": "${model.mapCommunicationTyp(contact.get().getKey())}",
                     "value": "${contact.get().getValue()}"
                 }@if (!contact.isLast()),@endif
             @endfor
             ],
-            "street": "",
-            "zipcode": "",
-            "city": "",
-            "country": ""
+            "street": "${entry.get().getStreet()}",
+            "zipcode": "${entry.get().getZipCode()}",
+            "city": "${entry.get().getCity()}",
+            "country": "${entry.get().getCountryKey()}"
         }@if (!entry.isLast()),@endif
     @endfor
     ],

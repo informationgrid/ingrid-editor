@@ -19,10 +19,14 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
@@ -36,10 +40,22 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
+data class OpenDataTransformerConfig(
+    override val catalogIdentifier: String,
+    override val codelists: CodelistTransformer,
+    override val uploadConfig: UploadConfig,
+    override val catalogService: CatalogService,
+    override val cache: TransformerCache,
+    override val doc: Document,
+    override val documentService: DocumentService,
+    override val tags: List<String>,
+) : GeneralTransformerConfig
+
 @Service
 class OpenDataExporter(
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
+    val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) : IgeExporter {
 
@@ -64,23 +80,29 @@ class OpenDataExporter(
 //            return luceneJson.toPrettyString()
         }
 
-        val indexDocument = createIndexDocument(doc, catalogId)
+        val indexDocument = createIndexDocument(doc, catalogId, options)
 
         return indexDocument.toString()
     }
 
-    private fun createIndexDocument(doc: Document, catalogId: String): TemplateOutput = StringOutput().apply {
+    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = StringOutput().apply {
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
+        val config = OpenDataTransformerConfig(
+            catalogId,
+            codelistTransformer,
+            uploadConfig,
+            catalogService,
+            TransformerCache(),
+            doc,
+            documentService,
+            options.tags,
+        )
         templateEngine.render(
             "export/opendata/lucene-export.jte",
             mapOf(
                 "map" to mapOf(
-                    "model" to OpenDataModelTransformer(
-                        doc,
-                        codelistHandler,
-                        catalogId,
-                        uploadConfig,
-                        documentService,
-                    ),
+                    "model" to OpenDataModelTransformer(config),
                 ),
             ),
             this,
