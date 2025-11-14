@@ -7,6 +7,6 @@
 `,
 additionalLineageSource = @`
     ,
-    "environmentDescription": "${model.getEnvironmentDescription()}"
+    "environmentDescription": @template.imports.ingrid.partial.key-value(item = model.getEnvironmentDescription())
 `
 )

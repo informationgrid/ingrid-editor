@@ -35,6 +35,7 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  startWith,
   tap,
 } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -98,6 +99,7 @@ export class AddressTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        startWith(this.formControl.value as AddressRef[]),
         debounceTime(0),
         distinctUntilChanged((a: AddressRef[], b: AddressRef[]) =>
           this.compareAddressRefs(a, b),
@@ -176,13 +178,6 @@ export class AddressTypeComponent
     ]);
   }
 
-  // TODO: let ige-form-error handle all error messages
-  getFirstError() {
-    return Object.values(this.formControl.errors).map(
-      (error) => error.message,
-    )[0];
-  }
-
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
     moveItemInArray(
       this.formControl.value,
@@ -231,6 +226,7 @@ export class AddressTypeComponent
             address: address,
             allowedTypes: this.props.allowedTypes,
             allowedTypesByDoctype: this.props.allowedTypesByDoctype,
+            disabledCondition: this.props.disabledCondition,
             skipToType: skipToType,
           },
           hasBackdrop: true,

@@ -158,31 +158,19 @@
       "description": "Erläuterungen Raumbezug"
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2016-02-29T23:00:00Z",
-          "referenceDateType": {
-            "key": "1",
-            "value": "Erstellung",
-            "_codelistId": "502"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "since",
-        "value": "seit",
-        "_codelistId": null
+      "event": {
+        "created": "2016-02-29T23:00:00Z"
       },
       "status": {
         "key": "7",
         "value": "in Erstellung",
         "_codelistId": "523"
       },
-      "resourceDate": "2016-03-01T00:00:00.000+01:00",
-      "resourceDateTypeSince": {
-        "key": "requestTime",
-        "value": "bis: gegenwärtig aktuell",
-        "_codelistId": null
+      "data": {
+        "type": "range",
+        "intervalFrom": "date",
+        "intervalTo": "continuously",
+        "resourceDate": "2016-03-01T00:00:00.000+01:00"
       }
     },
     "maintenanceInformation": {

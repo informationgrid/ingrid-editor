@@ -129,32 +129,17 @@
       "description": "Erläuterung"
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-05-31T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "1"
-          }
-        },
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "3"
-          }
-        },
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "2"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "at"
+      "event": {
+        "created": "2023-05-31T22:00:00.000Z",
+        "lastModified": "2023-06-30T22:00:00.000Z",
+        "firstPublished": "2023-06-30T22:00:00.000Z"
       },
-      "resourceDate": "2023-05-31T22:00:00.000Z",
       "status": {
         "key": "1"
+      },
+      "data": {
+        "type": "at",
+        "resourceDate": "2023-05-31T22:00:00.000Z"
       }
     },
     "maintenanceInformation": {

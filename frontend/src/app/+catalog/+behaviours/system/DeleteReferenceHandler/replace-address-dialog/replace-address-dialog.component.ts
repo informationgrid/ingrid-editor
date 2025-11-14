@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, signal } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -38,9 +38,9 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { TreeComponent } from "../../../../../+form/sidebars/tree/tree.component";
+import { AddressTreeStore } from "../../../../../store/address-tree/address-tree.store";
 
 export interface ReplaceAddressDialogData {
   source: string;
@@ -67,24 +67,21 @@ export interface ReplaceAddressDialogData {
     MatButton,
   ],
 })
-export class ReplaceAddressDialogComponent implements OnInit {
-  page = 0;
-  selectedAddress: string[];
+export class ReplaceAddressDialogComponent {
+  addressTreeStore = inject(AddressTreeStore);
+  private documentService = inject(DocumentService);
+  private dialog = inject(MatDialog);
+  page = signal<number>(0);
+  selectedAddress = signal<string[]>(null);
   private readonly source: string;
-  showInfo = true;
+  showInfo = signal<boolean>(true);
   disableTreeNode = (node: TreeNode) =>
     node._uuid === this.source || node.state === "W";
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,
-    private documentService: DocumentService,
-    private dialog: MatDialog,
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData) {
     this.source = data.source;
-    this.showInfo = data.showInfo;
+    this.showInfo.set(data.showInfo);
   }
-
-  ngOnInit(): void {}
 
   replaceAddress() {
     this.openConfirmReplaceAddressDialog()
@@ -93,14 +90,18 @@ export class ReplaceAddressDialogComponent implements OnInit {
         switchMap(() =>
           this.documentService.replaceAddress(
             this.source,
-            this.selectedAddress[0],
+            this.selectedAddress()[0],
           ),
         ),
       )
       .subscribe(() => {
         this.reloadAddress();
-        this.page++;
+        this.increasePage();
       });
+  }
+
+  increasePage() {
+    this.page.update((prev) => prev + 1);
   }
 
   openConfirmReplaceAddressDialog(): Observable<boolean> {

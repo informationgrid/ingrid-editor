@@ -1,0 +1,11 @@
+@use "src/variables" as vars;
+
+h4 {
+  margin: 12px 0 24px;
+  font-weight: 500;
+}
+
+ige-form-error {
+  display: block;
+  padding-bottom: 12px;
+}

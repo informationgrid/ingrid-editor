@@ -80,8 +80,8 @@ class OgcRecordService(
     private val formatFactory: FormatFactory,
     generalProperties: GeneralProperties,
 ) {
-    val hostUrl = generalProperties.host
-    val hostnameOgcApi = generalProperties.host + "/api/ogc"
+    val hostUrl = generalProperties.appUrl
+    val hostnameOgcApi = generalProperties.appUrl + "/api/ogc"
 
     fun handleLandingPageRequest(requestedFormat: CollectionFormat): ByteArray {
         val linkList: MutableList<Link> = mutableListOf()

@@ -24,7 +24,7 @@ export class UvpNumberBehaviour extends Plugin {
   id = "plugin.uvp.eia-number";
   name = "UVP Nummer (Codelist-Kategorie)";
   description =
-    "Auswahl der Codeliste für die Anzeige der UVP-Nummern. Bitte nach Änderung der Option die Seite neu laden.";
+    "Auswahl der Codeliste für die Anzeige der UVP-Nummern (Default: 9000). Bitte nach Änderung der Option die Seite neu laden.";
   defaultActive = true;
   group = "UVP";
 

@@ -292,6 +292,14 @@ h1 {
   width: 200px;
 }
 
+.width-time-small {
+  width: 100px;
+}
+
+.width-null {
+  width: 0;
+}
+
 .single-field {
   &.width-50 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.5;
@@ -494,6 +502,11 @@ nav a:focus.active {
 
 .padding-vertical {
   padding: 10px 0;
+}
+
+.padding-horizontal {
+  display: block;
+  padding: 0 10px;
 }
 
 .field-padding {
@@ -1202,14 +1215,10 @@ mat-icon.wide-icon-26px {
   gap: 12px;
 }
 
-.radio-vertical {
+.radio-vertical mat-radio-group {
   display: flex;
   flex-direction: column;
   margin-top: 12px;
-  /*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
-  /*mat-radio-button {
-    margin: 5px 0;
-  }*/
 }
 
 .comment {
@@ -1358,6 +1367,7 @@ table.big-font {
   ige-print-type,
   ige-date-range-type,
   ige-spatial-list,
+  ige-metadata-type > div,
   formly-field-mat-datepicker,
   .mat-mdc-radio-group {
     background: vars.$error-background !important;
@@ -1368,6 +1378,7 @@ table.big-font {
   ige-print-type,
   ige-date-range-type,
   ige-spatial-list,
+  ige-metadata-type > div,
   formly-field-mat-datepicker,
   .mat-mdc-radio-group {
     background: vars.$ige-check-background-color !important;

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ViewChild } from "@angular/core";
+import { Component, viewChild } from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
@@ -42,6 +42,6 @@ import { TabPage } from "../services/session.service";
 export class CatalogSettingsComponent extends TabContainerComponent {
   tabPage: TabPage = "catalogs";
 
-  @ViewChild("navigation") tabNav: MatTabNav;
-  @ViewChild("behaviours") behaviourComponent: BehavioursComponent;
+  readonly tabNav = viewChild<MatTabNav>("navigation");
+  readonly behaviourComponent = viewChild<BehavioursComponent>("behaviours");
 }

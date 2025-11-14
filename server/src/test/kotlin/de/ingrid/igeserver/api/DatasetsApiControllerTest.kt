@@ -28,6 +28,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.storage.Storage
@@ -68,6 +69,9 @@ class DatasetsApiControllerTest : AnnotationSpec() {
 
     @MockkBean(relaxed = true)
     private lateinit var documentService: DocumentService
+
+    @MockkBean(relaxed = true)
+    private lateinit var researchService: ResearchService
 
     @MockkBean(relaxed = true)
     private lateinit var aclService: IgeAclService
@@ -159,12 +163,12 @@ class DatasetsApiControllerTest : AnnotationSpec() {
     }
 
     private fun shouldRequestChildrenWithoutPermissionCheck() {
-        verify(exactly = 1) { documentService.findChildrenDocs(any(), any(), any()) }
+        verify(exactly = 1) { documentService.findChildren(any(), any(), any()) }
         verify(exactly = 0) { aclService.getDatasetIdsSetInGroups(any(), any(), any()) }
     }
 
     private fun shouldRequestChildrenWithPermissionCheck() {
-        verify(exactly = 0) { documentService.findChildrenDocs(any(), any(), any()) }
+        verify(exactly = 0) { documentService.findChildren(any(), any(), any()) }
         verify(exactly = 1) { aclService.getDatasetIdsSetInGroups(any(), any(), any()) }
     }
 }

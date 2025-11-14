@@ -293,7 +293,6 @@ private const val DB_VERSION = "0.XX"
 
 val expectedExportedCatalog = ExportedCatalog(
     DB_VERSION,
-    false,
     catalogInfo,
     behaviours,
     codelists,

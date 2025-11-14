@@ -116,6 +116,7 @@ data class VectorSpatialRepresentation(
     val geometricObjectCount: Int?,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Publication(
     val isbn: String?,
     val pages: String?,
@@ -177,7 +178,7 @@ data class Reference(
     val title: String,
     var type: KeyValue,
     val explanation: String?,
-    val url: String?,
+    var url: String?,
     val uuidRef: String?,
     var urlDataType: KeyValue?,
     var uuidRefClass: String? = null,
@@ -489,15 +490,19 @@ data class IngridSpatial(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Temporal(
-    val events: List<DateEvent>? = null,
+    val event: DateEvent? = null,
     val status: KeyValue? = null,
-    val resourceDateType: KeyValue? = null,
-    val resourceDateTypeSince: KeyValue? = null,
-    @JsonDeserialize(using = DateDeserializer::class)
-    val resourceDate: OffsetDateTime? = null,
+    val description: String? = null,
+    val data: ResourceData? = null,
+)
+
+data class ResourceData(
+    val type: String,
+    val intervalFrom: String? = null,
+    val intervalTo: String? = null,
+    @JsonDeserialize(using = DateDeserializer::class) val resourceDate: OffsetDateTime? = null,
     val resourceRange: TimeRange? = null,
-    val timeRefStatus: KeyValue? = null,
-    val maintenanceNote: String? = null,
+    val timezone: KeyValue? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -514,16 +519,19 @@ data class UserDefinedMaintenanceFrequency(
 )
 
 data class DateEvent(
-    @JsonDeserialize(using = DateDeserializer::class)
-    val referenceDate: OffsetDateTime?,
-    val referenceDateType: KeyValue?,
+    @JsonDeserialize(using = DateDeserializer::class) val created: OffsetDateTime?,
+    @JsonDeserialize(using = DateDeserializer::class) val firstPublished: OffsetDateTime?,
+    @JsonDeserialize(using = DateDeserializer::class) val lastModified: OffsetDateTime?,
 )
 
 data class TimeRange(
-    @JsonDeserialize(using = DateDeserializer::class)
-    val start: OffsetDateTime?,
-    @JsonDeserialize(using = DateDeserializer::class)
-    val end: OffsetDateTime?,
+    @JsonDeserialize(using = DateDeserializer::class) val start: OffsetDateTime?,
+    @JsonDeserialize(using = DateDeserializer::class) val end: OffsetDateTime?,
+)
+
+data class TypedDateEvent(
+    val type: String,
+    @JsonDeserialize(using = DateDeserializer::class) val date: OffsetDateTime?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

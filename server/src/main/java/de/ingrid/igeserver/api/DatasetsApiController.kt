@@ -25,6 +25,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
+import de.ingrid.igeserver.model.ResearchPaging
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -34,6 +36,7 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentInfo
 import de.ingrid.igeserver.services.DocumentService
@@ -41,6 +44,7 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.igeserver.services.PermissionInfo
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.convertToDocument
@@ -70,6 +74,7 @@ class DatasetsApiController(
     private val groupService: GroupService,
     private val aclService: IgeAclService,
     private val storage: Storage,
+    private val researchService: ResearchService,
     val auditLog: AuditLogger,
 ) : DatasetsApi {
 
@@ -206,11 +211,40 @@ class DatasetsApiController(
         return ResponseEntity(HttpStatus.OK)
     }
 
+    override fun getAccessibleReferences(
+        principal: Principal,
+        uuid: String,
+        page: Int?,
+        pageSize: Int?,
+        options: List<String>,
+    ): ResponseEntity<ResearchResponse> {
+        val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
+        val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
+        val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
+        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.parentProfile)
+        val refQuery = docType.getIncomingReferenceQuery(doc, options + "forResearch")
+
+        if (refQuery.isEmpty()) {
+            return ResponseEntity.ok(ResearchResponse(0, emptyList()))
+        }
+
+        val paging = if (page != null && pageSize != null) {
+            ResearchPaging(page, pageSize)
+        } else {
+            ResearchPaging()
+        }
+
+        val result = researchService.querySql(principal, catalogIdentifier, refQuery, paging)
+        return ResponseEntity.ok(result)
+    }
+
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
         val tagsJsonNode: JsonNode = jacksonObjectMapper().valueToTree(tags)
-        auditLog.log("tags", "update", id.toString(), data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
+        val docUuid = docWrapperRepo.getReferenceById(id).uuid
+        auditLog.log("tags", "update", docUuid, data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
         return ResponseEntity.ok(updatedTags)
     }
 
@@ -290,12 +324,11 @@ class DatasetsApiController(
         isAddress: Boolean,
     ): Long {
         // get all children of parent and save those recursively
-        val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
+        val docs = documentService.findChildren(catalogId, origParentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
         docs.hits.forEach { child ->
             child.let {
-                // clear UUID to create a new one during copy
-                prepareDocumentForCopy(it.document)
+                // add wrapperId from document for further usage
                 it.document.wrapperId = it.wrapper.id
                 createCopyAndHandleSubTree(principal, catalogId, it.document, CopyOptions(parentId, true), isAddress)
             }
@@ -337,7 +370,7 @@ class DatasetsApiController(
         val isAllowedToGetAllChildren = parentId != null || isSuperOrCatAdmin || (!ignoreRootReadPermission && hasRootReadPermission(principal)) || hasRootWritePermission(principal)
 
         val childrenInfo = if (isAllowedToGetAllChildren) {
-            documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
+            documentService.findChildren(catalogId, parentId?.toInt(), if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
         } else {
             // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)

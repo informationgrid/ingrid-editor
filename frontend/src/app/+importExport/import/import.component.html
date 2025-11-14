@@ -19,15 +19,15 @@
 
     <div main-header>
         <ige-job-handler-header
-            [message]="message"
-            [showMoreForce]="showMore"
-            [isRunning]="importIsRunning"
-            (showMore)="showMore = $event"
+            [message]="message()"
+            [showMoreForce]="showMore()"
+            [isRunning]="importIsRunning()"
+            (showMore)="showMore.set($event)"
         ></ige-job-handler-header>
     </div>
 
-    <div status class="status" [class.hide]="!showMore">
-        @if (message; as log) {
+    <div status class="status" [class.hide]="!showMore()">
+        @if (message(); as log) {
             <div>
                 <div>
                     Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}
@@ -44,7 +44,7 @@
     </div>
 
     <section main-content>
-        @if (websocketConnected && lastLogReceived) {
+        @if (websocketConnected() && lastLogReceived()) {
             <mat-horizontal-stepper
                 #stepper
                 [linear]="true"
@@ -64,16 +64,16 @@
                             ></ige-file-upload>
                         </div>
                     } @else {
-                        @if (message) {
+                        @if (message()) {
                             <div class="content">
-                                @if (message.endTime == null) {
+                                @if (message()?.endTime == null) {
                                     <div class="section-title">
                                         Analyse der hochgeladenen Datei(en)
                                         <!--                                {{ message.progress }} von {{}}-->
                                     </div>
                                     <mat-progress-spinner
                                         diameter="50"
-                                        [value]="message.progress"
+                                        [value]="message()?.progress"
                                     ></mat-progress-spinner>
                                     <button
                                         mat-flat-button
@@ -82,7 +82,7 @@
                                         Abbrechen
                                     </button>
                                 }
-                                @if (message.stage === "ANALYZE") {
+                                @if (message()?.stage === "ANALYZE") {
                                     <div class="section-title">
                                         Analyse abgeschlossen
                                     </div>
@@ -113,7 +113,7 @@
                             mat-flat-button
                             color="primary"
                             matStepperNext
-                            [disabled]="!step1Complete || errorInAnalysis"
+                            [disabled]="!step1Complete || errorInAnalysis()"
                         >
                             Weiter
                         </button>
@@ -137,7 +137,7 @@
                             <div class="padding">
                                 <div>
                                     <ige-breadcrumb
-                                        [path]="parent.documentPath"
+                                        [path]="parent().documentPath"
                                     ></ige-breadcrumb>
                                     <span class="link-text">
                                         <a
@@ -154,7 +154,7 @@
                                     <ige-breadcrumb
                                         [rootName]="'Adressen'"
                                         [selectable]
-                                        [path]="parent.addressPath"
+                                        [path]="parent().addressPath"
                                     ></ige-breadcrumb>
                                     <span class="link-text">
                                         <a
@@ -180,14 +180,14 @@
                                     aus.
                                 </div>
                             }
-                            @if (datasetsWithNoPermission.length > 0) {
+                            @if (datasetsWithNoPermission().length > 0) {
                                 <div class="error-box">
                                     Der Import beinhaltet existierende
                                     Datensätze. Sie haben zu mindestens einem
                                     Datensatz keine Berechtigungen:
                                     <ul>
                                         @for (
-                                            data of datasetsWithNoPermission;
+                                            data of datasetsWithNoPermission();
                                             track data.uuid
                                         ) {
                                             <li>
@@ -214,7 +214,7 @@
                             color="primary"
                             [disabled]="
                                 optionsFormGroup.invalid ||
-                                datasetsWithNoPermission.length > 0
+                                datasetsWithNoPermission().length > 0
                             "
                             matStepperNext
                             (click)="startImport()"
@@ -226,13 +226,13 @@
                 <mat-step>
                     <ng-template matStepLabel>Fertig</ng-template>
                     <div class="content text-center">
-                        @if (message && message.endTime === null) {
+                        @if (message() && message()?.endTime === null) {
                             <div class="section-title">
                                 Datensätze werden importiert
                             </div>
                             <mat-spinner diameter="50"></mat-spinner>
                         }
-                        @if (message?.endTime !== null) {
+                        @if (message()?.endTime !== null) {
                             <div class="flex-col">
                                 <div class="section-title">
                                     Import abgeschlossen
@@ -321,7 +321,7 @@
         </div>
     }
 
-    @if (log.report) {
+    @if (log?.report) {
         <ige-import-report [report]="log.report"></ige-import-report>
     }
 </ng-template>

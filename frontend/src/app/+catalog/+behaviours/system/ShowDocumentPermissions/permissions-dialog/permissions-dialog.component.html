@@ -9,14 +9,14 @@
         </button>
         <h1 mat-dialog-title>
             {{
-                forResponsibility
+                forResponsibility()
                     ? "Verantwortlichen Benutzer auswählen"
                     : "Berechtigungsübersicht"
             }}
         </h1>
     </div>
 
-    @if (users) {
+    @if (users()) {
         <mat-dialog-content>
             <!-- keyword search -->
             <ige-search-input
@@ -29,10 +29,10 @@
             <!-- permission table -->
             <user-table
                 data-cy="user-table"
-                [users]="users"
+                [users]="users()"
                 [query]="query.value"
                 [canExport]="false"
-                (onUserSelect)="selectedUser = $event"
+                (onUserSelect)="selectedUser.set($event)"
                 tableType="permission"
                 defaultSort="permission"
             ></user-table>
@@ -45,21 +45,21 @@
     <mat-dialog-actions>
         <button mat-flat-button mat-dialog-close="true">Schließen</button>
         <div class="flex-1"></div>
-        @if (forResponsibility) {
+        @if (forResponsibility()) {
             <button
                 color="primary"
                 mat-flat-button
-                [disabled]="!selectedUser"
+                [disabled]="!selectedUser()"
                 (click)="setAsResponsible()"
             >
                 Als Verantwortlichen festlegen
             </button>
         }
-        @if (!forResponsibility) {
+        @if (!forResponsibility()) {
             <button
                 color="primary"
                 mat-flat-button
-                [disabled]="!selectedUser"
+                [disabled]="!selectedUser()"
                 (click)="handleShowSelectedUser()"
             >
                 In Nutzerverwaltung anzeigen

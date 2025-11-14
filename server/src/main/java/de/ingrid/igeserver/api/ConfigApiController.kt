@@ -65,6 +65,7 @@ class ConfigApiController(
         ConnectionConfig(
             settingsService.getIBusConfig(),
             settingsService.getElasticConfig(),
+            settingsService.getCSWTConfig(),
         ),
     )
 
@@ -76,6 +77,9 @@ class ConfigApiController(
         }
         config.elasticsearch?.let {
             settingsService.setElasticConfig(it)
+        }
+        config.cswt?.let {
+            settingsService.setCSWTConfig(it)
         }
         connectionService.setupConnections()
         return ResponseEntity.ok().body(config)

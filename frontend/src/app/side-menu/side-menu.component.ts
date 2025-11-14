@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, Signal } from "@angular/core";
+import { Component, computed, inject, OnInit, Signal } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -70,8 +70,8 @@ export class SideMenuComponent implements OnInit {
   private uiStore = inject(UiStore);
   showDrawer: Observable<boolean>;
 
-  menuItems: Observable<Route[]> = this.menuService.menu$.pipe(
-    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route))),
+  menuItems: Signal<Route[]> = computed(() =>
+    this.menuService.menu().filter((route) => this.checkIfUserHasAccess(route)),
   );
 
   menuIsExpanded: Signal<boolean> = this.uiStore.sidebarExpanded;

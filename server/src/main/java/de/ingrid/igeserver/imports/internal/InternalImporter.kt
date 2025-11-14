@@ -31,6 +31,7 @@ import de.ingrid.igeserver.imports.internal.migrations.Migrate110
 import de.ingrid.igeserver.imports.internal.migrations.Migrate120
 import de.ingrid.igeserver.imports.internal.migrations.Migrate130
 import de.ingrid.igeserver.imports.internal.migrations.Migrate140
+import de.ingrid.igeserver.imports.internal.migrations.Migrate150
 import de.ingrid.igeserver.services.MapperService
 import de.ingrid.igeserver.utils.getString
 import org.springframework.http.MediaType
@@ -74,6 +75,10 @@ class InternalImporter : IgeImporter {
         if (version == "1.3.0") {
             documents = Migrate140.migrate(documents)
             version = "1.4.0"
+        }
+        if (version == "1.4.0") {
+            documents = Migrate150.migrate(documents)
+            version = "1.5.0"
         }
 
         return jacksonObjectMapper().createArrayNode().apply {

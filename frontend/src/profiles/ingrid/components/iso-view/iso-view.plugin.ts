@@ -65,12 +65,13 @@ export class IsoViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnIso",
       tooltip: "ISO Ansicht",
       matSvgVariable: "ISO-Ansicht",
       eventId: "ISO",
       pos: 80,
-      active: signal(false),
+      active: false,
     });
 
     // react on event when button is clicked

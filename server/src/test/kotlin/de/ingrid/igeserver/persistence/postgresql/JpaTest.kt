@@ -214,7 +214,7 @@ class JpaTest : IntegrationTest() {
                 // .addJoin("c", "doc.catalog")
                 .setParameter("type", "uvp")
         val result2 = q2.resultList
-        result2.size shouldBeExactly 7
+        result2.size shouldBeExactly 8
     }
 
     private fun convertDate(date: OffsetDateTime?): String? = date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))

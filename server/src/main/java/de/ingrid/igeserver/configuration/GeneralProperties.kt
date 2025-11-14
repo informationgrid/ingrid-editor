@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.bind.Name
 
 @ConfigurationProperties("app")
 data class GeneralProperties(
@@ -28,7 +29,8 @@ data class GeneralProperties(
     val enableCors: Boolean,
     val enableHttps: Boolean,
     val markInsteadOfDelete: Boolean,
-    val host: String,
+    @Name("host")
+    val appUrl: String,
     val externalHelp: String?,
     val instanceId: String = "ige-ng",
     val indexPageSize: Int = 100,

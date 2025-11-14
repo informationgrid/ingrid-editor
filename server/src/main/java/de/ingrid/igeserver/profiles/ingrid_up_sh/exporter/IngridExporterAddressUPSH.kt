@@ -21,13 +21,15 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class IngridExporterAddressUPSH(
     idfExporter: IngridIdfExporterUPSH,
-    luceneExporter: IngridLuceneExporterUPSH,
+    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
 ) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =

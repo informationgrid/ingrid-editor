@@ -6,6 +6,7 @@
     [placeholder]="props.placeholder"
     [errorStateMatcher]="errorStateMatcher"
     [required]="props.required"
+    [attr.data-cy]="'autocomplete-' + key"
 />
 @if (
     formControl.value != null && !props.hideDeleteButton && formControl.enabled

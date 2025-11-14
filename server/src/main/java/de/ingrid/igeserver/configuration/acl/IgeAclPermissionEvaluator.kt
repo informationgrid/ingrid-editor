@@ -68,11 +68,6 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             return true
         }
 
-        // root elements can only be created by admins
-        if (targetId == null) {
-            return false
-        }
-
         val objectIdentity = objectIdentityGenerator.createObjectIdentity(targetId, targetType)
         return checkACLPermission(authentication, objectIdentity, permission, null)
     }

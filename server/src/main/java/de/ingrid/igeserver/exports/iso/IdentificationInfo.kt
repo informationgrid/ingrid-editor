@@ -57,6 +57,7 @@ class MDDataIdentification(
     val environmentDescription: CharacterString?,
     // extent: List<CharacterString>?,
     val supplementalInformation: CharacterString?,
+    val aggregationInfo: List<AggregationInfo>?,
 ) : SVServiceIdentification(
     citation,
     abstract, purpose, status, pointOfContact, resourceMaintenance, resourceFormat, descriptiveKeywords, resourceSpecificUsage,
@@ -103,6 +104,19 @@ data class MDInteger(
 
 data class TopicCategory(
     @JacksonXmlProperty(localName = "MD_TopicCategoryCode") val value: String?,
+)
+
+data class AggregationInfo(
+    @JacksonXmlProperty(localName = "MD_AggregateInformation") val mdAggregateInformation: MDAggregateInformation?,
+)
+
+data class MDAggregateInformation(
+    @JacksonXmlProperty(localName = "aggregateDataSetName") val aggregateDataSetName: Citation?,
+    @JacksonXmlProperty(localName = "associationType") val associationType: AssociationType?,
+)
+
+data class AssociationType(
+    @JacksonXmlProperty(localName = "DS_AssociationTypeCode") val code: CodelistAttributes?,
 )
 
 data class CharacterSet(

@@ -39,7 +39,7 @@ import { Router } from "@angular/router";
 import { DocumentWithMetadata } from "../../../models/ige-document";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { waitForCondition } from "../../../services/utils";
 
@@ -53,7 +53,7 @@ export class CopyCutPastePlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   // event element needs to be passed for restoring focus correctly,
@@ -91,14 +91,15 @@ export class CopyCutPastePlugin extends Plugin {
     super.registerForm();
 
     const buttons: Array<ToolbarItem | Separator> = [
-      { id: "toolBtnCopyCutSeparator", pos: 30, isSeparator: true },
+      { id: "toolBtnCopyCutSeparator", pos: 30, type: "separator" },
       {
+        type: "button",
         id: "toolBtnCopy",
         tooltip: "Kopieren / Verschieben",
         matSvgVariable: "Kopieren-Ausschneiden",
         eventId: "COPY",
         pos: 40,
-        active: signal(false),
+        active: false,
         menu: [
           { eventId: "COPY", label: "Kopieren" },
           { eventId: "COPYTREE", label: "Kopieren mit Teilbaum" },

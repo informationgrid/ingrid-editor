@@ -24,6 +24,8 @@ import {
   inject,
   LOCALE_ID,
   provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -152,6 +154,11 @@ import {
   withRouter,
 } from "ngx-matomo-client";
 import { AppInjector } from "./app/app_injector";
+import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/timepicker-type.component";
+import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
+import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
+import { SubSectionWrapper } from "./app/formly/wrapper/sub-section-wrapper.component";
+import { TimeReferenceComponent } from "./app/formly/types/time-reference/time-reference.component";
 
 if (environment.production) {
   enableProdMode();
@@ -159,6 +166,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZonelessChangeDetection(),
     importProvidersFrom(
       KeycloakAngularModule,
       AngularSplitModule,
@@ -240,6 +248,10 @@ bootstrapApplication(AppComponent, {
             component: DateRangeTypeComponent,
           },
           {
+            name: "timepicker",
+            component: TimepickerTypeComponent,
+          },
+          {
             name: "upload",
             component: UploadTypeComponent,
           },
@@ -254,6 +266,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "uvpPhases",
             component: UvpSectionsComponent,
+          },
+          {
+            name: "bawPhases",
+            component: BawSectionsComponent,
           },
           {
             name: "referencedDocuments",
@@ -278,6 +294,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "metadata",
             component: MetadataTypeComponent,
+          },
+          {
+            name: "time-reference",
+            component: TimeReferenceComponent,
           },
           /* FOR PREVIEW */
           {
@@ -324,6 +344,10 @@ bootstrapApplication(AppComponent, {
             name: "unit-inputPrint",
             component: PrintTypeComponent,
           },
+          {
+            name: "explanationText",
+            component: ExplanationTextComponent,
+          },
         ],
         validators: [
           { name: "ip", validation: IpValidator },
@@ -347,6 +371,7 @@ bootstrapApplication(AppComponent, {
           { name: "panel", component: OneColumnWrapperComponent },
           { name: "full-panel", component: FullWidthWrapperComponent },
           { name: "section", component: SectionWrapper },
+          { name: "sub-section", component: SubSectionWrapper },
           { name: "button", component: ButtonWrapperComponent },
           // { name: "animation", component: AnimationWrapperComponent },
         ],
@@ -420,6 +445,8 @@ bootstrapApplication(AppComponent, {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+    // handle errors outside angular context with errorhandler
+    provideBrowserGlobalErrorListeners(),
     // cache routes
     {
       provide: RouteReuseStrategy,

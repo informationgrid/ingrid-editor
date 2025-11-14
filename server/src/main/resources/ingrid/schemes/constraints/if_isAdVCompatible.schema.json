@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/constraints/if_isAdVCompatible",
+  "type": "object",
+  "if": {
+    "properties": {
+      "properties": {
+        "type": "object",
+        "properties": {
+          "isAdVCompatible": { "const": true }
+        },
+        "required": ["isAdVCompatible"]
+      }
+    },
+    "required": ["properties"]
+  },
+  "then": {
+    "properties": {
+      "advProductGroups": {
+        "type": "array",
+        "minItems": 1
+      },
+      "pointOfContact": {
+        "type": "array",
+        "minItems": 1,
+        "contains": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "object",
+              "properties": {
+                "key": { "const": "7" }
+              },
+              "required": ["key"]
+            }
+          }
+        }
+      }
+    },
+    "required": ["advProductGroups"]
+  }
+}

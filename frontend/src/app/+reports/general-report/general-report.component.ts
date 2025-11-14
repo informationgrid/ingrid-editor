@@ -23,7 +23,7 @@ import {
   inject,
   OnInit,
   signal,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
@@ -93,11 +93,11 @@ import { CdkMonitorFocus } from "@angular/cdk/a11y";
   ],
 })
 export class GeneralReportComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
+  readonly sort = viewChild(MatSort);
   chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
   private translocoService = inject(TranslocoService);
-  displayedColumns = [
+  displayedColumns = signal<string[]>([
     "icon",
     "title",
     "percentage",
@@ -105,9 +105,8 @@ export class GeneralReportComponent implements OnInit {
     "published",
     "working",
     "allWorking",
-  ];
+  ]);
 
-  facetModel: any;
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
 
@@ -115,7 +114,7 @@ export class GeneralReportComponent implements OnInit {
     type: new UntypedFormControl("selectDocuments"),
     facets: new UntypedFormControl(),
   });
-  facets: Facets;
+  facets = signal<Facets | null>(null);
 
   constructor(
     private profileService: ProfileService,
@@ -191,7 +190,7 @@ export class GeneralReportComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters))),
+        .pipe(tap((filters) => this.facets.set(filters))),
     );
   }
 

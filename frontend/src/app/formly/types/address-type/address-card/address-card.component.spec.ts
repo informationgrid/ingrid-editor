@@ -32,6 +32,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("AddressCardComponent", () => {
   let spectator: Spectator<AddressCardComponent>;
@@ -45,6 +46,7 @@ describe("AddressCardComponent", () => {
     ],
     // declarations: [CodelistPipe],
     providers: [
+      provideZonelessChangeDetection(),
       DocumentService,
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),

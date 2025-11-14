@@ -32,4 +32,6 @@ class IngridModelTransformerBast(transformerConfig: TransformerConfig) : IngridM
         val oldestAncestorData = distributor.ancestorAddressesIncludingSelf.first().document.data
         return oldestAncestorData.getString("organization") ?: oldestAncestorData.getString("lastName") ?: "???"
     }
+
+    override val extraContent: String by lazy { getProjectInfoIdfSection(doc.data) }
 }

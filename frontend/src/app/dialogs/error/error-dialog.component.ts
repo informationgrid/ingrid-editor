@@ -25,7 +25,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, Signal } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
 import { ConfigService } from "../../services/config/config.service";
 import { MatIcon } from "@angular/material/icon";
@@ -54,20 +54,16 @@ import { MatAnchor, MatButton, MatIconButton } from "@angular/material/button";
   ],
 })
 export class ErrorDialogComponent {
-  errors: IgeError[];
-  generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen!";
+  errors: Signal<IgeError[]>;
+  readonly generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen!";
   public supportEmail: string;
   constructor(
-    @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
+    @Inject(MAT_DIALOG_DATA) data: Signal<IgeError[]>,
     private dlgRef: MatDialogRef<ErrorDialogComponent>,
     configService: ConfigService,
   ) {
     this.supportEmail = configService.getConfiguration()?.supportEmail;
-    if (data instanceof Array) {
-      this.errors = data;
-    } else {
-      this.errors = [data];
-    }
+    this.errors = data;
   }
 
   close() {

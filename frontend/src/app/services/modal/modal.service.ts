@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, NgZone } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ErrorDialogComponent } from "../../dialogs/error/error-dialog.component";
 import { IgeError } from "../../models/ige-error";
@@ -31,14 +31,10 @@ import {
   providedIn: "root",
 })
 export class ModalService {
+  private dialog = inject(MatDialog);
   private dialogRef: MatDialogRef<ErrorDialogComponent>;
-  errors: IgeError[] = [];
-  isExclusive = false;
-
-  constructor(
-    private dialog: MatDialog,
-    private ngZone: NgZone,
-  ) {}
+  private errors = signal<IgeError[]>([]);
+  private isExclusive = false;
 
   confirmWith(
     options: ConfirmDialogData,
@@ -67,9 +63,9 @@ export class ModalService {
 
     if (exclusive) {
       this.isExclusive = true;
-      this.errors = [error];
+      this.errors.set([error]);
     } else {
-      this.errors.push(error);
+      this.errors.update((prev) => [...prev, error]);
     }
 
     if (this.dialogRef) {
@@ -77,62 +73,16 @@ export class ModalService {
       return;
     }
 
-    // run the opening of the dialog within a zone, otherwise the dialog will not be closable (see #9676)
-    this.ngZone.run(() => {
-      this.dialogRef = this.dialog.open(ErrorDialogComponent, {
-        maxWidth: 700,
-        hasBackdrop: true,
-        data: this.errors,
-        delayFocusTrap: true,
-      });
-      this.dialogRef.afterClosed().subscribe(() => {
-        this.dialogRef = null;
-        this.errors = [];
-        this.isExclusive = false;
-      });
+    this.dialogRef = this.dialog.open(ErrorDialogComponent, {
+      maxWidth: 700,
+      hasBackdrop: true,
+      data: this.errors,
+      delayFocusTrap: true,
     });
-  }
-
-  /**
-   *
-   * @param message
-   * @param moreInfo
-   */
-  showJavascriptError(message: string | any, moreInfo?: string) {
-    // do not show error if modal is already showing an exclusive message unless it's also exclusive
-    if (this.isExclusive) {
-      return;
-    }
-
-    const errorObj = new IgeError();
-    errorObj.message = message;
-
-    if (this.dialogRef) {
-      console.warn("Dialog already open, just updated error information");
-      return;
-    }
-
-    if (moreInfo) {
-      errorObj.stacktrace = moreInfo;
-    } else if (message && message._body) {
-      errorObj.stacktrace = message._body;
-    }
-
-    this.ngZone.run(() => {
-      this.dialogRef = this.dialog.open(ErrorDialogComponent, {
-        maxWidth: 700,
-        hasBackdrop: true,
-        data: errorObj,
-      });
-      this.dialogRef.afterClosed().subscribe(() => {
-        this.dialogRef = null;
-        this.errors = [];
-        this.isExclusive = false;
-      });
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.dialogRef = null;
+      this.errors.set([]);
+      this.isExclusive = false;
     });
-  }
-
-  showNotImplemented() {
-    alert("Diese Funktion ist noch nicht implementiert!");
   }
 }

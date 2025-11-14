@@ -40,6 +40,7 @@ class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDelet
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
         // remove from index
         try {
+            // TODO: Records that are only in DRAFT mode do not need to be deleted.
             this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
         } catch (e: NoElasticsearchConnectionException) {
             // just give a warning so that delete operation succeeds since it runs in a transaction

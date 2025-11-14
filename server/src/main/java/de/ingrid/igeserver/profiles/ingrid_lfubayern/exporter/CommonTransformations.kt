@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -113,6 +114,13 @@ fun lfubGetTreePathNames(
         val pathDoc = documentService.getDocumentByWrapperId(catalogIdentifier, it)
         pathDoc.title ?: "???"
     }
+}
+
+fun lfubGetTreePathIDF(transformer: IngridModelTransformer): String {
+    val path = lfubGetTreePathNames(transformer.documentService, transformer.catalogIdentifier, transformer.doc).joinToString(",")
+    return """
+                <idf:treePath><gco:CharacterString>$path</gco:CharacterString></idf:treePath>
+    """.trimIndent()
 }
 
 fun getLfuBayernTransformer(docType: String): KClass<out Any>? = when (docType) {

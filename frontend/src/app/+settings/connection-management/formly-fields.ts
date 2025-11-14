@@ -41,7 +41,14 @@ export class ConnectionForm extends FormFieldHelper {
           key: "elastic",
           value: "Elasticsearch",
           fields: {
-            fieldGroup: this.addFieldsForElastic(),
+            fieldGroup: [...this.addFieldsForElastic()],
+          },
+        },
+        {
+          key: "cswt",
+          value: "CSW-T",
+          fields: {
+            fieldGroup: [...this.addFieldsForCSWT()],
           },
         },
       ],
@@ -120,6 +127,49 @@ export class ConnectionForm extends FormFieldHelper {
             field.model.https
               ? 'HTTPS (Zertifikat \"/elasticsearch-ca.pem\" muss vorhanden sein)'
               : "HTTPS",
+        },
+      }),
+      this.addCheckboxInline("isSecure", "ist abgesichert"),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("username", "Benutzername", {
+            className: "flex-1 white-bg ip",
+            required: true,
+            updateOn: "change",
+          }),
+          this.addInputInline("password", "Passwort", {
+            className: "flex-1 white-bg port",
+            required: true,
+            updateOn: "change",
+            type: "password",
+          }),
+        ],
+        {
+          hideExpression: (field: FormlyFieldConfig) => !field.model.isSecure,
+          fieldGroupClassName: "flex-row gap-6",
+        },
+      ),
+    ];
+  }
+  private addFieldsForCSWT() {
+    return [
+      { key: "_type" },
+      { key: "id" },
+      this.addInputInline("name", "Name", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        validators: {
+          validation: ["valid_es_alias"],
+        },
+      }),
+      this.addInputInline("url", "URL", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        validators: {
+          validation: ["url"],
         },
       }),
       this.addCheckboxInline("isSecure", "ist abgesichert"),

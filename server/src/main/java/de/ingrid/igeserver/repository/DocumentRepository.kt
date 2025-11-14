@@ -35,6 +35,8 @@ interface DocumentRepository : JpaRepository<Document, Int> {
 
     fun findAllByCatalogAndIsLatestIsTrueAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
 
+    fun findAllByCatalogAndStateAndUuidIn(catalog: Catalog, state: DocumentState, uuid: List<String>): List<Document>
+
     // caution! no deleted, latest checks. used for post-migration
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<Document>
 

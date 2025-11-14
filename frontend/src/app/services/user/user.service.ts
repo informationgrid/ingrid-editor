@@ -35,6 +35,7 @@ import { Group } from "../../models/user-group";
 // @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
+import { TranslocoService } from "@jsverse/transloco";
 import { ModalService } from "../modal/modal.service";
 
 @Injectable({
@@ -42,12 +43,13 @@ import { ModalService } from "../modal/modal.service";
 })
 export class UserService {
   private groupStore = inject(GroupStore);
+  private loco = inject(TranslocoService);
   private modalService = inject(ModalService);
 
   availableRoles: SelectOptionUi[] = [
-    new SelectOption("cat-admin", "Katalog-Administrator"),
-    new SelectOption("md-admin", "Metadaten-Administrator"),
-    new SelectOption("author", "Autor"),
+    new SelectOption("cat-admin", this.loco.translate("roles.cat-admin")),
+    new SelectOption("md-admin", this.loco.translate("roles.md-admin")),
+    new SelectOption("author", this.loco.translate("roles.author")),
   ];
 
   roleIcon = {
@@ -236,10 +238,9 @@ export class UserService {
     if (error.status === 409) {
       if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
-        this.modalService.showJavascriptError(
+        throw new IgeError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
-        return null;
       } else if (errorText.includes(EMAIL_NOT_UNIQUE)) {
         throw new IgeError(
           "Es existiert bereits ein Benutzer mit dieser Mailadresse",

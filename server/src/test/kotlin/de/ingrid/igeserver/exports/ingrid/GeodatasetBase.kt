@@ -129,7 +129,7 @@ open class GeodatasetBase : ShouldSpec() {
         )
 
         initDocumentMocks(addresses + datasets, this.documentService)
-        every { this@GeodatasetBase.documentService.getIncomingReferences(this.any(), this.any()) } answers { emptySet() }
+        every { this@GeodatasetBase.documentService.getIncomingReferenceUUIDs(this.any(), this.any(), this.any()) } answers { emptySet() }
     }
 
     protected fun exportGeoDataset(additionalJson: String? = null): String = exportJsonToXML(

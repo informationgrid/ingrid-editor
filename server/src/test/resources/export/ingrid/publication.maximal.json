@@ -41,19 +41,19 @@
     "accessConstraints": [{ "key": "5" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2022-09-06T22:00:00.000Z",
-        "referenceDateType": { "key": "3" }
-      }
-    ],
-    "status": { "key": "7" },
-    "resourceRange": {
-      "end": "2022-10-30T23:00:00.000Z",
-      "start": "2022-10-04T22:00:00.000Z"
+    "event": {
+      "lastModified": "2022-09-06T22:00:00.000Z"
     },
-    "resourceDateType": { "key": "since" },
-    "resourceDateTypeSince": { "key": "exactDate" }
+    "status": { "key": "7" },
+    "data": {
+      "type": "range",
+      "resourceRange": {
+        "end": "2022-10-30T23:00:00.000Z",
+        "start": "2022-10-04T22:00:00.000Z"
+      },
+      "intervalFrom": "date",
+      "intervalTo": "date"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "39" }] },
   "orderInfo": "order location",

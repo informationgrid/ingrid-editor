@@ -24,6 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransform
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getProjectInfoIdfSection
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
@@ -50,4 +51,6 @@ class GeoserviceTransformerBast(transformerConfig: TransformerConfig) : Geodatas
                 ),
             )
         }
+
+    override val extraContent: String by lazy { getProjectInfoIdfSection(doc.data) }
 }

@@ -67,6 +67,8 @@ class IndexTargetWorker(
     fun indexAll() {
         log.info("Indexing to target '${config.target}' in category: " + config.category.value)
 
+        config.target.setCatalogId(catalogId)
+
         // pre phase
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 
@@ -93,6 +95,9 @@ class IndexTargetWorker(
             }
             // post phase
             indexPostPhase(plugInfo)
+
+            config.target.onFinishIndexAll()
+
             log.debug("Task finished: Indexing for $catalogId")
         } catch (ex: InterruptedException) {
             log.info("Indexing was cancelled")
@@ -169,6 +174,7 @@ class IndexTargetWorker(
             Pair(config.exporter.run(doc, catalogId, exportOptions), config.exporter.typeInfo.type)
 
         val elasticDocument = convertToElasticDocument(exportedDoc)
+        config.target.setCatalogId(catalogId)
         config.target.update(indexInfo, elasticDocument)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
@@ -224,7 +230,7 @@ class IndexTargetWorker(
                 put("iPlugName", prepareIPlugName(infoId))
                 put("linkedIndex", info.newIndex)
                 put("linkedType", if (forAddress) "address" else "base")
-                put("adminUrl", generalProperties.host)
+                put("adminUrl", generalProperties.appUrl)
                 put("lastHeartbeat", currentDate)
                 put("lastIndexed", currentDate)
                 set<JsonNode>(

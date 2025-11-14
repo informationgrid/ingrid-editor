@@ -116,7 +116,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
   private expandNode(node: TreeNode) {
     node.isLoading = true;
     this._database
-      .getChildren(node._id, false, this.forAddress)
+      .getChildren(node._id, false)
       .pipe(
         map((docs) =>
           this._database.mapDocumentsToTreeNodes(docs, node.level + 1),

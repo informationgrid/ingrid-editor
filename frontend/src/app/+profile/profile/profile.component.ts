@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
 import {
@@ -34,6 +34,7 @@ import { MatButton } from "@angular/material/button";
 import { EmailformComponent } from "../../emailform/emailform.component";
 import { AsyncPipe } from "@angular/common";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
   selector: "ige-profile",
@@ -46,9 +47,10 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     EmailformComponent,
     AsyncPipe,
     MATOMO_DIRECTIVES,
+    TranslocoDirective,
   ],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent {
   constructor(
     private configService: ConfigService,
     public userService: UserService,
@@ -59,15 +61,6 @@ export class ProfileComponent implements OnInit {
   userInfo$ = this.configService.$userInfo;
 
   editingEmail = false;
-
-  getRoleLabel(role: string): string {
-    return (
-      this.userService.availableRoles.find((r) => r.value == role)?.label ??
-      role
-    );
-  }
-
-  ngOnInit(): void {}
 
   changeEmail(newMail: string): void {
     if (!newMail) {

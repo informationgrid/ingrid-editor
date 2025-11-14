@@ -24,7 +24,7 @@ import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
 import { IngridOrganisationDoctype } from "./ingrid/doctypes/ingrid-organisation.doctype";
 import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
 import { SpecialisedTaskDoctype } from "./ingrid/doctypes/specialisedTask.doctype";
-import { PublicationDoctype } from "./ingrid/doctypes/publication-doctype.service";
+import { PublicationDoctype } from "./ingrid/doctypes/publication-doctype";
 import { ProjectDoctype } from "./ingrid/doctypes/project.doctype";
 import { DataCollectionDoctype } from "./ingrid/doctypes/data-collection.doctype";
 import { InformationSystemDoctype } from "./ingrid/doctypes/information-system.doctype";

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/constraints/if_isOpenData-ingrid",
+  "type": "object",
+  "if": {
+    "properties": {
+      "properties": {
+        "type": "object",
+        "properties": {
+          "isOpenData": { "const": true }
+        },
+        "required": ["isOpenData"]
+      }
+    },
+    "required": ["properties"]
+  },
+  "then": {
+    "properties": {
+      "openDataCategories": {
+        "type": "array",
+        "minItems": 1
+      }
+    },
+    "anyOf": [
+      {
+        "properties": {
+          "references": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "object",
+                  "required": ["key"],
+                  "properties": {
+                    "key": { "const": "9990" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": ["references"]
+      },
+      {
+        "properties": {
+          "fileReferences": {
+            "type": "array",
+            "minItems": 1
+          }
+        },
+        "required": ["fileReferences"]
+      }
+    ],
+    "required": ["openDataCategories"]
+  }
+}

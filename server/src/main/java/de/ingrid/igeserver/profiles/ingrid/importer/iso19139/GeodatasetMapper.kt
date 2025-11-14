@@ -84,7 +84,21 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         val idOfIdentifier = identifier?.substringAfterLast("/")
                         val response = isoData.researchService.query(
                             catalogId,
-                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' IN ('$identifier', '$idOfIdentifier')"), null, null, false)),
+                            ResearchQuery(
+                                null,
+                                BoolFilter(
+                                    "AND",
+                                    listOf(
+                                        "document_wrapper.type = 'InGridGeoDataset'",
+                                        "deleted = 0",
+                                        "state = 'PUBLISHED'",
+                                        "data ->> 'identifier' IN ('$identifier', '$idOfIdentifier')",
+                                    ),
+                                    null,
+                                    null,
+                                    false,
+                                ),
+                            ),
                         )
                         return if (response.totalHits == 1) response.hits[0].uuid else null
                     }
@@ -121,7 +135,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
 
     fun getQualities(): List<Quality> = metadata.dataQualityInfo
         ?.flatMap { it.dqDataQuality?.report ?: emptyList() }
@@ -324,7 +338,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = KeyValue(nameId, name, info.codelist)
         val parameter = info.element.measureDescription?.value
-        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toDouble()
+        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.value?.toDouble()
         return Quality(info.type, nameKeyValue, value, parameter)
     }
 
@@ -372,7 +386,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val title = KeyValue(titleKey, titleValue, "3555")
                     CatalogInfo(
                         title,
-                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()
@@ -387,7 +401,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val title = KeyValue(titleKey, titleValue, "3535")
                     CatalogInfo(
                         title,
-                        it.citation.date.getOrNull(0)?.date?.date?.dateTime ?: it.citation.date.getOrNull(0)?.date?.date?.date,
+                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime ?: it.citation.date?.getOrNull(0)?.date?.date?.date,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()
@@ -444,7 +458,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
     private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? = metadata.dataQualityInfo
         ?.flatMap {
             it.dqDataQuality?.report
@@ -455,7 +469,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
     private fun getGriddedDataPositionalAccuracy(): Double? = metadata.dataQualityInfo
         ?.flatMap {
             it.dqDataQuality?.report
@@ -465,7 +479,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 } ?: emptyList()
         }
         ?.getOrNull(0)
-        ?.toDouble()
+        ?.value?.toDouble()
 }
 
 data class QualityInfo(

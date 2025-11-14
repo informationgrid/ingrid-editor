@@ -94,7 +94,7 @@
                                 [svgIcon]="this.props.elementIcon"
                             ></mat-icon>
                         }
-                        @if (type !== "search") {
+                        @if (type() !== "search") {
                             {{ getParameter(item) }}
                         } @else {
                             <div class="label">
@@ -132,7 +132,7 @@
     }
 }
 
-@if (type === "select") {
+@if (type() === "select") {
     <mat-form-field appearance="outline" class="width-100">
         <mat-select
             [placeholder]="props.placeholder"
@@ -150,7 +150,7 @@
                     ></ngx-mat-select-search>
                 </mat-option>
             }
-            @for (option of filteredOptions | async; track option.value) {
+            @for (option of filteredOptions(); track option.value) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
@@ -175,7 +175,7 @@
     </mat-form-field>
 }
 
-@if (type === "autocomplete") {
+@if (type() === "autocomplete") {
     <mat-form-field appearance="outline" class="width-100">
         @if (props.fieldLabel) {
             <mat-label>{{ props.fieldLabel }}</mat-label>
@@ -189,14 +189,14 @@
             (keydown.enter)="addFreeEntry(inputControl.value)"
             [matAutocomplete]="auto"
             [errorStateMatcher]="matcher"
-            (focusin)="hasFocus = true"
-            (focusout)="hasFocus = false"
+            (focusin)="hasFocus.set(true)"
+            (focusout)="hasFocus.set(false)"
         />
         <mat-autocomplete
             #auto="matAutocomplete"
             (optionSelected)="addToList($event.option.value)"
         >
-            @for (option of filteredOptions | async; track option.value) {
+            @for (option of filteredOptions(); track option.value) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
@@ -238,72 +238,76 @@
     </mat-form-field>
 }
 
-@if (type === "search") {
-    <ige-search-input
-        [autocompleteRef]="searchAuto"
-        [withWhiteBorder]="false"
-        [searchSub]="searchSub"
-        [query]="inputControl"
-        [flexWidth]="true"
-        [placeholder]="props.placeholder"
-        [focus]="false"
-        [errorText]="
-            inputControl.errors?.mustBeEmpty
-                ? 'Der Inhalt muss noch mit \'Return\' bestätigt werden'
-                : null
-        "
-        [showSearchIcon]="true"
-    ></ige-search-input>
-    <mat-autocomplete
-        #searchAuto="matAutocomplete"
-        [autoActiveFirstOption]="true"
-        (optionSelected)="addValueObject($event.option.value)"
-    >
-        @for (doc of searchResult | async; track doc) {
-            <mat-option [value]="doc">
-                {{ getLabel(doc) }}
-            </mat-option>
-        }
-    </mat-autocomplete>
-}
-
-@if (type === "simple" && formControl.enabled) {
-    <mat-form-field class="width-100" appearance="outline">
-        <input
-            matInput
+@if (!props.hideInputField) {
+    @if (type() === "search") {
+        <ige-search-input
+            [autocompleteRef]="searchAuto"
+            [withWhiteBorder]="false"
+            [searchSub]="searchSub"
+            [query]="inputControl"
+            [flexWidth]="true"
             [placeholder]="props.placeholder"
-            autocomplete="off"
-            [formControl]="inputControl"
-            [required]="showError && props.required && formControl.invalid"
-            (keydown.enter)="addSimpleValues(inputControl.value)"
-            [errorStateMatcher]="matcher"
-            (focusin)="hasFocus = true"
-            (focusout)="hasFocus = false"
-            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
-            aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
-        />
-        <div matSuffix>
-            @if (searchSub && !searchSub.closed) {
-                <mat-spinner [diameter]="24"></mat-spinner>
-            }
-            @if (inputControl.value?.length > 0) {
-                <button
-                    mat-icon-button
-                    type="button"
-                    class="field-close"
-                    (click)="inputControl.setValue('')"
-                >
-                    <mat-icon>close</mat-icon>
-                </button>
-            }
-        </div>
-        <mat-hint>{{ props.hint }}</mat-hint>
-        <mat-error *transloco="let t"
-            >{{
+            [focus]="false"
+            [errorText]="
                 inputControl.errors?.mustBeEmpty
-                    ? t("form.validationMessages.commitWithEnter")
-                    : "Bitte erstellen Sie mindestens einen Eintrag"
-            }}
-        </mat-error>
-    </mat-form-field>
+                    ? 'Der Inhalt muss noch mit \'Return\' bestätigt werden'
+                    : null
+            "
+            [showSearchIcon]="true"
+        ></ige-search-input>
+        <mat-autocomplete
+            #searchAuto="matAutocomplete"
+            [autoActiveFirstOption]="true"
+            (optionSelected)="addValueObject($event.option.value)"
+        >
+            @for (doc of searchResult(); track doc) {
+                <mat-option [value]="doc">
+                    {{ getLabel(doc) }}
+                </mat-option>
+            }
+        </mat-autocomplete>
+    }
+
+    @if (type() === "simple" && formControl.enabled) {
+        <mat-form-field class="width-100" appearance="outline">
+            <input
+                matInput
+                [placeholder]="props.placeholder"
+                autocomplete="off"
+                [formControl]="inputControl"
+                [required]="showError && props.required && formControl.invalid"
+                (keydown.enter)="addSimpleValues(inputControl.value)"
+                [errorStateMatcher]="matcher"
+                (focusin)="hasFocus.set(true)"
+                (focusout)="hasFocus.set(false)"
+                [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
+                aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
+            />
+            <div matSuffix>
+                @if (searchSub && !searchSub.closed) {
+                    <mat-spinner [diameter]="24"></mat-spinner>
+                }
+                @if (inputControl.value?.length > 0) {
+                    <button
+                        mat-icon-button
+                        type="button"
+                        class="field-close"
+                        (click)="inputControl.setValue('')"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </div>
+            <mat-hint>{{ props.hint }}</mat-hint>
+            <mat-error *transloco="let t"
+                >{{
+                    inputControl.errors?.mustBeEmpty
+                        ? t("form.validationMessages.commitWithEnter")
+                        : "Bitte erstellen Sie mindestens einen Eintrag"
+                }}
+            </mat-error>
+        </mat-form-field>
+    }
+} @else if (formControl.value.length === 0) {
+    <div class="comment-field padding">Keine manuelle Eingabe erlaubt</div>
 }

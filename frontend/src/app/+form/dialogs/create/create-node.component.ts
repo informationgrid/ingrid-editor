@@ -28,8 +28,8 @@ import {
   OnInit,
   Signal,
   signal,
-  ViewChild,
   WritableSignal,
+  viewChild,
 } from "@angular/core";
 import {
   DocumentService,
@@ -69,7 +69,7 @@ import { AddressTemplateComponent } from "./address-template/address-template.co
 import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
 import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
 import { GeneralStore } from "../../../store/general.store";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 export interface CreateOptions {
@@ -105,10 +105,10 @@ export interface CreateOptions {
 })
 export class CreateNodeComponent implements OnInit {
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
-  @ViewChild("contextNodeContainer") container: ElementRef;
+  readonly container = viewChild<ElementRef>("contextNodeContainer");
   title = "Neuen Ordner anlegen";
   parent: WritableSignal<number> = linkedSignal(() => {
     return this.path()[this.path().length - 1]?.id ?? null;

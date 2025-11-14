@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  input,
+  output,
+  signal,
+} from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
@@ -77,16 +84,16 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   private leafletService = inject(LeafletService);
 
   searchInput = new UntypedFormControl();
-  showWelcome = true;
-  showNoResult = false;
-  geoThesaurusResults: GeoThesaurusResult[] = [];
+  showWelcome = signal<boolean>(true);
+  showNoResult = signal<boolean>(false);
+  geoThesaurusResults = signal<GeoThesaurusResult[]>([]);
 
   searchSubscribe: Subscription;
   drawnBBox: Rectangle;
 
   spatialSelection: GeoThesaurusResult = null;
   useArs = true;
-  hasMoreResults = false;
+  hasMoreResults = signal<boolean>(false);
 
   ngOnInit(): void {
     this.searchInput.valueChanges
@@ -107,20 +114,20 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
     if (this.searchSubscribe) this.searchSubscribe.unsubscribe();
 
     if (query.trim().length === 0) {
-      this.showWelcome = true;
-      this.geoThesaurusResults = [];
-      this.hasMoreResults = false;
+      this.showWelcome.set(true);
+      this.geoThesaurusResults.set([]);
+      this.hasMoreResults.set(false);
       return;
     }
-    this.showWelcome = false;
+    this.showWelcome.set(false);
 
     this.searchSubscribe = this.thesaurus
       .search(query)
       .subscribe((response: GeoThesaurusResult[]) => {
         this.applyDisplayTitle(response);
-        this.geoThesaurusResults = response;
-        this.showNoResult = response.length === 0;
-        this.hasMoreResults = response?.[0]?.hasMoreResults ?? false;
+        this.geoThesaurusResults.set(response);
+        this.showNoResult.set(response.length === 0);
+        this.hasMoreResults.set(response?.[0]?.hasMoreResults ?? false);
         // @ts-ignore
         setTimeout(() => (<Map>this.map())._onResize());
       });

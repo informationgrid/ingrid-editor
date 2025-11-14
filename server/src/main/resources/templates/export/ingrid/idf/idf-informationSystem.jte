@@ -1,12 +1,14 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
+@import gg.jte.Content
 @import java.util.Map
 
 @param Map<String, Object> map
+@param Content additionalIdentification
 
 !{var page = ((InformationSystemModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.idf.shared-general(page = page)
+    @template.export.ingrid.idf.shared-general(page = page, additionalIdentification = additionalIdentification)
     @if(page.hasDataQualityInfo())
         <gmd:dataQualityInfo>
             <gmd:DQ_DataQuality>

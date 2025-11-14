@@ -27,6 +27,7 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
     override val mdStandardVersion = "2005/PDAM 1"
     override val identificationType = "srv:SV_ServiceIdentification"
     override val extentType = "srv:extent"
+    override fun hasAccessConstraints() = model.data.service.hasAccessConstraints ?: false
     override val description: String
         get() {
             var description = model.data.description ?: ""
@@ -49,5 +50,4 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
     val abstractText = model.data.description ?: ""
     val history = data.service.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
-    val hasAccessConstraint = model.data.service.hasAccessConstraints ?: false
 }

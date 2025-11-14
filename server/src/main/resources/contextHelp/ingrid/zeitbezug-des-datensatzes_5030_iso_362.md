@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: events
+id: created
 docType:
   - InGridDataCollection
   - InGridGeoDataset
@@ -10,7 +10,6 @@ docType:
   - InGridPublication
   - InGridProject
 profile: ingrid
-
 
 # title, used as window title
 title: Zeitbezug des Datensatzes (der Ressource)
@@ -22,7 +21,7 @@ Angabe, wann der Datensatz erstellt, geändert und/oder publiziert wurde.
 
 ## Beispiel:
 
-11.11.2003 Erstellung
+Erstellung: 11.11.2003
 
 # ISO Abbildung
 

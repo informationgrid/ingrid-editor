@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
@@ -29,8 +28,8 @@ import { FormGroup } from "@angular/forms";
 import { ConnectionForm } from "./formly-fields";
 import {
   ConfigService,
-  ConnectionInfo,
   Connections,
+  GeneralConnectionInfo,
 } from "../../services/config/config.service";
 import { tap } from "rxjs/operators";
 
@@ -48,7 +47,6 @@ import { FormlyForm } from "@ngx-formly/core";
   selector: "ige-ibus-management",
   templateUrl: "./connection-management.component.html",
   styleUrls: ["./connection-management.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButton,
     ConnectionStateComponent,
@@ -57,6 +55,8 @@ import { FormlyForm } from "@ngx-formly/core";
   ],
 })
 export class ConnectionManagementComponent implements OnInit {
+  private configService = inject(ConfigService);
+
   form = new FormGroup<any>({});
   fields = inject(ConnectionForm).fields;
   model: any;
@@ -65,10 +65,7 @@ export class ConnectionManagementComponent implements OnInit {
   $connectionStates = signal<any[]>([]);
   private connectionSubscriptions: Subscription[];
 
-  constructor(
-    private configService: ConfigService,
-    private cdr: ChangeDetectorRef,
-  ) {
+  constructor() {
     this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((state) => {
       this.$valid.set(state === "VALID");
     });
@@ -81,7 +78,7 @@ export class ConnectionManagementComponent implements OnInit {
         tap((config) => this.checkConnectionState(config.connections)),
         tap((config) => (this.model = config)),
       )
-      .subscribe(() => this.cdr.detectChanges());
+      .subscribe();
   }
 
   save() {
@@ -92,7 +89,7 @@ export class ConnectionManagementComponent implements OnInit {
     });
   }
 
-  private checkConnectionState(configs: ConnectionInfo[]) {
+  private checkConnectionState(configs: GeneralConnectionInfo[]) {
     this.connectionSubscriptions?.forEach((item) => item.unsubscribe());
 
     const connectionStates: ConnectionStateInfo[] = configs.map((config) => {

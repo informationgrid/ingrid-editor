@@ -22,16 +22,26 @@ package de.ingrid.igeserver.zabbix
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.configuration.ZabbixProperties
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.java.Java
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.request.HttpRequest
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.security.MessageDigest
+import kotlin.text.contains
 
 const val JSONRPC = "2.0"
 
@@ -39,6 +49,7 @@ const val JSONRPC = "2.0"
 @Profile("zabbix")
 class ZabbixService(
     zabbixProperties: ZabbixProperties,
+    private val httpClient: HttpClient = buildHttpClient(),
 ) {
     private var log = logger()
     private val apiKey = zabbixProperties.apiKey
@@ -48,6 +59,9 @@ class ZabbixService(
     private val userGroupId = zabbixProperties.userGroupId
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
+
+    private val jsonRpc: ContentType
+        get() = ContentType("application", "json-rpc")
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
         val remoteUploads = requestApi(getUploadsPayload(data.uuid)).get("result")
@@ -85,6 +99,9 @@ class ZabbixService(
      * @return userId of created user
      */
     private fun createUser(addressMail: String): String {
+        val userid = getUserId(addressMail)
+        if (userid != null) return userid
+
         val passwd = "readOnly"
         val paramsUsergroup = listOf(ZabbixModel.UserGroup(userGroupId))
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
@@ -92,12 +109,12 @@ class ZabbixService(
         val user = ZabbixModel.User(method = "user.create", params = params)
         val values = jacksonObjectMapper().writeValueAsString(user)
         val response = requestApi(values)
-        val userid: String = if (response.has("error")) {
-            getUserId(addressMail)
-        } else {
-            getFromResultAsList(response, "userids")[0].asText()
+
+        // check for invalid email address
+        if (response.get("error")?.get("data")?.asText()?.contains("Invalid email address") == true) {
+            throw InvalidParameterException.withInvalidParameters("addressMail")
         }
-        return userid
+        return getFromResultAsList(response, "userids")[0].asText()
     }
 
     data class Action(
@@ -165,11 +182,11 @@ class ZabbixService(
         requestApi(getActionPayload(uuid, updatedUserId))
     }
 
-    private fun getUserId(username: String): String {
+    private fun getUserId(username: String): String? {
         val jsonUserGet =
             """{"jsonrpc":"$JSONRPC","method":"user.get","params":{"output":["userid","username"],"filter":{"username":["$username"]}},"id":1}"""
         val responseUserGet = requestApi(jsonUserGet)
-        return responseUserGet.get("result").get(0).get("userid").asText()
+        return responseUserGet.get("result").get(0)?.get("userid")?.asText()
     }
 
     private fun deleteUser(userid: List<String>) {
@@ -204,11 +221,7 @@ class ZabbixService(
         log.debug("Add document url: $url to host $hostId with name $name and uuid $uuid")
         createWebscenario(uuid, hostId, "Verfahren", url, 2, "page-wrapper")
         createTrigger(uuid, "Verfahren", url)
-        if (!addressMail.isNullOrEmpty()) {
-            // only create notification job when mail is set
-            createUser(addressMail)
-            createAction(uuid, addressMail)
-        }
+        handleNotification(uuid, addressMail)
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url, 1, "")
@@ -380,6 +393,20 @@ class ZabbixService(
         return array.map { it }
     }
 
+    private fun getFromResultArrayAsList(response: JsonNode, field: String): List<String> {
+        val array = response.get("result")
+        val values = mutableListOf<String>()
+
+        for (i in 0 until array.size()) {
+            val hasTags = array.get(i).has("tags") && array.get(i).get("tags").size() > 0
+            if (hasTags) {
+                val value = array.get(i).get(field)?.asText()
+                if (value != null) values.add(value)
+            }
+        }
+        return values
+    }
+
     private fun resultArrayIsEmpty(response: JsonNode) = response.get("result").size() == 0
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
@@ -413,43 +440,28 @@ class ZabbixService(
         requestBody.substringBeforeLast("}") + ", \"auth\": \"${this.apiKey}\" }"
     }
 
-    private fun requestApi(requestBody: String): JsonNode {
-        val client = HttpClient.newBuilder().build()
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create(this.apiURL))
-            .POST(
-                HttpRequest.BodyPublishers.ofString(
-                    addAuthToBody(requestBody),
-                ),
-            )
-            .header("Content-Type", "application/json-rpc")
-            .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-        if (response.statusCode() != 200) {
-            throw ServerException.withReason("Api request failed with status code: ${response.statusCode()} ${sanitizeRequest(requestBody)}")
-        }
-
-        val json = jacksonObjectMapper().readTree(response.body())
-
-        if (json.has("error")) {
-            val error = json.get("error").get("data")?.asText()
-            with(error) {
-                when {
-                    isNullOrEmpty() -> throw ServerException.withReason("Request Error occurred. No error Data")
-                    contains("already exists") -> log.debug(this)
-                    contains("Invalid email address") -> log.error("Request failed: ${sanitizeRequest(requestBody)}")
-                    else -> throw ServerException.withReason(this)
-                }
+    private fun requestApi(requestBody: String): JsonNode = try {
+        val response: HttpResponse = runBlocking {
+            httpClient.post(apiURL) {
+                contentType(jsonRpc)
+                setBody(addAuthToBody(requestBody))
             }
         }
-        return json
-    }
-
-    private fun sanitizeRequest(requestBody: String): String = if (requestBody.contains("auth")) {
-        requestBody.substring(0, requestBody.indexOf("auth"))
-    } else {
-        requestBody
+        runBlocking {
+            response.bodyAsText().let { jacksonObjectMapper().readTree(it) }
+        }
+    } catch (e: ClientRequestException) {
+        // handles 400 errors
+        log.error("Client error: ${e.response.status} - ${runBlocking { e.response.bodyAsText() }}")
+        throw e
+    } catch (e: ServerResponseException) {
+        // handles 500 errors
+        log.error("Server error: ${e.response.status} - ${runBlocking { e.response.bodyAsText()} }")
+        throw e
+    } catch (e: Exception) {
+        // catch unexpected exceptions
+        log.error("An unexpected error occurred: ${e.message}")
+        throw e
     }
 
     fun getTriggerEvents(triggerId: String): List<ZabbixModel.Problem>? {
@@ -499,11 +511,86 @@ class ZabbixService(
         val bytes = url.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(bytes)
-        return digest.fold("", { str, it -> str + "%02x".format(it) })
+        return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
 
     private fun createDocumentName(docName: String, docUrl: String): String {
         val hash = createHash(docUrl)
         return shortenString(docName + " " + hash.take(4), 64)
     }
+
+    fun getHostIds(catalogName: String): List<String> {
+        val groupid = getHostGroupId(catalogName)
+        val jsonHostGet =
+            """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":["hostid","host","name"],"selectTags":"extend","groupids":"$groupid"},"id":1}"""
+        val responseHostGet = requestApi(jsonHostGet)
+        return getFromResultArrayAsList(responseHostGet, "host")
+    }
+
+    private fun handleNotification(uuid: String, addressMail: String?) {
+        if (!addressMail.isNullOrEmpty()) {
+            try {
+                createUser(addressMail)
+                createAction(uuid, addressMail)
+            } catch (ex: Exception) {
+                log.error("Error creating user for uuid $uuid", ex)
+            }
+        }
+    }
+}
+
+private fun buildHttpClient(): HttpClient = HttpClient(Java) {
+    expectSuccess = true
+    install(HttpRequestRetry) {
+        // use exponential backoff for delays between retries
+        exponentialDelay()
+        // retry condition
+        retryIf(maxRetries = 3) { request, response ->
+            response.status.value.let { it in 400..499 } ||
+                response.status.value.let { it in 500..599 } ||
+                retryOnError(request, response)
+        }
+    }
+}
+
+private fun retryOnError(request: HttpRequest, response: HttpResponse): Boolean {
+    val log = logger(ZabbixService::class.qualifiedName!!)
+    val json = runBlocking {
+        response.bodyAsText().let { jacksonObjectMapper().readTree(it) }
+    }
+    if (!json.has("error")) return false
+
+    val error = json.get("error").get("data")?.asText()
+    with(error) {
+        return when {
+            isNullOrEmpty() -> {
+                log.error("Request Error occurred. No error Data")
+                true
+            }
+            contains("already exists") -> {
+                log.debug(this)
+                false
+            }
+            contains("Invalid email address") -> {
+                log.error(
+                    "Request failed: ${
+                        sanitizeRequest(
+                            request.content.toString(),
+                        )
+                    }",
+                )
+                false
+            }
+            else -> {
+                log.error(this)
+                true
+            }
+        }
+    }
+}
+
+private fun sanitizeRequest(requestBody: String): String = if (requestBody.contains("auth")) {
+    requestBody.substringBefore("auth")
+} else {
+    requestBody
 }

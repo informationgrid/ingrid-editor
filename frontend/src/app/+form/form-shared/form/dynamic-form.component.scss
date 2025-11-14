@@ -36,6 +36,7 @@
 .form-content {
   display: flex;
   flex-direction: column;
+  overflow: auto;
 
   .form-inner {
     flex: 1;

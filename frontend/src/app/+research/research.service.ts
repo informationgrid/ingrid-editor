@@ -322,7 +322,7 @@ export class ResearchService {
         };
   }
 
-  private mapDocumentIcons(data: ResearchResponse): ResearchResponse {
+  mapDocumentIcons(data: ResearchResponse): ResearchResponse {
     data.hits.forEach((hit) => {
       hit.icon = this.profileService.getDocumentIcon(hit._type);
     });

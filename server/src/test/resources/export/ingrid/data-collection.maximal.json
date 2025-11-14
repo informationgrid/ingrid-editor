@@ -37,15 +37,16 @@
     "accessConstraints": [{ "key": "6" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2023-02-06T23:00:00.000Z",
-        "referenceDateType": { "key": "3" }
-      }
-    ],
+    "event": {
+      "lastModified": "2023-02-06T23:00:00.000Z"
+    },
     "status": { "key": "5" },
-    "resourceDate": "2023-02-21T23:00:00.000Z",
-    "resourceDateType": { "key": "till" }
+    "data": {
+      "type": "range",
+      "intervalFrom": "not-available",
+      "intervalTo": "date",
+      "resourceDate": "2023-02-21T23:00:00.000Z"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "60" }] },
   "orderInfo": "order",

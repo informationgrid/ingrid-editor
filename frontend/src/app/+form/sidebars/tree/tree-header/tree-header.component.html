@@ -46,6 +46,7 @@
                 @if (showWriteAccessToggle()) {
                     <mat-slide-toggle
                         class="show-all"
+                        data-cy="write-access-toggle"
                         (change)="toggleWriteAccess.emit($event.checked)"
                     >
                         mit Schreibzugriff

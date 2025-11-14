@@ -24,7 +24,8 @@ import {
   inject,
   Inject,
   OnInit,
-  ViewChild,
+  signal,
+  viewChild,
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
@@ -37,6 +38,8 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import {
+  BwastrSection,
+  SpatialDialogData,
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
@@ -47,7 +50,6 @@ import { TranslocoService } from "@jsverse/transloco";
 import { debounceTime } from "rxjs/operators";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatFormField } from "@angular/material/form-field";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
@@ -56,6 +58,7 @@ import { WktSpatialComponent } from "./wkt-spatial/wkt-spatial.component";
 import { GeothesaurusWfsgndeComponent } from "./geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
 import { MatInput } from "@angular/material/input";
 import { CoordinatesSpatialComponent } from "./coordinates-spatial/coordinates-spatial.component";
+import { BwastrSpatialComponent } from "./bwastr-spatial/bwastr-spatial.component";
 
 interface LocationType {
   id: SpatialLocationType;
@@ -72,7 +75,6 @@ interface LocationType {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatFormField,
     MatSelect,
@@ -85,62 +87,62 @@ interface LocationType {
     CoordinatesSpatialComponent,
     MatDialogActions,
     MatButton,
+    BwastrSpatialComponent,
   ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
-  @ViewChild("leafletDlg") leaflet: ElementRef;
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
   private transloco = inject(TranslocoService);
 
-  dialogTitle = this.data?.value
-    ? "Raumbezug bearbeiten"
-    : "Raumbezug hinzufügen";
+  dialogTitle = signal<string>(
+    this.data?.location?.value
+      ? "Raumbezug bearbeiten"
+      : "Raumbezug hinzufügen",
+  );
 
-  result: SpatialLocation = {
+  result = signal<SpatialLocation>({
     value: null,
     title: null,
     type: "free",
-    ars: null,
-  };
+    ars: undefined,
+  });
 
   titleInput = new FormControl<string>("");
 
   leafletReference: Map;
 
   _bbox: any = null;
-  types: LocationType[] = [
+  types = signal<LocationType[]>([
     { id: "free", label: this.transloco.translate("spatial.types.free") },
     { id: "wkt", label: this.transloco.translate("spatial.types.wkt") },
     { id: "wfsgnde", label: this.transloco.translate("spatial.types.wfsgnde") },
-  ];
-  view: SpatialLocationType;
+    { id: "bwastr", label: this.transloco.translate("spatial.types.bwastr") },
+  ]);
+  view = signal<SpatialLocationType | null>(null);
 
   constructor(
     private dialogRef: MatDialogRef<SpatialDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
+    @Inject(MAT_DIALOG_DATA) public data: SpatialDialogData,
     private leafletService: LeafletService,
   ) {
     if (this.data?.limitTypes) {
-      this.types = this.types.filter(
-        (type) => this.data.limitTypes.indexOf(type.id) !== -1,
+      this.types.update((types) =>
+        types.filter((type) => this.data.limitTypes.indexOf(type.id) !== -1),
       );
     }
   }
 
   ngOnInit(): void {
     this.titleInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
-      .subscribe((title) => (this.result.title = title));
+      .pipe(untilDestroyed(this))
+      .subscribe((title) => this.result.update((r) => ({ ...r, title })));
 
-    if (this.data) {
-      this._bbox = this.data.value;
-      this.titleInput.setValue(this.data.title);
-      this.result = {
-        value: this.data?.value,
-        title: this.data?.title,
-        type: this.data?.type ?? "free",
-        ars: this.data?.ars,
-      };
+    if (this.data?.location) {
+      const location = this.data.location;
+      this._bbox = location.value;
+      this.titleInput.setValue(location.title);
+      this.result.update((r) => ({ ...r, ...location }));
     } else {
       this.titleInput.setValue("Neuer Raumbezug");
     }
@@ -148,28 +150,35 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.leafletReference = this.leafletService.initMap(
-      this.leaflet.nativeElement,
+      this.leaflet().nativeElement,
       {},
     );
-    setTimeout(() => this.updateView(this.data?.type ?? "free"));
+    setTimeout(() => this.updateView(this.data?.location?.type ?? "free"));
   }
 
   updateBoundingBox(result: SpatialBoundingBox) {
-    this.result.value = result;
+    this.result.update((r) => ({ ...r, value: result }));
+  }
+
+  updateBwastr(result: BwastrSection) {
+    this.result.update((r) => ({ ...r, bwastr: result }));
   }
 
   updateView(viewType: SpatialLocationType) {
-    this.view = viewType;
-    this.result.type = viewType;
+    this.view.set(viewType);
+    this.result.update((r) => ({ ...r, type: viewType }));
     this.titleInput.enable();
-    if (viewType !== "wkt") this.result.wkt = undefined;
+    if (viewType !== "wkt")
+      this.result.update((r) => ({ ...r, wkt: undefined }));
+    if (viewType !== "bwastr")
+      this.result.update((r) => ({ ...r, bwastr: undefined }));
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }
     } else {
       if (viewType !== "wfsgnde") {
-        this.result.value = null;
+        this.result.update((r) => ({ ...r, value: null }));
       } else this.titleInput.disable();
       if (this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
@@ -182,7 +191,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
       // ignore buttons for restricted accessibility
       const buttons =
-        this.leaflet.nativeElement.querySelectorAll('[role="button"]');
+        this.leaflet().nativeElement.querySelectorAll('[role="button"]');
       this.setTabIgnore(buttons);
     });
   }
@@ -193,7 +202,11 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  updateWkt(wkt: string) {
+    this.result.update((r) => ({ ...r, wkt }));
+  }
+
   returnResult() {
-    this.dialogRef.close(this.result);
+    this.dialogRef.close(this.result());
   }
 }

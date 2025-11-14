@@ -19,7 +19,7 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { IngridClass, IngridShared } from "./ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -32,6 +32,9 @@ export class ProjectDoctype extends IngridShared {
   iconClass = "Projekt";
 
   hasOptionalFields = true;
+
+  showParticipants = true;
+  showManager = true;
 
   constructor() {
     super();
@@ -48,12 +51,16 @@ export class ProjectDoctype extends IngridShared {
       this.addSection(
         "Fachbezug",
         [
-          this.addTextArea("participants", "Beteiligte", this.id, {
-            className: "optional flex-1",
-          }),
-          this.addTextArea("manager", "Projektleiter", this.id, {
-            className: "optional flex-1",
-          }),
+          this.showParticipants
+            ? this.addTextArea("participants", "Beteiligte", this.id, {
+                className: "optional flex-1",
+              })
+            : null,
+          this.showManager
+            ? this.addTextArea("manager", "Projektleiter", this.id, {
+                className: "optional flex-1",
+              })
+            : null,
           this.addTextArea("explanation", "Erläuterungen", this.id, {
             className: "optional flex-1",
           }),
@@ -67,7 +74,7 @@ export class ProjectDoctype extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridProject),
     ];
 
     return this.manipulateDocumentFields(fields);

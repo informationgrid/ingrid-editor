@@ -65,7 +65,7 @@ class IngridExporterHmdkMetaver(
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexInGridIDFHmdk",
+        "indexInGridIDFHmdkMetaver",
         "Ingrid IDF Metaver (Elasticsearch)",
         "Export von HMDK Ingrid Dokumenten für die Anzeige im externen Metaver Portal.",
         "application/json",
@@ -85,6 +85,8 @@ class IngridIdfExporterHmdk(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdk")
+
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
@@ -96,6 +98,8 @@ class IngridIdfExporterHmdkMetaver(
     @Lazy documentService: DocumentService,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
+
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdkMetaver")
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelMetaverTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.checkPublicationTags
@@ -188,8 +189,8 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferences(addressDoc, catalogIdentifier).map {
-            val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
+        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map { uuid ->
+            val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 
@@ -201,7 +202,7 @@ open class AddressModelTransformer(
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
                     if (fileName?.get("asLink")?.booleanValue() == true) {
-                        fileName.get("uri")?.textValue() // TODO encode uri
+                        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
                     } else {
                         "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
                     }
@@ -228,7 +229,14 @@ open class AddressModelTransformer(
             )
         }.toMutableList()
 
-    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true).hits
+    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildren(catalogIdentifier, id, DocumentCategory.ADDRESS, true)
+        .hits
+        .filter {
+            kotlin.runCatching {
+                checkPublicationTags(it.wrapper.tags, tags)
+                true
+            }.getOrElse { false }
+        }
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
         documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
@@ -268,6 +276,8 @@ open class AddressModelTransformer(
         ?: emptyList()
 
     fun getSortHash(): String = DigestUtils.sha1Hex(title)
+
+    open fun transformUrl(url: String?): String? = url
 }
 
 data class ObjectReference(

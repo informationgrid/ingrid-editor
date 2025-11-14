@@ -37,40 +37,6 @@
     "participants": {
       "type": ["null", "string"]
     },
-    "serviceType": {
-      "anyOf": [
-        {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "serviceUrls": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "url": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "serviceVersion": {
-      "type": "array",
-      "items": {
-        "$ref": "../../general.schema.json#/definitions/KeyValue"
-      }
-    },
     "parentIdentifier": {
       "type": ["null", "string"]
     },

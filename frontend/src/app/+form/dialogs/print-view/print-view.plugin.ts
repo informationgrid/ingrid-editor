@@ -34,6 +34,7 @@ import { clone, JsonDiffMerge } from "../../../shared/utils";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { cleanObject, deepMerge } from "../../../services/utils";
 
 @UntilDestroy()
 @Injectable()
@@ -70,14 +71,14 @@ export class PrintViewPlugin extends Plugin {
 
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
-      // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
       {
+        type: "button",
         id: "toolBtnPrint",
         tooltip: "Vorschau",
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: signal(false),
+        active: false,
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
@@ -102,11 +103,22 @@ export class PrintViewPlugin extends Plugin {
       let fields: FormlyFieldConfig[];
       let fieldsPublished = null;
       if (published !== null) {
-        const diff = JsonDiffMerge.jsonDiff(
+        const diffBackward = JsonDiffMerge.jsonDiff(
           current.documentWithMetadata,
           published.documentWithMetadata,
           {},
         );
+        let diffForward = JsonDiffMerge.jsonDiff(
+          published.documentWithMetadata,
+          current.documentWithMetadata,
+          {},
+        );
+        // remove "empty" changes - otherwise, a mis-classification can occur
+        // if a previously non-set published field is
+        // first set to a value and saved, and then unset and saved
+        diffForward = cleanObject(diffForward);
+        // the actual diff contents are negligible because we only need the changed fields
+        const diff = deepMerge({}, diffBackward, diffForward);
         fields = doctype.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {

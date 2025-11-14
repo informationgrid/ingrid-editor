@@ -23,13 +23,14 @@ import {
 } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable, signal } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { IngridClass, IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { FormControl } from "@angular/forms";
 
 @Injectable({
   providedIn: "root",
@@ -61,6 +62,8 @@ export class GeoServiceDoctype extends IngridShared {
   constructor() {
     super();
     this.options.dynamicRequired.spatialSystems = () => true;
+    this.options.dynamicRequired.dataFormat = (field) =>
+      field.options.formState.mainModel?.properties?.isInspireIdentified;
     this.options.required.useConstraints = true;
   }
 
@@ -197,6 +200,16 @@ export class GeoServiceDoctype extends IngridShared {
                     validators: {
                       validation: ["url"],
                     },
+                    validators: {
+                      inspireRelevant: {
+                        expression: (ctrl: FormControl) =>
+                          ctrl.root.value?.properties?.isInspireIdentified ===
+                            undefined ||
+                          ["1", "2", "3", "4"].includes(ctrl.value?.key),
+                        message:
+                          "Für INSPIRE-relevante Dienste ist dieser Wert unzulässig",
+                      },
+                    },
                   }),
                 ],
               }),
@@ -297,7 +310,7 @@ export class GeoServiceDoctype extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridGeoService),
     ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);

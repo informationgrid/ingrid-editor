@@ -148,3 +148,24 @@ export function waitForCondition(
     catchError(() => of(false)),
   );
 }
+
+/**
+ * Recursively cleans an object of empty fields (null, undefined, empty string).
+ * @param obj The object to be cleaned
+ * @returns The same object, cleaned of empty fields (in-place changes)
+ */
+export function cleanObject(obj) {
+  for (const key in obj) {
+    if (obj[key] == null || obj[key] === "") {
+      delete obj[key];
+    } else if (Array.isArray(obj[key]) && obj[key].length === 0) {
+      delete obj[key];
+    } else if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+      cleanObject(obj[key]);
+      if (Object.keys(obj[key]).length === 0) {
+        delete obj[key];
+      }
+    }
+  }
+  return obj;
+}

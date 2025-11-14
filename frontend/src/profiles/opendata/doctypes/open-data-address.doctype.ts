@@ -36,7 +36,7 @@ export class OpenDataAddressDoctype extends OrganisationDoctype {
   label = "Adresse";
 
   constructor() {
-    super("addresses");
+    super();
     this.options = {
       hideAdministrativeArea: true,
     };

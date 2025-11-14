@@ -21,12 +21,12 @@ import {
   Component,
   Input,
   OnInit,
-  ViewChild,
   input,
   computed,
   Signal,
   AfterViewInit,
   output,
+  viewChild,
 } from "@angular/core";
 import {
   animate,
@@ -84,7 +84,7 @@ export class UploadComponent implements AfterViewInit {
   /* allow only specific file types when given */
   readonly allowedUploadTypes = input<string[]>(undefined);
 
-  @Input() infoText: string;
+  infoText = input<string>();
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();
   enableFileUploadRename = input<boolean>();
@@ -93,7 +93,7 @@ export class UploadComponent implements AfterViewInit {
   readonly chosenFiles = output<TransfersWithErrorInfo[]>();
   readonly removeFile = output<string>();
 
-  @ViewChild("flow") flow: FlowConfig;
+  readonly flow = viewChild<FlowConfig>("flow");
 
   target = input.required<string>();
   multiple = input<boolean>();
@@ -116,7 +116,7 @@ export class UploadComponent implements AfterViewInit {
   private forbiddenCharInName = "<>:'\"%$/|?*";
 
   // parameters to send with the upload information
-  private additionalParameters: any;
+  additionalParameters = input<any>({});
 
   constructor(
     private uploadService: UploadService,
@@ -124,12 +124,12 @@ export class UploadComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    combineLatest([this.errors, this.flow.transfers$])
+    combineLatest([this.errors, this.flow().transfers$])
       .pipe(
         untilDestroyed(this),
         skip(1), // do not use initial value
         map((result) =>
-          result[1].transfers.map(
+          (result as any)[1].transfers.map(
             (transfer) =>
               new TransfersWithErrorInfo(result[0][transfer.id], transfer),
           ),
@@ -140,35 +140,37 @@ export class UploadComponent implements AfterViewInit {
         this.chosenFiles.emit(result);
       });
 
-    this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
-      try {
-        if (this.autoupload() && event.type === "filesSubmitted") {
-          const flowFiles = <flowjs.FlowFile[]>event.event[0];
-          await this.uploadService.updateAuthenticationToken(flowFiles);
-          this.resetParametersForSubmittedFiles(flowFiles);
-          this.flow.upload();
-        } else if (event.type === "fileProgress") {
-          await this.uploadService.updateAuthenticationToken([
-            (<flowjs.FlowChunk>event.event[1]).fileObj,
-          ]);
-        } else if (event.type === "fileError") {
-          this.handleUploadError(event.event);
-        } else if (event.type === "fileSuccess") {
-          const messageSuccess = this.getMessageFromResponse(
-            event.event[2].xhr,
-          );
-          const fileIdentifier = this.getFileIdentifier(event.event);
-          this._errors[fileIdentifier] = null;
-          this.errors.next(this._errors);
-          this.complete.emit(messageSuccess);
+    this.flow()
+      .events$.pipe(untilDestroyed(this))
+      .subscribe(async (event) => {
+        try {
+          if (this.autoupload() && event.type === "filesSubmitted") {
+            const flowFiles = <flowjs.FlowFile[]>event.event[0];
+            await this.uploadService.updateAuthenticationToken(flowFiles);
+            this.resetParametersForSubmittedFiles(flowFiles);
+            this.flow().upload();
+          } else if (event.type === "fileProgress") {
+            await this.uploadService.updateAuthenticationToken([
+              (<flowjs.FlowChunk>event.event[1]).fileObj,
+            ]);
+          } else if (event.type === "fileError") {
+            this.handleUploadError(event.event);
+          } else if (event.type === "fileSuccess") {
+            const messageSuccess = this.getMessageFromResponse(
+              event.event[2].xhr,
+            );
+            const fileIdentifier = this.getFileIdentifier(event.event);
+            this._errors[fileIdentifier] = null;
+            this.errors.next(this._errors);
+            this.complete.emit(messageSuccess);
+          }
+        } catch (e) {
+          console.error("Error uploading file", e);
+          throw new IgeError(e);
         }
-      } catch (e) {
-        console.error("Error uploading file", e);
-        throw new IgeError(e);
-      }
-    });
+      });
 
-    this.flow.flowJs.on("filesAdded", (files) => {
+    this.flow().flowJs.on("filesAdded", (files) => {
       const invalidFile = this.validateFileNames(files);
       if (invalidFile != undefined) {
         throw new IgeError(
@@ -210,9 +212,11 @@ export class UploadComponent implements AfterViewInit {
   }
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
-    flowFiles.forEach(
-      (file) => (file.flowObj.opts.query = { ...this.additionalParameters }),
-    );
+    const params = this.additionalParameters();
+    params.options = params.options
+      ? JSON.stringify(params.options)
+      : undefined;
+    flowFiles.forEach((file) => (file.flowObj.opts.query = { ...params }));
   }
 
   isDragged = false;
@@ -239,11 +243,6 @@ export class UploadComponent implements AfterViewInit {
     transfer.success = true;
     this.errors.next(this._errors);
     this.complete.emit();
-  }
-
-  setAdditionalUploadParameter(params: any) {
-    this.additionalParameters = params;
-    this.flow.flowJs.opts.query = params;
   }
 
   private handleUploadError(event: flowjs.FlowEventFromEventName<any>) {
@@ -295,8 +294,12 @@ export class UploadComponent implements AfterViewInit {
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {
+      const params = this.additionalParameters();
+      params.options = params.options
+        ? JSON.stringify(params.options)
+        : undefined;
       flowFile.flowObj.opts.query = {
-        ...this.additionalParameters,
+        ...params,
         ...parameter,
       };
     }

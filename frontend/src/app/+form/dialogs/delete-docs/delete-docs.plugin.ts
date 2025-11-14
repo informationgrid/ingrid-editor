@@ -35,7 +35,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormStateService } from "../../form-state.service";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
@@ -48,7 +48,7 @@ export class DeleteDocsPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
@@ -86,12 +86,18 @@ export class DeleteDocsPlugin extends Plugin {
     super.registerForm();
 
     this.formToolbarService.addButton({
+      id: "toolBtnRemoveSeparator",
+      type: "separator",
+      pos: 99,
+    });
+    this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnRemove",
       tooltip: "Löschen",
       matSvgVariable: "outline-delete-24px",
       eventId: "DELETE",
       pos: 100,
-      active: signal(false),
+      active: false,
     });
 
     const store = this.getStore();
@@ -183,6 +189,7 @@ export class DeleteDocsPlugin extends Plugin {
 
     if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnRemove");
+      this.formToolbarService.removeButton("toolBtnRemoveSeparator");
     }
   }
 }

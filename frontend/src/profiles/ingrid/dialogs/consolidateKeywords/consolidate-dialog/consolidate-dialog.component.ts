@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit, signal } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -115,22 +115,22 @@ export class ConsolidateDialogComponent implements OnInit {
   keywordHierarchyMap: Map<ThesaurusType, ThesaurusTypeInfo>;
 
   keywordDialogData = [];
-  isLoading: boolean;
-  isSaving: boolean;
+  isLoading = signal<boolean>(false);
+  isSaving = signal<boolean>(false);
 
   async ngOnInit() {
     this.doc = this.formStateService.getForm().value;
     this.metadata = this.formStateService.metadata();
     const hasKeywords = this.initKeywords();
     if (!hasKeywords) {
-      this.isLoading = false;
+      this.isLoading.set(false);
       return;
     }
     await this.consolidateKeywords();
   }
 
   private initKeywords() {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.form = this.formStateService.getForm();
     this.keywords = this.form.get("keywords").value;
@@ -167,7 +167,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   protected async consolidateKeywords() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.timedOut = false;
 
     try {
@@ -191,7 +191,7 @@ export class ConsolidateDialogComponent implements OnInit {
       console.error("Error consolidating keywords", error);
       this.timedOut = true;
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 

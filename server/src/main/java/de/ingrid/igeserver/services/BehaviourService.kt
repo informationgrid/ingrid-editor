@@ -34,6 +34,11 @@ class BehaviourService(
 
     fun get(catalogId: String, behaviourId: String): Behaviour? = get(catalogId).find { it.name == behaviourId }
 
+    fun getData(catalogId: String, behaviourId: String): Map<String, *>? {
+        val behavior = get(catalogId, behaviourId)
+        return behavior?.data?.takeIf { behavior.active == true }
+    }
+
     fun save(catalogId: String, behaviours: List<Behaviour>) {
         val allBehaviours = get(catalogId)
         val catalog = catalogRepo.findByIdentifier(catalogId)

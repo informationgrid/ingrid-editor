@@ -32,6 +32,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
@@ -47,6 +48,8 @@ import java.util.*
 
 open class GeneralMapper(val isoData: IsoImportData) {
 
+    open val splitSpatialSystems = false
+
     private val log = logger()
 
     val fieldToCodelist = FieldToCodelist()
@@ -56,9 +59,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val codeListService: CodelistHandler = isoData.codelistService
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
+    val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
+    val importSettings = isoData.importSettings
 
     val uuid = metadata.fileIdentifier?.value
-    val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+    open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
         else -> "InGridGeoDataset"
@@ -392,11 +397,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.toList() ?: emptyList()
 
     fun getSpatialScope(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value?.trim() == "Spatial scope" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
         ?.mapNotNull { it }
         ?.mapNotNull { value ->
-            val key = codeListService.getCodeListEntryId("6360", value, isoData.catalogLanguage)
+            val key = codeListService.getCodeListEntryId("6360", value.trim(), isoData.catalogLanguage)
             key?.let { KeyValue(key, value, "6360") }
         }
         ?.getOrNull(0)
@@ -454,10 +459,17 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
+        // if splitSpatialSystems is true, we filter out vertical spatial systems
+        ?.filter { splitSpatialSystems.not() || codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", it, "de") == null }
         ?.mapNotNull { value ->
             val key = codeListService.getCodeListEntryId("100", value, isoData.catalogLanguage)
-            key?.let { KeyValue(key, value, "100") }
+            key?.let { KeyValue(key, value, "100") } ?: KeyValue(null, value, "100")
         } ?: emptyList()
+
+    fun getVerticalSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
+        ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
+        ?.mapNotNull { value -> codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", value, "de")?.let { KeyValue(it, value, "verticalSpatialSystems") } }
+        ?: emptyList()
 
     fun getSpatialReferences(): List<SpatialReference> {
         val references = mutableListOf<SpatialReference>()
@@ -470,9 +482,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val titleOrArs = geoIdentifierCode?.value
 
                 if (titleOrArs != null) {
+                    val isBwastr = it.geographicDescription.geographicIdentifier.mdIdentifier.authority?.citation?.title?.value == "VV-WSV 1103"
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
-                    // ignore regional key definition, which is identified by an anchor element
-                    if (isAnchorAndRegionKey) {
+                    if (isBwastr) {
+                        getBwastrSpatial(titleOrArs)?.let { references.add(it) }
+                    } else if (isAnchorAndRegionKey) {
                         references.add(SpatialReference("free", title = null, ars = titleOrArs))
                     } else {
                         references.add(SpatialReference("free", title = titleOrArs))
@@ -501,6 +515,64 @@ open class GeneralMapper(val isoData: IsoImportData) {
             }
 
         return references
+    }
+
+    private fun getBwastrSpatial(title: String): SpatialReference? {
+        var extractedBwastrId: String
+        var start: Double? = null
+        var end: Double? = null
+        // like: "0108-7.665-9"  // (ID-START-END)
+        if (title.matches("^[0-9]{4}-[0-9]+\\.?[0-9]*-[0-9]+\\.?[0-9]*$".toRegex())) {
+            title.split("-").let {
+                extractedBwastrId = it[0]
+                start = it[1].toDoubleOrNull()
+                end = it[2].toDoubleOrNull()
+            }
+        } else if (title.matches("\\[[0-9]{4}]$".toRegex())) {
+            // like: "Main, Hauptstrecke - [0108]"  (Name, Streckenname - [ID])
+            extractedBwastrId = title.substringAfterLast("[").substringBeforeLast("]")
+        } else {
+            log.warn("Could not extract BWASTR id from title: '$title', trying to extract numbers only.")
+            extractedBwastrId = title.replace("[^$0-9]".toRegex(), "")
+        }
+        // remove leading zero
+        extractedBwastrId = extractedBwastrId.removePrefix("0")
+
+        return if (bwastrLocatorService.customBWASTRMap.containsKey(extractedBwastrId)) {
+            val bwastr = bwastrLocatorService.customBWASTRMap[extractedBwastrId]!!
+            SpatialReference(
+                type = "bwastr",
+                bwastr = Bwastr(
+                    bwastrid = bwastr.bwastrid,
+                    bwastr_name = bwastr.bwastr_name,
+                    strecken_name = bwastr.strecken_name,
+                    concat_name = bwastr.concat_name,
+                    start = null,
+                    end = null,
+                ),
+                title = bwastr.concat_name,
+            )
+        } else {
+            val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId
+            val bwastr = bwastrLocatorService.search(idForSearch).firstOrNull()
+            return if (bwastr != null) {
+                SpatialReference(
+                    type = "bwastr",
+                    bwastr = Bwastr(
+                        bwastrid = bwastr.bwastrid,
+                        bwastr_name = bwastr.bwastr_name,
+                        strecken_name = bwastr.strecken_name,
+                        concat_name = bwastr.concat_name,
+                        start = end,
+                        end = start,
+                    ),
+                    title = bwastr.concat_name,
+                )
+            } else {
+                log.warn("Could not find BWASTR with id '$extractedBwastrId' in BWASTR Locator Service.")
+                null
+            }
+        }
     }
 
     val spatialDescription =
@@ -559,15 +631,34 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.mapNotNull { it.usage?.specificUsage?.value }
         ?.joinToString(";")
 
-    fun getTemporalEvents(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
-        ?.map {
+    private fun getTemporalEventsList(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
+        ?.mapNotNull {
             val value = it.date?.dateType?.code?.codeListValue
-            val typeKey = codeListService.getCodeListEntryId("502", value, "iso")
             val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
                 ?: it.date?.date?.date?.let { parseDate(it) }
-                ?: ""
-            Event(KeyValue(typeKey, typeKey?.let { codeListService.getCodelistValue("502", typeKey, catalogLanguage) } ?: value, "502"), date)
+
+            // no extractable information, skip
+            if (value == null && date == null) return@mapNotNull null
+
+            Event(value, date)
         } ?: emptyList()
+
+    fun getTemporalEvents(): List<Event> {
+        val events = getTemporalEventsList()
+        val created = events
+            .filter { it.type == "creation" }
+            .sortedBy { it.date }
+            .getOrNull(0)
+        val firstPublished = events
+            .filter { it.type == "publication" }
+            .sortedBy { it.date }
+            .getOrNull(0)
+        val lastModified = events
+            .filter { it.type == "revision" }
+            .sortedByDescending { it.date }
+            .getOrNull(0)
+        return listOfNotNull(created, firstPublished, lastModified)
+    }
 
     private fun parseDateTime(value: String): String = OffsetDateTime.parse(value).toInstant().toString()
 
@@ -586,46 +677,41 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val timeValue = it.extent?.extent?.timeInstant?.timePosition
                 val instant = timeValue?.let { parseDateTime(timeValue) }
                 if (instant != null) {
-                    return TimeInfo(instant, KeyValue("at", "am"), KeyValue(statusKey, statusValue, "523"))
+                    return TimeInfo(instant, "at", KeyValue(statusKey, statusValue, "523"))
                 }
 
                 val period = it.extent?.extent?.timePeriod
                 if (period != null) {
-                    val type = determineTemporalType(period)
-                    val typeSince = determineTemporalTypeSince(period)
+                    val intervalFrom = determineTemporalType(period)
+                    val intervalTo = determineTemporalTypeSince(period)
                     return TimeInfo(
                         period.beginPosition?.value,
-                        type,
+                        "range",
                         if (status == null) null else KeyValue(statusKey, statusValue, "523"),
+                        intervalFrom,
+                        intervalTo,
                         period.endPosition?.value,
-                        typeSince,
                     )
                 }
 
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey, statusValue, "523"))
+            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey, statusValue, "523"), isEmpty = true)
     }
 
-    private fun determineTemporalType(period: TimePeriod): KeyValue? {
-        if (period.beginPosition?.value != null && period.endPosition?.value != null) {
-            return KeyValue("since", "seit") // von
-        } else if (period.beginPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("until", "bis")
-        } else if (period.endPosition?.indeterminatePosition == "unknown") {
-            return KeyValue("since", "seit")
-        } else if (period.endPosition?.indeterminatePosition == "now") {
-            return KeyValue("since", "seit")
-        }
-
-        return null
+    private fun determineTemporalType(period: TimePeriod): String? = if (period.beginPosition?.value != null) {
+        "date"
+    } else if (period.beginPosition?.indeterminatePosition == "unknown") {
+        "not-available"
+    } else {
+        null
     }
 
-    private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
-        if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate", "bis: genaues Datum")
-        if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime", "bis: gegenwärtig aktuell")
-        if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown", "bis: gegenwärtige Aktualität unklar")
+    private fun determineTemporalTypeSince(period: TimePeriod): String? {
+        if (period.beginPosition?.value != null && period.endPosition?.value != null) return "date"
+        if (period.endPosition?.indeterminatePosition == "now") return "continuously"
+        if (period.endPosition?.indeterminatePosition == "unknown") return "not-available"
 
         return null
     }
@@ -791,7 +877,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue = KeyValue(specificationEntryId, specification, "6005")
-                val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
+                val dateObject = it.specification.citation.date?.getOrNull(0)?.date?.date
                 val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
                     ?: dateObject?.date?.let { parseDate(it) }
                     ?: ""
@@ -1037,13 +1123,15 @@ data class MaintenanceInterval(
 
 data class TimeInfo(
     val date: String? = null,
-    val type: KeyValue? = null,
+    val type: String? = null,
     var status: KeyValue? = null,
+    val intervalFrom: String? = null,
+    val intervalTo: String? = null,
     val untilDate: String? = null,
-    val dateTypeSince: KeyValue? = null,
+    val isEmpty: Boolean = false,
 )
 
-data class Event(val type: KeyValue, val date: String)
+data class Event(val type: String?, val date: String?)
 
 data class VerticalExtentModel(
     val uom: KeyValue,
@@ -1057,7 +1145,17 @@ data class SpatialReference(
     val title: String?,
     var coordinates: BoundingBox? = null,
     var wkt: String? = null,
+    val bwastr: Bwastr? = null,
     var ars: String? = null,
+)
+
+data class Bwastr(
+    val bwastrid: String?,
+    val bwastr_name: String?,
+    val strecken_name: String?,
+    val concat_name: String?,
+    val start: Double?,
+    val end: Double?,
 )
 
 data class BoundingBox(

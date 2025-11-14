@@ -18,6 +18,13 @@
     "dataSourceName": "${catalog.getName()}",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
+    "spatial": {
+        "geometries": [
+        @for(var entry : ForSupport.of(page.getGeometries()))
+            $unsafe{entry.get()}@if (!entry.isLast()),@endif
+        @endfor
+        ]
+    },
     "x1": ${page.getSpatialReferenceComponents(CoordinateType.Lon1)},
     "x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
     "y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
@@ -292,33 +299,33 @@
     @endfor
     ],
 
-    @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
-    "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    @if("at".equals(page.getResourceDateType()) && (page.getTemporalData().getResourceDate() != null))
+    "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
+    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
     "t01_object.time_type": "am",
     @endif
     @if("since".equals(page.getResourceDateType()))
-        @if(page.isResourceRangeDefined() && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
-            @if(page.getData().getTemporal().getResourceRange() != null)
-                "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
-                "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
-                "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
-                "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+        @if(page.isResourceRangeDefined())
+            @if(page.getTemporalData().getResourceRange() != null)
+                "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getStart())}",
+                "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getEnd())}",
+                "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getStart())}",
+                "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getEnd())}",
             @endif
             "t01_object.time_type": "von",
-        @elseif (page.getData().getTemporal().getResourceDate() != null)
-            "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-            "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-            @if(page.getData().getTemporal().getResourceDateTypeSince() != null && "requestTime".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
+        @elseif (page.getTemporalData().getResourceDate() != null)
+            "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
+            "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
+            @if("continuously".equals(page.getTemporalData().getIntervalTo()))
                 "t01_object.time_type": "seitX",
             @else
                 "t01_object.time_type": "seit",
             @endif
         @endif
     @endif
-    @if("till".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
-    "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    @if("till".equals(page.getResourceDateType()) && (page.getTemporalData().getResourceDate() != null))
+    "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
+    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
     "t01_object.time_type": "bis",
     @endif
     "object_use_constraint.license_key": [
@@ -333,8 +340,8 @@
     ],
 !{var wktJson = page.wktAsGeoJson();}
     @if(wktJson != null)
-    "wkt_geo": ${wktJson.getFirst()},
-    "wkt_geo_text": "${wktJson.getSecond()}",
+    "wkt_geo": $unsafe{wktJson},
+    "wkt_geo_text": "${wktJson}",
     @endif
     "spatial_ref_value.nativekey": [
     @for(var entry : ForSupport.of(page.getSpatialReferenceArs()))
@@ -405,10 +412,10 @@
     "t0110_avail_format.name": [],
     "object_types_catalogue.title_key": "",
     "searchterm_value.alternate_term": [],
+    ${extraFields}@if (extraFields != null),@endif
     "content": [
     @for(var entry : ForSupport.of(page.getContentField()))
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ]
-    ${extraFields}
 }

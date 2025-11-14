@@ -11,8 +11,14 @@
     "InGridPersonDoc": "Person"
   },
   "form": {
+    "alternateTitle": "Kurzbezeichnung",
+    "description": "Beschreibung",
     "references": {
       "fileFormat": "Dateiformat"
+    },
+    "statement": "Fachliche Grundlage",
+    "spatial": {
+      "spatialSystems": "Koordinatenreferenzsysteme"
     },
     "validationMessages": {
       "COUPLED_RESOURCES_MUST_BE_PUBLISHED": "Alle gekoppelten Daten müssen veröffentlicht sein",

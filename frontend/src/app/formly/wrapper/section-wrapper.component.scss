@@ -1,13 +1,5 @@
 @use "src/variables" as vars;
 
-.mat-icon {
-  vertical-align: bottom;
-
-  ::ng-deep path {
-    fill: vars.$ige-secondary;
-  }
-}
-
 .mat-divider {
   border: 0;
   height: 4px;

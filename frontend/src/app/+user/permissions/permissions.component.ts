@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, OnInit, input } from "@angular/core";
+import { Component, forwardRef, inject, input, OnInit } from "@angular/core";
 import {
   ControlValueAccessor,
+  FormBuilder,
+  FormControl,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
-  UntypedFormBuilder,
   UntypedFormGroup,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -55,21 +56,29 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
+  private fb = inject(FormBuilder);
+
   readonly showRootWriteSlider = input<boolean>(false);
   readonly showRootReadSlider = input<boolean>(false);
   readonly disabled = input<boolean>(false);
 
   formGroup: UntypedFormGroup;
-  rootPermissionRead = this.fb.control([]);
-  rootPermissionWrite = this.fb.control([]);
-
-  constructor(private fb: UntypedFormBuilder) {}
+  rootPermissionRead: FormControl;
+  rootPermissionWrite: FormControl;
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
       rootPermission: this.fb.control([]),
-      documents: this.fb.control([]),
-      addresses: this.fb.control([]),
+      documents: this.fb.control({ value: [], disabled: this.disabled() }),
+      addresses: this.fb.control({ value: [], disabled: this.disabled() }),
+    });
+    this.rootPermissionRead = this.fb.control({
+      value: [],
+      disabled: this.disabled(),
+    });
+    this.rootPermissionWrite = this.fb.control({
+      value: [],
+      disabled: this.disabled(),
     });
 
     this.formGroup.valueChanges

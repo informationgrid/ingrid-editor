@@ -49,12 +49,13 @@ fun prepareDocumentWithMetadata(
     val metadata = DocMetadata(
         docData.wrapper.countChildren > 0,
         docData.wrapper.parent?.id,
+        docData.wrapper.parent?.type,
         docData.document.createdByUser != null,
         docData.document.contentModifiedByUser != null,
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
         docData.wrapper.tags,
         docData.wrapper.responsibleUser?.id,
-        docData.wrapper.fingerprint?.let { it[0].date.toString() },
+        docData.wrapper.fingerprint?.maxByOrNull { it.date }?.date?.toString(),
         docData.wrapper.hasWritePermission,
         docData.wrapper.hasOnlySubtreeWritePermission,
         docData.wrapper.id!!,
@@ -83,10 +84,11 @@ fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean
 
 fun checkPublicationTags(
     wrapperTags: List<String>,
-    publicationDocTags: List<String>,
+    transformerTags: List<String>,
 ) {
     val refPublicationDocTags =
         wrapperTags.filter { it == "intranet" || it == "amtsintern" }
+    val publicationDocTags = transformerTags.filter { it == "intranet" || it == "amtsintern" }
 
     val docIsAmtsintern = publicationDocTags.contains("amtsintern")
     val intranetAndRefsNotAmtsintern =

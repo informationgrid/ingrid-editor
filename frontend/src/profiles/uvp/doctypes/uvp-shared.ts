@@ -389,9 +389,12 @@ export class UvpShared extends BaseDoctype {
   }
 
   setUvpCodelistId() {
-    this.uvpNumberCodelistId =
-      this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
-        ?.uvpCodelist ?? "9000";
+    const behaviour = this.behaviourService.getBehaviour(
+      "plugin.uvp.eia-number",
+    );
+    this.uvpNumberCodelistId = behaviour?.isActive()
+      ? (behaviour?.data?.uvpCodelist ?? "9000")
+      : "9000";
   }
 
   private convertToIsoDate(date: Date | string) {

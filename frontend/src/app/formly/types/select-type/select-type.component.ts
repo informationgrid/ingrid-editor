@@ -19,14 +19,17 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
-  ViewChild,
+  signal,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
+import {
+  FormControl,
+  ReactiveFormsModule,
+  UntypedFormControl,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   MatOption,
@@ -64,9 +67,7 @@ export class SelectTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
-
-  public filterCtrl = new UntypedFormControl();
+  public filterCtrl = new FormControl();
 
   defaultOptions = {
     props: {
@@ -74,14 +75,10 @@ export class SelectTypeComponent
     },
   };
 
+  selectOptions = signal<BackendOption[]>(null);
+  filteredOptions = signal<BackendOption[]>([]);
   private selectAllValue!: { options: any; value: any[] };
-  selectOptions: BackendOption[];
-  filteredOptions: BackendOption[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
-
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
 
   ngOnInit() {
     if (!this.props.simple && !this.props.compareWith) {
@@ -96,9 +93,7 @@ export class SelectTypeComponent
 
     this.filterCtrl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((value) => {
-        this.filteredOptions = this.search(value);
-      });
+      .subscribe((value) => this.filteredOptions.set(this.search(value)));
 
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
@@ -124,13 +119,13 @@ export class SelectTypeComponent
               <BackendOption>{ key: option.value, value: option.label },
           ),
         ),
-        tap((data) => (this.selectOptions = data)),
-        tap((data) => (this.filteredOptions = data)),
+        tap((data) => this.selectOptions.set(data)),
+        tap((data) => this.filteredOptions.set(data)),
         tap(() => this.optionsLoaded$.next(true)),
         tap(() => {
           let value = this.formControl.value;
           if (!value && this.props.useFirstValueInitially) {
-            this.formControl.setValue(this.filteredOptions[0].key);
+            this.formControl.setValue(this.filteredOptions()[0].key);
           }
           this.updateSelectField(value);
         }),
@@ -161,7 +156,6 @@ export class SelectTypeComponent
       // if simple and not multiple, value is an object. set as string
       this.formControl.setValue(value.key);
     }
-    this.cdr.detectChanges();
   }
 
   getSelectAllState(options: any[]): MatPseudoCheckboxState {
@@ -221,7 +215,7 @@ export class SelectTypeComponent
 
   search(value: string) {
     let filter = value.toLowerCase();
-    return this.selectOptions.filter(
+    return this.selectOptions().filter(
       (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
   }
