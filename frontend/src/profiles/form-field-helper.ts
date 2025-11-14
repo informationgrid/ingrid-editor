@@ -1081,10 +1081,18 @@ export class FormFieldHelper {
 
   findSectionWithLabel(fieldConfig: FormlyFieldConfig[], label: string) {
     if (!fieldConfig) return null;
+    let result = null;
 
-    return fieldConfig.find((item) => {
-      return item.props?.label === label;
+    fieldConfig.some((item) => {
+      // if section is in a group go one level down
+      if (!item.wrappers?.includes("section")) {
+        result = this.findSectionWithLabel(item.fieldGroup, label);
+      } else if (item.props?.label === label) {
+        result = item;
+      }
+      return result !== null;
     });
+    return result;
   }
 
   addAfter(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {

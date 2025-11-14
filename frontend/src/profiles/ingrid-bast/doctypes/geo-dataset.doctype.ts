@@ -33,15 +33,25 @@ export class GeoDatasetDoctypeBast extends GeoDatasetDoctype {
   showIdentifierCreateButton = false;
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    fieldConfig[0].fieldGroup
-      .find((field) => field.props.label === "Allgemeines")
-      .fieldGroup.push(...this.common.getFields());
+    const section = this.findSectionWithLabel(fieldConfig, "Allgemeines");
+    section.fieldGroup.push(...this.common.getFields());
 
-    fieldConfig[7].fieldGroup[0].fieldGroup.splice(
-      2,
-      0,
+    const useConstraints = this.findFieldElementWithId(
+      fieldConfig,
+      "useConstraints",
+    );
+    this.addAfter(
+      useConstraints,
       this.common.getUseConstraintsCommentsFieldConfig(),
     );
+
+    // do not set default value for temporal data since it's required
+    const temporalData = this.findFieldElementWithId(
+      fieldConfig,
+      "data",
+      "temporal",
+    );
+    temporalData.field.defaultValue = undefined;
 
     return fieldConfig;
   };
