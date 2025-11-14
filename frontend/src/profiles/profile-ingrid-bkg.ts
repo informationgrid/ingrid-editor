@@ -85,7 +85,7 @@ class InGridBkgComponent extends InGridComponent {
         docType.options.dynamicRequired.inspireTopics = undefined;
       }
       docType.showFileReferences = false;
-      docType.showLegalBasicsDescriptions = false;
+      docType.options.hide.legalBasicsDescriptions = true;
     });
   }
 

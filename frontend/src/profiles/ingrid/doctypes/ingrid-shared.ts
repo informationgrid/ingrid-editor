@@ -55,6 +55,7 @@ import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { GeneralStore } from "../../../app/store/general.store";
+import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -132,7 +133,7 @@ export abstract class IngridShared extends BaseDoctype {
       temporalStatus: false,
       legalBasicsDescriptions: false,
     },
-    spatialTypes: ["free", "wkt", "wfsgnde"],
+    spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
     validate: {
       downloadLinkWhenOpenData: true,
     },
@@ -1508,25 +1509,25 @@ export abstract class IngridShared extends BaseDoctype {
       "Verfügbarkeit",
       [
         this.addGroupSimple("resource", [
-        this.addRepeatList(
-          "accessConstraints",
-          this.transloco.translate("form.accessConstraints"),
-          {
-            asSelect: false,
-            showSearch: true,
-            options: this.getCodelistForSelect(
-              "6010",
-              "resource.accessConstraints",
-            ),
-            codelistId: "6010",
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.accessConstraints(field),
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
+          this.addRepeatList(
+            "accessConstraints",
+            this.transloco.translate("form.accessConstraints"),
+            {
+              asSelect: false,
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                "6010",
+                "resource.accessConstraints",
+              ),
+              codelistId: "6010",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  this.options.dynamicRequired.accessConstraints(field),
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
             },
-          },
-        ),
+          ),
           this.addRepeat("useConstraints", "Nutzungsbedingungen", {
             required: this.options.required.useConstraints,
             expressions: {

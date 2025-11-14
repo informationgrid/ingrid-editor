@@ -19,10 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bkg.importer
 
-import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportSettings
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
@@ -31,25 +32,32 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportBkg(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val config: UploadConfig) : ISOImportProfile {
+class ISOImportBkg(
+    val codelistHandler: CodelistHandler,
+    @Lazy val documentService: DocumentService,
+    @Lazy val researchService: ResearchService,
+    @Lazy val bwastrLocatorService: BwastrLocatorService,
+    val config: UploadConfig,
+) : ISOImportProfile {
     override fun handle(
-        catalogId: String,
-        data: Metadata,
-        addressMaps: MutableMap<String, String>,
+        isoData: IsoImportData,
     ): ImportProfileData? {
-        val catalogLanguage = documentService.catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val catalogLanguage =
+            documentService.catalogService.getCatalogById(isoData.catalogId).settings.config.language ?: "de"
         val isoData = IsoImportData(
-            data,
+            isoData.data,
             codelistHandler,
-            catalogId,
+            isoData.catalogId,
             documentService,
-            addressMaps,
+            isoData.addressMaps,
             researchService,
+            bwastrLocatorService,
             config,
             catalogLanguage,
+            ImportSettings(importGeometryContext = false),
         )
 
-        return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        return when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
                 ImportProfileData(
                     "imports/ingrid-bkg/geodataset.jte",

@@ -27,8 +27,7 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
-import { FieldConfigPosition, FormFieldHelper } from "./form-field-helper";
-import { CommonFieldsLUBW } from "./ingrid-lubw/doctypes/common-fields";
+import { IngridShared } from "./ingrid/doctypes/ingrid-shared";
 
 @Component({
   template: "",
@@ -93,7 +92,7 @@ class InGridLUBWComponent extends InGridComponent {
       const manipulateDocumentFieldsBase = docType.manipulateDocumentFields;
       docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
         manipulateDocumentFieldsBase(fieldConfig);
-        const contacts = docType.findFieldElementWithId(
+        const contacts = IngridShared.findFieldElementWithId(
           fieldConfig,
           "pointOfContact",
         );
@@ -108,8 +107,8 @@ class InGridLUBWComponent extends InGridComponent {
               return requiredTypes.every((requiredType) =>
                 ctrl.value
                   ? ctrl.value.some(
-                    (address: any) => address.type?.key === requiredType,
-                  )
+                      (address: any) => address.type?.key === requiredType,
+                    )
                   : false,
               );
             },
@@ -120,7 +119,7 @@ class InGridLUBWComponent extends InGridComponent {
           },
         };
 
-        const keywordsField = docType.findFieldElementWithId(
+        const keywordsField = IngridShared.findFieldElementWithId(
           fieldConfig,
           "keywords",
         );
@@ -130,7 +129,7 @@ class InGridLUBWComponent extends InGridComponent {
         docType.addBefore(keywordsField, analyzeField[0]);
 
         if (isAuthor) {
-          const freeKeywords = docType.findFieldElementWithId(
+          const freeKeywords = IngridShared.findFieldElementWithId(
             fieldConfig,
             "free",
           );
@@ -140,35 +139,6 @@ class InGridLUBWComponent extends InGridComponent {
         return fieldConfig;
       };
     });
-  }
-
-
-  // dataQualityInfo
-  // lineage
-  // source
-  // descriptions", "Datengrundlage",
-  // processStep
-  // description", "Herstellungsprozess",
-
-  private addFields(fieldConfig: FormlyFieldConfig[]) {
-    const identifierPosition = FormFieldHelper.findFieldElementWithId(
-      fieldConfig,
-      "identifier",
-    );
-    const processStepPosition = FormFieldHelper.findFieldElementWithId(
-      fieldConfig,
-      "processStep",
-    );
-
-    this.addAfter(identifierPosition, this.common.getOACFieldConfig());
-    this.addAfter(
-      processStepPosition,
-      this.common.getEnvironmentDescriptionFieldConfig(),
-    );
-  }
-
-  private addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
   }
 
   private getAddressTypesByKeys(keys: string[]) {

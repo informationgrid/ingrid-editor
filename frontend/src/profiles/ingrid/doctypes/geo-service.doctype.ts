@@ -199,8 +199,6 @@ export class GeoServiceDoctype extends IngridShared {
                     required: true,
                     validators: {
                       validation: ["url"],
-                    },
-                    validators: {
                       inspireRelevant: {
                         expression: (ctrl: FormControl) =>
                           ctrl.root.value?.properties?.isInspireIdentified ===

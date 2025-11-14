@@ -29,6 +29,7 @@ import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
+import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -224,7 +225,7 @@ export interface SpatialOptions {
   expressions?: any;
   defaultValue?: any;
   required?: boolean;
-  limitTypes?: Array<"free" | "wkt" | "wfsgnde">;
+  limitTypes?: SpatialLocationType[];
   max?: number;
 }
 
@@ -765,7 +766,6 @@ export class FormFieldHelper {
         multiple: options?.multiple,
         simple: options?.simple,
         useFirstValueInitially: options?.useFirstValueInitially,
-        hintStart: options?.hintStart,
       },
       validators: options?.validators,
       expressions: expressions,
@@ -1150,7 +1150,10 @@ export class FormFieldHelper {
     },
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const fieldPosition = FormFieldHelper.findFieldElementWithId(fieldConfig, id);
+    const fieldPosition = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      id,
+    );
     const targetField = fieldPosition.fieldConfig[fieldPosition.index];
     targetField.validators = {
       ...(targetField.validators ?? {}),
