@@ -6,6 +6,5 @@
 
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
-    ,
     "t02_address.identificationinfo_administrative_area_value": "${page.getAdministrativeArea()}"
 `)
