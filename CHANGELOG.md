@@ -1,5 +1,14 @@
 # Changelog
 
+## 8.1.2 (19.11.2025)
+
+### Features
+
+* Validierungsregel aus dem BAW-Profil vom IGE-Classic löschen (#8448)
+* Anzeige von Projektnummer und Projekttitel im Portal (#6713)
+* "Amtsintern" als default Einstellung für neue Datensätze (#6352)
+
+    
 ## 8.1.1 (31.10.2025)
 
 ### Features
