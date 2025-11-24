@@ -27,6 +27,7 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { GeneralStore } from "../app/store/general.store";
 
 @Component({
   template: "",
@@ -38,6 +39,7 @@ class InGridLUBWComponent extends InGridComponent {
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);
   translocoService = inject(TranslocoService);
+  private generalStore = inject(GeneralStore);
   protected codelistStore = inject(CodelistStore);
 
   constructor() {
@@ -75,6 +77,8 @@ class InGridLUBWComponent extends InGridComponent {
         { merge: true },
       );
       this.replaceHelpLink();
+      // author is not allowed to move any tree nodes
+      this.generalStore.setAllowDragNDropInTree(false);
     }
   }
 
