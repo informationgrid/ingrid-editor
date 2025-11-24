@@ -63,6 +63,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 interface TimeReferenceProps extends FormlyFieldProps {
   showTimepicker: boolean;
   showTimezone: boolean;
+  defaultTimezone?: string;
 }
 
 @Component({
@@ -138,7 +139,7 @@ export class TimeReferenceComponent
       fromDate: null as Date | null,
       intervalTo: "not-available",
       tillDate: null as Date | null,
-      timezone: undefined as string,
+      timezone: this.props.defaultTimezone ?? (undefined as string),
     };
 
     // reflect external Formly control changes into inner form
@@ -162,7 +163,7 @@ export class TimeReferenceComponent
 
     // this.temporalForm.statusChanges.subscribe((status) => {});
 
-    this.formControl.addValidators((value) => {
+    this.formControl.addValidators((_) => {
       return this.temporalForm.valid ? null : { someError: true };
     });
 

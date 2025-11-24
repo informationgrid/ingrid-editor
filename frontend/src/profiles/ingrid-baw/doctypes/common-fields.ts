@@ -114,6 +114,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     );
     timeRefRangePosition.field.props.showTimepicker = true;
     timeRefRangePosition.field.props.showTimezone = true;
+    timeRefRangePosition.field.props.defaultTimezone = "(GMT+01:00) Berlin";
 
     const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,
