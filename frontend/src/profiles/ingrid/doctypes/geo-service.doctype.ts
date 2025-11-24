@@ -202,6 +202,28 @@ export class GeoServiceDoctype extends IngridShared {
                   },
                 }),
               ],
+              validators: {
+                ifOgcFeatureThenLandingPage: {
+                  expression: (ctrl: FormControl) => {
+                    const ogcFeatureCodelistId = "4";
+                    const ogcLandingPageCodelistId = "7";
+
+                    const version = ctrl.root.value?.service?.version ?? [];
+                    const operations =
+                      ctrl.root.value?.service?.operations ?? [];
+
+                    const hasOgcFeature = version.some(
+                      (v) => v.key === ogcFeatureCodelistId,
+                    );
+                    const hasOgcLandingPage = operations.some(
+                      (op) => op?.name?.key === ogcLandingPageCodelistId,
+                    );
+                    return hasOgcFeature == hasOgcLandingPage;
+                  },
+                  message:
+                    "Wenn die Version des Dienstes ‚OGC API-Feature‘ gesetzt ist, muss auch die Operation ‚LandingPage‘ angegeben sein. Ebenso darf ‚LandingPage‘ nur gesetzt werden, wenn ‚OGC API-Feature‘ ausgewählt wurde.",
+                },
+              },
             }),
             this.addGroup(
               null,
