@@ -54,6 +54,7 @@ type GeneralState = {
   oldestExpiredDocuments: DocumentAbstract[];
   sessionTimeoutIn: number;
   catalogLanguage: string;
+  allowDragNDropInTree: boolean;
 };
 
 const initialState: GeneralState = {
@@ -82,6 +83,7 @@ const initialState: GeneralState = {
   oldestExpiredDocuments: [],
   sessionTimeoutIn: -1,
   catalogLanguage: "de",
+  allowDragNDropInTree: true,
 };
 
 export const GeneralStore = signalStore(
@@ -169,6 +171,9 @@ export const GeneralStore = signalStore(
     },
     setCatalogLanguage(value: string): void {
       patchState(store, { catalogLanguage: value });
+    },
+    setAllowDragNDropInTree(value: boolean): void {
+      patchState(store, { allowDragNDropInTree: value });
     },
   })),
 );
