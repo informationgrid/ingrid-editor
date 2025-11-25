@@ -29,5 +29,5 @@ private const val PROFILE_ID = NLPVProfile.ID
 @Component
 class InGridGeoDatasetTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val profiles = arrayOf(PROFILE_ID)
-    override val jsonSchema = "/ingrid/schemes/sh/geo-dataset_sh.schema.json"
+    override val jsonSchema = "/ingrid/schemes/nlpv/geo-dataset_nlpv.schema.json"
 }
