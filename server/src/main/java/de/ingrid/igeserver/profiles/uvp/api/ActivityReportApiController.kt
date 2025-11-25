@@ -77,6 +77,7 @@ class ActivityReportApiController(
         WHERE message->>'catalogIdentifier' = '$catalogIdentifier'
           AND message->>'cat' IN ('data-history', 'tags')
           AND message#>>'{data,_type}' NOT IN ('UvpOrganisationDoc', 'UvpAddressDoc', 'FOLDER')
+          AND document.is_latest=true
           AND (document.catalog_id=$catalogId OR document.catalog_id IS NULL)
           ${activityQueryOptions.from?.let { "AND timestamp >= '$it'" } ?: ""}
           ${activityQueryOptions.to?.let { "AND timestamp <= '$it'" } ?: ""}
