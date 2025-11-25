@@ -70,6 +70,9 @@
         },
         "hideAddress": {
           "type": "boolean"
+        },
+        "images": {
+          "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
         }
       },
       "required": ["_uuid", "_type", "lastName", "contact"],

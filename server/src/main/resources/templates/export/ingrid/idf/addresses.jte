@@ -2,6 +2,7 @@
 @import de.ingrid.igeserver.exporter.ObjectReference
 @import de.ingrid.igeserver.exporter.SubordinatedParty
 @import de.ingrid.igeserver.exporter.TransformationTools
+@import de.ingrid.igeserver.exporter.Image
 @import java.util.List
 
 @param List<AddressModelTransformer> addresses
@@ -94,6 +95,27 @@
                     </gmd:CI_OnlineResource>
                 </gmd:onlineResource>
             @endif
+            @for(Image image : address.getImages())
+                <gmd:onlineResource>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${image.getUri()}</gmd:URL>
+                        </gmd:linkage>
+                        <gmd:applicationProfile>
+                            <gco:CharacterString>image/png</gco:CharacterString>
+                        </gmd:applicationProfile>
+                        <gmd:name>
+                            <gco:CharacterString>${image.getTitle()}</gco:CharacterString>
+                        </gmd:name>
+                        <gmd:description>
+                            <gco:CharacterString>${image.getDescription()}</gco:CharacterString>
+                        </gmd:description>
+                        <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                        </gmd:function>
+                    </gmd:CI_OnlineResource>
+                </gmd:onlineResource>
+            @endfor
             @if(TransformationTools.hasValue(address.getHoursOfService()))
                 <gmd:hoursOfService>
                     <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>

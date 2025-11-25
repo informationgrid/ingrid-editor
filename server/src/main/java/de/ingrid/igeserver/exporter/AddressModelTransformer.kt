@@ -165,6 +165,14 @@ open class AddressModelTransformer(
     val salutation = displayAddress.data.get("salutation")?.mapToKeyValue()
     val academicTitle = displayAddress.data.get("academic-title")?.mapToKeyValue()
 
+    val images = displayAddress.data.get("images")?.mapNotNull {
+        Image(
+            getFileNameUri(it.get("fileName")) ?: return@mapNotNull null,
+            it.getString("fileDescription"),
+            it.getString("fileName.value"),
+        )
+    } ?: emptyList()
+
     val administrativeArea =
         codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(displayAddress.type)
@@ -201,16 +209,18 @@ open class AddressModelTransformer(
                 doc.data.get("description")?.textValue(),
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
-                    if (fileName?.get("asLink")?.booleanValue() == true) {
-                        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
-                    } else {
-                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
-                    }
+                    getFileNameUri(fileName)
                 } else {
                     null
                 },
             )
         }.filterNotNull()
+    }
+
+    fun getFileNameUri(fileName: JsonNode?): String? = if (fileName?.get("asLink")?.booleanValue() == true) {
+        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
+    } else {
+        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
     }
 
     /**
@@ -293,4 +303,10 @@ data class SubordinatedParty(
     val type: Int,
     val individualName: String?,
     val organisationName: String?,
+)
+
+data class Image(
+    val uri: String,
+    val description: String?,
+    val title: String?,
 )
