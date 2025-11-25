@@ -198,27 +198,27 @@
             (optionsScroll)="onScroll()"
         >
             @for (option of filteredOptions(); track option.label) {
-                @if (option.value === "_LOADING_SPINNER_") {
-                    <mat-option
-                        [disabled]="true"
-                        class="loading-spinner-option"
-                    >
-                        <div class="spinner-container">
-                            <mat-progress-spinner
-                                mode="indeterminate"
-                                diameter="20"
-                            >
-                            </mat-progress-spinner>
-                            <span class="loading-text">{{ option.label }}</span>
-                        </div>
-                    </mat-option>
-                } @else if (option.value === "_SEPARATOR_") {
+                @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
                     <mat-option [value]="option" [disabled]="option.disabled">
                         {{ option.label }}
                     </mat-option>
                 }
+            }
+            @if (paginationState.isLoading) {
+                <mat-option [disabled]="true" class="loading-spinner-option">
+                    <div class="spinner-container">
+                        <mat-progress-spinner
+                            mode="indeterminate"
+                            diameter="20"
+                        >
+                        </mat-progress-spinner>
+                        <span class="loading-text">
+                            Lädt externe Codelist-Einträge...
+                        </span>
+                    </div>
+                </mat-option>
             }
         </mat-autocomplete>
         <!-- clean button -->

@@ -19,7 +19,7 @@
  */
 import {
   Component,
-  ElementRef,
+  DestroyRef,
   inject,
   OnInit,
   signal,
@@ -36,28 +36,22 @@ import {
   MatAutocompleteTrigger,
 } from "@angular/material/autocomplete";
 import {
-  catchError,
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
-  scan,
-  skip,
   startWith,
   switchMap,
-  takeUntil,
   tap,
 } from "rxjs/operators";
 import {
   BehaviorSubject,
-  concat,
-  concatMap,
+  combineLatest,
   merge,
   Observable,
   of,
   Subject,
   Subscription,
-  timer,
 } from "rxjs";
 import {
   SelectOption,
@@ -110,6 +104,7 @@ import {
 } from "../../../store/codelist/codelist.model";
 import { ExternalResultsCache } from "./external-result-cache";
 import { OptionsScrollDirective } from "./options-scroll.directive";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -119,13 +114,6 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     else return false;
   }
 }
-
-const LOADING_INDICATOR: SelectOption = new SelectOption(
-  "_LOADING_SPINNER_",
-  "Lädt externe Codelist-Einträge...",
-);
-const LOADING_INDICATOR_DELAY_MS = 200;
-const EMPTY_PAGED_SEARCH_RESULT = { page: 0, totalPages: 0, results: [] };
 
 export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
@@ -161,6 +149,8 @@ export interface RepeatListProps extends FormlyFieldProps {
     threshold?: number;
   };
 }
+
+type PaginationState = { page: number; totalPages: number; isLoading: boolean };
 
 @UntilDestroy()
 @Component({
@@ -204,18 +194,17 @@ export class RepeatListComponent
   implements OnInit
 {
   private codelistStore = inject(CodelistStore);
+  private destroyRef = inject(DestroyRef);
   private externalResultsCache: ExternalResultsCache;
-  readonly autoCompleteEl = viewChild("repeatListInput", { read: ElementRef });
   readonly autoComplete = viewChild(MatAutocompleteTrigger);
   readonly selector = viewChild(MatSelect);
 
-  private destroy$ = new Subject<void>();
-  private loadMore = new Subject<void>();
-  private paginationState = {
+  paginationState = {
     page: 0,
     totalPages: 1,
     isLoading: false,
   };
+  private loadMore = new BehaviorSubject<PaginationState>(this.paginationState);
 
   onItemClick: (id: number) => void = () => {};
 
@@ -341,124 +330,83 @@ export class RepeatListComponent
     }
   }
 
-  handleExternalOptions() {
+  private handleExternalOptions() {
     const query$ = this.inputControl.valueChanges.pipe(
       startWith(this.inputControl.value),
       map((value) => (typeof value === "string" ? value : "")),
       tap(() => this.formControl.updateValueAndValidity()),
+      tap(() =>
+        this.loadMore.next({ page: 0, totalPages: 1, isLoading: false }),
+      ),
     );
 
-    query$
+    combineLatest([query$, this.loadMore])
       .pipe(
-        takeUntil(this.destroy$),
-        switchMap((query: string) => {
-          this.paginationState = { page: 0, totalPages: 1, isLoading: false };
-          const localResults = this._filter(query);
-          if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
-            return of({ isLoading: false, options: localResults });
-          }
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((event) => this.fetchPagedCodelistsWhenThreshold(event)),
+        map(
+          (result: {
+            query: string;
+            remoteResults: PagedSearchResult;
+            options: SelectOptionUi[];
+          }) => {
+            if (result.options) return result.options;
 
-          const pageTrigger = new BehaviorSubject<number>(0);
-          this.loadMore
-            .pipe(
-              takeUntil(query$.pipe(skip(1))),
-              filter(
-                () =>
-                  !this.paginationState.isLoading &&
-                  this.paginationState.page <
-                    this.paginationState.totalPages - 1,
-              ),
-              map(() => this.paginationState.page + 1),
-            )
-            .subscribe(pageTrigger);
+            this.paginationState = {
+              page: result.remoteResults.page,
+              totalPages: result.remoteResults.totalPages,
+              isLoading: false,
+            };
 
-          return pageTrigger.pipe(
-            distinctUntilChanged(),
-            concatMap((pageToFetch) => {
-              const remoteCall$ = timer(pageToFetch === 0 ? 50 : 0).pipe(
-                tap(() => {
-                  this.paginationState.isLoading = true;
-                }),
-                switchMap(() =>
-                  this.props.externalOptions.fetchCodelist(query, pageToFetch),
-                ),
-                catchError(() => of(EMPTY_PAGED_SEARCH_RESULT)),
-                map((remoteResults: PagedSearchResult) => {
-                  this.paginationState = {
-                    page: remoteResults.page,
-                    totalPages: remoteResults.totalPages,
-                    isLoading: false,
-                  };
-
-                  const newExternalResults = remoteResults.results.map(
-                    (label) => new SelectOption(null, label),
-                  );
-                  this.externalResultsCache.updateCache(newExternalResults);
-
-                  const allCachedForQuery =
-                    this.externalResultsCache.filter(query);
-
-                  return {
-                    isLoading: false,
-                    options: this.props.externalOptions.deduplicate(
-                      localResults,
-                      allCachedForQuery,
-                    ),
-                  };
-                }),
-              );
-
-              if (pageToFetch === 0) {
-                const cachedFilteredResults =
-                  this.externalResultsCache.filter(query);
-                const immediateResults = this.props.externalOptions.deduplicate(
-                  localResults,
-                  cachedFilteredResults,
-                );
-
-                const spinnerDelayed$ = timer(LOADING_INDICATOR_DELAY_MS).pipe(
-                  map(() => ({
-                    isLoading: true,
-                    options: [...immediateResults, LOADING_INDICATOR],
-                  })),
-                  takeUntil(remoteCall$),
-                );
-
-                return concat(
-                  of({ isLoading: false, options: immediateResults }),
-                  spinnerDelayed$,
-                  remoteCall$,
-                );
-              } else {
-                return concat(of({ isLoading: true }), remoteCall$);
-              }
-            }),
-          );
-        }),
-        scan(
-          (acc: { options: SelectOption[] }, val: any) => {
-            if (val.isLoading) {
-              if (val.options) {
-                return { options: val.options };
-              } else {
-                const currentOptions = acc.options.filter(
-                  (o) => o !== LOADING_INDICATOR,
-                );
-                return { options: [...currentOptions, LOADING_INDICATOR] };
-              }
-            } else {
-              return { options: val.options };
-            }
+            return this.mapExternalCodelistsToOptions(result);
           },
-          { options: [] },
         ),
-        map((state) => state.options),
         tap((value) => this._markSelected(value)),
       )
       .subscribe((value) => this.filteredOptions.set(value));
   }
 
-  handleRestCall() {
+  private mapExternalCodelistsToOptions(result: {
+    query: string;
+    remoteResults: PagedSearchResult;
+    options: SelectOptionUi[];
+  }) {
+    const newExternalResults = result.remoteResults.results.map(
+      (label) => new SelectOption(null, label),
+    );
+    this.externalResultsCache.updateCache(newExternalResults);
+
+    const allCachedForQuery = this.externalResultsCache.filter(result.query);
+
+    return this.props.externalOptions.deduplicate(
+      this._filter(result.query),
+      allCachedForQuery,
+    );
+  }
+
+  private fetchPagedCodelistsWhenThreshold<A>(event: A) {
+    const query = event[0];
+    const pagination = event[1];
+    this.paginationState.isLoading = false;
+    const localResults = this._filter(query);
+    const cachedFilteredResults = this.externalResultsCache.filter(query);
+    const immediateResults = this.props.externalOptions.deduplicate(
+      localResults,
+      cachedFilteredResults,
+    );
+    if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
+      return of({ options: immediateResults });
+    }
+
+    this.filteredOptions.set(immediateResults);
+
+    this.paginationState.isLoading = true;
+    return this.props.externalOptions
+      .fetchCodelist(query, pagination.page)
+      .pipe(map((results) => ({ query, remoteResults: results })));
+  }
+
+  private handleRestCall() {
     this.inputControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -470,7 +418,7 @@ export class RepeatListComponent
       .subscribe((query) => this.search(query));
   }
 
-  handleOptions() {
+  private handleOptions() {
     merge(
       this.formControl.valueChanges,
       this.inputControl.valueChanges.pipe(
@@ -788,17 +736,14 @@ export class RepeatListComponent
     return formattedDuplicates;
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onScroll() {
+    console.log(".");
     if (
       !this.paginationState.isLoading &&
       this.paginationState.page < this.paginationState.totalPages - 1
     ) {
-      this.loadMore.next();
+      this.paginationState.page = this.paginationState.page + 1;
+      this.loadMore.next(this.paginationState);
     }
   }
 }
