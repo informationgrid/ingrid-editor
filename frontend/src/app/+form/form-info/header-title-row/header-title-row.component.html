@@ -55,10 +55,10 @@
         mat-icon-button
         data-cy="btn-more-header"
         class="dark menu-button btn-toggle-form-header"
-        [class.expanded]="showMore"
+        [class.expanded]="showMore()"
         (click)="toggleMoreInfo()"
         aria-label="Details der Metadaten"
-        [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
+        [matTooltip]="showMore() ? 'Schließen' : 'Öffnen'"
     >
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
