@@ -29,6 +29,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.BawPropertiesHolder
 import de.ingrid.igeserver.profiles.ingrid_baw.importer.ISOImportBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.quickfilter.DocumentTypesBaw
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -37,10 +38,12 @@ import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
+@EnableConfigurationProperties(BawProperties::class)
 class BawProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,
@@ -51,6 +54,7 @@ class BawProfile(
     isoImport: ISOImport,
     isoImportBaw: ISOImportBaw,
     @JsonIgnore val behaviourService: BehaviourService,
+    bawProperties: BawProperties,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -63,6 +67,8 @@ class BawProfile(
 
     init {
         isoImport.profileMapper[ID] = isoImportBaw
+        // Initialize URL domain whitelist from configuration properties
+        BawPropertiesHolder.domainWhitelist = bawProperties.domainWhitelist
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/baw/default-mapping.json")?.readText() ?: ""
