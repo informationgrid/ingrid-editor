@@ -197,7 +197,7 @@ export class TimeReferenceComponent
     result.intervalFrom = value.intervalFrom ?? "not-available";
     result.intervalTo = value.intervalTo ?? "not-available";
 
-    if (this.showTimezone) {
+    if (this.showTimezone()) {
       result.timezone = value.timezone;
     }
 
@@ -232,7 +232,7 @@ export class TimeReferenceComponent
       return result;
     }
 
-    if (this.showTimezone) {
+    if (this.showTimezone()) {
       result.timezone = this.temporalForm.get("timezone")?.value;
     }
 
