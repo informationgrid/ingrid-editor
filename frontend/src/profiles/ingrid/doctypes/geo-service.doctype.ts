@@ -203,6 +203,17 @@ export class GeoServiceDoctype extends IngridShared {
                 }),
               ],
               validators: {
+                onlyOneLandingPage: {
+                  expression: (ctrl: FormControl) => {
+                    const ogcLandingPageCodelistId = "7";
+                    return (
+                      ctrl.root.value?.service?.operations?.filter(
+                        (op) => op?.name?.key === ogcLandingPageCodelistId,
+                      )?.length < 2
+                    );
+                  },
+                  message: "'LandingPage' darf nur einmal aufgeführt werden.",
+                },
                 ifOgcFeatureThenLandingPage: {
                   expression: (ctrl: FormControl) => {
                     const ogcFeatureCodelistId = "4";
