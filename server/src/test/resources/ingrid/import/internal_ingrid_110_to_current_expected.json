@@ -104,7 +104,8 @@
         },
         "status": null,
         "data": {
-          "type": "none"
+          "type": "none",
+          "timezone": null
         }
       },
       "extraInfo": {
