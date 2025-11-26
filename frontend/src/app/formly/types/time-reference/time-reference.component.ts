@@ -263,7 +263,7 @@ export class TimeReferenceComponent
       this.temporalForm.get("atDate").enable({ emitEvent: false });
       this.temporalForm.get("fromDate").disable({ emitEvent: false });
       this.temporalForm.get("tillDate").disable({ emitEvent: false });
-      this.temporalForm.get("tillTime").disable({ emitEvent: false });
+      this.temporalForm.get("fromTime").disable({ emitEvent: false });
       this.temporalForm.get("tillTime").disable({ emitEvent: false });
     } else {
       this.temporalForm.get("atDate").disable({ emitEvent: false });
