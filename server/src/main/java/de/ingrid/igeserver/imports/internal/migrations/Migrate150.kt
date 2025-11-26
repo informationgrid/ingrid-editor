@@ -135,7 +135,7 @@ class Migrate150 {
                 }
 
                 // preserve timezone (even if null)
-                set<JsonNode>("timezone", temporal.get("resourceTimezone"))
+                put("timezone", temporal.get("resourceTimezone")?.get("key")?.asText())
             }
             this.set<JsonNode>("data", dataNode)
         }
