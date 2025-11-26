@@ -547,9 +547,3 @@ data class Keyword(
     val label: String,
     val alternativeLabel: String?,
 )
-
-data class ServiceVersion(
-    val key: String?,
-    val value: String?,
-    val codelistId: String?,
-)

@@ -981,7 +981,7 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
-            @for( ServiceVersion version : page.getOgcServiceVersion() )
+            @if(page.hasOgcServiceVersion())
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
@@ -990,7 +990,7 @@ ${contentInfo}
                                     <gmd:URL>${page.getOgcLandingPage()}</gmd:URL>
                                 </gmd:linkage>
                                 <gmd:protocol>
-                                    <gmx:Anchor xlink:href="http://www.opengis.net/def/docs/17-069r3">OGC API-Features</gmx:Anchor>
+                                    <gmx:Anchor xlink:href="http://www.opengis.net/def/interface/ogcapi-features">OGC API-Features</gmx:Anchor>
                                 </gmd:protocol>
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
@@ -999,7 +999,7 @@ ${contentInfo}
                         </gmd:onLine>
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
-            @endfor
+            @endif
         </gmd:MD_Distribution>
     </gmd:distributionInfo>
 @endif
