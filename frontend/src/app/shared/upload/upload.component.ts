@@ -212,10 +212,9 @@ export class UploadComponent implements AfterViewInit {
   }
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
-    const params = this.additionalParameters();
-    params.options = params.options
-      ? JSON.stringify(params.options)
-      : undefined;
+    const options = this.additionalParameters();
+    const params: any = {};
+    if (options) params.options = JSON.stringify(options);
     flowFiles.forEach((file) => (file.flowObj.opts.query = { ...params }));
   }
 
@@ -294,10 +293,9 @@ export class UploadComponent implements AfterViewInit {
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {
-      const params = this.additionalParameters();
-      params.options = params.options
-        ? JSON.stringify(params.options)
-        : undefined;
+      const options = this.additionalParameters();
+      const params: any = {};
+      if (options) params.options = JSON.stringify(options);
       flowFile.flowObj.opts.query = {
         ...params,
         ...parameter,
