@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, signal } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -78,7 +78,7 @@ export interface CatalogDetailResponse {
   ],
 })
 export class CatalogDetailComponent implements OnInit {
-  catAdmins: User[];
+  catAdmins = signal<User[]>([]);
 
   constructor(
     public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
@@ -89,9 +89,9 @@ export class CatalogDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.userService.getCatAdmins(this.catalog.id).subscribe((catAdmins) => {
-      this.catAdmins = catAdmins;
-    });
+    this.userService
+      .getCatAdmins(this.catalog.id)
+      .subscribe((catAdmins) => this.catAdmins.set(catAdmins));
 
     this.catalogService.getCatalog(this.catalog.id);
   }
