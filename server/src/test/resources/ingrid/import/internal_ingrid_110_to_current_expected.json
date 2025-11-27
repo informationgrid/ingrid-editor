@@ -359,7 +359,8 @@
           "type": "range",
           "intervalFrom": "date",
           "intervalTo": "continuously",
-          "resourceDate": "2025-11-12T23:00:00.000Z"
+          "resourceDate": "2025-11-12T23:00:00.000Z",
+          "timezone": null
         }
       },
       "extraInfo": {
