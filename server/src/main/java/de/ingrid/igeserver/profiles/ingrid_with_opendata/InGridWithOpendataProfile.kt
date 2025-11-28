@@ -54,7 +54,7 @@ class InGridWithOpendataProfile(
     override val title = "InGrid mit Opendata - Katalog"
     override val parentProfile = "ingrid"
 
-//    override val indexExportFormatID = "indexInGridIDFKrzn"
+    override val indexExportFormatID = "indexInGridIDFOpenInGrid"
 
     init {
 //        openDataType.profiles = emptyList<>()

@@ -70,7 +70,7 @@ class OpenDataExporter(
         "Export der Datensätze für die weitere Verwendung im InGrid-System.",
         MediaType.APPLICATION_JSON_VALUE,
         "json",
-        listOf("opendata"),
+        listOf("opendata", "ingrid-with-opendata"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {

@@ -1,61 +1,41 @@
+package de.ingrid.igeserver.profiles.ingrid_with_opendata.exporter
+
 import de.ingrid.igeserver.exports.ExportOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.UploadConfig
-import org.springframework.context.annotation.Lazy
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataExporter
+import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
-class InGridExporterOpenDataInGrid
-
 @Service
-class IngridLuceneExporterOpenInGrid(
-    codelistHandler: CodelistHandler,
-    uploadConfig: UploadConfig,
-    catalogService: CatalogService,
-    @Lazy documentService: DocumentService,
-) : IngridLuceneExporter(
-    codelistHandler,
-    uploadConfig,
-    catalogService,
-    documentService,
-) {
+class InGridExporterOpenDataInGrid(
+    @Qualifier("ingridIndexExporter") val ingridExporter: IngridIndexExporter,
+    val openDataExporter: OpenDataExporter,
+) : IgeExporter {
 
-    /*
-        override fun getTransformer(data: TransformerData): Any = when (data.type) {
-            IngridDocType.DOCUMENT -> {
-                IngridModelTransformerBast(
-                    TransformerConfig(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        uploadConfig,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService,
-                        data.tags,
-                    ),
-                )
-            }
-
-            else -> super.getTransformer(data)
-        }
-     */
-
-    override fun getTemplateForDoctype(
-        doc: Document,
-        catalog: Catalog,
-        options: ExportOptions,
-    ): Pair<String, Map<String, Any>> = when (doc.type) {
-        "OpenDataDoc" -> Pair(
-            "export/opendata/lucene-export.jte",
-            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+    override val typeInfo =
+        ExportTypeInfo(
+            DocumentCategory.DATA,
+            "indexInGridIDFOpenInGrid",
+            "InGrid IDF OpenData + InGrid (Elasticsearch)",
+            "Export von InGrid und OpenData Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
+            "application/json",
+            "json",
+            listOf("ingrid-with-opendata"),
+            isPublic = true,
+            useForPublish = true,
         )
 
-        else -> super.getTemplateForDoctype(doc, catalog, options)
+    override fun run(
+        doc: Document,
+        catalogId: String,
+        options: ExportOptions,
+    ): Any = if (doc.type == "OpenDataDoc") {
+        openDataExporter.run(doc, catalogId, options)
+    } else {
+        ingridExporter.run(doc, catalogId, options)
     }
 }
