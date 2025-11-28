@@ -772,6 +772,16 @@ open class IngridModelTransformer(
         }
     }
 
+    val ogcLandingPage: String by lazy {
+        val operationWithLandingPage = data.service.operations?.firstOrNull({ it.name?.value == "LandingPage" })
+        operationWithLandingPage?.methodCall ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
+    }
+
+    fun hasOgcServiceVersion(): Boolean {
+        val ogcApiFeatureCodelistId = "4"
+        return (data.service.version ?: emptyList()).any({ it.key == ogcApiFeatureCodelistId })
+    }
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass =
             getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL"))
@@ -1200,6 +1210,7 @@ open class IngridModelTransformer(
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
+        hasOgcServiceVersion() ||
         // TODO Refactor after usage clarification #6322
         // || serviceUrls.isNotEmpty()
         // || getCoupledServiceUrls().isNotEmpty()
