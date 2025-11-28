@@ -212,7 +212,7 @@ export class GeoServiceDoctype extends IngridShared {
                       )?.length < 2
                     );
                   },
-                  message: "'LandingPage' darf nur einmal aufgeführt werden.",
+                  message: `"LandingPage" darf nur einmal aufgeführt werden`,
                 },
                 ifOgcFeatureThenLandingPage: {
                   expression: (ctrl: FormControl) => {
@@ -231,8 +231,7 @@ export class GeoServiceDoctype extends IngridShared {
                     );
                     return hasOgcFeature == hasOgcLandingPage;
                   },
-                  message:
-                    "Wenn die Version des Dienstes ‚OGC API-Feature‘ gesetzt ist, muss auch die Operation ‚LandingPage‘ angegeben sein. Ebenso darf ‚LandingPage‘ nur gesetzt werden, wenn ‚OGC API-Feature‘ ausgewählt wurde.",
+                  message: `Ist die Version "OGC API-Feature" gesetzt, muss auch eine Operation "LandingPage" angegeben werden. "LandingPage" darf nur gewählt werden, wenn "OGC API-Feature" aktiv ist`,
                 },
               },
             }),
