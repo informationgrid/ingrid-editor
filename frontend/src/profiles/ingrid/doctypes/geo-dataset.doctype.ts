@@ -365,114 +365,123 @@ export class GeoDatasetDoctype extends IngridShared {
                     ],
                     { wrappers: [] },
                   ),
-                ],
-                {
-                  hideExpression: (field: FormlyFieldConfig) =>
-                    field.options.formState.mainModel?.gridSpatialRepresentation
-                      ?.type?.key !== "basis",
-                },
-              ),
-              this.addGroup(
-                "georectified",
-                null,
-                [
                   this.addGroup(
-                    null,
+                    "georectified",
                     null,
                     [
-                      this.addCheckboxInline(
-                        "checkPointAvailability",
-                        "Kontrollpunktverfügbarkeit",
-                        {
-                          className: "flex-1",
-                          hasInlineContextHelp: true,
-                        },
+                      this.addGroup(
+                        null,
+                        null,
+                        [
+                          this.addCheckboxInline(
+                            "checkPointAvailability",
+                            "Kontrollpunktverfügbarkeit",
+                            {
+                              className: "flex-1",
+                              hasInlineContextHelp: true,
+                            },
+                          ),
+                          this.addInputInline(
+                            "checkPointDescription",
+                            "Kontrollpunktbeschreibung",
+                            {
+                              className: "flex-1",
+                              hasInlineContextHelp: true,
+                              wrappers: ["inline-help", "form-field"],
+                            },
+                          ),
+                        ],
+                        { wrappers: [] },
+                      ),
+                      this.addGroup(
+                        null,
+                        null,
+                        [
+                          this.addInputInline("cornerPoints", "Eckpunkte", {
+                            className: "flex-3",
+                            hasInlineContextHelp: true,
+                            wrappers: ["inline-help", "form-field"],
+                          }),
+                          this.addSelectInline(
+                            "pointInPixel",
+                            "Punkt im Pixel",
+                            {
+                              options: this.getCodelistForSelect(
+                                "2100",
+                                "gridSpatialRepresentation.georectified.pointInPixel",
+                              ),
+                              codelistId: "2100",
+                              showSearch: true,
+                              className: "flex-3",
+                              allowNoValue: true,
+                              hasInlineContextHelp: true,
+                              wrappers: ["inline-help", "form-field"],
+                            },
+                          ),
+                        ],
+                        { wrappers: [] },
+                      ),
+                    ],
+                    {
+                      wrappers: [],
+                      fieldGroupClassName: "",
+                      hideExpression: (field: FormlyFieldConfig) =>
+                        field.options.formState.mainModel
+                          ?.gridSpatialRepresentation?.type?.key !==
+                        "rectified",
+                    },
+                  ),
+                  this.addGroup(
+                    "georeferenceable",
+                    null,
+                    [
+                      this.addGroup(
+                        null,
+                        null,
+                        [
+                          this.addCheckboxInline(
+                            "orientationParameterAvailability",
+                            "Verfügbarkeit der Orientierungsparameter",
+                            { className: "flex-3" },
+                          ),
+                          this.addCheckboxInline(
+                            "controlPointAvaliability",
+                            "Passpunktverfügbarkeit",
+                            {
+                              className: "flex-3",
+                              hasInlineContextHelp: true,
+                            },
+                          ),
+                        ],
+                        { wrappers: [] },
                       ),
                       this.addInputInline(
-                        "checkPointDescription",
-                        "Kontrollpunktbeschreibung",
+                        "parameters",
+                        "Georeferenzierungsparameter",
                         {
-                          className: "flex-1",
+                          className: "",
                           hasInlineContextHelp: true,
                           wrappers: ["inline-help", "form-field"],
                         },
                       ),
                     ],
-                    { wrappers: [] },
-                  ),
-                  this.addGroup(
-                    null,
-                    null,
-                    [
-                      this.addInputInline("cornerPoints", "Eckpunkte", {
-                        className: "flex-3",
-                        hasInlineContextHelp: true,
-                        wrappers: ["inline-help", "form-field"],
-                      }),
-                      this.addSelectInline("pointInPixel", "Punkt im Pixel", {
-                        options: this.getCodelistForSelect(
-                          "2100",
-                          "gridSpatialRepresentation.georectified.pointInPixel",
-                        ),
-                        codelistId: "2100",
-                        showSearch: true,
-                        className: "flex-3",
-                        allowNoValue: true,
-                        hasInlineContextHelp: true,
-                        wrappers: ["inline-help", "form-field"],
-                      }),
-                    ],
-                    { wrappers: [] },
-                  ),
-                ],
-                {
-                  wrappers: [],
-                  fieldGroupClassName: "",
-                  hideExpression: (field: FormlyFieldConfig) =>
-                    field.options.formState.mainModel?.gridSpatialRepresentation
-                      ?.type?.key !== "rectified",
-                },
-              ),
-              this.addGroup(
-                "georeferenceable",
-                null,
-                [
-                  this.addGroup(
-                    null,
-                    null,
-                    [
-                      this.addCheckboxInline(
-                        "orientationParameterAvailability",
-                        "Verfügbarkeit der Orientierungsparameter",
-                        { className: "flex-3" },
-                      ),
-                      this.addCheckboxInline(
-                        "controlPointAvaliability",
-                        "Passpunktverfügbarkeit",
-                        {
-                          className: "flex-3",
-                          hasInlineContextHelp: true,
-                        },
-                      ),
-                    ],
-                    { wrappers: [] },
-                  ),
-                  this.addInputInline(
-                    "parameters",
-                    "Georeferenzierungsparameter",
                     {
-                      className: "",
-                      hasInlineContextHelp: true,
-                      wrappers: ["inline-help", "form-field"],
+                      wrappers: [],
+                      fieldGroupClassName: "",
+                      hideExpression: (field: FormlyFieldConfig) =>
+                        field.options.formState.mainModel
+                          ?.gridSpatialRepresentation?.type?.key !==
+                        "referenced",
                     },
                   ),
                 ],
                 {
-                  wrappers: [],
-                  fieldGroupClassName: "",
-                  hideExpression: (field: FormlyFieldConfig) =>
-                    field.options.formState.mainModel?.gridSpatialRepresentation
-                      ?.type?.key !== "referenced",
+                  hideExpression: (field: FormlyFieldConfig) => {
+                    const type =
+                      field.options.formState.mainModel
+                        ?.gridSpatialRepresentation?.type;
+                    return type === null || type === undefined;
+                  },
                 },
               ),
             ],
