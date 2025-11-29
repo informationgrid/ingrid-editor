@@ -22,7 +22,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";

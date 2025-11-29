@@ -22,7 +22,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { Router } from "@angular/router";
 import { CatalogDataService } from "./services/catalog-data.service";
 import {
@@ -78,6 +78,6 @@ describe("CatalogService", () => {
   it("should get catalogs", () => {
     spectator.service
       .getCatalogs()
-      .subscribe((catalogs) => expect(catalogs.length).toBeEmpty());
+      .subscribe((catalogs) => expect(catalogs.length).toBe(0));
   });
 });

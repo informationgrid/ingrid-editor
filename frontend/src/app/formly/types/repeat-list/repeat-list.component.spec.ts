@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
+import { createHostFactory, SpectatorHost } from "@ngneat/spectator/vitest";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import {
   FormlyFieldConfig,
@@ -236,8 +236,8 @@ describe("RepeatListComponent", () => {
       expect(await input.getPlaceholder()).toBe(placeholder);
     });
 
-    xit("should show already selected values as disabled");
-    xit("should reset disabled state when setting a new value", () => {
+    it.skip("should show already selected values as disabled");
+    it.skip("should reset disabled state when setting a new value", () => {
       // the previously disabled items should not be disabled anymore when we load a new model
       // and the list is going to be updated
     });
@@ -303,7 +303,7 @@ describe("RepeatListComponent", () => {
       const placeholderElement = document.querySelector(
         ".mat-mdc-select-placeholder",
       );
-      expect(placeholderElement).toContainText(placeholder);
+      expect(placeholderElement.textContent).contains(placeholder);
     });
   });
 
@@ -346,10 +346,10 @@ describe("RepeatListComponent", () => {
 
     it("should add a value after search", async () => {
       await spectator.fixture.whenStable();
-      expect(spectator.query("mat-spinner")).not.toExist();
+      expect(spectator.query("mat-spinner")).toBe(null);
       await auto.enterText("remote");
       await waitSomeTime(350);
-      expect(spectator.query("mat-spinner")).toExist();
+      expect(spectator.query("mat-spinner")).not.toBe(null);
       await waitSomeTime(400);
       expect((await auto.getOptions()).length).toBe(2);
 
@@ -450,7 +450,7 @@ describe("RepeatListComponent", () => {
     spectator.dispatchFakeEvent("input", "focusin");
     let matOptions = document.querySelectorAll("mat-option");
     values.forEach((value, index) => {
-      expect(matOptions[index]).toHaveAttribute("aria-disabled", `${value}`);
+      expect(matOptions[index].getAttribute("aria-disabled")).toBe(value + "");
     });
   }
 
@@ -463,7 +463,7 @@ describe("RepeatListComponent", () => {
   function checkItemContent(index: number, text: string) {
     let listItemSelector = "[data-cy=list-item]";
     let elements = spectator.queryAll(listItemSelector);
-    expect(elements[index]).toContainText(text);
+    expect(elements[index].textContent).contains(text);
   }
 
   function removeChip(index: number) {

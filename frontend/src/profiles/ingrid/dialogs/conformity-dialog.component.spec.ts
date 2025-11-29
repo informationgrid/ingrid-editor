@@ -27,7 +27,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -157,14 +157,14 @@ describe("ConformityDialogComponent", () => {
   it("should disable the date field when isInspire is true", async () => {
     spectator.detectChanges();
 
-    expect(await isInspireCheckbox.isChecked()).toBeTrue(); // Assuming checkbox is initially checked
-    expect(await dateField.isDisabled()).toBeTrue();
+    expect(await isInspireCheckbox.isChecked()).toBe(true); // Assuming checkbox is initially checked
+    expect(await dateField.isDisabled()).toBe(true);
 
     await isInspireCheckbox.uncheck();
-    expect(await dateField.isDisabled()).toBeFalse();
+    expect(await dateField.isDisabled()).toBe(false);
 
     await isInspireCheckbox.check();
-    expect(await dateField.isDisabled()).toBeTrue();
+    expect(await dateField.isDisabled()).toBe(true);
   });
 
   it("should set INSPIRE specification as autoComplete select value with free text ", async () => {
@@ -180,7 +180,7 @@ describe("ConformityDialogComponent", () => {
 
     await dateField.setValue("18.15.2019");
 
-    const closeDialog = spyOn(mockMatDialogRef, "close");
+    const closeDialog = vi.spyOn(mockMatDialogRef, "close");
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({
@@ -208,7 +208,7 @@ describe("ConformityDialogComponent", () => {
     await passField.clickOptions({ text: "konform" });
     expect(await dateField.getValue()).toBe("20.10.2009");
 
-    const closeDialog = spyOn(mockMatDialogRef, "close");
+    const closeDialog = vi.spyOn(mockMatDialogRef, "close");
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({

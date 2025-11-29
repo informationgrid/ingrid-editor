@@ -20,7 +20,10 @@
 import { BehaviourService } from "./behaviour.service";
 import { inject } from "@angular/core/testing";
 import { Behaviour } from "./behaviour";
-import { createServiceFactory, SpectatorService } from "@ngneat/spectator";
+import {
+  createServiceFactory,
+  SpectatorService,
+} from "@ngneat/spectator/vitest";
 
 class BehaviourMock {
   behaviours: Behaviour[] = [
@@ -42,7 +45,7 @@ describe("Behaviour", () => {
 
   beforeEach(() => (spectator = createService()));
 
-  xit("should have a bunch of defined behaviours on startup", inject(
+  it.skip("should have a bunch of defined behaviours on startup", inject(
     [BehaviourService],
     (behaviourService: BehaviourService) => {
       console.log("in test");
@@ -50,9 +53,9 @@ describe("Behaviour", () => {
     },
   ));
 
-  xit("should include external behaviours", () => {});
+  it.skip("should include external behaviours", () => {});
 
-  xit("should include external user behaviours written in javascript", () => {});
+  it.skip("should include external user behaviours written in javascript", () => {});
 
-  xit("should remove a default behaviour", () => {});
+  it.skip("should remove a default behaviour", () => {});
 });

@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { TreeHeaderComponent } from "./tree-header.component";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { DynamicDatabase } from "../dynamic.database";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 

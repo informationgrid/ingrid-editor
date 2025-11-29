@@ -22,7 +22,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { ConfigService, UserInfo } from "./config/config.service";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "./context-help/context-help.service";
