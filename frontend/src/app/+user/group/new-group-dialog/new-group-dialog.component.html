@@ -14,7 +14,7 @@
             <mat-label>Gruppenname</mat-label>
             <input
                 matInput
-                igeFocus
+                [igeFocus]="true"
                 placeholder="Eingeben..."
                 (keyup.enter)="createGroup()"
                 formControlName="name"

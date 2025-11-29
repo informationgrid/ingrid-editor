@@ -570,7 +570,7 @@ export class TreeComponent implements OnInit {
     });
   }
 
-  handleFolderClick(node: TreeNode, $event: MouseEvent) {
+  handleFolderClick(node: TreeNode, $event: Event) {
     // only toggle children if node is disabled
     if (this.disabledCondition()(node)) {
       if (this.isExpandable()(node)) {
@@ -666,7 +666,7 @@ export class TreeComponent implements OnInit {
     this.selection.toggleSelectionMode(isEditMode);
   }
 
-  selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {
+  selectNode(node: TreeNode, $event?: Event, emitActive = true) {
     if (this.disabledCondition()(node)) {
       // disabled nodes can't be selected
       return;

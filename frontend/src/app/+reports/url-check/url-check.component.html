@@ -17,7 +17,7 @@
     </div>
     <div main-header>
         <ige-job-handler-header
-            [message]="liveLog | async"
+            [message]="$any(liveLog) | async"
             [isRunning]="isRunning()"
             (showMore)="showMore.set($event)"
         >

@@ -114,7 +114,7 @@ export class LeafletTypeComponent
       const locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
       setTimeout(() => this.updateBoundingBoxCatchingErrors(locations));
-    } catch (e) {
+    } catch (e: any) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);

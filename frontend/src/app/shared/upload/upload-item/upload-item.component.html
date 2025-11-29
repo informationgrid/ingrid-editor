@@ -71,7 +71,7 @@
     ></mat-progress-bar>
 }
 
-@if (currentFile.error) {
+@if (currentFile?.error) {
     <div class="flex-col">
         <div class="flex-1 align-self-end">
             @if (currentFile.error.status === 409) {

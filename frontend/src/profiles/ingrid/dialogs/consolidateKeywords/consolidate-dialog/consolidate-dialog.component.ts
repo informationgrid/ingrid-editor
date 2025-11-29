@@ -53,9 +53,9 @@ export class Keyword {
   alternativeLabel?: string;
 }
 export class Keywords {
-  gemet?: Object[];
-  umthes?: Object[];
-  free?: Object[];
+  gemet?: Keyword[];
+  umthes?: Keyword[];
+  free?: Keyword[];
 }
 
 interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {

@@ -68,7 +68,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 export class SearchInputComponent {
   readonly searchSub = input<Subscription>(undefined);
 
-  readonly query = input<AbstractControl>(undefined);
+  readonly query = input<FormControl>(undefined);
   @Input() autocompleteRef: MatAutocomplete;
   readonly minWidth = input("100px");
   readonly flexWidth = input(false);

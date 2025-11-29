@@ -54,6 +54,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatTooltip } from "@angular/material/tooltip";
+import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
 
 @Component({
   selector: "zabbix-report-dialog",
@@ -86,6 +87,7 @@ import { MatTooltip } from "@angular/material/tooltip";
     MatTooltip,
     MatMenuTrigger,
     MatHeaderCellDef,
+    DateAgoPipe,
   ],
 })
 export class ZabbixReportDialogComponent implements OnInit, AfterViewInit {

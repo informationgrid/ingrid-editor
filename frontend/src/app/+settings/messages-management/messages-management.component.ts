@@ -87,7 +87,7 @@ export class MessagesManagementComponent implements OnInit {
     private configService: ConfigService,
   ) {}
 
-  private userInfo: UserInfo;
+  protected userInfo: UserInfo;
 
   ngOnInit() {
     this.userInfo = this.configService.$userInfo.getValue();

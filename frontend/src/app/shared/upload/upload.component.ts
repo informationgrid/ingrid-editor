@@ -164,7 +164,7 @@ export class UploadComponent implements AfterViewInit {
             this.errors.next(this._errors);
             this.complete.emit(messageSuccess);
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error("Error uploading file", e);
           throw new IgeError(e);
         }

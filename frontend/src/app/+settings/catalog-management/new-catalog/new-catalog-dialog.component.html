@@ -16,7 +16,7 @@
                 <input
                     matInput
                     autocomplete="off"
-                    igeFocus
+                    [igeFocus]="true"
                     [(ngModel)]="model.name"
                     (keyup.enter)="catForm.form.valid && dialogRef.close(model)"
                     name="name"

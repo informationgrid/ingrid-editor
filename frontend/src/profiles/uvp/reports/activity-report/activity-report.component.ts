@@ -46,6 +46,7 @@ import { FacetsComponent } from "../../../../app/+research/+facets/facets.compon
 import { MatIcon } from "@angular/material/icon";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { TranslocoService } from "@jsverse/transloco";
+import { Facets } from "../../../../app/+research/research.service";
 
 @UntilDestroy()
 @Component({
@@ -99,7 +100,7 @@ export class ActivityReportComponent implements AfterViewInit {
   endDate: string;
 
   query = new FormControl<string>("");
-  facets = {
+  facets: Facets = {
     addresses: [],
     documents: [
       {

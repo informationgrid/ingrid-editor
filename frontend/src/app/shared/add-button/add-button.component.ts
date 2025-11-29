@@ -71,7 +71,7 @@ export class AddButtonComponent implements OnInit {
   readonly ariaLabelledBy = input<string>(undefined);
   readonly matError = viewChild<ElementRef>("matError");
 
-  readonly add = output();
+  readonly add = output<string>();
 
   _options: AddButtonOptions[] = [];
 

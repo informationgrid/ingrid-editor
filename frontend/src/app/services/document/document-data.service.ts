@@ -235,7 +235,7 @@ export class DocumentDataService {
   }
 
   updateTags(id: number, data: TagRequest) {
-    return this.http.put(
+    return this.http.put<string[]>(
       `${this.configuration.backendUrl}datasets/${id}/tags`,
       data,
     );

@@ -20,7 +20,7 @@
                 @if (item.isExternalRef) {
                     <mat-icon svgIcon="download-link"></mat-icon>
                 } @else {
-                    <ige-document-icon [doc]="item"></ige-document-icon>
+                    <ige-document-icon [doc]="$any(item)"></ige-document-icon>
                 }
                 <span>{{ item.title ?? "???" }}</span>
             </div>
