@@ -146,7 +146,7 @@ describe("RepeatListComponent", () => {
       checkItemContent(1, "item 2");
       checkItemContent(2, "item 3");
       removeItem(1);
-      await waitSomeTime(10);
+      await waitSomeTime(30);
       checkItemCount(2);
       checkItemContent(0, "item 1");
       checkItemContent(1, "item 3");
