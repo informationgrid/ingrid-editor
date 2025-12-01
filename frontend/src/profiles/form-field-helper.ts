@@ -696,6 +696,7 @@ export class FormFieldHelper {
         // [attributes] must be defined first for assigning values, e.g. aria-labelledby below.
         attributes: {},
         unitOptions: options?.unitOptions,
+        codelistId: options?.codelistId,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "change",
