@@ -870,7 +870,7 @@ open class IngridModelTransformer(
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.namespace =
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
-        this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
         this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
 
