@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
@@ -54,6 +54,7 @@ export enum InGridDoctype {
 
 @Component({
   template: "",
+  standalone: true,
 })
 export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
@@ -191,9 +192,6 @@ export class InGridComponent implements OnInit {
   }
 }
 
-@NgModule({
-  imports: [InGridComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridComponent;

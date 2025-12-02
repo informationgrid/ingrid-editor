@@ -19,7 +19,7 @@
  */
 import { ApprovalProcedureDoctype } from "./uvp/doctypes/approval-procedure.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { Component, inject, NgModule, Renderer2 } from "@angular/core";
+import { Component, inject, Renderer2 } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { SpatialPlanningProcedureDoctype } from "./uvp/doctypes/spatial-planning-procedure.doctype";
 import { NegativePreliminaryAssessmentDoctype } from "./uvp/doctypes/negative-preliminary-assessment.doctype";
@@ -42,6 +42,7 @@ import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class UVPComponent {
   private catalogRouteService = inject(CatalogRoutesService);
@@ -192,9 +193,6 @@ class UVPComponent {
   }
 }
 
-@NgModule({
-  imports: [UVPComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return UVPComponent;

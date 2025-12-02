@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridKrznComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);
@@ -52,9 +53,6 @@ class InGridKrznComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridKrznComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridKrznComponent;

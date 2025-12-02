@@ -19,7 +19,7 @@
  */
 import { McloudDoctype } from "./mcloud/mcloud.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { Component, NgModule } from "@angular/core";
+import { Component } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { ContextHelpService } from "../app/services/context-help/context-help.service";
 import { McloudAddressDoctype } from "./mcloud/mcloud-address.doctype";
@@ -27,6 +27,8 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
 
 @Component({
   template: "",
+  standalone: true,
+  imports: [NgxFlowModule],
 })
 class MCloudComponent {
   constructor(
@@ -42,9 +44,6 @@ class MCloudComponent {
   }
 }
 
-@NgModule({
-  imports: [NgxFlowModule, MCloudComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return MCloudComponent;

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
@@ -26,6 +26,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
@@ -70,9 +71,6 @@ class InGridBastComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridBastComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridBastComponent;

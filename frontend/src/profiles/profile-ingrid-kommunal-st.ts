@@ -17,11 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, NgModule } from "@angular/core";
+import { Component } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridKommunalStComponent extends InGridComponent {
   constructor() {
@@ -53,9 +54,6 @@ class InGridKommunalStComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridKommunalStComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridKommunalStComponent;

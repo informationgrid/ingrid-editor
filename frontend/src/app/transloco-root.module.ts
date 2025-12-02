@@ -24,7 +24,7 @@ import {
   TranslocoLoader,
   TranslocoModule,
 } from "@jsverse/transloco";
-import { Injectable, isDevMode, NgModule } from "@angular/core";
+import { Injectable, isDevMode } from "@angular/core";
 import { ConfigService } from "./services/config/config.service";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { combineLatest, of } from "rxjs";
@@ -74,9 +74,9 @@ export class TranslocoHttpLoader implements TranslocoLoader {
   }
 }
 
-@NgModule({
-  exports: [TranslocoModule],
-  providers: [
+// Standalone-style provider factory to replace the previous NgModule
+export function provideTranslocoRoot() {
+  return [
     provideTransloco({
       config: {
         availableLangs: ["de", "en"],
@@ -85,9 +85,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },
-
       loader: TranslocoHttpLoader,
     }),
-  ],
-})
-export class TranslocoRootModule {}
+  ];
+}

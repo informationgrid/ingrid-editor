@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule, ROUTES, Routes } from "@angular/router";
-import { NgModule } from "@angular/core";
+import { Routes } from "@angular/router";
 import { ReportsComponent } from "./reports/reports.component";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { ReportsService } from "./reports.service";
 import { UrlCheckComponent } from "./url-check/url-check.component";
+import { inject } from "@angular/core";
 
 const routes: Routes = [
   {
@@ -49,23 +49,23 @@ const routes: Routes = [
         },
       },
     ],
+    // Ensure additional report routes are merged before navigation within this lazy scope
+    providers: [
+      {
+        provide: "REPORTS_ROUTE_INITIALIZER",
+        useFactory: () => {
+          // side-effect only: merge additional routes and apply filter
+          const reportService = inject(ReportsService);
+          const baseChildren = routes[0].children!;
+          // merge additional routes (if any) only once
+          reportService.addRoutes(baseChildren);
+          const filtered = reportService.filterRoutes(baseChildren);
+          // keep reference stable
+          routes[0].children!.splice(0, routes[0].children!.length, ...filtered);
+          return true;
+        },
+      },
+    ],
   },
 ];
-
-@NgModule({
-  exports: [RouterModule],
-  imports: [RouterModule.forChild(routes)],
-  providers: [
-    {
-      provide: ROUTES,
-      multi: true,
-      useFactory: (reportService: ReportsService) => {
-        reportService.addRoutes(routes[0].children);
-        routes[0].children = reportService.filterRoutes(routes[0].children);
-        return routes;
-      },
-      deps: [ReportsService],
-    },
-  ],
-})
-export class LazyReportsRouting {}
+export default routes;
