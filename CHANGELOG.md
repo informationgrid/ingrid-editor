@@ -1,5 +1,16 @@
 # Changelog
 
+## 8.1.3 (02.12.2025)
+
+### Features
+
+* Einschränkung für Fachredakteure: Verschieben von Elementen im Themenbaum unterbinden (#8422)
+
+### Bugfixes
+
+* Fehlende Informationen zum Raster-/Gridformat (#8509)
+* Unerwünschte Anzeige Identifikator im Portal auf TEST (#8488)
+    
 ## 8.1.2 (19.11.2025)
 
 ### Features
