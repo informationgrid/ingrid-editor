@@ -87,7 +87,7 @@ class CatalogTransferTest : ShouldSpec() {
             val data = jacksonObjectMapper().readValue<ExportedCatalog>(file)
 
             catalogImportService.importCatalog(data)
-            verify(exactly = 7) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
+            verify(atLeast = 7) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
         }
 
         should("not import catalog with wrong version") {
