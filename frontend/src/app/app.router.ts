@@ -72,7 +72,9 @@ export const routes: Routes = [
       {
         path: "reports",
         loadChildren: () =>
-          import("./+reports/lazy-reports.routing").then((m) => m.default),
+          import("./+reports/lazy-reports.routing").then(
+            (m) => m.LazyReportsRouting,
+          ),
         canActivate: [AuthGuard],
         data: {
           onlyAdmin: true,
