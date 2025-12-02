@@ -17,16 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Directive,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-} from "@angular/core";
-import { Subject } from "rxjs";
-import { takeUntil, tap } from "rxjs/operators";
+import { Directive, EventEmitter, Input, Output } from "@angular/core";
+import { tap } from "rxjs/operators";
 import { MatAutocomplete } from "@angular/material/autocomplete";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface IAutoCompleteScrollEvent {
   autoComplete: MatAutocomplete;
@@ -36,11 +30,10 @@ export interface IAutoCompleteScrollEvent {
 @Directive({
   selector: "mat-autocomplete[optionsScroll]",
 })
-export class OptionsScrollDirective implements OnDestroy {
+export class OptionsScrollDirective {
   @Input() thresholdPercent = 0.95;
   @Output("optionsScroll") scroll =
     new EventEmitter<IAutoCompleteScrollEvent>();
-  _onDestroy = new Subject();
 
   constructor(public autoComplete: MatAutocomplete) {
     this.autoComplete.opened
@@ -58,14 +51,14 @@ export class OptionsScrollDirective implements OnDestroy {
             );
           });
         }),
-        takeUntil(this._onDestroy),
+        takeUntilDestroyed(),
       )
       .subscribe();
 
     this.autoComplete.closed
       .pipe(
         tap(() => this.removeScrollEventListener()),
-        takeUntil(this._onDestroy),
+        takeUntilDestroyed(),
       )
       .subscribe();
   }
@@ -75,13 +68,6 @@ export class OptionsScrollDirective implements OnDestroy {
       "scroll",
       this.onScroll,
     );
-  }
-
-  ngOnDestroy() {
-    // this._onDestroy.next();
-    this._onDestroy.complete();
-
-    this.removeScrollEventListener();
   }
 
   onScroll(event: Event) {
