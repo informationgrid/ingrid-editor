@@ -465,7 +465,8 @@ class CatalogService(
         catalog.apply {
             if (name != null) this.name = name
             if (description != null) this.description = description
-            settings.config = config
+            // remember to save additional information in config (codelistFavorites)
+            settings.config = config.apply { codelistFavorites = settings.config.codelistFavorites }
         }
         catalogRepo.save(catalog)
     }
