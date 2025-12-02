@@ -27,7 +27,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
 
 @Pipe({
   name: "codelist",
-  standalone: true,
 })
 export class CodelistPipe implements PipeTransform {
   private codelistStore = inject(CodelistStore);

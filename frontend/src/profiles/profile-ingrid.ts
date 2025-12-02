@@ -54,7 +54,6 @@ export enum InGridDoctype {
 
 @Component({
   template: "",
-  standalone: true,
 })
 export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);

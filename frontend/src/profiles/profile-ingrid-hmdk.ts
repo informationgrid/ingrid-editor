@@ -36,7 +36,6 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 @UntilDestroy()
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridHMDKComponent extends InGridComponent {
   specialisedTask = inject(SpecialisedTaskDoctypeHMDK);

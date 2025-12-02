@@ -26,7 +26,6 @@ import { PluginService } from "../app/services/plugin/plugin.service";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridLFUBayernComponent extends InGridComponent {
   common = inject(CommonFieldsLfuBayern);

@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { FormMessageService } from "../../../services/form-message.service";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -49,6 +55,7 @@ export interface FormMessageType {
     ]),
   ],
   imports: [NgClass, MatIcon, MatIconButton],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormMessageComponent implements OnInit {
   private messageService = inject(FormMessageService);

@@ -28,7 +28,6 @@ import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class BmiComponent extends OpenDataComponent {
   constructor(

@@ -35,7 +35,6 @@ import { PublicationAddressDoctype } from "./ingrid-baw/doctypes/publicationAddr
 @UntilDestroy()
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridBawComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBaw);

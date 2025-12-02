@@ -31,7 +31,6 @@ import { GeneralStore } from "../app/store/general.store";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridLUBWComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);

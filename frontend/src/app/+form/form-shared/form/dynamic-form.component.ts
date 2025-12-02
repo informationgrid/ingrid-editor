@@ -19,6 +19,7 @@
  */
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -108,6 +109,7 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     JsonPipe,
     FormlyForm,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly address = input(false);

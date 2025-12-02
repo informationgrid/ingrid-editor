@@ -23,7 +23,6 @@ import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridKrznComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);

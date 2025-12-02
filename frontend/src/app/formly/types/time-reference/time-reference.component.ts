@@ -92,7 +92,6 @@ interface TimeReferenceProps extends FormlyFieldProps {
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
-  standalone: true,
 })
 export class TimeReferenceComponent
   extends FieldType<FieldTypeConfig<TimeReferenceProps>>

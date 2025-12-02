@@ -28,7 +28,6 @@ import { TestOrganisationDoctype } from "./test/test-organisation.doctype";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class TestComponent {
   constructor(

@@ -29,7 +29,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   template: "",
-  standalone: true,
 })
 export class OpenDataComponent {
   private codelistStore = inject(CodelistStore);

@@ -26,7 +26,6 @@ const fullNameCache = new Map<number, Observable<string>>([[null, of("")]]);
 
 @Pipe({
   name: "fullName",
-  standalone: true,
 })
 export class FullNamePipe implements PipeTransform {
   constructor(private userDataService: UserDataService) {}

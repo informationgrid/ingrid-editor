@@ -17,16 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
   selector: "ige-empty-navigation",
   templateUrl: "./empty-navigation.component.html",
   styleUrls: ["./empty-navigation.component.scss"],
-  standalone: true,
 })
-export class EmptyNavigationComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class EmptyNavigationComponent {}

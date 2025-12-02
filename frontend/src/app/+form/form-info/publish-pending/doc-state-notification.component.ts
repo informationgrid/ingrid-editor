@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from "@angular/core";
 import { MatButton } from "@angular/material/button";
 
 @Component({
@@ -25,6 +30,7 @@ import { MatButton } from "@angular/material/button";
   templateUrl: "./doc-state-notification.component.html",
   styleUrls: ["./doc-state-notification.component.scss"],
   imports: [MatButton],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocStateNotificationComponent {
   message = input<string>();

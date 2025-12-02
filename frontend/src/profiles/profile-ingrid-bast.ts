@@ -26,7 +26,6 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);

@@ -64,7 +64,6 @@ import { MatInput } from "@angular/material/input";
     "../free-spatial/free-spatial.component.scss",
     "./bwastr-spatial.component.scss",
   ],
-  standalone: true,
   imports: [
     MatDividerModule,
     MatListModule,

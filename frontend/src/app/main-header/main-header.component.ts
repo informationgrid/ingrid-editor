@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  output,
+} from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -68,6 +74,7 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
     DatePipe,
     MatomoTrackClickDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainHeaderComponent implements OnInit {
   private generalStore = inject(GeneralStore);

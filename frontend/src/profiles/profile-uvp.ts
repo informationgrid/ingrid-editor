@@ -42,7 +42,6 @@ import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class UVPComponent {
   private catalogRouteService = inject(CatalogRoutesService);

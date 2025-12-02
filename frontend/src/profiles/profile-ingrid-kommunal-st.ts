@@ -22,7 +22,6 @@ import { InGridComponent } from "./profile-ingrid";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridKommunalStComponent extends InGridComponent {
   constructor() {

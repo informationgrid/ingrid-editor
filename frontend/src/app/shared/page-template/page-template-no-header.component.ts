@@ -23,7 +23,6 @@ import { Component, Input, OnInit, input } from "@angular/core";
   selector: "page-template-no-header",
   templateUrl: "./page-template-no-header.component.html",
   styleUrls: ["./page-template.component.scss"],
-  standalone: true,
 })
 export class PageTemplateNoHeaderComponent implements OnInit {
   @Input() label = "";
