@@ -19,6 +19,56 @@
         }
       }
     },
+    "distribution": {
+      "properties": {
+        "license": {
+          "type": "nested",
+          "properties": {
+            "url": {
+              "type": "text",
+              "store": true
+            },
+            "name": {
+              "type": "text",
+              "store": true
+            },
+            "attribution_by_text": {
+              "type": "text",
+              "store": true
+            }
+          }
+        },
+        "access_url": {
+          "type": "text",
+          "store": true
+        },
+        "description": {
+          "type": "text",
+          "store": true
+        },
+        "availability": {
+          "type": "text",
+          "store": true
+        },
+        "title": {
+          "type": "text",
+          "store": true
+        },
+        "modified": {
+          "type": "text",
+          "store": true
+        },
+        "format": {
+          "type": "keyword",
+          "store": true
+        },
+        "languages": {
+          "type": "keyword",
+          "store": true
+        }
+      }
+    },
+
     "iPlugId": {
       "type": "keyword",
       "store": true

@@ -80,9 +80,11 @@
             "modified": "${download.get().getModified() }",
             "title": "${download.get().getTitle() }",
             "description": "${download.get().getDescription() }",
-            "license": "@if(download.get().getLicense() != null)${download.get().getLicense().getUrl()}@endif",
-            "license_name": "@if(download.get().getLicense() != null)${download.get().getLicense().getName()}@endif",
-            "byClause": "${download.get().getByClause() }",
+        "license": {
+        "url": "@if(download.get().getLicense() != null)${download.get().getLicense().getUrl()}@endif",
+        "name": "@if(download.get().getLicense() != null)${download.get().getLicense().getName()}@endif",
+        "attribution_by_text": "${download.get().getByClause() }"
+        },
             "languages": [
                 @for(var entry : ForSupport.of(download.get().getLanguages()))
                     "${entry.get()}"@if (!entry.isLast()),@endif
