@@ -11,6 +11,16 @@
 {
 "collection.name": "${catalog.getName()}",
 "collection.id": "${catalog.getIdentifier()}",
+    "partner": [
+
+    ],
+    "provider": [
+
+    ],
+    "datatype": ["metadata"],
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
+    "dataSourceName": "${catalog.getName()}",
+    "t01_object.obj_id": "${model.getUuid()}",
 "id": "${model.getUuid() }",
     "created": "${model.getCreated() }",
     "issued": "${model.getCreated() }",
