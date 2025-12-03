@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.api
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.SpykBean
+import com.ninjasquad.springmockk.MockkSpyBean
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -43,7 +43,7 @@ import org.springframework.security.core.Authentication
 
 class DatasetsApiControllerTest : AnnotationSpec() {
 
-    @SpykBean
+    @MockkSpyBean
     private lateinit var datasetsApiController: DatasetsApiController
 
     @MockkBean(relaxed = true)
