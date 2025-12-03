@@ -61,6 +61,11 @@ describe("Document Type", () => {
   let doctype;
 
   beforeEach(async () => {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, getTranslocoModule(), MatIconTestingModule],
       providers: [

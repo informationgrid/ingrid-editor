@@ -15,7 +15,7 @@
         <input
             [min]="minDate"
             formControlName="date"
-            igeFocus
+            [igeFocus]="true"
             matInput
             (keydown.enter)="setDateAndPublish()"
             [matDatepicker]="picker"

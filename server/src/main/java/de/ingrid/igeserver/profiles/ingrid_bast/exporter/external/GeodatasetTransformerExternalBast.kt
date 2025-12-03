@@ -34,6 +34,15 @@ class GeodatasetTransformerExternalBast(transformerConfig: TransformerConfig) : 
     init {
         pointOfContact = super.pointOfContact.filter { it.relationType?.key != "2" }
         transformerConfig.model.data.orderInfo = ""
+
+        // TODO: refactor for consistency! see #8529
+        //       for geodatasets there should not be a fallback to uuid for the citationURL. The citationURL
+        //       should get better name to make clear for what it's used, since there's also a resourceIdentifier
+        // if the identifier is not set and the dataset is open data do not generate a citation URL
+        if (model.data.identifier.isNullOrBlank() && model.data.properties?.isOpenData == true) {
+            this.citationURL = null
+            this.resourceIdentifier = null
+        }
     }
 
     override val useConstraints: List<UseConstraintTemplate> =

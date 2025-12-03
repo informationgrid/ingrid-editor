@@ -34,7 +34,10 @@ import { debounceTime } from "rxjs/operators";
 import { FormsModule, UntypedFormControl } from "@angular/forms";
 import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
 import { Subscription } from "rxjs";
-import { GeothesaurusWfsGndeService } from "./geothesaurus-wfs-gnde.service";
+import {
+  GeoThesaurusResult,
+  GeothesaurusWfsGndeService,
+} from "./geothesaurus-wfs-gnde.service";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { TranslocoService } from "@jsverse/transloco";
@@ -44,16 +47,6 @@ import {
 } from "@angular/material/checkbox";
 import { SpatialLocation } from "../../spatial-list/spatial-list.component";
 import { LeafletService } from "../../leaflet.service";
-
-interface GeoThesaurusResult {
-  id: string;
-  name: string;
-  displayTitle: string;
-  ars: string;
-  type: string;
-  bbox: SpatialBoundingBox;
-  hasMoreResults: boolean;
-}
 
 @UntilDestroy()
 @Component({

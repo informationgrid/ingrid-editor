@@ -134,5 +134,27 @@ class BastFieldsExternal : GeodatasetBase() {
                 result shouldContain USE_CONSTRAINTS_COMMENTS
             }
         }
+
+        should("not export optional empty identifier if it is opendata") {
+            val context =
+                jacksonObjectMapper()
+                    .readTree("""{ "properties": { "isOpenData": true }, "identifier": ""}""".trimIndent()) as ObjectNode
+
+            val result = exportJsonToXML(exporter, docSamples["GeoDataset"]!!, context)
+
+            // no uuid-attribute
+            result shouldContain """<gmd:MD_DataIdentification>"""
+        }
+
+        should("export required identifier if it is not opendata") {
+            val context =
+                jacksonObjectMapper()
+                    .readTree("""{ "properties": { "isOpenData": false }, "identifier": "abcdef"}""".trimIndent()) as ObjectNode
+
+            val result = exportJsonToXML(exporter, docSamples["GeoDataset"]!!, context)
+
+            // no uuid-attribute
+            result shouldContain """<gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/abcdef">"""
+        }
     }
 }

@@ -51,7 +51,7 @@ export const QueryStore = signalStore(
     add(query: Query): void {
       patchState(store, addEntity(query));
     },
-    remove(id: string): void {
+    remove(id: number): void {
       patchState(store, removeEntity(id));
     },
     update(id: number, query: Query): void {

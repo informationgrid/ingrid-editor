@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, NgModule } from "@angular/core";
+import { Component } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 
 @Component({
@@ -33,9 +33,6 @@ class InGridWsvComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridWsvComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridWsvComponent;

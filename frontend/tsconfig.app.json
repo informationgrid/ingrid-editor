@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts",
+    "src/profiles/profile-mcloud.ts",
+    "src/profiles/profile-uvp.ts",
+    "src/profiles/profile-test.ts",
+    "src/profiles/profile-ingrid.ts",
+    "src/profiles/profile-ingrid-hmdk.ts",
+    "src/profiles/profile-ingrid-kommunal-st.ts",
+    "src/profiles/profile-ingrid-krzn.ts",
+    "src/profiles/profile-ingrid-up-sh.ts",
+    "src/profiles/profile-ingrid-bast.ts",
+    "src/profiles/profile-ingrid-lfubayern.ts",
+    "src/profiles/profile-ingrid-lubw.ts",
+    "src/profiles/profile-ingrid-wsv.ts",
+    "src/profiles/profile-opendata.ts",
+    "src/profiles/profile-bmi.ts"
+  ]
+}

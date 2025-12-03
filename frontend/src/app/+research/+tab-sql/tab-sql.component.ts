@@ -24,7 +24,7 @@ import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { SqlQuery } from "../../store/query/query.model";
+import { Query, SqlQuery } from "../../store/query/query.model";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -82,10 +82,10 @@ export class TabSqlComponent implements OnInit {
         untilDestroyed(this),
         filter((a) => a && a.type === "sql"),
       )
-      .subscribe((entity: SqlQuery) => {
+      .subscribe((entity: Query) => {
         this.researchService.setActiveQuery(null);
-        this.sql.setValue(entity.sql);
-        this.search(entity.sql);
+        this.sql.setValue((<SqlQuery>entity).sql);
+        this.search((<SqlQuery>entity).sql);
       });
   }
 

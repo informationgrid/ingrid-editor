@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -46,6 +47,7 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
   imports: [TreeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
   documentTreeStore = inject(DocumentTreeStore);

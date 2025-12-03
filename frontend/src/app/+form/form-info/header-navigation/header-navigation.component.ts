@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatButton } from "@angular/material/button";
 
 @Component({
@@ -25,6 +30,7 @@ import { MatButton } from "@angular/material/button";
   templateUrl: "./header-navigation.component.html",
   styleUrls: ["./header-navigation.component.scss"],
   imports: [MatButton],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderNavigationComponent implements OnInit {
   readonly sections = input<string[]>([]);

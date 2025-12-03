@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBaw } from "./ingrid-baw/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBaw } from "./ingrid-baw/doctypes/geo-service.doctype";
@@ -88,9 +88,6 @@ class InGridBawComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridBawComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridBawComponent;

@@ -17,19 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 
 @Component({
   selector: "ige-form-error",
   templateUrl: "./ige-form-error.component.html",
   styleUrls: ["./ige-form-error.component.scss"],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormErrorComponent implements OnInit {
+export class FormErrorComponent {
   // accessibility
   readonly ariaLabel = input<string>(undefined);
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

@@ -29,7 +29,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 
 @Component({
   selector: "ige-object-attributes-dialog",
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     FormlyModule,

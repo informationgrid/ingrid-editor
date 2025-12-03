@@ -38,7 +38,7 @@ import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FacetQuery } from "../../store/query/query.model";
+import { FacetQuery, Query } from "../../store/query/query.model";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FacetsComponent } from "../+facets/facets.component";
@@ -109,11 +109,11 @@ export class TabSearchComponent implements OnInit {
         untilDestroyed(this),
         filter((a) => a && a.type === "facet"),
       )
-      .subscribe((entity: FacetQuery) => {
+      .subscribe((entity: Query) => {
         this.researchService.setActiveQuery(null);
         // add a little delay in case facet component is still initializing (coming from saved searches)
         // so we get the correct value before search is started
-        setTimeout(() => this.form.setValue(entity.model));
+        setTimeout(() => this.form.setValue((<FacetQuery>entity).model));
       });
   }
 

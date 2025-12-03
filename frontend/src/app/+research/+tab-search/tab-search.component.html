@@ -29,7 +29,7 @@
 
             <ige-search-input
                 placeholder="Begriff oder ID eingeben ..."
-                [query]="form.get('query')"
+                [query]="$any(form.get('query'))"
                 [withWhiteBorder]="false"
                 [flexWidth]="true"
                 [rectangular]="true"

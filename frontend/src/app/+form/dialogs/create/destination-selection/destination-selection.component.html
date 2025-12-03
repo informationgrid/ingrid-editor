@@ -17,7 +17,7 @@
     <div class="selection-divider"></div>
     <div class="side-padding dlg-field-hero-label">Oder anlegen unter</div>
     <ige-document-list-item
-        [docs]="getRootNode()"
+        [docs]="$any(getRootNode())"
         [hideDivider]="true"
         [setActiveItem]="activeListItem"
         (select)="updateParent([null], 'List')"

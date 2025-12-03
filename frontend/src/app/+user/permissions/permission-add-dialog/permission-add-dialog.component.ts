@@ -69,7 +69,7 @@ export class PermissionAddDialogComponent implements OnInit {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
   selection: number[] = [];
-  activeNodeSetter = new Subject();
+  activeNodeSetter = new Subject<number>();
 
   disableTreeNodes = (node: TreeNode) => {
     return this.val.some((v) => v.id === node._id);

@@ -23,7 +23,6 @@ import { Component, OnInit, input } from "@angular/core";
   selector: "page-template",
   templateUrl: "./page-template.component.html",
   styleUrls: ["./page-template.component.scss"],
-  standalone: true,
 })
 export class PageTemplateComponent implements OnInit {
   readonly label = input("");

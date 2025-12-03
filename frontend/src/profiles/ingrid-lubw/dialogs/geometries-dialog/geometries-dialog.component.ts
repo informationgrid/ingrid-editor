@@ -28,7 +28,6 @@ import { geometriesFields } from "./geometries.fields";
 
 @Component({
   selector: "ige-geometries-dialog",
-  standalone: true,
   imports: [DialogTemplateComponent, FormlyModule, ReactiveFormsModule],
   templateUrl: "./geometries-dialog.component.html",
   styleUrl: "./geometries-dialog.component.scss",

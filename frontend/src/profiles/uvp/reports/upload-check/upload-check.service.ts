@@ -31,7 +31,7 @@ export class UploadCheckService {
   ) {}
 
   analyse() {
-    return this.http.get(
+    return this.http.get<any[]>(
       `${this.config.getConfiguration().backendUrl}uvp/upload-check`,
     );
   }

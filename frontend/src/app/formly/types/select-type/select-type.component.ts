@@ -38,12 +38,35 @@ import {
 } from "@angular/material/core";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { FieldTypeConfig, FormlyAttributes } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyAttributes,
+  FormlyFieldProps,
+} from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatDivider } from "@angular/material/divider";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+
+interface SelectTypeProps extends FormlyFieldProps {
+  options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
+  codelistId?: string;
+  externalLabel?: string;
+  showSearch?: boolean;
+  allowNoValue?: boolean;
+  noValueLabel?: string;
+  change?: any;
+  hooks?: any;
+  resetOnHide?: boolean;
+  multiple?: boolean;
+  simple?: boolean;
+  useFirstValueInitially?: boolean;
+  selectAllOption?: boolean;
+  compareWith?: any;
+  disableOptionCentering?: boolean;
+}
 
 @UntilDestroy()
 @Component({
@@ -64,7 +87,7 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
   ],
 })
 export class SelectTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<SelectTypeProps>>
   implements OnInit
 {
   public filterCtrl = new FormControl();

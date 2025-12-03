@@ -22,7 +22,7 @@
                     <li>
                         <a
                             [routerLink]="[
-                                '/' + catalogItem.key + '/form',
+                                '/' + catalogItem.key.toString() + '/form',
                                 { id: docItem.key },
                             ]"
                             >{{ docItem.key }} ({{ docItem.value[0].state }})</a

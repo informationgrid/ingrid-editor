@@ -41,22 +41,22 @@ export class TreeSelection {
    * @param node
    * @param $event
    */
-  selectNode(node: TreeNode, $event?: MouseEvent) {
+  selectNode(node: TreeNode, $event?: Event | MouseEvent) {
     if (!this.allowMultiSelectionMode) {
       return this.handleSingleSelection(node);
     }
     if (this.multiSelectionModeEnabled()) {
-      this.nodeSelectionToggle(node, $event);
+      this.nodeSelectionToggle(node, $event as MouseEvent);
     } else {
-      if ($event?.ctrlKey) {
+      if (($event as MouseEvent)?.ctrlKey) {
         this.model.toggle(node);
         this.multiSelectionModeEnabled.set(true);
         this.model.select(node);
         return;
-      } else if ($event?.shiftKey) {
+      } else if (($event as MouseEvent)?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
         this.multiSelectionModeEnabled.set(true);
-        this.nodeSelectionToggle(node, $event);
+        this.nodeSelectionToggle(node, $event as MouseEvent);
         return;
       }
       const isUiEvent = $event !== undefined && $event !== null;

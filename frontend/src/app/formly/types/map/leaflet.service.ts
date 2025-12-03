@@ -47,7 +47,7 @@ import {
   BwastrLocatorCoordinatesResponse,
   BwastrLocatorService,
 } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
-import { firstValueFrom, Observable } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 
 export interface WktValidateResponse {
@@ -282,7 +282,7 @@ export class LeafletService {
       .getSectionCoordinates(location.bwastr)
       .pipe(
         catchError(() => {
-          return null;
+          return of(null);
         }),
         map((response: BwastrLocatorCoordinatesResponse) => {
           if (!response) {

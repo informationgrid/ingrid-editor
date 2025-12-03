@@ -19,6 +19,7 @@
  */
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -108,6 +109,7 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     JsonPipe,
     FormlyForm,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly address = input(false);
@@ -477,7 +479,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formInfoModel.set({ ...this.model });
 
       this.documentService.setDocLoadingState(false);
-    } catch (ex) {
+    } catch (ex: any) {
       throw new IgeError(ex);
     }
   }

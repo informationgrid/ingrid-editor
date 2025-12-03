@@ -78,7 +78,7 @@ export class WktTools {
         return wktToGeoJSON(
           preProcessedWkt.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
-      } catch (e2) {
+      } catch (e2: any) {
         if (e2.name === "WKTError") {
           throw new IgeError(
             "We could not understand the WKT string you entered. Check that you have parentheses " +

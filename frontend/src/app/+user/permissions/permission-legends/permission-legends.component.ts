@@ -21,9 +21,9 @@ import { Component, OnInit, input } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 
 interface Legend {
-  icon?: String;
-  svgIcon?: String;
-  text: String;
+  icon?: string;
+  svgIcon?: string;
+  text: string;
 }
 
 @Component({

@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FolderDoctype } from "./folder/folder.doctype";
-import { Component, NgModule } from "@angular/core";
+import { Component } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 import { ReportsService } from "../app/+reports/reports.service";
@@ -29,6 +29,7 @@ import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 @Component({
   template: "",
   standalone: true,
+  imports: [NgxFlowModule],
 })
 class BmiComponent extends OpenDataComponent {
   constructor(
@@ -43,9 +44,6 @@ class BmiComponent extends OpenDataComponent {
   }
 }
 
-@NgModule({
-  imports: [NgxFlowModule, BmiComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return BmiComponent;
