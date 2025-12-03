@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.SpykBean
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -42,9 +41,6 @@ import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.core.Authentication
 
 class DatasetsApiControllerTest : AnnotationSpec() {
-
-    @SpykBean
-    private lateinit var datasetsApiController: DatasetsApiController
 
     @MockkBean(relaxed = true)
     private lateinit var authUtils: AuthUtils
@@ -75,6 +71,24 @@ class DatasetsApiControllerTest : AnnotationSpec() {
 
     @MockkBean(relaxed = true)
     private lateinit var aclService: IgeAclService
+
+    private lateinit var datasetsApiController: DatasetsApiController
+
+    @BeforeAll
+    fun setup() {
+        datasetsApiController = DatasetsApiController(
+            authUtils,
+            catalogService,
+            docWrapperRepo,
+            docRepo,
+            documentService,
+            groupService,
+            aclService,
+            storage,
+            researchService,
+            auditLog,
+        )
+    }
 
     private val isAddress = false
 
