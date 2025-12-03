@@ -22,7 +22,7 @@
         @for(var entry : ForSupport.of(model.getAddresses()))
         {
             "role": "${model.mapAddressType(entry.get().getRelationType().getKey())}",
-            "title": "${entry.get().getTitle()}",
+            "name": "${entry.get().getTitle()}",
             "communications": [
             @for(var contact : ForSupport.of(entry.get().getAllCommunications()))
                 {
@@ -32,9 +32,12 @@
             @endfor
             ],
             "street": "${entry.get().getStreet()}",
-            "zipcode": "${entry.get().getZipCode()}",
-            "city": "${entry.get().getCity()}",
+            "code": "${entry.get().getZipCode()}",
+            "pocode": "",
+            "pobox": "",
+            "locality": "${entry.get().getCity()}",
             "country": "${entry.get().getCountryKey()}"
+            "administrative_area": ""
         }@if (!entry.isLast()),@endif
     @endfor
     ],
@@ -42,9 +45,9 @@
     "keywords": [
         @for(var entry : ForSupport.of(model.getKeywords()))
         {
-            "term": "${entry.get()}",
-            "id": "${entry.get()}",
-            "source": "${entry.get()}"
+            "term": "${entry.get().getTerm()}",
+            "id": "${entry.get().getId()}",
+            "source": "${entry.get().getSource()}"
         }@if (!entry.isLast()),@endif
         @endfor
     ],

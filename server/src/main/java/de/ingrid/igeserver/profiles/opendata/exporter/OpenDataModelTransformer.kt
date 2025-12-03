@@ -27,6 +27,12 @@ import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
+data class Keyword(
+    val id: String?,
+    val term: String,
+    val source: String,
+)
+
 class OpenDataModelTransformer(
     val transformerConfig: OpenDataTransformerConfig,
 ) {
@@ -57,14 +63,23 @@ class OpenDataModelTransformer(
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getString("description") ?: ""
     fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
-    fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull {
-        codelistTransformer.codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
+    fun getThemes() = doc.data.get("DCATThemes")?.mapNotNull {
+        val key = it.getString("key") ?: ""
+        Keyword(
+            key,
+            codelistTransformer.codelistHandler.getCodelistValue("6400", key) ?: "???",
+            "THEMES",
+        )
+    } ?: emptyList()
+
+    fun getFreeKeywords() = doc.data.get("keywords")?.mapNotNull {
+        Keyword(null, it.asText(), "FREE")
     } ?: emptyList()
 
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
     fun getPeriodicity() = "" // doc.data.getmodified.toString()
-    fun getKeywords() = emptyList<String>() + getThemes()
+    fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords()
     fun getAddresses() = doc.data.get("addresses").mapNotNull {
         addressExporter.toAddressModelTransformer(
             AddressRefModel(
