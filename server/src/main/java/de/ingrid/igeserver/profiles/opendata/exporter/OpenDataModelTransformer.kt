@@ -22,7 +22,10 @@ package de.ingrid.igeserver.profiles.opendata.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.model.AddressRefModel
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
+import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
@@ -58,13 +61,13 @@ class OpenDataModelTransformer(
         )
     } ?: emptyList()
 
-    fun getHierarchyParent() = doc.data.getString("_parent") ?: ""
+    fun getHierarchyParent() = doc.data.getStringOrEmpty("_parent")
     fun getUuid() = doc.uuid
     fun getTitle() = doc.title?.trim() ?: ""
-    fun getDescription() = doc.data.getString("description") ?: ""
-    fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
+    fun getDescription() = doc.data.getStringOrEmpty("description")
+    fun getLandingPage() = doc.data.getStringOrEmpty("landingPage")
     fun getThemes() = doc.data.get("DCATThemes")?.mapNotNull {
-        val key = it.getString("key") ?: ""
+        val key = it.getStringOrEmpty("key")
         Keyword(
             key,
             codelistTransformer.codelistHandler.getCodelistValue("6400", key) ?: "???",
@@ -78,7 +81,7 @@ class OpenDataModelTransformer(
 
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
-    fun getPeriodicity() = "" // doc.data.getmodified.toString()
+    fun getPeriodicity() = doc.data.getString("periodicity.key")?.let { codelistTransformer.getValue("518", KeyValue(it)) } ?: ""
     fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords()
     fun getAddresses() = doc.data.get("addresses").mapNotNull {
         addressExporter.toAddressModelTransformer(
@@ -106,17 +109,32 @@ class OpenDataModelTransformer(
         else -> "???"
     }
 
-    fun getSpatials() = emptyList<String>()
+    fun getSpatials(): List<String> = doc.data.get("spatial")?.mapNotNull { spatial ->
+        val type = spatial.getString("type")
+        when (type) {
+            "free" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
+            "wkt" -> convertWktToGeoJson(spatial.getString("wkt")!!)
+            else -> null
+        }
+    } ?: emptyList()
+
+    private fun getBoundingBox(node: JsonNode) = SpatialModel.BoundingBoxModel(
+        node.get("lat1").asDouble(),
+        node.get("lon1").asDouble(),
+        node.get("lat2").asDouble(),
+        node.get("lon2").asDouble(),
+    )
     fun getSpatialTitles() = emptyList<String>()
     fun getArs() = emptyList<String>()
-    fun getLegalBasis() = ""
-    fun getQualityProcessURI() = ""
-    fun getPoliticalGeocodingLevel() = ""
+    fun getLegalBasis() = doc.data.getStringOrEmpty("legalBasis")
+    fun getQualityProcessURI() = doc.data.getStringOrEmpty("qualityProcessURI")
+    fun getPoliticalGeocodingLevel() = doc.data.getString("politicalGeocodingLevel.key")
+        ?.let { codelistTransformer.getCatalogCodelistValue("20006", KeyValue(it)) }
     fun getTemporalStart(): String? = null
     fun getTemporalEnd(): String? = null
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {
-        dist.getString("link.uri") ?: "" // TODO encode uri
+        dist.getStringOrEmpty("link.uri") // TODO encode uri
     } else {
         "${uploadConfig.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
     }

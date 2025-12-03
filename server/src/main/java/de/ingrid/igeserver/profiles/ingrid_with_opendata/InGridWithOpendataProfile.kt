@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
-import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataLuceneExporter
-import de.ingrid.igeserver.profiles.opendata.types.OpenDataType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
@@ -43,7 +41,6 @@ class InGridWithOpendataProfile(
     dateService: DateService,
     openDataCategory: OpenDataCategory,
     @JsonIgnore @Qualifier("openDataProfile") val opendataProfile: OpenDataProfile,
-    @JsonIgnore val openDataType: OpenDataType,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -67,4 +64,6 @@ class InGridWithOpendataProfile(
 
         super.initCatalogCodelists(catalogId, codelistId)
     }
+
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/ingrid-with-opendata/default-mapping.json")?.readText() ?: ""
 }

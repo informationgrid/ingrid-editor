@@ -103,6 +103,7 @@ class OpenDataExporter(
             mapOf(
                 "map" to mapOf(
                     "model" to OpenDataModelTransformer(config),
+                    "catalog" to catalogService.getCatalogById(catalogId),
                 ),
             ),
             this,
