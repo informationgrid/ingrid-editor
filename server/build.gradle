@@ -208,8 +208,13 @@ dependencies {
         exclude group: "org.mockito"
     }
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation("org.springframework.boot:spring-boot-testcontainers") {
+        exclude group: "org.testcontainers"
+    }
+//    testImplementation 'org.testcontainers:postgresql'
+    // Use testcontainers 2.0.2 to support Docker version 29.x
+    testImplementation 'org.testcontainers:testcontainers:2.0.2'
+    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.2'
 
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.6.0")
