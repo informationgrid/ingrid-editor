@@ -68,7 +68,7 @@
 @for(var entry : ForSupport.of(model.getArs()))
     "${entry.get()}"@if (!entry.isLast()),@endif
 @endfor
-],
+]
 }
     },
     "legal_basis": "${model.getLegalBasis() }",
