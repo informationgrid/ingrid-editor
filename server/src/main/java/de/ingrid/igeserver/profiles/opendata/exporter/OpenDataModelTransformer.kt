@@ -51,7 +51,7 @@ class OpenDataModelTransformer(
         Distribution(
             dist.getStringOrEmpty("format.key"),
             getDownloadLink(dist, doc.uuid),
-            dist.getStringOrEmpty("modified"),
+            dist.getString("modified"),
             dist.getStringOrEmpty("title"),
             dist.getStringOrEmpty("description"),
             mapLicense(dist.getString("license.key")),

@@ -77,7 +77,7 @@
         {
             "format": ["${download.get().getFormat()}"],
             "access_url": "${download.get().getAccessURL()}",
-            "modified": "${download.get().getModified() }",
+        @if(download.get().getModified() != null)"modified": "${download.get().getModified()}",@endif
             "title": "${download.get().getTitle() }",
             "description": "${download.get().getDescription() }",
         "license": {
