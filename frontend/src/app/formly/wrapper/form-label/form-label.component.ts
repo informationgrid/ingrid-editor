@@ -35,7 +35,7 @@ export class FormLabelComponent {
 
   readonly contextHelp = output<HTMLElement>();
 
-  showContextHelp(evt: MouseEvent) {
+  showContextHelp(evt: Event) {
     if (!this.hasContextHelp()) {
       return;
     }

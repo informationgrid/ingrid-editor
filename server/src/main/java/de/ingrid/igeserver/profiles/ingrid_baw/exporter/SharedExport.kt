@@ -305,18 +305,16 @@ private fun createIndividualName(partyData: JsonNode): String? {
     return "$lastName, $firstName"
 }
 
-val DOMAIN_WHITELIST = listOf(
-    "baugrund-daten.baw.de",
-    "dl.datenrepository.baw.de",
-    "gst-umschlagstellen.baw.de",
-    "henry.baw.de",
-    "insel.baw.de",
-    "izw.baw.de",
-    "mdi-de.baw.de",
-    "mdi-dienste.baw.de",
-    "wiki.baw.de",
-    "www.baw.de",
-)
+/**
+ * Whitelist of allowed BAW domains for transformed URLs.
+ * The single source of truth for defaults lives in `BawProperties`.
+ * This holder is intentionally initialized empty and populated once at startup
+ * by `BawProfile` from Spring Boot properties (key `profile.baw.domain-whitelist`).
+ */
+object BawPropertiesHolder {
+    @Volatile
+    var domainWhitelist: List<String> = emptyList()
+}
 
 fun transformUrlForDatenrepository(url: String?): String? {
     // Skip URLs that are not BAW related
@@ -329,5 +327,6 @@ fun transformUrlForDatenrepository(url: String?): String? {
             .replace("dl.datenfinder.baw.de", "dl.datenrepository.baw.de")
 
     // Only allow URLs that are in the domain whitelist. Return null for other URLs.
-    return if (DOMAIN_WHITELIST.any { cleanUrl.contains(it) }) cleanUrl else null
+    val whitelist = BawPropertiesHolder.domainWhitelist
+    return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
 }

@@ -15,7 +15,7 @@
               "base": "build/dist"
             },
             "index": "src/index.html",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "leaflet",
               "@flowjs/flow.js",
@@ -130,28 +130,9 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "tsConfig": "src/tsconfig.spec.json",
-
-            "stylePreprocessorOptions": {
-              "includePaths": ["."]
-            },
-            "styles": ["src/material.css", "src/styles.scss", "src/theme.scss"],
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              },
-              {
-                "glob": "favicon.ico",
-                "input": "src",
-                "output": "/"
-              }
-            ],
-            "karmaConfig": "karma.conf.js"
-          }
+          "builder": "@angular/build:unit-test",
+          "options": {},
+          "configurations": {}
         }
       }
     }

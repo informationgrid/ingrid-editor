@@ -20,13 +20,13 @@
 import { DocumentService } from "./document.service";
 
 describe("Save", () => {
-  xit("should save a document when there is no validation", () => {});
+  it.skip("should save a document when there is no validation", () => {});
 
-  xit("should show a validation error when a field registered to onSave-validation", () => {});
+  it.skip("should show a validation error when a field registered to onSave-validation", () => {});
 });
 
 describe("Publish", () => {
-  xit("should show a dialog if document really should be published", () => {});
+  it.skip("should show a dialog if document really should be published", () => {});
 
-  xit("should show a validation error when a field registered to onPublish-validation", () => {});
+  it.skip("should show a validation error when a field registered to onPublish-validation", () => {});
 });

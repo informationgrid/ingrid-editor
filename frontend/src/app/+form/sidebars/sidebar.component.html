@@ -5,7 +5,7 @@
     [update]="updateTree"
     [setActiveNode]="activeTreeNode"
     [forAddresses]="address()"
-    [enableDrag]="true"
+    [enableDrag]="enableDrag()"
     [showMultiSelectButton]="true"
     (dropped)="dropped.emit($event)"
     (activate)="handleLoad($event)"

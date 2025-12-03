@@ -288,6 +288,42 @@
         }
       },
       "title": "FileReference"
+    },
+    "GeometryContext": {
+        "type": "object",
+        "unevaluatedProperties": false,
+        "properties": {
+          "geometryType": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "featureType": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "min": {
+            "type": ["null", "number"]
+          },
+          "max": {
+            "type": ["null", "number"]
+          },
+          "unit": {
+            "type": ["null", "string"]
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/KeyValue"
+            }
+          }
+        }
     }
   }
 }

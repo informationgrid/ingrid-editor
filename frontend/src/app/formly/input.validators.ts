@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import {
-  UntypedFormControl,
+  AbstractControl,
   ValidationErrors,
   ValidatorFn,
   Validators,
@@ -28,18 +28,18 @@ import { isNotEmptyObject } from "../shared/utils";
 export const REGEX_URL =
   "^(https?://)(([0-9a-zA-Z.-]+)\\.([0-9a-z.]{2,6})|localhost)(:\\d+)?(/.*)?$";
 
-export function IpValidator(control: UntypedFormControl): ValidationErrors {
+export function IpValidator(control: AbstractControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
     ? null
     : { ip: true };
 }
 
-export function EmailValidator(control: UntypedFormControl): ValidationErrors {
+export function EmailValidator(control: AbstractControl): ValidationErrors {
   return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
 }
 
 export function NotEmptyArrayValidator(
-  control: UntypedFormControl,
+  control: AbstractControl,
 ): ValidationErrors {
   const value: any[] = control.value;
   const result = value.every((item) => isNotEmptyObject(item));
@@ -48,7 +48,7 @@ export function NotEmptyArrayValidator(
     : { hasEmptyRows: { message: "Es dürfen keine leeren Zeilen vorkommen" } };
 }
 
-export function PositiveNumValidator(control: UntypedFormControl) {
+export function PositiveNumValidator(control: AbstractControl) {
   return control.value == undefined || control.value >= 0
     ? null
     : { positiveNum: { message: "Der Wert darf nicht negativ sein" } };
@@ -56,30 +56,26 @@ export function PositiveNumValidator(control: UntypedFormControl) {
 
 const regExp = new RegExp(REGEX_URL);
 
-export function UrlValidator(control: UntypedFormControl): ValidationErrors {
+export function UrlValidator(control: AbstractControl): ValidationErrors {
   return !control.value || regExp.test(control.value?.trim())
     ? null
     : { url: true };
 }
 
-export function LowercaseValidator(
-  control: UntypedFormControl,
-): ValidationErrors {
+export function LowercaseValidator(control: AbstractControl): ValidationErrors {
   return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };
 }
 
-export function NoSpaceValidator(
-  control: UntypedFormControl,
-): ValidationErrors {
+export function NoSpaceValidator(control: AbstractControl): ValidationErrors {
   return control.value?.indexOf(" ") === -1 ? null : { no_space: true };
 }
 
 const forbiddenESCharsRegExp = new RegExp(/^[^,/*?"<>|:#\\]+$/);
 
 export function ElasticsearchAliasValidator(
-  control: UntypedFormControl,
+  control: AbstractControl,
 ): ValidationErrors {
   return !control.value || forbiddenESCharsRegExp.test(control.value?.trim())
     ? null
@@ -88,9 +84,7 @@ export function ElasticsearchAliasValidator(
 
 const doiPrefixRegExp = new RegExp(/^10\.\d{4,}$/);
 
-export function DoiPrefixValidator(
-  control: UntypedFormControl,
-): ValidationErrors {
+export function DoiPrefixValidator(control: AbstractControl): ValidationErrors {
   return !control.value || doiPrefixRegExp.test(control.value?.trim())
     ? null
     : { doi_prefix: true };
@@ -98,7 +92,7 @@ export function DoiPrefixValidator(
 
 const doiRegExp = new RegExp(/^10\.\d{4,}\/.+$/);
 
-export function DoiValidator(control: UntypedFormControl): ValidationErrors {
+export function DoiValidator(control: AbstractControl): ValidationErrors {
   return !control.value || doiRegExp.test(control.value?.trim())
     ? null
     : { doi: { message: "Benötigtes Format: 10.VXYZ/ABC..." } };

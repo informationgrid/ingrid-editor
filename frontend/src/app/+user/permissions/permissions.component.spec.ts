@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { PermissionsComponent } from "./permissions.component";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import { ReactiveFormsModule } from "@angular/forms";
 import { getTranslocoModule } from "../../transloco-testing.module";
@@ -51,7 +51,7 @@ describe("PermissionsComponent", () => {
     expect(spectator).toBeTruthy();
   });
 
-  xit("should display activated permissions", () => {});
+  it.skip("should display activated permissions", () => {});
 
-  xit("should output permissions as JSON", () => {});
+  it.skip("should output permissions as JSON", () => {});
 });

@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   forwardRef,
@@ -37,6 +38,7 @@ import { MatIcon } from "@angular/material/icon";
   templateUrl: "./breadcrumb.component.html",
   styleUrls: ["./breadcrumb.component.scss"],
   imports: [MatTooltip, MatIcon, forwardRef(() => BreadCrumbTooltipPipe)],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent implements OnInit {
   path = input<ShortTreeNode[]>([]);
@@ -97,7 +99,6 @@ export class BreadcrumbComponent implements OnInit {
 
 @Pipe({
   name: "breadCrumbTooltip",
-  standalone: true,
 })
 export class BreadCrumbTooltipPipe implements PipeTransform {
   transform(value: ShortTreeNode, args?: any): any {

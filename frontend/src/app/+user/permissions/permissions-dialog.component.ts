@@ -38,7 +38,6 @@ import { PermissionsComponent } from "./permissions.component";
     ReactiveFormsModule,
     PermissionsComponent,
   ],
-  standalone: true,
 })
 export class PermissionsDialogComponent {
   form = new UntypedFormGroup({ permissions: new UntypedFormControl() });

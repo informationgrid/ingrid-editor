@@ -42,7 +42,6 @@ interface DataOriginItem {
 
 @Component({
   selector: "ige-data-origin-view",
-  standalone: true,
   templateUrl: "./data-origin-view.component.html",
   styleUrl: "./data-origin-view.component.scss",
 })

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
+import { createHostFactory, SpectatorHost } from "@ngneat/spectator/vitest";
 
 import { RepeatDetailListComponent } from "./repeat-detail-list.component";
 import {

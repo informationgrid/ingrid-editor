@@ -82,7 +82,7 @@ export class CatalogService {
 
   createCatalog(catalog: Catalog) {
     return this.http
-      .post(this.configuration.backendUrl + "catalogs", catalog)
+      .post<Catalog>(this.configuration.backendUrl + "catalogs", catalog)
       .pipe(
         catchError((err) => {
           const httpError = err.error;

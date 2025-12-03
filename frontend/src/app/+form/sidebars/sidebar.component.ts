@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -46,8 +47,16 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
   imports: [TreeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
+  documentTreeStore = inject(DocumentTreeStore);
+  addressTreeStore = inject(AddressTreeStore);
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+  private behaviourService = inject(BehaviourService);
+  private configService = inject(ConfigService);
+
   readonly address = input(false);
 
   readonly dropped = output();
@@ -59,15 +68,9 @@ export class SidebarComponent implements OnInit {
     return !this.configService.hasCatAdminRights() && pluginActive;
   });
 
-  documentTreeStore = inject(DocumentTreeStore);
-  addressTreeStore = inject(AddressTreeStore);
-  private generalStore = inject(GeneralStore);
-  private uiStore = inject(UiStore);
-  private behaviourService = inject(BehaviourService);
-  private configService = inject(ConfigService);
-
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<number>(null);
+  protected readonly enableDrag = this.generalStore.allowDragNDropInTree;
 
   private path: "/form" | "/address";
 

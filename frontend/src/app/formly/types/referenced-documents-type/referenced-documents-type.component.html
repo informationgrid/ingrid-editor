@@ -35,7 +35,7 @@
         #list
         [docs]="docs()"
         [removeSelectionAfter]="true"
-        (select)="openReference($event)"
+        (select)="openReference($any($event))"
     ></ige-document-list-item>
     @if (referencesHint() && docs().length > 0) {
         <mat-hint>

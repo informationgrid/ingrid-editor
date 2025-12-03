@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
 import { SpecialisedTaskDoctypeHMDK } from "./ingrid-hmdk/doctypes/specialisedTask.doctype";
@@ -87,9 +87,6 @@ class InGridHMDKComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridHMDKComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridHMDKComponent;

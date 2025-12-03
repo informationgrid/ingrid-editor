@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { ProfileService } from "../app/services/profile.service";
 import { ReportsService } from "../app/+reports/reports.service";
@@ -76,9 +76,6 @@ export class OpenDataComponent {
   }
 }
 
-@NgModule({
-  imports: [OpenDataComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return OpenDataComponent;

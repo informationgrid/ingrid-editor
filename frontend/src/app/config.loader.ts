@@ -195,9 +195,9 @@ export function ConfigLoader(
       if (language) generalStore.setCatalogLanguage(language);
       await firstValueFrom(translocoService.load("de"));
       await redirectToCatalogSpecificRoute(router, dialog);
-      await loadProfile.call(this, configService);
+      await loadProfile.call(ConfigLoader, configService);
       console.debug("FINISHED APP INIT");
-    } catch (err) {
+    } catch (err: any) {
       if (err.message === "Profile could not be loaded") {
         handleUnsupportedProfile();
         return;

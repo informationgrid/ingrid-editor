@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { AddressCardComponent } from "./address-card.component";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MatCardModule } from "@angular/material/card";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
 import { MatDialogModule } from "@angular/material/dialog";

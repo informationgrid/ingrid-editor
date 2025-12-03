@@ -981,6 +981,25 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
+            @if(page.hasOgcServiceVersion())
+                <gmd:transferOptions>
+                    <gmd:MD_DigitalTransferOptions>
+                        <gmd:onLine>
+                            <gmd:CI_OnlineResource>
+                                <gmd:linkage>
+                                    <gmd:URL>${page.getOgcLandingPage()}</gmd:URL>
+                                </gmd:linkage>
+                                <gmd:protocol>
+                                    <gmx:Anchor xlink:href="http://www.opengis.net/def/interface/ogcapi-features">OGC API-Features</gmx:Anchor>
+                                </gmd:protocol>
+                                <gmd:function>
+                                    <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+                                </gmd:function>
+                            </gmd:CI_OnlineResource>
+                        </gmd:onLine>
+                    </gmd:MD_DigitalTransferOptions>
+                </gmd:transferOptions>
+            @endif
         </gmd:MD_Distribution>
     </gmd:distributionInfo>
 @endif

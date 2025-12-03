@@ -52,7 +52,7 @@ export class UserManagementComponent extends TabContainerComponent {
     this.groupService.getGroups();
   }
 
-  @HostListener("window:beforeunload", ["$event"])
+  @HostListener("window:beforeunload")
   unloadHandler() {
     return !this.currentComponent?.form?.dirty;
   }

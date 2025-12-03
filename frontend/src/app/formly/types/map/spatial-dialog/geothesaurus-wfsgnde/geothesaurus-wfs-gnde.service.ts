@@ -20,6 +20,17 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../../services/config/config.service";
+import { SpatialBoundingBox } from "../spatial-result.model";
+
+export interface GeoThesaurusResult {
+  id: string;
+  name: string;
+  displayTitle: string;
+  ars: string;
+  type: string;
+  bbox: SpatialBoundingBox;
+  hasMoreResults: boolean;
+}
 
 @Injectable({
   providedIn: "root",
@@ -30,7 +41,7 @@ export class GeothesaurusWfsGndeService {
   constructor() {}
 
   search(query: string) {
-    return this.http.post(
+    return this.http.post<GeoThesaurusResult[]>(
       ConfigService.backendApiUrl + "search/geothesaurus/wfsgnde",
       query,
     );

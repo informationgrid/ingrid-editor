@@ -788,6 +788,16 @@ open class IngridModelTransformer(
         }
     }
 
+    val ogcLandingPage: String by lazy {
+        val operationWithLandingPage = data.service.operations?.firstOrNull({ it.name?.value == "LandingPage" })
+        operationWithLandingPage?.methodCall ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
+    }
+
+    fun hasOgcServiceVersion(): Boolean {
+        val ogcApiFeatureCodelistId = "4"
+        return (data.service.version ?: emptyList()).any({ it.key == ogcApiFeatureCodelistId })
+    }
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass =
             addressExporter.getLastPublishedDocument(
@@ -881,7 +891,7 @@ open class IngridModelTransformer(
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.namespace =
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
-        this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
         this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
 
@@ -1146,6 +1156,7 @@ open class IngridModelTransformer(
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
+        hasOgcServiceVersion() ||
         // TODO Refactor after usage clarification #6322
         // || serviceUrls.isNotEmpty()
         // || getCoupledServiceUrls().isNotEmpty()

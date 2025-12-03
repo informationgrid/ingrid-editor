@@ -49,10 +49,12 @@ import {
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
 import {
+  AbstractControl,
   FormControl,
   ReactiveFormsModule,
   UntypedFormControl,
   ValidationErrors,
+  ValidatorFn,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
@@ -170,8 +172,8 @@ export class RepeatListComponent
 
   onItemClick: (id: number) => void = () => {};
 
-  mustBeEmptyValidator = (otherControl: FormControl) => {
-    return (ctrl: FormControl): ValidationErrors => {
+  mustBeEmptyValidator = (otherControl: AbstractControl) => {
+    return (ctrl: AbstractControl): ValidationErrors | null => {
       const validateCtrl = otherControl ?? ctrl;
       return validateCtrl.value === null || validateCtrl.value === ""
         ? null

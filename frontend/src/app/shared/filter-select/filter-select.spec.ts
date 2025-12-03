@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 
 import { FilterSelectComponent } from "./filter-select.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
