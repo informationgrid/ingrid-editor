@@ -149,17 +149,14 @@ export class TimeReferenceComponent
         this.handleTimezoneState(next);
       });
 
-    // FIXME: workaround to avoid triggering on initial load when timepicker is active
-    setTimeout(() => {
-      // reflect internal form changes into Formly control
-      this.temporalForm.valueChanges
-        .pipe(map((value) => this.mapForBackend(value)))
-        .subscribe((value) => {
-          this.formControl?.patchValue(value);
-          this.formControl?.markAsDirty();
-          this.formControl?.markAsTouched();
-        });
-    });
+    // reflect internal form changes into Formly control
+    this.temporalForm.valueChanges
+      .pipe(map((value) => this.mapForBackend(value)))
+      .subscribe((value) => {
+        this.formControl?.patchValue(value);
+        this.formControl?.markAsDirty();
+        this.formControl?.markAsTouched();
+      });
 
     this.formControl.addValidators((_) => {
       return this.temporalForm.valid ? null : { someError: true };
