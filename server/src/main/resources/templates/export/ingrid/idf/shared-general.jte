@@ -1010,8 +1010,8 @@ ${contentInfo}
         @if( TransformationTools.hasValue(page.getParentIdentifierReference().getDescription()))
             <idf:description>${page.getParentIdentifierReference().getDescription()}</idf:description>
         @endif
-        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverview()))
-            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverview()}</idf:graphicOverview>
+        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverviewUri()))
+            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverviewUri()}</idf:graphicOverview>
         @endif
     </idf:superiorReference>
 @endif

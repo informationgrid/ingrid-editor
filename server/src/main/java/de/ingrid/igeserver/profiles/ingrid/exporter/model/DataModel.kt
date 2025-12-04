@@ -37,7 +37,7 @@ data class DataModel(
     val description: String?,
     // TODO AW: remove parent from data
     @Deprecated("parent should not be in data, but as separate metadata") val _parent: String?,
-    val parentIdentifier: String?,
+    @Deprecated("do not use directly. use transformer.getParentIdentifier() instead")val parentIdentifier: String?,
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
