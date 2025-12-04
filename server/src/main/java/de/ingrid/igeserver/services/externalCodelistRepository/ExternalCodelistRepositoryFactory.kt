@@ -17,46 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface Codelist {
-  id: string;
-  name: string;
-  description?: string;
-  entries: CodelistEntry[];
-  default: string;
-  isCatalog?: boolean;
-}
+package de.ingrid.igeserver.services.externalCodelistRepository
 
-export interface CodelistEntry {
-  id: string;
-  description: string;
-  fields: { [x: string]: string };
-  data?: string;
-}
+import org.springframework.stereotype.Service
 
-export interface CodelistBackend {
-  id: string;
-  name: string;
-  description?: string;
-  defaultEntry?: string;
-  entries: CodelistEntryBackend[];
-  lastModified?: number;
-}
-
-export interface CodelistEntryBackend {
-  id: string;
-  description: string;
-  localisations: any;
-  data: string;
-}
-
-export interface BackendOption {
-  key: string;
-  value: string;
-  _codelistId: string;
-}
-
-export interface PagedSearchResult {
-  page: number;
-  totalPages: number;
-  results: string[];
+@Service
+class ExternalCodelistRepositoryFactory(
+    private val repositories: Map<String, ExternalCodelistRepository>,
+) {
+    fun getRepository(repositoryId: String): ExternalCodelistRepository = repositories[repositoryId]
+        ?: throw IllegalArgumentException("Unknown repository ID: $repositoryId")
 }

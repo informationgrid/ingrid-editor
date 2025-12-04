@@ -47,6 +47,12 @@ class CacheConfiguration {
                 .expireAfterWrite(Duration.ofDays(1)).maximumSize(200).build(),
         )
 
+        cacheManager.registerCustomCache(
+            "epsgCodelistCache",
+            Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofDays(1)).maximumSize(200).build(),
+        )
+
         cacheManager.registerCustomCache("aclCache", Caffeine.newBuilder().build())
 
         return cacheManager

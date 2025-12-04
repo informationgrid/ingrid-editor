@@ -25,6 +25,7 @@ import {
   CodelistBackend,
   CodelistEntry,
   CodelistEntryBackend,
+  PagedSearchResult,
 } from "../../store/codelist/codelist.model";
 import {
   bufferTime,
@@ -323,6 +324,14 @@ export class CodelistService {
         CodelistService.mapToSelect(codelist, language, sortBy),
       ),
     );
+  }
+
+  observeExternal(
+    codelistId: string,
+    filter: string,
+    page: number,
+  ): Observable<PagedSearchResult> {
+    return this.dataService.getExternalCodelist(codelistId, filter, page);
   }
 
   observeRaw(codelistId: string): Observable<Codelist> {

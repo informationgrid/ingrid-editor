@@ -17,46 +17,27 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface Codelist {
-  id: string;
-  name: string;
-  description?: string;
-  entries: CodelistEntry[];
-  default: string;
-  isCatalog?: boolean;
+package de.ingrid.igeserver.services.externalCodelistRepository
+
+data class PagedSearchResult(
+    val page: Int,
+    val totalPages: Int,
+    val results: List<String>,
+) {
+    companion object {
+        val EMPTY = PagedSearchResult(
+            page = 0,
+            totalPages = 0,
+            results = emptyList(),
+        )
+    }
 }
 
-export interface CodelistEntry {
-  id: string;
-  description: string;
-  fields: { [x: string]: string };
-  data?: string;
-}
-
-export interface CodelistBackend {
-  id: string;
-  name: string;
-  description?: string;
-  defaultEntry?: string;
-  entries: CodelistEntryBackend[];
-  lastModified?: number;
-}
-
-export interface CodelistEntryBackend {
-  id: string;
-  description: string;
-  localisations: any;
-  data: string;
-}
-
-export interface BackendOption {
-  key: string;
-  value: string;
-  _codelistId: string;
-}
-
-export interface PagedSearchResult {
-  page: number;
-  totalPages: number;
-  results: string[];
+interface ExternalCodelistRepository {
+    /**
+     * @param term The search term.
+     * @param page The search results page that should be returned.
+     * @return A list of string representations of found items
+     */
+    fun search(term: String, page: Int = 0): PagedSearchResult
 }

@@ -19,7 +19,7 @@
  */
 import {
   Component,
-  ElementRef,
+  DestroyRef,
   inject,
   OnInit,
   signal,
@@ -41,9 +41,18 @@ import {
   filter,
   map,
   startWith,
+  switchMap,
   tap,
 } from "rxjs/operators";
-import { merge, Observable, Subject, Subscription } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+} from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -91,6 +100,13 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
+import {
+  BackendOption,
+  PagedSearchResult,
+} from "../../../store/codelist/codelist.model";
+import { ExternalResultsCache } from "./external-result-cache";
+import { OptionsScrollDirective } from "./options-scroll.directive";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -101,7 +117,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 
-interface RepeatListProps extends FormlyFieldProps {
+export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
   showSearch: boolean;
   restCall: any;
@@ -123,7 +139,20 @@ interface RepeatListProps extends FormlyFieldProps {
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
   hideInputField: boolean;
+  externalOptions?: {
+    fetchCodelist: (
+      query: string,
+      page: number,
+    ) => Observable<PagedSearchResult>;
+    deduplicate: (
+      options: SelectOption[],
+      externalOptions: SelectOption[],
+    ) => SelectOption[];
+    threshold?: number;
+  };
 }
+
+type PaginationState = { page: number; totalPages: number; isLoading: boolean };
 
 @UntilDestroy()
 @Component({
@@ -159,6 +188,7 @@ interface RepeatListProps extends FormlyFieldProps {
     MatProgressSpinner,
     FieldToAiraLabelledbyPipe,
     FormlyValidationMessage,
+    OptionsScrollDirective,
   ],
 })
 export class RepeatListComponent
@@ -166,9 +196,17 @@ export class RepeatListComponent
   implements OnInit
 {
   private codelistStore = inject(CodelistStore);
-  readonly autoCompleteEl = viewChild("repeatListInput", { read: ElementRef });
+  private destroyRef = inject(DestroyRef);
+  private externalResultsCache: ExternalResultsCache;
   readonly autoComplete = viewChild(MatAutocompleteTrigger);
   readonly selector = viewChild(MatSelect);
+
+  paginationState = {
+    page: 0,
+    totalPages: 1,
+    isLoading: false,
+  };
+  private loadMore = new BehaviorSubject<PaginationState>(this.paginationState);
 
   onItemClick: (id: number) => void = () => {};
 
@@ -183,7 +221,7 @@ export class RepeatListComponent
     };
   };
 
-  items = signal<any[]>([]);
+  items = signal<BackendOption[]>([]);
 
   filteredOptions = signal<SelectOptionUi[]>([]);
   parameterOptions: SelectOptionUi[];
@@ -282,34 +320,123 @@ export class RepeatListComponent
           : this.inputControl.enable();
       });
 
-    if (this.props.restCall) {
-      this.inputControl.valueChanges
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(300),
-          tap(() => this.formControl.updateValueAndValidity()),
-          filter((query) => query?.length > 1),
-        )
-        .subscribe((query) => this.search(query));
+    if (this.props.externalOptions) {
+      this.externalResultsCache = new ExternalResultsCache(
+        this.props.externalOptions.deduplicate,
+      );
+      this.handleExternalOptions();
+    } else if (this.props.restCall) {
+      this.handleRestCall();
     } else {
-      merge(
-        this.formControl.valueChanges,
-        this.inputControl.valueChanges.pipe(
-          tap(() => this.formControl.updateValueAndValidity()),
-        ),
-        this.manualUpdate.asObservable(),
-      )
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(0),
-          filter((value) => value !== undefined && value !== null),
-          map((value) => this._filter(value)),
-          tap((value) => this._markSelected(value)),
-        )
-        .subscribe((value) => this.filteredOptions.set(value));
+      this.handleOptions();
     }
+  }
+
+  private handleExternalOptions() {
+    const query$ = this.inputControl.valueChanges.pipe(
+      startWith(this.inputControl.value),
+      map((value) => (typeof value === "string" ? value : "")),
+      tap(() => this.formControl.updateValueAndValidity()),
+      tap(() =>
+        this.loadMore.next({ page: 0, totalPages: 1, isLoading: false }),
+      ),
+    );
+
+    combineLatest([query$, this.loadMore])
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((event) => this.fetchPagedCodelistsWhenThreshold(event)),
+        map(
+          (result: {
+            query: string;
+            remoteResults: PagedSearchResult;
+            options: SelectOptionUi[];
+          }) => {
+            if (result.options) return result.options;
+
+            this.paginationState = {
+              page: result.remoteResults.page,
+              totalPages: result.remoteResults.totalPages,
+              isLoading: false,
+            };
+
+            return this.mapExternalCodelistsToOptions(result);
+          },
+        ),
+        tap((value) => this._markSelected(value)),
+      )
+      .subscribe((value) => this.filteredOptions.set(value));
+  }
+
+  private mapExternalCodelistsToOptions(result: {
+    query: string;
+    remoteResults: PagedSearchResult;
+    options: SelectOptionUi[];
+  }) {
+    const newExternalResults = result.remoteResults.results.map(
+      (label) => new SelectOption(null, label),
+    );
+    this.externalResultsCache.updateCache(newExternalResults);
+
+    const allCachedForQuery = this.externalResultsCache.filter(result.query);
+
+    return this.props.externalOptions.deduplicate(
+      this._filter(result.query),
+      allCachedForQuery,
+    );
+  }
+
+  private fetchPagedCodelistsWhenThreshold<A>(event: A) {
+    const query = event[0];
+    const pagination = event[1];
+    this.paginationState.isLoading = false;
+    const localResults = this._filter(query);
+    const cachedFilteredResults = this.externalResultsCache.filter(query);
+    const immediateResults = this.props.externalOptions.deduplicate(
+      localResults,
+      cachedFilteredResults,
+    );
+    if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
+      return of({ options: immediateResults });
+    }
+
+    this.filteredOptions.set(immediateResults);
+
+    this.paginationState.isLoading = true;
+    return this.props.externalOptions
+      .fetchCodelist(query, pagination.page)
+      .pipe(map((results) => ({ query, remoteResults: results })));
+  }
+
+  private handleRestCall() {
+    this.inputControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(""),
+        debounceTime(300),
+        tap(() => this.formControl.updateValueAndValidity()),
+        filter((query) => query?.length > 1),
+      )
+      .subscribe((query) => this.search(query));
+  }
+
+  private handleOptions() {
+    merge(
+      this.formControl.valueChanges,
+      this.inputControl.valueChanges.pipe(
+        tap(() => this.formControl.updateValueAndValidity()),
+      ),
+      this.manualUpdate.asObservable(),
+    )
+      .pipe(
+        untilDestroyed(this),
+        startWith(""),
+        debounceTime(0),
+        filter((value) => value !== undefined && value !== null),
+        map((value) => this._filter(value)),
+        tap((value) => this._markSelected(value)),
+      )
+      .subscribe((value) => this.filteredOptions.set(value));
   }
 
   addToList(option: SelectOptionUi) {
@@ -340,9 +467,12 @@ export class RepeatListComponent
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label).forBackend(
-      this.props.codelistId,
-    );
+    const prepared =
+      option.value == null
+        ? new SelectOption(null, option.label).forBackend(null)
+        : new SelectOption(option.value, option.label).forBackend(
+            this.props.codelistId,
+          );
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 
@@ -416,12 +546,14 @@ export class RepeatListComponent
     value?.forEach((option) => {
       const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value,
-      ).disabled;
+      )?.disabled;
       const optionAlreadySelected = this.model?.[
         this.field.key as string
       ]?.some(
         (modelOption: any) =>
-          modelOption && (modelOption.key ?? modelOption) === option.value,
+          modelOption &&
+          ((modelOption.key ?? modelOption) === option.value ||
+            modelOption.value === option.label),
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
     });
@@ -604,5 +736,16 @@ export class RepeatListComponent
         .replace(/,([^,]*)$/, " und$1");
     }
     return formattedDuplicates;
+  }
+
+  onScroll() {
+    console.log(".");
+    if (
+      !this.paginationState.isLoading &&
+      this.paginationState.page < this.paginationState.totalPages - 1
+    ) {
+      this.paginationState.page = this.paginationState.page + 1;
+      this.loadMore.next(this.paginationState);
+    }
   }
 }
