@@ -212,6 +212,7 @@ export class ImportComponent implements OnInit {
   }
 
   startImport() {
+    this.message.set(null);
     const options = this.optionsFormGroup.value;
     this.exchangeService.import(options).subscribe();
   }
