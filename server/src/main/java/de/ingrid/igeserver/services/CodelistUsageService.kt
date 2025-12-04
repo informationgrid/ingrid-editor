@@ -32,13 +32,16 @@ class CodelistUsageService(
     private val log = logger()
 
     private val sqlFreeEntriesWithCounts = """
-        SELECT matches #>> '{}' AS value, COUNT(*)::int AS count
+        SELECT
+            matches #>> '{}' AS value,
+            COUNT(DISTINCT d.uuid)::int AS count,
+            ARRAY_AGG(DISTINCT d.uuid) AS uuids
         FROM document d
         JOIN document_wrapper dw ON d.uuid = dw.uuid AND d.catalog_id = dw.catalog_id
         JOIN catalog c ON dw.catalog_id = c.id
         , LATERAL jsonb_path_query(
             d.data,
-            '${'$'}.** ? (@.key == null && @."_codelistId" == ${'$'}cid).value',
+            '$.** ? (@.key == null && @."_codelistId" == ${'$'}cid).value',
             CAST(? AS jsonb)
         ) AS matches
         WHERE c.identifier = ?
@@ -58,9 +61,15 @@ class CodelistUsageService(
         val vars = """{"cid":"$codelistId"}"""
         return try {
             jdbcTemplate.query(sqlFreeEntriesWithCounts, { rs, _ ->
+                val sqlArray = rs.getArray("uuids")
+                val uuids: List<String> = when (val arr = sqlArray?.array) {
+                    is Array<*> -> arr.filterNotNull().map { it.toString() }
+                    else -> emptyList()
+                }
                 FreeEntryUsage(
                     rs.getString("value"),
                     rs.getInt("count"),
+                    uuids,
                 )
             }, vars, catalogIdentifier)
         } catch (e: Exception) {

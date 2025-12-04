@@ -104,4 +104,5 @@ interface CodelistApi {
 data class FreeEntryUsage(
     val value: String,
     val count: Int,
+    val uuids: List<String> = emptyList(),
 )
