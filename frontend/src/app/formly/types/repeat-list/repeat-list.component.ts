@@ -63,7 +63,6 @@ import {
   ReactiveFormsModule,
   UntypedFormControl,
   ValidationErrors,
-  ValidatorFn,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
@@ -198,7 +197,6 @@ export class RepeatListComponent
   private codelistStore = inject(CodelistStore);
   private destroyRef = inject(DestroyRef);
   private externalResultsCache: ExternalResultsCache;
-  readonly autoComplete = viewChild(MatAutocompleteTrigger);
   readonly selector = viewChild(MatSelect);
 
   paginationState = {
@@ -208,7 +206,7 @@ export class RepeatListComponent
   };
   private loadMore = new BehaviorSubject<PaginationState>(this.paginationState);
 
-  onItemClick: (id: number) => void = () => {};
+  onItemClick: (id: string) => void = () => {};
 
   mustBeEmptyValidator = (otherControl: AbstractControl) => {
     return (ctrl: AbstractControl): ValidationErrors | null => {
@@ -386,9 +384,10 @@ export class RepeatListComponent
     );
   }
 
-  private fetchPagedCodelistsWhenThreshold<A>(event: A) {
-    const query = event[0];
-    const pagination = event[1];
+  private fetchPagedCodelistsWhenThreshold(
+    event: [string, PaginationState],
+  ): Observable<{ options: any; query: string; remoteResults: any }> {
+    const [query, pagination] = event;
     this.paginationState.isLoading = false;
     const localResults = this._filter(query);
     const cachedFilteredResults = this.externalResultsCache.filter(query);
@@ -397,7 +396,7 @@ export class RepeatListComponent
       cachedFilteredResults,
     );
     if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
-      return of({ options: immediateResults });
+      return of({ options: immediateResults, query, remoteResults: null });
     }
 
     this.filteredOptions.set(immediateResults);
@@ -405,7 +404,9 @@ export class RepeatListComponent
     this.paginationState.isLoading = true;
     return this.props.externalOptions
       .fetchCodelist(query, pagination.page)
-      .pipe(map((results) => ({ query, remoteResults: results })));
+      .pipe(
+        map((results) => ({ query, remoteResults: results, options: null })),
+      );
   }
 
   private handleRestCall() {
@@ -630,7 +631,7 @@ export class RepeatListComponent
     }
   }
 
-  onOptionClick($event: MouseEvent, option: SelectOptionUi) {
+  onOptionClick(_$event: MouseEvent, option: SelectOptionUi) {
     if (option.disabled) {
       // do nothing
       return;
