@@ -28,7 +28,7 @@ import {
 } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { filter, tap } from "rxjs/operators";
+import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -233,6 +233,33 @@ export class CatalogCodelistsComponent implements OnInit {
   setAsDefault(entry: CodelistEntry) {
     this.selectedCodelist.default = entry?.id ?? null;
     this.save();
+  }
+
+  openFreeEntries() {
+    this.codelistService
+      .getFreeEntries(this.selectedCodelist.id)
+      .pipe(
+        catchError((error) => {
+          this._snackBar.open("Fehler beim Laden der freien Einträge", "", {
+            duration: 3000,
+          });
+          throw error;
+        }),
+      )
+      .subscribe((result) => {
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: <ConfirmDialogData>{
+              message: `Freie Einträge: <br><br> ${result
+                .map((e) => `${e.value} (verwendet ${e.count} mal)`)
+                .join("<br>")}`,
+              title: "Freie Einträge",
+              buttons: [{ text: "Schließen", id: "close", emphasize: true }],
+            },
+          })
+          .afterClosed()
+          .subscribe();
+      });
   }
 
   resetCodelist() {

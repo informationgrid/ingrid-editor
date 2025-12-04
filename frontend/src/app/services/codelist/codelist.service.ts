@@ -312,6 +312,10 @@ export class CodelistService {
     );
   }
 
+  getFreeEntries(codelistId: string) {
+    return this.dataService.getFreeEntries(codelistId);
+  }
+
   observe(
     codelistId: string,
     sortBy: CodelistSort = "label",

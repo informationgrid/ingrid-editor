@@ -22,6 +22,7 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { Injectable } from "@angular/core";
 import {
   CodelistBackend,
+  FreeEntry,
   PagedSearchResult,
 } from "../../store/codelist/codelist.model";
 
@@ -97,6 +98,12 @@ export class CodelistDataService {
       this.configuration.backendUrl +
         `jobs/codelist-sync?command=start&migrate=${migrate}`,
       {},
+    );
+  }
+
+  getFreeEntries(codelistId: string) {
+    return this.http.get<FreeEntry[]>(
+      this.configuration.backendUrl + "codelist/free-entries/" + codelistId,
     );
   }
 }
