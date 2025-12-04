@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, Signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  Signal,
+} from "@angular/core";
 import {
   CodelistService,
   SelectOptionUi,
@@ -58,9 +65,9 @@ export class CodelistsComponent implements OnInit {
       });
   });
 
-  disableSyncButton = false;
-  showMore = false;
-  selectedCodelist: Codelist;
+  disableSyncButton = signal<boolean>(false);
+  showMore = signal<boolean>(false);
+  selectedCodelist = signal<Codelist>(null);
 
   constructor(
     private codelistService: CodelistService,
@@ -72,23 +79,23 @@ export class CodelistsComponent implements OnInit {
   }
 
   updateCodelists() {
-    this.disableSyncButton = true;
+    this.disableSyncButton.set(true);
     this.codelistService
       .update()
       .pipe(
         tap(() => this.snack.open("Codelisten erfolgreich synchronisiert")),
-        finalize(() => (this.disableSyncButton = false)),
+        finalize(() => this.disableSyncButton.set(false)),
       )
       .subscribe();
   }
 
   updateCodelistSelection(option: SelectOptionUi) {
     if (!option) {
-      this.selectedCodelist = null;
+      this.selectedCodelist.set(null);
       return;
     }
 
-    this.selectedCodelist = this.codelistStore.entityMap()[option.value];
+    this.selectedCodelist.set(this.codelistStore.entityMap()[option.value]);
   }
 
   resetInput() {
