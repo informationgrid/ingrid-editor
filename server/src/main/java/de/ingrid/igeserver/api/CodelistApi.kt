@@ -92,4 +92,16 @@ interface CodelistApi {
         @Parameter() @PathVariable filter: String,
         @Parameter() @RequestParam page: Int,
     ): ResponseEntity<PagedSearchResult>
+
+    @Operation
+    @GetMapping(value = ["/free-entries/{codelistId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getFreeEntriesWithCounts(
+        principal: Principal,
+        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+    ): ResponseEntity<List<FreeEntryUsage>>
 }
+
+data class FreeEntryUsage(
+    val value: String,
+    val count: Int,
+)

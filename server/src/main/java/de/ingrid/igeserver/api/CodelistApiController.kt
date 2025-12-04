@@ -38,6 +38,7 @@ import java.security.Principal
 @RequestMapping("/api/codelist")
 class CodelistApiController(
     private val externalCodelistRepositoryFactory: ExternalCodelistRepositoryFactory,
+    private val codelistUsageService: de.ingrid.igeserver.services.CodelistUsageService,
 ) : CodelistApi {
 
     private val log = logger()
@@ -64,6 +65,7 @@ class CodelistApiController(
             handler.getCatalogCodelists(catalogId)
         } catch (e: Exception) {
             log.warn("Error fetching catalog for ${principal.name}")
+            log.debug(e)
             emptyList()
         }
 
@@ -129,6 +131,15 @@ class CodelistApiController(
     override fun getExternalCodelist(id: String, filter: String, page: Int): ResponseEntity<PagedSearchResult> {
         val codelistRepo = externalCodelistRepositoryFactory.getRepository(id)
         val values = codelistRepo.search(filter, page)
+        return ResponseEntity.ok(values)
+    }
+
+    override fun getFreeEntriesWithCounts(
+        principal: Principal,
+        codelistId: String,
+    ): ResponseEntity<List<FreeEntryUsage>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val values = codelistUsageService.getFreeEntriesWithCountsForCodelist(catalogId, codelistId)
         return ResponseEntity.ok(values)
     }
 }
