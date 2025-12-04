@@ -468,12 +468,10 @@ export class RepeatListComponent
       return;
     }
 
-    const prepared =
-      option.value == null
-        ? new SelectOption(null, option.label).forBackend(null)
-        : new SelectOption(option.value, option.label).forBackend(
-            this.props.codelistId,
-          );
+    const prepared = new SelectOption(option.value, option.label).forBackend(
+      this.props.codelistId,
+    );
+
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 
