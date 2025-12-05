@@ -21,6 +21,7 @@ package de.ingrid.mdek.upload.storage.validate.impl;
 
 import org.apache.commons.io.IOUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +67,7 @@ public class ExternalCommand {
             // capture output
             final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(1);
             final Future<String> output = newFixedThreadPool.submit(() -> {
-                return IOUtils.toString(process.getInputStream());
+                return IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
             });
             newFixedThreadPool.shutdown();
 

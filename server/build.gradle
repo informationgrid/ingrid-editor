@@ -256,12 +256,6 @@ springBoot {
     buildInfo()
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
-}
-
 if (hasProperty('filename')) {
     bootJar {
         dependsOn(unzip)
@@ -299,6 +293,9 @@ tasks.register('updateGitHooks', Copy) {
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
+    }
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
