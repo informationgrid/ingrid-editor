@@ -33,12 +33,12 @@
     "contacts": [
         @for(var entry : ForSupport.of(model.getAddresses()))
         {
-            "role": "${model.mapAddressType(entry.get().getRelationType().getKey())}",
+            "role": "${entry.get().getRelationType().getKey()}",
             "name": "${entry.get().getTitle()}",
             "communications": [
             @for(var contact : ForSupport.of(entry.get().getAllCommunications()))
                 {
-                "type": "${model.mapCommunicationTyp(contact.get().getKey())}",
+                    "type": "${model.mapCommunicationTyp(contact.get().getKey())}",
                     "value": "${contact.get().getValue()}"
                 }@if (!contact.isLast()),@endif
             @endfor
@@ -63,23 +63,23 @@
         @endfor
     ],
     "spatial": {
-"title": [
-@for(var entry : ForSupport.of(model.getSpatialTitles()))
-    "${entry.get()}"@if (!entry.isLast()),@endif
-@endfor
-],
+        "title": [
+        @for(var entry : ForSupport.of(model.getSpatialTitles()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
         "geometries": [
             @for(var entry : ForSupport.of(model.getSpatials()))
                 $unsafe{entry.get()}@if (!entry.isLast()),@endif
             @endfor
-],
-"administrative": {
-"regional_key": [
-@for(var entry : ForSupport.of(model.getArs()))
-    "${entry.get()}"@if (!entry.isLast()),@endif
-@endfor
-]
-}
+        ],
+        "administrative": {
+            "regional_key": [
+                @for(var entry : ForSupport.of(model.getArs()))
+                "${entry.get()}"@if (!entry.isLast()),@endif
+                @endfor
+            ]
+        }
     },
     "legal_basis": "${model.getLegalBasis() }",
 "distributions": [
