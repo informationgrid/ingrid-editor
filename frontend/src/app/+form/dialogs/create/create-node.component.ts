@@ -30,6 +30,7 @@ import {
   signal,
   WritableSignal,
   viewChild,
+  DestroyRef,
 } from "@angular/core";
 import {
   DocumentService,
@@ -53,7 +54,6 @@ import {
 } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom } from "rxjs";
@@ -71,13 +71,13 @@ import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.compo
 import { GeneralStore } from "../../../store/general.store";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface CreateOptions {
   forAddress: boolean;
   isFolder: boolean;
 }
 
-@UntilDestroy()
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
@@ -107,6 +107,7 @@ export class CreateNodeComponent implements OnInit {
   private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private destroyRef = inject(DestroyRef);
 
   readonly container = viewChild<ElementRef>("contextNodeContainer");
   title = "Neuen Ordner anlegen";
@@ -169,7 +170,7 @@ export class CreateNodeComponent implements OnInit {
     }
 
     this.formGroup.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.docTypeChoice.set(value.choice));
   }
 

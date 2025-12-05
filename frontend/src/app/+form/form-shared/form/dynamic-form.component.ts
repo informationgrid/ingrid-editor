@@ -23,6 +23,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   HostListener,
@@ -56,7 +57,6 @@ import {
   FormlyFormOptions,
 } from "@ngx-formly/core";
 import { FormularService } from "../../formular.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
 import {
   combineLatest,
@@ -84,13 +84,16 @@ import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal,
+} from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
 import { AuthenticationFactory } from "../../../security/auth.factory";
 
-@UntilDestroy()
 @Component({
   selector: "ige-form-wrapper",
   templateUrl: "./dynamic-form.component.html",
@@ -119,6 +122,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
   private authService = inject(AuthenticationFactory);
+  private destroyRef = inject(DestroyRef);
 
   readonly scrollForm = viewChild("scrollForm", { read: ElementRef });
   readonly formInfoRef = viewChild("formInfo", { read: ElementRef });
@@ -254,13 +258,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
       ),
     ])
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => this.loadDocument(params[2]));
 
     this.formularService.currentDoctypeId = null;
 
     this.documentService.publishState$
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((doPublish) => {
         this.numberOfErrors.set(0);
         if (doPublish) {
@@ -294,7 +298,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.documentService.documentOperationFinished$
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((finished) => this.showBlocker.set(!finished));
 
     this.initScrollBehavior();
@@ -316,7 +320,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const element = this.scrollForm().nativeElement;
     fromEvent(element, "scroll")
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         // debounceTime(10), // do not handle all events
         filter((_) => this.formInfoRef() !== undefined),
         map((): boolean => this.determineToggleState(element.scrollTop)),
@@ -370,7 +374,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const loadSubscription = this.documentService
       .load(id, this.address(), true, true)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((doc) => doc != null),
         tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
         tap((doc) => this.handleReadOnlyState(doc.documentWithMetadata)),
@@ -555,7 +559,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.errorCounterSubscription = this.form.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(500),
         filter(() => this.showValidationErrors),
       )

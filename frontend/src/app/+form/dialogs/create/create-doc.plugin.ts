@@ -20,7 +20,6 @@
 import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
@@ -35,7 +34,6 @@ import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Injectable()
 export class CreateDocumentPlugin extends Plugin {
   id = "plugin.newDoc";

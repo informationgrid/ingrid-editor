@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { AfterViewInit, Component, viewChild } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -36,7 +35,6 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
 import { MatIcon } from "@angular/material/icon";
 
-@UntilDestroy()
 @Component({
   selector: "zabbix-report",
   templateUrl: "./zabbix-report.component.html",

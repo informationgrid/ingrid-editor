@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -35,7 +35,6 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatIcon } from "@angular/material/icon";
@@ -46,6 +45,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { ProfileService } from "../../../services/profile.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface Reference {
   layerNames: string[];
@@ -69,7 +69,6 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
   isExternalRef: false,
 };
 
-@UntilDestroy()
 @Component({
   selector: "ige-document-reference-type",
   templateUrl: "./document-reference-type.component.html",
@@ -96,6 +95,7 @@ export class DocumentReferenceTypeComponent
   private router = inject(Router);
   private docService = inject(DocumentService);
   private profileService = inject(ProfileService);
+  private destroyRef = inject(DestroyRef);
 
   myModel = signal<(DocumentReference | UrlReference)[]>([]);
 
@@ -107,7 +107,7 @@ export class DocumentReferenceTypeComponent
     this.onlyInternalRefs.set(this.props.onlyInternalRefs);
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(<any[]>this.formControl.value),
         debounceTime(10),
       )

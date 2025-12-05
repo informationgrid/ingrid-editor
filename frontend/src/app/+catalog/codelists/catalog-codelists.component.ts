@@ -43,7 +43,6 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
@@ -59,7 +58,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 import { CodelistStore } from "../../store/codelist/codelist.store";
 import { MatInput } from "@angular/material/input";
 
-@UntilDestroy()
 @Component({
   selector: "ige-catalog-codelists",
   templateUrl: "./catalog-codelists.component.html",

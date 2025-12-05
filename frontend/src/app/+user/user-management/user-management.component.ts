@@ -20,14 +20,12 @@
 import { Component, HostListener, inject, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { TabPage } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { TabContainerComponent } from "../../+research/tab-container.component";
 
-@UntilDestroy()
 @Component({
   selector: "ige-user-management",
   templateUrl: "./user-management.component.html",

@@ -20,16 +20,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   OnInit,
   signal,
 } from "@angular/core";
 import { FormMessageService } from "../../../services/form-message.service";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface FormMessageType {
   severity: "info" | "error";
@@ -37,7 +38,6 @@ export interface FormMessageType {
   duration?: number;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-form-message",
   templateUrl: "./form-message.component.html",
@@ -59,6 +59,7 @@ export interface FormMessageType {
 })
 export class FormMessageComponent implements OnInit {
   private messageService = inject(FormMessageService);
+  private destroyRef = inject(DestroyRef);
 
   types = signal<FormMessageType[]>([]);
 
@@ -66,11 +67,11 @@ export class FormMessageComponent implements OnInit {
 
   ngOnInit() {
     this.messageService.message$
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((type) => this.handleMessage(type));
 
     this.messageService.clearMessages$
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.resetAllMessages());
   }
 

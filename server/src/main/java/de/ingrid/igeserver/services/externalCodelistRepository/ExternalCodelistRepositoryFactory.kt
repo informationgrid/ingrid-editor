@@ -17,25 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
-import { TabPage } from "../../services/session.service";
-import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
-import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
-import { TabContainerComponent } from "../../+research/tab-container.component";
+package de.ingrid.igeserver.services.externalCodelistRepository
 
-@Component({
-  selector: "ige-reports",
-  templateUrl: "./reports.component.html",
-  styleUrls: ["./reports.component.scss"],
-  imports: [
-    MatTabNav,
-    MatTabLink,
-    RouterLinkActive,
-    RouterLink,
-    MatTabNavPanel,
-    RouterOutlet,
-  ],
-})
-export class ReportsComponent extends TabContainerComponent {
-  tabPage: TabPage = "reports";
+import org.springframework.stereotype.Service
+
+@Service
+class ExternalCodelistRepositoryFactory(
+    private val repositories: Map<String, ExternalCodelistRepository>,
+) {
+    fun getRepository(repositoryId: String): ExternalCodelistRepository = repositories[repositoryId]
+        ?: throw IllegalArgumentException("Unknown repository ID: $repositoryId")
 }

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, effect, inject, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
@@ -41,6 +41,8 @@ import { Metadata } from "../app/models/ige-document";
 import { ResearchService } from "../app/+research/research.service";
 import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
 import { PluginService } from "../app/services/plugin/plugin.service";
+import { DataformatPlugin } from "./ingrid/behaviours/dataformat.plugin";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -69,15 +71,22 @@ export class InGridComponent implements OnInit {
   person = inject(IngridPersonDoctype);
   organisation = inject(IngridOrganisationDoctype);
   // will be created and registered automatically, but needs to be injected!
-  // noinspection JSUnusedGlobalSymbols
+  // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
+  // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
+  dataformatPlugin = inject(DataformatPlugin);
   doi = inject(DoiPlugin);
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
   pluginService = inject(PluginService);
   consolidateKeywordsPlugin = inject(ConsolidateKeywordsPlugin);
+  behaviourService = inject(BehaviourService);
+
+  private dataformatValidation = this.behaviourService.getBehaviour(
+    "plugin.ingrid.dataformat",
+  )?.isActive;
 
   // docTypesEnum: InGridDoctype
 
@@ -98,15 +107,21 @@ export class InGridComponent implements OnInit {
 
   constructor() {
     this.pluginService.registerPlugin(this.consolidateKeywordsPlugin);
+    effect(() => {
+      if (this.dataformatValidation()) {
+        this.profileService.additionalPublicationCheck =
+          this.getAdditionalPublicationCheck();
+      } else {
+        this.profileService.additionalPublicationCheck = () =>
+          Promise.resolve(true);
+      }
+    });
   }
 
   ngOnInit() {
     this.profileService.registerDoctypes(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
-
-    this.profileService.additionalPublicationCheck =
-      this.getAdditionalPublicationCheck();
   }
 
   private getAdditionalPublicationCheck() {

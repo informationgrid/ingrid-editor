@@ -20,17 +20,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import {
-  FormControl,
-  ReactiveFormsModule,
-  UntypedFormControl,
-} from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import {
   MatOption,
   MatPseudoCheckbox,
@@ -49,6 +46,7 @@ import { NgTemplateOutlet } from "@angular/common";
 import { MatDivider } from "@angular/material/divider";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface SelectTypeProps extends FormlyFieldProps {
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
@@ -68,7 +66,6 @@ interface SelectTypeProps extends FormlyFieldProps {
   disableOptionCentering?: boolean;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-select-type",
   templateUrl: "./select-type.component.html",
@@ -90,6 +87,8 @@ export class SelectTypeComponent
   extends FieldType<FieldTypeConfig<SelectTypeProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   public filterCtrl = new FormControl();
 
   defaultOptions = {
@@ -115,12 +114,12 @@ export class SelectTypeComponent
     }
 
     this.filterCtrl.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.filteredOptions.set(this.search(value)));
 
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(0),
         filter(([, ready]) => ready),
         tap(([value]) => this.updateSelectField(value)),
@@ -133,7 +132,7 @@ export class SelectTypeComponent
     }
     options
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((data) => data !== undefined && data.length > 0),
         // take(1),
         map((options) =>

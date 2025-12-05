@@ -24,6 +24,8 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.externalCodelistRepository.ExternalCodelistRepositoryFactory
+import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -34,7 +36,9 @@ import java.security.Principal
 
 @RestController
 @RequestMapping("/api/codelist")
-class CodelistApiController : CodelistApi {
+class CodelistApiController(
+    private val externalCodelistRepositoryFactory: ExternalCodelistRepositoryFactory,
+) : CodelistApi {
 
     private val log = logger()
 
@@ -120,5 +124,11 @@ class CodelistApiController : CodelistApi {
     override fun updateCodelists(): ResponseEntity<List<CodeList>> {
         val codelists = handler.fetchCodelists() ?: throw ServerException.withReason("Failed to synchronize code lists")
         return ResponseEntity.ok(codelists)
+    }
+
+    override fun getExternalCodelist(id: String, filter: String, page: Int): ResponseEntity<PagedSearchResult> {
+        val codelistRepo = externalCodelistRepositoryFactory.getRepository(id)
+        val values = codelistRepo.search(filter, page)
+        return ResponseEntity.ok(values)
     }
 }

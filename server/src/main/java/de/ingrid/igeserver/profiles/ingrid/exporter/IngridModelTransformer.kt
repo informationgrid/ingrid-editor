@@ -871,6 +871,7 @@ open class IngridModelTransformer(
         emptyList()
     }
 
+    @Suppress("DEPRECATION") // use of parentIdentifier only allowed here
     open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
 
@@ -1016,19 +1017,21 @@ open class IngridModelTransformer(
     }
 
     private fun getSuperiorReference(): SuperiorReference? {
-        if (data.parentIdentifier.isNullOrEmpty()) return null
-        val uuid = data.parentIdentifier
+        val uuid = getParentIdentifier()
+        if (uuid.isNullOrEmpty()) return null
+
         val doc = addressExporter.getLastPublishedDocument(uuid) ?: return null
+
+        val firstGraphicJson = doc.data.get("graphicOverviews")?.get(0)
+        val graphicOverviews = listOfNotNull(convertToGraphicOverview(firstGraphicJson))
+        val graphicUri = generateBrowseGraphics(graphicOverviews, uuid).firstOrNull()?.uri
 
         return SuperiorReference(
             uuid = uuid,
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
             description = doc.data.getString("description"),
-            graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))),
-                uuid,
-            ).firstOrNull()?.uri,
+            graphicOverviewUri = graphicUri,
         )
     }
 
@@ -1265,7 +1268,7 @@ data class SuperiorReference(
     val objectName: String,
     val objectType: String,
     val description: String?,
-    val graphicOverview: String?,
+    val graphicOverviewUri: String?,
 )
 
 data class GeometryContext(

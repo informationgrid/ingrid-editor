@@ -78,9 +78,9 @@ configurations.default.extendsFrom(configurations.npmResources)
 
 if (hasProperty('buildProfile')) {
   artifacts {
-    npmResources(packageNpmApp.archivePath) {
+    npmResources(packageNpmApp.archiveFile) {
       builtBy packageNpmApp
-      type "jar"
+      type = "jar"
     }
   }
 }

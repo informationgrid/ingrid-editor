@@ -125,3 +125,19 @@ mat-spinner {
   display: inline-block;
   margin-right: 8px;
 }
+
+.loading-spinner-option {
+  height: 36px;
+  line-height: 36px;
+  cursor: default !important;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-text {
+  color: #9e9e9e;
+}

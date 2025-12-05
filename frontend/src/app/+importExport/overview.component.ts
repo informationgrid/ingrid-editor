@@ -19,12 +19,10 @@
  */
 import { Component, viewChild } from "@angular/core";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { TabContainerComponent } from "../+research/tab-container.component";
 import { TabPage } from "../services/session.service";
 
-@UntilDestroy()
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],

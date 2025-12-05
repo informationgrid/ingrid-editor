@@ -19,7 +19,9 @@
  */
 import {
   Component,
+  DestroyRef,
   effect,
+  inject,
   OnInit,
   Signal,
   signal,
@@ -28,13 +30,11 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { Observable, of } from "rxjs";
 import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import {
   FieldTypeConfig,
   FormlyAttributes,
   FormlyFieldProps,
-  FormlyForm,
 } from "@ngx-formly/core";
 import { BackendOption } from "../../store/codelist/codelist.model";
 import { MatInput } from "@angular/material/input";
@@ -48,6 +48,7 @@ import { MatSuffix } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
 import { MatOption } from "@angular/material/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface AutocompleteProps extends FormlyFieldProps {
   fieldLabel?: string;
@@ -61,7 +62,6 @@ interface AutocompleteProps extends FormlyFieldProps {
   dynamicCodelistId?: Signal<string>;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-formly-autocomplete-type",
   templateUrl: "./autocomplete-type.component.html",
@@ -83,6 +83,7 @@ export class AutocompleteTypeComponent
   extends FieldType<FieldTypeConfig<AutocompleteProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
   private parameterOptions: WritableSignal<BackendOption[]> = signal([]);
   filteredOptions: WritableSignal<BackendOption[]> = signal([]);
   private currentCodelistId: string;
@@ -103,12 +104,14 @@ export class AutocompleteTypeComponent
       if (this.props.dynamicCodelistId && this.parameterOptions().length > 0) {
         // delay execution, otherwise destroy operation of previously loaded dataset
         // might lead to an error where the field is not defined anymore
-        setTimeout(() => {
-          this.currentCodelistId = this.props.dynamicCodelistId();
-          this.formControl.setValue(
-            this.formControl.value?.value ?? this.formControl.value,
-          );
-        });
+        // setTimeout(() => {
+        this.currentCodelistId = this.props.dynamicCodelistId();
+        console.log("current", this.formControl.value);
+        console.log("codelist", this.currentCodelistId);
+        if (this.formControl.value?._codelistId !== this.currentCodelistId) {
+          this.formControl.setValue(this.formControl.value?.value);
+        }
+        // });
       }
     });
   }
@@ -119,7 +122,7 @@ export class AutocompleteTypeComponent
       : this.props.dynamicCodelistId?.();
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(<string>this.formControl.value ?? ""),
         debounceTime(0),
         map((value) => {
@@ -159,7 +162,7 @@ export class AutocompleteTypeComponent
     }
     options
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((data) => data !== undefined),
         // take(1),
         tap((data) => this.initInputListener(data)),

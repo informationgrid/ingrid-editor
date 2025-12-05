@@ -72,7 +72,7 @@
         (cdkDropListDropped)="drop($event)"
         role="list"
     >
-        @for (item of items(); track item; let i = $index) {
+        @for (item of items(); track item.value; let i = $index) {
             <div
                 cdkDrag
                 [cdkDragDisabled]="
@@ -150,7 +150,7 @@
                     ></ngx-mat-select-search>
                 </mat-option>
             }
-            @for (option of filteredOptions(); track option.value) {
+            @for (option of filteredOptions(); track option.label) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
@@ -195,8 +195,9 @@
         <mat-autocomplete
             #auto="matAutocomplete"
             (optionSelected)="addToList($event.option.value)"
+            (optionsScroll)="onScroll()"
         >
-            @for (option of filteredOptions(); track option.value) {
+            @for (option of filteredOptions(); track option.label) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
@@ -204,6 +205,20 @@
                         {{ option.label }}
                     </mat-option>
                 }
+            }
+            @if (paginationState.isLoading) {
+                <mat-option [disabled]="true" class="loading-spinner-option">
+                    <div class="spinner-container">
+                        <mat-progress-spinner
+                            mode="indeterminate"
+                            diameter="20"
+                        >
+                        </mat-progress-spinner>
+                        <span class="loading-text">
+                            Lädt externe Codelist-Einträge...
+                        </span>
+                    </div>
+                </mat-option>
             }
         </mat-autocomplete>
         <!-- clean button -->

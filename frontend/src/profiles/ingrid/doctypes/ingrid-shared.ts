@@ -946,7 +946,7 @@ export abstract class IngridShared extends BaseDoctype {
                 this.options.dynamicRequired.spatialReferences(field),
             },
           }),
-          this.addRepeatList(
+          this.addExtendedRepeatList(
             "spatialSystems",
             this.transloco.translate("form.spatial.spatialSystems"),
             {
@@ -956,6 +956,20 @@ export abstract class IngridShared extends BaseDoctype {
                 "100",
                 "spatial.spatialSystems",
               ),
+              externalOptions: {
+                fetchCodelist: (query: string, page: number) =>
+                  this.getExternalCodelistForSelect("EPSG", query, page),
+                deduplicate: (options, externalOptions) => {
+                  const localLabels = options.map((r) => r.label.split(":")[0]);
+                  return [
+                    ...options,
+                    ...externalOptions.filter(
+                      (r) => !localLabels.includes(r.label.split(":")[0]),
+                    ),
+                  ];
+                },
+                threshold: 3,
+              },
               codelistId: "100",
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>

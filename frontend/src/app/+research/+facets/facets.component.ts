@@ -19,9 +19,11 @@
  */
 import {
   Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   forwardRef,
+  inject,
   Input,
   input,
   OnInit,
@@ -35,7 +37,6 @@ import { LeafletService } from "../../formly/types/map/leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -68,8 +69,8 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { AsyncPipe, DecimalPipe } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-facets",
   templateUrl: "./facets.component.html",
@@ -108,6 +109,8 @@ import { AsyncPipe, DecimalPipe } from "@angular/common";
   ],
 })
 export class FacetsComponent implements OnInit, ControlValueAccessor {
+  private destroyRef = inject(DestroyRef);
+
   // TODO: remove input and filter facets from report component
   readonly forReports = input<boolean>(undefined);
 
@@ -169,7 +172,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     this.form.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.onChange && this.onChange(value));
   }
 

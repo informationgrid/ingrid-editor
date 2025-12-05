@@ -30,7 +30,6 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
@@ -41,7 +40,6 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { UiStore } from "../../store/ui.store";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
 
-@UntilDestroy()
 @Component({
   selector: "ige-sidebar",
   templateUrl: "./sidebar.component.html",

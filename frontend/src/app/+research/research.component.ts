@@ -18,13 +18,11 @@
  * limitations under the Licence.
  */
 import { Component } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { TabPage } from "../services/session.service";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { TabContainerComponent } from "./tab-container.component";
 
-@UntilDestroy()
 @Component({
   selector: "ige-research",
   templateUrl: "./research.component.html",

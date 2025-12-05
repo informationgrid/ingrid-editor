@@ -19,6 +19,7 @@
  */
 import {
   Component,
+  DestroyRef,
   EventEmitter,
   inject,
   OnInit,
@@ -48,7 +49,6 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { debounceTime, startWith, tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
@@ -61,8 +61,8 @@ import { ChartComponent } from "../../+dashboard/chart/chart.component";
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { MatIcon } from "@angular/material/icon";
 import { CdkMonitorFocus } from "@angular/cdk/a11y";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-general-report",
   templateUrl: "./general-report.component.html",
@@ -93,10 +93,12 @@ import { CdkMonitorFocus } from "@angular/cdk/a11y";
   ],
 })
 export class GeneralReportComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private translocoService = inject(TranslocoService);
+
   readonly sort = viewChild(MatSort);
   chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
-  private translocoService = inject(TranslocoService);
   displayedColumns = signal<string[]>([
     "icon",
     "title",
@@ -124,7 +126,11 @@ export class GeneralReportComponent implements OnInit {
   async ngOnInit() {
     await this.initFacets();
     this.form.valueChanges
-      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(300),
+      )
       .subscribe(() => this.updateFilter());
   }
 

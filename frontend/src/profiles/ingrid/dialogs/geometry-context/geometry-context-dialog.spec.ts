@@ -20,7 +20,6 @@
 import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { GeometryContextDialogComponent } from "./geometry-context-dialog.component";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { getTranslocoModule } from "../../../../app/transloco-testing.module";
 import { OneColumnWrapperComponent } from "../../../../app/formly/wrapper/one-column-wrapper.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
@@ -89,7 +88,6 @@ describe("GeometryContextDialogComponent", () => {
       unobserve() {}
       disconnect() {}
     };
-    UntilDestroy()(GeometryContextDialogComponent);
     spectator = createComponent();
     spectator.detectChanges();
     loader = TestbedHarnessEnvironment.loader(spectator.fixture);

@@ -17,10 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import { Component, OnInit, input, inject, DestroyRef } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../models/ige-document";
 import {
   ReactiveFormsModule,
@@ -30,6 +29,7 @@ import {
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { patternWithMessage, REGEX_URL } from "../../input.validators";
 import { MatInput } from "@angular/material/input";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface LinkType {
   uri: string;
@@ -37,7 +37,6 @@ interface LinkType {
   documentID: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-upload-type",
   templateUrl: "./upload-type.component.html",
@@ -48,6 +47,8 @@ export class UploadTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   // TODO: refactor and use direct form control to prevent explicit updates
   upload: LinkType;
   readonly document = input<IgeDocument>(undefined);
@@ -72,7 +73,7 @@ export class UploadTypeComponent
 
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         distinctUntilChanged(),
         map((value) => this.mapStringValue(value)),
       )

@@ -26,7 +26,6 @@ import {
   output,
 } from "@angular/core";
 import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -70,7 +69,6 @@ export interface SpatialLocationWithColor extends SpatialLocation {
   color: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-spatial-list",
   templateUrl: "./spatial-list.component.html",

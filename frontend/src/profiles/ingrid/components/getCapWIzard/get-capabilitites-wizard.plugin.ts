@@ -141,7 +141,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       service: {},
       resource: {},
       spatial: {},
-      temporal: { events: [] },
+      temporal: { event: {} },
       keywords: { gemet: [], umthes: [], free: [] },
       themes: [],
     };

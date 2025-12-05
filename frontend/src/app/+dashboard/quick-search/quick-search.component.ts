@@ -17,12 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, output, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
 import { FormControl } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime } from "rxjs/operators";
 import { combineLatest, of, Subscription } from "rxjs";
 import { ConfigService } from "../../services/config/config.service";
@@ -33,8 +39,8 @@ import { MatOptgroup, MatOption } from "@angular/material/core";
 import { MatIcon } from "@angular/material/icon";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { escapeRegExp } from "../../shared/utils";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-quick-search",
   templateUrl: "./quick-search.component.html",
@@ -49,6 +55,8 @@ import { escapeRegExp } from "../../shared/utils";
   ],
 })
 export class QuickSearchComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly selectDoc = output<string>();
   readonly selectAddress = output<string>();
 
@@ -74,7 +82,7 @@ export class QuickSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.query.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe((query) => this.search(query));
   }
 

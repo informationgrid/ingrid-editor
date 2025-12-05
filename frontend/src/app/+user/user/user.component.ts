@@ -32,7 +32,6 @@ import {
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
 import { Observable, of, Subscription } from "rxjs";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormControl, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -66,7 +65,6 @@ import { UiStore } from "../../store/ui.store";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
-@UntilDestroy()
 @Component({
   selector: "ige-user-manager",
   templateUrl: "./user.component.html",
