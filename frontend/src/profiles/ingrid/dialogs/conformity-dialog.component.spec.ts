@@ -55,7 +55,6 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatDatepickerInputHarness } from "@angular/material/datepicker/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
 import {
   provideHttpClient,
@@ -135,7 +134,6 @@ describe("ConformityDialogComponent", () => {
   });
 
   beforeEach(async () => {
-    UntilDestroy()(ConformityDialogComponent);
     spectator = createComponent();
 
     mockCodelists();

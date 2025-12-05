@@ -17,8 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -39,6 +38,7 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface DocumentReference {
   uuid: string;
@@ -46,7 +46,6 @@ interface DocumentReference {
   title?: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-document-reference-selector",
   templateUrl: "./document-reference-selector.component.html",
@@ -71,6 +70,7 @@ export class DocumentReferenceSelectorComponent
   private dialog = inject(MatDialog);
   private router = inject(Router);
   private docService = inject(DocumentService);
+  private destroyRef = inject(DestroyRef);
 
   myModel: (DocumentAbstract | DocumentReference)[];
   allowMultiSelect = signal(false);
@@ -81,7 +81,7 @@ export class DocumentReferenceSelectorComponent
   ngOnInit() {
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(<any[]>this.formControl.value || <any>this.formControl.value),
         debounceTime(10),
       )

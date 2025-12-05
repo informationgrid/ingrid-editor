@@ -2400,18 +2400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngneat/until-destroy@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "@ngneat/until-destroy@npm:10.0.0"
-  dependencies:
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    "@angular/core": ">=13"
-    rxjs: ^6.4.0 || ^7.0.0
-  checksum: 10c0/6844112e3a4258af76bd0f4179bd6ce426652fe92bccaf8bb395e45c1754e2e8605978459a70d970d673d565bf1e4015e785465635d36a319b49f7ca2073a4a3
-  languageName: node
-  linkType: hard
-
 "@ngrx/signals@npm:20.1.0":
   version: 20.1.0
   resolution: "@ngrx/signals@npm:20.1.0"
@@ -5535,7 +5523,6 @@ __metadata:
     "@jsverse/transloco": "npm:8.2.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
     "@ngneat/spectator": "npm:^22.1.0"
-    "@ngneat/until-destroy": "npm:^10.0.0"
     "@ngrx/signals": "npm:20.1.0"
     "@ngx-formly/core": "npm:7.0.1"
     "@ngx-formly/material": "npm:7.0.1"

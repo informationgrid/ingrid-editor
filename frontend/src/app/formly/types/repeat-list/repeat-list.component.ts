@@ -64,7 +64,6 @@ import {
   UntypedFormControl,
   ValidationErrors,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorStateMatcher, MatOption } from "@angular/material/core";
@@ -153,7 +152,6 @@ export interface RepeatListProps extends FormlyFieldProps {
 
 type PaginationState = { page: number; totalPages: number; isLoading: boolean };
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat-list",
   templateUrl: "./repeat-list.component.html",
@@ -242,7 +240,7 @@ export class RepeatListComponent
       .pipe(
         startWith(this.formControl.value),
         debounceTime(0),
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((data) => {
         // FIXME: defaultValue seems to get overridden when field initially hidden and becomes undefined
@@ -256,7 +254,7 @@ export class RepeatListComponent
       if (this.props.showSearch) {
         this.filterCtrl = new FormControl<string>("");
         this.filterCtrl.valueChanges
-          .pipe(untilDestroyed(this))
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((value) => this.manualUpdate.next(value));
       }
     } else if (this.props.restCall) {
@@ -275,7 +273,7 @@ export class RepeatListComponent
     if (this.props.options instanceof Observable) {
       this.props.options
         .pipe(
-          untilDestroyed(this),
+          takeUntilDestroyed(this.destroyRef),
           filter((data) => data !== undefined),
           // take(1),
           tap((data) => this.initInputListener(data)),
@@ -311,7 +309,7 @@ export class RepeatListComponent
     }
 
     this.formControl.statusChanges
-      .pipe(untilDestroyed(this), distinctUntilChanged())
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe((status) => {
         status === "DISABLED"
           ? this.inputControl.disable()
@@ -342,7 +340,6 @@ export class RepeatListComponent
 
     combineLatest([query$, this.loadMore])
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
         switchMap((event) => this.fetchPagedCodelistsWhenThreshold(event)),
         map(
           (result: {
@@ -362,6 +359,7 @@ export class RepeatListComponent
           },
         ),
         tap((value) => this._markSelected(value)),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((value) => this.filteredOptions.set(value));
   }
@@ -412,7 +410,7 @@ export class RepeatListComponent
   private handleRestCall() {
     this.inputControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(""),
         debounceTime(300),
         tap(() => this.formControl.updateValueAndValidity()),
@@ -430,7 +428,7 @@ export class RepeatListComponent
       this.manualUpdate.asObservable(),
     )
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(""),
         debounceTime(0),
         filter((value) => value !== undefined && value !== null),

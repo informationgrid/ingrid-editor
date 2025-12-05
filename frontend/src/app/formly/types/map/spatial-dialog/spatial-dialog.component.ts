@@ -20,6 +20,7 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   Inject,
@@ -27,7 +28,6 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
 import {
   MAT_DIALOG_DATA,
@@ -59,13 +59,13 @@ import { GeothesaurusWfsgndeComponent } from "./geothesaurus-wfsgnde/geothesauru
 import { MatInput } from "@angular/material/input";
 import { CoordinatesSpatialComponent } from "./coordinates-spatial/coordinates-spatial.component";
 import { BwastrSpatialComponent } from "./bwastr-spatial/bwastr-spatial.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface LocationType {
   id: SpatialLocationType;
   label: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-spatial-dialog",
   templateUrl: "./spatial-dialog.component.html",
@@ -91,9 +91,10 @@ interface LocationType {
   ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
-  readonly leaflet = viewChild<ElementRef>("leafletDlg");
-
   private transloco = inject(TranslocoService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
   dialogTitle = signal<string>(
     this.data?.location?.value
@@ -135,7 +136,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.titleInput.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((title) => this.result.update((r) => ({ ...r, title })));
 
     if (this.data?.location) {

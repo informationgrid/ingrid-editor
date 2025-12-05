@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   OnInit,
@@ -30,7 +31,6 @@ import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { RxStompService } from "../../rx-stomp.service";
@@ -46,8 +46,8 @@ import { IndexingFields } from "./indexing-fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-indexing",
   templateUrl: "./indexing.component.html",
@@ -67,6 +67,8 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
   ],
 })
 export class IndexingComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly indexContent = viewChild<ElementRef<HTMLElement>>("indexContent");
 
   cronField = new FormControl<string>("");
@@ -109,7 +111,7 @@ export class IndexingComponent implements OnInit {
     this.rxStompService
       .watch(`/topic/indexStatus/${ConfigService.catalogId}`)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => this.indexingIsRunning.set(!data.endTime)),
         tap((data) => this.status.set(data)),
@@ -125,7 +127,7 @@ export class IndexingComponent implements OnInit {
       });
 
     this.cronField.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => {
         let expression = this.translateCronExpression(value);
         this.hint.set(expression.message);

@@ -28,7 +28,6 @@ import {
 } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../models/ige-document";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
@@ -46,7 +45,6 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
 import { DatePipe } from "@angular/common";
 import { firstValueFrom } from "rxjs";
 
-@UntilDestroy()
 @Component({
   selector: "ige-form-info",
   templateUrl: "./form-info.component.html",

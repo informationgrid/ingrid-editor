@@ -19,6 +19,7 @@
  */
 import {
   Component,
+  DestroyRef,
   EventEmitter,
   inject,
   Input,
@@ -31,7 +32,6 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
 
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import {
   FormControl,
@@ -55,8 +55,8 @@ import {
 } from "./bwastr-locator.service";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-bwastr-spatial",
   templateUrl: "./bwastr-spatial.component.html",
@@ -78,6 +78,8 @@ import { MatInput } from "@angular/material/input";
   ],
 })
 export class BwastrSpatialComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
+
   @Input() map: Map;
   @Input() value: SpatialLocation;
 
@@ -117,11 +119,11 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
     this.limitForm.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe(() => this.updateSection());
 
     if (this.value.bwastr) {

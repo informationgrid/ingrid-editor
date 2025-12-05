@@ -19,6 +19,7 @@
  */
 import {
   Component,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -30,7 +31,6 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
 import { filter, map, startWith, switchMap, tap } from "rxjs/operators";
 import { FieldType } from "@ngx-formly/material";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
@@ -41,8 +41,8 @@ import { MatButton } from "@angular/material/button";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
 import { MatHint } from "@angular/material/form-field";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-referenced-documents-type",
   templateUrl: "./referenced-documents-type.component.html",
@@ -63,6 +63,7 @@ export class ReferencedDocumentsTypeComponent
   private researchService = inject(ResearchService);
   private documentService = inject(DocumentService);
   private formStateService = inject(FormStateService);
+  private destroyRef = inject(DestroyRef);
 
   @ViewChild("list", { read: ElementRef }) set listElement(
     content: ElementRef<HTMLElement>,
@@ -107,18 +108,18 @@ export class ReferencedDocumentsTypeComponent
     this.isLoading.set(false);
 
     const reloadEvent = this.documentService.reload$.pipe(
-      untilDestroyed(this),
+      takeUntilDestroyed(this.destroyRef),
       map((item) => item.uuid),
     );
 
     reloadEvent
       .pipe(
-        untilDestroyed(this),
         startWith(this.currentUuid),
         filter((uuid) => uuid !== undefined),
         tap(() => this.docs.set([])),
         tap(() => (this.firstLoaded = true)),
         switchMap((uuid) => this.searchReferences(uuid)),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

@@ -30,7 +30,6 @@ import {
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { finalize, tap } from "rxjs/operators";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
@@ -39,7 +38,6 @@ import { FilterSelectComponent } from "../../shared/filter-select/filter-select.
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 
-@UntilDestroy()
 @Component({
   selector: "ige-codelists",
   templateUrl: "./codelists.component.html",

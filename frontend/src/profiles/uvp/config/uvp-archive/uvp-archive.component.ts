@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -26,7 +33,6 @@ import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { switchMap } from "rxjs";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { filter, map, tap } from "rxjs/operators";
@@ -34,8 +40,8 @@ import { RxStompService } from "../../../../app/rx-stomp.service";
 import { BaseLogResult } from "../../../../app/shared/base-log-result";
 import { DatePipe } from "@angular/common";
 import { TranslocoService } from "@jsverse/transloco";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-uvp-archive",
   imports: [
@@ -56,6 +62,7 @@ export class UvpArchiveComponent implements OnInit {
   private uvpArchiveService = inject(UvpArchiveService);
   private rxStompService = inject(RxStompService);
   private transloco = inject(TranslocoService);
+  private destroyRef = inject(DestroyRef);
 
   active = computed<boolean>(() => {
     const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
@@ -75,11 +82,11 @@ export class UvpArchiveComponent implements OnInit {
   constructor() {
     this.dateControl.valueChanges
       .pipe(
-        untilDestroyed(this),
         filter((value) => value instanceof Date && !isNaN(value.getTime())),
         switchMap((value) =>
           this.uvpArchiveService.checkDatasetsBeforeDecisionDate(value),
         ),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((value) => {
         this.numOfDatasetsHint.set(`${value} Verfahren werden archiviert`);
@@ -90,7 +97,7 @@ export class UvpArchiveComponent implements OnInit {
     this.rxStompService
       .watch(`/topic/uvp/archiveStatus/${ConfigService.catalogId}`)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => this.status.set(data)),
       )

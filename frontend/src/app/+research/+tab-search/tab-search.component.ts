@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   FormGroup,
   ReactiveFormsModule,
@@ -37,7 +44,6 @@ import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FacetQuery, Query } from "../../store/query/query.model";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
@@ -49,9 +55,8 @@ import { SearchInputComponent } from "../../shared/search-input/search-input.com
 import { MatButton } from "@angular/material/button";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
@@ -72,6 +77,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 })
 export class TabSearchComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private destroyRef = inject(DestroyRef);
 
   form: FormGroup;
 
@@ -101,12 +107,16 @@ export class TabSearchComponent implements OnInit {
     setTimeout(() => (this.initialValue = this.form.value));
 
     this.form.valueChanges
-      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(300),
+      )
       .subscribe(() => this.startSearch());
 
     this.activeQuery$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "facet"),
       )
       .subscribe((entity: Query) => {

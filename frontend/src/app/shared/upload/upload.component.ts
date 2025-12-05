@@ -18,14 +18,14 @@
  * limitations under the Licence.
  */
 import {
-  Component,
-  Input,
-  OnInit,
-  input,
-  computed,
-  Signal,
   AfterViewInit,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
   output,
+  Signal,
   viewChild,
 } from "@angular/core";
 import {
@@ -36,7 +36,6 @@ import {
   trigger,
 } from "@angular/animations";
 import { FlowConfig, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
@@ -47,8 +46,8 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
 import { AsyncPipe } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-file-upload",
   templateUrl: "./upload.component.html",
@@ -62,6 +61,8 @@ import { AsyncPipe } from "@angular/common";
   imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
 })
 export class UploadComponent implements AfterViewInit {
+  private destroyRef = inject(DestroyRef);
+
   /** Link text */
   readonly text = input(
     this.transloco.translate("form.placeholder.chooseFile"),
@@ -126,7 +127,7 @@ export class UploadComponent implements AfterViewInit {
   ngAfterViewInit() {
     combineLatest([this.errors, this.flow().transfers$])
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         skip(1), // do not use initial value
         map((result) =>
           (result as any)[1].transfers.map(
@@ -141,7 +142,7 @@ export class UploadComponent implements AfterViewInit {
       });
 
     this.flow()
-      .events$.pipe(untilDestroyed(this))
+      .events$.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(async (event) => {
         try {
           if (this.autoupload() && event.type === "filesSubmitted") {
