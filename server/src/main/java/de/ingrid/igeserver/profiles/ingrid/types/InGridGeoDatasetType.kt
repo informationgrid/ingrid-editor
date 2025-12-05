@@ -69,6 +69,7 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
                 )
             }
         } catch (e: Exception) {
+            if (e is ValidationException) throw e
             throw ServerException.withReason(
                 "Error while validating internal resource-reference during publish: ${e.message}",
                 e,
