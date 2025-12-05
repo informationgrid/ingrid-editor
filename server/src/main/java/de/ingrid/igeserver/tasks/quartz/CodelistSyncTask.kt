@@ -213,7 +213,7 @@ class CodelistSyncTask(
         val result = mutableListOf<String>()
 
         if (node.isObject) {
-            node.fields().forEach { (fieldName, value) ->
+            node.properties().forEach { (fieldName, value) ->
                 val newPath = if (currentPath == "$") "$.$fieldName" else "$currentPath.$fieldName"
 
                 if (fieldName == "_codelistId") {

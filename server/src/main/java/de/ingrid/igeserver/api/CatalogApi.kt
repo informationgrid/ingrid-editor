@@ -132,6 +132,9 @@ interface CatalogApi {
     @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])
     fun catalogExport(
         principal: Principal,
-        @Parameter(description = "The identifier of the catalog.", required = true) @PathVariable("identifier") id: String,
+        @Parameter(
+            description = "The identifier of the catalog.",
+            required = true,
+        ) @PathVariable("identifier") catalogIdentifier: String,
     ): ResponseEntity<ByteArray?>
 }

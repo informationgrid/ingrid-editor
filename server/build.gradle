@@ -30,7 +30,7 @@ plugins {
     id 'io.kotest' version "$kotest_version"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.6.20.Final"
+    id "org.hibernate.orm" version "7.1.11.Final"
     id "org.jlleitschuh.gradle.ktlint" version "13.1.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
@@ -404,15 +404,6 @@ jib {
 
 noArg {
     annotation('de.ingrid.igeserver.annotations.NoArgs')
-}
-
-hibernate {
-    enhancement {
-        lazyInitialization = true
-        dirtyTracking = true
-//        associationManagement = true
-//        extendedEnhancement = false
-    }
 }
 
 if (hasProperty('buildDockerImage')) {

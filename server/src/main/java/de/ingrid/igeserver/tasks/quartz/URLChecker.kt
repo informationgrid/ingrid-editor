@@ -45,6 +45,7 @@ import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import java.util.*
 
@@ -168,7 +169,7 @@ class URLChecker(
             withContext(Dispatchers.IO) {
                 // encode URL to handle those with special characters like umlauts
                 // alternatively we might use: url.toURI().toASCIIString()
-                URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
+                URI(UrlTool.getEncodedUnicodeUrl(info.url)).toURL().openConnection()
             } as HttpURLConnection
             ).let {
             it.connectTimeout = 3000
