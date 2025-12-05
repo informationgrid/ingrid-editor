@@ -183,9 +183,7 @@ export class GetCapabilitiesService {
   private mapOperations(operations: Operation[]) {
     return operations.map((op) => {
       return {
-        name: op.name.key
-          ? { key: op.name.key }
-          : { key: null, value: op.name.value },
+        name: { key: op.name.key, value: op.name.value },
         methodCall: op.addressList[0],
       };
     });
