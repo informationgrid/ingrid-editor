@@ -45,7 +45,7 @@ export class OptionsScrollDirective {
           setTimeout(() => {
             // Note: remove listner just for safety, in case the close event is skipped.
             this.removeScrollEventListener();
-            this.autoComplete.panel.nativeElement.addEventListener(
+            this.autoComplete.panel?.nativeElement?.addEventListener(
               "scroll",
               this.onScroll.bind(this),
             );
@@ -64,7 +64,7 @@ export class OptionsScrollDirective {
   }
 
   private removeScrollEventListener() {
-    this.autoComplete.panel.nativeElement.removeEventListener(
+    this.autoComplete.panel?.nativeElement?.removeEventListener(
       "scroll",
       this.onScroll,
     );
