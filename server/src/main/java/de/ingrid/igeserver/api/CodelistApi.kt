@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryRequest
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import io.swagger.v3.oas.annotations.Hidden
@@ -99,6 +101,14 @@ interface CodelistApi {
         principal: Principal,
         @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
     ): ResponseEntity<List<FreeEntryUsage>>
+
+    @Operation
+    @PostMapping(value = ["/free-entries/{codelistId}/replace"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun replaceFreeEntry(
+        principal: Principal,
+        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+        @Parameter(description = "Replacement instruction", required = true) @RequestBody request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult>
 }
 
 data class FreeEntryUsage(

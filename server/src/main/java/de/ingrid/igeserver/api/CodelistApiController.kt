@@ -21,6 +21,8 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryRequest
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -141,5 +143,25 @@ class CodelistApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val values = codelistUsageService.getFreeEntriesWithCountsForCodelist(catalogId, codelistId)
         return ResponseEntity.ok(values)
+    }
+
+    override fun replaceFreeEntry(
+        principal: Principal,
+        codelistId: String,
+        request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult> {
+        require(request.fromValue.isNotBlank()) { "fromValue must not be blank" }
+        require(request.toKey.isNotBlank()) { "toKey must not be blank" }
+        require(request.toValue.isNotBlank()) { "toValue must not be blank" }
+
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = codelistUsageService.replaceFreeEntryWithKeyed(
+            catalogId = catalogId,
+            codelistId = codelistId,
+            fromValue = request.fromValue,
+            toKey = request.toKey,
+            toValue = request.toValue,
+        )
+        return ResponseEntity.ok(result)
     }
 }
