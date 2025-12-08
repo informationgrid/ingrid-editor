@@ -28,13 +28,14 @@ import {
 } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { catchError, filter, tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
+import { FreeEntryReplaceDialogComponent } from "./free-entry-replace-dialog/free-entry-replace-dialog.component";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
@@ -236,29 +237,24 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   openFreeEntries() {
-    this.codelistService
-      .getFreeEntries(this.selectedCodelist.id)
-      .pipe(
-        catchError((error) => {
-          this._snackBar.open("Fehler beim Laden der freien Einträge", "", {
-            duration: 3000,
-          });
-          throw error;
-        }),
-      )
+    // Open the dedicated dialog to select and replace free entries
+    this.dialog
+      .open(FreeEntryReplaceDialogComponent, {
+        data: {
+          codelistId: this.selectedCodelist.id,
+          codelistName: this.selectedCodelist.name,
+        },
+        width: "600px",
+      })
+      .afterClosed()
       .subscribe((result) => {
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            data: <ConfirmDialogData>{
-              message: `Freie Einträge: <br><br> ${result
-                .map((e) => `${e.value} (verwendet ${e.count} mal)`)
-                .join("<br>")}`,
-              title: "Freie Einträge",
-              buttons: [{ text: "Schließen", id: "close", emphasize: true }],
-            },
-          })
-          .afterClosed()
-          .subscribe();
+        if (result?.occurrences >= 0) {
+          this._snackBar.open(
+            `Freie Einträge ersetzt: ${result.occurrences}`,
+            undefined,
+            { duration: 3000 },
+          );
+        }
       });
   }
 

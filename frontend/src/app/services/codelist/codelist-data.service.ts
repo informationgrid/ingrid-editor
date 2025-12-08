@@ -106,4 +106,19 @@ export class CodelistDataService {
       this.configuration.backendUrl + "codelist/free-entries/" + codelistId,
     );
   }
+
+  replaceFreeEntry(
+    codelistId: string,
+    body: { fromValue: string; toKey: string },
+  ) {
+    return this.http.post<{
+      occurrences: number;
+      documentsUpdated: number;
+      uuids: string[];
+    }>(
+      this.configuration.backendUrl +
+        `codelist/free-entries/${codelistId}/replace`,
+      body,
+    );
+  }
 }
