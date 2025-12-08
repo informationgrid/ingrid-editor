@@ -152,15 +152,29 @@ class CodelistApiController(
     ): ResponseEntity<ReplaceFreeEntryResult> {
         require(request.fromValue.isNotBlank()) { "fromValue must not be blank" }
         require(request.toKey.isNotBlank()) { "toKey must not be blank" }
-        require(request.toValue.isNotBlank()) { "toValue must not be blank" }
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        // Determine the display value from the codelist; fall back sensibly if not found
+        val catalogValue = try {
+            handler.getCatalogCodelistValue(catalogId, codelistId, request.toKey)
+        } catch (e: Exception) {
+            log.debug("Failed to resolve catalog codelist value for $codelistId/${request.toKey}: ${e.message}")
+            null
+        }
+        val globalValue = catalogValue ?: try {
+            handler.getCodelistValue(codelistId, request.toKey)
+        } catch (e: Exception) {
+            log.debug("Failed to resolve global codelist value for $codelistId/${request.toKey}: ${e.message}")
+            null
+        }
+        val toValue = globalValue ?: throw ServerException.withReason("Failed to resolve value for $codelistId/${request.toKey}")
+
         val result = codelistUsageService.replaceFreeEntryWithKeyed(
             catalogId = catalogId,
             codelistId = codelistId,
             fromValue = request.fromValue,
             toKey = request.toKey,
-            toValue = request.toValue,
+            toValue = toValue,
         )
         return ResponseEntity.ok(result)
     }

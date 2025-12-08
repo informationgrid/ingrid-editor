@@ -22,5 +22,4 @@ package de.ingrid.igeserver.api.dto
 data class ReplaceFreeEntryRequest(
     val fromValue: String,
     val toKey: String,
-    val toValue: String,
 )

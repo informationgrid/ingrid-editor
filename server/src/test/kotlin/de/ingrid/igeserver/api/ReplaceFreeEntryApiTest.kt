@@ -23,9 +23,6 @@ import IntegrationTest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -64,7 +61,6 @@ class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() 
             mapOf(
                 "fromValue" to "Free A",
                 "toKey" to "k-123",
-                "toValue" to "Keyed Value",
             ),
         )
 
