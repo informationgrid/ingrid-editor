@@ -30,6 +30,8 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
@@ -46,6 +48,14 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
             (principal.principal as Jwt).getClaimAsString("preferred_username")
         }
 
+        is OAuth2AuthenticationToken -> {
+            val oidcUser = principal.principal as? OidcUser
+            oidcUser?.getClaim<String>("preferred_username")
+                ?: oidcUser?.email
+                ?: oidcUser?.name
+                ?: "???"
+        }
+
         is UsernamePasswordAuthenticationToken -> {
             principal.principal as String
         }
@@ -57,7 +67,15 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     override fun getFullNameFromPrincipal(principal: Principal): String {
         return try {
-            ((principal as JwtAuthenticationToken).principal as Jwt).getClaimAsString("name")
+            when (principal) {
+                is JwtAuthenticationToken -> ((principal.principal as Jwt).getClaimAsString("name"))
+
+                is OAuth2AuthenticationToken -> (principal.principal as? OidcUser)?.fullName
+                    ?: (principal.principal as? OidcUser)?.name
+                    ?: getUsernameFromPrincipal(principal)
+
+                else -> getUsernameFromPrincipal(principal)
+            }
         } catch (ex: Exception) {
             log.warn("Full name could not be extracted from principal: ${ex.message}")
             return getUsernameFromPrincipal(principal)

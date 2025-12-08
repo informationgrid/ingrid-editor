@@ -311,7 +311,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener("window:beforeunload", ["$event"])
   beforeUnloadHandler(event: Event) {
-    if (this.form?.dirty && this.authService.get().isLoggedIn()) {
+    if (this.form?.dirty /* TODO: && this.authService.isLoggedIn()*/) {
       event.preventDefault();
     }
   }

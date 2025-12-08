@@ -20,7 +20,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { ConfigService } from "../../services/config/config.service";
-import { KeycloakService } from "keycloak-angular";
 import { Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
@@ -58,18 +57,13 @@ export class UploadError {
   providedIn: "root",
 })
 export class UploadService {
-  private backendUrl: string;
+  private readonly backendUrl: string;
 
   constructor(
     private http: HttpClient,
     configService: ConfigService,
-    private keycloak: KeycloakService,
   ) {
     this.backendUrl = configService.getConfiguration().backendUrl;
-  }
-
-  deleteUploadedFile(docId: string, fileId: string) {
-    this.http.delete(`${this.backendUrl}upload/${docId}/${fileId}`).subscribe();
   }
 
   extractUploadedFilesOnServer(
@@ -81,23 +75,6 @@ export class UploadService {
     return this.http.get(
       `${this.backendUrl}upload/extract/${docId}/${fileId}${requestOptions}`,
     );
-  }
-
-  async updateAuthenticationToken(flowFiles: flowjs.FlowFile[]) {
-    const keycloakInstance = this.keycloak.getKeycloakInstance();
-    if (!keycloakInstance) {
-      return;
-    }
-
-    if (this.keycloak.isTokenExpired(5)) {
-      await this.keycloak.updateToken();
-    }
-    flowFiles.forEach((file) => {
-      file.flowObj.opts.headers = {
-        ...file.flowObj.opts.headers,
-        Authorization: "Bearer " + keycloakInstance.token,
-      };
-    });
   }
 
   downloadFile(docUuid: string, uri: string, $event: MouseEvent) {

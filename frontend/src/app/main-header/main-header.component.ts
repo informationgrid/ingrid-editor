@@ -102,7 +102,6 @@ export class MainHeaderComponent implements OnInit {
     private catalogService: CatalogService,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService,
     private formMenuService: FormMenuService,
   ) {}
 
@@ -143,8 +142,7 @@ export class MainHeaderComponent implements OnInit {
     this.onLogout.emit();
 
     setTimeout(() => {
-      this.storageService.clear("ige-refresh-token");
-      this.authFactory.get().logout();
+      this.authFactory.logout();
     }, 1000);
   }
 

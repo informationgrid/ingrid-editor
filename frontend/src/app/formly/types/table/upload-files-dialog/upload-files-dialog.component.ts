@@ -141,7 +141,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     // refresh token to in this dialog to prevent auto-save, since this might lead to
     // a removal of uploaded files (#6386)
     this.refreshTimer$ = window.setInterval(() => {
-      return this.authFactory.get().refreshToken();
+      return this.authFactory.refreshToken();
     }, 60000);
   }
 

@@ -177,7 +177,7 @@ export class AppComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         throttleTime(10000), // allow token refresh only every 10s once
       )
-      .subscribe(() => this.authFactory.get().refreshToken());
+      .subscribe(() => this.authFactory.refreshToken());
 
     combineLatest([
       this.transloco.selectTranslation(),

@@ -47,6 +47,6 @@ export class SessionTimeoutInfoComponent implements OnInit {
   ngOnInit(): void {}
 
   refreshSession() {
-    this.authFactory.get().refreshToken();
+    this.authFactory.refreshToken();
   }
 }

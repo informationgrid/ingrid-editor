@@ -25,11 +25,9 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { Observable, Subscription, timer } from "rxjs";
-import { filter, scan, take, takeWhile } from "rxjs/operators";
+import { scan, takeWhile } from "rxjs/operators";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { KeycloakEventTypeLegacy, KeycloakService } from "keycloak-angular";
-import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { GeneralStore } from "../store/general.store";
 
@@ -43,18 +41,8 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
   constructor(
     private modalService: ModalService,
-    private keycloak: KeycloakService,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService,
-  ) {
-    this.initListener();
-    this.keycloak.keycloakEvents$
-      .pipe(
-        filter((item) => item.type === KeycloakEventTypeLegacy.OnAuthSuccess),
-        take(1),
-      )
-      .subscribe(() => this.resetSessionTimeout());
-  }
+  ) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -88,7 +76,8 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   }
 
   private calculateDuration() {
-    const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
+    return 999;
+    /*const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
     if (!refreshToken) {
       this.updateStore(-1);
       return;
@@ -97,7 +86,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     const endTime = refreshToken.exp;
 
     const now = Math.ceil(new Date().getTime() / 1000);
-    return endTime - now;
+    return endTime - now;*/
   }
 
   private updateStore(time: number) {
@@ -108,66 +97,8 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.",
       );
       this.modalService.showIgeError(error);
-      setTimeout(() => this.authFactory.get().logout(), 5000);
+      setTimeout(() => this.authFactory.logout(), 5000);
       this.timer$.unsubscribe();
     }
-  }
-
-  private initListener() {
-    this.storageService.changes
-      .pipe(
-        filter((item) => item.key === "ige-refresh-token"),
-        takeWhile((item) => item.value !== null),
-      )
-      .subscribe((data) => {
-        console.debug("Token in LocalStorage has changed", data);
-        if (!data.value) {
-          this.storageService.clear("ige-refresh-token");
-          this.authFactory.get().logout();
-          return;
-        }
-        this.keycloak.getKeycloakInstance().refreshToken = data.value;
-        this.keycloak.getKeycloakInstance().refreshTokenParsed =
-          this.decodeToken(data.value);
-
-        this.resetSessionTimeout();
-      });
-
-    this.keycloak.keycloakEvents$
-      .pipe(
-        filter(
-          (item) => item.type === KeycloakEventTypeLegacy.OnAuthRefreshSuccess,
-        ),
-      )
-      .subscribe(() => {
-        this.storageService.store(
-          "ige-refresh-token",
-          this.keycloak.getKeycloakInstance().refreshToken,
-        );
-      });
-  }
-
-  private decodeToken(str: any) {
-    str = str.split(".")[1];
-
-    str = str.replace(/-/g, "+");
-    str = str.replace(/_/g, "/");
-    switch (str.length % 4) {
-      case 0:
-        break;
-      case 2:
-        str += "==";
-        break;
-      case 3:
-        str += "=";
-        break;
-      default:
-        throw "Invalid token";
-    }
-
-    str = decodeURIComponent(atob(str));
-
-    str = JSON.parse(str);
-    return str;
   }
 }

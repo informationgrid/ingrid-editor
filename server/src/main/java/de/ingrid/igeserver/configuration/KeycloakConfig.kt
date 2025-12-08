@@ -49,6 +49,10 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.web.client.RestTemplate
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -85,14 +89,33 @@ internal class KeycloakConfig {
                     sameOrigin = true
                 }
             }
+            // For API/BFF style flows we want 401 on unauthenticated requests instead of 302 redirects during XHR
+            exceptionHandling {
+                authenticationEntryPoint =
+                    org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED)
+            }
             authorizeHttpRequests {
                 // secure api-routes except a few necessary ones
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
+                // BFF auth endpoints
+                authorize("/auth/login", permitAll)
+                authorize("/auth/logout", permitAll)
+                authorize("/auth/me", authenticated)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
             }
-            oauth2Login {}
+            oauth2Login {
+                // After successful OAuth2 login, send the browser to the SPA root
+                defaultSuccessUrl(generalProperties.appUrl, true)
+                userInfoEndpoint {
+                    userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
+                }
+            }
+            sessionManagement {
+                // Allow sessions for oauth2Login
+                sessionCreationPolicy = org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED
+            }
             oauth2ResourceServer {
                 jwt {
                     jwtAuthenticationConverter = jwtAuthenticationConverter()
@@ -106,7 +129,8 @@ internal class KeycloakConfig {
             if (!generalProperties.enableCors) {
                 cors { disable() }
             }
-            if (!generalProperties.enableHttps) {
+            // Redirect to HTTPS only when HTTPS is explicitly enabled in configuration
+            if (generalProperties.enableHttps) {
                 redirectToHttps {}
             }
         }
@@ -243,5 +267,71 @@ class KeycloakRealmRoleConverter(
             return userRepository.save(userDbUpdate)
         }
         return userDb
+    }
+}
+
+/**
+ * Map Keycloak realm roles from OIDC login (session-based oauth2Login) into Spring authorities,
+ * and enrich them with DB-derived roles/groups similar to the JWT converter above. This ensures
+ * that users authenticated via oauth2Login have the same effective authorities as JWT users.
+ */
+class OidcRealmRoleMapper(
+    private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository,
+) : GrantedAuthoritiesMapper {
+    override fun mapAuthorities(authorities: MutableCollection<out GrantedAuthority>?): MutableCollection<out GrantedAuthority> {
+        val result = mutableSetOf<GrantedAuthority>()
+
+        // Keep any already-present authorities
+        if (authorities != null) result.addAll(authorities)
+
+        // Extract realm roles from OIDC id token
+        val oidcAuth = authorities?.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority
+        val idToken = oidcAuth?.idToken
+        val claims = idToken?.claims ?: emptyMap<String, Any>()
+        val realmAccess = claims["realm_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+        val roles = (realmAccess["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+
+        // Add ROLE_ prefix for Spring
+        result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
+
+        // Add DB-derived roles/groups similar to JWT converter
+        val username = (claims["preferred_username"] as? String) ?: (claims["email"] as? String)
+        if (!username.isNullOrBlank()) {
+            val isSuperAdmin = roles.contains("ige-super-admin")
+            var userDb = userRepository.findByUserId(username)
+            userDb = if (userDb == null && isSuperAdmin) {
+                // create user for super admin in db
+                val userDbUpdate = UserInfo().apply {
+                    userId = username
+                    role = roleRepository.findByName("ige-super-admin")
+                    data = UserInfoData().apply {
+                        this.creationDate = Date()
+                        this.modificationDate = Date()
+                    }
+                }
+                userRepository.save(userDbUpdate)
+            } else {
+                userDb
+            }
+
+            userDb?.curCatalog?.id?.let { catalogId ->
+                val groups = userDb.groups.filter { it.catalog?.id == catalogId }
+                groups.forEach {
+                    result.add(SimpleGrantedAuthority("GROUP_${it.id}"))
+                    if (it.permissions?.rootPermission == RootPermissionType.WRITE) {
+                        result.add(SimpleGrantedAuthority("SPECIAL_write_root"))
+                    } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {
+                        result.add(SimpleGrantedAuthority("SPECIAL_read_root"))
+                    }
+                }
+            }
+            userDb?.role?.name?.let {
+                result.add(SimpleGrantedAuthority("ROLE_$it"))
+                result.add(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
+            }
+        }
+
+        return result.toMutableSet()
     }
 }

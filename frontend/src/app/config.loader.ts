@@ -27,8 +27,6 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "./dialogs/confirm/confirm-dialog.component";
-import { initializeKeycloakAndGetUserInfo } from "./keycloak.init";
-import { AuthenticationFactory } from "./security/auth.factory";
 import { Router } from "@angular/router";
 import { Catalog } from "./+catalog/services/catalog.model";
 import { firstValueFrom } from "rxjs";
@@ -74,7 +72,6 @@ function loadProfile(configService: ConfigService) {
 
 export function ConfigLoader(
   configService: ConfigService,
-  authFactory: AuthenticationFactory,
   router: Router,
   http: HttpClient,
   dialog: MatDialog,
@@ -188,8 +185,24 @@ export function ConfigLoader(
 
       const config = configService.getConfiguration();
       if (config.matomoUrl) initializeMatomo(config);
-
-      await initializeKeycloakAndGetUserInfo(authFactory, configService);
+      // Fetch current user via BFF session. If unauthenticated, the interceptor will route to session-expired.
+      try {
+        await configService.getCurrentUserInfo();
+      } catch (err: any) {
+        // If we are unauthenticated, route to the session-expired page and finish init silently
+        if (err && (err.status === 401 || err?.name === "HttpErrorResponse")) {
+          await router.navigate(["/session-expired"], {
+            queryParams: {
+              from:
+                typeof window !== "undefined"
+                  ? window.location.pathname
+                  : undefined,
+            },
+          });
+          return; // stop further init until user logs in
+        }
+        throw err; // rethrow other errors
+      }
       const language =
         configService.$userInfo.value.currentCatalog.settings?.config.language;
       if (language) generalStore.setCatalogLanguage(language);

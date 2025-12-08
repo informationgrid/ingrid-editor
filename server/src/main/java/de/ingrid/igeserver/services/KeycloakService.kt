@@ -182,6 +182,7 @@ class KeycloakService : UserManagementService {
             .serverUrl(keycloakUrl)
             .realm(keycloakRealm)
             .clientId(keycloakClientId)
+            .clientSecret("I6eAT14IZYap75LMQS8wYUJnQledgdDZ")
             .grantType(OAuth2Constants.PASSWORD)
             .username(backendUser)
             .password(backendUserPassword)
