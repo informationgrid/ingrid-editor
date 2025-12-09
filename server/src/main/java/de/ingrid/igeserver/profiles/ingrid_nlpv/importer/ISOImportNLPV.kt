@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_nlpv.importer
 
-import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportSettings
@@ -29,12 +28,19 @@ import org.springframework.stereotype.Service
 @Service
 class ISOImportNLPV : ISOImportProfile {
     override fun handle(isoData: IsoImportData): ImportProfileData? = when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        "service" -> {
+            val nlpvIsoData = isoData.copy(importSettings = ImportSettings(importGeometryContext = true))
+            ImportProfileData(
+                "imports/ingrid-nlpv/geoservice.jte",
+                GeoserviceMapperNLPV(nlpvIsoData),
+            )
+        }
+
         "dataset" -> {
             val nlpvIsoData = isoData.copy(importSettings = ImportSettings(importGeometryContext = true))
-
             ImportProfileData(
-                "imports/ingrid/geodataset.jte",
-                GeodatasetMapper(nlpvIsoData),
+                "imports/ingrid-nlpv/geodataset.jte",
+                GeodatasetMapperNLPV(nlpvIsoData),
             )
         }
 

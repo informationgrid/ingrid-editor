@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://wemove.com/schemas/ingrid/schemes/nlpv/GeoDatasetNlpv",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/nlpv/GeoServiceNlpv",
   "allOf": [
     {
-      "$ref": "../geo-dataset-base.schema.json"
+      "$ref": "../geo-service-base.schema.json"
     }
   ],
   "properties": {
