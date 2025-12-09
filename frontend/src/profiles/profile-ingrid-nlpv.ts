@@ -21,14 +21,48 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { NLPVOrganisationDoctype } from "./ingrid-nlpv/doctypes/organisation.doctype";
 import { GeoDatasetDoctypeNLPV } from "./ingrid-nlpv/doctypes/geo-dataset.doctype";
+import { CommonFieldsNLPV } from "./ingrid-nlpv/doctypes/common-fields";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
   standalone: true,
 })
 class InGridNLPVComponent extends InGridComponent {
+  common = inject(CommonFieldsNLPV);
   geoDataset = inject(GeoDatasetDoctypeNLPV);
   organisation = inject(NLPVOrganisationDoctype);
+
+  constructor() {
+    super();
+    this.modifyFormFieldConfiguration();
+  }
+
+  protected getDocTypes = () => [
+    this.folder,
+    this.geoDataset,
+    this.geoService,
+    this.publication,
+    this.person,
+    this.organisation,
+  ];
+
+  private modifyFormFieldConfiguration() {
+    [this.geoDataset, this.geoService, this.publication].forEach((docType) => {
+      docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+        this.addFields(fieldConfig, docType.id);
+        return fieldConfig;
+      };
+    });
+  }
+
+  private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
+    const orderInfoPosition = this.common.findFieldElementWithId(
+      fieldConfig,
+      "orderInfo",
+    );
+    this.common.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
+  }
 }
 
 @NgModule({

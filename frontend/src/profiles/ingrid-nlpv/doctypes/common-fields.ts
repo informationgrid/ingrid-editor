@@ -32,4 +32,8 @@ export class CommonFieldsNLPV extends FormFieldHelper {
         }),
       );
   }
+
+  getFeesFieldConfig(): FormlyFieldConfig {
+    return this.addTextArea("fees", "Gebühren", "nlpv");
+  }
 }
