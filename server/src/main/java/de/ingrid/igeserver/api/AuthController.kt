@@ -23,13 +23,11 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.UserInfo
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
@@ -52,11 +50,9 @@ import java.security.Principal
 @RequestMapping
 class AuthController(
     private val usersApiController: UsersApiController,
-    private val authorizedClientService: OAuth2AuthorizedClientService,
     private val generalProperties: GeneralProperties,
-    @Value("\${keycloak.auth-server-url}") private val keycloakServerUrl: String,
-    @Value("\${keycloak.realm}") private val keycloakRealm: String,
     private val clientRegistrationRepository: ClientRegistrationRepository,
+    private val oauth2Properties: OAuth2ClientProperties,
 ) {
 
     /**
@@ -96,7 +92,13 @@ class AuthController(
             if (!idToken.isNullOrBlank()) {
                 val redirect = generalProperties.appUrl
                 val encodedRedirect = URLEncoder.encode(redirect, StandardCharsets.UTF_8)
-                val realmBase = keycloakServerUrl.trimEnd('/') + "/realms/" + keycloakRealm
+
+                val provider = oauth2Properties.provider["keycloak"]
+                val authUri = provider?.authorizationUri ?: ""
+                val serverUrl = authUri.substringBefore("/realms/")
+                val realmName = authUri.substringAfter("/realms/").substringBefore("/")
+
+                val realmBase = "$serverUrl/realms/$realmName"
                 endSessionUrl =
                     "$realmBase/protocol/openid-connect/logout?id_token_hint=$idToken&post_logout_redirect_uri=$encodedRedirect"
             }

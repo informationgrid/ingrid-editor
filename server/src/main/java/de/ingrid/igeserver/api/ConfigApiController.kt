@@ -36,15 +36,6 @@ class ConfigApiController(
     val connectionService: ConnectionService,
 ) : ConfigApi {
 
-    @Value("\${keycloak.auth-server-url-frontend}")
-    lateinit var keycloakUrlFrontend: String
-
-    @Value("\${keycloak.realm}")
-    lateinit var keycloakRealm: String
-
-    @Value("\${frontend.keycloak.resource}")
-    lateinit var keycloakClientId: String
-
     @Value("\${frontend.support-email}")
     lateinit var supportEmail: String
 
@@ -53,9 +44,6 @@ class ConfigApiController(
 
     override fun get(): ResponseEntity<FrontendConfiguration> = ResponseEntity.ok().body(
         FrontendConfiguration(
-            keycloakUrl = keycloakUrlFrontend,
-            keycloakRealm = keycloakRealm,
-            keycloakClientId = keycloakClientId,
             keycloakEnabled = keycloakEnabled,
             supportEmail = supportEmail,
         ),
