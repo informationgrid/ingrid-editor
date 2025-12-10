@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { Injectable, WritableSignal } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { SnackBarMessageService } from "../../form-shared/updatable-snackbar/snackbar-message.service";
 import { ConfigService } from "../../../services/config/config.service";
 
@@ -31,7 +30,6 @@ interface CopyFilesMessage {
   progress: number;
 }
 
-@UntilDestroy()
 @Injectable({
   providedIn: "root",
 })
@@ -44,7 +42,7 @@ export class CopyFilesService extends SnackBarMessageService {
     );
   }
 
-  isCopyInProgress(targetId) {
+  isCopyInProgress(targetId: string) {
     return this.status()?.targetDatasetId == targetId && !this.isDone();
   }
 

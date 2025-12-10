@@ -18,11 +18,11 @@
  * limitations under the Licence.
  */
 import { effect, inject, signal, WritableSignal } from "@angular/core";
-import { untilDestroyed } from "@ngneat/until-destroy";
 import { map, tap } from "rxjs";
 import { UpdatableMatSnackBar } from "./updatable-snackbar";
 import { RxStompService } from "../../../rx-stomp.service";
 import { MatSnackBar, MatSnackBarRef } from "@angular/material/snack-bar";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export abstract class SnackBarMessageService {
   private currentSnackBarRef: MatSnackBarRef<UpdatableMatSnackBar>;
@@ -37,11 +37,11 @@ export abstract class SnackBarMessageService {
     this.setupSnackBarEffect();
   }
 
-  startListening(): void {
+  startListening(ref: any): void {
     this.rxStompService
       .watch(this.getWatchPath())
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(ref),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => {
           this.status.set(data);
@@ -78,7 +78,7 @@ export abstract class SnackBarMessageService {
     });
   }
 
-  protected abstract updateMessage(data): void;
+  protected abstract updateMessage(data: any): void;
 
   protected abstract isDone(): boolean;
 

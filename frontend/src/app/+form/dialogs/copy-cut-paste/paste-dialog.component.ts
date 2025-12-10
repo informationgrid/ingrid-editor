@@ -57,7 +57,7 @@ export class PasteDialogComponent implements OnInit {
   }
 
   submit() {
-    this.copyFilesService.startListening();
+    this.copyFilesService.startListening(this.dlgRef);
     this.dlgRef.close({ selection: this.selection, path: this.path });
   }
 }
