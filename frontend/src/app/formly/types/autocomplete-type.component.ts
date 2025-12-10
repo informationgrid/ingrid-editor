@@ -102,16 +102,16 @@ export class AutocompleteTypeComponent
     effect(() => {
       // ensure it only runs when parameterOptions are set
       if (this.props.dynamicCodelistId && this.parameterOptions().length > 0) {
-        // delay execution, otherwise destroy operation of previously loaded dataset
+        // delay execution, otherwise destroy operation of a previously loaded dataset
         // might lead to an error where the field is not defined anymore
-        // setTimeout(() => {
-        this.currentCodelistId = this.props.dynamicCodelistId();
-        console.log("current", this.formControl.value);
-        console.log("codelist", this.currentCodelistId);
-        if (this.formControl.value?._codelistId !== this.currentCodelistId) {
-          this.formControl.setValue(this.formControl.value?.value);
-        }
-        // });
+        // example: service with operations is selected and another service without operations
+        // is loaded next (also with different service type)
+        setTimeout(() => {
+          this.currentCodelistId = this.props.dynamicCodelistId();
+          if (this.formControl.value?._codelistId !== this.currentCodelistId) {
+            this.formControl.setValue(this.formControl.value?.value);
+          }
+        }, 100);
       }
     });
   }
