@@ -1,3 +1,7 @@
+TRUNCATE TABLE catalog RESTART IDENTITY CASCADE;
+TRUNCATE TABLE "user_info" RESTART IDENTITY CASCADE;
+TRUNCATE TABLE document RESTART IDENTITY CASCADE;
+TRUNCATE TABLE document_wrapper RESTART IDENTITY CASCADE;
 -- Seed data for free-entries API tests
 
 INSERT INTO catalog VALUES (100, 'test-catalog', 'ingrid', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL);
