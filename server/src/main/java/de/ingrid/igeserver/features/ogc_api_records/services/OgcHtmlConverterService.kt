@@ -49,12 +49,7 @@ class OgcHtmlConverterService(
         }
 
         return """
-                 <style>
-                    body { font-family: Sans-Serif; padding-bottom: 50px }
-                    table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
-                    td { vertical-align: top; outline: 2px solid lightGray; background-color: white;}}
-                </style>
-                <div class="record" style="margin: 40px 10px; padding: 10px; outline: solid; background: lightgray;">
+                <div class="record">
                     $h1
                     $table
                 </div>
@@ -84,7 +79,7 @@ class OgcHtmlConverterService(
         return "$table</table>"
     }
 
-    private fun addRow(key: String, value: String): String = "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
+    private fun addRow(key: String, value: String): String = "<tr><td class='table-row'><b>$key</b></td><td>$value</td></tr>"
 
     fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String {
         var metadata = ""
@@ -134,7 +129,62 @@ class OgcHtmlConverterService(
 
         return """
             <html>
-                <head><title>Ingrid - OGC Record API</title></head>
+                <head>
+                    <title>Ingrid - OGC Record API</title>
+                     <style>
+                        body { font-family: Sans-Serif; padding-bottom: 50px; }
+                        table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
+                        td { vertical-align: top; outline: 2px solid lightGray; background-color: white; }
+                        .record { margin: 40px 10px; padding: 10px; outline: solid; background: lightgray; }
+                        .table-row { width:160px; }
+                        header {
+                            background: #28225b;
+                            color: #ffffff;
+                            padding: 10px;
+                        }
+                        button {
+                            cursor: pointer;
+                            font-size: large;
+                            font-style: inherit;
+                            font-weight: 600;
+                        }
+                        .grid-container {
+                            display: grid;
+                            gap: 10px;
+                            grid-template-columns: auto auto auto auto;
+                        }
+                        .grid-item {
+                        }
+                        .dropdownTitle{
+                            width: 100%;
+                        }
+                        .dropdown { 
+                            display: inline-block; 
+                            position: relative; 
+                        } 
+                        .dropdown-content {
+                            display: none;
+                            position: absolute;
+                            width: 100%;
+                            overflow: auto;
+                            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                        }
+                        .dropdown:hover .dropdown-content {
+                            display: block;
+                        }
+                        .dropdown-content a {
+                            display: block;
+                            color: #000000;
+                            background-color: #ffffff;
+                            padding: 5px;
+                            text-decoration: none;
+                      }
+                      .dropdown-content a:hover {
+                          color: #FFFFFF;
+                          background-color: #196ea2;
+                      }
+                  </style>
+                </head>
             <body>
             <header>
                 <h1>OGC Record API</h1>
@@ -150,54 +200,6 @@ class OgcHtmlConverterService(
                 </div>
             </header>
             $responseRecords
-             <style>
-                header {
-                    background: #28225b;
-                    color: #ffffff;
-                    padding: 10px;
-                }
-                button {
-                    cursor: pointer;
-                    font-size: large;
-                    font-style: inherit;
-                    font-weight: 600;
-                }
-                .grid-container {
-                    display: grid;
-                    gap: 10px;
-                    grid-template-columns: auto auto auto auto;
-                }
-                .grid-item {
-                }
-                .dropdownTitle{
-                    width: 100%;
-                }
-                .dropdown { 
-                    display: inline-block; 
-                    position: relative; 
-                } 
-                .dropdown-content {
-                    display: none;
-                    position: absolute;
-                    width: 100%;
-                    overflow: auto;
-                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                }
-                .dropdown:hover .dropdown-content {
-                    display: block;
-                }
-                .dropdown-content a {
-                    display: block;
-                    color: #000000;
-                    background-color: #ffffff;
-                    padding: 5px;
-                    text-decoration: none;
-              }
-              .dropdown-content a:hover {
-                  color: #FFFFFF;
-                  background-color: #196ea2;
-              }
-          </style>
           </body></html>
         """.trimIndent()
     }
