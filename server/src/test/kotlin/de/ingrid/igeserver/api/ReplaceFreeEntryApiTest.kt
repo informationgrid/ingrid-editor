@@ -60,12 +60,12 @@ class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() 
         val body = mapper.writeValueAsString(
             mapOf(
                 "fromValue" to "Free A",
-                "toKey" to "k-123",
+                "toKey" to "1",
             ),
         )
 
         val result = mockMvc.perform(
-            post("/api/codelist/free-entries/6010/replace")
+            post("/api/codelist/free-entries/4300/replace")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
                 .principal(mockPrincipal),
@@ -81,7 +81,7 @@ class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() 
 
         // After replacement, counts should only contain Free B (1)
         val countsAfter = mockMvc.perform(
-            get("/api/codelist/free-entries/6010")
+            get("/api/codelist/free-entries/4300")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal),
         )

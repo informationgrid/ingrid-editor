@@ -1,22 +1,19 @@
 -- Seed data for free-entries API tests
 
--- Do not truncate; IntegrationTest already prepares base catalog/users
+INSERT INTO catalog VALUES (100, 'test-catalog', 'ingrid', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL);
 
--- Use VALUES form to match column order defined in schema; safe if already exists
-INSERT INTO catalog VALUES (100, 'test-catalog', 'ingrid', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL)
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO "user_info" ("id", "user_id", "cur_catalog_id", "data") VALUES (1, 'user1', 100, '{"catalogIds": ["test-catalog"], "recentLogins": [1604572789000, 1604574295000]}');
 
-
--- Helper: published document with two free entries for codelist 6010 (A and B)
+-- published document with two free entries for codelist 4300 (A and B)
 INSERT INTO document VALUES (
     9001, 100, 'free-uuid-1', 'InGridGeoService', 'Test Free Entries Doc 1', '{
       "someField": {
-        "_codelistId": "6010",
+        "_codelistId": "4300",
         "key": null,
         "value": "Free A"
       },
       "anotherField": {
-        "_codelistId": "6010",
+        "_codelistId": "4300",
         "key": null,
         "value": "Free B"
       }
@@ -29,7 +26,7 @@ INSERT INTO document VALUES (
     9002, 100, 'free-uuid-2', 'InGridGeoService', 'Test Free Entries Doc 2', '{
       "nested": {
         "deep": {
-          "_codelistId": "6010",
+          "_codelistId": "4300",
           "key": null,
           "value": "Free A"
         }
@@ -42,7 +39,7 @@ INSERT INTO document VALUES (
 INSERT INTO document VALUES (
     9003, 100, 'free-uuid-3', 'InGridGeoService', 'Archived Free Entries Doc', '{
       "field": {
-        "_codelistId": "6010",
+        "_codelistId": "4300",
         "key": null,
         "value": "Free A"
       }
@@ -54,7 +51,7 @@ INSERT INTO document VALUES (
 INSERT INTO document VALUES (
     9004, 100, 'free-uuid-4', 'InGridGeoService', 'Deleted Wrapper Doc', '{
       "field": {
-        "_codelistId": "6010",
+        "_codelistId": "4300",
         "key": null,
         "value": "Free B"
       }
@@ -63,7 +60,7 @@ INSERT INTO document VALUES (
 );
 
 -- Wrappers for the documents above
-INSERT INTO document_wrapper VALUES (9001, 100, NULL, 'free-uuid-1', 'InGridGeoService', 'data', 0);
-INSERT INTO document_wrapper VALUES (9002, 100, NULL, 'free-uuid-2', 'InGridGeoService', 'data', 0);
-INSERT INTO document_wrapper VALUES (9003, 100, NULL, 'free-uuid-3', 'InGridGeoService', 'data', 0);
-INSERT INTO document_wrapper VALUES (9004, 100, NULL, 'free-uuid-4', 'InGridGeoService', 'data', 1);
+INSERT INTO document_wrapper VALUES (9001, 100, NULL, 'free-uuid-1', 'InGridGeoService', 'data', 1);
+INSERT INTO document_wrapper VALUES (9002, 100, NULL, 'free-uuid-2', 'InGridGeoService', 'data', 1);
+INSERT INTO document_wrapper VALUES (9003, 100, NULL, 'free-uuid-3', 'InGridGeoService', 'data', 1);
+INSERT INTO document_wrapper VALUES (9004, 100, NULL, 'free-uuid-4', 'InGridGeoService', 'data', 1, null, 1);

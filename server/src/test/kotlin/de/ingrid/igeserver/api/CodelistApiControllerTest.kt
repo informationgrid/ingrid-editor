@@ -56,7 +56,7 @@ class CodelistApiControllerTest(private val mockMvc: MockMvc) : IntegrationTest(
     @Test
     fun `should return free entry counts for codelist`() {
         val mvcResult = mockMvc.perform(
-            get("/api/codelist/free-entries/6010")
+            get("/api/codelist/free-entries/4300")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal),
         )
