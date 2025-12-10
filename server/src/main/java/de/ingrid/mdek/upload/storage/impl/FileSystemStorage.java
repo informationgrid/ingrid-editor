@@ -881,14 +881,17 @@ public class FileSystemStorage implements Storage {
         jobDataMap.put("sourceDatasetId", sourceDatasetId);
         jobDataMap.put("targetDatasetId", targetDatasetId);
         jobDataMap.put("docsDir", this.docsDir);
+
         // we cannot schedule here directly because that needs to be done in a fresh transactional context
-        schedulerDelegate.scheduleCopyFilesJob(jobKey, jobDataMap);
         // this is needed to resolve the race condition between transaction and job schedule
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        new Thread(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            schedulerDelegate.scheduleCopyFilesJob(jobKey, jobDataMap);
+        }).start();
     }
 
     @Override
