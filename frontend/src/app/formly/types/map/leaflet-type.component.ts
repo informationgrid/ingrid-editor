@@ -37,9 +37,17 @@ import { LeafletService } from "./leaflet.service";
 import {
   SpatialListComponent,
   SpatialLocation,
+  SpatialLocationType,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  take,
+} from "rxjs/operators";
 import { of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -50,6 +58,14 @@ import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  BwastrLocatorCoordinatesResponse,
+  BwastrLocatorService,
+} from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: "ige-formly-leaflet-type",
@@ -76,6 +92,7 @@ export class LeafletTypeComponent
   private leafletService = inject(LeafletService);
   private translocoService = inject(TranslocoService);
   private destroyRef = inject(DestroyRef);
+  private bwastrLocatorService = inject(BwastrLocatorService);
 
   readonly leaflet = viewChild<ElementRef>("leaflet");
 
@@ -217,15 +234,37 @@ export class LeafletTypeComponent
       .afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {
+          // Insert or update the selected location
           if (locationIndex >= 0) {
             locations[locationIndex] = result;
           } else {
             locations.push(result);
           }
 
+          // Update form control immediately with the selected location
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
           this.updateBoundingBoxCatchingErrors(locations);
+
+          // add additional bounding box for bwastr if chosen by user
+          if (result.type === "bwastr") {
+            this.dialog
+              .open(ConfirmDialogComponent, {
+                data: <ConfirmDialogData>{
+                  title: `Bounding-Box hinzufügen?`,
+                  message: `Möchten Sie zusätzlich die automatisch ermittelte Bounding-Box der Bundeswasserstraßenstrecke "${result.title}" hinzufügen?`,
+                  confirmButtonText: "Ja",
+                },
+              })
+              .afterClosed()
+              .pipe(filter((result) => result))
+              .subscribe(() =>
+                this.addBBoxForBwaStr(
+                  result,
+                  locationIndex ?? locations.size - 1,
+                ),
+              );
+          }
         }
       });
   }
@@ -259,5 +298,38 @@ export class LeafletTypeComponent
       "Raumbezug",
       of(this.translocoService.translate("spatial.generalHelp")),
     );
+  }
+
+  addBBoxForBwaStr(location: SpatialLocation, neighborIndex: number) {
+    this.bwastrLocatorService
+      .getSectionBoundingBox(location.bwastr)
+      .pipe(
+        take(1),
+        catchError(() => of(undefined)),
+        map((response) =>
+          response
+            ? ({
+                value: {
+                  lat1: response.lat1,
+                  lon1: response.lon1,
+                  lat2: response.lat2,
+                  lon2: response.lon2,
+                },
+                title: location.title,
+                type: "free",
+              } as SpatialLocation)
+            : undefined,
+        ),
+        map((additionalBBox) => {
+          if (!additionalBBox) return;
+          const current = this.formControl.value ?? [];
+          current.splice(neighborIndex + 1, 0, additionalBBox);
+
+          this.formControl.setValue([...current]);
+          this.formControl.markAsDirty();
+          this.updateBoundingBoxCatchingErrors(current);
+        }),
+      )
+      .subscribe();
   }
 }

@@ -47,7 +47,6 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 import { TranslocoService } from "@jsverse/transloco";
-import { debounceTime } from "rxjs/operators";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { MatFormField } from "@angular/material/form-field";
