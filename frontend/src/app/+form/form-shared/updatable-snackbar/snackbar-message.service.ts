@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, signal, WritableSignal } from "@angular/core";
-import { map, tap } from "rxjs";
+import { inject, signal, WritableSignal } from "@angular/core";
+import { map, Subject, takeUntil, tap } from "rxjs";
 import { UpdatableMatSnackBar } from "./updatable-snackbar";
 import { RxStompService } from "../../../rx-stomp.service";
 import { MatSnackBar, MatSnackBarRef } from "@angular/material/snack-bar";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export abstract class SnackBarMessageService {
   private currentSnackBarRef: MatSnackBarRef<UpdatableMatSnackBar>;
@@ -32,38 +31,41 @@ export abstract class SnackBarMessageService {
 
   private snackBar = inject(MatSnackBar);
   private rxStompService = inject(RxStompService);
+  private destroy$: Subject<void> = null;
 
-  constructor() {
-    this.setupSnackBarEffect();
-  }
-
-  startListening(ref: any): void {
+  startListening(): void {
+    // if it's already listening, do nothing
+    if (this.destroy$ && !this.destroy$.closed) {
+      return;
+    }
+    this.destroy$ = new Subject<void>();
     this.rxStompService
       .watch(this.getWatchPath())
       .pipe(
-        takeUntilDestroyed(ref),
+        tap((msg) => console.log("new message received", msg)),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => {
+          // TODO: data should have status of all files to be copied
           this.status.set(data);
           this.updateMessage(data);
+          if (!this.currentSnackBarRef) {
+            this.openSnackBar();
+          } else if (this.isDone()) {
+            this.destroy$.next();
+            this.destroy$.complete();
+            this.destroy$.unsubscribe();
+          }
         }),
+        takeUntil(this.destroy$),
       )
-      .subscribe();
-  }
-
-  private setupSnackBarEffect(): void {
-    effect(() => {
-      if (this.status()) {
-        if (!this.currentSnackBarRef) {
-          this.openSnackBar();
-        } else if (this.isDone()) {
+      .subscribe({
+        complete: () => {
           setTimeout(
             () => this.currentSnackBarRef?.dismiss(),
             this.getExitDelay(),
           );
-        }
-      }
-    });
+        },
+      });
   }
 
   private openSnackBar() {
@@ -73,8 +75,11 @@ export abstract class SnackBarMessageService {
     );
     // clear the reference and reset the state when manually dismissed
     this.currentSnackBarRef.afterDismissed().subscribe(() => {
-      this.currentSnackBarRef = null;
-      this.status.set(null);
+      // only cleanup when there is not another copy-job running
+      if (this.destroy$.closed) {
+        this.currentSnackBarRef = null;
+        this.status.set(null);
+      }
     });
   }
 

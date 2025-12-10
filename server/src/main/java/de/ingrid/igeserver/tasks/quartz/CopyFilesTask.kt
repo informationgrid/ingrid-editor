@@ -26,7 +26,6 @@ import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import de.ingrid.mdek.upload.storage.impl.Scope
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
-import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.io.UncheckedIOException
@@ -35,7 +34,6 @@ import java.nio.file.StandardCopyOption
 import java.util.*
 
 @Component
-@PersistJobDataAfterExecution
 class CopyFilesTask(
     private val notify: CopyFilesNotifier,
     private val fileStore: FileSystemStorage,

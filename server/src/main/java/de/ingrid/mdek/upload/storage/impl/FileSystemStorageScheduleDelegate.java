@@ -24,20 +24,19 @@ import de.ingrid.igeserver.services.SchedulerService;
 import de.ingrid.igeserver.tasks.quartz.CopyFilesTask;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.quartz.Trigger.DEFAULT_PRIORITY;
 
 @Service
 public class FileSystemStorageScheduleDelegate {
 
-    @Autowired
-    private SchedulerService scheduler;
+    private final SchedulerService scheduler;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public FileSystemStorageScheduleDelegate(SchedulerService scheduler) {
+        this.scheduler = scheduler;
+    }
+
     public void scheduleCopyFilesJob(JobKey jobKey, JobDataMap jobDataMap) {
         scheduler.handleJobWithCommand(JobCommand.start, CopyFilesTask.class, jobKey, jobDataMap, DEFAULT_PRIORITY, true);
     }
