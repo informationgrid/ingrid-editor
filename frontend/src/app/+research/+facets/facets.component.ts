@@ -19,23 +19,24 @@
  */
 import {
   Component,
+  DestroyRef,
   ElementRef,
-  forwardRef,
-  Input,
-  OnInit,
-  ViewChild,
-  input,
-  output,
   EventEmitter,
+  forwardRef,
+  inject,
+  Input,
+  input,
+  OnInit,
   Output,
+  signal,
+  viewChild,
 } from "@angular/core";
-import { FacetGroup, Facets, ResearchService } from "../research.service";
-import { Map, Rectangle } from "leaflet";
+import { FacetGroup, Facets } from "../research.service";
+import { GeoJSON, Map, Polyline } from "leaflet";
 import { LeafletService } from "../../formly/types/map/leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
 import { SpatialLocation } from "../../formly/types/map/spatial-list/spatial-list.component";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -68,13 +69,8 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { AsyncPipe, DecimalPipe } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-export interface FacetUpdate {
-  model: any;
-  fieldsWithParameters: { [x: string]: any[] };
-}
-
-@UntilDestroy()
 @Component({
   selector: "ige-facets",
   templateUrl: "./facets.component.html",
@@ -113,6 +109,8 @@ export interface FacetUpdate {
   ],
 })
 export class FacetsComponent implements OnInit, ControlValueAccessor {
+  private destroyRef = inject(DestroyRef);
+
   // TODO: remove input and filter facets from report component
   readonly forReports = input<boolean>(undefined);
 
@@ -140,22 +138,22 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     return this._forAddresses;
   }
 
-  @ViewChild("leafletDlg") leaflet: ElementRef;
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
-  filterGroup: FacetGroup[];
+  filterGroup = signal<FacetGroup[]>([]);
   researchOnlyFilterIds = ["state"];
 
   leafletReference: L.Map;
-  notExpanded: any = {};
-  location: SpatialLocation;
+  notExpanded = signal<Record<string, boolean>>({});
+  location = signal<SpatialLocation | null>(null);
 
-  codelistOptions: { [x: string]: Observable<SelectOptionUi[]> } = {};
+  codelistOptions: Record<string, Observable<SelectOptionUi[]>> = {};
 
   private _forAddresses = false;
   private allFacets: Facets;
-  private boxes: Rectangle[];
+  private boxes: (Polyline<any> | GeoJSON)[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
-  timeGroupId: string;
+  timeGroupId = signal<string>("");
 
   form: UntypedFormGroup = this.fb.group({});
 
@@ -166,7 +164,6 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   constructor(
     private dialog: MatDialog,
-    private researchService: ResearchService,
     private leafletService: LeafletService,
     private fb: UntypedFormBuilder,
     public codelistService: CodelistService,
@@ -175,7 +172,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     this.form.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.onChange && this.onChange(value));
   }
 
@@ -213,11 +210,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   initLeaflet() {
-    if (this.leaflet) {
-      this.leaflet.nativeElement.style.minHeight = "200px";
-      this.leaflet.nativeElement.style.minWidth = "200px";
+    const leaflet = this.leaflet();
+    if (leaflet) {
+      leaflet.nativeElement.style.minHeight = "200px";
+      leaflet.nativeElement.style.minWidth = "200px";
       this.leafletReference = this.leafletService.initMap(
-        this.leaflet.nativeElement,
+        leaflet.nativeElement,
         {},
       );
       this.leafletService.zoomToInitialBox(this.leafletReference);
@@ -231,7 +229,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       if (group.viewComponent === "RADIO") {
         // TODO: implement
       } else if (group.viewComponent === "TIMESPAN") {
-        this.timeGroupId = group.id;
+        this.timeGroupId.set(group.id);
         this.form.addControl(
           group.id,
           this.fb.group({
@@ -270,14 +268,9 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   showSpatialDialog(location: SpatialLocation = null) {
-    const data: Partial<SpatialLocation> = location ?? {
-      type: "free",
-    };
-    data.limitTypes = ["free"];
-
     this.dialog
       .open(SpatialDialogComponent, {
-        data: data,
+        data: { location: location ?? { type: "free" }, limitTypes: ["free"] },
         width: "90%",
         maxWidth: 1260,
         minWidth: "min(600px, 100%)",
@@ -289,14 +282,14 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   toggleSection(id: string) {
-    this.notExpanded[id] = !this.notExpanded[id];
-    if (id === "spatial" && this.notExpanded.spatial) {
+    this.notExpanded.update((m) => ({ ...m, [id]: !m[id] }));
+    if (id === "spatial" && this.notExpanded().spatial) {
       setTimeout(() => this.leafletReference.invalidateSize());
     }
   }
 
   private updateLocation(location: SpatialLocation) {
-    this.location = location;
+    this.location.set(location);
 
     if (!location) {
       this.removeSpatialFromMap();
@@ -317,15 +310,17 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
     this.removeSpatialFromMap();
     if (location) {
-      this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [
-        {
-          value: location.value,
-          type: location.type,
-          title: location.title,
-          color: this.leafletService.getColor(0),
-          indexNumber: 0,
-        },
-      ]);
+      this.leafletService
+        .drawSpatialRefs(this.leafletReference, [
+          {
+            value: location.value,
+            type: location.type,
+            title: location.title,
+            color: this.leafletService.getColor(0),
+            indexNumber: 0,
+          },
+        ])
+        .then((boxes) => (this.boxes = boxes));
     }
   }
 
@@ -339,7 +334,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   removeLocation() {
-    this.location = null;
+    this.location.set(null);
     this.updateFormWithLocation(null);
 
     this.removeSpatialFromMap();
@@ -353,7 +348,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
         (fg) => !this.researchOnlyFilterIds.includes(fg.id),
       );
     this.setDefaultModel(filter);
-    this.filterGroup = filter;
+    this.filterGroup.set(filter);
 
     if (filter.some((f) => f.viewComponent === "SPATIAL")) {
       setTimeout(() => {
@@ -380,16 +375,16 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   filterForStartDate = (d: Date | null): boolean => {
-    const endDate = this.form.get(this.timeGroupId).get("end").value;
+    const endDate = this.form.get(this.timeGroupId()).get("end").value;
     return endDate === null || d <= endDate;
   };
 
   filterForEndDate = (d: Date | null): boolean => {
-    return d >= this.form.get(this.timeGroupId).get("start").value;
+    return d >= this.form.get(this.timeGroupId()).get("start").value;
   };
 
   resetDateFields() {
-    this.form.get(this.timeGroupId).get("start").setValue(null);
-    this.form.get(this.timeGroupId).get("end").setValue(null);
+    this.form.get(this.timeGroupId()).get("start").setValue(null);
+    this.form.get(this.timeGroupId()).get("end").setValue(null);
   }
 }

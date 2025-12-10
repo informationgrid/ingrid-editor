@@ -27,6 +27,6 @@ export class TestAddressDoctype extends PersonDoctype {
   id = "AddressDoc";
 
   constructor() {
-    super("addresses");
+    super();
   }
 }

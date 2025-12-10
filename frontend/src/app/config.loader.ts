@@ -58,7 +58,9 @@ function loadProfile(configService: ConfigService) {
         map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
         take(1),
         catchError(() => {
-          const igeError = new IgeError("Profile could not be loaded");
+          const igeError = new IgeError(
+            `Profile '${configService.$userInfo.value.currentCatalog?.type}' could not be loaded. You may need to add it to the profile.mapper.ts file.`,
+          );
           reject(igeError);
           throw igeError;
         }),
@@ -193,9 +195,9 @@ export function ConfigLoader(
       if (language) generalStore.setCatalogLanguage(language);
       await firstValueFrom(translocoService.load("de"));
       await redirectToCatalogSpecificRoute(router, dialog);
-      await loadProfile.call(this, configService);
+      await loadProfile.call(ConfigLoader, configService);
       console.debug("FINISHED APP INIT");
-    } catch (err) {
+    } catch (err: any) {
       if (err.message === "Profile could not be loaded") {
         handleUnsupportedProfile();
         return;

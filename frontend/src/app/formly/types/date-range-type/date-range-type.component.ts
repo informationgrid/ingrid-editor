@@ -17,15 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyFieldProps,
+  FormlyValidationMessage,
+} from "@ngx-formly/core";
 import { debounceTime } from "rxjs/operators";
 import {
   MatError,
   MatFormField,
+  MatFormFieldAppearance,
   MatLabel,
   MatSuffix,
 } from "@angular/material/form-field";
@@ -36,8 +40,19 @@ import {
   MatEndDate,
   MatStartDate,
 } from "@angular/material/datepicker";
+import {
+  MatTimepicker,
+  MatTimepickerInput,
+  MatTimepickerToggle,
+} from "@angular/material/timepicker";
+import { MatInput } from "@angular/material/input";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
+interface DateRangeProps extends FormlyFieldProps {
+  showTimeInputs: boolean;
+  appearance: MatFormFieldAppearance;
+}
+
 @Component({
   selector: "ige-date-range-type",
   templateUrl: "./date-range-type.component.html",
@@ -54,12 +69,18 @@ import {
     MatDateRangePicker,
     MatError,
     FormlyValidationMessage,
+    MatTimepickerInput,
+    MatTimepickerToggle,
+    MatTimepicker,
+    MatInput,
   ],
 })
 export class DateRangeTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<DateRangeProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   rangeFormGroup = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -76,7 +97,7 @@ export class DateRangeTypeComponent
     ]);
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(0))
       .subscribe((value) => {
         this.rangeFormGroup.setValue(
           value ?? {
@@ -121,8 +142,10 @@ export class DateRangeTypeComponent
   }
 
   updateFormControl() {
-    this.formControl.setValue(this.rangeFormGroup.value);
-    this.formControl.markAsTouched();
-    this.formControl.markAsDirty();
+    setTimeout(() => {
+      this.formControl.setValue(this.rangeFormGroup.value);
+      this.formControl.markAsTouched();
+      this.formControl.markAsDirty();
+    });
   }
 }

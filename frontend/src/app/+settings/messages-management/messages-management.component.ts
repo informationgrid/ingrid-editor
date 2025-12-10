@@ -17,10 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
 import {
@@ -51,7 +50,6 @@ import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
-@UntilDestroy()
 @Component({
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
@@ -80,14 +78,14 @@ export class MessagesManagementComponent implements OnInit {
   messages: MessageFormatBackend[] = [];
   dataSourceAllCatalog = new MatTableDataSource<MessageFormatBackend>([]);
   dataSourceCurrentCatalog = new MatTableDataSource<MessageFormatBackend>([]);
-  displayedColumns: string[] = ["text", "_expires", "_actions_"];
+  displayedColumns = signal<string[]>(["text", "_expires", "_actions_"]);
   constructor(
     private messageService: MessageService,
     private dialog: MatDialog,
     private configService: ConfigService,
   ) {}
 
-  private userInfo: UserInfo;
+  protected userInfo: UserInfo;
 
   ngOnInit() {
     this.userInfo = this.configService.$userInfo.getValue();

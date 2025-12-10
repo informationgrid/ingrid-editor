@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -30,7 +30,6 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { BehaviorSubject, Observable, Subscription } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, filter, map, startWith, take } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -69,9 +68,8 @@ import { MatSelect } from "@angular/material/select";
 import { AsyncPipe } from "@angular/common";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
@@ -104,6 +102,8 @@ import { toObservable } from "@angular/core/rxjs-interop";
 })
 export class RepeatChipComponent extends FieldArrayType implements OnInit {
   private codelistStore = inject(CodelistStore);
+  private destroyRef = inject(DestroyRef);
+
   inputControl = new UntypedFormControl();
 
   type: "simple" | "codelist" | "object" = "simple";
@@ -118,7 +118,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     private dialog: MatDialog,
     private http: HttpClient,
     private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef,
   ) {
     super();
 
@@ -140,7 +139,11 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     } else if (this.props.restCall) {
       this.type = "object";
       this.inputControl.valueChanges
-        .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          startWith(""),
+          debounceTime(300),
+        )
         .subscribe((query) => this.search(query));
     }
   }
@@ -156,7 +159,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
       .subscribe((result) => {
         this.searchResult.next(result);
       });
-    this.cdr.detectChanges();
   }
 
   openDialog() {
@@ -173,7 +175,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
-          this.cdr.detectChanges();
         }
       });
   }

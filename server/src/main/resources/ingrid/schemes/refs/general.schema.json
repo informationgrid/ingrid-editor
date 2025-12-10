@@ -47,23 +47,23 @@
       }
     },
     "events": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "unevaluatedProperties": false,
-        "properties": {
-          "referenceDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "referenceDateType": {
-            "$ref": "../../../general.schema.json#/definitions/KeyValue"
-          }
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "created": {
+          "type": ["null", "string"],
+          "format": "date-time"
         },
-        "required": ["referenceDateType", "referenceDate"],
-        "title": "events"
+        "firstPublished": {
+          "type": ["null", "string"],
+          "format": "date-time"
+        },
+        "lastModified": {
+          "type": ["null", "string"],
+          "format": "date-time"
+        }
       },
-      "minItems": 1
+      "title": "events"
     },
     "Spatial": {
       "type": "object",
@@ -79,6 +79,12 @@
           "type": ["null", "string"]
         },
         "spatialSystems": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
+        },
+        "verticalSpatialSystems": {
           "type": "array",
           "items": {
             "$ref": "../../../general.schema.json#/definitions/KeyValue"
@@ -365,9 +371,9 @@
     },
     "temporal": {
       "type": "object",
-      "unevaluatedProperties": false,
+      "unevaluatedProperties": true,
       "properties": {
-        "events": {
+        "event": {
           "$ref": "#/definitions/events"
         },
         "status": {
@@ -380,60 +386,55 @@
             }
           ]
         },
-        "resourceDate": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
+        "data": {
+          "type": "object",
+          "unevaluatedProperties": true,
+          "properties": {
+            "type": {
+              "type": ["null", "string"]
             },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "resourceDateType": {
-          "anyOf": [
-            {
-              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            "intervalFrom": {
+              "type": ["null", "string"]
             },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "resourceDateTypeSince": {
-          "anyOf": [
-            {
-              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            "intervalTo": {
+              "type": ["null", "string"]
             },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "resourceRange": {
-          "anyOf": [
-            {
-              "type": "object",
-              "unevaluatedProperties": false,
-              "properties": {
-                "end": {
-                  "type": ["string", "null"],
+            "resourceDate": {
+              "anyOf": [
+                {
+                  "type": "string",
                   "format": "date-time"
                 },
-                "start": {
-                  "type": ["string", "null"],
-                  "format": "date-time"
+                {
+                  "type": "null"
                 }
-              }
+              ]
             },
-            {
-              "type": "null"
+            "resourceRange": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "unevaluatedProperties": false,
+                  "properties": {
+                    "end": {
+                      "type": ["string", "null"],
+                      "format": "date-time"
+                    },
+                    "start": {
+                      "type": ["string", "null"],
+                      "format": "date-time"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
-          ]
+          }
         }
       },
-      "required": ["events"]
+      "required": ["event"]
     },
     "keywords": {
       "type": "object",

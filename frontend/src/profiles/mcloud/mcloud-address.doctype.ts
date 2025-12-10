@@ -29,7 +29,7 @@ export class McloudAddressDoctype extends OrganisationDoctype {
   label = "Adresse";
 
   constructor() {
-    super("addresses");
+    super();
     this.options = {
       hideCountryAndAdministrativeArea: true,
     };

@@ -6,7 +6,7 @@
     <ige-facets
         left-side
         formControlName="facets"
-        [facets]="facets"
+        [facets]="facets()"
         [forAddresses]="form.get('type').value === 'selectAddresses'"
         [refreshView]="facetViewRefresher"
         (resetQuery)="resetSearchField()"
@@ -29,7 +29,7 @@
 
             <ige-search-input
                 placeholder="Begriff oder ID eingeben ..."
-                [query]="form.get('query')"
+                [query]="$any(form.get('query'))"
                 [withWhiteBorder]="false"
                 [flexWidth]="true"
                 [rectangular]="true"
@@ -46,8 +46,8 @@
 
     <div main-content>
         <ige-result-table
-            [result]="result"
-            [isLoading]="isSearching"
+            [result]="result()"
+            [isLoading]="isSearching()"
             (updated)="startSearch()"
         ></ige-result-table>
     </div>

@@ -18,23 +18,28 @@
  * limitations under the Licence.
  */
 import { PermissionsComponent } from "./permissions.component";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
-import { RouterTestingModule } from "@angular/router/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { getTranslocoModule } from "../../transloco-testing.module";
+import { provideZonelessChangeDetection } from "@angular/core";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 
 describe("PermissionsComponent", () => {
   let spectator: Spectator<PermissionsComponent>;
   const createHost = createComponentFactory({
     component: PermissionsComponent,
-    imports: [
-      MatDialogModule,
-      RouterTestingModule,
-      ReactiveFormsModule,
-      getTranslocoModule(),
+    imports: [MatDialogModule, ReactiveFormsModule, getTranslocoModule()],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      provideZonelessChangeDetection(),
+      { provide: MAT_DIALOG_DATA, useValue: [] },
     ],
-    providers: [{ provide: MAT_DIALOG_DATA, useValue: [] }],
     detectChanges: false,
   });
 
@@ -46,7 +51,7 @@ describe("PermissionsComponent", () => {
     expect(spectator).toBeTruthy();
   });
 
-  xit("should display activated permissions", () => {});
+  it.skip("should display activated permissions", () => {});
 
-  xit("should output permissions as JSON", () => {});
+  it.skip("should output permissions as JSON", () => {});
 });

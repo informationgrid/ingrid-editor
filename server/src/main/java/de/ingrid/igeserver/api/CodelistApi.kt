@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 
 @Hidden
@@ -82,4 +84,12 @@ interface CodelistApi {
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody favorites: List<String>?,
     ): ResponseEntity<Unit>
+
+    @Operation
+    @GetMapping(value = ["/external/{id}/{filter}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getExternalCodelist(
+        @Parameter() @PathVariable id: String,
+        @Parameter() @PathVariable filter: String,
+        @Parameter() @RequestParam page: Int,
+    ): ResponseEntity<PagedSearchResult>
 }

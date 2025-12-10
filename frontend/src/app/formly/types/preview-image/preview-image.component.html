@@ -14,7 +14,7 @@
                 @if (model) {
                     <div class="content">
                         <img
-                            [src]="imageLinks[model[i]?.fileName?.uri]"
+                            [src]="imageLinks()[model[i]?.fileName?.uri]"
                             [alt]="model[i]?.fileName?.uri"
                             [class]="'preview-image-' + i"
                         />

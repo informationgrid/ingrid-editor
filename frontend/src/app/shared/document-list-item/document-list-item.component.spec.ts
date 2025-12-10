@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Spectator, createComponentFactory } from "@ngneat/spectator";
+import { Spectator, createComponentFactory } from "@ngneat/spectator/vitest";
 
 import { DocumentListItemComponent } from "./document-list-item.component";
 

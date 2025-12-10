@@ -4,16 +4,18 @@
     aria-label="Navigation zu einzelnem Formularsegment"
 >
     @for (section of sections(); track section; let i = $index) {
-        <button
-            mat-button
-            class="link-button"
-            role="menuitem"
-            (click)="scrollToSection(i)"
-        >
-            {{ section }}
-        </button>
-        @if (i !== sections().length - 1) {
-            |
+        @if (section[0] !== "_") {
+            <button
+                mat-button
+                class="link-button"
+                role="menuitem"
+                (click)="scrollToSection(i)"
+            >
+                {{ section }}
+            </button>
+            @if (i !== sections().length - 1) {
+                |
+            }
         }
     }
 </div>

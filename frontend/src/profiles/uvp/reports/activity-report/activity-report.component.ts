@@ -17,8 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  viewChild,
+} from "@angular/core";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -45,8 +50,10 @@ import { DocumentIconComponent } from "../../../../app/shared/document-icon/docu
 import { FacetsComponent } from "../../../../app/+research/+facets/facets.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton, MatIconButton } from "@angular/material/button";
+import { TranslocoService } from "@jsverse/transloco";
+import { Facets } from "../../../../app/+research/research.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "activity-report",
   templateUrl: "./activity-report.component.html",
@@ -70,8 +77,10 @@ import { MatButton, MatIconButton } from "@angular/material/button";
   ],
 })
 export class ActivityReportComponent implements AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  private destroyRef = inject(DestroyRef);
+
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = [
@@ -84,11 +93,21 @@ export class ActivityReportComponent implements AfterViewInit {
     "settings",
   ];
 
+  trackedActions = [
+    "create",
+    "update",
+    "publish",
+    "unpublish",
+    "delete",
+    "archive",
+    "unarchive",
+  ];
+
   startDate: string;
   endDate: string;
 
   query = new FormControl<string>("");
-  facets = {
+  facets: Facets = {
     addresses: [],
     documents: [
       {
@@ -105,28 +124,12 @@ export class ActivityReportComponent implements AfterViewInit {
       {
         id: "actionType",
         label: "Aktion",
-        filter: [
-          {
-            id: "create",
-            label: "Erstellt",
-          },
-          {
-            id: "update",
-            label: "Aktualisiert",
-          },
-          {
-            id: "publish",
-            label: "Veröffentlicht",
-          },
-          {
-            id: "unpublish",
-            label: "Veröffentlichung zurückgezogen",
-          },
-          {
-            id: "delete",
-            label: "Gelöscht",
-          },
-        ],
+        filter: this.trackedActions.map((action) => {
+          return {
+            id: action,
+            label: this.translocoService.translate(`dataset-events.${action}`),
+          };
+        }),
         combine: null,
         viewComponent: "CHECKBOX",
       },
@@ -138,30 +141,27 @@ export class ActivityReportComponent implements AfterViewInit {
     private uvpResearchService: UvpResearchService,
     private exportService: ExportService,
     private router: Router,
+    private translocoService: TranslocoService,
   ) {
     this.getReport(null);
 
     this.facetForm.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe(() => this.getReport(this.facetForm.value));
 
     this.query.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe(() => (this.dataSource.filter = this.query.value));
   }
 
   getReport(formValue) {
     this.startDate = formValue?.timeRef.start;
     this.endDate = BackendQuery.modifyToEndOfDay(formValue?.timeRef.end);
-    const actions = [
-      "create",
-      "update",
-      "publish",
-      "unpublish",
-      "delete",
-    ].filter((action) => formValue?.actionType[action]);
+    const activeActions = this.trackedActions.filter(
+      (action) => formValue?.actionType[action],
+    );
     this.uvpResearchService
-      .getActivityReport(this.startDate, this.endDate, actions)
+      .getActivityReport(this.startDate, this.endDate, activeActions)
       .subscribe((report) => {
         this.dataSource.data = report.map((entry) => {
           return {
@@ -172,33 +172,18 @@ export class ActivityReportComponent implements AfterViewInit {
             contact_name: entry.contact_name,
             contact_uuid: entry.contact_uuid,
             actor: entry.actor,
-            action: this.translateAction(entry.action),
+            action: this.translocoService.translate(
+              `dataset-events.${entry.action}`,
+            ),
             deleted: entry.action === "delete",
           };
         });
       });
   }
 
-  translateAction(action: String) {
-    switch (action) {
-      case "create":
-        return "Erstellt";
-      case "update":
-        return "Aktualisiert";
-      case "publish":
-        return "Veröffentlicht";
-      case "unpublish":
-        return "Veröffentlichung zurückgezogen";
-      case "delete":
-        return "Gelöscht";
-      default:
-        return action;
-    }
-  }
-
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 
   openDataset(element) {

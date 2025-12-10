@@ -13,27 +13,29 @@
             [attr.aria-label]="item.title"
         >
             <div
-                [class]="allowRedirectToDocument ? 'clickable' : ''"
-                (click)="allowRedirectToDocument ? openReference(item) : null"
+                [class]="allowRedirectToDocument() ? 'clickable' : ''"
+                (click)="allowRedirectToDocument() ? openReference(item) : null"
                 (keyup.enter)="
-                    allowRedirectToDocument ? openReference(item) : null
+                    allowRedirectToDocument() ? openReference(item) : null
                 "
             >
                 <div class="title">
-                    @if (item.isExternalRef) {
+                    @if ($any(item).isExternalRef) {
                         <mat-icon svgIcon="download-link"></mat-icon>
                     } @else {
-                        <ige-document-icon [doc]="item"></ige-document-icon>
+                        <ige-document-icon
+                            [doc]="$any(item)"
+                        ></ige-document-icon>
                     }
-                    <span>{{ item.title ?? "???" }}</span>
-                </div>
-                @if (props.showLayernames) {
-                    <ul>
-                        @for (name of item.layerNames; track name) {
-                            <li>{{ name }}</li>
+                    <div class="title-content">
+                        <span>{{ item.title ?? "???" }}</span>
+                        @if (
+                            $any(item).isExternalRef && $any(item)?.uuid?.length
+                        ) {
+                            <span class="subtitle">{{ $any(item).uuid }}</span>
                         }
-                    </ul>
-                }
+                    </div>
+                </div>
             </div>
             @if (formControl.enabled) {
                 <button
@@ -66,13 +68,18 @@
         </div>
     }
 
-    @if (refreshing) {
+    @if (refreshing()) {
         <mat-spinner diameter="30"></mat-spinner>
     }
 
-    @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
-        <button mat-button color="primary" (click)="showInternalRefDialog()">
-            {{ titleOfDocumentSelectorDialog }}
+    @if (allowMultiSelect() || (!allowMultiSelect() && !myModel?.[0])) {
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showReferenceDialog()"
+        >
+            {{ titleOfDocumentSelectorDialog() }}
         </button>
     }
 </div>

@@ -46,15 +46,14 @@
     "accessConstraints": [{ "key": "4" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2022-01-11T23:00:00.000Z",
-        "referenceDateType": { "key": "2" }
-      }
-    ],
+    "event": {
+      "firstPublished": "2022-01-11T23:00:00.000Z"
+    },
     "status": { "key": "1" },
-    "resourceDate": "2022-06-14T22:00:00.000Z",
-    "resourceDateType": { "key": "at" }
+    "data": {
+      "type": "at",
+      "resourceDate": "2022-06-14T22:00:00.000Z"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "68" }] },
   "orderInfo": "order data",

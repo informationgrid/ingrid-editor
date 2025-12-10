@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
+import { createHostFactory, SpectatorHost } from "@ngneat/spectator/vitest";
 
 import { RepeatDetailListComponent } from "./repeat-detail-list.component";
 import {
@@ -26,6 +26,7 @@ import {
   provideFormlyCore,
 } from "@ngx-formly/core";
 import { getTranslocoModule } from "../../../transloco-testing.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("RepeatDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -33,6 +34,7 @@ describe("RepeatDetailListComponent", () => {
     component: FormlyForm,
     imports: [RepeatDetailListComponent, getTranslocoModule()],
     providers: [
+      provideZonelessChangeDetection(),
       provideFormlyCore({
         types: [
           {

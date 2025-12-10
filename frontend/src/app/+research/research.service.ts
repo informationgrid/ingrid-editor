@@ -45,8 +45,8 @@ import {
 export interface QuickFilter {
   id: string;
   label: string;
-  implicitFilter: string[];
-  parameters: any[];
+  implicitFilter?: string[];
+  parameters?: any[];
   codelistId?: string;
   codelistIdFromBehaviour?: string;
 }
@@ -60,7 +60,7 @@ export interface FacetGroup {
   id: string;
   label: string;
   filter: QuickFilter[];
-  combine: "AND" | "OR";
+  combine?: "AND" | "OR";
   viewComponent:
     | "CHECKBOX"
     | "RADIO"
@@ -219,7 +219,7 @@ export class ResearchService {
       .subscribe();
   }
 
-  setActiveQuery(id: string) {
+  setActiveQuery(id: number) {
     this.generalStore.setActiveQuery(this.queryStore.entityMap()[id]);
   }
 
@@ -292,7 +292,7 @@ export class ResearchService {
     };
   }
 
-  removeQuery(id: string) {
+  removeQuery(id: number) {
     return this.http
       .delete(`${this.configuration.backendUrl}search/query/${id}`)
       .pipe(tap(() => this.queryStore.remove(id)));
@@ -322,7 +322,7 @@ export class ResearchService {
         };
   }
 
-  private mapDocumentIcons(data: ResearchResponse): ResearchResponse {
+  mapDocumentIcons(data: ResearchResponse): ResearchResponse {
     data.hits.forEach((hit) => {
       hit.icon = this.profileService.getDocumentIcon(hit._type);
     });

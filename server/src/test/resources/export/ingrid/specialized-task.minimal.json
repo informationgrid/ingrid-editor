@@ -37,15 +37,9 @@
     }
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2023-01-08T23:00:00.000Z",
-        "referenceDateType": {
-          "key": "1"
-        }
-      }
-    ],
-    "resourceDateType": null,
+    "event": {
+      "created": "2023-01-08T23:00:00.000Z"
+    },
     "status": null
   },
   "maintenanceInformation": {

@@ -60,6 +60,7 @@ export class DashboardService {
             addresses: forAddresses(),
           },
         }) as HttpResourceRequest,
+      // @ts-ignore
       {
         parse: (researchResponse: ResearchResponse) =>
           this.documentService

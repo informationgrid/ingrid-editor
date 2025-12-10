@@ -10,8 +10,8 @@
     <div flowDrop [flow]="flow.flowJs" class="upload-content">
         @if (!showOnlyProgress()) {
             <div class="text-center">
-                @if (infoText) {
-                    <div>{{ infoText }}</div>
+                @if (infoText()) {
+                    <div>{{ infoText() }}</div>
                 }
                 <div class="strong">{{ dropZoneText() }}</div>
                 <mat-icon class="upload light" svgIcon="upload"></mat-icon>

@@ -25,7 +25,6 @@ import {
 } from "../../form-shared/toolbar/form-toolbar.service";
 import { PrintViewDialogComponent } from "./print-view-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
@@ -36,7 +35,6 @@ import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { cleanObject, deepMerge } from "../../../services/utils";
 
-@UntilDestroy()
 @Injectable()
 export class PrintViewPlugin extends Plugin {
   id = "plugin.printView";
@@ -71,14 +69,14 @@ export class PrintViewPlugin extends Plugin {
 
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
-      // { id: 'toolBtnCopyCutSeparator', pos: 60, isSeparator: true },
       {
+        type: "button",
         id: "toolBtnPrint",
         tooltip: "Vorschau",
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: signal(false),
+        active: false,
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));

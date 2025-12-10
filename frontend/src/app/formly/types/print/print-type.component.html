@@ -62,7 +62,12 @@
             }}
         }
         @case ("unit-inputPrint") {
-            {{ formControl.value?.value }} {{ formControl.value?.unit?.key }}
+            {{ formControl.value?.[$any(field.fieldGroup[0].key)] }}
+            {{
+                formControl.value?.unit?.key
+                    | codelist: field.props.codelistId
+                    | async
+            }}
         }
         @default {
             <div [innerHTML]="getValueByDefault(formControl.value)"></div>

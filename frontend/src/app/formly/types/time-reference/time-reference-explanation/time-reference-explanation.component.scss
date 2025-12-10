@@ -1,0 +1,7 @@
+@use "src/variables" as vars;
+
+.message {
+  background-color: vars.$ige-background;
+  padding: 12px;
+  color: vars.$ige-hint-color;
+}

@@ -17,13 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  signal,
+  inject,
+  DestroyRef,
+} from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
   UntypedFormControl,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
 import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
@@ -49,8 +57,8 @@ import {
 } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { HelpContextButtonComponent } from "../../../../../help-context-button/help-context-button.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-free-spatial",
   templateUrl: "./free-spatial.component.html",
@@ -73,16 +81,18 @@ import { HelpContextButtonComponent } from "../../../../../help-context-button/h
   ],
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
+
   readonly map = input<Map>(undefined);
   readonly value = input<SpatialLocation>(undefined);
 
   readonly result = output<SpatialBoundingBox>();
   readonly updateTitle = output<string>();
 
-  nominatimResult: NominatimResult[] = [];
+  nominatimResult = signal<NominatimResult[]>([]);
   searchInput = new UntypedFormControl();
-  showNoResult = false;
-  showWelcome = true;
+  showNoResult = signal<boolean>(false);
+  showWelcome = signal<boolean>(true);
 
   drawnBBox: Rectangle;
   spatialSelection: NominatimResult = null;
@@ -97,11 +107,11 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
     this.arsControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((ars) => (this.value().ars = ars));
 
     const value = this.value();
@@ -122,11 +132,11 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   searchLocation(query: string) {
     if (query.trim().length === 0) {
-      this.showWelcome = true;
-      this.nominatimResult = [];
+      this.showWelcome.set(true);
+      this.nominatimResult.set([]);
       return;
     }
-    this.showWelcome = false;
+    this.showWelcome.set(false);
 
     this.searchSubscribe = this.nominatimService
       .search(query)
@@ -134,9 +144,9 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
         response = response
           .filter((item) => item.type !== "city")
           .map((item) => FreeSpatialComponent.addTypeToDisplayName(item));
-        this.nominatimResult = response;
+        this.nominatimResult.set(response);
         console.debug("Nominatim:", response);
-        this.showNoResult = response.length === 0;
+        this.showNoResult.set(response.length === 0);
         // @ts-ignore
         setTimeout(() => (<Map>this.map())._onResize());
       });

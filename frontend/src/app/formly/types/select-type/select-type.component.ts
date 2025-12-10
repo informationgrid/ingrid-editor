@@ -19,15 +19,15 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  DestroyRef,
+  inject,
   OnInit,
-  ViewChild,
+  signal,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import {
   MatOption,
   MatPseudoCheckbox,
@@ -35,14 +35,37 @@ import {
 } from "@angular/material/core";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { FieldTypeConfig, FormlyAttributes } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyAttributes,
+  FormlyFieldProps,
+} from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatDivider } from "@angular/material/divider";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
+interface SelectTypeProps extends FormlyFieldProps {
+  options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
+  codelistId?: string;
+  externalLabel?: string;
+  showSearch?: boolean;
+  allowNoValue?: boolean;
+  noValueLabel?: string;
+  change?: any;
+  hooks?: any;
+  resetOnHide?: boolean;
+  multiple?: boolean;
+  simple?: boolean;
+  useFirstValueInitially?: boolean;
+  selectAllOption?: boolean;
+  compareWith?: any;
+  disableOptionCentering?: boolean;
+}
+
 @Component({
   selector: "ige-select-type",
   templateUrl: "./select-type.component.html",
@@ -61,12 +84,12 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
   ],
 })
 export class SelectTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<SelectTypeProps>>
   implements OnInit
 {
-  @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
+  private destroyRef = inject(DestroyRef);
 
-  public filterCtrl = new UntypedFormControl();
+  public filterCtrl = new FormControl();
 
   defaultOptions = {
     props: {
@@ -74,14 +97,10 @@ export class SelectTypeComponent
     },
   };
 
+  selectOptions = signal<BackendOption[]>(null);
+  filteredOptions = signal<BackendOption[]>([]);
   private selectAllValue!: { options: any; value: any[] };
-  selectOptions: BackendOption[];
-  filteredOptions: BackendOption[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
-
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
 
   ngOnInit() {
     if (!this.props.simple && !this.props.compareWith) {
@@ -95,14 +114,12 @@ export class SelectTypeComponent
     }
 
     this.filterCtrl.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((value) => {
-        this.filteredOptions = this.search(value);
-      });
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.filteredOptions.set(this.search(value)));
 
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(0),
         filter(([, ready]) => ready),
         tap(([value]) => this.updateSelectField(value)),
@@ -115,7 +132,7 @@ export class SelectTypeComponent
     }
     options
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((data) => data !== undefined && data.length > 0),
         // take(1),
         map((options) =>
@@ -124,13 +141,13 @@ export class SelectTypeComponent
               <BackendOption>{ key: option.value, value: option.label },
           ),
         ),
-        tap((data) => (this.selectOptions = data)),
-        tap((data) => (this.filteredOptions = data)),
+        tap((data) => this.selectOptions.set(data)),
+        tap((data) => this.filteredOptions.set(data)),
         tap(() => this.optionsLoaded$.next(true)),
         tap(() => {
           let value = this.formControl.value;
           if (!value && this.props.useFirstValueInitially) {
-            this.formControl.setValue(this.filteredOptions[0].key);
+            this.formControl.setValue(this.filteredOptions()[0].key);
           }
           this.updateSelectField(value);
         }),
@@ -161,7 +178,6 @@ export class SelectTypeComponent
       // if simple and not multiple, value is an object. set as string
       this.formControl.setValue(value.key);
     }
-    this.cdr.detectChanges();
   }
 
   getSelectAllState(options: any[]): MatPseudoCheckboxState {
@@ -221,7 +237,7 @@ export class SelectTypeComponent
 
   search(value: string) {
     let filter = value.toLowerCase();
-    return this.selectOptions.filter(
+    return this.selectOptions().filter(
       (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
   }

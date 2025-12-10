@@ -20,17 +20,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   OnInit,
   signal,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { RxStompService } from "../../rx-stomp.service";
@@ -46,8 +46,8 @@ import { IndexingFields } from "./indexing-fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-indexing",
   templateUrl: "./indexing.component.html",
@@ -67,16 +67,18 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
   ],
 })
 export class IndexingComponent implements OnInit {
-  @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
+  private destroyRef = inject(DestroyRef);
+
+  readonly indexContent = viewChild<ElementRef<HTMLElement>>("indexContent");
 
   cronField = new FormControl<string>("");
 
-  hint: string;
-  valid = true;
-  isActivated: boolean;
-  showMore = false;
-  indexingIsRunning = false;
-  initialized = false;
+  hint = signal<string>("");
+  valid = signal<boolean>(true);
+  isActivated = signal<boolean>(false);
+  showMore = signal<boolean>(false);
+  indexingIsRunning = signal<boolean>(false);
+  initialized = signal<boolean>(false);
 
   exportForm = new FormGroup({});
   exportModel: any = {};
@@ -93,11 +95,11 @@ export class IndexingComponent implements OnInit {
     private snackBar: MatSnackBar,
     private rxStompService: RxStompService,
   ) {
-    this.isActivated = configService.$userInfo.value.useElasticsearch;
+    this.isActivated.set(configService.$userInfo.value.useElasticsearch);
   }
 
   ngOnInit(): void {
-    if (!this.isActivated) {
+    if (!this.isActivated()) {
       return;
     }
 
@@ -109,27 +111,27 @@ export class IndexingComponent implements OnInit {
     this.rxStompService
       .watch(`/topic/indexStatus/${ConfigService.catalogId}`)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => (this.indexingIsRunning = !data.endTime)),
+        tap((data) => this.indexingIsRunning.set(!data.endTime)),
         tap((data) => this.status.set(data)),
       )
       .subscribe();
 
     this.indexService
       .getIndexConfig()
-      .pipe(tap(() => (this.initialized = true)))
+      .pipe(tap(() => this.initialized.set(true)))
       .subscribe((config) => {
         this.cronField.setValue(config.cronPattern);
         this.exportModel = { "catalog-index-config": config.exports };
       });
 
     this.cronField.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => {
         let expression = this.translateCronExpression(value);
-        this.hint = expression.message;
-        this.valid = expression.valid;
+        this.hint.set(expression.message);
+        this.valid.set(expression.valid);
       });
 
     this.configService.getConnectionsConfig().subscribe((config) => {
@@ -138,7 +140,10 @@ export class IndexingComponent implements OnInit {
   }
 
   index() {
-    this.indexService.start().subscribe();
+    this.indexService
+      .start()
+      .pipe(tap(() => this.indexingIsRunning.set(true)))
+      .subscribe();
   }
 
   updatePattern(value: string) {
@@ -171,7 +176,7 @@ export class IndexingComponent implements OnInit {
   copyContent(event: MouseEvent) {
     event.preventDefault();
 
-    this.copyToClipboardFn(this.indexContent.nativeElement.innerText, {
+    this.copyToClipboardFn(this.indexContent().nativeElement.innerText, {
       successText: "Log in Zwischenablage kopiert",
     });
   }
@@ -182,7 +187,7 @@ export class IndexingComponent implements OnInit {
   }
 
   cancelIndexing() {
-    this.indexingIsRunning = false;
+    this.indexingIsRunning.set(false);
     this.indexService.cancel();
   }
 

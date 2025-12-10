@@ -17,13 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, Signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  Signal,
+} from "@angular/core";
 import {
   CodelistService,
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { finalize, tap } from "rxjs/operators";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
@@ -32,7 +38,6 @@ import { FilterSelectComponent } from "../../shared/filter-select/filter-select.
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 
-@UntilDestroy()
 @Component({
   selector: "ige-codelists",
   templateUrl: "./codelists.component.html",
@@ -58,9 +63,9 @@ export class CodelistsComponent implements OnInit {
       });
   });
 
-  disableSyncButton = false;
-  showMore = false;
-  selectedCodelist: Codelist;
+  disableSyncButton = signal<boolean>(false);
+  showMore = signal<boolean>(false);
+  selectedCodelist = signal<Codelist>(null);
 
   constructor(
     private codelistService: CodelistService,
@@ -72,23 +77,23 @@ export class CodelistsComponent implements OnInit {
   }
 
   updateCodelists() {
-    this.disableSyncButton = true;
+    this.disableSyncButton.set(true);
     this.codelistService
       .update()
       .pipe(
         tap(() => this.snack.open("Codelisten erfolgreich synchronisiert")),
-        finalize(() => (this.disableSyncButton = false)),
+        finalize(() => this.disableSyncButton.set(false)),
       )
       .subscribe();
   }
 
   updateCodelistSelection(option: SelectOptionUi) {
     if (!option) {
-      this.selectedCodelist = null;
+      this.selectedCodelist.set(null);
       return;
     }
 
-    this.selectedCodelist = this.codelistStore.entityMap()[option.value];
+    this.selectedCodelist.set(this.codelistStore.entityMap()[option.value]);
   }
 
   resetInput() {

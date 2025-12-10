@@ -160,38 +160,22 @@ export function dataOrigin(
 }
 
 function loadAndSetEvent(doc: DocumentWithMetadata, field: FormlyFieldConfig) {
-  const sortedTemporalEvents = getSortedEvents(doc);
+  const event = doc.document.temporal?.event;
+  const revisionDate = event?.lastModified;
 
-  if (sortedTemporalEvents.length === 0) {
+  if (!event || Object.keys(event).length === 0) {
     console.warn("No temporal events found!");
     return;
   }
-  const allRevisionEvents = sortedTemporalEvents.filter(
-    (event) => event.referenceDateType.key === "3",
-  );
-  const revisionFound = allRevisionEvents.length > 0;
+
   field.formControl.root.patchValue({
-    date: revisionFound
-      ? allRevisionEvents[0].referenceDate
-      : sortedTemporalEvents[0].referenceDate,
-    dateType: revisionFound
-      ? allRevisionEvents[0].referenceDateType
-      : sortedTemporalEvents[0].referenceDateType,
-  });
-}
-
-function getSortedEvents(doc: DocumentWithMetadata) {
-  const events = doc.document.temporal?.events ?? [];
-  if (
-    events.length <= 0 ||
-    events[0].referenceDate == null ||
-    events[0].referenceDateType == null
-  )
-    return [];
-
-  return events.sort((a, b) => {
-    return (
-      new Date(b.referenceDate).getTime() - new Date(a.referenceDate).getTime()
-    );
+    date: revisionDate
+      ? revisionDate
+      : (event?.firstPublished ?? event?.created),
+    dateType: revisionDate
+      ? { key: "3" }
+      : event?.firstPublished
+        ? { key: "2" }
+        : { key: "1" },
   });
 }

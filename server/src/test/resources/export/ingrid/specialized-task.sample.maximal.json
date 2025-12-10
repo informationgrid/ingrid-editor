@@ -96,20 +96,17 @@
       "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "3"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "till"
+      "event": {
+        "lastModified": "2023-06-30T22:00:00.000Z"
       },
-      "resourceDate": "2023-06-30T22:00:00.000Z",
       "status": {
         "key": "7"
+      },
+      "data": {
+        "type": "range",
+        "resourceDate": "2023-06-30T22:00:00.000Z",
+        "intervalFrom": "not-available",
+        "intervalTo": "date"
       }
     },
     "maintenanceInformation": {

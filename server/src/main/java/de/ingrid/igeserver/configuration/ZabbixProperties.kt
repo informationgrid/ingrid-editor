@@ -30,4 +30,11 @@ data class ZabbixProperties(
     val checkDelay: String,
     val checkCount: Int,
     val userGroupId: String,
-)
+    val cleanup: Cleanup,
+) {
+
+    data class Cleanup(
+        val pattern: String,
+        val threshold: Int,
+    )
+}

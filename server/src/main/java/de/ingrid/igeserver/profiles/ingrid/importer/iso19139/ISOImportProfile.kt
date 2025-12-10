@@ -19,10 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
-import de.ingrid.igeserver.exports.iso.Metadata
-
 interface ISOImportProfile {
-    fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData?
+    fun handle(isoData: IsoImportData): ImportProfileData?
 }
 
 data class ImportProfileData(

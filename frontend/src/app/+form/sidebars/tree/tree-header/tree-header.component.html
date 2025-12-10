@@ -46,6 +46,7 @@
                 @if (showWriteAccessToggle()) {
                     <mat-slide-toggle
                         class="show-all"
+                        data-cy="write-access-toggle"
                         (change)="toggleWriteAccess.emit($event.checked)"
                     >
                         mit Schreibzugriff
@@ -77,7 +78,7 @@
                 [focus]="false"
                 [withWhiteBorder]="false"
                 placeholder="Suchen"
-                showSearchIcon="true"
+                [showSearchIcon]="true"
                 ariaLabel="Suche nach der Metadaten in der Baumansicht"
             ></ige-search-input>
             <mat-autocomplete

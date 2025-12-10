@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   input,
   OnInit,
@@ -35,7 +36,6 @@ import {
 } from "@angular/forms";
 import { DoctypeAbstract } from "../../../../store/doctype/doctype.model";
 import { filter, map, tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoService } from "@jsverse/transloco";
@@ -44,13 +44,12 @@ import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { DoctypeStore } from "../../../../store/doctype/doctype.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
 interface AddressDocumentAbstract extends DocumentAbstract {
   addressType: "person" | "organization";
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-address-template",
   templateUrl: "./address-template.component.html",
@@ -66,6 +65,7 @@ interface AddressDocumentAbstract extends DocumentAbstract {
 })
 export class AddressTemplateComponent implements OnInit {
   private doctypeStore = inject(DoctypeStore);
+  private destroyRef = inject(DestroyRef);
 
   readonly form = input<UntypedFormGroup>(undefined);
   parent = input<number>();
@@ -101,7 +101,7 @@ export class AddressTemplateComponent implements OnInit {
     parent: number,
   ) {
     return doctypes.pipe(
-      untilDestroyed(this),
+      takeUntilDestroyed(this.destroyRef),
       filter((types) => types.length > 0),
       map((types) => this.filterDocTypesByParent(types, parent)),
       map((types) => this.prepareDocumentTypes(types)),

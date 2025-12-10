@@ -111,9 +111,10 @@ class KeycloakService : UserManagementService {
     override fun getUsersWithIgeRoles(): Set<User> {
         try {
             val realm = keycloakClient.realm()
-            val usersWithRole = getUsersWithRole(realm).toSet()
-            val userInGroupsWithRole = getUsersInGroupsWithRole(realm).toSet()
-            return usersWithRole + userInGroupsWithRole
+            val usersWithRole = getUsersWithRole(realm)
+            val externalUsersWithRole = getUsersFromUserFederation(realm)
+            val userInGroupsWithRole = getUsersInGroupsWithRole(realm)
+            return (usersWithRole + externalUsersWithRole + userInGroupsWithRole).distinctBy { it.login }.toSet()
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
@@ -143,6 +144,23 @@ class KeycloakService : UserManagementService {
         log.warn("No users found with role '$ROLE_IGE_USER'")
         emptyList()
     }
+
+    /**
+     * Retrieves a list of users which are synchronized with a user federation.
+     * The mapped roles are only associated with the users and must be requested explicitly.
+     *
+     * @param realm The realm resource from which to fetch the users.
+     * @return A list of users retrieved from the user federation with the specified criteria.
+     */
+    private fun getUsersFromUserFederation(realm: RealmResource): List<User> = keycloakClient.realm().users().list()
+        .filter { it.federationLink != null }
+        .filter { user ->
+            realm.users().get(user.id)
+                .roles()
+                .realmLevel()
+                .listAll().any { it.name == ROLE_IGE_USER }
+        }
+        .map { mapUser(it) }
 
     private fun getUsersInGroupsWithRole(
         realm: RealmResource,

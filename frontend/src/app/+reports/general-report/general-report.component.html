@@ -20,7 +20,7 @@
         </mat-button-toggle-group>
         <ige-facets
             formControlName="facets"
-            [facets]="facets"
+            [facets]="facets()"
             [forAddresses]="form.get('type').value === 'selectAddresses'"
             [forReports]="true"
             [refreshView]="facetViewRefresher"
@@ -30,7 +30,7 @@
         <div class="chart-container">
             <ige-chart
                 [data]="chartDataPublished()"
-                showPercentages="true"
+                [showPercentages]="true"
             ></ige-chart>
         </div>
         <ige-card-box
@@ -103,12 +103,12 @@
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
                 <tr
                     mat-row
                     cdkMonitorElementFocus
                     tabindex="0"
-                    *matRowDef="let row; columns: displayedColumns"
+                    *matRowDef="let row; columns: displayedColumns()"
                     [attr.aria-label]="row.ariaLabel"
                 ></tr>
             </table>

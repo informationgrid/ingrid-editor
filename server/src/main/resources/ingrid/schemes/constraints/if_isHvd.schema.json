@@ -31,6 +31,6 @@
         "required": ["isOpenData"]
       }
     },
-    "required": ["properties"]
+    "required": ["properties", "hvdCategories"]
   }
 }

@@ -23,7 +23,7 @@ import {
 } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable, signal } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { IngridClass, IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
 import {
@@ -202,6 +202,38 @@ export class GeoServiceDoctype extends IngridShared {
                   },
                 }),
               ],
+              validators: {
+                onlyOneLandingPage: {
+                  expression: (ctrl: FormControl) => {
+                    const ogcLandingPageCodelistId = "7";
+                    return (
+                      ctrl.root.value?.service?.operations?.filter(
+                        (op) => op?.name?.key === ogcLandingPageCodelistId,
+                      )?.length < 2
+                    );
+                  },
+                  message: `"LandingPage" darf nur einmal aufgeführt werden`,
+                },
+                ifOgcFeatureThenLandingPage: {
+                  expression: (ctrl: FormControl) => {
+                    const ogcFeatureCodelistId = "4";
+                    const ogcLandingPageCodelistId = "7";
+
+                    const version = ctrl.root.value?.service?.version ?? [];
+                    const operations =
+                      ctrl.root.value?.service?.operations ?? [];
+
+                    const hasOgcFeature = version.some(
+                      (v) => v.key === ogcFeatureCodelistId,
+                    );
+                    const hasOgcLandingPage = operations.some(
+                      (op) => op?.name?.key === ogcLandingPageCodelistId,
+                    );
+                    return hasOgcFeature == hasOgcLandingPage;
+                  },
+                  message: `Ist die Version "OGC API-Feature" gesetzt, muss auch eine Operation "LandingPage" angegeben werden. "LandingPage" darf nur gewählt werden, wenn "OGC API-Feature" aktiv ist`,
+                },
+              },
             }),
             this.addGroup(
               null,
@@ -297,7 +329,7 @@ export class GeoServiceDoctype extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridGeoService),
     ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);

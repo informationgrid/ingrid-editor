@@ -30,13 +30,17 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
+import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.utils.FileUploadHandler
 import org.apache.logging.log4j.kotlin.logger
+import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
+import org.quartz.JobKey
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
@@ -52,6 +56,7 @@ class ImportTask(
     val documentService: DocumentService,
     val catalogService: CatalogService,
     val fileUploadHandler: FileUploadHandler,
+    private val scheduler: SchedulerService,
 ) : IgeJob() {
 
     override val log = logger()
@@ -103,6 +108,7 @@ class ImportTask(
                         info.options!!,
                         message,
                     )
+                    runCodelistSyncTask(info.catalogId)
                     info.analysis.apply { this.importResult = counter }
                 }
 
@@ -133,6 +139,15 @@ class ImportTask(
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")
+    }
+
+    private fun runCodelistSyncTask(catalogIdentifier: String) {
+        // now trigger another job to add the codelist values to the datasets
+        val jobKey = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalogIdentifier)
+        val jobDataMap = JobDataMap().apply {
+            this.put("catalogId", catalogIdentifier)
+        }
+        scheduler.handleJobWithCommand(JobCommand.start, CodelistSyncTask::class.java, jobKey, jobDataMap)
     }
 
     @Suppress("UNCHECKED_CAST")

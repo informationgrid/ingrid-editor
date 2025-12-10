@@ -1,7 +1,11 @@
 ---
 # ID des GUI Elements
 id: fileReferences
-docType: InGridGeoDataset
+docType:
+  - InGridDataCollection
+  - InGridGeoDataset
+  - InGridInformationSystem
+  - InGridPublication
 profile: ingrid
 
 # title, used as window title

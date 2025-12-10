@@ -27,7 +27,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -55,13 +55,13 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatDatepickerInputHarness } from "@angular/material/datepicker/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
 import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("ConformityDialogComponent", () => {
   let spectator: Spectator<ConformityDialogComponent>;
@@ -94,6 +94,7 @@ describe("ConformityDialogComponent", () => {
       MatAutocompleteModule,
     ],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       { provide: MatDialogRef, useValue: mockMatDialogRef },
@@ -133,7 +134,6 @@ describe("ConformityDialogComponent", () => {
   });
 
   beforeEach(async () => {
-    UntilDestroy()(ConformityDialogComponent);
     spectator = createComponent();
 
     mockCodelists();
@@ -155,14 +155,14 @@ describe("ConformityDialogComponent", () => {
   it("should disable the date field when isInspire is true", async () => {
     spectator.detectChanges();
 
-    expect(await isInspireCheckbox.isChecked()).toBeTrue(); // Assuming checkbox is initially checked
-    expect(await dateField.isDisabled()).toBeTrue();
+    expect(await isInspireCheckbox.isChecked()).toBe(true); // Assuming checkbox is initially checked
+    expect(await dateField.isDisabled()).toBe(true);
 
     await isInspireCheckbox.uncheck();
-    expect(await dateField.isDisabled()).toBeFalse();
+    expect(await dateField.isDisabled()).toBe(false);
 
     await isInspireCheckbox.check();
-    expect(await dateField.isDisabled()).toBeTrue();
+    expect(await dateField.isDisabled()).toBe(true);
   });
 
   it("should set INSPIRE specification as autoComplete select value with free text ", async () => {
@@ -178,7 +178,7 @@ describe("ConformityDialogComponent", () => {
 
     await dateField.setValue("18.15.2019");
 
-    const closeDialog = spyOn(mockMatDialogRef, "close");
+    const closeDialog = vi.spyOn(mockMatDialogRef, "close");
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({
@@ -206,7 +206,7 @@ describe("ConformityDialogComponent", () => {
     await passField.clickOptions({ text: "konform" });
     expect(await dateField.getValue()).toBe("20.10.2009");
 
-    const closeDialog = spyOn(mockMatDialogRef, "close");
+    const closeDialog = vi.spyOn(mockMatDialogRef, "close");
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({

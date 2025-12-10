@@ -21,14 +21,15 @@ import {
   Component,
   Input,
   OnInit,
-  ViewChild,
   input,
   output,
+  viewChild,
+  inject,
+  DestroyRef,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   MatListItemIcon,
   MatListItemTitle,
@@ -42,8 +43,8 @@ import { DocumentIconComponent } from "../document-icon/document-icon.component"
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatDivider } from "@angular/material/divider";
 import { DateAgoPipe } from "../../directives/date-ago.pipe";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-document-list-item",
   templateUrl: "./document-list-item.component.html",
@@ -65,6 +66,8 @@ import { DateAgoPipe } from "../../directives/date-ago.pipe";
   ],
 })
 export class DocumentListItemComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   _docs: Observable<DocumentAbstract[] | TreeNode[]>;
   @Input() set docs(
     value: Observable<DocumentAbstract[] | TreeNode[]> | DocumentAbstract[],
@@ -85,7 +88,7 @@ export class DocumentListItemComponent implements OnInit {
   readonly setActiveItem = input<Subject<Partial<DocumentAbstract>>>(undefined);
   readonly select = output<DocumentAbstract | TreeNode>();
 
-  @ViewChild(MatSelectionList) list: MatSelectionList;
+  readonly list = viewChild(MatSelectionList);
 
   currentSelection: Partial<DocumentAbstract>;
 
@@ -95,7 +98,7 @@ export class DocumentListItemComponent implements OnInit {
     const setActiveItem = this.setActiveItem();
     if (setActiveItem) {
       setActiveItem
-        .pipe(untilDestroyed(this))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((doc) => this.updateSelectionFromExternal(doc));
     }
   }
@@ -107,8 +110,9 @@ export class DocumentListItemComponent implements OnInit {
   makeSelection(doc: DocumentAbstract | TreeNode) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
-    if (this.removeSelectionAfter() && this.list) {
-      this.list.deselectAll();
+    const list = this.list();
+    if (this.removeSelectionAfter() && list) {
+      list.deselectAll();
     } else {
       this.currentSelection = doc;
     }

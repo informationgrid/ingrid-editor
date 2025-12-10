@@ -107,10 +107,7 @@ internal class KeycloakConfig {
                 cors { disable() }
             }
             if (!generalProperties.enableHttps) {
-                requiresChannel {
-                    anyRequest
-                    requiresSecure
-                }
+                redirectToHttps {}
             }
         }
 

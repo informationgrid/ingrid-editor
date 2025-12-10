@@ -24,7 +24,6 @@ import { map } from "rxjs/operators";
 
 @Pipe({
   name: "selectOption",
-  standalone: true,
 })
 export class SelectOptionPipe implements PipeTransform {
   constructor() {}

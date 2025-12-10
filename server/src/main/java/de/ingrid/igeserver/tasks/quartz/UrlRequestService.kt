@@ -99,6 +99,7 @@ class UrlRequestService {
         .method(method, HttpRequest.BodyPublishers.noBody())
         .uri(URI.create(url))
         .timeout(Duration.ofSeconds(5))
+        .version(HttpClient.Version.HTTP_1_1) // be more compatible
         .build()
 
     fun isSuccessCode(status: Int): Boolean = status < 400

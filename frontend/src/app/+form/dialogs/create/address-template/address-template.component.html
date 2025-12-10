@@ -5,7 +5,7 @@
                 <div class="dlg-field-label required">Vorname</div>
                 <mat-form-field appearance="outline" class="width-100">
                     <input
-                        igeFocus
+                        [igeFocus]="true"
                         matInput
                         data-cy="create-address-firstName"
                         formControlName="firstName"
@@ -32,7 +32,7 @@
         <div class="dlg-field-label required">Organisation</div>
         <mat-form-field appearance="outline" class="space-bottom">
             <input
-                igeFocus
+                [igeFocus]="true"
                 matInput
                 data-cy="create-address-organization"
                 name="organization"
@@ -51,11 +51,11 @@
         </div>
         <ige-document-list-item
             [docs]="documentTypes()"
-            showSelection="true"
+            [showSelection]="true"
             [denseMode]="true"
             [hideDivider]="true"
             [setActiveItem]="initialActiveDocumentType"
-            (select)="setDocType($event)"
+            (select)="setDocType($any($event))"
         ></ige-document-list-item>
     }
 </div>

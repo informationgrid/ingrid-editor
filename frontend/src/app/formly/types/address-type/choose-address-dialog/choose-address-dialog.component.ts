@@ -20,12 +20,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   Inject,
   OnDestroy,
   OnInit,
   signal,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
@@ -46,7 +47,6 @@ import {
 import { ResolvedAddressWithType } from "../address-card/address-card.component";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
@@ -57,7 +57,7 @@ import { MatIcon } from "@angular/material/icon";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { GeneralStore } from "../../../../store/general.store";
 
@@ -66,6 +66,7 @@ export interface ChooseAddressDialogData {
   allowedTypes: string[];
   allowedTypesByDoctype: { [key: string]: string[] } | null;
   skipToType: boolean;
+  disabledCondition: (node: TreeNode) => boolean | null;
 }
 
 export interface ChooseAddressResponse {
@@ -73,7 +74,6 @@ export interface ChooseAddressResponse {
   address: DocumentAbstract;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-choose-address-dialog",
   templateUrl: "./choose-address-dialog.component.html",
@@ -94,10 +94,12 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  addressTreeStore = inject(AddressTreeStore);
   private codelistStore = inject(CodelistStore);
-  private addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
-  @ViewChild(MatSelect) recentAddressSelect: MatSelect;
+  private destroyRef = inject(DestroyRef);
+
+  readonly recentAddressSelect = viewChild(MatSelect);
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
@@ -124,10 +126,14 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.data.disabledCondition != null)
+      this.disabledCondition = this.data.disabledCondition;
     this.codelistService.byId(this.addressTypeCodelistId);
+    // disable the type selection if only one type is allowed for all doctypes
+    this.typeSelectionEnabled.set(!(this.data.allowedTypes?.length === 1));
     this.codelists$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((item) => item[this.addressTypeCodelistId]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         tap((items) => {
@@ -209,10 +215,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   handleTreeError(error: HttpErrorResponse) {
     console.error(error);
     if (error.error.errorText === "No value present") {
+      const recentAddressSelect = this.recentAddressSelect();
       this.documentService.removeFromRecentlyUsedAddresses(
-        this.recentAddressSelect.value.id,
+        recentAddressSelect.value.id,
       );
-      this.recentAddressSelect.value = null;
+      recentAddressSelect.value = null;
       throw new IgeError(
         "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt.",
       );

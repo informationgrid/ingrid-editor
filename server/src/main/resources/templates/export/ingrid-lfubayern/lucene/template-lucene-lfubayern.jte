@@ -7,7 +7,6 @@
 
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
-,
     "object_node.tree_path.name": [
     @for(var entry : ForSupport.of(page.getTreePathNames()))
         "${entry.get()}"@if (!entry.isLast()),@endif

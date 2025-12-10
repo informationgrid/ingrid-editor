@@ -11,6 +11,7 @@
 
     <mat-dialog-content>
         <ige-tree
+            [treeStore]="addressTreeStore"
             [class.hide]="activeStep !== 1"
             (selected)="updateAddressTree($event[0])"
             data-cy="choose-address-tree"
@@ -35,12 +36,12 @@
             <ige-document-list-item
                 data-cy="address-type-select"
                 [docs]="allowedReferenceTypes"
-                showSelection="true"
+                [showSelection]="true"
                 [denseMode]="true"
                 [hideDivider]="true"
                 [setActiveItem]="initialActiveAddressType"
                 [showIcons]="false"
-                (select)="setRefType($event)"
+                (select)="setRefType($any($event))"
             ></ige-document-list-item>
         </div>
     </mat-dialog-content>

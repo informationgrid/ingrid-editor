@@ -50,7 +50,7 @@ data class OperationBean(
     var name: KeyValue? = null,
 )
 
-data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
+data class TimeReferenceBean(var type: String? = null, var date: Date? = null, var from: Date? = null, var to: Date? = null)
 data class ConformityBean(var level: Int? = null, var specification: String? = null, var publishDate: String? = null)
 data class AddressBean(
     var uuid: String? = null,
@@ -212,16 +212,16 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val params
         return confKey
     }
 
-    private fun getDateType(xPath: String): Int? {
+    private fun getDateType(xPath: String): String? {
         if (xPath.indexOf("DateOfPublication") != -1) {
-            return 2
+            return "2"
         } else if (xPath.indexOf("DateOfCreation") != -1) {
-            return 1
+            return "1"
         } else if (xPath.indexOf(
                 "DateOfLastRevision",
             ) != -1
         ) {
-            return 3
+            return "3"
         }
         return null
     }

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { geoJson, Map } from "leaflet";
+import { GeoJSON, geoJson, Map } from "leaflet";
 import { IgeError } from "../../../../../models/ige-error";
 import { wktToGeoJSON } from "@terraformer/wkt"; // GeoJSON types
 
@@ -46,7 +46,7 @@ export class WktTools {
     overrideConfig = {},
     editable: boolean = false,
     focus: boolean = true,
-  ): object {
+  ): GeoJSON {
     let geom = this.readWKTString(wktString);
 
     const config: any = {
@@ -78,7 +78,7 @@ export class WktTools {
         return wktToGeoJSON(
           preProcessedWkt.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
-      } catch (e2) {
+      } catch (e2: any) {
         if (e2.name === "WKTError") {
           throw new IgeError(
             "We could not understand the WKT string you entered. Check that you have parentheses " +

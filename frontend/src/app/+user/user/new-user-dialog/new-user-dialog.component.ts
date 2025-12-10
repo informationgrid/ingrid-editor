@@ -17,8 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
-import { Observable, of, Subscription } from "rxjs";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import {
@@ -27,7 +33,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { catchError, filter, finalize, tap } from "rxjs/operators";
+import { catchError, filter, finalize } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import {
   FormlyFieldConfig,
@@ -35,13 +41,12 @@ import {
   FormlyFormOptions,
 } from "@ngx-formly/core";
 import { IgeError } from "../../../models/ige-error";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
+import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
@@ -56,28 +61,25 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class NewUserDialogComponent implements OnInit {
-  userSub: Subscription;
-  users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
-    tap((users) => (this.noAvailableUsers = users.length === 0)),
-    tap((users) => (this.externalUsers = users)),
-    tap(
-      (users) =>
-        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users)),
-    ),
-  );
-  externalUsers: BackendUser[];
+  private destroyRef = inject(DestroyRef);
+
+  users$ = rxResource({
+    stream: () => this.userService.getExternalUsers(),
+  });
+  private externalUsers = computed<BackendUser[]>(() => this.users$.value());
   form: FormGroup;
-  noAvailableUsers = true;
-  importExternal = false;
-  formlyFieldConfig: FormlyFieldConfig[];
+  private importExternal = signal<boolean>(false);
+  formlyFieldConfig = computed<FormlyFieldConfig[]>(() =>
+    this.userService.getNewUserFormFields(this.externalUsers()),
+  );
   options: FormlyFormOptions = {
     formState: {
       showGroups: false,
     },
   };
   model: FrontendUser;
-  loginValue = "";
-  asAdmin: boolean = false;
+  private loginValue = "";
+  asAdmin = signal<boolean>(false);
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
@@ -105,34 +107,34 @@ export class NewUserDialogComponent implements OnInit {
     });
     this.form
       .get("login")
-      .valueChanges.pipe(untilDestroyed(this))
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.updateForm(value));
     this.form
       .get("role")
-      .valueChanges.pipe(untilDestroyed(this))
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((role) => {
         if (typeof role === "string") {
-          this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
-          if (this.asAdmin) this.form.get("groups").reset();
+          this.asAdmin.set(role === "ige-super-admin" || role === "cat-admin");
+          if (this.asAdmin()) this.form.get("groups").reset();
         }
       });
 
-    this.userSub = this.users$.subscribe();
+    // this.userSub.set(this.users$.subscribe());
   }
 
   updateForm(existingLogin: string) {
     if (existingLogin !== this.loginValue) {
-      this.importExternal = false;
+      this.importExternal.set(false);
       this.loginValue = existingLogin;
       const role = this.form.get("role").value;
-      const potentialMatch = this.externalUsers?.filter((user) => {
+      const potentialMatch = this.externalUsers()?.filter((user) => {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
         this.model = new FrontendUser(potentialMatch[0]);
         this.model.role = role;
         this.form.reset(this.model);
-        this.importExternal = true;
+        this.importExternal.set(true);
       }
     }
   }
@@ -144,7 +146,7 @@ export class NewUserDialogComponent implements OnInit {
     user.login = user.login.trim();
 
     this.userService
-      .createUser(user, !this.importExternal)
+      .createUser(user, !this.importExternal())
       .pipe(
         filter((user) => user !== undefined),
         catchError((error: IgeError) => {
@@ -163,7 +165,7 @@ export class NewUserDialogComponent implements OnInit {
   }
 
   handleSubmit() {
-    if (this.asAdmin || this.options.formState.showGroups) {
+    if (this.asAdmin() || this.options.formState.showGroups) {
       this.createUser();
       return;
     }

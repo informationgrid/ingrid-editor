@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
 import {
   FieldArrayType,
   FormlyField,
@@ -30,13 +30,12 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { debounceTime, filter, map, startWith } from "rxjs/operators";
 import { FormularService } from "../../../+form/formular.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-uvp-sections",
   templateUrl: "./uvp-sections.component.html",
@@ -53,6 +52,8 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   markSection = {};
   sectionTypes = [];
 
@@ -66,7 +67,7 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(100),
         startWith(this.formControl.value),
         map((values) => this.getLabelFromSections(values)),

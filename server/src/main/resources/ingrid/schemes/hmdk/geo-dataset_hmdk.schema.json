@@ -3,7 +3,8 @@
   "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/GeoDatasetHmdk",
   "allOf": [
     { "$ref": "../geo-dataset-base.schema.json" },
-    { "$ref": "../constraints/if_isInspireIdentified-geo-dataset.schema.json"},
+    { "$ref": "../constraints/if_isInspireIdentifiedConform-geo-dataset.schema.json"},
+    { "$ref": "../constraints/if_isInspireIdentifiedNotConform-geo-dataset.schema.json"},
     { "$ref": "../constraints/if_isOpenData-hmdk.schema.json"},
     { "$ref": "../constraints/if_publicationHmbTG-hmdk.schema.json"},
     { "$ref": "../constraints/if_isHvd.schema.json"},

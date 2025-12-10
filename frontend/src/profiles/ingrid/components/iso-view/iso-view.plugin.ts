@@ -17,18 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { ExchangeService } from "../../../../app/+importExport/exchange.service";
 import { of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 
-@UntilDestroy()
 @Injectable({ providedIn: "root" })
 export class IsoViewPlugin extends Plugin {
   id = "plugin.isoView";
@@ -65,12 +63,13 @@ export class IsoViewPlugin extends Plugin {
 
     // add button to toolbar
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnIso",
       tooltip: "ISO Ansicht",
       matSvgVariable: "ISO-Ansicht",
       eventId: "ISO",
       pos: 80,
-      active: signal(false),
+      active: false,
     });
 
     // react on event when button is clicked

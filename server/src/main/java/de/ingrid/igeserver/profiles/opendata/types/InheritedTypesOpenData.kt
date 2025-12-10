@@ -58,7 +58,7 @@ class OpenDataType : EntityType() {
         }
     }
 
-    override fun getReferenceIds(doc: Document): List<String> = doc.data.path("addresses").map { address ->
+    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("addresses").map { address ->
         address.path("ref").textValue()
     }
 }

@@ -41,6 +41,7 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Sql(scripts = ["/test_data_uvp_archive.sql"], config = SqlConfig(encoding = "UTF-8"))
@@ -233,10 +234,10 @@ class UvpArchiveTaskTest : IntegrationTest() {
     private fun getTableRows(steps: ArrayNode, section: Int, tableId: String): ArrayNode = steps.get(section).get(tableId) as ArrayNode
 
     private fun getYesterdayDate(): String {
-        return OffsetDateTime.now(ZoneId.of("Europe/Berlin"))
+        return ZonedDateTime.now(ZoneId.of("Europe/Berlin"))
             .with(LocalTime.MIN) // Sets the time to the start of the day
             .minusDays(1)
-            .withOffsetSameInstant(ZoneOffset.UTC) // Adjusts the offset to UTC
+            .withZoneSameInstant(ZoneOffset.UTC) // Adjusts the offset to UTC
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")) // Formats with milliseconds
     }
 

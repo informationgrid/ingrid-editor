@@ -19,7 +19,7 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { IngridClass, IngridShared } from "./ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -117,7 +117,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridInformationSystem),
       this.addFileReferences(),
     ];
 

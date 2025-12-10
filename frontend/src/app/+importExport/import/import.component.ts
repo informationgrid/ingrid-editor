@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from "@angular/core";
 import {
   AbstractControl,
   FormControl,
@@ -44,12 +51,10 @@ import {
 import { filter, map, take, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
-import { FileUploadModel } from "../../shared/upload/fileUploadModel";
 import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import {
   PasteDialogComponent,
@@ -65,8 +70,8 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { BreadcrumbComponent } from "../../+form/form-info/breadcrumb/breadcrumb.component";
 import { MatIcon } from "@angular/material/icon";
 import { ImportReportComponent } from "./import-report/import-report.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-import",
   templateUrl: "./import.component.html",
@@ -92,11 +97,12 @@ import { ImportReportComponent } from "./import-report/import-report.component";
   ],
 })
 export class ImportComponent implements OnInit {
-  @ViewChild("stepper") stepper: MatStepper;
-  @ViewChild("uploadComponent") uploadComponent: UploadComponent;
+  private destroyRef = inject(DestroyRef);
+
+  readonly stepper = viewChild<MatStepper>("stepper");
+  readonly uploadComponent = viewChild<UploadComponent>("uploadComponent");
 
   file: File;
-  droppedFiles: FileUploadModel[] = [];
 
   private validParentValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -122,13 +128,13 @@ export class ImportComponent implements OnInit {
   importers: ImportTypeInfo[];
   chosenFiles: TransfersWithErrorInfo[];
 
-  importIsRunning: boolean;
+  importIsRunning = signal<boolean>(false);
 
-  showMore = false;
+  showMore = signal<boolean>(false);
 
-  errorInAnalysis = false;
+  errorInAnalysis = signal<boolean>(false);
 
-  datasetsWithNoPermission: DatasetInfo[] = [];
+  datasetsWithNoPermission = signal<DatasetInfo[]>([]);
 
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
@@ -146,11 +152,10 @@ export class ImportComponent implements OnInit {
             info?.report?.importers ? info?.report?.importers[0] : null,
           ),
       ),
-      tap(
-        (info: ImportLogInfo) =>
-          (this.errorInAnalysis = info?.errors?.length > 0),
+      tap((info: ImportLogInfo) =>
+        this.errorInAnalysis.set(info?.errors?.length > 0),
       ),
-      tap(() => (this.lastLogReceived = true)),
+      tap(() => this.lastLogReceived.set(true)),
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
@@ -160,15 +165,15 @@ export class ImportComponent implements OnInit {
       ),
   );
 
-  message: ImportLogInfo;
+  message = signal<ImportLogInfo | null>(null);
 
-  parent = {
+  parent = signal<{ documentPath: any[]; addressPath: any[] }>({
     documentPath: [],
     addressPath: [],
-  };
+  });
 
-  lastLogReceived: boolean = false;
-  websocketConnected: boolean = false;
+  lastLogReceived = signal<boolean>(false);
+  websocketConnected = signal<boolean>(false);
 
   protected readonly ConfigService = ConfigService;
 
@@ -184,7 +189,7 @@ export class ImportComponent implements OnInit {
   ngOnInit(): void {
     // wait for websocket connection to be ready to receive import state
     this.rxStompService.connected$.pipe(take(1)).subscribe(() => {
-      this.websocketConnected = true;
+      this.websocketConnected.set(true);
     });
 
     this.exchangeService
@@ -194,10 +199,10 @@ export class ImportComponent implements OnInit {
 
     this.liveImportMessage
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         tap((info) => {
           // activate change detection, since sometimes view is not updated
-          setTimeout(() => (this.message = info));
+          setTimeout(() => this.message.set(info));
         }),
       )
       .subscribe();
@@ -210,12 +215,12 @@ export class ImportComponent implements OnInit {
   }
 
   cancel() {
-    this.droppedFiles = [];
-    this.stepper.selectedIndex = 0;
+    this.stepper().selectedIndex = 0;
     this.step1Complete = false;
   }
 
   startImport() {
+    this.message.set(null);
     const options = this.optionsFormGroup.value;
     this.exchangeService.import(options).subscribe();
   }
@@ -224,7 +229,7 @@ export class ImportComponent implements OnInit {
     this.router.navigate([
       `${ConfigService.catalogId}/form`,
       {
-        id: this.message.report.references.filter((ref) => !ref.isAddress)[0]
+        id: this.message().report.references.filter((ref) => !ref.isAddress)[0]
           .document._uuid,
       },
     ]);
@@ -236,10 +241,10 @@ export class ImportComponent implements OnInit {
   }
 
   private handleRunningInfo(data: any) {
-    this.importIsRunning = !data.endTime;
+    this.importIsRunning.set(!data.endTime);
     if (data?.stage === "ANALYZE") {
-      this.showMore = true;
-      this.errorInAnalysis = data.errors?.length > 0;
+      this.showMore.set(true);
+      this.errorInAnalysis.set(data.errors?.length > 0);
     }
   }
 
@@ -267,33 +272,37 @@ export class ImportComponent implements OnInit {
         if (isAddress) {
           this.documentService
             .getPath(target.selection)
-            .subscribe((path) => (this.parent.addressPath = path));
+            .subscribe((path) =>
+              this.parent.update((p) => ({ ...p, addressPath: path })),
+            );
         } else {
           this.documentService
             .getPath(target.selection)
-            .subscribe((path) => (this.parent.documentPath = path));
+            .subscribe((path) =>
+              this.parent.update((p) => ({ ...p, documentPath: path })),
+            );
         }
       });
   }
 
   handleStepEvent(index: number, retries = 0) {
     if (index !== 1) return;
-    this.datasetsWithNoPermission = [];
+    this.datasetsWithNoPermission.set([]);
 
     const action = () =>
-      this.message.report.existingDatasets.map((dataset) =>
+      this.message().report.existingDatasets.map((dataset) =>
         this.documentService
           .uuidExists(dataset.uuid)
           .pipe(filter((exists) => !exists))
           .subscribe(() => {
             console.error(`${dataset.uuid} cannot be accessed`);
-            this.datasetsWithNoPermission.push(dataset);
+            this.datasetsWithNoPermission.update((arr) => [...arr, dataset]);
           }),
       );
 
     // in case the report has not been ready yet
     // TODO: find a better solution
-    if (this.message?.report) action();
+    if (this.message()?.report) action();
     else if (retries === 3) {
       throw new IgeError("Report was not ready after 3 retries");
     } else {

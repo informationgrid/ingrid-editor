@@ -31,6 +31,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -52,8 +53,10 @@ data class IsoImportData(
     val documentService: DocumentService,
     val addressMaps: MutableMap<String, String>,
     val researchService: ResearchService,
+    val bwastrLocatorService: BwastrLocatorService,
     val uploadConfig: UploadConfig,
     val catalogLanguage: String,
+    val importSettings: ImportSettings,
 )
 
 data class IsoConverterOutput(
@@ -61,8 +64,12 @@ data class IsoConverterOutput(
     val references: ArrayNode,
 )
 
+data class ImportSettings(
+    val importGeometryContext: Boolean,
+)
+
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, @Lazy val bwastrLocatorService: BwastrLocatorService, val uploadConfig: UploadConfig) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -70,6 +77,11 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+        data as String
+        if (data.contains("csw:GetRecordByIdResponse")) {
+            throw ServerException.withReason("CSW-Antworten werden für den Import nicht unterstützt (csw:GetRecordByIdResponse). Bitte stellen Sie ein ISO-XML-Dokument bereit, bei dem gmd:MD_Metadata ein Wurzelelement ist.")
+        }
+
         val xmlDeserializer = XmlMapper(
             JacksonXmlModule().apply {
                 setDefaultUseWrapper(false)
@@ -79,9 +91,11 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-        val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
+        val finalObject = xmlDeserializer.readValue(data, Metadata::class.java)
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, uploadConfig, catalogLanguage)
+        val defaultImportSettings = ImportSettings(importGeometryContext = false)
+
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage, defaultImportSettings)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
@@ -144,9 +158,9 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     }
 
     private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? = profileMapper[profile]?.let { mapper ->
-        mapper.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
+        mapper.handle(isoData)?.let {
             val output: TemplateOutput = JsonStringOutput()
-            templateEngine.render(it.template, it.mapper, output)
+            templateEngine.render(it.template, mapOf("model" to it.mapper), output)
 
             IsoConverterOutput(
                 output.toString(),

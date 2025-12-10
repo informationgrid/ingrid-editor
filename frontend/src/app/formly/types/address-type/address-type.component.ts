@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   AddressCardComponent,
@@ -35,9 +35,9 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  startWith,
   tap,
 } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import {
@@ -67,8 +67,8 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { waitForCondition } from "../../../services/utils";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-address-type",
   templateUrl: "./address-type.component.html",
@@ -93,11 +93,13 @@ export class AddressTypeComponent
   private router = inject(Router);
   private documentService = inject(DocumentService);
   private snack = inject(MatSnackBar);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
+        startWith(this.formControl.value as AddressRef[]),
         debounceTime(0),
         distinctUntilChanged((a: AddressRef[], b: AddressRef[]) =>
           this.compareAddressRefs(a, b),
@@ -111,7 +113,7 @@ export class AddressTypeComponent
     // in case they have changed, like address state or data
     this.documentService.reload$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((info) => info.forAddress === false),
         map((item) => item.uuid),
       )
@@ -176,13 +178,6 @@ export class AddressTypeComponent
     ]);
   }
 
-  // TODO: let ige-form-error handle all error messages
-  getFirstError() {
-    return Object.values(this.formControl.errors).map(
-      (error) => error.message,
-    )[0];
-  }
-
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
     moveItemInArray(
       this.formControl.value,
@@ -231,6 +226,7 @@ export class AddressTypeComponent
             address: address,
             allowedTypes: this.props.allowedTypes,
             allowedTypesByDoctype: this.props.allowedTypesByDoctype,
+            disabledCondition: this.props.disabledCondition,
             skipToType: skipToType,
           },
           hasBackdrop: true,

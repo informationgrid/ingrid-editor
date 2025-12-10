@@ -1,0 +1,156 @@
+{
+  "properties": {
+    "isAdVCompatible": true,
+    "subType": {
+      "key": "5",
+      "value": "Datensatz",
+      "_codelistId": "525"
+    }
+  },
+  "dataset": {
+    "languages": [
+      "150"
+    ]
+  },
+  "lineage": {
+    "statement": "Fachliche Grundlage"
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Neuer Raumbezug",
+        "value": {
+          "lat1": 49.66762782262194,
+          "lat2": 51.83577752045248,
+          "lon1": 8.481445312500002,
+          "lon2": 10.9423828125
+        }
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "84",
+        "value": "CRS 84: CRS 84 / mathematisch",
+        "_codelistId": "100"
+      }
+    ],
+    "verticalExtent": {
+      "Datum": {
+        "key": "5105",
+        "value": "Baltic Sea",
+        "_codelistId": "101"
+      },
+      "maximumValue": 1,
+      "minimumValue": 1,
+      "unitOfMeasure": {
+        "key": "9001",
+        "value": "Meter",
+        "_codelistId": "102"
+      }
+    }
+  },
+  "keywords": {
+    "free": [],
+    "gemet": [],
+    "umthes": []
+  },
+  "metadata": {
+    "language": {
+      "key": "150",
+      "_codelistId": "99999999"
+    },
+    "characterSet": null
+  },
+  "resource": {
+    "useConstraints": [
+      {
+        "title": {
+          "key": "27",
+          "value": "Creative Commons Namensnennung 4.0 International",
+          "_codelistId": "6500"
+        }
+      }
+    ],
+    "accessConstraints": [
+      {
+        "key": "1",
+        "value": "Es gelten keine Zugriffsbeschränkungen",
+        "_codelistId": "6010"
+      }
+    ]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2025-10-21T22:00:00.000Z",
+        "referenceDateType": {
+          "key": "1",
+          "value": "Erstellung",
+          "_codelistId": "502"
+        }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": {
+    "legalBasicsDescriptions": []
+  },
+  "qualities": [],
+  "identifier": "87d2cb4e-fa26-480b-9b51-17528c017aa3",
+  "resolution": [],
+  "dataQuality": {
+    "completenessOmission": {}
+  },
+  "description": "Beschreibung",
+  "distribution": {
+    "format": []
+  },
+  "pointOfContact": [
+    {
+      "ref": "110C6012-1713-44C0-9A33-4E2C24D06966",
+      "type": {
+        "key": "12",
+        "value": "Ansprechpartner MD",
+        "_codelistId": "505"
+      }
+    }
+  ],
+  "dataQualityInfo": {
+    "lineage": {
+      "source": {
+        "processStep": {
+          "description": []
+        }
+      }
+    }
+  },
+  "topicCategories": [
+    {
+      "key": "4",
+      "value": "Atmosphäre",
+      "_codelistId": "527"
+    }
+  ],
+  "advProductGroups": [],
+  "graphicOverviews": [],
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null
+    }
+  },
+  "portrayalCatalogueInfo": {
+    "citation": []
+  },
+  "spatialRepresentationType": [],
+  "featureCatalogueDescription": {
+    "citation": [],
+    "featureTypes": []
+  },
+  "absoluteExternalPositionalAccuracy": {},
+  "title": "Validation Test Geodatensatz",
+  "_type": "InGridGeoDataset"
+}

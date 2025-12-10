@@ -19,10 +19,6 @@
  */
 package de.ingrid.mdek.upload.storage.validate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +51,6 @@ public class ValidatorFactory {
      * ...
      * }
      *
-     * @param config
      */
     public ValidatorFactory(final Map<String, Map<String, Object>> config) {
         validatorMap.clear();
@@ -68,6 +63,7 @@ public class ValidatorFactory {
                 if (properties instanceof List) {
                     instance.initialize(new HashMap<>());
                 } else {
+                    //noinspection unchecked
                     instance.initialize((Map<String, String>)properties);
                 }
                 validatorMap.put(validatorName, instance);
@@ -88,9 +84,6 @@ public class ValidatorFactory {
 
     /**
      * Get the validator with the given name
-     *
-     * @param name
-     * @return Validator
      */
     public Validator getValidator(final String name) {
         if (validatorMap.containsKey(name)) {

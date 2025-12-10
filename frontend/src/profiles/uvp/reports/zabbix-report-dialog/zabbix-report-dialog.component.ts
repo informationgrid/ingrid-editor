@@ -22,7 +22,7 @@ import {
   Component,
   Inject,
   OnInit,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -54,6 +54,7 @@ import { MatPaginator } from "@angular/material/paginator";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatTooltip } from "@angular/material/tooltip";
+import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
 
 @Component({
   selector: "zabbix-report-dialog",
@@ -86,11 +87,12 @@ import { MatTooltip } from "@angular/material/tooltip";
     MatTooltip,
     MatMenuTrigger,
     MatHeaderCellDef,
+    DateAgoPipe,
   ],
 })
 export class ZabbixReportDialogComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = ["docName", "clock", "resolved", "settings"];
@@ -111,7 +113,7 @@ export class ZabbixReportDialogComponent implements OnInit, AfterViewInit {
       });
   }
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort();
+    this.dataSource.paginator = this.paginator();
   }
 }

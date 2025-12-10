@@ -19,7 +19,7 @@
  */
 import { BaseDoctype } from "./base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { Injectable, provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -61,9 +61,15 @@ describe("Document Type", () => {
   let doctype;
 
   beforeEach(async () => {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, getTranslocoModule(), MatIconTestingModule],
       providers: [
+        provideZonelessChangeDetection(),
         DummyDocType,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),

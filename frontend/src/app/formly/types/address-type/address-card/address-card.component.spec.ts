@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { AddressCardComponent } from "./address-card.component";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MatCardModule } from "@angular/material/card";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -32,6 +32,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("AddressCardComponent", () => {
   let spectator: Spectator<AddressCardComponent>;
@@ -45,6 +46,7 @@ describe("AddressCardComponent", () => {
     ],
     // declarations: [CodelistPipe],
     providers: [
+      provideZonelessChangeDetection(),
       DocumentService,
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),

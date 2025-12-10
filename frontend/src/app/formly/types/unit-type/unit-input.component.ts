@@ -20,12 +20,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
 import { MatInput, MatSuffix } from "@angular/material/input";
-import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
-import { MatIcon } from "@angular/material/icon";
 import { ReactiveFormsModule } from "@angular/forms";
 import {
   SelectOption,
@@ -36,13 +36,15 @@ import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { Observable, of } from "rxjs";
 import { debounceTime, startWith } from "rxjs/operators";
 import { BackendOption } from "../../../store/codelist/codelist.model";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface UnitInput extends FormlyFieldProps {
-  unitOptions: Observable<SelectOptionUi[]>;
+  unitOptions: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  codelistId: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-unit-input",
   imports: [
@@ -62,19 +64,27 @@ export class UnitInputComponent
   extends FieldType<FieldTypeConfig<UnitInput>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   $unit = signal<string>("");
   $options = signal<SelectOptionUi[]>([]);
 
   ngOnInit(): void {
-    let options = this.props.unitOptions;
-    if (!(options instanceof Observable)) options = of(options);
+    const options =
+      this.props.unitOptions instanceof Observable
+        ? this.props.unitOptions
+        : of(this.props.unitOptions);
 
-    options.pipe(untilDestroyed(this)).subscribe((opts) => {
+    options.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((opts) => {
       const unitValue = this.field.fieldGroup[1].formControl.value;
       this.$options.set(opts);
 
       this.field.fieldGroup[1].formControl.valueChanges
-        .pipe(untilDestroyed(this), startWith(unitValue), debounceTime(0))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          startWith(unitValue),
+          debounceTime(0),
+        )
 
         .subscribe((value: BackendOption) => {
           this.updateUnit(
@@ -89,7 +99,7 @@ export class UnitInputComponent
     this.$unit.set(item.label);
     this.field.fieldGroup[1].formControl.setValue(
       item.forBackend
-        ? item.forBackend(null)
+        ? item.forBackend(this.props.codelistId)
         : new SelectOption(item.value, item.label).forBackend(null),
       {
         emitEvent: shouldEmitEvent,

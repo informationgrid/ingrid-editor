@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
 import { SpecialisedTaskDoctypeHMDK } from "./ingrid-hmdk/doctypes/specialisedTask.doctype";
@@ -28,12 +28,10 @@ import { DataCollectionDoctypeHMDK } from "./ingrid-hmdk/doctypes/data-collectio
 import { PublicationDoctypeHMDK } from "./ingrid-hmdk/doctypes/publication.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-published.behaviour";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
-@UntilDestroy()
 @Component({
   template: "",
   standalone: true,
@@ -87,9 +85,6 @@ class InGridHMDKComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridHMDKComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridHMDKComponent;

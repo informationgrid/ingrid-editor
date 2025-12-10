@@ -28,7 +28,6 @@ import {
 } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../models/ige-document";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
@@ -38,7 +37,7 @@ import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
 import { DocStateNotificationComponent } from "./publish-pending/doc-state-notification.component";
 import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.component";
 import { GeneralStore } from "../../store/general.store";
-import { TreeStore } from "../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../services/document/document.service";
 import { DocEventsService } from "../../services/event/doc-events.service";
@@ -46,7 +45,6 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
 import { DatePipe } from "@angular/common";
 import { firstValueFrom } from "rxjs";
 
-@UntilDestroy()
 @Component({
   selector: "ige-form-info",
   templateUrl: "./form-info.component.html",
@@ -72,7 +70,7 @@ export class FormInfoComponent implements OnInit {
   disableTitleEdit = input<boolean>(false);
 
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentService = inject(DocumentService);
   private docEvents = inject(DocEventsService);

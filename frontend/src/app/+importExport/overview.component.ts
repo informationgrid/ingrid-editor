@@ -17,14 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ViewChild } from "@angular/core";
+import { Component, viewChild } from "@angular/core";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { TabContainerComponent } from "../+research/tab-container.component";
 import { TabPage } from "../services/session.service";
 
-@UntilDestroy()
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],
@@ -39,5 +37,5 @@ import { TabPage } from "../services/session.service";
 })
 export class OverviewComponent extends TabContainerComponent {
   tabPage: TabPage = "importExport";
-  @ViewChild("navigation") tabNav: MatTabNav;
+  readonly tabNav = viewChild<MatTabNav>("navigation");
 }

@@ -25,14 +25,10 @@
   "metadata": { "language": { "key": "150" } },
   "resource": { "useConstraints": [], "accessConstraints": [] },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2020-12-11T23:00:00.000Z",
-        "referenceDateType": { "key": "1" }
-      }
-    ],
-    "status": null,
-    "resourceDateType": null
+    "event": {
+      "created": "2020-12-11T23:00:00.000Z"
+    },
+    "status": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
   "references": [],

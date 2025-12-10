@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.utils
 
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import org.geotools.geojson.geom.GeometryJSON
 import org.geotools.geometry.jts.WKTReader2
 import org.geotools.gml3.v3_2.GML
@@ -83,6 +84,16 @@ fun convertWktToGeoJson(wkt: String): String {
     val out = ByteArrayOutputStream()
     geometryJSON.write(geometry, out)
     return out.toString()
+}
+
+fun convertBoundingBoxToGeoJson(bbox: SpatialModel.BoundingBoxModel): String {
+    // Mapping der Koordinaten: lat1/lon1 = southwest, lat2/lon2 = northeast
+    val wkt = if (bbox.lon1 == bbox.lon2 && bbox.lat1 == bbox.lat2) {
+        "POINT(${bbox.lon1} ${bbox.lat1})"
+    } else {
+        "POLYGON((${bbox.lon1} ${bbox.lat1}, ${bbox.lon2} ${bbox.lat1}, ${bbox.lon2} ${bbox.lat2}, ${bbox.lon1} ${bbox.lat2}, ${bbox.lon1} ${bbox.lat1}))"
+    }
+    return convertWktToGeoJson(wkt)
 }
 
 private fun checkOrientation(geom: Geometry): Geometry {

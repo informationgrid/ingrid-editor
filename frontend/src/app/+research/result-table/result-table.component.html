@@ -86,11 +86,11 @@
             </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
         <tr
             mat-row
             tabindex="0"
-            *matRowDef="let row; columns: displayedColumns"
+            *matRowDef="let row; columns: displayedColumns()"
             [class.readonly]="!row.hasWritePermission || isLoading()"
             (click)="isLoading() ? undefined : openDataset(row)"
             (keyup.enter)="isLoading() ? undefined : openDataset(row)"

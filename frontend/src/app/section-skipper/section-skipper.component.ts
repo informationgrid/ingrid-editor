@@ -23,7 +23,6 @@ import { Component } from "@angular/core";
   selector: "ige-section-skipper",
   templateUrl: "./section-skipper.component.html",
   styleUrls: ["./section-skipper.component.scss"],
-  standalone: true,
 })
 export class SectionSkipperComponent {
   focusable = "a, button, [tabindex='0'], input";

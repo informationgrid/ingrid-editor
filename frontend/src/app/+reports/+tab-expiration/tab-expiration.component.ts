@@ -20,7 +20,9 @@
 import {
   Component,
   computed,
+  DestroyRef,
   EventEmitter,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -32,7 +34,6 @@ import { ExpirationTableComponent } from "./expiration-table/expiration-table.co
 import { MatButtonModule } from "@angular/material/button";
 import { catchError, filter, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDividerModule } from "@angular/material/divider";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -41,8 +42,8 @@ import { NavigationEnd, Router } from "@angular/router";
 import { ExpiredData } from "./tab-expiration.model";
 import { FormsModule } from "@angular/forms";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tab-expiration",
   templateUrl: "./tab-expiration.component.html",
@@ -59,6 +60,12 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   ],
 })
 export class TabExpirationComponent implements OnInit {
+  private researchService = inject(ResearchService);
+  private configService = inject(ConfigService);
+  private catalogService = inject(CatalogService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+
   currentUserId: number;
   expiryFunctionalityActive = signal<boolean>(false);
 
@@ -76,13 +83,6 @@ export class TabExpirationComponent implements OnInit {
     }
   });
 
-  constructor(
-    private researchService: ResearchService,
-    private configService: ConfigService,
-    private catalogService: CatalogService,
-    private router: Router,
-  ) {}
-
   ngOnInit(): void {
     this.currentUserId = this.configService.$userInfo?.getValue().id;
     this.initSearchEmitter();
@@ -93,11 +93,11 @@ export class TabExpirationComponent implements OnInit {
   private initSearchEmitter() {
     this.onSearch
       .pipe(
-        untilDestroyed(this),
         tap(() => this.isSearching.set(true)),
         debounce(() => timer(500)),
         concatMap(() => this.updateResult()),
         tap(() => this.isSearching.set(false)),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }
@@ -106,7 +106,7 @@ export class TabExpirationComponent implements OnInit {
     this.catalogService
       .getExpiryDuration()
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         tap((expiryDuration) =>
           this.expiryFunctionalityActive.set(expiryDuration > 0),
         ),
@@ -118,7 +118,7 @@ export class TabExpirationComponent implements OnInit {
   private initAutoSearch() {
     this.router.events
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter(
           (event) =>
             event instanceof NavigationEnd &&

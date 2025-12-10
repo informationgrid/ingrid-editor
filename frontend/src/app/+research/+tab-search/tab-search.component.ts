@@ -17,11 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, inject, OnInit } from "@angular/core";
 import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
+import {
+  FormGroup,
   ReactiveFormsModule,
   UntypedFormBuilder,
-  UntypedFormGroup,
 } from "@angular/forms";
 import { firstValueFrom, of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
@@ -37,8 +44,7 @@ import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FacetQuery } from "../../store/query/query.model";
+import { FacetQuery, Query } from "../../store/query/query.model";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FacetsComponent } from "../+facets/facets.component";
@@ -49,9 +55,8 @@ import { SearchInputComponent } from "../../shared/search-input/search-input.com
 import { MatButton } from "@angular/material/button";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
@@ -72,17 +77,17 @@ import { toObservable } from "@angular/core/rxjs-interop";
 })
 export class TabSearchComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private destroyRef = inject(DestroyRef);
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  result: ResearchResponse;
+  result = signal<ResearchResponse>(null);
 
-  error: string = null;
-  isSearching = false;
+  isSearching = signal<boolean>(false);
 
   facetViewRefresher = new EventEmitter<void>();
 
-  facets: Facets;
+  facets = signal<Facets>(null);
   private initialValue: any;
   private activeQuery$ = toObservable(this.generalStore.activeQuery);
 
@@ -102,36 +107,38 @@ export class TabSearchComponent implements OnInit {
     setTimeout(() => (this.initialValue = this.form.value));
 
     this.form.valueChanges
-      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(300),
+      )
       .subscribe(() => this.startSearch());
 
     this.activeQuery$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "facet"),
       )
-      .subscribe((entity: FacetQuery) => {
+      .subscribe((entity: Query) => {
         this.researchService.setActiveQuery(null);
         // add a little delay in case facet component is still initializing (coming from saved searches)
         // so we get the correct value before search is started
-        setTimeout(() => this.form.setValue(entity.model));
+        setTimeout(() => this.form.setValue((<FacetQuery>entity).model));
       });
   }
 
   startSearch() {
-    this.isSearching = true;
+    this.isSearching.set(true);
     const model = this.form.value;
 
-    setTimeout(() => {
-      return this.researchService
-        .search(model.query, { type: model.type, ...model.facets })
-        .pipe(
-          catchError((err) => this.handleSearchError(err)),
-          // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
-          finalize(() => setTimeout(() => (this.isSearching = false), 300)),
-        )
-        .subscribe((result) => this.updateHits(result));
-    });
+    return this.researchService
+      .search(model.query, { type: model.type, ...model.facets })
+      .pipe(
+        catchError((err) => this.handleSearchError(err)),
+        // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
+        finalize(() => setTimeout(() => this.isSearching.set(false), 300)),
+      )
+      .subscribe((result) => this.updateHits(result));
   }
 
   saveQuery() {
@@ -158,13 +165,13 @@ export class TabSearchComponent implements OnInit {
       });
   }
 
-  private handleSearchError(err) {
+  private handleSearchError(err: any) {
     console.warn("Error during search", err);
     return of({ totalHits: 0, hits: [] });
   }
 
   private updateHits(result: ResearchResponse) {
-    this.result = result;
+    this.result.set(result);
   }
 
   private initForm() {
@@ -191,7 +198,7 @@ export class TabSearchComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters))),
+        .pipe(tap((filters) => this.facets.set(filters))),
     );
   }
 

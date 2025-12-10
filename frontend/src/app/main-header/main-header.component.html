@@ -1,7 +1,7 @@
 <mat-toolbar role="banner" *transloco="let t; read: 'menu'">
     <mat-toolbar-row
         class="header-row medium-spacing"
-        [class.showShadow]="showShadow"
+        [class.showShadow]="showShadow()"
     >
         <div class="header-logo">
             <img src="{{ t('logo') }}" alt="{{ t('logo-text') }}" />
@@ -10,7 +10,9 @@
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
         >
-        <div class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</div>
+        <div class="main-page-title">
+            {{ pageTitle() ? t(pageTitle()) : "" }}
+        </div>
 
         <div class="center-header flex-grow">
             @if (timeout(); as timer) {
@@ -21,10 +23,10 @@
             }
         </div>
 
-        @if (currentCatalog$ | async; as currentCatalog) {
+        @if (currentCatalog$(); as currentCatalog) {
             <div
                 class="header-info flex-grow flex-row align-items-center justify-content-end"
-                [class.single]="otherAssignedCatalogs.length == 0"
+                [class.single]="otherAssignedCatalogs().length == 0"
             >
                 Katalog:
                 <button
@@ -32,20 +34,20 @@
                     mat-button
                     [matTooltip]="currentCatalog"
                     [matMenuTriggerFor]="catMenu"
-                    [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
-                    [disabled]="otherAssignedCatalogs.length == 0"
+                    [tabindex]="otherAssignedCatalogs().length > 0 ? 0 : -1"
+                    [disabled]="otherAssignedCatalogs().length == 0"
                     aria-label="Menü zur Auswahl der Kataloge"
                     aria-describedby="catalog-label"
                 >
                     <span id="catalog-label">{{ currentCatalog }}</span>
-                    @if (otherAssignedCatalogs.length > 0) {
+                    @if (otherAssignedCatalogs().length > 0) {
                         <mat-icon iconPositionEnd
                             >keyboard_arrow_down
                         </mat-icon>
                     }
                 </button>
                 <mat-menu #catMenu="matMenu">
-                    @for (catalog of otherAssignedCatalogs; track catalog) {
+                    @for (catalog of otherAssignedCatalogs(); track catalog) {
                         <span
                             mat-menu-item
                             class="menu-item"
@@ -60,7 +62,7 @@
             </div>
         }
 
-        @if (userInfo$ | async; as userInfo) {
+        @if (userInfo(); as userInfo) {
             <span class="flex-row">
                 <button
                     type="button"
@@ -71,7 +73,7 @@
                     matTooltip="Nutzerprofil"
                     data-cy="header-profile-button"
                 >
-                    {{ initials }}
+                    {{ initials() }}
                 </button>
                 <mat-menu #menu="matMenu" class="user-popup-menu">
                     <div class="user-popup-header">
@@ -153,7 +155,7 @@
                             <button
                                 mat-menu-item
                                 [routerLink]="[
-                                    catalogId + '/settings/' + group.path,
+                                    catalogId() + '/settings/' + group.path,
                                 ]"
                             >
                                 {{ group.data?.title }}

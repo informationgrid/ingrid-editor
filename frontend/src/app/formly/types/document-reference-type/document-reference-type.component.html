@@ -4,7 +4,7 @@
     </ige-form-error>
 }
 
-@for (item of myModel; track item; let i = $index) {
+@for (item of myModel(); track item; let i = $index) {
     <div
         class="item"
         tabindex="0"
@@ -20,7 +20,7 @@
                 @if (item.isExternalRef) {
                     <mat-icon svgIcon="download-link"></mat-icon>
                 } @else {
-                    <ige-document-icon [doc]="item"></ige-document-icon>
+                    <ige-document-icon [doc]="$any(item)"></ige-document-icon>
                 }
                 <span>{{ item.title ?? "???" }}</span>
             </div>
@@ -64,17 +64,24 @@
 }
 <!--{{ formControl.value | json }}-->
 
-@if (refreshing) {
+@if (refreshing()) {
     <mat-spinner diameter="30"></mat-spinner>
 }
 
 @if (!formControl.disabled) {
-    <ige-add-button
-        [matMenuTriggerFor]="menu"
-        [showRequiredError]="
-            showError && formControl.invalid && formControl.errors?.required
-        "
-    ></ige-add-button>
+    @if (onlyInternalRefs()) {
+        <ige-add-button (click)="showInternalRefDialog()">
+            [showRequiredError]=" showError && formControl.invalid &&
+            formControl.errors?.required " ></ige-add-button
+        >
+    } @else {
+        <ige-add-button
+            [matMenuTriggerFor]="menu"
+            [showRequiredError]="
+                showError && formControl.invalid && formControl.errors?.required
+            "
+        ></ige-add-button>
+    }
 }
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">

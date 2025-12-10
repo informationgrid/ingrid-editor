@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { Component, inject, Input, input } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../../models/ige-document";
 import { FormStateService } from "../../../form-state.service";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -29,7 +28,6 @@ import { ErrorPanelComponent } from "../error-panel/error-panel.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { UiStore } from "../../../../store/ui.store";
 
-@UntilDestroy()
 @Component({
   selector: "ige-quick-navbar",
   templateUrl: "./quick-navbar.component.html",

@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   OnInit,
   signal,
@@ -54,8 +55,8 @@ import {
   AddButtonComponent,
   AddButtonOptions,
 } from "../../../shared/add-button/add-button.component";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, startWith } from "rxjs/operators";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -64,7 +65,6 @@ interface RepeatDetailListProps extends FormlyFieldProps {
   viewComponent: any;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat-detail-list",
   templateUrl: "./repeat-detail-list.component.html",
@@ -91,13 +91,14 @@ export class RepeatDetailListComponent
   implements OnInit
 {
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   previewItems = signal<any[]>([]);
 
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(this.formControl.value),
         debounceTime(0),
       )

@@ -43,7 +43,6 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
@@ -59,7 +58,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 import { CodelistStore } from "../../store/codelist/codelist.store";
 import { MatInput } from "@angular/material/input";
 
-@UntilDestroy()
 @Component({
   selector: "ige-catalog-codelists",
   templateUrl: "./catalog-codelists.component.html",
@@ -105,9 +103,9 @@ export class CatalogCodelistsComponent implements OnInit {
     }
     const list = this.getFilteredCodelists(this.filterCtrlValue());
     if (this.selectedCodelist) {
-      this.selectedCodelist = list.find(
-        (item) => item.id === this.selectedCodelist.id,
-      );
+      this.selectedCodelist = {
+        ...list.find((item) => item.id === this.selectedCodelist.id),
+      };
     }
     return list;
   });
@@ -270,7 +268,10 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
     if (oldId === null) {
-      this.selectedCodelist.entries.push(result);
+      this.selectedCodelist.entries = [
+        ...this.selectedCodelist.entries,
+        result,
+      ];
     } else {
       const index = this.selectedCodelist.entries.findIndex(
         (e) => e.id === oldId,

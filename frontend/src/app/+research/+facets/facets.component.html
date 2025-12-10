@@ -1,5 +1,5 @@
 <div [formGroup]="form">
-    @for (group of filterGroup; track group) {
+    @for (group of filterGroup(); track group) {
         <div [formGroupName]="group.id" class="flex-col gap-12">
             <div class="section flex-row">
                 <div class="section-title">{{ group.label }}</div>
@@ -10,13 +10,13 @@
                         class="toggle"
                         (click)="toggleSection(group.id)"
                         [matTooltip]="
-                            notExpanded[group.id] ? 'Aufklappen' : 'Zuklappen'
+                            notExpanded()[group.id] ? 'Aufklappen' : 'Zuklappen'
                         "
                         aria-label="Filter-Facette"
                     >
                         <mat-icon
                             class="mat-icon-rtl-mirror expander animated"
-                            [class.expanded]="!notExpanded[group.id]"
+                            [class.expanded]="!notExpanded()[group.id]"
                         >
                             expand_more
                         </mat-icon>
@@ -27,7 +27,7 @@
                 <mat-radio-group
                     [name]="group.label"
                     class="flex-col gap-12"
-                    [class.invisible]="notExpanded[group.id]"
+                    [class.invisible]="notExpanded()[group.id]"
                 >
                     @for (
                         filter of group.filter;
@@ -42,7 +42,7 @@
             }
             @if (group.viewComponent === "CHECKBOX") {
                 <div
-                    [class.invisible]="notExpanded[group.id]"
+                    [class.invisible]="notExpanded()[group.id]"
                     class="flex-col gap-12"
                 >
                     @for (filter of group.filter; track filter) {
@@ -56,31 +56,34 @@
                 </div>
             }
             @if (group.viewComponent === "SPATIAL") {
-                <div class="flex-col" [class.invisible]="notExpanded[group.id]">
+                <div
+                    class="flex-col"
+                    [class.invisible]="notExpanded()[group.id]"
+                >
                     <div #leafletDlg class="flex-1"></div>
-                    @if (location) {
+                    @if (location()) {
                         <div class="location flex-row">
                             <div>
-                                <span>{{ location.title }}</span>
+                                <span>{{ location()?.title }}</span>
                                 <p>
                                     L1:
                                     {{
-                                        location.value.lat1
+                                        location()?.value?.lat1
                                             | number: ".6" : "en-US"
                                     }}° B1:
                                     {{
-                                        location.value.lon1
+                                        location()?.value?.lon1
                                             | number: ".6" : "en-US"
                                     }}°
                                 </p>
                                 <p>
                                     L2:
                                     {{
-                                        location.value.lat2
+                                        location()?.value?.lat2
                                             | number: ".6" : "en-US"
                                     }}° B2:
                                     {{
-                                        location.value.lon2
+                                        location()?.value?.lon2
                                             | number: ".6" : "en-US"
                                     }}°
                                 </p>
@@ -98,7 +101,7 @@
                                 <mat-menu #spatialRef="matMenu">
                                     <button
                                         mat-menu-item
-                                        (click)="showSpatialDialog(location)"
+                                        (click)="showSpatialDialog(location())"
                                     >
                                         Bearbeiten
                                     </button>
@@ -112,7 +115,7 @@
                             </div>
                         </div>
                     }
-                    @if (!location) {
+                    @if (!location()) {
                         <ige-add-button
                             (add)="showSpatialDialog()"
                         ></ige-add-button>
@@ -155,9 +158,10 @@
                                 <mat-datepicker #endDate></mat-datepicker>
                             </mat-form-field>
                             @if (
-                                form.get(timeGroupId).get("start").value !==
+                                form.get(timeGroupId()).get("start").value !==
                                     null ||
-                                form.get(timeGroupId).get("end").value !== null
+                                form.get(timeGroupId()).get("end").value !==
+                                    null
                             ) {
                                 <button
                                     mat-icon-button
@@ -178,7 +182,7 @@
             }
             @if (group.viewComponent === "SELECT") {
                 <div
-                    [class.invisible]="notExpanded[group.id]"
+                    [class.invisible]="notExpanded()[group.id]"
                     class="flex-col gap-12"
                     [attr.data-cy]="group.label"
                 >
@@ -217,7 +221,7 @@
         </div>
     }
 </div>
-@if (filterGroup?.length > 0 && resetQuery.observed) {
+@if (filterGroup()?.length > 0 && resetQuery.observed) {
     <div class="reset-form-button">
         <button mat-button color="primary" (click)="resetQuery.emit()">
             Suchparameter zurücksetzen

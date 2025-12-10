@@ -35,7 +35,7 @@ import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
-import { TreeStore } from "../../../../app/store/tree/tree.store";
+import { DocumentTreeStore } from "../../../../app/store/tree/document-tree.store";
 import { trimObjectAndRemoveEvilTags } from "../../../../app/shared/utils";
 
 @Injectable({
@@ -60,7 +60,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private documentService = inject(DocumentService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
-  private treeStore = inject(TreeStore);
+  private treeStore = inject(DocumentTreeStore);
   private configService = inject(ConfigService);
 
   constructor() {
@@ -95,12 +95,13 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     super.registerForm();
 
     this.formToolbarService.addButton({
+      type: "button",
       id: this.buttonId,
       tooltip: "GetCapabilities-Assistent",
       matIconVariable: "auto_fix_normal",
       eventId: this.eventId,
       pos: 11,
-      active: signal(true),
+      active: true,
     });
 
     const toolbarEventSubscription = this.docEvents
@@ -140,7 +141,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       service: {},
       resource: {},
       spatial: {},
-      temporal: { events: [] },
+      temporal: { event: {} },
       keywords: { gemet: [], umthes: [], free: [] },
       themes: [],
     };

@@ -25,6 +25,8 @@ import {
   OnInit,
   input,
   output,
+  inject,
+  DestroyRef,
 } from "@angular/core";
 import {
   FormControl,
@@ -32,15 +34,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { Map, Rectangle } from "leaflet";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { GeoJSON, Map, Polyline } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { debounceTime, filter, tap } from "rxjs/operators";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-coordinates-spatial",
   templateUrl: "./coordinates-spatial.component.html",
@@ -50,6 +51,8 @@ import { MatInput } from "@angular/material/input";
 export class CoordinatesSpatialComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
+  private destroyRef = inject(DestroyRef);
+
   form = new FormGroup({
     lat1: new FormControl<number>(null, Validators.required),
     lon1: new FormControl<number>(null, Validators.required),
@@ -66,16 +69,16 @@ export class CoordinatesSpatialComponent
 
   readonly result = output<any>();
 
-  private boundingBoxes: Rectangle[];
+  private boundingBoxes: (Polyline<any> | GeoJSON)[];
 
   constructor(private leafletService: LeafletService) {}
 
   ngOnInit(): void {
     this.form.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(300),
-        tap((value) => this.removeBoundingBoxes()),
+        tap(() => this.removeBoundingBoxes()),
         filter((value) => this.coordinatesValid(value)),
         tap((value) => this.drawCoordinates(value)),
       )
@@ -102,7 +105,7 @@ export class CoordinatesSpatialComponent
     );
   }
 
-  private drawCoordinates(values) {
+  private drawCoordinates(values: any) {
     const coloredBoundingBox = this.leafletService.extendLocationsWithColor([
       {
         title: "",
@@ -110,13 +113,12 @@ export class CoordinatesSpatialComponent
         value: <SpatialBoundingBox>values,
       },
     ]);
-    this.boundingBoxes = this.leafletService.drawSpatialRefs(
-      this.map(),
-      coloredBoundingBox,
-    );
+    this.leafletService
+      .drawSpatialRefs(this.map(), coloredBoundingBox)
+      .then((refs) => (this.boundingBoxes = refs));
   }
 
-  private coordinatesValid(value): boolean {
+  private coordinatesValid(value: any): boolean {
     const valid = value.lat1 && value.lon1 && value.lat2 && value.lon2;
     this.result.emit(valid ? this.form.value : null);
     return valid;

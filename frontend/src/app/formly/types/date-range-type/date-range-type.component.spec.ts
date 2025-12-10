@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
+import { createHostFactory, SpectatorHost } from "@ngneat/spectator/vitest";
 
 import { DateRangeTypeComponent } from "./date-range-type.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -29,8 +29,10 @@ import {
 } from "@ngx-formly/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { withFormlyMaterial } from "@ngx-formly/material";
-import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { DateAdapter, MAT_DATE_FORMATS } from "@angular/material/core";
+import { GermanDateAdapter } from "../../../services/german-date.adapter";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -45,7 +47,15 @@ describe("DateRangeTypeComponent", () => {
       FormsModule,
     ],
     providers: [
-      provideNativeDateAdapter(),
+      provideZonelessChangeDetection(),
+      {
+        provide: DateAdapter,
+        useClass: GermanDateAdapter,
+      },
+      {
+        provide: MAT_DATE_FORMATS,
+        useClass: GermanDateAdapter,
+      },
       provideFormlyCore([
         {
           types: [

@@ -18,19 +18,19 @@
  * limitations under the Licence.
  */
 import {
-  ChangeDetectorRef,
   Component,
   Input,
   OnInit,
   input,
   output,
+  inject,
+  DestroyRef,
 } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { UntypedFormControl } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIconButton } from "@angular/material/button";
@@ -42,8 +42,8 @@ import { MatOption } from "@angular/material/core";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tree-header",
   templateUrl: "./tree-header.component.html",
@@ -63,6 +63,9 @@ import { MatSlideToggle } from "@angular/material/slide-toggle";
   ],
 })
 export class TreeHeaderComponent implements OnInit {
+  private db = inject(DynamicDatabase);
+  private destroyRef = inject(DestroyRef);
+
   readonly showReloadButton = input(false);
   readonly showWriteAccessToggle = input(false);
   readonly isAddress = input(false);
@@ -85,15 +88,14 @@ export class TreeHeaderComponent implements OnInit {
   query = new UntypedFormControl("");
   searchSub: Subscription;
 
-  constructor(
-    private db: DynamicDatabase,
-    private cdr: ChangeDetectorRef,
-  ) {}
-
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component
     this.query.valueChanges
-      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(300),
+      )
       .subscribe((query) => this.search(query));
   }
 
@@ -116,7 +118,6 @@ export class TreeHeaderComponent implements OnInit {
       .subscribe((result) => {
         this.searchResult.next(this.filterResult(result));
       });
-    this.cdr.detectChanges();
   }
 
   loadResultDocument(doc: TreeNode) {

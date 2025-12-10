@@ -71,4 +71,24 @@ mat-expansion-panel-header {
 
 .mat-expansion-panel-header-description {
   margin: 0;
+  flex-grow: initial;
+}
+
+.panel-preview {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-left: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  //display: grid;
+  //gap: 4px;
+}
+
+mat-panel-title {
+  min-width: 0 !important;
+}
+
+mat-panel-title > .mat-icon[cdkdraghandle] {
+  flex: 0 0 auto;
 }

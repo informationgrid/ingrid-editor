@@ -19,13 +19,15 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
   OnInit,
-  ViewChild,
   input,
+  signal,
+  inject,
+  computed,
+  viewChild,
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
@@ -65,6 +67,9 @@ import { HeaderMoreComponent } from "../header-more/header-more.component";
   ],
 })
 export class HeaderTitleRowComponent implements OnInit {
+  private formMenuService = inject(FormMenuService);
+  private formStateService = inject(FormStateService);
+
   @Input() set form(value: UntypedFormGroup) {
     this._form = value;
   }
@@ -74,55 +79,47 @@ export class HeaderTitleRowComponent implements OnInit {
     this._model = value;
     const metadata = this.formStateService.metadata();
     // @ts-ignore
-    this.doc = {
+    this.doc.set({
       ...value,
       _type: metadata.docType,
       _state: metadata.state,
       _tags: metadata.tags,
-    };
+    });
     this.updateHeaderMenuOptions();
   }
 
   readonly disableEdit = input<boolean>(undefined);
   readonly address = input<boolean>(undefined);
 
-  @ViewChild("titleInput") titleInput: ElementRef;
-  @ViewChild("cfcAutosize") contentFCAutosize: CdkTextareaAutosize;
+  readonly titleInput = viewChild<ElementRef>("titleInput");
+  readonly contentFCAutosize = viewChild<CdkTextareaAutosize>("cfcAutosize");
 
   _form: UntypedFormGroup;
   _model: IgeDocument;
-  showTitleInput = false;
-  showMore = false;
-  showMoreActions = false;
-  doc: DocumentAbstract;
+  showTitleInput = signal<boolean>(false);
+  showMore = signal<boolean>(false);
+  showMoreActions = computed<boolean>(() => this.moreActions().length > 0);
+  doc = signal<DocumentAbstract>(null);
 
-  moreActions: FormularMenuItem[];
-
-  constructor(
-    private cdRef: ChangeDetectorRef,
-    private formMenuService: FormMenuService,
-    private formStateService: FormStateService,
-  ) {}
+  moreActions = signal<FormularMenuItem[]>([]);
 
   ngOnInit() {
     this.updateHeaderMenuOptions();
   }
 
   editTitle() {
-    this.showTitleInput = !this.showTitleInput;
-    this.cdRef.detectChanges();
-    this.contentFCAutosize.resizeToFitContent(true);
-    this.titleInput.nativeElement.focus();
+    this.showTitleInput.update((prev) => !prev);
+    this.contentFCAutosize().resizeToFitContent(true);
+    this.titleInput().nativeElement.focus();
   }
 
   toggleMoreInfo() {
-    this.showMore = !this.showMore;
+    this.showMore.update((prev) => !prev);
   }
 
   private updateHeaderMenuOptions() {
-    this.moreActions = this.formMenuService.getMenuItems(
-      this.address() ? "address" : "dataset",
+    this.moreActions.set(
+      this.formMenuService.getMenuItems(this.address() ? "address" : "dataset"),
     );
-    this.showMoreActions = this.moreActions.length > 0;
   }
 }

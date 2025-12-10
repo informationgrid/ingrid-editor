@@ -6,8 +6,8 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.2.10'
-    ext.spring_boot_version = '3.5.6'
-    ext.kotest_version = '6.0.1'
+    ext.spring_boot_version = '3.5.8'
+    ext.kotest_version = '6.0.7'
     ext.jte_version = '3.2.1'
     ext.geotools_version = '33.2'
     ext['log4j2.version'] = '2.23.1'
@@ -30,7 +30,7 @@ plugins {
     id 'io.kotest' version "$kotest_version"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.6.20.Final"
+    id "org.hibernate.orm" version "6.6.38.Final"
     id "org.jlleitschuh.gradle.ktlint" version "13.1.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
@@ -72,7 +72,7 @@ if (hasProperty('buildProfile')) {
     }
 
     def unzippedDir = file('build/resources/main').getAbsolutePath()
-    task unzip(type:Copy) {
+    tasks.register('unzip', Copy) {
         dependsOn(configurations.webapp)
         into unzippedDir from zipTree(configurations.webapp.singleFile)
     }
@@ -161,7 +161,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.10.3'
 
-    implementation "de.ingrid:ingrid-codelist-service:8.0.0"
+    implementation "de.ingrid:ingrid-codelist-service:8.2.0-SNAPSHOT"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation 'org.apache.commons:commons-text:1.14.0'
@@ -192,7 +192,7 @@ dependencies {
     implementation "org.apache.jena:apache-jena-libs:5.5.0"
 
     // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
-    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
+    implementation("de.ingrid:dcat-parser:8.1.0")
 
     // Test
     testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
@@ -203,13 +203,18 @@ dependencies {
     testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
     testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_client"
     testImplementation 'io.mockk:mockk:1.14.5'
-    testImplementation "com.ninja-squad:springmockk:4.0.2"
+    testImplementation "com.ninja-squad:springmockk:5.0.1"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation("org.springframework.boot:spring-boot-testcontainers") {
+        exclude group: "org.testcontainers"
+    }
+//    testImplementation 'org.testcontainers:postgresql'
+    // Use testcontainers 2.0.2 to support Docker version 29.x
+    testImplementation 'org.testcontainers:testcontainers:2.0.2'
+    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.2'
 
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.6.0")
@@ -238,6 +243,9 @@ dependencyManagement {
         // conflict with kotest and search-client -> kotlinx-serialization
         dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0"
         dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0"
+
+        // quartz bug in 2.5.1
+        dependency "org.quartz-scheduler:quartz:2.5.2"
     }
 }
 
@@ -246,12 +254,6 @@ description = 'IGE-NG Server'
 
 springBoot {
     buildInfo()
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
 }
 
 if (hasProperty('filename')) {
@@ -285,12 +287,15 @@ tasks.matching { it.name.startsWith("kapt") }.configureEach {
 tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
-    into '../.git/hooks'
+    into gitProperties.dotGitDirectory.dir('./hooks')
 }
 
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
+    }
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
@@ -307,8 +312,23 @@ jte {
 }
 
 gitProperties {
-    // define that .git directory is on the same level as the root project
-    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
+    def dotGitFile = rootProject.layout.projectDirectory.file(".git").asFile
+    if (dotGitFile.isFile()) {
+        // .git directory needs to be read from .git file
+        def dotGitFileContent = dotGitFile.text
+        def gitDirLine = dotGitFileContent.readLines().find { it.startsWith("gitdir: ") }
+        if (gitDirLine != null) {
+            def gitDirPath = gitDirLine.substring('gitdir: '.length(), gitDirLine.lastIndexOf('/.git/'))
+            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath+ "/.git")
+        } else {
+            throw new GradleException("No .git directory found in project .git file.")
+        }
+    } else if (dotGitFile.isDirectory()) {
+        // .git directory is on the same level as the root project
+        dotGitDirectory = dotGitFile
+    } else {
+        throw new GradleException("No .git directory found in project root.")
+    }
 }
 
 tasks.named('generateJte') {
@@ -386,20 +406,11 @@ noArg {
     annotation('de.ingrid.igeserver.annotations.NoArgs')
 }
 
-hibernate {
-    enhancement {
-        lazyInitialization = true
-        dirtyTracking = true
-//        associationManagement = true
-//        extendedEnhancement = false
-    }
-}
-
 if (hasProperty('buildDockerImage')) {
     tasks.assemble.dependsOn tasks.jib
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 

@@ -30,18 +30,18 @@
             ></ngx-mat-select-search>
         </mat-option>
     }
-    @if (selectOptions) {
+    @if (selectOptions()) {
         @if (props.multiple && props.selectAllOption) {
             <ng-container
                 [ngTemplateOutlet]="selectAll"
-                [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
+                [ngTemplateOutletContext]="{ selectOptions: selectOptions() }"
             >
             </ng-container>
         }
         @if (props.allowNoValue) {
             <mat-option>{{ props.noValueLabel ?? "- Keine -" }}</mat-option>
         }
-        @for (item of filteredOptions; track itemId(item)) {
+        @for (item of filteredOptions(); track itemId(item)) {
             @if (item.key === "_SEPARATOR_") {
                 <mat-divider class="space-bottom"></mat-divider>
             } @else {

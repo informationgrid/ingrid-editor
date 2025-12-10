@@ -22,7 +22,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { Router } from "@angular/router";
 import { CatalogDataService } from "./services/catalog-data.service";
 import {
@@ -35,6 +35,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("CatalogService", () => {
   let spectator: SpectatorService<CatalogService>;
@@ -42,6 +43,7 @@ describe("CatalogService", () => {
     service: CatalogService,
     imports: [MatSnackBarModule],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       mockProvider(ConfigService, {
@@ -76,6 +78,6 @@ describe("CatalogService", () => {
   it("should get catalogs", () => {
     spectator.service
       .getCatalogs()
-      .subscribe((catalogs) => expect(catalogs.length).toBeEmpty());
+      .subscribe((catalogs) => expect(catalogs.length).toBe(0));
   });
 });

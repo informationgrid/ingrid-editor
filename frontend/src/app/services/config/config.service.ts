@@ -50,6 +50,8 @@ export class Configuration {
     public matomoUrl?: string,
     public matomoSiteId?: string,
     public matomoDisableCookies?: boolean,
+    public lfsInterfaceUrl?: string,
+    public lfsMoveResourcesUrl?: string,
   ) {}
 }
 

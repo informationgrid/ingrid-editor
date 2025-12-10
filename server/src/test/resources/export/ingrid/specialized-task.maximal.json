@@ -35,15 +35,16 @@
   "metadata": { "language": { "key": "126" } },
   "resource": { "purpose": "zweck1", "specificUsage": "nutzung1" },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2020-10-08T22:00:00.000Z",
-        "referenceDateType": { "key": "3" }
-      }
-    ],
+    "event": {
+      "lastModified": "2020-10-08T22:00:00.000Z"
+    },
     "status": { "key": "6" },
-    "resourceDate": "2020-10-11T22:00:00.000Z",
-    "resourceDateType": { "key": "since" }
+    "data": {
+      "type": "range",
+      "resourceDate": "2020-10-11T22:00:00.000Z",
+      "intervalFrom": "date",
+      "intervalTo": "not-available"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "43" }] },
   "references": [

@@ -9,7 +9,7 @@
     </ige-form-error>
 }
 
-<div>
+<div [attr.data-cy]="'repeat-' + key">
     @for (key of groupedFieldsKeys(); track key) {
         <div
             cdkDropList

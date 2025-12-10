@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { DestroyRef, inject, Injectable } from "@angular/core";
 import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { FlatTreeControl } from "@angular/cdk/tree";
@@ -30,7 +30,7 @@ import { map } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DynamicDatabase } from "./dynamic.database";
 import { TreeService } from "./tree.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -39,7 +39,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
  * The input will be a json object string, and the output is a list of `FileNode` with nested
  * structure.
  */
-@UntilDestroy()
 @Injectable()
 export class DynamicDataSource extends DataSource<TreeNode> {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
@@ -60,13 +59,14 @@ export class DynamicDataSource extends DataSource<TreeNode> {
     private _treeControl: FlatTreeControl<TreeNode>,
     private _database: DynamicDatabase,
     private treeService: TreeService,
+    private destroyRef: DestroyRef,
   ) {
     super();
   }
 
   connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
     this._treeControl.expansionModel.changed
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((change) => {
         if (
           (change as SelectionChange<TreeNode>).added ||
@@ -116,7 +116,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
   private expandNode(node: TreeNode) {
     node.isLoading = true;
     this._database
-      .getChildren(node._id, false, this.forAddress)
+      .getChildren(node._id, false)
       .pipe(
         map((docs) =>
           this._database.mapDocumentsToTreeNodes(docs, node.level + 1),

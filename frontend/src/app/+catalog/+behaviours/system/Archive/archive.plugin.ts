@@ -97,11 +97,11 @@ export class ArchivePlugin extends Plugin {
   }
 
   register() {
-    DocumentService.archivePluginActive = true;
+    DocumentService.archivePluginActive.set(true);
   }
 
   unregister() {
-    DocumentService.archivePluginActive = false;
+    DocumentService.archivePluginActive.set(false);
   }
 
   registerForm() {
@@ -111,11 +111,12 @@ export class ArchivePlugin extends Plugin {
     if (this.data.hideForMdAdmins && this.configService.isMdAdmin()) return;
 
     this.formToolbarService.addButton({
+      type: "button",
       id: "toolBtnArchive",
       label: "Archivieren",
       eventId: "ARCHIVE",
       pos: 18,
-      active: signal(false),
+      active: false,
       align: "right",
     });
 

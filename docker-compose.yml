@@ -1,7 +1,7 @@
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:26.2.4-1
+    image: docker-registry.wemove.com/keycloak:26.2.4-3
     restart: unless-stopped
     environment:
       - SIMPLE_SECURITY=true
@@ -14,6 +14,7 @@ services:
       - KC_DB_USERNAME=admin
       - KC_DB_PASSWORD=admin
       - MAIL_SMTP=mailrelay
+      - MAIL_SMTP_PORT=1025
       - MAIL_FROM=keycloak@wemove.com
       #- IGE_CLIENT_ID=ige-ng
       - IGE_FRONTEND_URL=http://localhost:4300
@@ -76,6 +77,17 @@ services:
     restart: unless-stopped
     ports:
       - "8081:8080"
+    networks:
+      - ige-ng-network
+
+  mailrelay:
+    image: axllent/mailpit
+    environment:
+      - TZ=Europe/Berlin
+    ports:
+      - "8025:8025"
+      - "25:1025"
+    restart: unless-stopped
     networks:
       - ige-ng-network
 

@@ -27,7 +27,6 @@ import { MatIconButton } from "@angular/material/button";
   selector: "ige-search-field",
   templateUrl: "./ige-search-field.component.html",
   styleUrls: ["./ige-search-field.component.scss"],
-  standalone: true,
   imports: [MatFormField, MatIcon, MatSuffix, MatInput, MatIconButton],
 })
 export class IgeSearchField {

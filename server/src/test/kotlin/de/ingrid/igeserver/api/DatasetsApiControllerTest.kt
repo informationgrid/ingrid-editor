@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.SpykBean
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -28,6 +27,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.storage.Storage
@@ -41,9 +41,6 @@ import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.core.Authentication
 
 class DatasetsApiControllerTest : AnnotationSpec() {
-
-    @SpykBean
-    private lateinit var datasetsApiController: DatasetsApiController
 
     @MockkBean(relaxed = true)
     private lateinit var authUtils: AuthUtils
@@ -70,7 +67,28 @@ class DatasetsApiControllerTest : AnnotationSpec() {
     private lateinit var documentService: DocumentService
 
     @MockkBean(relaxed = true)
+    private lateinit var researchService: ResearchService
+
+    @MockkBean(relaxed = true)
     private lateinit var aclService: IgeAclService
+
+    private lateinit var datasetsApiController: DatasetsApiController
+
+    @BeforeAll
+    fun setup() {
+        datasetsApiController = DatasetsApiController(
+            authUtils,
+            catalogService,
+            docWrapperRepo,
+            docRepo,
+            documentService,
+            groupService,
+            aclService,
+            storage,
+            researchService,
+            auditLog,
+        )
+    }
 
     private val isAddress = false
 

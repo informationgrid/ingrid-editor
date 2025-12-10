@@ -428,7 +428,7 @@ class CapabilitiesServiceTest :
                             "http://my-download-resource-locator",
                         ),
                     )
-                    timeReference shouldBe listOf(TimeReferenceBean(1, formatter.parse("2007-11-13")))
+                    timeReference shouldBe listOf(TimeReferenceBean("1", formatter.parse("2007-11-13")))
                 }
             }
         }
@@ -662,8 +662,8 @@ class CapabilitiesServiceTest :
                         ),
                     )
                     timeReference shouldBe listOf(
-                        TimeReferenceBean(1, formatter.parse("2003-01-01")),
-                        TimeReferenceBean(2, formatter.parse("2003-05-10")),
+                        TimeReferenceBean("1", formatter.parse("2003-01-01")),
+                        TimeReferenceBean("2", formatter.parse("2003-05-10")),
                     )
                 }
             }
@@ -1087,9 +1087,9 @@ class CapabilitiesServiceTest :
                         ),
                     )
                     timeReference shouldBe listOf(
-                        TimeReferenceBean(1, formatter.parse("2009-07-02")),
-                        TimeReferenceBean(2, formatter.parse("2012-10-22")),
-                        TimeReferenceBean(3, formatter.parse("2013-11-26")),
+                        TimeReferenceBean("1", formatter.parse("2009-07-02")),
+                        TimeReferenceBean("2", formatter.parse("2012-10-22")),
+                        TimeReferenceBean("3", formatter.parse("2013-11-26")),
                     )
                     timeSpan shouldBe TimeReferenceBean(
                         from = formatter.parse("2009-08-20"),

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, Inject, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -31,7 +31,6 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { BackendOption } from "../../../app/store/codelist/codelist.model";
 import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dialog-template.component";
@@ -55,6 +54,7 @@ import {
 } from "@angular/material/datepicker";
 import { AsyncPipe } from "@angular/common";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface FormType {
   specification: FormControl<SelectOptionUi>;
@@ -64,7 +64,6 @@ export interface FormType {
   isInspire: FormControl<boolean>;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-conformity-dialog",
   templateUrl: "./conformity-dialog.component.html",
@@ -89,6 +88,8 @@ export interface FormType {
 })
 export class ConformityDialogComponent implements OnInit {
   private codelistStore = inject(CodelistStore);
+  private destroyRef = inject(DestroyRef);
+
   specifications = this.codelistService.observe("6005");
   specificationsFree = this.codelistService.observe("6006");
   level = this.codelistService.observe("6000");
@@ -137,7 +138,7 @@ export class ConformityDialogComponent implements OnInit {
   private handleInspireChange() {
     this.form
       .get("isInspire")
-      .valueChanges.pipe(untilDestroyed(this))
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((checked) => {
         const dateField = this.form.controls.date;
         checked ? dateField.disable() : dateField.enable();
@@ -150,7 +151,7 @@ export class ConformityDialogComponent implements OnInit {
     this.form
       .get("specification")
       .valueChanges.pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((option) => option !== null),
       )
       .subscribe((option) => {

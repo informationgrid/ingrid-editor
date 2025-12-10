@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
+import { createHostFactory, SpectatorHost } from "@ngneat/spectator/vitest";
 
 import { RepeatDistributionDetailListComponent } from "./repeat-distribution-detail-list.component";
 import {
@@ -25,6 +25,8 @@ import {
   FormlyForm,
   provideFormlyCore,
 } from "@ngx-formly/core";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { vi } from "vitest";
 
 describe("RepeatDistributionDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -32,6 +34,7 @@ describe("RepeatDistributionDetailListComponent", () => {
     component: FormlyForm,
     imports: [RepeatDistributionDetailListComponent],
     providers: [
+      provideZonelessChangeDetection(),
       provideFormlyCore({
         types: [
           {
@@ -44,6 +47,11 @@ describe("RepeatDistributionDetailListComponent", () => {
   });
 
   beforeEach(() => {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     spectator = createHost(`<formly-form [fields]="config"></formly-form>`, {
       hostProps: {
         config: [

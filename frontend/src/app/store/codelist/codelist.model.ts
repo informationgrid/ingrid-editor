@@ -54,3 +54,9 @@ export interface BackendOption {
   value: string;
   _codelistId: string;
 }
+
+export interface PagedSearchResult {
+  page: number;
+  totalPages: number;
+  results: string[];
+}

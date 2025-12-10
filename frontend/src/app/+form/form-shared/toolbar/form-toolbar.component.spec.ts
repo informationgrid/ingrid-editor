@@ -21,7 +21,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDividerModule } from "@angular/material/divider";
@@ -40,10 +40,10 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { DocumentService } from "../../../services/document/document.service";
 import { provideMatomoTesting } from "ngx-matomo-client/testing";
-import { signal, WritableSignal } from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 
 let spectator: Spectator<FormToolbarComponent>;
-const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
+const buttonSignal = signal<Array<ToolbarItem | Separator>>([]);
 const documentOperationFinishedSubject = new Subject<boolean>();
 
 const createHost = createComponentFactory({
@@ -54,14 +54,14 @@ const createHost = createComponentFactory({
     MatButtonModule,
     MatMenuModule,
     MatToolbarModule,
-    BrowserAnimationsModule,
     MatTabsModule,
     MatFormFieldModule,
     MatTooltipModule,
   ],
   providers: [
+    provideZonelessChangeDetection(),
     mockProvider(FormToolbarService, {
-      toolbar$: buttonSubject,
+      toolbar$: buttonSignal,
     }),
     mockProvider(DocumentService, {
       documentOperationFinished$: documentOperationFinishedSubject,
@@ -73,12 +73,13 @@ const createHost = createComponentFactory({
 
 describe("Form-Toolbar", () => {
   beforeEach(() => {
+    buttonSignal.set([]);
     spectator = createHost();
   });
 
-  it("should not show any toolbar items after initialization", () => {
+  it("should not show any toolbar items after initialization", async () => {
     // trigger data binding to update the view
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");
@@ -87,17 +88,18 @@ describe("Form-Toolbar", () => {
     expect(buttons.length).toBe(0);
   });
 
-  it("should add a toolbar item through the service", () => {
+  it("should add a toolbar item through the service", async () => {
     const item: ToolbarItem = {
+      type: "button",
       id: "btnToolbarTest",
       tooltip: "TEST_TOOLBAR_ITEM",
       matIconVariable: "remove",
       pos: 1,
       eventId: "TEST_EVENT",
-      active: signal(false),
+      active: false,
     };
-    buttonSubject.next([item]);
-    spectator.detectChanges();
+    buttonSignal.set([item]);
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");
@@ -106,8 +108,9 @@ describe("Form-Toolbar", () => {
     expect(buttons.length).toBe(1);
   });
 
-  it("should add a publish button through the service", () => {
+  it("should add a publish button through the service", async () => {
     const item: ToolbarItem = {
+      type: "button",
       id: "btnPublish",
       tooltip: "TEST_TOOLBAR_ITEM",
       matIconVariable: "remove",
@@ -116,11 +119,11 @@ describe("Form-Toolbar", () => {
       isPrimary: true,
       label: "Veröffentlichen",
       align: "right",
-      active: signal(false),
+      active: false,
     };
-    buttonSubject.next([item]);
+    buttonSignal.set([item]);
 
-    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // find the title element in the DOM using a CSS selector
     const buttons = spectator.queryAll("button");

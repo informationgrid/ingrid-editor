@@ -123,29 +123,18 @@
       "description": "Testerläuterung1"
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-02-08T23:00:00.000Z",
-          "referenceDateType": {
-            "key": "1"
-          }
-        },
-        {
-          "referenceDate": "2023-02-27T23:00:00.000Z",
-          "referenceDateType": {
-            "key": "3"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "since"
+      "event": {
+        "created": "2023-02-08T23:00:00.000Z",
+        "lastModified": "2023-02-27T23:00:00.000Z"
       },
-      "resourceDate": "2023-02-07T23:00:00.000Z",
       "status": {
         "key": "4"
       },
-      "resourceDateTypeSince": {
-        "key": "requestTime"
+      "data": {
+        "type": "range",
+        "resourceDate": "2023-02-07T23:00:00.000Z",
+        "intervalFrom": "date",
+        "intervalTo": "continuously"
       }
     },
     "maintenanceInformation": {

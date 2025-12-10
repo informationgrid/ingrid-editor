@@ -57,16 +57,16 @@
     "accessConstraints": [{ "key": "6" }]
   },
   "temporal": {
-    "events": [
-      {
-        "referenceDate": "2022-01-12T23:00:00.000Z",
-        "referenceDateType": { "key": "3" }
-      }
-    ],
+    "event": {
+      "lastModified": "2022-01-12T23:00:00.000Z"
+    },
     "status": { "key": "2" },
-    "resourceDate": "2020-09-03T22:00:00.000Z",
-    "resourceDateType": { "key": "since" },
-    "resourceDateTypeSince": { "key": "unknown" }
+    "data": {
+      "type": "range",
+      "resourceDate": "2020-09-03T22:00:00.000Z",
+      "intervalFrom": "date",
+      "intervalTo": "not-available"
+    }
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "59" }] },
   "orderInfo": "bestellinfo",

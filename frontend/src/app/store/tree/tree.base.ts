@@ -27,9 +27,41 @@ import {
   updateEntity,
 } from "@ngrx/signals/entities";
 import { sleep } from "../../services/utils";
+import { Observable } from "rxjs";
+
+export interface TreeStoreMethods {
+  set(docs: DocumentAbstract[]): void;
+  update(id: number, doc: Partial<DocumentAbstract>): void;
+  add(docs: DocumentAbstract[]): void;
+  create(doc: DocumentAbstract): void;
+  remove(ids: number[]): void;
+  getFirstParentFolder(childId: number): DocumentAbstract;
+  getByUuid(uuid: string): DocumentAbstract;
+  getChildren(parent: number): DocumentAbstract[];
+  getParents(id: number): DocumentAbstract[];
+  waitForDocumentInStore(id: string | number, maxTimes?: number): Promise<void>;
+  byId(id: number): Promise<DocumentAbstract>;
+  // Additional store specific functions
+  fetchChildren(
+    parentId: number | string,
+    hideReadOnly?: boolean,
+  ): Observable<DocumentAbstract[]>;
+}
+
+export function updateTreeStoreDocs(
+  store,
+  parentId: number | string,
+  docs: DocumentAbstract[],
+) {
+  if (parentId === null) {
+    getTreeStoreMethods()(store).set(docs);
+  } else {
+    getTreeStoreMethods()(store).add(docs);
+  }
+}
 
 export function getTreeStoreMethods() {
-  return (store) => ({
+  return (store): TreeStoreMethods => ({
     set(docs: DocumentAbstract[]): void {
       patchState(store, setAllEntities(docs));
     },
@@ -80,7 +112,10 @@ export function getTreeStoreMethods() {
       }
       return parents;
     },
-    async waitForDocumentInStore(id: string | number, maxTimes: number = 10) {
+    async waitForDocumentInStore(
+      id: string | number,
+      maxTimes: number = 10,
+    ): Promise<void> {
       while (maxTimes > 0) {
         if (store.entityMap()[id]) return;
         else await sleep(100);
@@ -89,6 +124,10 @@ export function getTreeStoreMethods() {
     async byId(id: number): Promise<DocumentAbstract> {
       await this.waitForDocumentInStore(id);
       return store.entityMap()[id];
+    },
+
+    fetchChildren(_parentId: number | string): Observable<DocumentAbstract[]> {
+      throw new Error("No logic implemented for tree store to fetch children.");
     },
   });
 }

@@ -23,7 +23,7 @@ import { of } from "rxjs";
 import { recentDocuments } from "../_test-data/documents";
 import { ModalService } from "../services/modal/modal.service";
 import { FormularService } from "../+form/formular.service";
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MatDialogModule } from "@angular/material/dialog";
 import { DocumentService } from "../services/document/document.service";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
@@ -48,7 +48,7 @@ import {
 import { ProfileService } from "../services/profile.service";
 import { DashboardService } from "./dashboard.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { signal } from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 import { CatalogService } from "../+catalog/services/catalog.service";
 
 describe("DashboardComponent", () => {
@@ -70,6 +70,7 @@ describe("DashboardComponent", () => {
     ],
     componentMocks: [QuickSearchComponent],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),
@@ -95,11 +96,9 @@ describe("DashboardComponent", () => {
         {
           provide: DashboardService,
           useValue: {
-            fetchRecentDocs: jasmine
-              .createSpy("fetchRecentDocs")
-              .and.returnValue({
-                value: signal<DocumentAbstract[]>(recentDocuments),
-              } as HttpResourceRef<DocumentAbstract[]>),
+            fetchRecentDocs: vi.fn().mockReturnValue({
+              value: signal<DocumentAbstract[]>(recentDocuments),
+            } as HttpResourceRef<DocumentAbstract[]>),
           },
         },
       ],
@@ -107,7 +106,7 @@ describe("DashboardComponent", () => {
 
     // Set up other mocks after component creation
     const docService = spectator.inject<DocumentService>(DocumentService);
-    docService.getStatistic.and.returnValue(
+    docService.getStatistic.andReturn(
       of({
         statsPerType: new Map(),
         totalNum: 5,
@@ -118,7 +117,7 @@ describe("DashboardComponent", () => {
     );
 
     const catalogService = spectator.inject<CatalogService>(CatalogService);
-    catalogService.getExpiryDuration.and.returnValue(of(1));
+    catalogService.getExpiryDuration.andReturn(of(1));
   });
 
   it("should create", () => {
@@ -136,20 +135,20 @@ describe("DashboardComponent", () => {
     expect(recentDocs[2].textContent.trim()).toEqual("Test Document 3");
   });
 
-  xit("should show number of published documents", () => {
+  it.skip("should show number of published documents", () => {
     const numPublishedDocs = spectator.query(".numPublishedDocs");
     expect(numPublishedDocs.textContent).toEqual("2");
   });
 
-  xit("should show number of draft documents", () => {});
+  it.skip("should show number of draft documents", () => {});
 
-  xit('should change URL if shortcut "Neues Dokument" was clicked', () => {});
+  it.skip('should change URL if shortcut "Neues Dokument" was clicked', () => {});
 
-  xit('should change URL if shortcut "Neue Adresse" was clicked', () => {});
+  it.skip('should change URL if shortcut "Neue Adresse" was clicked', () => {});
 
-  xit('should change URL if shortcut "Neuer Benutzer" was clicked', () => {});
+  it.skip('should change URL if shortcut "Neuer Benutzer" was clicked', () => {});
 
-  xit("should show documents marked as favorite", () => {});
+  it.skip("should show documents marked as favorite", () => {});
 
-  xit("should open document when selected from recent documents widget", () => {});
+  it.skip("should open document when selected from recent documents widget", () => {});
 });

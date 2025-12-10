@@ -71,12 +71,24 @@
         , "ars": "${ref.get().getArs()}"
         @elseif(ref.get().getType().equals("wkt"))
         , "wkt": "${ref.get().getWkt()}"
+        @elseif(ref.get().getType().equals("bwastr"))
+        , "bwastr": {
+            "bwastrid": "${ref.get().getBwastr().getBwastrid()}",
+            "bwastr_name": "${ref.get().getBwastr().getBwastr_name()}",
+            "concat_name": "${ref.get().getBwastr().getConcat_name()}",
+            "strecken_name": "${ref.get().getBwastr().getStrecken_name()}",
+            "start": @if(ref.get().getBwastr().getStart() != null)${ref.get().getBwastr().getStart()}@else null @endif,
+            "end": @if(ref.get().getBwastr().getEnd() != null)${ref.get().getBwastr().getEnd()}@else null @endif
+            }
         @endif
 
     }@if (!ref.isLast()),@endif
 @endfor
 ],
 "spatialSystems": @template.imports.ingrid.partial.key-values(list = model.getSpatialSystems()),
+@if(model.getSplitSpatialSystems())
+"verticalSpatialSystems": @template.imports.ingrid.partial.key-values(list = model.getVerticalSpatialSystems()),
+@endif
 @if(model.getVerticalExtent() != null)
     "verticalExtent": {
     "minimumValue": ${model.getVerticalExtent().getMin()},
@@ -88,28 +100,39 @@
 "description": "${model.getSpatialDescription()}"
 },
 "temporal": {
-"events": [
+"event": {
 @for(var event : ForSupport.of(model.getTemporalEvents()))
-    {
-        "referenceDate": "${event.get().getDate()}",
-        "referenceDateType": @template.imports.ingrid.partial.key-value(item = event.get().getType())
-    }@if (!event.isLast()),@endif
+    @if ("creation".equals(event.get().getType()))
+        "created": "${event.get().getDate()}"
+    @endif
+    @if ("publication".equals(event.get().getType()))
+        "firstPublished": "${event.get().getDate()}"
+    @endif
+    @if ("revision".equals(event.get().getType()))
+        "lastModified": "${event.get().getDate()}"
+    @endif
+    @if (!event.isLast()),@endif
 @endfor
-]
+}
 !{var time = model.getTimeRelatedInfo();}
 @if(time != null)
     ,
-    "resourceDateType": @template.imports.ingrid.partial.key-value(item = time.getType()),
-    "status": @template.imports.ingrid.partial.key-value(item = time.getStatus()),
-    @if(time.getUntilDate() == null)
-        "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
-    @else
-        "resourceRange": {
-        "start": "${time.getDate()}",
-        "end": "${time.getUntilDate()}"
-        },
+    "status": @template.imports.ingrid.partial.key-value(item = time.getStatus())
+    @if (!time.isEmpty())
+    , "data": {
+        "type": "${time.getType()}",
+        @if (time.getIntervalFrom() != null) "intervalFrom": "${time.getIntervalFrom()}",@endif
+        @if (time.getIntervalTo() != null) "intervalTo": "${time.getIntervalTo()}",@endif
+        @if(time.getUntilDate() != null && time.getDate() != null)
+            "resourceRange": {
+                "start":@if(time.getDate() == null) null@else "${time.getDate()}"@endif,
+                "end":@if(time.getUntilDate() == null) null@else "${time.getUntilDate()}"@endif
+            }
+        @else
+            "resourceDate":@if(time.getDate() != null) "${time.getDate()}"@elseif (time.getUntilDate() != null) "${time.getUntilDate()}"@else null@endif
+        @endif
+    }
     @endif
-    "resourceDateTypeSince": @template.imports.ingrid.partial.key-value(item = time.getDateTypeSince())
 @endif
 },
 "maintenanceInformation": {

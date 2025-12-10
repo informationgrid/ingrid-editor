@@ -5,20 +5,20 @@
         ></ige-indexing-explanation>
     </ng-container>
 
-    @if (isActivated) {
+    @if (isActivated()) {
         <ng-container main-header>
             <ige-job-handler-header
                 [message]="status()"
-                [isRunning]="indexingIsRunning"
-                (showMore)="showMore = $event"
+                [isRunning]="indexingIsRunning()"
+                (showMore)="showMore.set($event)"
             >
                 <div class="index-btn">
-                    @if (!indexingIsRunning) {
+                    @if (!indexingIsRunning()) {
                         <button
                             mat-flat-button
                             color="primary"
                             class="start-index"
-                            [disabled]="!initialized || hasNoConnections()"
+                            [disabled]="!initialized() || hasNoConnections()"
                             (click)="index()"
                             matomoClickCategory="Indexing"
                             matomoClickAction="StartIndexing"
@@ -52,7 +52,7 @@
         Indizierung benötigt wird.
     }
 
-    <div status class="status" [class.hide]="!showMore">
+    <div status class="status" [class.hide]="!showMore()">
         <div class="copy-button-area">
             <div class="extra-large-spacing link-text">
                 <a href="#" (click)="copyContent($event)">Kopieren</a>
@@ -74,7 +74,7 @@
                     matInput
                     placeholder="*/1 * * * * *"
                 />
-                <mat-hint>{{ hint }}</mat-hint>
+                <mat-hint>{{ hint() }}</mat-hint>
             </mat-form-field>
             <div class="button-bar flex-row justify-content-space-between">
                 <button
@@ -88,7 +88,7 @@
                     mat-stroked-button
                     color="primary"
                     (click)="updatePattern(cronField.value)"
-                    [disabled]="!valid"
+                    [disabled]="!valid()"
                 >
                     Übernehmen
                 </button>

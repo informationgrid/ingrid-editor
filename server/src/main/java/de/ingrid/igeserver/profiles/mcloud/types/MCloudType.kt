@@ -47,7 +47,7 @@ class MCloudType : EntityType() {
         download.get("link").get("value").textValue()
     }
 
-    override fun getReferenceIds(doc: Document): List<String> = doc.data.path("addresses").map { address ->
+    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("addresses").map { address ->
         address.getString("ref")!!
     }
 }

@@ -24,7 +24,7 @@ import {
   OnDestroy,
   OnInit,
   TemplateRef,
-  ViewChild,
+  viewChild,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
@@ -52,7 +52,7 @@ export class InlineHelpWrapperComponent
   extends FieldWrapper
   implements OnInit, AfterViewInit, OnDestroy
 {
-  @ViewChild("matSuffix", { static: true }) matSuffix!: TemplateRef<any>;
+  readonly matSuffix = viewChild.required<TemplateRef<any>>("matSuffix");
 
   private profile: string;
   private fieldId: string;
@@ -71,9 +71,10 @@ export class InlineHelpWrapperComponent
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     this.fieldId = <string>this.field.key;
 
-    if (this.matSuffix && !this.props.isSuffixUnsupported) {
+    const matSuffix = this.matSuffix();
+    if (matSuffix && !this.props.isSuffixUnsupported) {
       this.props._matSuffix = this.props.suffix;
-      this.props.suffix = this.matSuffix;
+      this.props.suffix = matSuffix;
     }
   }
 

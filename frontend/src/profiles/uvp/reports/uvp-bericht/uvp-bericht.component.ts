@@ -17,10 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, ViewChild } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
-import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatSort, MatSortModule } from "@angular/material/sort";
@@ -31,8 +37,9 @@ import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.compo
 import { FacetsComponent } from "../../../../app/+research/+facets/facets.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
+import { Facets } from "../../../../app/+research/research.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
@@ -49,14 +56,16 @@ import { MatButton } from "@angular/material/button";
   ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
-  report: UvpReport;
-  averageDuration: string;
+  private destroyRef = inject(DestroyRef);
 
-  startDate: string;
-  endDate: string;
+  readonly sort = viewChild(MatSort);
+  report = signal<UvpReport>(null);
+  private averageDuration: string;
 
-  facets = {
+  private startDate: string;
+  private endDate: string;
+
+  facets: Facets = {
     addresses: [],
     documents: [
       {
@@ -75,28 +84,28 @@ export class UvpBerichtComponent implements AfterViewInit {
       },
     ],
   };
-  facetForm = new UntypedFormControl();
+  facetForm = new FormControl();
   dataSource = new MatTableDataSource([]);
   dataSourceMiscellaneous = new MatTableDataSource([]);
-  displayedColumns = ["eiaNumber", "eiaCategory", "count"];
-  displayedColumnsMiscellaneous = ["type", "value"];
+  displayedColumns = signal<string[]>(["eiaNumber", "eiaCategory", "count"]);
+  displayedColumnsMiscellaneous = signal<string[]>(["type", "value"]);
 
   constructor(private uvpResearchService: UvpResearchService) {
     this.uvpResearchService.initialized$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((x) => x),
       )
       .subscribe(() => {
         this.initData();
         this.facetForm.valueChanges
-          .pipe(untilDestroyed(this), debounceTime(300))
+          .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
           .subscribe(() => this.getReport(this.facetForm.value));
       });
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort();
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case "eiaNumber": {
@@ -144,7 +153,7 @@ export class UvpBerichtComponent implements AfterViewInit {
   }
 
   updateReport(report: UvpReport) {
-    this.report = report;
+    this.report.set(report);
     this.averageDuration = this.uvpResearchService.convertAverageDuration(
       report.averageProcedureDuration,
     );
@@ -174,7 +183,7 @@ export class UvpBerichtComponent implements AfterViewInit {
   downloadReport() {
     let fileText =
       "UVP Nummer; UVP-G Kategorie; Anzahl; Abgeschlossene Vorhaben; Positive Vorprüfungen; Negative Vorprüfungen; Durchschnittliche Verfahrensdauer\n";
-    fileText += `;;;${this.report.procedureCount};${this.report.positivePreliminaryAssessments};${this.report.negativePreliminaryAssessments};${this.averageDuration}\n`;
+    fileText += `;;;${this.report().procedureCount};${this.report().positivePreliminaryAssessments};${this.report().negativePreliminaryAssessments};${this.averageDuration}\n`;
     this.dataSource.data.forEach((row) => {
       fileText += `${row.eiaNumber};${row.eiaCategory};${row.count}\n`;
     });

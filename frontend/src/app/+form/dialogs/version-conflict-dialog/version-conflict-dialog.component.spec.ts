@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 
 import { VersionConflictDialogComponent } from "./version-conflict-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -31,6 +31,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("VersionConflictDialogComponent", () => {
   let spectator: Spectator<VersionConflictDialogComponent>;
@@ -42,6 +43,7 @@ describe("VersionConflictDialogComponent", () => {
     component: VersionConflictDialogComponent,
     imports: [MatDialogModule],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
     ],
@@ -52,7 +54,7 @@ describe("VersionConflictDialogComponent", () => {
   });
 
   it("should show two options when property not set", () => {
-    spyOn(configService, "getConfiguration").and.returnValue({
+    vi.spyOn(configService, "getConfiguration").mockReturnValue({
       ...defaultConfig,
     });
     spectator = createComponent();
@@ -61,7 +63,7 @@ describe("VersionConflictDialogComponent", () => {
   });
 
   it("should show two options when property set to 'false'", () => {
-    spyOn(configService, "getConfiguration").and.returnValue({
+    vi.spyOn(configService, "getConfiguration").mockReturnValue({
       ...defaultConfig,
       allowOverwriteOnVersionConflict: false,
     });
@@ -71,7 +73,7 @@ describe("VersionConflictDialogComponent", () => {
   });
 
   it("should show two options when property set to 'true'", () => {
-    spyOn(configService, "getConfiguration").and.returnValue({
+    vi.spyOn(configService, "getConfiguration").mockReturnValue({
       ...defaultConfig,
       allowOverwriteOnVersionConflict: true,
     });

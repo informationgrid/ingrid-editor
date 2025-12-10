@@ -20,7 +20,6 @@
 import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
 import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
@@ -31,11 +30,10 @@ import { TranslocoService } from "@jsverse/transloco";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { take } from "rxjs/operators";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Injectable()
 export class CreateDocumentPlugin extends Plugin {
   id = "plugin.newDoc";
@@ -45,7 +43,7 @@ export class CreateDocumentPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   isAdmin = this.config.hasCatAdminRights();
@@ -96,12 +94,13 @@ export class CreateDocumentPlugin extends Plugin {
       .pipe(take(1))
       .subscribe((tooltipText) => {
         this.toolbarService.addButton({
+          type: "button",
           id: "toolBtnNew",
           tooltip: tooltipText,
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: signal(true),
+          active: true,
         });
         this.addNonAdminBehaviour();
       });

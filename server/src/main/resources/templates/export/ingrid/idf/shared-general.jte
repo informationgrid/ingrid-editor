@@ -18,8 +18,11 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Content aggregateInformation = null
 @param Content citationEdition = null
 @param Boolean isService = false
+@param Content additionalIdentification = null
+
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -288,16 +291,16 @@
             @if( page.getDateEvents().isEmpty() )
                 <gmd:date gco:nilReason="missing"></gmd:date>
             @else
-                @for(DateEvent event : page.getDateEvents())
+                @for(TypedDateEvent event : page.getDateEvents())
                     <gmd:date>
                         <gmd:CI_Date>
                             <gmd:date>
-                                <gco:DateTime>${page.formatDate(page.getFormatterISO(), event.getReferenceDate())}</gco:DateTime>
+                                <gco:DateTime>${page.formatDate(page.getFormatterISO(), event.getDate())}</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode
                                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode"
-                                        codeListValue="${page.getCodelists().getValue("502", event.getReferenceDateType(), "iso")}" />
+                                        codeListValue="${event.getType()}" />
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
@@ -306,11 +309,11 @@
 
             ${citationEdition}
 
-            @if( page.getModel().getType().equals("InGridGeoDataset") &&  TransformationTools.hasValue(page.getCitationURL()))
+            @if( TransformationTools.hasValue(page.getResourceIdentifier()))
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
-                            <gco:CharacterString>${page.getCitationURL()}</gco:CharacterString>
+                            <gco:CharacterString>${page.getResourceIdentifier()}</gco:CharacterString>
                         </gmd:code>
                     </gmd:MD_Identifier>
                 </gmd:identifier>
@@ -338,6 +341,8 @@
                 </gmd:identifier>
             @endif
 
+            @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithoutEmail(), wrapperElement = "gmd:citedResponsibleParty")
+
             ${additionalCitation}
 
         </gmd:CI_Citation>
@@ -357,7 +362,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
+    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithEmail(), wrapperElement = "gmd:pointOfContact")
     @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -479,6 +484,7 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
     @endif
+    ${aggregateInformation}
     @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
         <gmd:spatialRepresentationType>
             <gmd:MD_SpatialRepresentationTypeCode
@@ -504,7 +510,7 @@
             <gmd:spatialResolution>
                 <gmd:MD_Resolution>
                     <gmd:distance>
-                        <gco:Distance uom="meter">${resolution.getDistanceMeter()}</gco:Distance>
+                        <gco:Distance uom="${page.getUomMeter()}">${resolution.getDistanceMeter()}</gco:Distance>
                     </gmd:distance>
                 </gmd:MD_Resolution>
             </gmd:spatialResolution>
@@ -568,6 +574,7 @@
                             </gmd:extentTypeCode>
                         @endif
                             <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
                                 @if(ref.getAuthority() != null)
                                     <gmd:authority>
                                         <gmd:CI_Citation>
@@ -587,7 +594,6 @@
                                         </gmd:CI_Citation>
                                     </gmd:authority>
                                 @endif
-                                <gmd:MD_Identifier>
                                     <gmd:code>
                                         @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
                                     </gmd:code>
@@ -634,7 +640,7 @@
                     <gmd:extent>
                         @if("at".equals(page.getResourceDateType()))
                             <gml:TimeInstant gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
-                                <gml:timePosition>${page.formatDate(page.getFormatterISO(), page.getData().getTemporal().getResourceDate())}</gml:timePosition>
+                                <gml:timePosition>${page.formatDate(page.getFormatterISO(), page.getData().getTemporal().getData().getResourceDate())}</gml:timePosition>
                             </gml:TimeInstant>
                         @else
                             <gml:TimePeriod gml:id="timePeriod_ID_${TransformationTools.getRandomUUID()}">
@@ -655,6 +661,9 @@
                     <gmd:maximumValue>
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
+                    @if(page.getLinkToVerticalCRS())
+                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="http://www.opengis.net/def/crs/EPSG/0/${verticalExtent.getDatum().getKey()}" />
+                    @else
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
                             <gml:identifier codeSpace="" />
@@ -682,35 +691,13 @@
                             </gml:verticalDatum>
                         </gml:VerticalCRS>
                     </gmd:verticalCRS>
+                    @endif
+
                 </gmd:EX_VerticalExtent>
             </gmd:verticalElement>
         @endif
     </gmd:EX_Extent>
 </${page.getExtentType()}>
-@for( String identifier : page.getCoupledResourceIdentifiers() )
-    @for( DisplayOperation operation : page.getOperations() )
-        <srv:coupledResource>
-            <srv:SV_CoupledResource>
-                <srv:operationName>
-                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
-                </srv:operationName>
-                <srv:identifier>
-                    <gco:CharacterString>${identifier}</gco:CharacterString>
-                </srv:identifier>
-            </srv:SV_CoupledResource>
-        </srv:coupledResource>
-    @endfor
-    @if(page.getOperations().isEmpty())
-        <srv:coupledResource>
-            <srv:SV_CoupledResource>
-                <srv:operationName gco:nilReason="missing" />
-                <srv:identifier>
-                    <gco:CharacterString>${identifier}</gco:CharacterString>
-                </srv:identifier>
-            </srv:SV_CoupledResource>
-        </srv:coupledResource>
-    @endif
-@endfor
 @if(isService)
     <srv:couplingType>
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
@@ -778,6 +765,7 @@
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
     </gmd:supplementalInformation>
 @endif
+${additionalIdentification}
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 ${contentInfo}
@@ -993,6 +981,25 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
+            @if(page.hasOgcServiceVersion())
+                <gmd:transferOptions>
+                    <gmd:MD_DigitalTransferOptions>
+                        <gmd:onLine>
+                            <gmd:CI_OnlineResource>
+                                <gmd:linkage>
+                                    <gmd:URL>${page.getOgcLandingPage()}</gmd:URL>
+                                </gmd:linkage>
+                                <gmd:protocol>
+                                    <gmx:Anchor xlink:href="http://www.opengis.net/def/interface/ogcapi-features">OGC API-Features</gmx:Anchor>
+                                </gmd:protocol>
+                                <gmd:function>
+                                    <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+                                </gmd:function>
+                            </gmd:CI_OnlineResource>
+                        </gmd:onLine>
+                    </gmd:MD_DigitalTransferOptions>
+                </gmd:transferOptions>
+            @endif
         </gmd:MD_Distribution>
     </gmd:distributionInfo>
 @endif
@@ -1003,8 +1010,8 @@ ${contentInfo}
         @if( TransformationTools.hasValue(page.getParentIdentifierReference().getDescription()))
             <idf:description>${page.getParentIdentifierReference().getDescription()}</idf:description>
         @endif
-        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverview()))
-            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverview()}</idf:graphicOverview>
+        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverviewUri()))
+            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverviewUri()}</idf:graphicOverview>
         @endif
     </idf:superiorReference>
 @endif
@@ -1055,3 +1062,4 @@ ${contentInfo}
 @if(TransformationTools.hasValue(page.getMapLinkUrl()))
     <idf:mapUrl>${page.getMapLinkUrl()}</idf:mapUrl>
 @endif
+$unsafe{page.getExtraContent()}

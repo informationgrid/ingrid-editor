@@ -171,7 +171,7 @@ class DistributionInfo : GeodatasetBase() {
                     ObjectNode::class.java,
                 )
             }
-            every { documentService.getIncomingReferences(any(), "test-catalog") } returns setOf("12345")
+            every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns setOf("12345")
             every { documentService.getLastPublishedDocument("test-catalog", "12345", forExport = true) } returns doc
 
             val result = exportGeoDataset()

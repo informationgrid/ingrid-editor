@@ -22,7 +22,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from "@ngneat/spectator";
+} from "@ngneat/spectator/vitest";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
@@ -41,8 +41,7 @@ import {
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { Observable, of } from "rxjs";
 import { getTranslocoModule } from "../../transloco-testing.module";
-import "zone.js";
-import "zone.js/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
@@ -76,6 +75,7 @@ describe("CatalogCodelistsComponent", () => {
       getTranslocoModule(),
     ],
     providers: [
+      provideZonelessChangeDetection(),
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       mockProvider(CodelistService, {

@@ -17,14 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { SqlQuery } from "../../store/query/query.model";
+import { Query, SqlQuery } from "../../store/query/query.model";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -37,9 +43,8 @@ import { MatInput } from "@angular/material/input";
 import { MatFormField } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
@@ -56,37 +61,37 @@ import { toObservable } from "@angular/core/rxjs-interop";
 export class TabSqlComponent implements OnInit {
   private generalStore = inject(GeneralStore);
   private snackBar = inject(MatSnackBar);
+  private researchService = inject(ResearchService);
+  private dialog = inject(MatDialog);
+  private config = inject(ConfigService);
+  private destroyRef = inject(DestroyRef);
 
   sql = new UntypedFormControl("");
   request = new FormControl<string>("");
 
   sqlExamples = this.researchService.sqlExamples;
 
-  isSearching = false;
+  isSearching = signal<boolean>(false);
 
-  result: any;
-  aiSearchEnabled =
-    this.config.hasSuperAdminRights() &&
-    (this.config.getConfiguration().featureFlags.openAISearch ?? false);
+  result = signal<any>(null);
+  aiSearchEnabled = computed(
+    () =>
+      this.config.hasSuperAdminRights() &&
+      (this.config.getConfiguration().featureFlags.openAISearch ?? false),
+  );
 
   private activeQuery = toObservable(this.generalStore.activeQuery);
-
-  constructor(
-    private researchService: ResearchService,
-    private dialog: MatDialog,
-    private config: ConfigService,
-  ) {}
 
   ngOnInit(): void {
     this.activeQuery
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "sql"),
       )
-      .subscribe((entity: SqlQuery) => {
+      .subscribe((entity: Query) => {
         this.researchService.setActiveQuery(null);
-        this.sql.setValue(entity.sql);
-        this.search(entity.sql);
+        this.sql.setValue((<SqlQuery>entity).sql);
+        this.search((<SqlQuery>entity).sql);
       });
   }
 
@@ -96,10 +101,10 @@ export class TabSqlComponent implements OnInit {
       this.updateHits({ hits: [], totalHits: 0 });
       return;
     }
-    this.isSearching = true;
+    this.isSearching.set(true);
     this.researchService
       .searchBySQL(sql)
-      .pipe(finalize(() => (this.isSearching = false)))
+      .pipe(finalize(() => this.isSearching.set(false)))
       .subscribe(
         (result) => this.updateHits(result),
         // (error: HttpErrorResponse) => (this.error = error.error.errorText)
@@ -136,15 +141,15 @@ export class TabSqlComponent implements OnInit {
   }
 
   private updateHits(result: ResearchResponse) {
-    this.result = result;
+    this.result.set(result);
   }
 
   askForSQL(question: string) {
-    this.isSearching = true;
+    this.isSearching.set(true);
     this.researchService
       .askAI(question)
       .pipe(
-        finalize(() => (this.isSearching = false)),
+        finalize(() => this.isSearching.set(false)),
         map((answer) => this.adaptAnswer(answer)),
       )
       .subscribe((answer) => {

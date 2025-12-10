@@ -27,6 +27,9 @@ mat-chip-listbox {
   button.small-icon-button {
     box-shadow: 0 0 0 1px vars.$ige-text-color;
     opacity: 0.3;
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 1px;
 
     &:hover {
       opacity: 1;

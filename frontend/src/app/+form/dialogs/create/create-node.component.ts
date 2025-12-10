@@ -28,8 +28,9 @@ import {
   OnInit,
   Signal,
   signal,
-  ViewChild,
   WritableSignal,
+  viewChild,
+  DestroyRef,
 } from "@angular/core";
 import {
   DocumentService,
@@ -53,7 +54,6 @@ import {
 } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom } from "rxjs";
@@ -69,15 +69,15 @@ import { AddressTemplateComponent } from "./address-template/address-template.co
 import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
 import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
 import { GeneralStore } from "../../../store/general.store";
-import { TreeStore } from "../../../store/tree/tree.store";
+import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface CreateOptions {
   forAddress: boolean;
   isFolder: boolean;
 }
 
-@UntilDestroy()
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
@@ -105,10 +105,11 @@ export interface CreateOptions {
 })
 export class CreateNodeComponent implements OnInit {
   private generalStore = inject(GeneralStore);
-  private documentTreeStore = inject(TreeStore);
+  private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private destroyRef = inject(DestroyRef);
 
-  @ViewChild("contextNodeContainer") container: ElementRef;
+  readonly container = viewChild<ElementRef>("contextNodeContainer");
   title = "Neuen Ordner anlegen";
   parent: WritableSignal<number> = linkedSignal(() => {
     return this.path()[this.path().length - 1]?.id ?? null;
@@ -169,7 +170,7 @@ export class CreateNodeComponent implements OnInit {
     }
 
     this.formGroup.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.docTypeChoice.set(value.choice));
   }
 

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import {
   ConsolidateDialogComponent,
   Keyword,
@@ -35,12 +35,14 @@ import {
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { ConfigService } from "../../../../../app/services/config/config.service";
-import { fakeAsync, tick } from "@angular/core/testing";
 import { ThesaurusType } from "../../../components/thesaurus-result";
 import { KeywordAnalysis } from "../../../utils/keywords";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { waitSomeTime } from "../../../utils/time";
+import { vi } from "vitest";
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
@@ -48,6 +50,7 @@ describe("ConsolidateDialogComponent", () => {
     component: ConsolidateDialogComponent,
     imports: [MatIconTestingModule],
     providers: [
+      provideZonelessChangeDetection(),
       { provide: MAT_DIALOG_DATA, useValue: [] },
       { provide: MatDialogRef, useValue: [] },
       provideHttpClient(withInterceptorsFromDi()),
@@ -60,14 +63,19 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   beforeEach(() => {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     spectator = createComponent({ detectChanges: false });
   });
 
-  it("should show an empty result when no keywords available", () => {
+  it("should show an empty result when no keywords available", async () => {
     initForm({ free: [], gemet: [], umthes: [] });
-    spectator.detectChanges();
 
-    expect(spectator.query("ige-dialog-template")).toHaveText(
+    await spectator.fixture.whenStable();
+    expect(spectator.query("ige-dialog-template").textContent).contains(
       "In diesem Datensatz sind keine Schlagworte vorhanden.",
     );
     expectThesaurusNotExists("Umthes-Schlagworte");
@@ -75,139 +83,135 @@ describe("ConsolidateDialogComponent", () => {
     expectThesaurusNotExists("Freie Schlagworte");
   });
 
-  it("should not re-assign free keywords", fakeAsync(() => {
+  it("should not re-assign free keywords", async () => {
     initForm({ free: [{ label: "test" }] });
-    spectator.detectChanges();
-    mockHttp();
-
+    await mockHttp();
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "unchanged");
     expectThesaurusNotExists("Umthes-Schlagworte");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should move a free keyword to umthes", fakeAsync(() => {
+  it("should move a free keyword to umthes", async () => {
     initForm({ free: [{ label: "test" }] });
-    spectator.detectChanges();
-    mockHttp({ umthes: [{ id: "1", label: "test" }] });
 
+    await mockHttp({ umthes: [{ id: "1", label: "test" }] });
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "removed");
     expectKeywordCount("Umthes-Schlagworte", 1, "test", "added");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should move a free keyword to gemet", fakeAsync(() => {
+  it("should move a free keyword to gemet", async () => {
     initForm({ free: [{ label: "test" }] });
-    spectator.detectChanges();
-    mockHttp({ gemet: [{ id: "1", label: "test" }] });
+    await mockHttp({ gemet: [{ id: "1", label: "test" }] });
 
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "removed");
     expectKeywordCount("Gemet-Schlagworte", 1, "test", "added");
     expectThesaurusNotExists("Umthes-Schlagworte");
-  }));
+  });
 
-  it("should keep a free keyword and add synonym to gemet", fakeAsync(() => {
+  it("should keep a free keyword and add synonym to gemet", async () => {
     initForm({ free: [{ label: "test" }] });
-    spectator.detectChanges();
-    mockHttp({ gemet: [{ id: "1", label: "test-other" }] });
-
+    await mockHttp({ gemet: [{ id: "1", label: "test-other" }] });
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "unchanged");
     expectKeywordCount("Gemet-Schlagworte", 1, "test-other", "added");
     expectThesaurusNotExists("Umthes-Schlagworte");
-  }));
+  });
 
-  it("should keep a free keyword and add synonym to umthes", fakeAsync(() => {
+  it("should keep a free keyword and add synonym to umthes", async () => {
     initForm({ free: [{ label: "test" }] });
-    spectator.detectChanges();
-    mockHttp({ umthes: [{ id: "1", label: "test-other" }] });
-
+    await mockHttp({ umthes: [{ id: "1", label: "test-other" }] });
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "unchanged");
     expectKeywordCount("Umthes-Schlagworte", 1, "test-other", "added");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should move a free keyword to inspire", fakeAsync(() => {
+  it("should move a free keyword to inspire", async () => {
     initForm({ free: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Freie Schlagworte", 1, "Adressen", "removed");
     expectThesaurusNotExists("Umthes-Schlagworte");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should move a gemet keyword to inspire", fakeAsync(() => {
+  it("should move a gemet keyword to inspire", async () => {
     initForm({ gemet: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Gemet-Schlagworte", 1, "Adressen", "removed");
     expectThesaurusNotExists("Umthes-Schlagworte");
     expectThesaurusNotExists("Freie Schlagworte");
-  }));
+  });
 
-  it("should move a gemet keyword to free keywords if not found", fakeAsync(() => {
-    initForm({ gemet: [{ id: 1, label: "test" }] });
+  it("should move a gemet keyword to free keywords if not found", async () => {
+    initForm({ gemet: [{ id: "1", label: "test" }] });
 
-    spectator.detectChanges();
-    mockHttp({});
-
+    await mockHttp({});
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "added");
     expectKeywordCount("Gemet-Schlagworte", 1, "test", "removed");
     expectThesaurusNotExists("Umthes-Schlagworte");
-  }));
+  });
 
-  it("should move an umthes keyword to free keywords if not found", fakeAsync(() => {
-    initForm({ umthes: [{ id: 1, label: "test" }] });
+  it("should move an umthes keyword to free keywords if not found", async () => {
+    initForm({ umthes: [{ id: "1", label: "test" }] });
 
-    spectator.detectChanges();
-    mockHttp({});
-
+    await mockHttp({});
+    await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "added");
     expectKeywordCount("Umthes-Schlagworte", 1, "test", "removed");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should move an umthes keyword to gemet keywords (higher hierarchy)", fakeAsync(() => {
-    initForm({ umthes: [{ id: 1, label: "test" }] });
+  it("should move an umthes keyword to gemet keywords (higher hierarchy)", async () => {
+    initForm({ umthes: [{ id: "1", label: "test" }] });
 
-    spectator.detectChanges();
-    mockHttp({ gemet: [{ id: "1", label: "test" }] });
-
+    await mockHttp({ gemet: [{ id: "1", label: "test" }] });
+    await waitSomeTime();
     expectKeywordCount("Gemet-Schlagworte", 1, "test", "added");
     expectKeywordCount("Umthes-Schlagworte", 1, "test", "removed");
     expectThesaurusNotExists("Freie Schlagworte");
     expectThesaurusNotExists("INSPIRE-Themen");
-  }));
+  });
 
-  it("should move an umthes keyword to inspire", fakeAsync(() => {
-    initForm({ umthes: [{ id: 1, label: "Adressen" }] }, [], "conform");
+  it("should move an umthes keyword to inspire", async () => {
+    initForm({ umthes: [{ id: "1", label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Umthes-Schlagworte", 1, "Adressen", "removed");
     expectThesaurusNotExists("Freie Schlagworte");
     expectThesaurusNotExists("Gemet-Schlagworte");
-  }));
+  });
 
-  it("should notify if thesauri are not available", fakeAsync(() => {
+  it("should notify if thesauri are not available", async () => {
     initForm({ free: [{ label: "test" }] });
 
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
-    spyOn(keywordAnalysis, "analyzeKeywords").and.returnValue(
-      new Promise((resolve) => {
+    vi.spyOn(keywordAnalysis, "analyzeKeywords").mockReturnValue(
+      // @ts-ignore
+      new Promise((resolve: any) => {
         // @ts-ignore: force an error in the component
         resolve("Some error message.");
       }),
     );
-    tick();
-    spectator.detectChanges();
-    tick();
-    spectator.detectChanges();
-    expect(spectator.query("div.legend")).not.toContainText(
-      "Die Schlagworte werden analysiert. Bitte warten Sie einen Moment.",
-    );
-    expect(spectator.query(".error-message")).toExist();
-    expect(spectator.query(".error-message")).toContainText(
+    await waitSomeTime();
+    expect(spectator.query("div.legend")).toBe(null);
+    // .textContent).not.contains(
+    //   "Die Schlagworte werden analysiert. Bitte warten Sie einen Moment.",
+    // );
+    expect(spectator.query(".error-message")).not.toBe(null);
+    expect(spectator.query(".error-message").textContent).contains(
       "Es konnte keine Verbindung zu einem der Thesauri hergestellt werden.",
     );
 
@@ -215,7 +219,7 @@ describe("ConsolidateDialogComponent", () => {
     expectThesaurusNotExists("Freie Schlagworte");
     expectThesaurusNotExists("Gemet-Schlagworte");
     expectThesaurusNotExists("Umthes-Schlagworte");
-  }));
+  });
 
   function expectKeywordCount(
     thesaurus: ThesaurusType,
@@ -228,23 +232,29 @@ describe("ConsolidateDialogComponent", () => {
     ).toHaveLength(count);
     if (value) {
       expect(
-        spectator.query(`div[aria-label='${thesaurus}'] mat-chip`),
-      ).toHaveText(value);
+        spectator
+          .query(`div[aria-label='${thesaurus}'] mat-chip`)
+          .textContent.trim(),
+      ).toEqual(value);
     }
     if (state) {
       expect(
-        spectator.query(`div[aria-label='${thesaurus}'] mat-chip`),
-      ).toHaveClass(state + "-keyword");
+        spectator
+          .query(`div[aria-label='${thesaurus}'] mat-chip`)
+          .classList.contains(state + "-keyword"),
+      ).toBe(true);
     }
   }
 
   function expectThesaurusNotExists(thesaurus: ThesaurusType) {
-    expect(spectator.query(`div[aria-label='${thesaurus}']`)).not.toExist();
+    expect(spectator.query(`div[aria-label='${thesaurus}']`)).toBe(null);
   }
 
   function initForm(
     keywords: Keywords,
-    themes: { key: string }[] = [],
+    themes: {
+      key: string;
+    }[] = [],
     isInspireIdentified: any = false,
   ) {
     const formStateService = spectator.inject(FormStateService, true);
@@ -292,46 +302,43 @@ describe("ConsolidateDialogComponent", () => {
     });
   }
 
-  function mockHttp(data?: {
-    gemet?: { id: string; label: string }[];
-    umthes?: { id: string; label: string }[];
+  async function mockHttp(data?: {
+    gemet?: {
+      id: string;
+      label: string;
+    }[];
+    umthes?: {
+      id: string;
+      label: string;
+    }[];
   }) {
     const httpCtrl = spectator.inject(HttpTestingController);
 
+    await spectator.fixture.whenStable();
     const reqGemet = httpCtrl.expectOne(
       "/api/keywords/gemet?q=test&type=EXACT",
     );
     reqGemet.flush(data?.gemet ?? []);
-    tick();
 
     if (data?.gemet && !data?.umthes) {
       // If gemet was found, we don't need to check umthes.
       httpCtrl.expectNone("/api/keywords/umthes?q=test&type=EXACT");
-      tick();
       httpCtrl.verify();
-      spectator.detectChanges();
       return;
     }
 
+    await waitSomeTime();
     const reqUmthes = httpCtrl.expectOne(
       "/api/keywords/umthes?q=test&type=EXACT",
     );
     reqUmthes.flush(data?.umthes ?? []);
-    tick();
 
     // Finally, assert that there are no outstanding requests.
     httpCtrl.verify();
-
-    spectator.detectChanges();
   }
 
   function mockCheckInThemes(data?: CodelistEntry) {
     const codelistStore = spectator.inject(CodelistStore);
-    spyOn(codelistStore, "getCodelistEntryByValue").and.returnValue(data);
-    // We have to trigger tick twice to make sure the promise is resolved.
-    tick();
-    spectator.detectChanges();
-    tick();
-    spectator.detectChanges();
+    vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
   }
 });
