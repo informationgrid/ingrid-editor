@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import {
@@ -34,14 +41,12 @@ import {
   FormlyFormOptions,
 } from "@ngx-formly/core";
 import { IgeError } from "../../../models/ige-error";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { rxResource } from "@angular/core/rxjs-interop";
+import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
@@ -56,6 +61,8 @@ import { rxResource } from "@angular/core/rxjs-interop";
   ],
 })
 export class NewUserDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   users$ = rxResource({
     stream: () => this.userService.getExternalUsers(),
   });
@@ -100,11 +107,11 @@ export class NewUserDialogComponent implements OnInit {
     });
     this.form
       .get("login")
-      .valueChanges.pipe(untilDestroyed(this))
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.updateForm(value));
     this.form
       .get("role")
-      .valueChanges.pipe(untilDestroyed(this))
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((role) => {
         if (typeof role === "string") {
           this.asAdmin.set(role === "ige-super-admin" || role === "cat-admin");

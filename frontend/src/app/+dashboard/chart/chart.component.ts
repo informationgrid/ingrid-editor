@@ -23,13 +23,11 @@ import {
   Input,
   input,
 } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { DecimalPipe } from "@angular/common";
 
 /**
  * This functionality was much inspired by https://stackoverflow.com/questions/48601880/svg-counterclockwise
  */
-@UntilDestroy()
 @Component({
   selector: "ige-chart",
   templateUrl: "./chart.component.html",

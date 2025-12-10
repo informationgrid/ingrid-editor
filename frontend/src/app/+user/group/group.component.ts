@@ -20,6 +20,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   OnInit,
@@ -40,7 +41,6 @@ import {
 } from "@angular/forms";
 import { Permissions, User } from "../user";
 import { filter, map, tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -70,9 +70,8 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
-import { rxResource } from "@angular/core/rxjs-interop";
+import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
@@ -116,6 +115,7 @@ export class GroupComponent implements OnInit {
   public userService = inject(UserService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private destroyRef = inject(DestroyRef);
 
   activeGroup = this.generalStore.activeGroup;
   groups = this.groupStore.entities;
@@ -174,16 +174,18 @@ export class GroupComponent implements OnInit {
     });
 
     this.groupService.forceReload$
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadGroup(this.previousGroupId));
 
-    this.userInfo$.pipe(untilDestroyed(this)).subscribe((info) => {
-      this.userGroupNames = info.groups;
-      this.userHasRootWritePermission =
-        this.configService.hasPermission("can_write_root");
-      this.userHasRootReadPermission =
-        this.configService.hasPermission("can_read_root");
-    });
+    this.userInfo$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((info) => {
+        this.userGroupNames = info.groups;
+        this.userHasRootWritePermission =
+          this.configService.hasPermission("can_write_root");
+        this.userHasRootReadPermission =
+          this.configService.hasPermission("can_read_root");
+      });
   }
 
   openAddGroupDialog() {

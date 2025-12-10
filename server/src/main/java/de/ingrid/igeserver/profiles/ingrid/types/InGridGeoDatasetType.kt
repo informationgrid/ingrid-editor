@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -46,11 +47,33 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
     override fun onPublish(doc: Document) {
         super.onPublish(doc)
 
-        val allCoupledResourcesPublished = doc.data.getPath("dataQualityInfo.lineage.source.descriptions")
-            ?.filter { it.getString("_type") == "internalDataOrigin" }
-            ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.getString("uuidRef")!!) }
-            ?.all { it.state == DocumentState.PUBLISHED } ?: true
+        try {
+            val allCoupledResourcesPublished = doc.data.getPath("dataQualityInfo.lineage.source.descriptions")
+                ?.filter { it.getString("_type") == "internalDataOrigin" }
+                ?.map {
+                    documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(
+                        doc.catalog!!,
+                        it.getString("uuidRef")!!,
+                    )
+                }
+                ?.all { it.state == DocumentState.PUBLISHED } ?: true
 
-        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(listOf(InvalidField("dataQualityInfo.lineage.source.descriptions", "INTERNAL_REFERENCES_MUST_BE_PUBLISHED")))
+            if (!allCoupledResourcesPublished) {
+                throw ValidationException.withInvalidFields(
+                    listOf(
+                        InvalidField(
+                            "dataQualityInfo.lineage.source.descriptions",
+                            "INTERNAL_REFERENCES_MUST_BE_PUBLISHED",
+                        ),
+                    ),
+                )
+            }
+        } catch (e: Exception) {
+            if (e is ValidationException) throw e
+            throw ServerException.withReason(
+                "Error while validating internal resource-reference during publish: ${e.message}",
+                e,
+            )
+        }
     }
 }

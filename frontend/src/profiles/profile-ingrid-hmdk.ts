@@ -28,12 +28,10 @@ import { DataCollectionDoctypeHMDK } from "./ingrid-hmdk/doctypes/data-collectio
 import { PublicationDoctypeHMDK } from "./ingrid-hmdk/doctypes/publication.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-published.behaviour";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
-@UntilDestroy()
 @Component({
   template: "",
   standalone: true,

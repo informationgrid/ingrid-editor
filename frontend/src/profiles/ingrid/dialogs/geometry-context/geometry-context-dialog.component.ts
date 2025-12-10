@@ -17,11 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
@@ -29,8 +34,8 @@ import { MatSelectModule } from "@angular/material/select";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   templateUrl: "./geometry-context-dialog.component.html",
   imports: [
@@ -43,6 +48,8 @@ import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/
   ],
 })
 export class GeometryContextDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   form: FormGroup = new FormGroup<any>({});
 
   static featureTypeOptions = [
@@ -62,9 +69,11 @@ export class GeometryContextDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
-      this.disabled.set(value !== "VALID");
-    });
+    this.form.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.disabled.set(value !== "VALID");
+      });
   }
 
   submit() {

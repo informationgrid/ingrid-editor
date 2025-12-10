@@ -22,6 +22,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   OnDestroy,
@@ -30,7 +31,6 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { GeoJSON, Map, MapOptions, Polyline } from "leaflet";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
 import { LeafletService } from "./leaflet.service";
@@ -49,8 +49,8 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-formly-leaflet-type",
   templateUrl: "leaflet-type.component.html",
@@ -75,6 +75,7 @@ export class LeafletTypeComponent
   private contextHelpService = inject(ContextHelpService);
   private leafletService = inject(LeafletService);
   private translocoService = inject(TranslocoService);
+  private destroyRef = inject(DestroyRef);
 
   readonly leaflet = viewChild<ElementRef>("leaflet");
 
@@ -95,7 +96,11 @@ export class LeafletTypeComponent
     this.leaflet().nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0), distinctUntilChanged())
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        debounceTime(0),
+        distinctUntilChanged(),
+      )
       .subscribe((value) => this.updateBoundingBoxCatchingErrors(value || []));
 
     try {

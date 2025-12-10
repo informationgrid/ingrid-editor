@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -51,7 +51,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   supportLink?: boolean;
@@ -66,7 +66,6 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   codelistIdForFileReferenceFormats: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat-distribution-detail-list",
   templateUrl: "./repeat-distribution-detail-list.component.html",
@@ -92,6 +91,8 @@ export class RepeatDistributionDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDistributionDetailListProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   showMore = {};
 
   setCodelistIdForFileReferenceFormats() {
@@ -114,7 +115,10 @@ export class RepeatDistributionDetailListComponent
   ngOnInit(): void {
     this.setCodelistIdForFileReferenceFormats();
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), startWith(this.formControl.value))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(this.formControl.value),
+      )
       .subscribe((data) => this.items.set(data ?? []));
   }
 

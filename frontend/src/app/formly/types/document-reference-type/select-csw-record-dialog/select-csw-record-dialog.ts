@@ -17,14 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, tap } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {
@@ -39,6 +45,7 @@ import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { FormErrorComponent } from "../../../../+form/form-shared/ige-form-error/form-error.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface SelectCswRecordResponse {
   title: string;
@@ -55,7 +62,6 @@ export interface SelectCswRecordData {
   showLayernames: boolean;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-select-csw-record-dialog",
   templateUrl: "./select-csw-record-dialog.html",
@@ -73,6 +79,8 @@ export interface SelectCswRecordData {
   ],
 })
 export class SelectCswRecordDialog implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   urlControl = new FormControl<string>("https://", [
     Validators.required,
     Validators.pattern(REGEX_URL),
@@ -106,7 +114,7 @@ export class SelectCswRecordDialog implements OnInit {
   ngOnInit(): void {
     this.urlControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         debounceTime(500),
         filter((_) => this.urlControl.valid),
         tap((_) => this.phase.set("analyzing")),

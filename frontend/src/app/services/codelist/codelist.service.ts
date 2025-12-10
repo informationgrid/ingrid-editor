@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { DestroyRef, effect, inject, Injectable } from "@angular/core";
 import { CodelistDataService } from "./codelist-data.service";
 import {
   BackendOption,
@@ -36,12 +36,11 @@ import {
   Subject,
   throwError,
 } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, filter, map, tap } from "rxjs/operators";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
 import { CodelistStore } from "../../store/codelist/codelist.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { GeneralStore } from "../../store/general.store";
 
 export class SelectOption {
@@ -78,13 +77,13 @@ export type CodelistSort =
   | "sortkey"
   | "description";
 
-@UntilDestroy()
 @Injectable({
   providedIn: "root",
 })
 export class CodelistService {
   private store = inject(CodelistStore);
   private generalStore = inject(GeneralStore);
+  private destroyRef = inject(DestroyRef);
 
   private codelistStore$ = toObservable(this.store.entityMap);
   private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
@@ -177,7 +176,6 @@ export class CodelistService {
 
     this.requestedCodelists
       .pipe(
-        untilDestroyed(this),
         // Collect IDs within a time window of 100ms
         bufferTime(100),
         filter((ids) => ids.length > 0),
@@ -189,6 +187,7 @@ export class CodelistService {
             tap(() => this.generalStore.setCodelistsLoaded()),
           ),
         ),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

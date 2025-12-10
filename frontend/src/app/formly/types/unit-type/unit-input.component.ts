@@ -20,6 +20,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -34,16 +36,15 @@ import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { Observable, of } from "rxjs";
 import { debounceTime, startWith } from "rxjs/operators";
 import { BackendOption } from "../../../store/codelist/codelist.model";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface UnitInput extends FormlyFieldProps {
   unitOptions: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   codelistId: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-unit-input",
   imports: [
@@ -63,6 +64,8 @@ export class UnitInputComponent
   extends FieldType<FieldTypeConfig<UnitInput>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   $unit = signal<string>("");
   $options = signal<SelectOptionUi[]>([]);
 
@@ -72,12 +75,16 @@ export class UnitInputComponent
         ? this.props.unitOptions
         : of(this.props.unitOptions);
 
-    options.pipe(untilDestroyed(this)).subscribe((opts) => {
+    options.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((opts) => {
       const unitValue = this.field.fieldGroup[1].formControl.value;
       this.$options.set(opts);
 
       this.field.fieldGroup[1].formControl.valueChanges
-        .pipe(untilDestroyed(this), startWith(unitValue), debounceTime(0))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          startWith(unitValue),
+          debounceTime(0),
+        )
 
         .subscribe((value: BackendOption) => {
           this.updateUnit(

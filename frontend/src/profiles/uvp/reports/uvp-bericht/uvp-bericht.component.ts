@@ -17,8 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, signal, viewChild } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
@@ -32,8 +38,8 @@ import { FacetsComponent } from "../../../../app/+research/+facets/facets.compon
 import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { Facets } from "../../../../app/+research/research.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
@@ -50,6 +56,8 @@ import { Facets } from "../../../../app/+research/research.service";
   ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly sort = viewChild(MatSort);
   report = signal<UvpReport>(null);
   private averageDuration: string;
@@ -85,13 +93,13 @@ export class UvpBerichtComponent implements AfterViewInit {
   constructor(private uvpResearchService: UvpResearchService) {
     this.uvpResearchService.initialized$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((x) => x),
       )
       .subscribe(() => {
         this.initData();
         this.facetForm.valueChanges
-          .pipe(untilDestroyed(this), debounceTime(300))
+          .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
           .subscribe(() => this.getReport(this.facetForm.value));
       });
   }

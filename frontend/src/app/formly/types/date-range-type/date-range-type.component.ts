@@ -17,10 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   FieldTypeConfig,
   FormlyFieldProps,
@@ -47,13 +46,13 @@ import {
   MatTimepickerToggle,
 } from "@angular/material/timepicker";
 import { MatInput } from "@angular/material/input";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface DateRangeProps extends FormlyFieldProps {
   showTimeInputs: boolean;
   appearance: MatFormFieldAppearance;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-date-range-type",
   templateUrl: "./date-range-type.component.html",
@@ -80,6 +79,8 @@ export class DateRangeTypeComponent
   extends FieldType<FieldTypeConfig<DateRangeProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   rangeFormGroup = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -96,7 +97,7 @@ export class DateRangeTypeComponent
     ]);
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(0))
       .subscribe((value) => {
         this.rangeFormGroup.setValue(
           value ?? {

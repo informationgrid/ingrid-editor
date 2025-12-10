@@ -20,6 +20,8 @@
 import {
   Component,
   computed,
+  DestroyRef,
+  inject,
   Inject,
   OnDestroy,
   OnInit,
@@ -38,7 +40,6 @@ import {
   UploadService,
 } from "../../../../shared/upload/upload.service";
 import { forkJoin, Observable } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, filter, map, mapTo, tap } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
@@ -50,6 +51,7 @@ import { DialogTemplateComponent } from "../../../../shared/dialog-template/dial
 import { UploadComponent } from "../../../../shared/upload/upload.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { MatButton } from "@angular/material/button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface LinkInfo {
   file: string;
@@ -57,7 +59,6 @@ export interface LinkInfo {
   sizeInBytes?: number;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
@@ -70,6 +71,8 @@ export interface LinkInfo {
   ],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
+
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: WritableSignal<string> = signal("");
   docUuid = null;
@@ -186,7 +189,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       }),
     )
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         catchError((error) => this.handleExtractError(error)),
         filter((result) => result),
         map(UploadFilesDialogComponent.convertExtractResponse),

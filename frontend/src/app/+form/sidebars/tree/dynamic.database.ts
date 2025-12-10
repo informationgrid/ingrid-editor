@@ -23,7 +23,6 @@ import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { DocumentService } from "../../../services/document/document.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
 import { GeneralStore } from "../../../store/general.store";
 
@@ -31,7 +30,6 @@ import { GeneralStore } from "../../../store/general.store";
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
-@UntilDestroy()
 @Injectable()
 export class DynamicDatabase {
   private generalStore = inject(GeneralStore);

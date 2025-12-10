@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, signal, viewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
 import { Observable, of, Subscription } from "rxjs";
@@ -40,7 +47,6 @@ import {
 import { DocumentService } from "../../../../services/document/document.service";
 import { ShortTreeNode } from "../../../../+form/sidebars/tree/tree.types";
 import { ConfigService } from "../../../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
@@ -52,8 +58,8 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { CodelistPipe } from "../../../../directives/codelist.pipe";
 import { CredentialsDialogComponent } from "../credentials-dialog/credentials-dialog.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
@@ -79,6 +85,8 @@ import { CredentialsDialogComponent } from "../credentials-dialog/credentials-di
   ],
 })
 export class GetCapabilitiesDialogComponent {
+  private destroyRef = inject(DestroyRef);
+
   readonly selection = viewChild(MatSelectionList);
 
   report = signal<GetCapabilitiesAnalysis | null>(null);
@@ -110,7 +118,7 @@ export class GetCapabilitiesDialogComponent {
     if (this.selectSubsription) this.selectSubsription.unsubscribe();
 
     this.selectSubsription = this.selection()
-      .selectionChange.pipe(untilDestroyed(this))
+      .selectionChange.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.handleAddressConstraint());
   }
 

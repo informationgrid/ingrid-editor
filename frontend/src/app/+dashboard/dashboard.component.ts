@@ -20,6 +20,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   Signal,
@@ -47,11 +48,10 @@ import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 import { DashboardService } from "./dashboard.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { tap } from "rxjs/operators";
 import { CatalogService } from "../+catalog/services/catalog.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
@@ -68,6 +68,7 @@ import { CatalogService } from "../+catalog/services/catalog.service";
 })
 export class DashboardComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private destroyRef = inject(DestroyRef);
 
   canCreateAddress: boolean;
   canCreateDataset: boolean;
@@ -110,7 +111,7 @@ export class DashboardComponent implements OnInit {
     this.catalogService
       .getExpiryDuration()
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         // update Expired documents if expiry duration is set
         tap((expiryDuration) =>
           expiryDuration > 0 ? this.updateExpired() : null,

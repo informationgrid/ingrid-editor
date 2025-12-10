@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import {
   FieldArrayType,
   FieldGroupTypeConfig,
@@ -34,7 +34,6 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { clone, groupByWithIndexReference } from "../../../shared/utils";
 import { debounceTime, startWith, tap } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
@@ -42,6 +41,7 @@ import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIconButton } from "@angular/material/button";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface RepeatProps extends FormlyFieldProps {
   menuOptions: {
@@ -56,7 +56,6 @@ export interface RepeatProps extends FormlyFieldProps {
   addButtonTitle: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat",
   templateUrl: "./repeat.component.html",
@@ -78,6 +77,8 @@ export class RepeatComponent
   extends FieldArrayType<FieldTypeConfig<RepeatProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   canBeDragged = false;
 
   groupedFields: any;
@@ -93,7 +94,7 @@ export class RepeatComponent
 
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(this.formControl.value as any[]),
         debounceTime(0),
         tap((value) => this.createGroupedFields(value)),

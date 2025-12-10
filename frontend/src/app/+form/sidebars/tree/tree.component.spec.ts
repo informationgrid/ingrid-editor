@@ -49,7 +49,6 @@ import {
 import { delay } from "rxjs/operators";
 import { DynamicDatabase } from "./dynamic.database";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { EmptyNavigationComponent } from "./empty-navigation/empty-navigation.component";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -129,7 +128,6 @@ describe("TreeComponent", () => {
 
   beforeEach(() => {
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
-    UntilDestroy()(TreeComponent);
     spectator = createHost();
     db = spectator.inject(DynamicDatabase, true);
     db.initialData.andReturn(of(recentDocuments));

@@ -23,7 +23,6 @@ import {
   BehaviourService,
 } from "../../services/behavior/behaviour.service";
 import { FormControl, FormGroup } from "@angular/forms";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormlyFormBuilder } from "@ngx-formly/core";
 import { ActivatedRoute } from "@angular/router";
 import { PluginService } from "../../services/plugin/plugin.service";
@@ -32,7 +31,6 @@ import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-t
 import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.component";
 import { KeyValuePipe } from "@angular/common";
 
-@UntilDestroy()
 @Component({
   selector: "ige-behaviours",
   templateUrl: "./behaviours.component.html",

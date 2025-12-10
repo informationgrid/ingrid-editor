@@ -21,14 +21,14 @@
                 mat-flat-button
                 color="primary"
                 (click)="updateCodelists()"
-                [disabled]="disableSyncButton"
+                [disabled]="disableSyncButton()"
             >
                 Synchronisieren
             </button>
         </div>
     </div>
 
-    @if (showMore) {
+    @if (showMore()) {
         <div status class="status">Letzte Information ...</div>
     }
 
@@ -43,19 +43,19 @@
             ></ige-filter-select>
         </div>
 
-        @if (selectedCodelist?.description) {
+        @if (selectedCodelist()?.description) {
             <div class="description">
                 <div class="section-title">Beschreibung</div>
-                <div>{{ selectedCodelist?.description }}</div>
+                <div>{{ selectedCodelist()?.description }}</div>
             </div>
         }
 
         <ige-codelist-presenter
-            [codelist]="selectedCodelist"
+            [codelist]="selectedCodelist()"
             [hideMenu]="true"
         ></ige-codelist-presenter>
 
-        @if (!selectedCodelist) {
+        @if (!selectedCodelist()) {
             <div
                 class="image-wrapper flex-row justify-content-center align-items-stretch"
             >

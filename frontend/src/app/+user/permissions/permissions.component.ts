@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, inject, input, OnInit } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  input,
+  OnInit,
+} from "@angular/core";
 import {
   ControlValueAccessor,
   FormBuilder,
@@ -26,13 +33,12 @@ import {
   ReactiveFormsModule,
   UntypedFormGroup,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatIconModule } from "@angular/material/icon";
 import { PermissionTableComponent } from "./permission-table/permission-table.component";
 import { TranslocoModule } from "@jsverse/transloco";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-permissions",
   templateUrl: "./permissions.component.html",
@@ -53,6 +59,8 @@ import { TranslocoModule } from "@jsverse/transloco";
   ],
 })
 export class PermissionsComponent implements OnInit, ControlValueAccessor {
+  private destroyRef = inject(DestroyRef);
+
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
@@ -82,7 +90,7 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
     });
 
     this.formGroup.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.onChange && this.onChange(value));
   }
 

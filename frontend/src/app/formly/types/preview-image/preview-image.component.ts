@@ -17,9 +17,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatButtonModule } from "@angular/material/button";
 import {
   LinkInfo,
@@ -56,8 +55,8 @@ import { of } from "rxjs";
 import { REGEX_URL } from "../../input.validators";
 import { TranslocoService } from "@jsverse/transloco";
 import { FormStateService } from "../../../+form/form-state.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-repeat",
   templateUrl: "./preview-image.component.html",
@@ -77,6 +76,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private messageService = inject(FormMessageService);
   private translocoService = inject(TranslocoService);
   private formStateService = inject(FormStateService);
+  private destroyRef = inject(DestroyRef);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -131,7 +131,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(this.formControl.value),
         debounceTime(100),
         distinctUntilChanged((a: any[], b: any[]) => {

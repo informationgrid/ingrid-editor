@@ -21,12 +21,12 @@ import {
   AfterViewInit,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   signal,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, filter, startWith, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -78,6 +78,7 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export interface TableProps {
   hidden?: boolean;
@@ -100,7 +101,6 @@ export interface TableProps {
   duplicatePostfixField?: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-table-type",
   templateUrl: "table-type.component.html",
@@ -142,6 +142,7 @@ export class TableTypeComponent
   public contextHelpService = inject(ContextHelpService);
   public configService = inject(ConfigService);
   private formStateService = inject(FormStateService);
+  private destroyRef = inject(DestroyRef);
 
   dataSource = signal<MatTableDataSource<any>>(null);
   initialColumns = signal<any[]>([]);
@@ -177,7 +178,7 @@ export class TableTypeComponent
 
     this.formControl.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         startWith(this.formControl.value),
         // distinctUntilChanged(),
         debounceTime(0),

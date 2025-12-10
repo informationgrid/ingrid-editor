@@ -24,12 +24,11 @@ import {
   input,
   output,
   signal,
+  DestroyRef,
 } from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
-
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { FormsModule, UntypedFormControl } from "@angular/forms";
 import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
@@ -47,8 +46,8 @@ import {
 } from "@angular/material/checkbox";
 import { SpatialLocation } from "../../spatial-list/spatial-list.component";
 import { LeafletService } from "../../leaflet.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-geothesaurus-wfsgnde",
   templateUrl: "./geothesaurus-wfsgnde.component.html",
@@ -66,6 +65,8 @@ import { LeafletService } from "../../leaflet.service";
   ],
 })
 export class GeothesaurusWfsgndeComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly map = input<Map>(undefined);
   readonly value = input<SpatialLocation>(undefined);
 
@@ -90,7 +91,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
     const value = this.value();
