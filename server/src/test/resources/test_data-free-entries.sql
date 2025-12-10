@@ -1,12 +1,12 @@
 TRUNCATE TABLE catalog RESTART IDENTITY CASCADE;
-TRUNCATE TABLE "user_info" RESTART IDENTITY CASCADE;
+TRUNCATE TABLE user_info RESTART IDENTITY CASCADE;
 TRUNCATE TABLE document RESTART IDENTITY CASCADE;
 TRUNCATE TABLE document_wrapper RESTART IDENTITY CASCADE;
 -- Seed data for free-entries API tests
 
 INSERT INTO catalog VALUES (100, 'test-catalog', 'ingrid', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL);
 
-INSERT INTO "user_info" ("id", "user_id", "cur_catalog_id", "data") VALUES (1, 'user1', 100, '{"catalogIds": ["test-catalog"], "recentLogins": [1604572789000, 1604574295000]}');
+INSERT INTO user_info ("id", "user_id", "cur_catalog_id", "data") VALUES (1, 'user1', 100, '{"catalogIds": ["test-catalog"], "recentLogins": [1604572789000, 1604574295000]}');
 
 -- published document with two free entries for codelist 4300 (A and B)
 INSERT INTO document VALUES (
