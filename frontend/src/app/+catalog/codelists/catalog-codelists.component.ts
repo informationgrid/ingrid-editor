@@ -35,6 +35,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
+import { FreeEntryReplaceDialogComponent } from "./free-entry-replace-dialog/free-entry-replace-dialog.component";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
@@ -231,6 +232,28 @@ export class CatalogCodelistsComponent implements OnInit {
   setAsDefault(entry: CodelistEntry) {
     this.selectedCodelist.default = entry?.id ?? null;
     this.save();
+  }
+
+  openFreeEntries() {
+    // Open the dedicated dialog to select and replace free entries
+    this.dialog
+      .open(FreeEntryReplaceDialogComponent, {
+        data: {
+          codelistId: this.selectedCodelist.id,
+          codelistName: this.selectedCodelist.name,
+        },
+        width: "600px",
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.occurrences >= 0) {
+          this._snackBar.open(
+            `Freie Einträge ersetzt: ${result.occurrences}`,
+            undefined,
+            { duration: 3000 },
+          );
+        }
+      });
   }
 
   resetCodelist() {

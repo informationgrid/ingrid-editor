@@ -60,3 +60,8 @@ export interface PagedSearchResult {
   totalPages: number;
   results: string[];
 }
+
+export interface FreeEntry {
+  value: string;
+  count: number;
+}
