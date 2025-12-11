@@ -37,7 +37,6 @@ import {
   Codelist,
   PagedSearchResult,
 } from "../app/store/codelist/codelist.model";
-import { Codelist } from "../app/store/codelist/codelist.model";
 import { GeneralStore } from "../app/store/general.store";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
