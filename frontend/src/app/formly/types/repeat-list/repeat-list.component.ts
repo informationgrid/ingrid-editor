@@ -297,9 +297,12 @@ export class RepeatListComponent
       this.parameterOptions = JSON.parse(optionsAsString);
       this.initialParameterOptions = JSON.parse(optionsAsString);
       const codelistId = this.getCodelistId();
-      this.formControl.value.forEach(
-        (item: any) => (item._codelistId = codelistId),
-      );
+      if (!this.props.asSimpleValues) {
+        // fix codelistId for all values in case the options have been (dynamically) changed
+        this.formControl.value.forEach(
+          (item: any) => (item._codelistId = codelistId),
+        );
+      }
       this.inputControl.setValue("");
     }
   }
