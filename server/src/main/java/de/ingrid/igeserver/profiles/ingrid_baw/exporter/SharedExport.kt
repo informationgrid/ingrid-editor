@@ -30,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
@@ -68,15 +69,12 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
     "InGridInformationSystem" -> "export/ingrid-baw/idf-software-baw.jte"
-//    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
     else -> null
 }
 
 fun mapDocumentTypeBaw(type: String): String? = when (type) {
-    "BawMeasurement",
-    "BawSimulation",
-    -> "1" // InGridGeoDataset
-    "BawPublication" -> "2" // InGridPublication
+    "BawMeasurement", "BawSimulation" -> InGridDocType.InGridGeoDataset.typeId
+    "BawPublication" -> InGridDocType.InGridPublication.typeId
     else -> null
 }
 
