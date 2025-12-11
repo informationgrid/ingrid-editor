@@ -63,6 +63,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 interface TimeReferenceProps extends FormlyFieldProps {
   showTimepicker: boolean;
   showTimezone: boolean;
+  defaultTimezone?: string;
 }
 
 @Component({
@@ -91,7 +92,6 @@ interface TimeReferenceProps extends FormlyFieldProps {
   ],
   templateUrl: "./time-reference.component.html",
   styleUrl: "./time-reference.component.scss",
-  standalone: true,
 })
 export class TimeReferenceComponent
   extends FieldType<FieldTypeConfig<TimeReferenceProps>>
@@ -113,13 +113,11 @@ export class TimeReferenceComponent
       validators: Validators.required,
       updateOn: "blur",
     }),
-    fromTime: new FormControl<string | null>(null),
     intervalTo: new FormControl<string | null>(null),
     tillDate: new FormControl<Date | null>(null, {
       validators: Validators.required,
       updateOn: "blur",
     }),
-    tillTime: new FormControl<string | null>(null),
     timezone: new FormControl<string | null>(null),
   });
   public filterCtrl = new FormControl();
@@ -138,7 +136,7 @@ export class TimeReferenceComponent
       fromDate: null as Date | null,
       intervalTo: "not-available",
       tillDate: null as Date | null,
-      timezone: undefined as string,
+      timezone: this.props.defaultTimezone ?? (undefined as string),
     };
 
     // reflect external Formly control changes into inner form
@@ -160,9 +158,7 @@ export class TimeReferenceComponent
         this.formControl?.markAsTouched();
       });
 
-    // this.temporalForm.statusChanges.subscribe((status) => {});
-
-    this.formControl.addValidators((value) => {
+    this.formControl.addValidators((_) => {
       return this.temporalForm.valid ? null : { someError: true };
     });
 
@@ -196,7 +192,7 @@ export class TimeReferenceComponent
     result.intervalFrom = value.intervalFrom ?? "not-available";
     result.intervalTo = value.intervalTo ?? "not-available";
 
-    if (this.showTimezone) {
+    if (this.showTimezone()) {
       result.timezone = value.timezone;
     }
 
@@ -231,7 +227,7 @@ export class TimeReferenceComponent
       return result;
     }
 
-    if (this.showTimezone) {
+    if (this.showTimezone()) {
       result.timezone = this.temporalForm.get("timezone")?.value;
     }
 
@@ -262,24 +258,18 @@ export class TimeReferenceComponent
       this.temporalForm.get("atDate").enable({ emitEvent: false });
       this.temporalForm.get("fromDate").disable({ emitEvent: false });
       this.temporalForm.get("tillDate").disable({ emitEvent: false });
-      this.temporalForm.get("tillTime").disable({ emitEvent: false });
-      this.temporalForm.get("tillTime").disable({ emitEvent: false });
     } else {
       this.temporalForm.get("atDate").disable({ emitEvent: false });
 
       if (value.intervalFrom === "date") {
         this.temporalForm.get("fromDate").enable({ emitEvent: false });
-        this.temporalForm.get("fromTime").enable({ emitEvent: false });
       } else {
         this.temporalForm.get("fromDate").disable({ emitEvent: false });
-        this.temporalForm.get("fromTime").disable({ emitEvent: false });
       }
       if (value.intervalTo === "date") {
         this.temporalForm.get("tillDate").enable({ emitEvent: false });
-        this.temporalForm.get("tillTime").enable({ emitEvent: false });
       } else {
         this.temporalForm.get("tillDate").disable({ emitEvent: false });
-        this.temporalForm.get("tillTime").disable({ emitEvent: false });
       }
     }
   }

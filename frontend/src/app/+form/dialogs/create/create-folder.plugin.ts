@@ -23,7 +23,6 @@ import { MatDialog } from "@angular/material/dialog";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
 import { FormUtils } from "../../form.utils";
 import { DocumentService } from "../../../services/document/document.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
@@ -33,7 +32,6 @@ import { TranslocoService } from "@jsverse/transloco";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
-@UntilDestroy()
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
   id = "plugin.folder";

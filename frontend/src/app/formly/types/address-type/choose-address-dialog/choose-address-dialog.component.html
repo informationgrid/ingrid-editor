@@ -36,12 +36,12 @@
             <ige-document-list-item
                 data-cy="address-type-select"
                 [docs]="allowedReferenceTypes"
-                showSelection="true"
+                [showSelection]="true"
                 [denseMode]="true"
                 [hideDivider]="true"
                 [setActiveItem]="initialActiveAddressType"
                 [showIcons]="false"
-                (select)="setRefType($event)"
+                (select)="setRefType($any($event))"
             ></ige-document-list-item>
         </div>
     </mat-dialog-content>

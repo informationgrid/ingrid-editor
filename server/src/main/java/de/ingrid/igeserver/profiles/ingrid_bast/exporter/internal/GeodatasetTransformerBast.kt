@@ -31,10 +31,13 @@ import de.ingrid.igeserver.utils.getStringOrEmpty
 class GeodatasetTransformerBast(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     init {
-        this.citationURL = if (model.data.identifier.isNullOrBlank() && model.data.properties?.isOpenData == true) {
-            null
-        } else {
-            super.addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        // TODO: refactor for consistency! see #8529
+        //       for geodatasets there should not be a fallback to uuid for the citationURL. The citationURL
+        //       should get a better name to make clear for what it's used, since there's also a resourceIdentifier
+        // if the identifier is not set and the dataset is open data do not generate a citation URL
+        if (model.data.identifier.isNullOrBlank() && model.data.properties?.isOpenData == true) {
+            this.citationURL = null
+            this.resourceIdentifier = null
         }
     }
 

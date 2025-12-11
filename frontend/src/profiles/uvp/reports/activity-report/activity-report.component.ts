@@ -17,8 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, viewChild } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  viewChild,
+} from "@angular/core";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -46,8 +51,9 @@ import { FacetsComponent } from "../../../../app/+research/+facets/facets.compon
 import { MatIcon } from "@angular/material/icon";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { TranslocoService } from "@jsverse/transloco";
+import { Facets } from "../../../../app/+research/research.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "activity-report",
   templateUrl: "./activity-report.component.html",
@@ -71,6 +77,8 @@ import { TranslocoService } from "@jsverse/transloco";
   ],
 })
 export class ActivityReportComponent implements AfterViewInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly sort = viewChild(MatSort);
   readonly paginator = viewChild(MatPaginator);
 
@@ -99,7 +107,7 @@ export class ActivityReportComponent implements AfterViewInit {
   endDate: string;
 
   query = new FormControl<string>("");
-  facets = {
+  facets: Facets = {
     addresses: [],
     documents: [
       {
@@ -138,11 +146,11 @@ export class ActivityReportComponent implements AfterViewInit {
     this.getReport(null);
 
     this.facetForm.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe(() => this.getReport(this.facetForm.value));
 
     this.query.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(300))
       .subscribe(() => (this.dataSource.filter = this.query.value));
   }
 

@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal, viewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from "@angular/core";
 import {
   AbstractControl,
   FormControl,
@@ -48,7 +55,6 @@ import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import {
   PasteDialogComponent,
@@ -64,8 +70,8 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { BreadcrumbComponent } from "../../+form/form-info/breadcrumb/breadcrumb.component";
 import { MatIcon } from "@angular/material/icon";
 import { ImportReportComponent } from "./import-report/import-report.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-import",
   templateUrl: "./import.component.html",
@@ -91,6 +97,8 @@ import { ImportReportComponent } from "./import-report/import-report.component";
   ],
 })
 export class ImportComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly stepper = viewChild<MatStepper>("stepper");
   readonly uploadComponent = viewChild<UploadComponent>("uploadComponent");
 
@@ -191,7 +199,7 @@ export class ImportComponent implements OnInit {
 
     this.liveImportMessage
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         tap((info) => {
           // activate change detection, since sometimes view is not updated
           setTimeout(() => this.message.set(info));
@@ -212,6 +220,7 @@ export class ImportComponent implements OnInit {
   }
 
   startImport() {
+    this.message.set(null);
     const options = this.optionsFormGroup.value;
     this.exchangeService.import(options).subscribe();
   }

@@ -99,7 +99,7 @@
                     <ige-document-list-item
                         [docs]="oldestExpiredDocs()"
                         [hideDate]="false"
-                        (select)="openByType($event)"
+                        (select)="openByType($any($event))"
                     ></ige-document-list-item>
                 </ige-card-box>
             }

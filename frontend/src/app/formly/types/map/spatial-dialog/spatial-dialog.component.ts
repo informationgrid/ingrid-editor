@@ -20,6 +20,7 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   Inject,
@@ -27,7 +28,6 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
 import {
   MAT_DIALOG_DATA,
@@ -47,7 +47,6 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 import { TranslocoService } from "@jsverse/transloco";
-import { debounceTime } from "rxjs/operators";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { MatFormField } from "@angular/material/form-field";
@@ -59,13 +58,13 @@ import { GeothesaurusWfsgndeComponent } from "./geothesaurus-wfsgnde/geothesauru
 import { MatInput } from "@angular/material/input";
 import { CoordinatesSpatialComponent } from "./coordinates-spatial/coordinates-spatial.component";
 import { BwastrSpatialComponent } from "./bwastr-spatial/bwastr-spatial.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface LocationType {
   id: SpatialLocationType;
   label: string;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-spatial-dialog",
   templateUrl: "./spatial-dialog.component.html",
@@ -91,9 +90,10 @@ interface LocationType {
   ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
-  readonly leaflet = viewChild<ElementRef>("leafletDlg");
-
   private transloco = inject(TranslocoService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly leaflet = viewChild<ElementRef>("leafletDlg");
 
   dialogTitle = signal<string>(
     this.data?.location?.value
@@ -135,7 +135,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.titleInput.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((title) => this.result.update((r) => ({ ...r, title })));
 
     if (this.data?.location) {

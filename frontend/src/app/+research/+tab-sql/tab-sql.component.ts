@@ -17,14 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, signal } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { SqlQuery } from "../../store/query/query.model";
+import { Query, SqlQuery } from "../../store/query/query.model";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -37,9 +43,8 @@ import { MatInput } from "@angular/material/input";
 import { MatFormField } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
@@ -59,6 +64,7 @@ export class TabSqlComponent implements OnInit {
   private researchService = inject(ResearchService);
   private dialog = inject(MatDialog);
   private config = inject(ConfigService);
+  private destroyRef = inject(DestroyRef);
 
   sql = new UntypedFormControl("");
   request = new FormControl<string>("");
@@ -79,13 +85,13 @@ export class TabSqlComponent implements OnInit {
   ngOnInit(): void {
     this.activeQuery
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "sql"),
       )
-      .subscribe((entity: SqlQuery) => {
+      .subscribe((entity: Query) => {
         this.researchService.setActiveQuery(null);
-        this.sql.setValue(entity.sql);
-        this.search(entity.sql);
+        this.sql.setValue((<SqlQuery>entity).sql);
+        this.search((<SqlQuery>entity).sql);
       });
   }
 

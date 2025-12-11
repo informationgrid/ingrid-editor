@@ -17,13 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBaw } from "./ingrid-baw/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBaw } from "./ingrid-baw/doctypes/geo-service.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { SoftwareDoctypeBaw } from "./ingrid-baw/doctypes/software.doctype";
 import { CommonFieldsBaw } from "./ingrid-baw/doctypes/common-fields";
 import { ProjectDoctypeBaw } from "./ingrid-baw/doctypes/project.doctype";
@@ -32,7 +31,6 @@ import { SimulationDoctypeBaw } from "./ingrid-baw/doctypes/simulation.doctype";
 import { MeasurementDoctypeBaw } from "./ingrid-baw/doctypes/measurement.doctype";
 import { PublicationAddressDoctype } from "./ingrid-baw/doctypes/publicationAddress.doctype";
 
-@UntilDestroy()
 @Component({
   template: "",
   standalone: true,
@@ -88,9 +86,6 @@ class InGridBawComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridBawComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridBawComponent;

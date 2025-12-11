@@ -29,7 +29,6 @@ import { GeneralStore } from "../store/general.store";
 
 @Pipe({
   name: "codelist",
-  standalone: true,
 })
 export class CodelistPipe implements PipeTransform {
   private codelistStore = inject(CodelistStore);

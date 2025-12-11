@@ -20,15 +20,19 @@
                 "
             >
                 <div class="title">
-                    @if (item.isExternalRef) {
+                    @if ($any(item).isExternalRef) {
                         <mat-icon svgIcon="download-link"></mat-icon>
                     } @else {
-                        <ige-document-icon [doc]="item"></ige-document-icon>
+                        <ige-document-icon
+                            [doc]="$any(item)"
+                        ></ige-document-icon>
                     }
                     <div class="title-content">
                         <span>{{ item.title ?? "???" }}</span>
-                        @if (item.isExternalRef && item?.uuid?.length) {
-                            <span class="subtitle">{{ item.uuid }}</span>
+                        @if (
+                            $any(item).isExternalRef && $any(item)?.uuid?.length
+                        ) {
+                            <span class="subtitle">{{ $any(item).uuid }}</span>
                         }
                     </div>
                 </div>

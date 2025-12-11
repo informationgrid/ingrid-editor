@@ -20,7 +20,6 @@
 import { Component, input, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../services/config/config.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
 import { DashboardDocsHeaderComponent } from "./dashboard-docs-header/dashboard-docs-header.component";
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
@@ -29,7 +28,6 @@ import { MatIcon } from "@angular/material/icon";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { DashboardService } from "../../+dashboard/dashboard.service";
 
-@UntilDestroy()
 @Component({
   selector: "ige-form-dashboard",
   templateUrl: "./form-dashboard.component.html",

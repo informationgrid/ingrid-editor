@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -29,7 +30,6 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentTreeStore } from "../../store/tree/document-tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
@@ -40,14 +40,21 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { UiStore } from "../../store/ui.store";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
 
-@UntilDestroy()
 @Component({
   selector: "ige-sidebar",
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
   imports: [TreeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
+  documentTreeStore = inject(DocumentTreeStore);
+  addressTreeStore = inject(AddressTreeStore);
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+  private behaviourService = inject(BehaviourService);
+  private configService = inject(ConfigService);
+
   readonly address = input(false);
 
   readonly dropped = output();
@@ -59,15 +66,9 @@ export class SidebarComponent implements OnInit {
     return !this.configService.hasCatAdminRights() && pluginActive;
   });
 
-  documentTreeStore = inject(DocumentTreeStore);
-  addressTreeStore = inject(AddressTreeStore);
-  private generalStore = inject(GeneralStore);
-  private uiStore = inject(UiStore);
-  private behaviourService = inject(BehaviourService);
-  private configService = inject(ConfigService);
-
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<number>(null);
+  protected readonly enableDrag = this.generalStore.allowDragNDropInTree;
 
   private path: "/form" | "/address";
 

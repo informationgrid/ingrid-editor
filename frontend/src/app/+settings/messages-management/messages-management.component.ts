@@ -20,7 +20,6 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
 import {
@@ -51,7 +50,6 @@ import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
-@UntilDestroy()
 @Component({
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
@@ -87,7 +85,7 @@ export class MessagesManagementComponent implements OnInit {
     private configService: ConfigService,
   ) {}
 
-  private userInfo: UserInfo;
+  protected userInfo: UserInfo;
 
   ngOnInit() {
     this.userInfo = this.configService.$userInfo.getValue();

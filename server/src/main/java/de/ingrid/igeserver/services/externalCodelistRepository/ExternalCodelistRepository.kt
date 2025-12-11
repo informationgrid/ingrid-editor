@@ -17,21 +17,27 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { getTestBed } from "@angular/core/testing";
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from "@angular/platform-browser-dynamic/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+package de.ingrid.igeserver.services.externalCodelistRepository
 
-// First, initialize the Angular testing environment.
-getTestBed().initTestEnvironment(
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting(),
-  {
-    teardown: { destroyAfterEach: false },
-  },
-);
-getTestBed().configureTestingModule({
-  providers: [provideZonelessChangeDetection()],
-});
+data class PagedSearchResult(
+    val page: Int,
+    val totalPages: Int,
+    val results: List<String>,
+) {
+    companion object {
+        val EMPTY = PagedSearchResult(
+            page = 0,
+            totalPages = 0,
+            results = emptyList(),
+        )
+    }
+}
+
+interface ExternalCodelistRepository {
+    /**
+     * @param term The search term.
+     * @param page The search results page that should be returned.
+     * @return A list of string representations of found items
+     */
+    fun search(term: String, page: Int = 0): PagedSearchResult
+}

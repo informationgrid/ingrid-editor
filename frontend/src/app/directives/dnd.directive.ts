@@ -27,7 +27,6 @@ import {
 
 @Directive({
   selector: "[appDnd]",
-  standalone: true,
 })
 export class DndDirective {
   @HostBinding("class.fileover") fileOver: boolean;

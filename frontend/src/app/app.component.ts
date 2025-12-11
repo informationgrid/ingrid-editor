@@ -19,6 +19,7 @@
  */
 import {
   Component,
+  DestroyRef,
   HostListener,
   inject,
   Inject,
@@ -30,7 +31,6 @@ import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer, Title } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { combineLatest, Subject } from "rxjs";
@@ -50,8 +50,8 @@ import { MainHeaderComponent } from "./main-header/main-header.component";
 import { SectionSkipperComponent } from "./section-skipper/section-skipper.component";
 import { UiStore } from "./store/ui.store";
 import { SessionService } from "./services/session.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-root",
   templateUrl: "./app.component.html",
@@ -67,6 +67,8 @@ import { SessionService } from "./services/session.service";
   ],
 })
 export class AppComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   sessionRefresher$ = new Subject<void>();
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
   showTestBadge: boolean;
@@ -172,7 +174,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.sessionRefresher$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         throttleTime(10000), // allow token refresh only every 10s once
       )
       .subscribe(() => this.authFactory.get().refreshToken());

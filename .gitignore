@@ -72,3 +72,5 @@ server/server/build/tmp/
 !/frontend/.yarn/releases
 /postgres/_data
 /build/tmp/spotless-register-dependencies
+/build/reports
+/build/test-results

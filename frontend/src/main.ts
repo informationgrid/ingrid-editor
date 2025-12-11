@@ -104,7 +104,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
-import { TranslocoRootModule } from "./app/transloco-root.module";
+import { provideTranslocoRoot } from "./app/transloco-root.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
 import { AppComponent } from "./app/app.component";
 import Flow from "@flowjs/flow.js";
@@ -200,10 +200,10 @@ bootstrapApplication(AppComponent, {
       FormsModule,
       MatTabsModule,
       MatMenuModule,
-      TranslocoRootModule,
       ClipboardModule,
       MatNativeDateModule,
     ),
+    ...provideTranslocoRoot(),
     provideFormlyCore([
       {
         types: [

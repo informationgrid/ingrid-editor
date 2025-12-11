@@ -114,7 +114,7 @@
             <mat-step>
                 <ng-template matStepLabel>Vorschau</ng-template>
 
-                @if (exportResult) {
+                @if (exportResult()) {
                     <div
                         class="flex-col justify-content-center align-items-center"
                     >

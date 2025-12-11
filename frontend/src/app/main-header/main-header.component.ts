@@ -17,16 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from "@angular/core";
 import {
   ConfigService,
-  Configuration,
   UserInfo,
   Version,
 } from "../services/config/config.service";
 import { NavigationEnd, Router, RouterLink, Routes } from "@angular/router";
-import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
@@ -41,9 +46,10 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
 import { MatCardTitle } from "@angular/material/card";
 import { MatDivider } from "@angular/material/divider";
-import { AsyncPipe, DatePipe } from "@angular/common";
+import { DatePipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-main-header",
@@ -64,27 +70,28 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
     MatCardTitle,
     MatDivider,
     RouterLink,
-    AsyncPipe,
     DatePipe,
     MatomoTrackClickDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainHeaderComponent implements OnInit {
   private generalStore = inject(GeneralStore);
   readonly onLogout = output<void>();
 
-  userInfo$ = this.configService.$userInfo;
-  showShadow: boolean;
-  pageTitle: string;
-  currentCatalog$: Observable<string>;
+  showShadow = signal<boolean>(false);
+  pageTitle = signal<string>("");
+  userInfo = toSignal(this.configService.$userInfo);
+  currentCatalog$ = computed(() => this.userInfo().currentCatalog?.label);
+
   version: Version;
   timeout = this.generalStore.sessionTimeoutIn;
-  initials: string;
+  initials = computed(() => this.getInitials(this.userInfo()));
   isAdmin: boolean;
-  externalHelp: string;
-  config: Configuration;
-  otherAssignedCatalogs: any[];
-  catalogId: string;
+  otherAssignedCatalogs = computed(() =>
+    this.getOtherAssignedCatalogs(this.userInfo()),
+  );
+  catalogId = computed(() => this.userInfo()?.currentCatalog.id);
   menuItems: Routes = settingsRoutes[0].children
     .filter((item) => item.path !== "")
     .filter((item) => this.configService.hasPermission(item.data?.permission));
@@ -103,27 +110,15 @@ export class MainHeaderComponent implements OnInit {
     let userInfo = this.configService.$userInfo.getValue();
     this.isAdmin = this.configService.hasCatAdminRights();
     this.version = userInfo?.version;
-    this.externalHelp = userInfo?.externalHelp;
-    this.catalogId = userInfo?.currentCatalog.id;
-    this.initials = this.getInitials(userInfo);
-    this.currentCatalog$ = this.configService.$userInfo.pipe(
-      tap(
-        (userInfo) =>
-          (this.otherAssignedCatalogs =
-            this.getOtherAssignedCatalogs(userInfo)),
-      ),
-      map((userInfo) => userInfo?.currentCatalog?.label),
-    );
 
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         const rootPath = this.router.parseUrl(this.router.url).root.children
           .primary?.segments[1]?.path;
-        this.showShadow = rootPath !== "dashboard";
-        this.pageTitle = rootPath;
+        this.showShadow.set(rootPath !== "dashboard");
+        this.pageTitle.set(rootPath);
       }
     });
-    this.config = this.configService.getConfiguration();
   }
 
   private getOtherAssignedCatalogs(userInfo: UserInfo) {
@@ -159,7 +154,7 @@ export class MainHeaderComponent implements OnInit {
   }
 
   openProfileSettings() {
-    this.router.navigate([`/${this.catalogId}/profile`]);
+    this.router.navigate([`/${this.catalogId()}/profile`]);
   }
 
   chooseCatalog(id: string) {

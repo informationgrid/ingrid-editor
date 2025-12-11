@@ -37,7 +37,7 @@ data class DataModel(
     val description: String?,
     // TODO AW: remove parent from data
     @Deprecated("parent should not be in data, but as separate metadata") val _parent: String?,
-    val parentIdentifier: String?,
+    @Deprecated("do not use directly. use transformer.getParentIdentifier() instead")val parentIdentifier: String?,
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
@@ -323,7 +323,7 @@ data class ConformanceResult(
             return if (field?.contains("Z") == true) {
                 val isoDate: Date = try {
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(field)
-                } catch (ex: ParseException) {
+                } catch (_: ParseException) {
                     Date.from(OffsetDateTime.parse(field).toInstant())
                 }
                 SimpleDateFormat("yyyy-MM-dd").format(isoDate)
@@ -502,7 +502,7 @@ data class ResourceData(
     val intervalTo: String? = null,
     @JsonDeserialize(using = DateDeserializer::class) val resourceDate: OffsetDateTime? = null,
     val resourceRange: TimeRange? = null,
-    val timezone: KeyValue? = null,
+    val timezone: String? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

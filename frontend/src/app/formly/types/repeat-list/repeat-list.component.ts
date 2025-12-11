@@ -19,7 +19,7 @@
  */
 import {
   Component,
-  ElementRef,
+  DestroyRef,
   inject,
   OnInit,
   signal,
@@ -41,20 +41,29 @@ import {
   filter,
   map,
   startWith,
+  switchMap,
   tap,
 } from "rxjs/operators";
-import { merge, Observable, Subject, Subscription } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+} from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
 import {
+  AbstractControl,
   FormControl,
   ReactiveFormsModule,
   UntypedFormControl,
   ValidationErrors,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorStateMatcher, MatOption } from "@angular/material/core";
@@ -89,6 +98,13 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
+import {
+  BackendOption,
+  PagedSearchResult,
+} from "../../../store/codelist/codelist.model";
+import { ExternalResultsCache } from "./external-result-cache";
+import { OptionsScrollDirective } from "./options-scroll.directive";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -99,7 +115,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 
-interface RepeatListProps extends FormlyFieldProps {
+export interface RepeatListProps extends FormlyFieldProps {
   asSelect: boolean;
   showSearch: boolean;
   restCall: any;
@@ -121,9 +137,21 @@ interface RepeatListProps extends FormlyFieldProps {
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
   hideInputField: boolean;
+  externalOptions?: {
+    fetchCodelist: (
+      query: string,
+      page: number,
+    ) => Observable<PagedSearchResult>;
+    deduplicate: (
+      options: SelectOption[],
+      externalOptions: SelectOption[],
+    ) => SelectOption[];
+    threshold?: number;
+  };
 }
 
-@UntilDestroy()
+type PaginationState = { page: number; totalPages: number; isLoading: boolean };
+
 @Component({
   selector: "ige-repeat-list",
   templateUrl: "./repeat-list.component.html",
@@ -157,6 +185,7 @@ interface RepeatListProps extends FormlyFieldProps {
     MatProgressSpinner,
     FieldToAiraLabelledbyPipe,
     FormlyValidationMessage,
+    OptionsScrollDirective,
   ],
 })
 export class RepeatListComponent
@@ -164,14 +193,21 @@ export class RepeatListComponent
   implements OnInit
 {
   private codelistStore = inject(CodelistStore);
-  readonly autoCompleteEl = viewChild("repeatListInput", { read: ElementRef });
-  readonly autoComplete = viewChild(MatAutocompleteTrigger);
+  private destroyRef = inject(DestroyRef);
+  private externalResultsCache: ExternalResultsCache;
   readonly selector = viewChild(MatSelect);
 
-  onItemClick: (id: number) => void = () => {};
+  paginationState = {
+    page: 0,
+    totalPages: 1,
+    isLoading: false,
+  };
+  private loadMore = new BehaviorSubject<PaginationState>(this.paginationState);
 
-  mustBeEmptyValidator = (otherControl: FormControl) => {
-    return (ctrl: FormControl): ValidationErrors => {
+  onItemClick: (id: string) => void = () => {};
+
+  mustBeEmptyValidator = (otherControl: AbstractControl) => {
+    return (ctrl: AbstractControl): ValidationErrors | null => {
       const validateCtrl = otherControl ?? ctrl;
       return validateCtrl.value === null || validateCtrl.value === ""
         ? null
@@ -181,7 +217,7 @@ export class RepeatListComponent
     };
   };
 
-  items = signal<any[]>([]);
+  items = signal<BackendOption[]>([]);
 
   filteredOptions = signal<SelectOptionUi[]>([]);
   parameterOptions: SelectOptionUi[];
@@ -204,7 +240,7 @@ export class RepeatListComponent
       .pipe(
         startWith(this.formControl.value),
         debounceTime(0),
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((data) => {
         // FIXME: defaultValue seems to get overridden when field initially hidden and becomes undefined
@@ -218,7 +254,7 @@ export class RepeatListComponent
       if (this.props.showSearch) {
         this.filterCtrl = new FormControl<string>("");
         this.filterCtrl.valueChanges
-          .pipe(untilDestroyed(this))
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((value) => this.manualUpdate.next(value));
       }
     } else if (this.props.restCall) {
@@ -237,7 +273,7 @@ export class RepeatListComponent
     if (this.props.options instanceof Observable) {
       this.props.options
         .pipe(
-          untilDestroyed(this),
+          takeUntilDestroyed(this.destroyRef),
           filter((data) => data !== undefined),
           // take(1),
           tap((data) => this.initInputListener(data)),
@@ -273,41 +309,133 @@ export class RepeatListComponent
     }
 
     this.formControl.statusChanges
-      .pipe(untilDestroyed(this), distinctUntilChanged())
+      .pipe(takeUntilDestroyed(this.destroyRef), distinctUntilChanged())
       .subscribe((status) => {
         status === "DISABLED"
           ? this.inputControl.disable()
           : this.inputControl.enable();
       });
 
-    if (this.props.restCall) {
-      this.inputControl.valueChanges
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(300),
-          tap(() => this.formControl.updateValueAndValidity()),
-          filter((query) => query?.length > 1),
-        )
-        .subscribe((query) => this.search(query));
+    if (this.props.externalOptions) {
+      this.externalResultsCache = new ExternalResultsCache(
+        this.props.externalOptions.deduplicate,
+      );
+      this.handleExternalOptions();
+    } else if (this.props.restCall) {
+      this.handleRestCall();
     } else {
-      merge(
-        this.formControl.valueChanges,
-        this.inputControl.valueChanges.pipe(
-          tap(() => this.formControl.updateValueAndValidity()),
-        ),
-        this.manualUpdate.asObservable(),
-      )
-        .pipe(
-          untilDestroyed(this),
-          startWith(""),
-          debounceTime(0),
-          filter((value) => value !== undefined && value !== null),
-          map((value) => this._filter(value)),
-          tap((value) => this._markSelected(value)),
-        )
-        .subscribe((value) => this.filteredOptions.set(value));
+      this.handleOptions();
     }
+  }
+
+  private handleExternalOptions() {
+    const query$ = this.inputControl.valueChanges.pipe(
+      startWith(this.inputControl.value),
+      map((value) => (typeof value === "string" ? value : "")),
+      tap(() => this.formControl.updateValueAndValidity()),
+      tap(() =>
+        this.loadMore.next({ page: 0, totalPages: 1, isLoading: false }),
+      ),
+    );
+
+    combineLatest([query$, this.loadMore])
+      .pipe(
+        switchMap((event) => this.fetchPagedCodelistsWhenThreshold(event)),
+        map(
+          (result: {
+            query: string;
+            remoteResults: PagedSearchResult;
+            options: SelectOptionUi[];
+          }) => {
+            if (result.options) return result.options;
+
+            this.paginationState = {
+              page: result.remoteResults.page,
+              totalPages: result.remoteResults.totalPages,
+              isLoading: false,
+            };
+
+            return this.mapExternalCodelistsToOptions(result);
+          },
+        ),
+        tap((value) => this._markSelected(value)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((value) => this.filteredOptions.set(value));
+  }
+
+  private mapExternalCodelistsToOptions(result: {
+    query: string;
+    remoteResults: PagedSearchResult;
+    options: SelectOptionUi[];
+  }) {
+    const newExternalResults = result.remoteResults.results.map(
+      (label) => new SelectOption(null, label),
+    );
+    this.externalResultsCache.updateCache(newExternalResults);
+
+    const allCachedForQuery = this.externalResultsCache.filter(result.query);
+
+    return this.props.externalOptions.deduplicate(
+      this._filter(result.query),
+      allCachedForQuery,
+    );
+  }
+
+  private fetchPagedCodelistsWhenThreshold(
+    event: [string, PaginationState],
+  ): Observable<{ options: any; query: string; remoteResults: any }> {
+    const [query, pagination] = event;
+    this.paginationState.isLoading = false;
+    const localResults = this._filter(query);
+    const cachedFilteredResults = this.externalResultsCache.filter(query);
+    const immediateResults = this.props.externalOptions.deduplicate(
+      localResults,
+      cachedFilteredResults,
+    );
+    if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
+      return of({ options: immediateResults, query, remoteResults: null });
+    }
+
+    this.filteredOptions.set(immediateResults);
+
+    this.paginationState.isLoading = true;
+    return this.props.externalOptions
+      .fetchCodelist(query, pagination.page)
+      .pipe(
+        map((results) => ({ query, remoteResults: results, options: null })),
+      );
+  }
+
+  private handleRestCall() {
+    this.inputControl.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(300),
+        tap(() => this.formControl.updateValueAndValidity()),
+        filter((query) => query?.length > 1),
+      )
+      .subscribe((query) => this.search(query));
+  }
+
+  private handleOptions() {
+    merge(
+      this.formControl.valueChanges,
+      this.inputControl.valueChanges.pipe(
+        tap(() => this.formControl.updateValueAndValidity()),
+      ),
+      this.manualUpdate.asObservable(),
+    )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(""),
+        debounceTime(0),
+        filter((value) => value !== undefined && value !== null),
+        map((value) => this._filter(value)),
+        tap((value) => this._markSelected(value)),
+      )
+      .subscribe((value) => this.filteredOptions.set(value));
   }
 
   addToList(option: SelectOptionUi) {
@@ -341,6 +469,7 @@ export class RepeatListComponent
     const prepared = new SelectOption(option.value, option.label).forBackend(
       this.props.codelistId,
     );
+
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 
@@ -414,12 +543,14 @@ export class RepeatListComponent
     value?.forEach((option) => {
       const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value,
-      ).disabled;
+      )?.disabled;
       const optionAlreadySelected = this.model?.[
         this.field.key as string
       ]?.some(
         (modelOption: any) =>
-          modelOption && (modelOption.key ?? modelOption) === option.value,
+          modelOption &&
+          ((modelOption.key ?? modelOption) === option.value ||
+            modelOption.value === option.label),
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
     });
@@ -496,7 +627,7 @@ export class RepeatListComponent
     }
   }
 
-  onOptionClick($event: MouseEvent, option: SelectOptionUi) {
+  onOptionClick(_$event: MouseEvent, option: SelectOptionUi) {
     if (option.disabled) {
       // do nothing
       return;
@@ -602,5 +733,16 @@ export class RepeatListComponent
         .replace(/,([^,]*)$/, " und$1");
     }
     return formattedDuplicates;
+  }
+
+  onScroll() {
+    console.log(".");
+    if (
+      !this.paginationState.isLoading &&
+      this.paginationState.page < this.paginationState.totalPages - 1
+    ) {
+      this.paginationState.page = this.paginationState.page + 1;
+      this.loadMore.next(this.paginationState);
+    }
   }
 }

@@ -17,10 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { GeometryContextDialogComponent } from "./geometry-context-dialog.component";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { getTranslocoModule } from "../../../../app/transloco-testing.module";
 import { OneColumnWrapperComponent } from "../../../../app/formly/wrapper/one-column-wrapper.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
@@ -41,6 +40,7 @@ import { provideFormlyCore } from "@ngx-formly/core";
 import { withFormlyMaterial } from "@ngx-formly/material";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../utils/time";
+import { vi } from "vitest";
 
 describe("GeometryContextDialogComponent", () => {
   let spectator: Spectator<GeometryContextDialogComponent>;
@@ -83,7 +83,11 @@ describe("GeometryContextDialogComponent", () => {
   });
 
   beforeEach(async () => {
-    UntilDestroy()(GeometryContextDialogComponent);
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     spectator = createComponent();
     spectator.detectChanges();
     loader = TestbedHarnessEnvironment.loader(spectator.fixture);

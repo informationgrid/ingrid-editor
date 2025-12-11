@@ -23,11 +23,23 @@ import {
   ViewChild,
   ViewContainerRef,
 } from "@angular/core";
-import { FieldWrapper } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FieldWrapper,
+  FormlyFieldProps,
+} from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
 import { ContextHelpService } from "../../services/context-help/context-help.service";
 import { FormStateService } from "../../+form/form-state.service";
 import { FormLabelComponent } from "./form-label/form-label.component";
+import { FieldType } from "@ngx-formly/material";
+
+interface OneColumnWrapperProps extends FormlyFieldProps {
+  hasContextHelp?: boolean;
+  contextHelpId: string;
+  externalLabel?: string;
+  ariaLabel?: string;
+}
 
 @Component({
   selector: "ige-one-column-wrapper",
@@ -36,7 +48,7 @@ import { FormLabelComponent } from "./form-label/form-label.component";
   imports: [FormLabelComponent],
 })
 export class OneColumnWrapperComponent
-  extends FieldWrapper
+  extends FieldWrapper<FieldType<FieldTypeConfig<OneColumnWrapperProps>>>
   implements AfterViewInit
 {
   @ViewChild("fieldComponent", { read: ViewContainerRef, static: true })

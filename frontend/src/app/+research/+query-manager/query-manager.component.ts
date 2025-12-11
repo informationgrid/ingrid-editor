@@ -103,7 +103,7 @@ export class QueryManagerComponent implements OnInit {
     this.researchService.fetchQueries();
   }
 
-  removeQuery(id: string) {
+  removeQuery(id: number) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -126,11 +126,11 @@ export class QueryManagerComponent implements OnInit {
       .subscribe((result) => this.researchService.removeQuery(id).subscribe());
   }
 
-  load(id: string) {
+  load(id: number) {
     this.loadQuery(id);
   }
 
-  loadQuery(id: string) {
+  loadQuery(id: number) {
     let entity: Query = this.queryStore.entityMap()[id];
 
     this.researchService.setActiveQuery(id);
@@ -146,7 +146,7 @@ export class QueryManagerComponent implements OnInit {
     queries: Query[],
     fn: (q: Query) => boolean = () => true,
   ): QueryUI[] {
-    return queries.map((q: QueryUI) => {
+    return queries.map((q: Query) => {
       return {
         ...q,
         canDelete: fn(q),

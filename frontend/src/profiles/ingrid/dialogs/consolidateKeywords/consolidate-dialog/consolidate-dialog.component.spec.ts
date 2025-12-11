@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
 import {
   ConsolidateDialogComponent,
   Keyword,
@@ -42,6 +42,7 @@ import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model"
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../../utils/time";
+import { vi } from "vitest";
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
@@ -62,6 +63,11 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   beforeEach(() => {
+    window.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     spectator = createComponent({ detectChanges: false });
   });
 
@@ -69,7 +75,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [], gemet: [], umthes: [] });
 
     await spectator.fixture.whenStable();
-    expect(spectator.query("ige-dialog-template")).toHaveText(
+    expect(spectator.query("ige-dialog-template").textContent).contains(
       "In diesem Datensatz sind keine Schlagworte vorhanden.",
     );
     expectThesaurusNotExists("Umthes-Schlagworte");
@@ -147,7 +153,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should move a gemet keyword to free keywords if not found", async () => {
-    initForm({ gemet: [{ id: 1, label: "test" }] });
+    initForm({ gemet: [{ id: "1", label: "test" }] });
 
     await mockHttp({});
     await waitSomeTime();
@@ -157,7 +163,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should move an umthes keyword to free keywords if not found", async () => {
-    initForm({ umthes: [{ id: 1, label: "test" }] });
+    initForm({ umthes: [{ id: "1", label: "test" }] });
 
     await mockHttp({});
     await waitSomeTime();
@@ -167,7 +173,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should move an umthes keyword to gemet keywords (higher hierarchy)", async () => {
-    initForm({ umthes: [{ id: 1, label: "test" }] });
+    initForm({ umthes: [{ id: "1", label: "test" }] });
 
     await mockHttp({ gemet: [{ id: "1", label: "test" }] });
     await waitSomeTime();
@@ -178,7 +184,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should move an umthes keyword to inspire", async () => {
-    initForm({ umthes: [{ id: 1, label: "Adressen" }] }, [], "conform");
+    initForm({ umthes: [{ id: "1", label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
     await waitSomeTime();
@@ -192,18 +198,20 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [{ label: "test" }] });
 
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
-    spyOn(keywordAnalysis, "analyzeKeywords").and.returnValue(
-      new Promise((resolve) => {
+    vi.spyOn(keywordAnalysis, "analyzeKeywords").mockReturnValue(
+      // @ts-ignore
+      new Promise((resolve: any) => {
         // @ts-ignore: force an error in the component
         resolve("Some error message.");
       }),
     );
     await waitSomeTime();
-    expect(spectator.query("div.legend")).not.toContainText(
-      "Die Schlagworte werden analysiert. Bitte warten Sie einen Moment.",
-    );
-    expect(spectator.query(".error-message")).toExist();
-    expect(spectator.query(".error-message")).toContainText(
+    expect(spectator.query("div.legend")).toBe(null);
+    // .textContent).not.contains(
+    //   "Die Schlagworte werden analysiert. Bitte warten Sie einen Moment.",
+    // );
+    expect(spectator.query(".error-message")).not.toBe(null);
+    expect(spectator.query(".error-message").textContent).contains(
       "Es konnte keine Verbindung zu einem der Thesauri hergestellt werden.",
     );
 
@@ -224,23 +232,29 @@ describe("ConsolidateDialogComponent", () => {
     ).toHaveLength(count);
     if (value) {
       expect(
-        spectator.query(`div[aria-label='${thesaurus}'] mat-chip`),
-      ).toHaveText(value);
+        spectator
+          .query(`div[aria-label='${thesaurus}'] mat-chip`)
+          .textContent.trim(),
+      ).toEqual(value);
     }
     if (state) {
       expect(
-        spectator.query(`div[aria-label='${thesaurus}'] mat-chip`),
-      ).toHaveClass(state + "-keyword");
+        spectator
+          .query(`div[aria-label='${thesaurus}'] mat-chip`)
+          .classList.contains(state + "-keyword"),
+      ).toBe(true);
     }
   }
 
   function expectThesaurusNotExists(thesaurus: ThesaurusType) {
-    expect(spectator.query(`div[aria-label='${thesaurus}']`)).not.toExist();
+    expect(spectator.query(`div[aria-label='${thesaurus}']`)).toBe(null);
   }
 
   function initForm(
     keywords: Keywords,
-    themes: { key: string }[] = [],
+    themes: {
+      key: string;
+    }[] = [],
     isInspireIdentified: any = false,
   ) {
     const formStateService = spectator.inject(FormStateService, true);
@@ -289,8 +303,14 @@ describe("ConsolidateDialogComponent", () => {
   }
 
   async function mockHttp(data?: {
-    gemet?: { id: string; label: string }[];
-    umthes?: { id: string; label: string }[];
+    gemet?: {
+      id: string;
+      label: string;
+    }[];
+    umthes?: {
+      id: string;
+      label: string;
+    }[];
   }) {
     const httpCtrl = spectator.inject(HttpTestingController);
 
@@ -319,6 +339,6 @@ describe("ConsolidateDialogComponent", () => {
 
   function mockCheckInThemes(data?: CodelistEntry) {
     const codelistStore = spectator.inject(CodelistStore);
-    spyOn(codelistStore, "getCodelistEntryByValue").and.returnValue(data);
+    vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
   }
 });

@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -53,6 +59,7 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MatIconButton,
     MATOMO_DIRECTIVES,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormToolbarComponent {
   private formToolbarService = inject(FormToolbarService);

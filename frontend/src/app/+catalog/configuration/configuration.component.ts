@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { fields } from "./formly-fields";
 import { CodelistService } from "../../services/codelist/codelist.service";
@@ -35,7 +35,7 @@ import { FormlyForm } from "@ngx-formly/core";
 export class ConfigurationComponent implements OnInit {
   form = new UntypedFormGroup({});
   fields = fields(this.codelistService);
-  model: any = {};
+  model = signal<any>({});
 
   constructor(
     private codelistService: CodelistService,
@@ -43,7 +43,7 @@ export class ConfigurationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.catalogService.getConfig().subscribe((value) => (this.model = value));
+    this.catalogService.getConfig().subscribe((value) => this.model.set(value));
   }
 
   save() {

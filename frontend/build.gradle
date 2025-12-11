@@ -26,15 +26,18 @@ if (hasProperty('baseHref')) {
   buildArgs = ['run', 'prod', '--base-href', getProperty('baseHref')]
 }
 
-task yarnUpgrade(type: YarnTask, dependsOn: 'yarnSetup') {
+tasks.register('yarnUpgrade', YarnTask) {
+  dependsOn 'yarnSetup'
   args = ['set', 'version', '4.6.0']     // maybe with `yarn set version 3.x` also
 }
 
-task yarnInstall(type: YarnTask, dependsOn: 'yarnUpgrade') {
+tasks.register('yarnInstall', YarnTask) {
+  dependsOn 'yarnUpgrade'
   args = ['install', '--immutable']
 }
 
-task bundle(type: YarnTask, dependsOn: 'yarnInstall') {
+tasks.register('bundle', YarnTask) {
+  dependsOn 'yarnInstall'
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
   inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
@@ -44,15 +47,15 @@ task bundle(type: YarnTask, dependsOn: 'yarnInstall') {
   args = buildArgs
 }
 
-task test(type: YarnTask) {
-  args = ['run', 'test-headless']
+tasks.register('test', YarnTask) {
+  args = ['run', 'test-ci']
 }
 
-task testFormatting(type: YarnTask) {
+tasks.register('testFormatting', YarnTask) {
   args = ['prettier', '--check', "."]
 }
 
-task packageNpmApp(type: Zip) {
+tasks.register('packageNpmApp', Zip) {
   dependsOn bundle
   archiveFileName = 'ige-frontend-app.jar'
   destinationDirectory = file("${projectDir}/build/packageApp")
@@ -61,7 +64,7 @@ task packageNpmApp(type: Zip) {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
     into 'static'
   }
-  from ('src/assets') {
+  from('src/assets') {
     into 'static/assets'
     include 'config.prod.json'
     rename { 'config.json' }
@@ -75,9 +78,9 @@ configurations.default.extendsFrom(configurations.npmResources)
 
 if (hasProperty('buildProfile')) {
   artifacts {
-    npmResources(packageNpmApp.archivePath) {
+    npmResources(packageNpmApp.archiveFile) {
       builtBy packageNpmApp
-      type "jar"
+      type = "jar"
     }
   }
 }

@@ -24,13 +24,14 @@ import {
   input,
   output,
   signal,
+  inject,
+  DestroyRef,
 } from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
   UntypedFormControl,
 } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
 import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
@@ -56,8 +57,8 @@ import {
 } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { HelpContextButtonComponent } from "../../../../../help-context-button/help-context-button.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-free-spatial",
   templateUrl: "./free-spatial.component.html",
@@ -80,6 +81,8 @@ import { HelpContextButtonComponent } from "../../../../../help-context-button/h
   ],
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
+
   readonly map = input<Map>(undefined);
   readonly value = input<SpatialLocation>(undefined);
 
@@ -104,11 +107,11 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchInput.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
     this.arsControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(500))
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500))
       .subscribe((ars) => (this.value().ars = ars));
 
     const value = this.value();

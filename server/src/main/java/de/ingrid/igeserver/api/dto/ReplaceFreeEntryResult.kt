@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-declare var module: NodeModule;
-interface NodeModule {
-  id: string;
-}
+package de.ingrid.igeserver.api.dto
+
+data class ReplaceFreeEntryResult(
+    val occurrences: Int,
+    val documentsUpdated: Int,
+    val uuids: List<String> = emptyList(),
+)

@@ -20,7 +20,10 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryRequest
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 
 @Hidden
@@ -82,4 +86,33 @@ interface CodelistApi {
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody favorites: List<String>?,
     ): ResponseEntity<Unit>
+
+    @Operation
+    @GetMapping(value = ["/external/{id}/{filter}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getExternalCodelist(
+        @Parameter() @PathVariable id: String,
+        @Parameter() @PathVariable filter: String,
+        @Parameter() @RequestParam page: Int,
+    ): ResponseEntity<PagedSearchResult>
+
+    @Operation
+    @GetMapping(value = ["/free-entries/{codelistId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getFreeEntriesWithCounts(
+        principal: Principal,
+        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+    ): ResponseEntity<List<FreeEntryUsage>>
+
+    @Operation
+    @PostMapping(value = ["/free-entries/{codelistId}/replace"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun replaceFreeEntry(
+        principal: Principal,
+        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+        @Parameter(description = "Replacement instruction", required = true) @RequestBody request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult>
 }
+
+data class FreeEntryUsage(
+    val value: String,
+    val count: Int,
+    val uuids: List<String> = emptyList(),
+)

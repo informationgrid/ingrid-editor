@@ -39,6 +39,7 @@ class Migrate150 {
             "InGridPublication",
             "InGridProject",
             "InGridSpecialisedTask",
+            "BawPublication",
             "BawMeasurement",
             "BawSimulation",
         )
@@ -70,6 +71,10 @@ class Migrate150 {
 
             // migrate events -> event
             val eventNode = jacksonObjectMapper().createObjectNode()
+            eventNode.set<JsonNode>("created", null)
+            eventNode.set<JsonNode>("firstPublished", null)
+            eventNode.set<JsonNode>("lastModified", null)
+
             val events = temporal.get("events") as? ArrayNode
             var createdDate: String? = null
             var firstPublished: String? = null
@@ -128,6 +133,9 @@ class Migrate150 {
                         set<JsonNode>("resourceRange", resourceRange)
                     }
                 }
+
+                // add timezone if existing
+                temporal.get("resourceTimezone")?.get("key")?.asText()?.let { put("timezone", it) }
             }
             this.set<JsonNode>("data", dataNode)
         }

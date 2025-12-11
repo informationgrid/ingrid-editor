@@ -22,6 +22,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   OnDestroy,
@@ -30,16 +31,23 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { GeoJSON, Map, MapOptions, Polyline } from "leaflet";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
 import { LeafletService } from "./leaflet.service";
 import {
   SpatialListComponent,
   SpatialLocation,
+  SpatialLocationType,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  take,
+} from "rxjs/operators";
 import { of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -49,8 +57,16 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  BwastrLocatorCoordinatesResponse,
+  BwastrLocatorService,
+} from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
 
-@UntilDestroy()
 @Component({
   selector: "ige-formly-leaflet-type",
   templateUrl: "leaflet-type.component.html",
@@ -75,6 +91,8 @@ export class LeafletTypeComponent
   private contextHelpService = inject(ContextHelpService);
   private leafletService = inject(LeafletService);
   private translocoService = inject(TranslocoService);
+  private destroyRef = inject(DestroyRef);
+  private bwastrLocatorService = inject(BwastrLocatorService);
 
   readonly leaflet = viewChild<ElementRef>("leaflet");
 
@@ -95,7 +113,11 @@ export class LeafletTypeComponent
     this.leaflet().nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0), distinctUntilChanged())
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        debounceTime(0),
+        distinctUntilChanged(),
+      )
       .subscribe((value) => this.updateBoundingBoxCatchingErrors(value || []));
 
     try {
@@ -114,7 +136,7 @@ export class LeafletTypeComponent
       const locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
       setTimeout(() => this.updateBoundingBoxCatchingErrors(locations));
-    } catch (e) {
+    } catch (e: any) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);
@@ -212,15 +234,37 @@ export class LeafletTypeComponent
       .afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {
+          // Insert or update the selected location
           if (locationIndex >= 0) {
             locations[locationIndex] = result;
           } else {
             locations.push(result);
           }
 
+          // Update form control immediately with the selected location
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
           this.updateBoundingBoxCatchingErrors(locations);
+
+          // add additional bounding box for bwastr if chosen by user
+          if (result.type === "bwastr") {
+            this.dialog
+              .open(ConfirmDialogComponent, {
+                data: <ConfirmDialogData>{
+                  title: `Bounding-Box hinzufügen?`,
+                  message: `Möchten Sie zusätzlich die automatisch ermittelte Bounding-Box der Bundeswasserstraßenstrecke "${result.title}" hinzufügen?`,
+                  confirmButtonText: "Ja",
+                },
+              })
+              .afterClosed()
+              .pipe(filter((result) => result))
+              .subscribe(() =>
+                this.addBBoxForBwaStr(
+                  result,
+                  locationIndex ?? locations.size - 1,
+                ),
+              );
+          }
         }
       });
   }
@@ -254,5 +298,38 @@ export class LeafletTypeComponent
       "Raumbezug",
       of(this.translocoService.translate("spatial.generalHelp")),
     );
+  }
+
+  addBBoxForBwaStr(location: SpatialLocation, neighborIndex: number) {
+    this.bwastrLocatorService
+      .getSectionBoundingBox(location.bwastr)
+      .pipe(
+        take(1),
+        catchError(() => of(undefined)),
+        map((response) =>
+          response
+            ? ({
+                value: {
+                  lat1: response.lat1,
+                  lon1: response.lon1,
+                  lat2: response.lat2,
+                  lon2: response.lon2,
+                },
+                title: location.title,
+                type: "free",
+              } as SpatialLocation)
+            : undefined,
+        ),
+        map((additionalBBox) => {
+          if (!additionalBBox) return;
+          const current = this.formControl.value ?? [];
+          current.splice(neighborIndex + 1, 0, additionalBBox);
+
+          this.formControl.setValue([...current]);
+          this.formControl.markAsDirty();
+          this.updateBoundingBoxCatchingErrors(current);
+        }),
+      )
+      .subscribe();
   }
 }

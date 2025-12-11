@@ -1,4 +1,12 @@
-# IGE-NG
+# InGrid Editor
+
+<img src="https://ingrid-oss.eu/8.2.0/assets/components/ingrid-plattform.png" alt="InformationGrid illustration" width="480" align="right">
+
+This repository is part of **[InGrid](https://ingrid-oss.eu)**, an open-source solution for building, managing, and exposing metadata-driven information systems. 
+
+**About InGrid Editor:**  
+Maintain your metadata with ease: create, validate, and publish ISO 19115/19119, OGC and INSPIRE compliant metadata — with simple import & export functionality.
+
 
 [Full documentation](docs/index.adoc)
 

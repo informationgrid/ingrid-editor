@@ -30,6 +30,7 @@ import {
   signal,
   WritableSignal,
   viewChild,
+  DestroyRef,
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -39,7 +40,6 @@ import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { UpdateType } from "../../../models/update-type.enum";
 import { DynamicDataSource } from "./dynamic.datasource";
 import { DynamicDatabase } from "./dynamic.database";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeService } from "./tree.service";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
@@ -64,6 +64,7 @@ import { DocumentIconComponent } from "../../../shared/document-icon/document-ic
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { EmptyNavigationComponent } from "./empty-navigation/empty-navigation.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 export enum TreeActionType {
   ADD,
@@ -71,7 +72,6 @@ export enum TreeActionType {
   DELETE,
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-tree",
   templateUrl: "./tree.component.html",
@@ -101,6 +101,7 @@ export class TreeComponent implements OnInit {
   public treeService = inject(TreeService);
   public configService = inject(ConfigService);
   private docBehaviour = inject(DocBehavioursService);
+  private destroyRef = inject(DestroyRef);
 
   @Input() treeStore = null;
 
@@ -188,7 +189,7 @@ export class TreeComponent implements OnInit {
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode();
     this.selection.model.changed
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((data) => data.source.selected.map((item) => item._id)),
         tap((data) => this.selected.emit(data)),
       )
@@ -201,10 +202,11 @@ export class TreeComponent implements OnInit {
       this.treeControl,
       this.database,
       this.treeService,
+      this.destroyRef,
     );
     this.dataSource.dataChange
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((data) => data?.length > 0),
         tap((notEmpty) => {
           this.hasData.set(notEmpty);
@@ -228,13 +230,13 @@ export class TreeComponent implements OnInit {
 
     if (!this.ignoreTreeUpdates()) {
       this.database.treeUpdates
-        .pipe(untilDestroyed(this))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((data) => this.handleUpdate(data));
     }
 
     this.searchSuggestions()
       ?.pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0)),
       )
       .subscribe((nodes) => {
@@ -249,7 +251,11 @@ export class TreeComponent implements OnInit {
     }
 
     setActiveNode
-      .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        debounceTime(100),
+        distinctUntilChanged(),
+      )
       .subscribe(async (id) => {
         if (this.activeNodeId() === id) {
           return;
@@ -570,7 +576,7 @@ export class TreeComponent implements OnInit {
     });
   }
 
-  handleFolderClick(node: TreeNode, $event: MouseEvent) {
+  handleFolderClick(node: TreeNode, $event: Event) {
     // only toggle children if node is disabled
     if (this.disabledCondition()(node)) {
       if (this.isExpandable()(node)) {
@@ -666,7 +672,7 @@ export class TreeComponent implements OnInit {
     this.selection.toggleSelectionMode(isEditMode);
   }
 
-  selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {
+  selectNode(node: TreeNode, $event?: Event, emitActive = true) {
     if (this.disabledCondition()(node)) {
       // disabled nodes can't be selected
       return;

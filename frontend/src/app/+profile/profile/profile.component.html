@@ -61,7 +61,7 @@
                     <ige-emailform
                         [initialEmail]="userInfo.email"
                         [canAutocomplete]="true"
-                        (onClose)="changeEmail($event)"
+                        (onClose)="changeEmail($any($event))"
                     >
                     </ige-emailform>
                 } @else {

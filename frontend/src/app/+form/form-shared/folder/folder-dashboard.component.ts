@@ -21,9 +21,7 @@ import { Component, effect, inject, input, signal } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
-import { DocumentService } from "../../../services/document/document.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
@@ -34,7 +32,6 @@ import { GeneralStore } from "../../../store/general.store";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
-@UntilDestroy()
 @Component({
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",

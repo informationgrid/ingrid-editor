@@ -19,7 +19,10 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
-import { SelectOptionUi } from "../app/services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
 import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
@@ -29,6 +32,8 @@ import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
 import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
+import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
+import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
 
 export interface FieldConfigPosition {
@@ -128,6 +133,17 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
+  externalOptions?: {
+    fetchCodelist: (
+      query: string,
+      page: number,
+    ) => Observable<PagedSearchResult>;
+    deduplicate: (
+      options: SelectOption[],
+      externalOptions: SelectOption[],
+    ) => SelectOption[];
+    threshold?: number;
+  };
   view?: "chip" | "list";
   restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
@@ -461,6 +477,18 @@ export class FormFieldHelper {
     };
   }
 
+  addExtendedRepeatList(id, label, options: RepeatListOptions) {
+    let repeatList = this.addRepeatList(id, label, {
+      ...options,
+      asAutocomplete: true,
+      labelField: "value",
+    });
+    (repeatList.props as RepeatListProps).externalOptions = {
+      ...options.externalOptions,
+    };
+    return repeatList;
+  }
+
   addRepeatDetailList(
     id,
     label,
@@ -706,6 +734,7 @@ export class FormFieldHelper {
         // [attributes] must be defined first for assigning values, e.g. aria-labelledby below.
         attributes: {},
         unitOptions: options?.unitOptions,
+        codelistId: options?.codelistId,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "change",

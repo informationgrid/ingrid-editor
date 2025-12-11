@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   Inject,
   OnDestroy,
@@ -46,7 +47,6 @@ import {
 import { ResolvedAddressWithType } from "../address-card/address-card.component";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
@@ -57,7 +57,7 @@ import { MatIcon } from "@angular/material/icon";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { GeneralStore } from "../../../../store/general.store";
 
@@ -74,7 +74,6 @@ export interface ChooseAddressResponse {
   address: DocumentAbstract;
 }
 
-@UntilDestroy()
 @Component({
   selector: "ige-choose-address-dialog",
   templateUrl: "./choose-address-dialog.component.html",
@@ -98,6 +97,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   addressTreeStore = inject(AddressTreeStore);
   private codelistStore = inject(CodelistStore);
   private generalStore = inject(GeneralStore);
+  private destroyRef = inject(DestroyRef);
+
   readonly recentAddressSelect = viewChild(MatSelect);
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
@@ -132,7 +133,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     this.typeSelectionEnabled.set(!(this.data.allowedTypes?.length === 1));
     this.codelists$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((item) => item[this.addressTypeCodelistId]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         tap((items) => {

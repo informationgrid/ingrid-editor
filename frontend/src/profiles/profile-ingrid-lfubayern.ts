@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent, InGridDoctype } from "./profile-ingrid";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
@@ -129,9 +129,6 @@ class InGridLFUBayernComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridLFUBayernComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridLFUBayernComponent;

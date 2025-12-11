@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { FormMenuService } from "../app/+form/form-menu.service";
 import { TranslocoService } from "@jsverse/transloco";
@@ -27,6 +27,7 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { GeneralStore } from "../app/store/general.store";
 import { IngridShared } from "./ingrid/doctypes/ingrid-shared";
 
 @Component({
@@ -39,6 +40,7 @@ class InGridLUBWComponent extends InGridComponent {
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);
   translocoService = inject(TranslocoService);
+  private generalStore = inject(GeneralStore);
   protected codelistStore = inject(CodelistStore);
 
   constructor() {
@@ -76,6 +78,8 @@ class InGridLUBWComponent extends InGridComponent {
         { merge: true },
       );
       this.replaceHelpLink();
+      // author is not allowed to move any tree nodes
+      this.generalStore.setAllowDragNDropInTree(false);
     }
   }
 
@@ -168,9 +172,6 @@ class InGridLUBWComponent extends InGridComponent {
   }
 }
 
-@NgModule({
-  imports: [InGridLUBWComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridLUBWComponent;

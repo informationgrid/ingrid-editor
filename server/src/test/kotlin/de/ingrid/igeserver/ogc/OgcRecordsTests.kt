@@ -29,9 +29,10 @@ import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.hasItems
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
@@ -44,12 +45,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 import java.nio.charset.StandardCharsets
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.toJavaInstant
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 @Sql(scripts = ["/ogc/data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class OgcRecordsTests : IntegrationTest() {
 
-    val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+    //    val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+    val mockPrincipal = mockk<JwtAuthenticationToken>(relaxed = true)
+    val mockJwt = mockk<Jwt>(relaxed = true)
 
     @Autowired
     lateinit var entityManager: EntityManager
@@ -66,14 +72,18 @@ class OgcRecordsTests : IntegrationTest() {
     val wrongRecordId = "wrong3dc-f3cd-46ea-a12e-d7f79invalid"
     val formats = listOf(RecordFormat.JSON, RecordFormat.GEOJSON, RecordFormat.HTML) // , RecordFormat.INGRID_ISO)
 
+    @OptIn(ExperimentalTime::class)
     @BeforeEach
     fun beforeTest() {
         every {
             mockPrincipal.authorities
         }.returns(listOf(SimpleGrantedAuthority("cat-admin")))
+        val now = Clock.System.now().toJavaInstant()
         every {
             mockPrincipal.principal
-        }.returns("user1")
+        }.returns(mockJwt)
+        every { mockJwt.getClaimAsString("name") } returns "user1"
+        every { mockPrincipal.name } returns "user1"
         every {
             mockPrincipal.isAuthenticated
         }.returns(true)

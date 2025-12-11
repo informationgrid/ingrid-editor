@@ -17,9 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Input,
+  input,
+  OnInit,
+  output,
+} from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { delay, filter } from "rxjs/operators";
 import {
   MatCard,
@@ -30,8 +37,8 @@ import {
 } from "@angular/material/card";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { FormlyForm } from "@ngx-formly/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@UntilDestroy()
 @Component({
   selector: "ige-behaviour-item",
   templateUrl: "./behaviour-item.component.html",
@@ -48,6 +55,8 @@ import { FormlyForm } from "@ngx-formly/core";
   ],
 })
 export class BehaviourItemComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   readonly title = input<string>(undefined);
   @Input() description: string;
   @Input() control: any;
@@ -60,7 +69,7 @@ export class BehaviourItemComponent implements OnInit {
     const form = <UntypedFormGroup>this.control.form;
     form.valueChanges
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         delay(0), // add tiny delay to get updated form state
         filter(() => form.dirty && form.valid),
       )

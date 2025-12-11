@@ -52,7 +52,6 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
-import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel.Companion.catalogService
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -68,7 +67,6 @@ import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.text.StringEscapeUtils.escapeJson
-import org.apache.jena.vocabulary.SchemaDO.keywords
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -795,6 +793,16 @@ open class IngridModelTransformer(
         }
     }
 
+    val ogcLandingPage: String by lazy {
+        val operationWithLandingPage = data.service.operations?.firstOrNull({ it.name?.value == "LandingPage" })
+        operationWithLandingPage?.methodCall ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
+    }
+
+    fun hasOgcServiceVersion(): Boolean {
+        val ogcApiFeatureCodelistId = "4"
+        return (data.service.version ?: emptyList()).any({ it.key == ogcApiFeatureCodelistId })
+    }
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass =
             getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL"))
@@ -866,6 +874,7 @@ open class IngridModelTransformer(
         emptyList()
     }
 
+    @Suppress("DEPRECATION") // use of parentIdentifier only allowed here
     open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
 
@@ -899,7 +908,7 @@ open class IngridModelTransformer(
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         this.namespace =
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
-        this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
         this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
 
@@ -1074,19 +1083,21 @@ open class IngridModelTransformer(
     }
 
     private fun getSuperiorReference(): SuperiorReference? {
-        if (data.parentIdentifier.isNullOrEmpty()) return null
-        val uuid = data.parentIdentifier
+        val uuid = getParentIdentifier()
+        if (uuid.isNullOrEmpty()) return null
+
         val doc = getLastPublishedDocument(uuid) ?: return null
+
+        val firstGraphicJson = doc.data.get("graphicOverviews")?.get(0)
+        val graphicOverviews = listOfNotNull(convertToGraphicOverview(firstGraphicJson))
+        val graphicUri = generateBrowseGraphics(graphicOverviews, uuid).firstOrNull()?.uri
 
         return SuperiorReference(
             uuid = uuid,
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
             description = doc.data.getString("description"),
-            graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))),
-                uuid,
-            ).firstOrNull()?.uri,
+            graphicOverviewUri = graphicUri,
         )
     }
 
@@ -1224,6 +1235,7 @@ open class IngridModelTransformer(
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
+        hasOgcServiceVersion() ||
         // TODO Refactor after usage clarification #6322
         // || serviceUrls.isNotEmpty()
         // || getCoupledServiceUrls().isNotEmpty()
@@ -1348,7 +1360,7 @@ data class SuperiorReference(
     val objectName: String,
     val objectType: String,
     val description: String?,
-    val graphicOverview: String?,
+    val graphicOverviewUri: String?,
 )
 
 data class GeometryContext(

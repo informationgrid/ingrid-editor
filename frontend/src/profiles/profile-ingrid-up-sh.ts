@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeUPSH } from "./ingrid-up-sh/doctypes/geo-dataset.doctype";
 
@@ -28,10 +28,6 @@ import { GeoDatasetDoctypeUPSH } from "./ingrid-up-sh/doctypes/geo-dataset.docty
 class InGridUPSHComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeUPSH);
 }
-
-@NgModule({
-  imports: [InGridUPSHComponent],
-})
 export class ProfilePack {
   static getMyComponent() {
     return InGridUPSHComponent;

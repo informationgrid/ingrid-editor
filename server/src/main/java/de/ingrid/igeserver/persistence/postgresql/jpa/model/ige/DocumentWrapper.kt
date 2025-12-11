@@ -42,7 +42,7 @@ import org.hibernate.annotations.Formula
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Where
+import org.hibernate.annotations.SQLRestriction
 import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
@@ -50,7 +50,7 @@ import java.util.*
 @Suppress("ktlint:standard:property-naming")
 @Entity
 @Table(name = "document_wrapper")
-@Where(clause = "deleted = 0")
+@SQLRestriction("deleted = 0")
 class DocumentWrapper {
 
     @Id

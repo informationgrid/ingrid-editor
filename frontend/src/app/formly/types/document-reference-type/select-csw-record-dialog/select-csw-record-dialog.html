@@ -4,7 +4,7 @@
     [disabled]="phase() !== 'valid' || form.invalid"
 >
     <div content>
-        @if (showLayernames) {
+        @if (showLayernames()) {
         <div class="section-title">Layernamen:</div>
         <div class="padding">
             <formly-form
@@ -18,7 +18,7 @@
             <mat-label>GetRecordById-URL</mat-label>
             <input
                 matInput
-                igeFocus
+                [igeFocus]="true"
                 [formControl]="urlControl"
                 data-cy="get-record-url"
             />

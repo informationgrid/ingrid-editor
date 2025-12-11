@@ -21,7 +21,6 @@ import { Directive, ElementRef, Input, Renderer2 } from "@angular/core";
 
 @Directive({
   selector: "[scrollTo]",
-  standalone: true,
 })
 export class ScrollToDirective {
   @Input() scrollTo: boolean;

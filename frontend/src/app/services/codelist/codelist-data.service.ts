@@ -20,7 +20,11 @@
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { Injectable } from "@angular/core";
-import { CodelistBackend } from "../../store/codelist/codelist.model";
+import {
+  CodelistBackend,
+  FreeEntry,
+  PagedSearchResult,
+} from "../../store/codelist/codelist.model";
 
 @Injectable({
   providedIn: "root",
@@ -80,11 +84,41 @@ export class CodelistDataService {
     );
   }
 
+  getExternalCodelist(id: string, filter: string, page: number = 0) {
+    return this.http.get<PagedSearchResult>(
+      this.configuration.backendUrl + "codelist/external/" + id + "/" + filter,
+      {
+        params: { page: page },
+      },
+    );
+  }
+
   syncCodelistValues(migrate: boolean) {
     return this.http.post<void>(
       this.configuration.backendUrl +
         `jobs/codelist-sync?command=start&migrate=${migrate}`,
       {},
+    );
+  }
+
+  getFreeEntries(codelistId: string) {
+    return this.http.get<FreeEntry[]>(
+      this.configuration.backendUrl + "codelist/free-entries/" + codelistId,
+    );
+  }
+
+  replaceFreeEntry(
+    codelistId: string,
+    body: { fromValue: string; toKey: string },
+  ) {
+    return this.http.post<{
+      occurrences: number;
+      documentsUpdated: number;
+      uuids: string[];
+    }>(
+      this.configuration.backendUrl +
+        `codelist/free-entries/${codelistId}/replace`,
+      body,
     );
   }
 }
