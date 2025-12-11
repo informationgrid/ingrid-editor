@@ -129,7 +129,7 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
-        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/$path" })
+        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/LFS/$path" })
             ?: return@mapNotNull null,
         description = it.getString("explanation"),
         functionValue = "download",
