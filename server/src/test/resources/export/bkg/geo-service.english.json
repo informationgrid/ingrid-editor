@@ -201,18 +201,13 @@
       "description": ""
     },
     "temporal": {
-      "events": [
-        {
-          "referenceDate": "2020-11-17T07:47:50.251Z",
-          "referenceDateType": {
-            "key": "1"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "at"
+      "event": {
+        "created": "2020-11-17T07:47:50.251Z"
       },
-      "resourceDate": "2025-02-16T23:00:00Z",
+      "data": {
+        "type": "at",
+        "resourceDate": "2025-02-16T23:00:00Z"
+      },
       "status": {
         "key": "4"
       }

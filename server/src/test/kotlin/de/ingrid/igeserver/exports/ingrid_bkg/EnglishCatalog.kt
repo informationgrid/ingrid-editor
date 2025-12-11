@@ -23,6 +23,7 @@ import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
+import de.ingrid.igeserver.exports.ingrid.updateDatestampInExpectedXml
 import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.IngridIdfExporterBkg
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.core.spec.Spec
@@ -57,7 +58,8 @@ class EnglishCatalog : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/bkg/geo-service.english.expected.xml")
+            val expectedResultWithTodayDatestamp = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/bkg/geo-service.english.expected.xml"))
+            result shouldBe expectedResultWithTodayDatestamp
         }
 
         should("export geodataset to ISO with English codelist values") {
@@ -67,7 +69,8 @@ class EnglishCatalog : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/bkg/geo-dataset.english.expected.xml")
+            val expectedResultWithTodayDatestamp = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/bkg/geo-dataset.english.expected.xml"))
+            result shouldBe expectedResultWithTodayDatestamp
         }
     }
 }
