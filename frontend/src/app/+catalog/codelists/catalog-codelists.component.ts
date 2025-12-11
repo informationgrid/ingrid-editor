@@ -242,7 +242,6 @@ export class CatalogCodelistsComponent implements OnInit {
           codelistId: this.selectedCodelist.id,
           codelistName: this.selectedCodelist.name,
         },
-        width: "600px",
       })
       .afterClosed()
       .subscribe((result) => {

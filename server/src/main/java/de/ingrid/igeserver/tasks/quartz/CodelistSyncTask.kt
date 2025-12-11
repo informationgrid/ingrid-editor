@@ -165,7 +165,11 @@ class CodelistSyncTask(
         catalogLanguage: String,
     ): Boolean {
         val codelistId = node.getString("_codelistId")
-            ?: throw ServerException.withReason("Key field is null at path: $path for uuid: $uuid")
+        if (codelistId == null) {
+            log.debug("Codelist-ID field is null at path: $path for uuid: $uuid")
+            return false
+        }
+
         val entryKey = node.getString("key")
         val codelist = codelistHandler.getCodelists(listOf(codelistId)).firstOrNull()
             ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistId }

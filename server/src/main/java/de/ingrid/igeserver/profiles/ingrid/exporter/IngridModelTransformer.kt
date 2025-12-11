@@ -51,6 +51,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
@@ -295,6 +296,7 @@ open class IngridModelTransformer(
                     )
                 }
             }
+
             "wkt" -> {
                 if (ref.polygon != null) {
                     geoElements.add(
@@ -361,7 +363,7 @@ open class IngridModelTransformer(
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
-    var documentType = mapDocumentType(model.type)
+    var documentTypeId = mapDocumentType(model.type)
 
     open val hierarchyLevel = "nonGeographicDataset"
     open val hierarchyLevelName: String? = "job"
@@ -401,6 +403,7 @@ open class IngridModelTransformer(
         val epsgLink = when {
             // like EPSG:1234 Bla
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
+
             // like EPSG 12345: Bla
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
@@ -410,6 +413,7 @@ open class IngridModelTransformer(
                     null
                 }
             }
+
             else -> null
         }
         return CharacterStringModel(referenceSystem, epsgLink)
@@ -436,8 +440,12 @@ open class IngridModelTransformer(
     )
 
     private fun mapToInspireLink(key: String?): String? = when (key) {
-        "304" -> "http://inspire.ec.europa.eu/theme/lu" // land use
-        "202" -> "http://inspire.ec.europa.eu/theme/lc" // land cover
+        // land use
+        "304" -> "http://inspire.ec.europa.eu/theme/lu"
+
+        // land cover
+        "202" -> "http://inspire.ec.europa.eu/theme/lc"
+
         else -> null
     }
 
@@ -637,13 +645,13 @@ open class IngridModelTransformer(
     val contentField: MutableList<String> = mutableListOf()
 
     protected open fun mapDocumentType(type: String): String = when (type) {
-        "InGridSpecialisedTask" -> "0"
-        "InGridGeoDataset" -> "1"
-        "InGridPublication" -> "2"
-        "InGridGeoService" -> "3"
-        "InGridProject" -> "4"
-        "InGridDataCollection" -> "5"
-        "InGridInformationSystem" -> "6"
+        "InGridSpecialisedTask" -> InGridDocType.InGridSpecialisedTask.typeId
+        "InGridGeoDataset" -> InGridDocType.InGridGeoDataset.typeId
+        "InGridPublication" -> InGridDocType.InGridPublication.typeId
+        "InGridGeoService" -> InGridDocType.InGridGeoService.typeId
+        "InGridProject" -> InGridDocType.InGridProject.typeId
+        "InGridDataCollection" -> InGridDocType.InGridDataCollection.typeId
+        "InGridInformationSystem" -> InGridDocType.InGridInformationSystem.typeId
         else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
@@ -910,7 +918,7 @@ open class IngridModelTransformer(
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
         this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
-        this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
+        this.resourceIdentifier = if (this.documentTypeId == InGridDocType.InGridGeoDataset.typeId) this.citationURL else null
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }

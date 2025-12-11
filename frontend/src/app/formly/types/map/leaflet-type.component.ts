@@ -252,7 +252,7 @@ export class LeafletTypeComponent
               .open(ConfirmDialogComponent, {
                 data: <ConfirmDialogData>{
                   title: `Bounding-Box hinzufügen?`,
-                  message: `Möchten Sie zusätzlich die automatisch ermittelte Bounding-Box der Bundeswasserstraßenstrecke "${result.title}" hinzufügen?`,
+                  message: `Möchten Sie die Bounding-Box der BWasStr.-Strecke zusätzlich als Raumbezug hinzufügen?`,
                   confirmButtonText: "Ja",
                 },
               })

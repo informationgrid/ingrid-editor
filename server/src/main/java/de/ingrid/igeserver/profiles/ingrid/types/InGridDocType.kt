@@ -1,4 +1,4 @@
-/**
+/*
  * ==================================================
  * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
-enum class InGridDocType {
-    InGridGeoDataset,
-    InGridDataCollection,
-    InGridGeoService,
-    InGridInformationSystem,
-    InGridPublication,
-    InGridProject,
-    InGridSpecialisedTask,
+enum class InGridDocType(val typeId: String) {
+    InGridSpecialisedTask("0"),
+    InGridGeoDataset("1"),
+    InGridPublication("2"),
+    InGridGeoService("3"),
+    InGridProject("4"),
+    InGridDataCollection("5"),
+    InGridInformationSystem("6"),
 }
