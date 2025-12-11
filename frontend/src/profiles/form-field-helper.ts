@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -127,7 +127,7 @@ export interface ExplanationTextOptions extends Options {
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
-  codelistId?: string;
+  codelistId?: string | BehaviorSubject<string>;
   asSelect?: boolean;
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up

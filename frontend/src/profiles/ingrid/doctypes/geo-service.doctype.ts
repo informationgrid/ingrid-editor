@@ -82,6 +82,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+  getServiceVersionCodelistId = new BehaviorSubject<string>("5152");
   currentServiceOperationNameCodelist = signal<string>("5110");
 
   private couplingTypeOptions: SelectOption[] = [
@@ -157,7 +158,7 @@ export class GeoServiceDoctype extends IngridShared {
                   }),
                   this.addRepeatListInline("version", "Version des Dienstes", {
                     options: this.getServiceVersionOptions,
-                    // codelistId: "5152",
+                        codelistId: this.getServiceVersionCodelistId,
                     showSearch: true,
                     fieldGroupClassName: "flex-1",
                     hasInlineContextHelp: true,
@@ -360,6 +361,7 @@ export class GeoServiceDoctype extends IngridShared {
       this.getServiceVersionOptions.next([]);
     } else {
       this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
+        this.getServiceVersionCodelistId.next(codelistId);
         this.getServiceVersionOptions.next(value);
         this.updateServiceVersionInPrintField(value);
       });
