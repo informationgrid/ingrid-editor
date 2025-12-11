@@ -1,4 +1,4 @@
-/**
+/*
  * ==================================================
  * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
@@ -158,7 +158,7 @@ export class GeoServiceDoctype extends IngridShared {
                   }),
                   this.addRepeatListInline("version", "Version des Dienstes", {
                     options: this.getServiceVersionOptions,
-                        codelistId: this.getServiceVersionCodelistId,
+                    codelistId: this.getServiceVersionCodelistId,
                     showSearch: true,
                     fieldGroupClassName: "flex-1",
                     hasInlineContextHelp: true,
