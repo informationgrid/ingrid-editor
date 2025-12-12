@@ -299,7 +299,7 @@ export class RepeatListComponent
       const codelistId = this.getCodelistId();
       if (!this.props.asSimpleValues) {
         // fix codelistId for all values in case the options have been (dynamically) changed
-        this.formControl.value.forEach(
+        this.formControl.value?.forEach(
           (item: any) => (item._codelistId = codelistId),
         );
       }
