@@ -201,15 +201,14 @@ export class ExportComponent implements OnInit {
     });
   }
 
-  private handleError(error: HttpErrorResponse): Promise<any> {
-    return this.getErrorFromBlob(error).then((jsonError: IgeException) => {
-      if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
-        throw new IgeError(
-          "Es können nur veröffentlichte Versionen exportiert werden.",
-        );
-      }
-      throw new IgeError(jsonError.errorText);
-    });
+  private async handleError(error: HttpErrorResponse): Promise<any> {
+    const jsonError = await this.getErrorFromBlob(error);
+    if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
+      throw new IgeError(
+        "Es können nur veröffentlichte Versionen exportiert werden.",
+      );
+    }
+    throw new IgeError(jsonError.errorText);
   }
 
   private getErrorFromBlob(error: HttpErrorResponse) {
