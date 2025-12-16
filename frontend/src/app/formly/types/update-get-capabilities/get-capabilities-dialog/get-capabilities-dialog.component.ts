@@ -154,7 +154,7 @@ export class GetCapabilitiesDialogComponent {
       .open(CredentialsDialogComponent, { width: "300px" })
       .afterClosed()
       .pipe(
-        filter((result) => result !== ""),
+        filter((result) => result),
         tap((result) => {
           this.analyze(url, result.username, result.password);
         }),
