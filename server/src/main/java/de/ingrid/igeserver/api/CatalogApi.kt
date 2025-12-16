@@ -136,5 +136,11 @@ interface CatalogApi {
             description = "The identifier of the catalog.",
             required = true,
         ) @PathVariable("identifier") catalogIdentifier: String,
+        @RequestBody(required = false) options: ExportCatalogOptions = ExportCatalogOptions(),
     ): ResponseEntity<ByteArray?>
 }
+
+data class ExportCatalogOptions(
+    val exportUsers: Boolean = true,
+    val exportArchivedDatasets: Boolean = true,
+)

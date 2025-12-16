@@ -37,6 +37,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import kotlin.collections.sorted
 
 data class CatalogImportOptions(
     val allowUpdate: Boolean = false,
@@ -176,7 +177,7 @@ class CatalogImportService(
         val wrapperIdMigrationMap = mutableMapOf<Int, Int>()
 
         @Suppress("UNCHECKED_CAST")
-        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<String>).size }
+        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<String>?)?.size ?: 0 }
 
         depthToWrapper.keys.sorted().forEach { depth ->
             log.info("Importing DocumentWrapper with depth $depth ...")

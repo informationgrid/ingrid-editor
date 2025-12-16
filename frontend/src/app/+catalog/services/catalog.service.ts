@@ -107,9 +107,11 @@ export class CatalogService {
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
-  exportCatalog(id: string) {
+  exportCatalog(id: string, options?: { exportUsers: boolean; exportArchivedDatasets: boolean }) {
     this.http
-      .post(this.configuration.backendUrl + `catalogs/export/${id}`, null, {
+      .post(this.configuration.backendUrl + `catalogs/export/${id}`,
+        options ?? null,
+        {
         responseType: "blob",
         observe: "response",
       })

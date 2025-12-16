@@ -182,13 +182,17 @@ class CatalogApiController(
         return ResponseEntity.status(HttpStatus.ACCEPTED).build()
     }
 
-    override fun catalogExport(principal: Principal, catalogIdentifier: String): ResponseEntity<ByteArray?> {
+    override fun catalogExport(
+        principal: Principal,
+        catalogIdentifier: String,
+        options: ExportCatalogOptions,
+    ): ResponseEntity<ByteArray?> {
         authUtils.isSuperAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build()
         }
 
-        val exportedTables = catalogExportService.exportCatalog(catalogIdentifier)
+        val exportedTables = catalogExportService.exportCatalog(catalogIdentifier, options)
         val mapper = jacksonObjectMapper()
         mapper.registerModule(JavaTimeModule())
         mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
