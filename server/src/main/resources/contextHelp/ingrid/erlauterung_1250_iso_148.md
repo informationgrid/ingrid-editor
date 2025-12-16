@@ -11,19 +11,17 @@ docType:
   - InGridProject
 profile: ingrid
 
-
 # title, used as window title
 title: Erläuterung
 ---
 
 # Erläuterung
 
-Zusätzliche Angaben zum Zeitbezug. Hier können z.B. die Angaben der Periodizität eingeschränkt, weitere Zeitangaben gemacht oder Unregelmäßigkeiten erklärt werden. Im Zusammenhang mit dem Eintrag im Feld Periodizität können hier Abstände, Perioden und Intervalle eingetragen werden, die sich nicht aus dem Zusammenhang der anderen Felder des Zeitbezuges erklären, z.B. Jahreszeiten, Dekaden, Tageszeiten.
+Zusätzliche Angaben zum Zeitbezug. Hier können z.B. die Angaben des Pflege- und Aktualisierungsintervalls eingeschränkt, weitere Zeitangaben gemacht oder Unregelmäßigkeiten erklärt werden. Im Zusammenhang mit dem Eintrag im Feld "Pflege- und Aktualisierungsintervall" können hier Abstände, Perioden und Intervalle eingetragen werden, die sich nicht aus dem Zusammenhang der anderen Felder des Zeitbezuges erklären, z.B. Jahreszeiten, Dekaden, Tageszeiten.
 
 ## Beispiel:
 
 Die Messungen erfolgten nur tagsüber.
-
 
 # ISO Abbildung
 

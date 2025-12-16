@@ -1151,6 +1151,60 @@ export abstract class IngridShared extends BaseDoctype {
                         message:
                           "Es muss entweder ein Datum der Erstellung, der erstmaligen Veröffentlichung oder der letzten Änderung angegeben werden",
                       },
+                      dateOrder: {
+                        expression: (
+                          ctrl: FormControl,
+                          field: FormlyFieldConfig,
+                        ) => {
+                          const event = ctrl.value;
+                          if (!event) return true;
+
+                          // Parse dates if present
+                          const created = event.created
+                            ? new Date(event.created)
+                            : null;
+                          const firstPublished = event.firstPublished
+                            ? new Date(event.firstPublished)
+                            : null;
+                          const lastModified = event.lastModified
+                            ? new Date(event.lastModified)
+                            : null;
+
+                          // Helper to validate order allowing equality
+                          const leq = (a: Date, b: Date) =>
+                            a.getTime() <= b.getTime();
+
+                          // If both dates in a pair are present, they must be in order
+                          if (
+                            created &&
+                            firstPublished &&
+                            !leq(created, firstPublished)
+                          ) {
+                            return false;
+                          }
+                          if (
+                            firstPublished &&
+                            lastModified &&
+                            !leq(firstPublished, lastModified)
+                          ) {
+                            return false;
+                          }
+                          // If firstPublished is missing, ensure created <= lastModified when both exist
+                          if (
+                            created &&
+                            lastModified &&
+                            !firstPublished &&
+                            !leq(created, lastModified)
+                          ) {
+                            return false;
+                          }
+
+                          // All checks passed or insufficient data to compare
+                          return true;
+                        },
+                        message:
+                          "Die Reihenfolge der Daten ist ungültig: 'Erstellung' muss vor 'Erstmalige Veröffentlichung' und diese vor 'Letzte Änderung' liegen.",
+                      },
                     },
                   },
                 ),
@@ -1184,7 +1238,6 @@ export abstract class IngridShared extends BaseDoctype {
                           "maintenanceInformation.maintenanceAndUpdateFrequency",
                         ),
                         codelistId: "518",
-                        hintStart: "Wie oft wird der Datensatz aktualisiert?",
                         className: "optional",
                         change: (field: FormlyFieldConfig) => {
                           const isNotContinuously =
@@ -1195,6 +1248,16 @@ export abstract class IngridShared extends BaseDoctype {
                               .get("userDefinedMaintenanceFrequency")
                               .setValue({ number: null, unit: null });
                           }
+                        },
+                        expressions: {
+                          "props.hintStart": (field: FormlyFieldConfig) => {
+                            const value = field.formControl.value;
+                            // if selected value is "unbekannt", "unregelmäßig" or "bei Bedarf"
+                            if (["9", "10", "12"].includes(value?.key))
+                              return "Bitte fügen Sie im untenstehenden Feld eine Erläuterung zu diesem Intervall hinzu";
+                            else
+                              return "Wie oft wird der Datensatz aktualisiert?";
+                          },
                         },
                       },
                     ),
