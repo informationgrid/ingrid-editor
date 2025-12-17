@@ -73,7 +73,34 @@ interface DocumentWrapperRepository :
     fun findByParent_id(parent_id: Int): List<DocumentWrapper>
 
     @Query(
-        "SELECT dw.id FROM document_wrapper dw, document doc WHERE dw.uuid = doc.uuid AND dw.parent_id = ?1 AND dw.deleted = 0 AND (doc.state = 'PUBLISHED' OR doc.type = 'FOLDER')",
+        """
+WITH RECURSIVE sub AS (
+    SELECT
+        dw.id,
+        dw.parent_id,
+        d.state,
+        d.type,
+        dw.id AS root_child_id
+    FROM document_wrapper dw
+             JOIN document d ON d.uuid = dw.uuid
+    WHERE dw.parent_id = ?1
+      AND dw.deleted = 0
+
+    UNION ALL
+    SELECT
+        c.id,
+        c.parent_id,
+        d2.state,
+        d2.type,
+        sub.root_child_id
+    FROM document_wrapper c
+             JOIN document d2 ON d2.uuid = c.uuid
+             JOIN sub ON c.parent_id = sub.id
+    WHERE c.deleted = 0
+)
+SELECT DISTINCT s.root_child_id AS id
+FROM sub s
+WHERE s.state = 'PUBLISHED'""",
         nativeQuery = true,
     )
     fun findByParentIdAndPublished(parentId: Int): List<Int>
