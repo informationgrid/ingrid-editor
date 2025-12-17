@@ -218,8 +218,18 @@ export class GeoDatasetDoctype extends IngridShared {
                 codelistId: "515",
                 showSearch: true,
                 expressions: {
-                  "props.required": (field: FormlyFieldConfig) =>
-                    field.model?.geometricObjectCount != null,
+                  "props.required": (field: FormlyFieldConfig, ctrl: any) => {
+                    // FIXME: when using field.model then this select cannot be removed correctly
+                    //        after loading a new dataset with an empty vector format because the model change
+                    //        seems to happen during destroy
+                    // return field.model?.geometricObjectCount != null;
+
+                    // The workaround does not immediately evaluate since it does not get the updated value
+                    return (
+                      field.formControl.parent.value.geometricObjectCount !=
+                      null
+                    );
+                  },
                 },
               }),
               this.addInputInline("geometricObjectCount", "Elementanzahl", {
