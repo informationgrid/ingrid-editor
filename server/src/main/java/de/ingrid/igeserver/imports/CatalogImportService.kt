@@ -61,7 +61,7 @@ class CatalogImportService(
     private val log = logger()
 
     fun importCatalog(exportedCatalog: ExportedCatalog, options: CatalogImportOptions = CatalogImportOptions()) {
-        runPreChecks(exportedCatalog)
+        verifyCatalogVersion(exportedCatalog)
 
         val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
         val catalogId = try {
@@ -97,14 +97,10 @@ class CatalogImportService(
         log.info("Finished importing catalog ${exportedCatalog.catalog["identifier"]} with ID $catalogId")
     }
 
-    private fun runPreChecks(exportedCatalog: ExportedCatalog) {
+    private fun verifyCatalogVersion(exportedCatalog: ExportedCatalog) {
         val currentVersion = getEditorVersion()
         if (exportedCatalog.version != currentVersion) {
             throw ServerException.withReason("The editor version of the exported catalog is different from the current version: ${exportedCatalog.version} != $currentVersion")
-        }
-
-        if (catalogService.catalogExists(exportedCatalog.catalog["identifier"] as String)) {
-//            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
         }
     }
 
