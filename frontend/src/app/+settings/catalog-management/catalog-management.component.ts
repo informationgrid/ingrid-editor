@@ -219,17 +219,23 @@ export class CatalogManagementComponent implements OnInit {
     this.dialog
       .open(ExportCatalogDialogComponent, {
         disableClose: true,
-        width: '400px',
+        width: "400px",
         data: {
           exportUsers: true,
           exportArchivedDatasets: true,
         },
       })
       .afterClosed()
-      .subscribe((result: { exportUsers: boolean; exportArchivedDatasets: boolean } | undefined) => {
-        if (!result) return;
-        this.catalogService.exportCatalog(id, result);
-      });
+      .subscribe(
+        (
+          result:
+            | { exportUsers: boolean; exportArchivedDatasets: boolean }
+            | undefined,
+        ) => {
+          if (!result) return;
+          this.catalogService.exportCatalog(id, result);
+        },
+      );
   }
 
   showCatalogDetail(catalog: Catalog) {

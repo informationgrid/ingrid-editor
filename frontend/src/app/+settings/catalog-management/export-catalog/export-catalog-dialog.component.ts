@@ -31,11 +31,7 @@ export interface ExportCatalogOptionsModel {
 @Component({
   selector: "ige-export-catalog-dialog",
   templateUrl: "./export-catalog-dialog.component.html",
-  imports: [
-    DialogTemplateComponent,
-    MatCheckbox,
-    FormsModule,
-  ],
+  imports: [DialogTemplateComponent, MatCheckbox, FormsModule],
 })
 export class ExportCatalogDialogComponent {
   model: ExportCatalogOptionsModel;

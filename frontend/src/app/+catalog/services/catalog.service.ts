@@ -107,14 +107,19 @@ export class CatalogService {
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
-  exportCatalog(id: string, options?: { exportUsers: boolean; exportArchivedDatasets: boolean }) {
+  exportCatalog(
+    id: string,
+    options?: { exportUsers: boolean; exportArchivedDatasets: boolean },
+  ) {
     this.http
-      .post(this.configuration.backendUrl + `catalogs/export/${id}`,
+      .post(
+        this.configuration.backendUrl + `catalogs/export/${id}`,
         options ?? null,
         {
-        responseType: "blob",
-        observe: "response",
-      })
+          responseType: "blob",
+          observe: "response",
+        },
+      )
       .pipe(
         tap((response: HttpResponse<Blob>) => {
           const downloadLink = document.createElement("a");
