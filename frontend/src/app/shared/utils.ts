@@ -124,6 +124,7 @@ export function isEmptyObject(objValue: any, ignoreFields = []) {
 }
 
 export function isNotEmptyObject(objValue: any, ignoreFields = []) {
+  if (!objValue) return false;
   return Object.keys(objValue).some((key) => {
     if (ignoreFields.indexOf(key) !== -1) return false;
     let valueElement = objValue[key];

@@ -960,7 +960,10 @@ export abstract class IngridShared extends BaseDoctype {
                 fetchCodelist: (query: string, page: number) =>
                   this.getExternalCodelistForSelect("EPSG", query, page),
                 deduplicate: (options, externalOptions) => {
-                  const localLabels = options.map((r) => r.label.split(":")[0]);
+                  if (!options) return [];
+
+                  const localLabels =
+                    options.map((r) => r.label.split(":")[0]) ?? [];
                   return [
                     ...options,
                     ...externalOptions.filter(
