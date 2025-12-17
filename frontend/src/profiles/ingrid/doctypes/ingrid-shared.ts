@@ -1173,9 +1173,14 @@ export abstract class IngridShared extends BaseDoctype {
                             ? new Date(event.lastModified)
                             : null;
 
-                          // Helper to validate order allowing equality
+                          // Compare by calendar date only (ignore time)
+                          const dateKey = (d: Date) =>
+                            d.getFullYear() * 10000 +
+                            (d.getMonth() + 1) * 100 +
+                            d.getDate();
+                          // Helper to validate order allowing equality (date-only)
                           const leq = (a: Date, b: Date) =>
-                            a.getTime() <= b.getTime();
+                            dateKey(a) <= dateKey(b);
 
                           // If both dates in a pair are present, they must be in order
                           if (
