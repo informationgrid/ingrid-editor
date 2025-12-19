@@ -55,6 +55,7 @@ import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { GeneralStore } from "../../../app/store/general.store";
+import { validateDateResourceOrder } from "./validations";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -1155,63 +1156,9 @@ export abstract class IngridShared extends BaseDoctype {
                           "Es muss entweder ein Datum der Erstellung, der erstmaligen Veröffentlichung oder der letzten Änderung angegeben werden",
                       },
                       dateOrder: {
-                        expression: (
-                          ctrl: FormControl,
-                          field: FormlyFieldConfig,
-                        ) => {
-                          const event = ctrl.value;
-                          if (!event) return true;
-
-                          // Parse dates if present
-                          const created = event.created
-                            ? new Date(event.created)
-                            : null;
-                          const firstPublished = event.firstPublished
-                            ? new Date(event.firstPublished)
-                            : null;
-                          const lastModified = event.lastModified
-                            ? new Date(event.lastModified)
-                            : null;
-
-                          // Compare by calendar date only (ignore time)
-                          const dateKey = (d: Date) =>
-                            d.getFullYear() * 10000 +
-                            (d.getMonth() + 1) * 100 +
-                            d.getDate();
-                          // Helper to validate order allowing equality (date-only)
-                          const leq = (a: Date, b: Date) =>
-                            dateKey(a) <= dateKey(b);
-
-                          // If both dates in a pair are present, they must be in order
-                          if (
-                            created &&
-                            firstPublished &&
-                            !leq(created, firstPublished)
-                          ) {
-                            return false;
-                          }
-                          if (
-                            firstPublished &&
-                            lastModified &&
-                            !leq(firstPublished, lastModified)
-                          ) {
-                            return false;
-                          }
-                          // If firstPublished is missing, ensure created <= lastModified when both exist
-                          if (
-                            created &&
-                            lastModified &&
-                            !firstPublished &&
-                            !leq(created, lastModified)
-                          ) {
-                            return false;
-                          }
-
-                          // All checks passed or insufficient data to compare
-                          return true;
-                        },
+                        expression: validateDateResourceOrder,
                         message:
-                          "Die Reihenfolge der Daten ist ungültig: 'Erstellung' muss vor 'Erstmalige Veröffentlichung' und diese vor 'Letzte Änderung' liegen.",
+                          "Die Reihenfolge der Daten ist ungültig: 'Erstellung' muss vor 'Erstmalige Veröffentlichung' und vor 'Letzte Änderung' liegen.",
                       },
                     },
                   },
