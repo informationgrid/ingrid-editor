@@ -38,7 +38,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
 import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
@@ -46,13 +55,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
-import org.springframework.security.oauth2.core.oidc.user.OidcUser
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.web.client.RestTemplate
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -82,8 +88,35 @@ internal class KeycloakConfig {
     private val jwkSetUri: String? = null
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun authorizedClientManager(
+        clientRegistrationRepository: ClientRegistrationRepository,
+        authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    ): OAuth2AuthorizedClientManager {
+        val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+            .authorizationCode()
+            .refreshToken()
+            .build()
+        val authorizedClientManager = DefaultOAuth2AuthorizedClientManager(
+            clientRegistrationRepository,
+            authorizedClientRepository,
+        )
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
+        return authorizedClientManager
+    }
+
+    @Bean
+    fun filterChain(
+        http: HttpSecurity,
+        authorizedClientManager: OAuth2AuthorizedClientManager,
+        authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    ): SecurityFilterChain {
         http {
+            addFilterAfter<BasicAuthenticationFilter>(
+                OAuth2TokenRefreshFilter(
+                    authorizedClientManager,
+                    authorizedClientRepository,
+                ),
+            )
             headers {
                 frameOptions {
                     sameOrigin = true
