@@ -63,21 +63,32 @@ fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docTy
 
 fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "InGridGeoDataset" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+
     "BawMeasurement" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+
     "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+
     "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
+
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
+
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
+
     "InGridInformationSystem" -> "export/ingrid-baw/idf-software-baw.jte"
-//    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
+
+    //    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
     else -> null
 }
 
 fun mapDocumentTypeBaw(type: String): String? = when (type) {
     "BawMeasurement",
     "BawSimulation",
-    -> "1" // InGridGeoDataset
-    "BawPublication" -> "2" // InGridPublication
+    -> "1"
+
+    // InGridGeoDataset
+    "BawPublication" -> "2"
+
+    // InGridPublication
     else -> null
 }
 
@@ -135,7 +146,7 @@ fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransforme
         description = it.getString("explanation"),
         functionValue = "download",
         attachedToField = AttachedField("2000", "9900", "Datendownload"),
-        applicationProfile = modelTransformer.codelists.getValue("1320", it.get("fileFormat").mapToKeyValue()),
+        applicationProfile = modelTransformer.codelists.getValue("1320", it.getPath("fileFormat")?.mapToKeyValue()),
     )
 } ?: emptyList()
 
