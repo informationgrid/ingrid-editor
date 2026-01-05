@@ -41,6 +41,7 @@ import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import de.ingrid.igeserver.utils.prefixIfNot
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -127,7 +128,7 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
-        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/LFS/$path" })
+        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/${path.prefixIfNot("LFS/")}" })
             ?: return@mapNotNull null,
         description = it.getString("explanation"),
         functionValue = "download",
