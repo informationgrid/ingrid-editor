@@ -133,7 +133,7 @@ fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransforme
         description = it.getString("explanation"),
         functionValue = "download",
         attachedToField = AttachedField("2000", "9900", "Datendownload"),
-        applicationProfile = modelTransformer.codelists.getValue("1320", it.get("fileFormat").mapToKeyValue()),
+        applicationProfile = modelTransformer.codelists.getValue("1320", it.getPath("fileFormat")?.mapToKeyValue()),
     )
 } ?: emptyList()
 
