@@ -176,7 +176,7 @@
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
         "key": "1",
-        "value": "kontinuierlich",
+        "value": "kontinuierlich (benutzerdefiniert)",
         "_codelistId": "518"
       },
       "userDefinedMaintenanceFrequency": {
