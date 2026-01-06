@@ -378,7 +378,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "urlDataType",
-                required: false,
+                required: true,
               },
             ),
           ],
