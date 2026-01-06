@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.DateHelper
 import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
@@ -1050,8 +1051,11 @@ data class ConformanceResult(
     val isInspire: Boolean,
     val explanation: String?,
     val specification: KeyValue?,
-    val publicationDate: String?,
-)
+    private val _publicationDate: String?,
+) {
+    val publicationDate: String?
+        get() = _publicationDate?.let { DateHelper.normalizeToUtc(it) }
+}
 
 data class Operation(
     val name: KeyValue?,
@@ -1116,16 +1120,28 @@ data class MaintenanceInterval(
 )
 
 data class TimeInfo(
-    val date: String? = null,
+    private val _date: String? = null,
     val type: String? = null,
     var status: KeyValue? = null,
     val intervalFrom: String? = null,
     val intervalTo: String? = null,
-    val untilDate: String? = null,
+    private val _untilDate: String? = null,
     val isEmpty: Boolean = false,
-)
+) {
+    val date: String?
+        get() = _date?.let { DateHelper.normalizeToUtc(it) }
 
-data class Event(val type: String?, val date: String?)
+    val untilDate: String?
+        get() = _untilDate?.let { DateHelper.normalizeToUtc(it) }
+}
+
+data class Event(
+    val type: String?,
+    private val _date: String?,
+) {
+    val date: String?
+        get() = _date?.let { DateHelper.normalizeToUtc(it) }
+}
 
 data class VerticalExtentModel(
     val uom: KeyValue,
