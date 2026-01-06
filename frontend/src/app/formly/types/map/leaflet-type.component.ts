@@ -252,8 +252,17 @@ export class LeafletTypeComponent
               .open(ConfirmDialogComponent, {
                 data: <ConfirmDialogData>{
                   title: `Bounding-Box hinzufügen?`,
-                  message: `Möchten Sie die Bounding-Box der BWasStr.-Strecke zusätzlich als Raumbezug hinzufügen?`,
-                  confirmButtonText: "Ja",
+                  message: `Möchten Sie die Bounding-Box der BWasStr.-Strecke zusätzlich als Raumbezug hinzufügen?
+                  Bei „Nein“ wird in der Portalansicht ggf. kein Raumbezug angezeigt (z. B. bei Seewasserstraßen).`,
+                  buttons: [
+                    { text: "Nein" },
+                    {
+                      text: "Ja",
+                      alignRight: true,
+                      id: "confirm",
+                      emphasize: true,
+                    },
+                  ],
                 },
               })
               .afterClosed()
