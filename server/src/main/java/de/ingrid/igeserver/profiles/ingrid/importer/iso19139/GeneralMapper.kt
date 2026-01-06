@@ -636,8 +636,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
     private fun getTemporalEventsList(): List<Event> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
         ?.mapNotNull {
             val value = it.date?.dateType?.code?.codeListValue
-            val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
-                ?: it.date?.date?.date?.let { parseDate(it) }
+            val date = it.date?.date?.dateTime
+                ?: it.date?.date?.date
 
             // no extractable information, skip
             if (value == null && date == null) return@mapNotNull null
@@ -662,13 +662,6 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return listOfNotNull(created, firstPublished, lastModified)
     }
 
-    private fun parseDateTime(value: String): String = OffsetDateTime.parse(value).toInstant().toString()
-
-    private fun parseDate(value: String): String = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
-        .atStartOfDay(ZoneId.systemDefault())
-        .toInstant()
-        .toString()
-
     fun getTimeRelatedInfo(): TimeInfo? {
         val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
         val statusKey = if (status == null) null else codeListService.getCodeListEntryId("523", status, "iso")
@@ -677,9 +670,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.map {
                 val timeValue = it.extent?.extent?.timeInstant?.timePosition
-                val instant = timeValue?.let { parseDateTime(timeValue) }
-                if (instant != null) {
-                    return TimeInfo(instant, "at", KeyValue(statusKey, statusValue, "523"))
+                if (timeValue != null) {
+                    return TimeInfo(timeValue, "at", KeyValue(statusKey, statusValue, "523"))
                 }
 
                 val period = it.extent?.extent?.timePeriod
@@ -879,8 +871,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue = KeyValue(specificationEntryId, specification, "6005")
                 val dateObject = it.specification.citation.date?.getOrNull(0)?.date?.date
-                val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
-                    ?: dateObject?.date?.let { parseDate(it) }
+                val publicationDate = dateObject?.dateTime
+                    ?: dateObject?.date
                     ?: ""
                 ConformanceResult(
                     pass,
