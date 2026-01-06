@@ -159,7 +159,7 @@
     },
     "temporal": {
       "event": {
-        "created": "2016-02-29T23:00:00Z"
+        "created": "2016-02-29T23:00:00.000Z"
       },
       "status": {
         "key": "7",
@@ -170,7 +170,7 @@
         "type": "range",
         "intervalFrom": "date",
         "intervalTo": "continuously",
-        "resourceDate": "2016-03-01T00:00:00.000+01:00"
+        "resourceDate": "2016-02-29T23:00:00.000Z"
       }
     },
     "maintenanceInformation": {
@@ -203,7 +203,7 @@
           "value": "Technical Guidance for the implementation of INSPIRE Download Services",
           "_codelistId": "6005"
         },
-        "publicationDate": "2007-03-13T23:00:00Z"
+        "publicationDate": "2007-03-13T23:00:00.000Z"
       },
       {
         "pass": {
@@ -218,7 +218,7 @@
           "value": "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste",
           "_codelistId": "6005"
         },
-        "publicationDate": "2010-12-07T23:00:00Z"
+        "publicationDate": "2010-12-07T23:00:00.000Z"
       }
     ],
     "extraInfo": {
@@ -433,7 +433,7 @@
             "value": "Ganzflächige Biotopkartierung 94",
             "_codelistId": "3555"
           },
-          "date": "2023-02-07T00:00:00.000+01:00",
+          "date": "2023-02-06T23:00:00.000Z",
           "edition": "1.0"
         }
       ]
@@ -446,7 +446,7 @@
             "value": "von Drachenfels 94",
             "_codelistId": "3535"
           },
-          "date": "2023-02-03T00:00:00.000+01:00",
+          "date": "2023-02-02T23:00:00.000Z",
           "edition": "2.1"
         }
       ],
@@ -479,7 +479,7 @@
             },
             {
               "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
-              "date": "2024-11-18",
+              "date": "2024-11-17T23:00:00.000Z",
               "dateType": {
                 "key": "1",
                 "value": "Erstellung",
