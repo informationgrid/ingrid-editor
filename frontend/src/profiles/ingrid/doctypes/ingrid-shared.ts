@@ -133,10 +133,12 @@ export abstract class IngridShared extends BaseDoctype {
     spatialTypes: ["free", "wkt", "wfsgnde"],
   };
 
-  private inspireChangeMessage =
-    "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
-  private inspireDeleteMessage =
-    "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
+  private inspireChangeMessage = this.transloco.translate(
+    "form.dialog.INSPIRE_CHANGE",
+  );
+  private inspireDeleteMessage = this.transloco.translate(
+    "form.dialog.INSPIRE_DELETE",
+  );
 
   showInVeKoSField: boolean = false;
   showInspireRelevant: boolean = false;
@@ -1984,9 +1986,7 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message = this.inspireChangeMessage;
-
-    return this.showConfirmDialog(message, cookieId).pipe(
+    return this.showConfirmDialog(this.inspireChangeMessage, cookieId).pipe(
       map((decision) => {
         if (decision === "ok") this.handleActivateInspireIdentified(field);
         else
