@@ -37,7 +37,6 @@ import { LeafletService } from "./leaflet.service";
 import {
   SpatialListComponent,
   SpatialLocation,
-  SpatialLocationType,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
 import {
@@ -58,10 +57,7 @@ import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  BwastrLocatorCoordinatesResponse,
-  BwastrLocatorService,
-} from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import { BwastrLocatorService } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
