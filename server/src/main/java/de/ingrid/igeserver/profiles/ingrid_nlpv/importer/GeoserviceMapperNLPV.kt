@@ -17,23 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormFieldHelper } from "../../form-field-helper";
-import { Injectable } from "@angular/core";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+package de.ingrid.igeserver.profiles.ingrid_nlpv.importer
 
-@Injectable({ providedIn: "root" })
-export class CommonFieldsNLPV extends FormFieldHelper {
-  addImages(fieldConfig: FormlyFieldConfig[]) {
-    fieldConfig
-      .find((field) => field.props.label === "Organisationsdaten")
-      .fieldGroup.push(
-        this.addPreviewImage("images", "Bilder", {
-          className: "optional",
-        }),
-      );
-  }
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
-  getFeesFieldConfig(): FormlyFieldConfig {
-    return this.addTextArea("fees", "Gebühren", "nlpv");
-  }
+class GeoserviceMapperNLPV(isoData: IsoImportData) : GeoserviceMapper(isoData) {
+
+    val fees: String = isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(0)?.mdStandardOrderProcess?.fees?.value ?: ""
 }
