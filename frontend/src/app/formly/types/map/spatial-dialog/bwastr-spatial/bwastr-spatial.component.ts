@@ -98,6 +98,7 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
     });
   }
   drawnPolyLine: Polyline;
+  private drawSubscribe: Subscription;
 
   private bwastrLocatorService = inject(BwastrLocatorService);
   private leafletService = inject(LeafletService);
@@ -178,7 +179,7 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
     this.value.bwastr = this._selectedSection;
     this.result.emit(this._selectedSection);
     this.removeDrawnBwastrSection();
-    this.leafletService
+    this.drawSubscribe = this.leafletService
       .drawSpatialRefs(this.map, [
         {
           type: "bwastr",
@@ -188,10 +189,14 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
           bwastr: this._selectedSection,
         },
       ])
-      .then((geometries) => (this.drawnPolyLine = geometries[0] as Polyline));
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        (geometries) => (this.drawnPolyLine = geometries[0] as Polyline),
+      );
   }
 
   private removeDrawnBwastrSection() {
+    if (this.drawSubscribe) this.drawSubscribe.unsubscribe();
     if (!this.drawnPolyLine) return;
     this.leafletService.removeDrawnBoundingBoxes(this.map, [
       this.drawnPolyLine,

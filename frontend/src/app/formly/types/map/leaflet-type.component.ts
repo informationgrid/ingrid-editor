@@ -45,9 +45,12 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  startWith,
+  switchMap,
   take,
+  tap,
 } from "rxjs/operators";
-import { of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
@@ -100,21 +103,12 @@ export class LeafletTypeComponent
     () => this.locationsWithColor().length >= this.props.max,
   );
   mapHasMoved = signal<boolean>(false);
-
   private leafletReference: L.Map;
   private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
   ngAfterViewInit() {
     this.leaflet().nativeElement.style.height = this.props.height + "px";
     this.leaflet().nativeElement.style.width = "100%";
-
-    this.formControl.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        debounceTime(0),
-        distinctUntilChanged(),
-      )
-      .subscribe((value) => this.updateBoundingBoxCatchingErrors(value || []));
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -129,9 +123,15 @@ export class LeafletTypeComponent
       (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => this.mapHasMoved.set(true));
 
-      const locations = this.formControl.value || [];
-      // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => this.updateBoundingBoxCatchingErrors(locations));
+      this.formControl.valueChanges
+        .pipe(
+          startWith(this.formControl.value),
+          takeUntilDestroyed(this.destroyRef),
+          debounceTime(0),
+          distinctUntilChanged(),
+          switchMap((value) => this.updateBoundingBoxObservable(value || [])),
+        )
+        .subscribe();
     } catch (e: any) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
@@ -140,26 +140,19 @@ export class LeafletTypeComponent
     }
   }
 
-  private updateBoundingBoxCatchingErrors(
-    locations: SpatialLocationWithColor[],
-  ) {
-    try {
-      this.updateBoundingBox(locations);
-    } catch (e) {
-      console.warn("Failed to update bounding box. Map already unloaded?", e);
-    }
-  }
-
   private updateLocations(locations: SpatialLocationWithColor[]) {
     this.locationsWithColor.set(locations);
   }
 
-  private updateBoundingBox(locations: SpatialLocation[]) {
+  private updateBoundingBoxObservable(
+    locations: SpatialLocation[],
+  ): Observable<any> {
     this.updateLocations([]);
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
       this.drawnSpatialRefs,
     );
+    this.drawnSpatialRefs = [];
 
     const hasCoordinates = locations.some((location) =>
       this.leafletService.containsCoordinates(location),
@@ -170,23 +163,26 @@ export class LeafletTypeComponent
     if (locations.length === 0 || !hasCoordinates) {
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
+      return of([]);
     }
 
     const coloredLocations =
       this.leafletService.extendLocationsWithColor(locations);
     this.updateLocations(coloredLocations);
 
-    if (hasCoordinates) {
-      this.leafletService
-        .drawSpatialRefs(this.leafletReference, coloredLocations)
-        .then((spatialRefs) => {
-          this.drawnSpatialRefs = spatialRefs.filter(
-            (item) => item !== undefined,
-          );
+    return this.leafletService
+      .drawSpatialRefs(this.leafletReference, coloredLocations)
+      .pipe(
+        tap((spatialRefs) => {
+          this.drawnSpatialRefs = spatialRefs;
           this.leafletReference.dragging.enable();
           this.leafletReference.doubleClickZoom.enable();
-        });
-    }
+        }),
+        catchError((e) => {
+          console.warn("Failed to update bounding box.", e);
+          return of([]);
+        }),
+      );
   }
 
   /**
@@ -197,9 +193,12 @@ export class LeafletTypeComponent
    */
   public ngOnDestroy(): void {
     try {
-      if (this.leafletReference && this.leafletReference.remove) {
-        this.leafletReference.clearAllEventListeners();
-        this.leafletReference.remove();
+      if (this.leafletReference) {
+        if (this.leafletReference.remove) {
+          this.leafletReference.clearAllEventListeners();
+          this.leafletReference.remove();
+        }
+        this.leafletReference = null;
       }
       const leaflet = this.leaflet();
       if (leaflet && leaflet.nativeElement.remove) {
@@ -240,7 +239,6 @@ export class LeafletTypeComponent
           // Update form control immediately with the selected location
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
-          this.updateBoundingBoxCatchingErrors(locations);
 
           // add additional bounding box for bwastr if chosen by user
           if (result.type === "bwastr") {
@@ -266,7 +264,7 @@ export class LeafletTypeComponent
               .subscribe(() =>
                 this.addBBoxForBwaStr(
                   result,
-                  locationIndex ?? locations.size - 1,
+                  locationIndex ?? locations.length - 1,
                 ),
               );
           }
@@ -278,8 +276,6 @@ export class LeafletTypeComponent
     this.formControl.value.splice(index, 1);
     this.formControl.setValue([...this.formControl.value]);
     this.formControl.markAsDirty();
-
-    this.updateBoundingBoxCatchingErrors(this.formControl.value);
   }
 
   highlightLocation(index: number) {
@@ -292,7 +288,14 @@ export class LeafletTypeComponent
       ]);
       if (bounds) this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBoxCatchingErrors(locations);
+      const bounds = this.leafletService.getBoundingBoxFromLayers(
+        this.drawnSpatialRefs,
+      );
+      if (bounds) {
+        this.leafletReference.fitBounds(bounds, { maxZoom: 18 });
+      } else {
+        this.leafletService.zoomToInitialBox(this.leafletReference);
+      }
     }
 
     this.mapHasMoved.set(locations.length === 1 ? false : index != null);
@@ -314,14 +317,14 @@ export class LeafletTypeComponent
         map((response) =>
           response
             ? ({
+                type: "free",
+                title: location.title,
                 value: {
                   lat1: response.lat1,
                   lon1: response.lon1,
                   lat2: response.lat2,
                   lon2: response.lon2,
                 },
-                title: location.title,
-                type: "free",
               } as SpatialLocation)
             : undefined,
         ),
@@ -332,7 +335,6 @@ export class LeafletTypeComponent
 
           this.formControl.setValue([...current]);
           this.formControl.markAsDirty();
-          this.updateBoundingBoxCatchingErrors(current);
         }),
       )
       .subscribe();
