@@ -20,21 +20,26 @@
 import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../app/services/plugin/plugin.service";
+import { FormMenuService } from "../../../app/+form/form-menu.service";
+import { DocEventsService } from "../../../app/services/event/doc-events.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ExportDataCiteDialogComponent } from "./export-data-cite-dialog/export-data-cite-dialog.component";
 
 @Injectable({
   providedIn: "root",
 })
 export class DoiPlugin extends Plugin {
+  private formMenuService = inject(FormMenuService);
+  private docEvents = inject(DocEventsService);
+  private dialog = inject(MatDialog);
+
   id = "plugin.ingrid.doi";
   name = "DOI-Felder anzeigen";
   description = `Zeigt DOI-Felder im Formular unter der Rubrik "Fachbezug" an. In der Objektklasse "Literatur" wird dadurch das Feld "Dokumenttyp" ersetzt.
 <p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p>`;
   defaultActive = false;
-
-  constructor() {
-    super();
-
-    this.fields.push({
+  fields: any[] = [
+    {
       key: "doiPrefix",
       type: "input",
       props: {
@@ -48,8 +53,38 @@ export class DoiPlugin extends Plugin {
       validators: {
         validation: ["doiPrefix"],
       },
-    });
+    },
+    {
+      key: "exportDataCite",
+      type: "checkbox",
+      defaultValue: false,
+      wrappers: [],
+      props: {
+        label: "Export nach DataCite",
+      },
+    },
+  ];
+  private eventExportDataCite = "EXPORT_DATACITE";
+
+  constructor() {
+    super();
 
     inject(PluginService).registerPlugin(this);
+    this.formMenuService.addToolbarMenuItem("publish", {
+      eventId: this.eventExportDataCite,
+      label: "Export DataCite",
+      active: true,
+    });
+
+    const toolbarEventSubscription = [
+      this.docEvents
+        .onEvent(this.eventExportDataCite)
+        .subscribe(() => this.exportDataCite()),
+    ];
+  }
+
+  private exportDataCite() {
+    console.log("Export DataCite");
+    this.dialog.open(ExportDataCiteDialogComponent);
   }
 }
