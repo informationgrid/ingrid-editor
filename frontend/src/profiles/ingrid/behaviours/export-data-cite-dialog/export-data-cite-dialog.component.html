@@ -1,0 +1,36 @@
+<ige-dialog-template
+    label="Export DataCite"
+    submitLabel="Export"
+    (submit)="submit()"
+>
+    <ng-container content>
+        <div class="flex-row gap-8">
+            <mat-form-field appearance="outline">
+                <mat-label>Username</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="username"
+                    id="username"
+                    name="username"
+                    autocomplete="username"
+                />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input
+                    matInput
+                    [(ngModel)]="password"
+                    id="current-password"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                />
+            </mat-form-field>
+        </div>
+
+        <pre
+            >{{ document() | json }}
+        </pre>
+    </ng-container>
+</ige-dialog-template>
