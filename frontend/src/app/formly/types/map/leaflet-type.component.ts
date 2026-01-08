@@ -160,15 +160,16 @@ export class LeafletTypeComponent
 
     // we need to call fitBounds in order to fully initialize map (see #7508)
     this.leafletService.zoomToInitialBox(this.leafletReference);
+
+    const coloredLocations =
+      this.leafletService.extendLocationsWithColor(locations);
+    this.updateLocations(coloredLocations);
+
     if (locations.length === 0 || !hasCoordinates) {
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
       return of([]);
     }
-
-    const coloredLocations =
-      this.leafletService.extendLocationsWithColor(locations);
-    this.updateLocations(coloredLocations);
 
     return this.leafletService
       .drawSpatialRefs(this.leafletReference, coloredLocations)
