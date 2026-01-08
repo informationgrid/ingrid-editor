@@ -262,7 +262,6 @@ export class ImportComponent implements OnInit {
         data: <PasteDialogOptions>{
           forAddress: isAddress,
           titleText: "Ordner auswählen",
-          typeToInsert: isAddress ? "organization" : "FOLDER",
         },
       })
       .afterClosed()
