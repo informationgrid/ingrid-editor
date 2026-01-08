@@ -3,7 +3,13 @@ import { HttpClient } from "@angular/common/http";
 import { IgeError } from "../../../../app/models/ige-error";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { firstValueFrom } from "rxjs";
-import { Metadata } from "../../../../app/models/ige-document";
+import {
+  DocumentWithMetadata,
+  Metadata,
+} from "../../../../app/models/ige-document";
+import { GeneralStore } from "../../../../app/store/general.store";
+import { CodelistService } from "../../../../app/services/codelist/codelist.service";
+import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 
 @Injectable({
   providedIn: "root",
@@ -11,6 +17,9 @@ import { Metadata } from "../../../../app/models/ige-document";
 export class DataSiteService {
   private http = inject(HttpClient);
   private documentService = inject(DocumentService);
+  private generalStore = inject(GeneralStore);
+  private codelistService = inject(CodelistService);
+  private codelistStore = inject(CodelistStore);
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
     return {
@@ -23,81 +32,27 @@ export class DataSiteService {
           alternateIdentifier: metadata.uuid,
         },
       ],
-      language: "de",
-      publisher: {
-        name: "DataCite",
-        publisherIdentifier: "https://ror.org/04wxnsj81",
-        publisherIdentifierScheme: "ROR",
-        schemeUri: "https://ror.org/",
-      },
-      publicationYear: 2014,
-      contributors: [
-        {
-          name: "Starr, Joan",
-          nameType: "Personal",
-          givenName: "Joan",
-          familyName: "Starr",
-          affiliation: [
-            {
-              affiliationIdentifier: "https://ror.org/03yrm5c26",
-              affiliationIdentifierScheme: "ROR",
-              name: "California Digital Library",
-              schemeUri: "https://ror.org/",
-            },
-          ],
-          contributorType: "ProjectLeader",
-          nameIdentifiers: [
-            {
-              schemeUri: "https://orcid.org",
-              nameIdentifier: "https://orcid.org/0000-0002-7285-027X",
-              nameIdentifierScheme: "ORCID",
-            },
-          ],
-        },
-      ],
-      dates: [
-        {
-          date: "2021-01-26",
-          dateType: "Updated",
-          dateInformation: "Updated with 4.4 properties",
-        },
-        {
-          date: "2014",
-          dateType: "Issued",
-          dateInformation: null,
-        },
-      ],
+      language: this.generalStore.catalogLanguage(),
+      publisher: await this.getPublisher(model),
+      publicationYear: this.getPublicationYear(model),
+      contributors: await this.getContributors(model),
+      dates: this.getDates(model),
       types: {
-        schemaOrg: "ScholarlyArticle",
-        citeproc: "article-journal",
-        bibtex: "article",
-        ris: "RPRT",
-        resourceTypeGeneral: "Text",
+        ris: "DATA",
+        bibtex: "misc",
+        citeproc: "dataset",
+        schemaOrg: "Dataset",
+        resourceTypeGeneral: "Dataset",
       },
-      titles: [
-        {
-          lang: "de",
-          title: model.title,
-        },
-      ],
+      titles: this.getTitles(model),
       descriptions: [
         {
-          lang: "en-US",
-          description:
-            "XML example of all DataCite Metadata Schema v4.4 properties.",
+          lang: this.generalStore.catalogLanguage(),
+          description: model.description,
           descriptionType: "Abstract",
         },
       ],
-      rightsList: [
-        {
-          rights: "Creative Commons Zero v1.0 Universal",
-          rightsUri:
-            "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
-          schemeUri: "https://spdx.org/licenses/",
-          rightsIdentifier: "cc0-1.0",
-          rightsIdentifierScheme: "SPDX",
-        },
-      ],
+      rightsList: this.getRightsList(model),
       geoLocations: [
         {
           geoLocationBox: {
@@ -109,10 +64,12 @@ export class DataSiteService {
           geoLocationPlace: "Atlantic Ocean",
         },
       ],
+      url: `https://baw.de/trefferanzeige?docuuid=${metadata.uuid}`,
     };
   }
 
   uploadDOI(username: string, password: string, attributes: any) {
+    // TODO: handle create vs update operation
     let headers: any = {
       "Content-Type": "application/vnd.api+json",
       Authorization: "Basic " + btoa(username + ":" + password),
@@ -131,11 +88,15 @@ export class DataSiteService {
   }
 
   private async getCreator(contacts: any[]): Promise<any> {
-    const creator = contacts.find((contact) => contact.type.key === "11");
-    if (!creator) throw new IgeError("No creator found");
+    const creator = contacts?.find((contact) => contact.type.key === "11");
+    if (!creator) throw new Error("No creator found");
     const address = await firstValueFrom(
       this.documentService.load(creator.ref, true, false, true),
     );
+    return this.mapToAddress(address);
+  }
+
+  private mapToAddress(address: DocumentWithMetadata) {
     if (address.metadata.docType === "InGridOrganisationDoc") {
       return {
         name: address.document.organization,
@@ -148,6 +109,114 @@ export class DataSiteService {
         givenName: address.document.firstName,
         familyName: address.document.lastName,
       };
+    }
+  }
+
+  private getPublicationYear(model: any): number {
+    const createdDate = model.temporal?.event?.created;
+    if (!createdDate) throw new IgeError("No created date found");
+    return parseInt(createdDate.substring(0, 4));
+  }
+
+  private async getPublisher(model: any) {
+    const publisher = model.pointOfContact?.find(
+      (contact: any) => contact.type.key === "10",
+    );
+    if (!publisher) throw new Error("No publisher found");
+
+    const address = await firstValueFrom(
+      this.documentService.load(publisher.ref, true, false, true),
+    );
+
+    return (
+      address.document.organization ??
+      `${address.document.lastName}, ${address.document.firstName}`
+    );
+  }
+
+  private async getContributors(model: any) {
+    const contributors = model.pointOfContact?.filter(
+      (contact: any) => contact.type.key !== "10" && contact.type.key !== "11",
+    );
+    const result = [];
+    for (const contributor of contributors) {
+      const address = await firstValueFrom(
+        this.documentService.load(contributor.ref, true, false, true),
+      );
+
+      result.push({
+        ...this.mapToAddress(address),
+        contributorType: "Other",
+      });
+    }
+    return result;
+  }
+
+  private getDates(model: any): any[] {
+    const events = [];
+    const eventModel = model.temporal?.event;
+    if (eventModel?.created)
+      events.push({ date: eventModel.created, dateType: "Created" });
+    if (eventModel?.firstPublished)
+      events.push({ date: eventModel.firstPublished, dateType: "Issued" });
+    if (eventModel?.lastModified)
+      events.push({ date: eventModel.lastModified, dateType: "Updated" });
+    return events;
+  }
+
+  private getTitles(model: any): any[] {
+    const result = [
+      {
+        lang: this.generalStore.catalogLanguage(),
+        title: model.title,
+      },
+    ];
+    if (model.alternateTitle) {
+      result.push({
+        lang: this.generalStore.catalogLanguage(),
+        title: model.alternateTitle,
+      });
+    }
+    return result;
+  }
+
+  private getRightsList(model: any): any[] {
+    return model.useConstraints?.map((useConstraint: any) => {
+      const constraintEntry = this.codelistStore.getCodelistEntryByKey(
+        "6500",
+        useConstraint.title.key,
+      );
+      return {
+        rights: constraintEntry.fields.de,
+        rightsUri: this.mapToSpdxLicenceUrl(constraintEntry.data),
+        schemeUri: "https://spdx.org/licenses/",
+        rightsIdentifier: "cc0-1.0",
+        rightsIdentifierScheme: "SPDX",
+      };
+    });
+  }
+
+  private mapToSpdxLicenceUrl(data: any): string {
+    if (!data) return "";
+
+    const entry = JSON.parse(data);
+    const id = entry.id;
+    if (id === "odby") {
+      return "https://opendatacommons.org/licenses/by/1.0/";
+    } else if (id === "cc-by-nd/3.0") {
+      return "https://creativecommons.org/licenses/by/3.0/legalcode";
+    } else if (id === "cc-by/4.0") {
+      return "https://creativecommons.org/licenses/by/4.0/legalcode";
+    } else if (id === "cc-by-nc/4.0") {
+      return "https://creativecommons.org/licenses/by-nc/4.0/legalcode";
+    } else if (id === "cc-by-nd/4.0") {
+      return "https://creativecommons.org/licenses/by-nd/4.0/legalcode";
+    } else if (id === "cc-by-sa/4.0") {
+      return "https://creativecommons.org/licenses/by-sa/4.0/legalcode";
+    } else if (id === "mozilla") {
+      return "https://opensource.org/licenses/MPL/2.0/";
+    } else {
+      return "";
     }
   }
 }

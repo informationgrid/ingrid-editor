@@ -4,33 +4,18 @@
     (submit)="submit()"
 >
     <ng-container content>
-        <div class="flex-row gap-8">
-            <mat-form-field appearance="outline">
-                <mat-label>Username</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="username"
-                    id="username"
-                    name="username"
-                    autocomplete="username"
-                />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-                <mat-label>Password</mat-label>
-                <input
-                    matInput
-                    [(ngModel)]="password"
-                    id="current-password"
-                    type="password"
-                    name="password"
-                    autocomplete="current-password"
-                />
-            </mat-form-field>
-        </div>
-
-        <pre
-            >{{ document() | json }}
-        </pre>
+        @if (documentResource.error()) {
+            <div class="error-box">
+                {{
+                    $any(documentResource.error())?.message ||
+                        documentResource.error()
+                }}
+            </div>
+        } @else {
+            <pre
+                >{{ document() | json }}
+                </pre
+            >
+        }
     </ng-container>
 </ige-dialog-template>
