@@ -319,6 +319,10 @@ export class CodelistService {
     return this.dataService.replaceFreeEntry(codelistId, { fromValue, toKey });
   }
 
+  addFreeEntryToCodelist(codelistId: string, value: string) {
+    return this.dataService.addFreeEntryToCodelist(codelistId, value);
+  }
+
   observe(
     codelistId: string,
     sortBy: CodelistSort = "label",

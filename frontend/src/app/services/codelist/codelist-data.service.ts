@@ -121,4 +121,19 @@ export class CodelistDataService {
       body,
     );
   }
+
+  addFreeEntryToCodelist(codelistId: string, value: string) {
+    return this.http.post<{
+      occurrences: number;
+      documentsUpdated: number;
+      uuids: string[];
+    }>(
+      this.configuration.backendUrl +
+        `codelist/free-entries/${codelistId}/add-to-codelist`,
+      value,
+      {
+        // headers: { "Content-Type": "text/plain" },
+      },
+    );
+  }
 }

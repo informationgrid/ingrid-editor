@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnInit,
-  signal,
-  computed,
-} from "@angular/core";
+import { Component, computed, Inject, OnInit, signal } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -40,6 +33,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   UntypedFormGroup,
+  Validators,
 } from "@angular/forms";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
@@ -91,6 +85,7 @@ export interface FreeEntryReplaceDialogData {
 })
 export class FreeEntryReplaceDialogComponent implements OnInit {
   isReplacing = signal(false);
+  isAdding = signal(false);
   loadingEntries = signal(false);
 
   freeEntries = signal<FreeEntry[]>([]);
@@ -107,10 +102,18 @@ export class FreeEntryReplaceDialogComponent implements OnInit {
       this.fromInvalid() ||
       this.toInvalid() ||
       this.isReplacing() ||
+      this.isAdding() ||
+      this.noFreeEntries(),
+  );
+  addDisabled = computed(
+    () =>
+      this.fromInvalid() ||
+      this.isReplacing() ||
+      this.isAdding() ||
       this.noFreeEntries(),
   );
 
-  fromCtrl = new FormControl<string | null>(null);
+  fromCtrl = new FormControl<string | null>(null, Validators.required);
   freeFilterCtrl = new FormControl<string>("");
 
   // Formly configuration for selecting the target keyed entry
@@ -226,6 +229,37 @@ export class FreeEntryReplaceDialogComponent implements OnInit {
             "Fehler beim Ersetzen des freien Eintrags",
             undefined,
             { duration: 4000 },
+          );
+        },
+      });
+  }
+
+  addToCodelist() {
+    const fromValue = this.fromCtrl.value?.toString().trim();
+    if (!fromValue) return;
+
+    this.isAdding.set(true);
+    this.codelistService
+      .addFreeEntryToCodelist(this.data.codelistId, fromValue)
+      .pipe(take(1))
+      .subscribe({
+        next: (result) => {
+          this.isAdding.set(false);
+          this.snackBar.open(
+            `In Codelist übernommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en) ersetzt`,
+            undefined,
+            { duration: 4000 },
+          );
+          this.dialogRef.close(result);
+        },
+        error: () => {
+          this.isAdding.set(false);
+          this.snackBar.open(
+            "Fehler beim Übernehmen in die Codelist",
+            undefined,
+            {
+              duration: 4000,
+            },
           );
         },
       });

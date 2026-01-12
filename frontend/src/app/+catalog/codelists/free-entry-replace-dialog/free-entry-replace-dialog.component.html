@@ -69,6 +69,14 @@
     <div class="flex-1"></div>
     <button mat-button mat-dialog-close color="primary">Abbrechen</button>
     <button
+        mat-button
+        color="primary"
+        (click)="addToCodelist()"
+        [disabled]="addDisabled()"
+    >
+        {{ isAdding() ? "Übernehmen..." : "In Codelist übernehmen" }}
+    </button>
+    <button
         mat-flat-button
         color="primary"
         (click)="replace()"
