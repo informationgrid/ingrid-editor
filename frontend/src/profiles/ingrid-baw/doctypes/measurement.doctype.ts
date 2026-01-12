@@ -32,6 +32,8 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   iconClass = "messdaten";
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    this.options.required.resourceDateType = true;
+
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
       this.addSection("Messdaten (Allgemein)", [
@@ -254,6 +256,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   getTargetParametersFieldConfig() {
     return this.addRepeat("targetParameters", "Zielparameter", {
+      required: true,
       fields: [
         this.addGroupSimple(null, [
           this.addSelectInline("name", "Name", {
