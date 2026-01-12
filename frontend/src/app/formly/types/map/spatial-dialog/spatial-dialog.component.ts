@@ -102,10 +102,9 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   );
 
   result = signal<SpatialLocation>({
-    value: null,
-    title: null,
     type: "free",
-    ars: undefined,
+    title: null,
+    value: null,
   });
 
   titleInput = new FormControl<string>("");

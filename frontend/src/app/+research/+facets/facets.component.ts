@@ -44,7 +44,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
 } from "@angular/forms";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { filter, take } from "rxjs/operators";
 import {
   CodelistService,
@@ -152,6 +152,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   private _forAddresses = false;
   private allFacets: Facets;
   private boxes: (Polyline<any> | GeoJSON)[];
+  private boxesSubscription: Subscription;
   private facetsInitialized = new BehaviorSubject<boolean>(false);
   timeGroupId = signal<string>("");
 
@@ -308,9 +309,11 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       return;
     }
 
+    if (this.boxesSubscription) this.boxesSubscription.unsubscribe();
+
     this.removeSpatialFromMap();
     if (location) {
-      this.leafletService
+      this.boxesSubscription = this.leafletService
         .drawSpatialRefs(this.leafletReference, [
           {
             value: location.value,
@@ -320,7 +323,8 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
             indexNumber: 0,
           },
         ])
-        .then((boxes) => (this.boxes = boxes));
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((boxes) => (this.boxes = boxes));
     }
   }
 
