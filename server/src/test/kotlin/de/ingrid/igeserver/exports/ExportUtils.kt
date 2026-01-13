@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -54,3 +55,5 @@ fun prettyFormatXml(input: String, indent: Int): String = try {
 } catch (e: Exception) {
     throw RuntimeException(e) // simple exception handling, please review it
 }
+
+fun prettyFormatJson(json: String): String = jacksonObjectMapper().readValue(json, JsonNode::class.java).toPrettyString()

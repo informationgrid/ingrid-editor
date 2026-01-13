@@ -37,11 +37,13 @@ import {
   Codelist,
   PagedSearchResult,
 } from "../app/store/codelist/codelist.model";
+import { GeneralStore } from "../app/store/general.store";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
   protected codelistStore = inject(CodelistStore);
   protected formStateService = inject(FormStateService);
+  protected generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 

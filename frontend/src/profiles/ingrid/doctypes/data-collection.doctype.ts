@@ -109,7 +109,7 @@ export class DataCollectionDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridDataCollection),
       this.addFileReferences(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };

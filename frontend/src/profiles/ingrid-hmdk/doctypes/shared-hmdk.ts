@@ -55,12 +55,15 @@ export class SharedHmdk {
     fieldConfig: FormlyFieldConfig[],
   ) => {
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = doc.findFieldElementWithId(
+    const pointOfContact = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
 
-    doc.addAfter(pointOfContact, this.getInformationHmbTGFieldConfig(doc));
+    IngridShared.addAfter(
+      pointOfContact,
+      this.getInformationHmbTGFieldConfig(doc),
+    );
 
     pointOfContact.fieldConfig[pointOfContact.index].validators = {
       ...pointOfContact.fieldConfig[pointOfContact.index].validators,
