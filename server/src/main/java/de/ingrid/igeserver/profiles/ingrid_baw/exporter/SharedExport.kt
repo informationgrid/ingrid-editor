@@ -125,6 +125,18 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
         ?: emptyList(),
 )
 
+fun getOrderInfoValue(transformer: IngridModelTransformer): String? = transformer.doc.data.getPath("bawOrderInfo")?.mapToKeyValue()?.let { transformer.codelists.getValue("bawOrderInfo", it) }
+
+fun getOrderNumber(transformer: IngridModelTransformer): String? {
+    val orderInfoValue = getOrderInfoValue(transformer)
+    return orderInfoValue?.substringBefore(" - ")?.trim()
+}
+
+fun getOrderTitle(transformer: IngridModelTransformer): String? {
+    val orderInfoValue = getOrderInfoValue(transformer)
+    return orderInfoValue?.substringAfter(" - ")?.trim()
+}
+
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",

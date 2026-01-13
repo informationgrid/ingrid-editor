@@ -102,15 +102,10 @@ export class PublicationDoctypeBaw extends IngridShared {
       "alternateTitle",
     );
 
-    // Auftragsnummer
+    // Auftrag
     this.addBefore(
       alternateTitlePosition,
-      this.addRepeatList("orderNumber", "Auftragsnummer"),
-    );
-    // Auftragstitel
-    this.addBefore(
-      alternateTitlePosition,
-      this.addRepeatList("orderTitles", "Auftragstitel"),
+      this.common.getBAWOrderInfoFieldConfig(this),
     );
 
     return fieldConfig;

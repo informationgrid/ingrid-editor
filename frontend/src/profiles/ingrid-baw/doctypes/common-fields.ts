@@ -32,17 +32,15 @@ import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderTitle", "Auftragstitel", {
+  getBAWOrderInfoFieldConfig(
+    doc: IngridShared,
+    options: SelectOptions = {},
+  ): FormlyFieldConfig {
+    return this.addSelect("bawOrderInfo", "Auftrag", {
+      showSearch: true,
       required: true,
-      wrappers: ["panel", "form-field"],
-      ...options,
-    });
-  }
-
-  getOrderNumberFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderNumber", "Auftragsnummer", {
-      required: true,
+      options: doc.getCodelistForSelect("bawOrderInfo", "null"),
+      codelistId: "bawOrderInfo",
       wrappers: ["panel", "form-field"],
       ...options,
     });
@@ -307,10 +305,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "alternateTitle",
     );
 
-    // Auftragsnummer
-    this.addBefore(alternateTitlePosition, this.getOrderNumberFieldConfig());
-    // Auftragstitel
-    this.addBefore(alternateTitlePosition, this.getOrderTitleFieldConfig());
+    // Auftragsnummer / -titel
+    this.addBefore(
+      alternateTitlePosition,
+      this.getBAWOrderInfoFieldConfig(doc),
+    );
 
     this.addSharedFields(doc, fieldConfig);
   }

@@ -6,8 +6,7 @@
 
 @template.imports.ingrid.geodataset(model = model, contentInfo = @`
     ,
-    "orderTitle": "${model.getOrderTitle()}",
-    "orderNumber": "${model.getOrderNumber()}",
+    "bawOrderInfo":  @template.imports.ingrid.partial.key-value(item = model.getBawOrderInfo()),
     "literatureReferences": [
     @for(var uuid : ForSupport.of(model.getLiteratureReferences()))
         {

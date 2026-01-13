@@ -3,11 +3,8 @@
   "$id": "GeoDatasetBaw",
   "$ref": "../geo-dataset-base.schema.json",
   "properties": {
-    "orderTitle":  {
-      "type": "string"
-    },
-    "orderNumber": {
-      "type": "string"
+    "bawOrderInfo": {
+      "$ref": "../../../general.schema.json#/definitions/KeyValue"
     },
     "bawKeywords": {
       "type": "array",

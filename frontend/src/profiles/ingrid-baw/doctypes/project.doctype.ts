@@ -38,10 +38,10 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
       fieldConfig,
       "alternateTitle",
     );
-    // Auftragsnummer
+    // Auftragsnummer / -titel
     this.common.addBefore(
       alternateTitlePosition,
-      this.common.getOrderNumberFieldConfig(),
+      this.common.getBAWOrderInfoFieldConfig(this),
     );
 
     return fieldConfig;

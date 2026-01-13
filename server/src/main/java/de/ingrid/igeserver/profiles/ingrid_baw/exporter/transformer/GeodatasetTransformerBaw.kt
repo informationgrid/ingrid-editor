@@ -29,6 +29,8 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicEleme
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderNumber
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderTitle
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getSubsoilKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
@@ -77,8 +79,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
 
-    val orderTitle = if (forRepository()) null else doc.data.getString("orderTitle")
-    val orderNumber = if (forRepository()) null else doc.data.getString("orderNumber")
+    val orderTitle = if (forRepository()) null else getOrderTitle(this)
+    val orderNumber = if (forRepository()) null else getOrderNumber(this)
+
     val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(
