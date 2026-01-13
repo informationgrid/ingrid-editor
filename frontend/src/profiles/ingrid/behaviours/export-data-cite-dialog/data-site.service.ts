@@ -53,17 +53,7 @@ export class DataSiteService {
         },
       ],
       rightsList: this.getRightsList(model),
-      geoLocations: [
-        {
-          geoLocationBox: {
-            eastBoundLongitude: -68.211,
-            northBoundLatitude: 42.893,
-            southBoundLatitude: 41.09,
-            westBoundLongitude: -71.032,
-          },
-          geoLocationPlace: "Atlantic Ocean",
-        },
-      ],
+      geoLocations: [this.getGeoLocations(model)],
       url: `https://baw.de/trefferanzeige?docuuid=${metadata.uuid}`,
     };
   }
@@ -114,7 +104,7 @@ export class DataSiteService {
 
   private getPublicationYear(model: any): number {
     const createdDate = model.temporal?.event?.created;
-    if (!createdDate) throw new IgeError("No created date found");
+    if (!createdDate) throw new Error("No created date found");
     return parseInt(createdDate.substring(0, 4));
   }
 
@@ -218,5 +208,19 @@ export class DataSiteService {
     } else {
       return "";
     }
+  }
+
+  private getGeoLocations(model: any): any[] {
+    return model.spatial?.references?.map((spatial: any) => {
+      return {
+        geoLocationBox: {
+          eastBoundLongitude: spatial.value.lon1,
+          northBoundLatitude: spatial.value.lat1,
+          southBoundLatitude: spatial.value.lat2,
+          westBoundLongitude: spatial.value.lon2,
+        },
+        geoLocationPlace: spatial.title,
+      };
+    });
   }
 }
