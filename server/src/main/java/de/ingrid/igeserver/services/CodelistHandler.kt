@@ -165,11 +165,8 @@ class CodelistHandler(
         null
     } else {
         val id = codeListService.getCodeListEntryId(listId, value, language)
-        // try german localization
-        if (id == null && language != "de") {
-            codeListService.getCodeListEntryId(listId, value, "de")
-        }
-        id
+        // try German localization if id not found and language is not German
+        id ?: if (language != "de") codeListService.getCodeListEntryId(listId, value, "de") else null
     }
 
     fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? = codeListService.getCodeList(listId)
