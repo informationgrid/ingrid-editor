@@ -89,10 +89,21 @@ export class FormMenuService {
   }
 
   addToolbarMenuItem(menuId: MenuId, menuItem: ToolbarMenuItem): void {
-    this.toolbarMenuItems[menuId].push(menuItem);
+    const exists = this.toolbarMenuItems[menuId].some(
+      (item) => item.eventId === menuItem.eventId,
+    );
+    if (!exists) {
+      this.toolbarMenuItems[menuId].push(menuItem);
+    }
   }
 
   getToolbarMenuItems(menuId: MenuId): ToolbarMenuItem[] {
     return this.toolbarMenuItems[menuId];
+  }
+
+  removeToolbarMenuItems(menuId: MenuId, eventId: string) {
+    this.toolbarMenuItems[menuId] = this.toolbarMenuItems[menuId].filter(
+      (item) => item.eventId !== eventId,
+    );
   }
 }

@@ -24,6 +24,9 @@ import { FormMenuService } from "../../../app/+form/form-menu.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ExportDataCiteDialogComponent } from "./export-data-cite-dialog/export-data-cite-dialog.component";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 @Injectable({
   providedIn: "root",
@@ -32,13 +35,14 @@ export class DoiPlugin extends Plugin {
   private formMenuService = inject(FormMenuService);
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
+  private behaviourService = inject(BehaviourService);
 
   id = "plugin.ingrid.doi";
   name = "DOI-Felder anzeigen";
   description = `Zeigt DOI-Felder im Formular unter der Rubrik "Fachbezug" an. In der Objektklasse "Literatur" wird dadurch das Feld "Dokumenttyp" ersetzt.
 <p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p>`;
   defaultActive = false;
-  fields: any[] = [
+  fields: FormlyFieldConfig[] = [
     {
       key: "doiPrefix",
       type: "input",
@@ -61,6 +65,10 @@ export class DoiPlugin extends Plugin {
       wrappers: [],
       props: {
         label: "Export nach DataCite",
+        change: (_field, event: MatCheckboxChange) => {
+          if (event.checked) this.addDataCiteMenu();
+          else this.removeDataCiteMenu();
+        },
       },
     },
   ];
@@ -70,21 +78,56 @@ export class DoiPlugin extends Plugin {
     super();
 
     inject(PluginService).registerPlugin(this);
+  }
+
+  register() {
+    super.register();
+
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
+    if (behaviour.isActive && behaviour.data.exportDataCite) {
+      this.formMenuService.addToolbarMenuItem("publish", {
+        eventId: this.eventExportDataCite,
+        label: "Export DataCite",
+        active: true,
+      });
+
+      this.subscriptions.push(
+        this.docEvents
+          .onEvent(this.eventExportDataCite)
+          .subscribe(() => this.exportDataCite()),
+      );
+    }
+  }
+
+  unregister() {
+    super.unregister();
+    this.removeDataCiteMenu();
+  }
+
+  private exportDataCite() {
+    console.log("Export DataCite");
+    this.dialog.open(ExportDataCiteDialogComponent);
+  }
+
+  private removeDataCiteMenu() {
+    this.formMenuService.removeToolbarMenuItems(
+      "publish",
+      this.eventExportDataCite,
+    );
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  private addDataCiteMenu() {
     this.formMenuService.addToolbarMenuItem("publish", {
       eventId: this.eventExportDataCite,
       label: "Export DataCite",
       active: true,
     });
 
-    const toolbarEventSubscription = [
+    this.subscriptions.push(
       this.docEvents
         .onEvent(this.eventExportDataCite)
         .subscribe(() => this.exportDataCite()),
-    ];
-  }
-
-  private exportDataCite() {
-    console.log("Export DataCite");
-    this.dialog.open(ExportDataCiteDialogComponent);
+    );
   }
 }

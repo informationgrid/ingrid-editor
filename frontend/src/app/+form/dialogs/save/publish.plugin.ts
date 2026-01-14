@@ -66,9 +66,6 @@ export class PublishPlugin extends SaveBase {
   private modalService = inject(ModalService);
   private docEvents = inject(DocEventsService);
 
-  publishMenuItems: ToolbarMenuItem[] =
-    this.formMenuService.getToolbarMenuItems("publish");
-
   constructor() {
     super();
     this.fields.push({
@@ -149,7 +146,7 @@ export class PublishPlugin extends SaveBase {
       });
     }
 
-    publishMenu.push(...this.publishMenuItems);
+    publishMenu.push(...this.formMenuService.getToolbarMenuItems("publish"));
 
     this.formToolbarService.addButton({
       type: "button",
