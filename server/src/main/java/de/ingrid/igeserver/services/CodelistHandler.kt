@@ -161,7 +161,16 @@ class CodelistHandler(
         return codelistRepo.save(codelist)
     }
 
-    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? = if (value == null) null else codeListService.getCodeListEntryId(listId, value, language)
+    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? = if (value == null) {
+        null
+    } else {
+        val id = codeListService.getCodeListEntryId(listId, value, language)
+        // try german localization
+        if (id == null && language != "de") {
+            codeListService.getCodeListEntryId(listId, value, "de")
+        }
+        id
+    }
 
     fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? = codeListService.getCodeList(listId)
         .entries.find { it.data.contains(dataValue) }
