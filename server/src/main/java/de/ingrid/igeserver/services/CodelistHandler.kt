@@ -21,6 +21,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import de.ingrid.codelists.CodeListService
@@ -30,7 +31,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CodelistHandler(
@@ -38,9 +41,17 @@ class CodelistHandler(
     private val catalogRepo: CatalogRepository,
     private val codeListService: CodeListService,
 ) {
+    private val log = logger()
 
     companion object {
-        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null, description: String? = null, iso: String? = null): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        fun toCodelistEntry(
+            id: String,
+            german: String,
+            data: String? = null,
+            english: String? = null,
+            description: String? = null,
+            iso: String? = null,
+        ): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
             if (data != null) put("data", data)
             set<JsonNode>(
@@ -88,7 +99,8 @@ class CodelistHandler(
                 defaultEntry = it.defaultEntry
                 entries = it.data?.map { entry ->
                     CodeListEntry().apply {
-                        id = entry.get("id")?.asText() ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
+                        id = entry.get("id")?.asText()
+                            ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
                         description =
                             if (entry.get("description") == null || entry.get("description").isNull) {
                                 null
@@ -149,7 +161,17 @@ class CodelistHandler(
         return codelistRepo.save(codelist)
     }
 
-    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? = if (value == null) null else codeListService.getCodeListEntryId(listId, value, language)
+    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? = if (value == null) {
+        null
+    } else {
+        val id = codeListService.getCodeListEntryId(listId, value, language)
+        // try german localization
+        if (id == null && language != "de") {
+            codeListService.getCodeListEntryId(listId, value, "de")
+        }
+        id
+    }
+
     fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? = codeListService.getCodeList(listId)
         .entries.find { it.data.contains(dataValue) }
         ?.id
@@ -167,4 +189,38 @@ class CodelistHandler(
     val allCodelists: List<CodeList> = codeListService.codeLists
 
     val initialCodelists: MutableList<CodeList> = codeListService.initialCodelists
+
+    @Transactional
+    fun addEntryToCatalogCodelist(catalogId: String, codelistId: String, value: String): String {
+        val dbCodelist = codelistRepo.findAllByCatalog_Identifier(catalogId).find { it.identifier == codelistId }
+            ?: throw ServerException.withReason("Codelist $codelistId not found")
+
+        val entries = dbCodelist.data as? ArrayNode ?: jacksonObjectMapper().createArrayNode()
+
+        // Check if value already exists
+        val existingEntry = entries.find {
+            it.get("localisations")?.get("de")?.asText() == value
+        }
+
+        if (existingEntry != null) {
+            log.warn("Duplicate entry detected for value '$value' in codelist $codelistId. Skipping addition.")
+            return existingEntry.get("id").asText()
+        }
+
+        val existingIds = entries.mapNotNull { it.get("id")?.asText() }
+        val newId = generateNewId(existingIds)
+        entries.add(toCodelistEntry(newId, value))
+        dbCodelist.data = entries
+        codelistRepo.save(dbCodelist)
+        return newId
+    }
+
+    private fun generateNewId(existingIds: List<String>): String {
+        val numericIds = existingIds.mapNotNull { it.toIntOrNull() }
+        var nextId = if (numericIds.isEmpty()) 1 else numericIds.max() + 1
+        while (existingIds.contains(nextId.toString())) {
+            nextId++
+        }
+        return nextId.toString()
+    }
 }
