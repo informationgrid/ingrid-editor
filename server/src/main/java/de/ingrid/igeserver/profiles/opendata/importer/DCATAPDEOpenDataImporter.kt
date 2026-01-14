@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.opendata.importer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.DcatApDeMapper
@@ -32,8 +33,6 @@ import de.ingrid.igeserver.services.DocumentService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -76,16 +75,9 @@ class DCATAPDEOpenDataImporter(
         return output.toString()
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains("http://dcat-ap.de/def/dcatde/")
-
-    internal class JsonStringOutput : StringOutput() {
-        override fun writeUserContent(value: String?) {
-            if (value == null) return
-            super.writeUserContent(
-                escapeJson(value),
-            )
-        }
-    }
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains(
+        "http://dcat-ap.de/def/dcatde/",
+    )
 
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(

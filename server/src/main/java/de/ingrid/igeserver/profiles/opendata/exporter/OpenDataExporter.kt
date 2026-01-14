@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.services.CatalogService
@@ -34,7 +35,6 @@ import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
@@ -85,7 +85,7 @@ class OpenDataExporter(
         return indexDocument.toString()
     }
 
-    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = StringOutput().apply {
+    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = JsonStringOutput().apply {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
         val config = OpenDataTransformerConfig(
@@ -98,6 +98,7 @@ class OpenDataExporter(
             documentService,
             options.tags,
         )
+
         templateEngine.render(
             "export/opendata/lucene-export.jte",
             mapOf(

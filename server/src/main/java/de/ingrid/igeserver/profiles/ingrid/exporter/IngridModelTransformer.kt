@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -1270,6 +1271,8 @@ open class IngridModelTransformer(
         ).getString(field)
     }
 }
+
+data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
 

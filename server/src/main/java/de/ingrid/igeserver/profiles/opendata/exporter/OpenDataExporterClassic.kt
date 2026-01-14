@@ -25,10 +25,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.JsonStringOutput
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
