@@ -23,6 +23,9 @@ export class DataSiteService {
   private behaviourService = inject(BehaviourService);
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
+    const generalResourceType = model.publication.generalResourceType;
+    if (!generalResourceType) throw new Error("No resource type found");
+
     // event: "publish",
     const portalURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data
@@ -42,11 +45,10 @@ export class DataSiteService {
       contributors: await this.getContributors(model),
       dates: this.getDates(model),
       types: {
-        ris: "DATA",
-        bibtex: "misc",
-        citeproc: "dataset",
-        schemaOrg: "Dataset",
-        resourceTypeGeneral: "Dataset",
+        resourceTypeGeneral: this.codelistStore.getCodelistEntryByKey(
+          "3390",
+          generalResourceType.key,
+        ).fields.de,
       },
       titles: this.getTitles(model),
       descriptions: [

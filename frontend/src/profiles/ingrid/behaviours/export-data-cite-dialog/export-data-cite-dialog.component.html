@@ -2,6 +2,7 @@
     label="Export DataCite"
     submitLabel="Export"
     (submit)="submit()"
+    [disabled]="documentResource.error() != null"
 >
     <ng-container content>
         @if (documentResource.error()) {
