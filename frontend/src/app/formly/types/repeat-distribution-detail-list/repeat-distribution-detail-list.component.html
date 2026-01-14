@@ -38,54 +38,66 @@
                                         >drag_indicator
                                     </mat-icon>
                                 }
-                                {{ item.title }}
+                                <div class="panel-preview">
+                                    {{ item.title }}
+                                    <div
+                                        class="flex-1 flex-col align-items-start"
+                                    >
+                                        @if (item.link.asLink) {
+                                            <a
+                                                class="url no-text-transform icon-in-table"
+                                                [href]="item.link.uri"
+                                                (click)="
+                                                    $event.stopPropagation()
+                                                "
+                                                (keydown)="
+                                                    $event.stopPropagation()
+                                                "
+                                                target="_blank"
+                                            >
+                                                <img
+                                                    width="20"
+                                                    height="20"
+                                                    src="assets/icons/external_link.svg"
+                                                    alt="Link"
+                                                />
+                                                {{ item.link.uri }}</a
+                                            >
+                                        }
+                                        @if (!item.link.asLink) {
+                                            <a
+                                                class="url no-text-transform icon-in-table"
+                                                [href]="
+                                                    getDownloadURL(
+                                                        item.link.uri
+                                                    )
+                                                "
+                                                (click)="
+                                                    handleCellClick(
+                                                        i,
+                                                        item.link,
+                                                        $event
+                                                    );
+                                                    $event.stopPropagation()
+                                                "
+                                                (keydown)="
+                                                    $event.stopPropagation()
+                                                "
+                                                target="_blank"
+                                            >
+                                                <img
+                                                    width="20"
+                                                    height="20"
+                                                    src="assets/icons/download.svg"
+                                                    alt="Herunterladen"
+                                                />
+                                                {{ item.link.uri }}</a
+                                            >
+                                        }
+                                    </div>
+                                </div>
                             </mat-panel-title>
                             <mat-panel-description>
-                                <div class="flex-1 flex-col align-items-start">
-                                    @if (item.link.asLink) {
-                                        <a
-                                            class="url no-text-transform icon-in-table"
-                                            [href]="item.link.uri"
-                                            (click)="$event.stopPropagation()"
-                                            (keydown)="$event.stopPropagation()"
-                                            target="_blank"
-                                        >
-                                            <img
-                                                width="20"
-                                                height="20"
-                                                src="assets/icons/external_link.svg"
-                                                alt="Link"
-                                            />
-                                            {{ item.link.uri }}</a
-                                        >
-                                    }
-                                    @if (!item.link.asLink) {
-                                        <a
-                                            class="url no-text-transform icon-in-table"
-                                            [href]="
-                                                getDownloadURL(item.link.uri)
-                                            "
-                                            (click)="
-                                                handleCellClick(
-                                                    i,
-                                                    item.link,
-                                                    $event
-                                                );
-                                                $event.stopPropagation()
-                                            "
-                                            (keydown)="$event.stopPropagation()"
-                                            target="_blank"
-                                        >
-                                            <img
-                                                width="20"
-                                                height="20"
-                                                src="assets/icons/download.svg"
-                                                alt="Herunterladen"
-                                            />
-                                            {{ item.link.uri }}</a
-                                        >
-                                    }
-                                </div>
                                 @if (formControl.enabled) {
                                     <button
                                         mat-icon-button

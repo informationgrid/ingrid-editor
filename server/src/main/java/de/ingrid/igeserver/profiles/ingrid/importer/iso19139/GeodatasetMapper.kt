@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,6 +34,7 @@ import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
+import de.ingrid.igeserver.utils.DateHelper
 import org.apache.logging.log4j.kotlin.logger
 
 open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
@@ -110,7 +111,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     }
                     LineageSourceDescription(
                         value = it.liSource?.description?.value,
-                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.getBestDate(),
+                        _date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.getBestDate(),
                         dateType = dateType,
                         title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
                         identifier = if (internalGeoDatasetUuid == null) identifier else null,
@@ -401,7 +402,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val title = KeyValue(titleKey, titleValue, "3535")
                     CatalogInfo(
                         title,
-                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.date?.getOrNull(0)?.date?.date?.dateTime ?: it.citation.date?.getOrNull(0)?.date?.date?.date,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()
@@ -490,9 +491,12 @@ data class QualityInfo(
 
 data class CatalogInfo(
     val title: KeyValue?,
-    val date: String?,
+    private val _date: String?,
     val edition: String?,
-)
+) {
+    val date: String?
+        get() = _date?.let { DateHelper.normalizeToUtc(it) }
+}
 
 data class Quality(
     val type: String,
@@ -530,7 +534,10 @@ data class LineageSourceDescription(
     val value: String?,
     val title: String?,
     val identifier: String?,
-    val date: String?,
+    val _date: String?,
     val dateType: KeyValue?,
     val uuidRef: String?,
-)
+) {
+    val date: String?
+        get() = _date?.let { DateHelper.normalizeToUtc(it) }
+}

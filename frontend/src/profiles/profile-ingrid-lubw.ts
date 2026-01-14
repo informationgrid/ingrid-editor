@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,6 +28,7 @@ import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { GeneralStore } from "../app/store/general.store";
+import { IngridShared } from "./ingrid/doctypes/ingrid-shared";
 
 @Component({
   template: "",
@@ -95,7 +96,7 @@ class InGridLUBWComponent extends InGridComponent {
       const manipulateDocumentFieldsBase = docType.manipulateDocumentFields;
       docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
         manipulateDocumentFieldsBase(fieldConfig);
-        const contacts = docType.findFieldElementWithId(
+        const contacts = IngridShared.findFieldElementWithId(
           fieldConfig,
           "pointOfContact",
         );
@@ -122,7 +123,7 @@ class InGridLUBWComponent extends InGridComponent {
           },
         };
 
-        const keywordsField = docType.findFieldElementWithId(
+        const keywordsField = IngridShared.findFieldElementWithId(
           fieldConfig,
           "keywords",
         );
@@ -132,7 +133,7 @@ class InGridLUBWComponent extends InGridComponent {
         docType.addBefore(keywordsField, analyzeField[0]);
 
         if (isAuthor) {
-          const freeKeywords = docType.findFieldElementWithId(
+          const freeKeywords = IngridShared.findFieldElementWithId(
             fieldConfig,
             "free",
           );

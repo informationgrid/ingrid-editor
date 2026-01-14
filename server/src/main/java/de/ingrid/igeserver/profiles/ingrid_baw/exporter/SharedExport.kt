@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
@@ -40,6 +41,7 @@ import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import de.ingrid.igeserver.utils.prefixIfNot
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -68,15 +70,12 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
     "InGridInformationSystem" -> "export/ingrid-baw/idf-software-baw.jte"
-//    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
     else -> null
 }
 
 fun mapDocumentTypeBaw(type: String): String? = when (type) {
-    "BawMeasurement",
-    "BawSimulation",
-    -> "1" // InGridGeoDataset
-    "BawPublication" -> "2" // InGridPublication
+    "BawMeasurement", "BawSimulation" -> InGridDocType.InGridGeoDataset.typeId
+    "BawPublication" -> InGridDocType.InGridPublication.typeId
     else -> null
 }
 
@@ -129,12 +128,12 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
-        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/$path" })
+        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/${path.prefixIfNot("LFS/")}" })
             ?: return@mapNotNull null,
         description = it.getString("explanation"),
         functionValue = "download",
         attachedToField = AttachedField("2000", "9900", "Datendownload"),
-        applicationProfile = modelTransformer.codelists.getValue("1320", it.get("fileFormat").mapToKeyValue()),
+        applicationProfile = modelTransformer.codelists.getValue("1320", it.getPath("fileFormat")?.mapToKeyValue()),
     )
 } ?: emptyList()
 

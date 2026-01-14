@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,6 +20,9 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
@@ -128,4 +131,13 @@ open class GeodatasetBase : ShouldSpec() {
         initDocumentMocks(addresses + datasets, this.documentService)
         every { this@GeodatasetBase.documentService.getIncomingReferenceUUIDs(this.any(), this.any(), this.any()) } answers { emptySet() }
     }
+
+    protected fun exportGeoDataset(additionalJson: String? = null): String = exportJsonToXML(
+        exporter,
+        "/export/ingrid/geo-dataset.minimal.sample.json",
+        additionalJson?.let {
+            jacksonObjectMapper()
+                .readTree(additionalJson.trimIndent()) as ObjectNode
+        },
+    ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }

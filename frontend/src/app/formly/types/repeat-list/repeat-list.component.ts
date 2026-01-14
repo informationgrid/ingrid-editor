@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -132,7 +132,7 @@ export interface RepeatListProps extends FormlyFieldProps {
   elementIcon: string;
   selectionEmptyNotice: string;
   suffix: TemplateRef<any>;
-  codelistId: string;
+  codelistId: string | BehaviorSubject<string>;
   view: "chip";
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
@@ -276,26 +276,38 @@ export class RepeatListComponent
           takeUntilDestroyed(this.destroyRef),
           filter((data) => data !== undefined),
           // take(1),
-          tap((data) => this.initInputListener(data)),
+          tap((data) => this.updateOptions(data)),
         )
         .subscribe();
     } else {
-      this.initInputListener(this.props.options);
+      this.updateOptions(this.props.options);
     }
+
+    this.initInputListener();
 
     if (this.props.onItemClick) {
       this.onItemClick = this.props.onItemClick;
     }
   }
 
-  private initInputListener(options: SelectOptionUi[]) {
+  private updateOptions(options: SelectOptionUi[]) {
     // create copies to not change the original options
     if (options) {
       const optionsAsString = JSON.stringify(options);
       this.parameterOptions = JSON.parse(optionsAsString);
       this.initialParameterOptions = JSON.parse(optionsAsString);
+      const codelistId = this.getCodelistId();
+      if (!this.props.asSimpleValues) {
+        // fix codelistId for all values in case the options have been (dynamically) changed
+        this.formControl.value?.forEach(
+          (item: any) => (item._codelistId = codelistId),
+        );
+      }
+      this.inputControl.setValue("");
     }
+  }
 
+  private initInputListener() {
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
 
@@ -467,7 +479,7 @@ export class RepeatListComponent
     }
 
     const prepared = new SelectOption(option.value, option.label).forBackend(
-      this.props.codelistId,
+      this.getCodelistId(),
     );
 
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
@@ -718,7 +730,7 @@ export class RepeatListComponent
     if (this.props.codelistId) {
       duplicates = duplicates.map((dup) =>
         this.codelistStore.getCodelistEntryValueByKey(
-          this.props.codelistId,
+          this.getCodelistId(),
           dup,
         ),
       );
@@ -744,5 +756,11 @@ export class RepeatListComponent
       this.paginationState.page = this.paginationState.page + 1;
       this.loadMore.next(this.paginationState);
     }
+  }
+
+  private getCodelistId(): string {
+    return this.props.codelistId instanceof BehaviorSubject
+      ? this.props.codelistId.value
+      : this.props.codelistId;
   }
 }

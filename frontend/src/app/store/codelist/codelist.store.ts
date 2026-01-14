@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,6 +26,7 @@ import {
   withEntities,
 } from "@ngrx/signals/entities";
 import { IgeError } from "../../models/ige-error";
+import { ConfigService } from "../../services/config/config.service";
 
 export const CodelistStore = signalStore(
   { providedIn: "root" },
@@ -55,7 +56,9 @@ export const CodelistStore = signalStore(
         (entry) => entry.id === entryKey,
       )?.fields;
 
-      return entryFields ? entryFields["de"] : (defaultValue ?? "");
+      return entryFields
+        ? entryFields[ConfigService.catalogLanguage]
+        : (defaultValue ?? "");
     },
 
     getCodelistEntryByKey(codelistId: string, entryKey: string): CodelistEntry {

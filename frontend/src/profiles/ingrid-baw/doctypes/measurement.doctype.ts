@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,6 +32,8 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   iconClass = "messdaten";
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    this.options.required.resourceDateType = true;
+
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
       this.addSection("Messdaten (Allgemein)", [
@@ -254,6 +256,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   getTargetParametersFieldConfig() {
     return this.addRepeat("targetParameters", "Zielparameter", {
+      required: true,
       fields: [
         this.addGroupSimple(null, [
           this.addSelectInline("name", "Name", {

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -50,6 +50,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
@@ -212,17 +213,8 @@ open class IngridModelTransformer(
             if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
 
         val baseJson = codelists.getData("6500", constraint.title?.key)
-        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty().replace("\"", "\\\\\"")}\""
 
-        val json = baseJson?.let {
-            if (it.contains(",\"quelle\":\"\"".toRegex())) {
-                // replace existing source string
-                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
-            } else {
-                // add source string
-                it.replace("}$".toRegex(), "$sourceString}")
-            }
-        }
+        val json = getUseConstraintJson(baseJson, constraint.source)
 
         UseConstraintTemplate(
             CharacterStringModel(
@@ -236,7 +228,23 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
+    private fun getUseConstraintJson(baseJson: String?, source: String?): String? {
+        val sourceString = ",\"quelle\":\"${source.orEmpty().replace("\"", "\\\\\"")}\""
+
+        return baseJson?.let {
+            if (it.contains(",\"quelle\":\"\"".toRegex())) {
+                // replace existing source string
+                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+            } else {
+                // add source string
+                it.replace("}$".toRegex(), "$sourceString}")
+            }
+        }
+    }
+
     fun containsSpatialRepresentation(): Boolean = gridSpatialRepresentation != null && !gridSpatialRepresentation.isAllFieldsNullOrEmpty()
+
+    open val useAndAccessConstraintsCodelistValues: List<String> = listOf("otherRestrictions")
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val georectified = gridSpatialRepresentation?.georectified
@@ -353,7 +361,7 @@ open class IngridModelTransformer(
 
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
-    var documentType = mapDocumentType(model.type)
+    var documentTypeId = mapDocumentType(model.type)
 
     open val hierarchyLevel = "nonGeographicDataset"
     open val hierarchyLevelName: String? = "job"
@@ -399,10 +407,8 @@ open class IngridModelTransformer(
                 ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
         val epsgLink = when {
             // like EPSG:1234 Bla
-            referenceSystem.startsWith("EPSG:") ->
-                "http://www.opengis.net/def/crs/EPSG/0/${
-                    referenceSystem.substring(5).substringBefore(" ")
-                }"
+            referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
+
             // like EPSG 12345: Bla
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
@@ -439,8 +445,12 @@ open class IngridModelTransformer(
     )
 
     private fun mapToInspireLink(key: String?): String? = when (key) {
-        "304" -> "http://inspire.ec.europa.eu/theme/lu" // land use
-        "202" -> "http://inspire.ec.europa.eu/theme/lc" // land cover
+        // land use
+        "304" -> "http://inspire.ec.europa.eu/theme/lu"
+
+        // land cover
+        "202" -> "http://inspire.ec.europa.eu/theme/lc"
+
         else -> null
     }
 
@@ -476,7 +486,11 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(it.label, adaptGemetLinks(it.id), it.alternativeLabel) }
+        keywords = data.keywords?.gemet?.map {
+            val label = if (codelists.catalogLanguage == "en") it.alternativeLabel else it.label
+            val alternativeLabel = if (codelists.catalogLanguage == "en") null else it.alternativeLabel
+            KeywordIso(label, adaptGemetLinks(it.id), alternativeLabel)
+        }
             ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1",
@@ -609,25 +623,37 @@ open class IngridModelTransformer(
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
-    val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
+
+    open fun getAccessConstraints(): List<AccessConstraint> = if (availabilityAccessConstraints.isEmpty()) {
+        emptyList()
+    } else {
+        listOf(
+            AccessConstraint(
+                useAndAccessConstraintsCodelistValues,
+                availabilityAccessConstraints,
+            ),
+        )
+    }
+
+    private val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         @Suppress("RegExpRedundantEscape")
         CharacterStringModel(
-            "(?<=\\\"de\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
+            getValueFromCodelistData("6010", it.key, codelists.catalogLanguage)
                 ?: codelists.getValue("6010", it) ?: "",
-            "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value,
+            getValueFromCodelistData("6010", it.key, "url"),
         )
     } ?: emptyList()
 
     val contentField: MutableList<String> = mutableListOf()
 
     protected open fun mapDocumentType(type: String): String = when (type) {
-        "InGridSpecialisedTask" -> "0"
-        "InGridGeoDataset" -> "1"
-        "InGridPublication" -> "2"
-        "InGridGeoService" -> "3"
-        "InGridProject" -> "4"
-        "InGridDataCollection" -> "5"
-        "InGridInformationSystem" -> "6"
+        "InGridSpecialisedTask" -> InGridDocType.InGridSpecialisedTask.typeId
+        "InGridGeoDataset" -> InGridDocType.InGridGeoDataset.typeId
+        "InGridPublication" -> InGridDocType.InGridPublication.typeId
+        "InGridGeoService" -> InGridDocType.InGridGeoService.typeId
+        "InGridProject" -> InGridDocType.InGridProject.typeId
+        "InGridDataCollection" -> InGridDocType.InGridDataCollection.typeId
+        "InGridInformationSystem" -> InGridDocType.InGridInformationSystem.typeId
         else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
@@ -894,7 +920,7 @@ open class IngridModelTransformer(
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
         this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
-        this.resourceIdentifier = if (this.documentType == "1") this.citationURL else null
+        this.resourceIdentifier = if (this.documentTypeId == InGridDocType.InGridGeoDataset.typeId) this.citationURL else null
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
@@ -979,6 +1005,7 @@ open class IngridModelTransformer(
                     data.service.version?.firstOrNull(),
                     data.service.type?.key,
                 ),
+                functionValue = "information",
             )
         }
         ?: emptyList()
@@ -1227,6 +1254,20 @@ open class IngridModelTransformer(
         "scalar" -> "ScalarFeature"
         "other" -> "OtherFeature"
         else -> "OtherFeature"
+    }
+
+    fun getValueFromCodelistData(codelistId: String, key: String?, field: String): String? {
+        val jsonData = codelists.getData(
+            codelistId,
+            key,
+        )
+
+        if (jsonData.isNullOrEmpty()) return null
+
+        return jacksonObjectMapper().readValue(
+            jsonData,
+            JsonNode::class.java,
+        ).getString(field)
     }
 }
 

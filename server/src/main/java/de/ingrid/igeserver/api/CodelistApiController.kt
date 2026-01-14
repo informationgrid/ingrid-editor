@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,6 +21,8 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryRequest
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -38,6 +40,7 @@ import java.security.Principal
 @RequestMapping("/api/codelist")
 class CodelistApiController(
     private val externalCodelistRepositoryFactory: ExternalCodelistRepositoryFactory,
+    private val codelistUsageService: de.ingrid.igeserver.services.CodelistUsageService,
 ) : CodelistApi {
 
     private val log = logger()
@@ -64,6 +67,7 @@ class CodelistApiController(
             handler.getCatalogCodelists(catalogId)
         } catch (e: Exception) {
             log.warn("Error fetching catalog for ${principal.name}")
+            log.debug(e)
             emptyList()
         }
 
@@ -130,5 +134,67 @@ class CodelistApiController(
         val codelistRepo = externalCodelistRepositoryFactory.getRepository(id)
         val values = codelistRepo.search(filter, page)
         return ResponseEntity.ok(values)
+    }
+
+    override fun getFreeEntriesWithCounts(
+        principal: Principal,
+        codelistId: String,
+    ): ResponseEntity<List<FreeEntryUsage>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val values = codelistUsageService.getFreeEntriesWithCountsForCodelist(catalogId, codelistId)
+        return ResponseEntity.ok(values)
+    }
+
+    override fun replaceFreeEntry(
+        principal: Principal,
+        codelistId: String,
+        request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult> {
+        require(request.fromValue.isNotBlank()) { "fromValue must not be blank" }
+        require(request.toKey.isNotBlank()) { "toKey must not be blank" }
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        // Determine the display value from the codelist; fall back sensibly if not found
+        val catalogValue = try {
+            handler.getCatalogCodelistValue(catalogId, codelistId, request.toKey)
+        } catch (e: Exception) {
+            log.debug("Failed to resolve catalog codelist value for $codelistId/${request.toKey}: ${e.message}")
+            null
+        }
+        val globalValue = catalogValue ?: try {
+            handler.getCodelistValue(codelistId, request.toKey)
+        } catch (e: Exception) {
+            log.debug("Failed to resolve global codelist value for $codelistId/${request.toKey}: ${e.message}")
+            null
+        }
+        val toValue = globalValue ?: throw ServerException.withReason("Failed to resolve value for $codelistId/${request.toKey}")
+
+        val result = codelistUsageService.replaceFreeEntryWithKeyed(
+            catalogId = catalogId,
+            codelistId = codelistId,
+            fromValue = request.fromValue,
+            toKey = request.toKey,
+            toValue = toValue,
+        )
+        return ResponseEntity.ok(result)
+    }
+
+    @Transactional
+    override fun addFreeEntryToCodelist(
+        principal: Principal,
+        codelistId: String,
+        value: String,
+    ): ResponseEntity<ReplaceFreeEntryResult> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val newKey = handler.addEntryToCatalogCodelist(catalogId, codelistId, value)
+
+        val result = codelistUsageService.replaceFreeEntryWithKeyed(
+            catalogId = catalogId,
+            codelistId = codelistId,
+            fromValue = value,
+            toKey = newKey,
+            toValue = value,
+        )
+        return ResponseEntity.ok(result)
     }
 }

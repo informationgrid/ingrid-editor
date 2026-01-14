@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2022-2025 wemove digital solutions GmbH
+ * Copyright (C) 2022-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -71,9 +71,9 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
     }
 
     @Throws(ServerException::class)
-    override fun deserializeRecord(rdf: String?): RecordPLUProperties? {
+    override fun deserializeRecord(serializedRecordProperties: String?): RecordPLUProperties? {
         try {
-            val model = getRdfModel(rdf, Lang.RDFXML)
+            val model = getRdfModel(serializedRecordProperties, Lang.RDFXML)
 //            validationUtils.validateSyntax(model)
             val datasetProperty = model.getProperty(model.getNsPrefixURI("dcat"), "Dataset")
 

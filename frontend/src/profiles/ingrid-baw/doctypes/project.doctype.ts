@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,6 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
 import { CommonFieldsBaw } from "./common-fields";
 import { ProjectDoctype } from "../../ingrid/doctypes/project.doctype";
+import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -33,7 +34,7 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);
-    const alternateTitlePosition = this.findFieldElementWithId(
+    const alternateTitlePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "alternateTitle",
     );

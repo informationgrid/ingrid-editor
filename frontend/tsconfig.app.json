@@ -10,6 +10,7 @@
     "src/profiles/profile-uvp.ts",
     "src/profiles/profile-test.ts",
     "src/profiles/profile-ingrid.ts",
+    "src/profiles/profile-ingrid-bkg.ts",
     "src/profiles/profile-ingrid-hmdk.ts",
     "src/profiles/profile-ingrid-kommunal-st.ts",
     "src/profiles/profile-ingrid-krzn.ts",

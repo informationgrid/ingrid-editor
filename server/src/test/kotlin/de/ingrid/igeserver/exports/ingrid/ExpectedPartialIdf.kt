@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -250,4 +250,12 @@ const val DISTRIBUTOR = """
                             </gmd:distributionOrderProcess>
                         </gmd:MD_Distributor>
                     </gmd:distributor>
+"""
+
+const val USE_LIMITATION_CONSTRAINTS = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useLimitation>
+                                <gco:CharacterString>bkg useLimitation constraint</gco:CharacterString>
+                            </gmd:useLimitation>
+                        </gmd:MD_LegalConstraints>
 """

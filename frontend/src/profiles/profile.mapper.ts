@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,6 +31,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-ingrid-bast"));
     case "ingrid-baw":
       return from(import("./profile-ingrid-baw"));
+    case "ingrid-bkg":
+      return from(import("./profile-ingrid-bkg"));
     case "ingrid-hmdk":
       return from(import("./profile-ingrid-hmdk"));
     case "ingrid-kommunal-st":

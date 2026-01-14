@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports.catalog
 
+import de.ingrid.igeserver.api.ExportCatalogOptions
 import de.ingrid.igeserver.services.CatalogService
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
@@ -67,6 +68,14 @@ class CatalogExportService(
         catalogId,
     )
 
+    private fun exportDocumentTableForNonArchivedWrappers(catalogId: Int): List<MutableMap<String?, Any?>> = getQueryResultsAsMap(
+        """
+        SELECT * FROM document 
+        WHERE catalog_id = $catalogId 
+        AND state != 'ARCHIVED'
+        """.trimIndent(),
+    )
+
     private fun exportPermissionGroupTable(catalogId: Int): List<MutableMap<String?, Any?>> = getSimpleQueryResultsAsMap(
         "permission_group",
         catalogId,
@@ -89,11 +98,14 @@ class CatalogExportService(
 
     private fun exportUsers(catalogIdentifier: String) = catalogService.getAllCatalogUsers(catalogIdentifier)
 
-    fun exportCatalog(catalogIdentifier: String): ExportedCatalog {
+    fun exportCatalog(catalogIdentifier: String, options: ExportCatalogOptions = ExportCatalogOptions()): ExportedCatalog {
         val catalog = exportCatalogTable(catalogIdentifier)
         val catalogId = catalog["id"] as Int
-        val userInfo = exportUserInfoTable(catalogId)
-        val permissionGroup = exportPermissionGroupTable(catalogId)
+        val includeUsers = options.exportUsers
+        val includeArchived = options.exportArchivedDatasets
+
+        val userInfo = if (includeUsers) exportUserInfoTable(catalogId) else emptyList()
+        val permissionGroup = if (includeUsers) exportPermissionGroupTable(catalogId) else emptyList()
 
         return ExportedCatalog(
             version = getEditorVersion(),
@@ -103,10 +115,10 @@ class CatalogExportService(
             userInfo = userInfo,
             query = exportQueryTable(catalogId),
             documentWrapper = exportDocumentWrapperTable(catalogId),
-            document = exportDocumentTable(catalogId),
+            document = if (includeArchived) exportDocumentTable(catalogId) else exportDocumentTableForNonArchivedWrappers(catalogId),
             permissionGroup = permissionGroup,
-            userGroup = exportUserGroupTable(userInfo, permissionGroup),
-            users = exportUsers(catalogIdentifier),
+            userGroup = if (includeUsers) exportUserGroupTable(userInfo, permissionGroup) else emptyList(),
+            users = if (includeUsers) exportUsers(catalogIdentifier) else emptyList(),
         )
     }
 }

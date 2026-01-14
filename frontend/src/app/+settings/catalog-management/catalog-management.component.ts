@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,6 +30,7 @@ import {
   CatalogDetailResponse,
 } from "./catalog-detail/catalog-detail.component";
 import { NewCatalogDialogComponent } from "./new-catalog/new-catalog-dialog.component";
+import { ExportCatalogDialogComponent } from "./export-catalog/export-catalog-dialog.component";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
@@ -215,7 +216,26 @@ export class CatalogManagementComponent implements OnInit {
   }
 
   exportCatalog(id: string) {
-    this.catalogService.exportCatalog(id);
+    this.dialog
+      .open(ExportCatalogDialogComponent, {
+        disableClose: true,
+        width: "400px",
+        data: {
+          exportUsers: true,
+          exportArchivedDatasets: true,
+        },
+      })
+      .afterClosed()
+      .subscribe(
+        (
+          result:
+            | { exportUsers: boolean; exportArchivedDatasets: boolean }
+            | undefined,
+        ) => {
+          if (!result) return;
+          this.catalogService.exportCatalog(id, result);
+        },
+      );
   }
 
   showCatalogDetail(catalog: Catalog) {

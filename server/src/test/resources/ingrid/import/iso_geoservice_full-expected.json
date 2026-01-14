@@ -142,7 +142,7 @@
     },
     "temporal": {
       "event": {
-        "created": "2015-03-16T23:00:00Z"
+        "created": "2015-03-16T23:00:00.000Z"
       },
       "status": {
         "key": "7",
@@ -151,13 +151,13 @@
       },
       "data": {
         "type": "at",
-        "resourceDate": "2023-02-07T23:00:00Z"
+        "resourceDate": "2023-02-07T23:00:00.000Z"
       }
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
         "key": "1",
-        "value": "kontinuierlich",
+        "value": "kontinuierlich (benutzerdefiniert)",
         "_codelistId": "518"
       },
       "userDefinedMaintenanceFrequency": {
@@ -184,7 +184,7 @@
           "value": "Technical Guidance for the implementation of INSPIRE Download Services",
           "_codelistId": "6005"
         },
-        "publicationDate": "2013-08-08T22:00:00Z"
+        "publicationDate": "2013-08-08T22:00:00.000Z"
       },
       {
         "pass": {
@@ -199,7 +199,7 @@
           "value": "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste",
           "_codelistId": "6005"
         },
-        "publicationDate": "2009-10-19T22:00:00Z"
+        "publicationDate": "2009-10-19T22:00:00.000Z"
       }
     ],
     "extraInfo": {

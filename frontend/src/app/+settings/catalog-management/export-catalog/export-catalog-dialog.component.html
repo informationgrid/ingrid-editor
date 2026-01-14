@@ -1,0 +1,15 @@
+<ige-dialog-template
+    label="Export catalog"
+    submitLabel="Export"
+    (submit)="submit()"
+>
+    <ng-container content>
+        <mat-checkbox [(ngModel)]="model.exportUsers"
+            >Benutzer exportieren</mat-checkbox
+        >
+        <br />
+        <mat-checkbox [(ngModel)]="model.exportArchivedDatasets"
+            >Archivierte Datensätze exportieren</mat-checkbox
+        >
+    </ng-container>
+</ige-dialog-template>

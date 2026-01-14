@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -107,12 +107,19 @@ export class CatalogService {
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
 
-  exportCatalog(id: string) {
+  exportCatalog(
+    id: string,
+    options?: { exportUsers: boolean; exportArchivedDatasets: boolean },
+  ) {
     this.http
-      .post(this.configuration.backendUrl + `catalogs/export/${id}`, null, {
-        responseType: "blob",
-        observe: "response",
-      })
+      .post(
+        this.configuration.backendUrl + `catalogs/export/${id}`,
+        options ?? null,
+        {
+          responseType: "blob",
+          observe: "response",
+        },
+      )
       .pipe(
         tap((response: HttpResponse<Blob>) => {
           const downloadLink = document.createElement("a");

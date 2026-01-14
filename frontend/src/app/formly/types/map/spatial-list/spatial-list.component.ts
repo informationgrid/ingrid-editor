@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -24,6 +24,7 @@ import {
   inject,
   input,
   output,
+  signal,
 } from "@angular/core";
 import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
 import {
@@ -34,7 +35,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatIcon } from "@angular/material/icon";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { MatLine } from "@angular/material/core";
-import { MatIconButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { DecimalPipe } from "@angular/common";
@@ -77,6 +78,7 @@ export interface SpatialLocationWithColor extends SpatialLocation {
     MatIcon,
     TranslocoDirective,
     MatLine,
+    MatButton,
     MatIconButton,
     MatTooltip,
     MatMenuTrigger,
@@ -94,6 +96,8 @@ export class SpatialListComponent {
   readonly edit = output<number>();
   readonly remove = output<number>();
 
+  protected expandedWkt = signal<Set<number>>(new Set());
+
   private dialog = inject(MatDialog);
 
   typedLocations = computed<{ [x: string]: SpatialLocationWithColor[] }>(() => {
@@ -110,6 +114,16 @@ export class SpatialListComponent {
       (type) => this.typedLocations()[type].length > 0,
     );
   });
+
+  toggleWkt(index: number): void {
+    const next = new Set(this.expandedWkt());
+    if (next.has(index)) {
+      next.delete(index);
+    } else {
+      next.add(index);
+    }
+    this.expandedWkt.set(next);
+  }
 
   confirmRemove(location: SpatialLocationWithColor): void {
     this.dialog

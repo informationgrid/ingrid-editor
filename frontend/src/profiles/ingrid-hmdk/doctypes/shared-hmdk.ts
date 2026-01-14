@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -55,12 +55,15 @@ export class SharedHmdk {
     fieldConfig: FormlyFieldConfig[],
   ) => {
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = doc.findFieldElementWithId(
+    const pointOfContact = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
 
-    doc.addAfter(pointOfContact, this.getInformationHmbTGFieldConfig(doc));
+    IngridShared.addAfter(
+      pointOfContact,
+      this.getInformationHmbTGFieldConfig(doc),
+    );
 
     pointOfContact.fieldConfig[pointOfContact.index].validators = {
       ...pointOfContact.fieldConfig[pointOfContact.index].validators,

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,6 +37,7 @@ import {
 import { GeoJSON, Map, Polyline } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { debounceTime, filter, tap } from "rxjs/operators";
+import { Subscription } from "rxjs";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
@@ -70,6 +71,7 @@ export class CoordinatesSpatialComponent
   readonly result = output<any>();
 
   private boundingBoxes: (Polyline<any> | GeoJSON)[];
+  private drawSubscribe: Subscription;
 
   constructor(private leafletService: LeafletService) {}
 
@@ -99,6 +101,7 @@ export class CoordinatesSpatialComponent
   }
 
   private removeBoundingBoxes() {
+    if (this.drawSubscribe) this.drawSubscribe.unsubscribe();
     this.leafletService.removeDrawnBoundingBoxes(
       this.map(),
       this.boundingBoxes,
@@ -113,9 +116,10 @@ export class CoordinatesSpatialComponent
         value: <SpatialBoundingBox>values,
       },
     ]);
-    this.leafletService
+    this.drawSubscribe = this.leafletService
       .drawSpatialRefs(this.map(), coloredBoundingBox)
-      .then((refs) => (this.boundingBoxes = refs));
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((refs) => (this.boundingBoxes = refs));
   }
 
   private coordinatesValid(value: any): boolean {

@@ -4,5 +4,10 @@
   },
   "publish": {
     "buttonLabel": "Speichern & Veröffentlichen"
+  },
+  "form": {
+    "dialog": {
+      "INSPIRE_CHANGE": "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.<p>Bitte nehmen Sie für die INSPIRE-Identifizierung vorab Kontakt auf zu <a href='mailto:RIPS-Metadaten@lubw.bwl.de'>RIPS-Metadaten@lubw.bwl.de</a></p>"
+    }
   }
 }

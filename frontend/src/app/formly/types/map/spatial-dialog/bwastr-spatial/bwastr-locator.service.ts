@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -83,6 +83,16 @@ export class BwastrLocatorService {
     );
   }
 
+  getSectionBoundingBox(
+    section: BwastrSection,
+  ): Observable<SpatialBoundingBox> {
+    return this.getSectionCoordinates(section).pipe(
+      map((res) => {
+        return res?.bounds ?? this.computeBBoxFromCoordinates(res?.coordinates);
+      }),
+    );
+  }
+
   private searchInCodelist(query: string): CodelistEntry {
     return this.bwaStrIds()?.entries?.find(
       (item) =>
@@ -103,6 +113,38 @@ export class BwastrLocatorService {
         [lon1, lat1],
       ],
     ];
+  }
+
+  private computeBBoxFromCoordinates(coords: number[][][]): {
+    lat1: number;
+    lon1: number;
+    lat2: number;
+    lon2: number;
+  } {
+    // coords: Array of LineStrings, each point as [lon, lat]
+    let minLat = Infinity,
+      minLon = Infinity,
+      maxLat = -Infinity,
+      maxLon = -Infinity;
+    coords?.forEach((line) =>
+      line?.forEach((pt) => {
+        const lon = pt[0];
+        const lat = pt[1];
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+        if (lon < minLon) minLon = lon;
+        if (lon > maxLon) maxLon = lon;
+      }),
+    );
+    if (
+      !isFinite(minLat) ||
+      !isFinite(minLon) ||
+      !isFinite(maxLat) ||
+      !isFinite(maxLon)
+    ) {
+      return null;
+    }
+    return { lat1: minLat, lon1: minLon, lat2: maxLat, lon2: maxLon };
   }
 }
 

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,8 +47,8 @@ import {
   BwastrLocatorCoordinatesResponse,
   BwastrLocatorService,
 } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
-import { firstValueFrom, Observable, of } from "rxjs";
-import { catchError, map } from "rxjs/operators";
+import { forkJoin, Observable, of } from "rxjs";
+import { catchError, finalize, map, tap } from "rxjs/operators";
 
 export interface WktValidateResponse {
   isValid: boolean;
@@ -154,50 +154,59 @@ export class LeafletService {
   }
 
   drawSpatialRefs(
-    map: Map,
+    mapRef: Map,
     locations: SpatialLocationWithColor[],
-  ): Promise<(Polyline<any> | GeoJSON)[]> {
-    const wktLocations = locations.filter(
-      (location) => location.type === "wkt" && location.wkt,
-    );
-    const boxLocations = locations.filter(
-      (location) =>
-        (location.type === "free" && location.value) ||
-        location.type === "wfsgnde",
-    );
-    const bwastrLocations = locations.filter(
-      (location) => location.type === "bwastr",
-    );
+  ): Observable<(Polyline<any> | GeoJSON)[]> {
+    if (locations.length === 0) return of([]);
 
-    const drawnWktLocations = this.drawWktLocations(map, wktLocations);
-    const drawnBoxLocations = this.drawBoxLocations(map, boxLocations);
-
-    // fix order of drawn layers since we use them for selection and more
     const drawnBoxes: (Polyline<any> | GeoJSON)[] = [];
-    wktLocations.forEach(
-      (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnWktLocations[index]),
+    let isComplete = false;
+
+    const drawingObservables = locations.map((location) =>
+      this.drawSingleLocation(mapRef, location).pipe(
+        tap((geometry) => (drawnBoxes[location.indexNumber] = geometry)),
+      ),
     );
-    boxLocations.forEach(
-      (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnBoxLocations[index]),
+
+    return forkJoin(drawingObservables).pipe(
+      tap(() => {
+        this.finalizeDrawing(mapRef, drawnBoxes);
+        isComplete = true;
+      }),
+      map(() => drawnBoxes),
+      finalize(() => {
+        if (!isComplete) {
+          this.removeDrawnBoundingBoxes(mapRef, drawnBoxes);
+        }
+      }),
     );
-    const promises = bwastrLocations.map((location) => {
-      return firstValueFrom(this.drawBwastrLocations(map, location)).then(
-        (geometry) => (drawnBoxes[location.indexNumber] = geometry),
-      );
-    });
+  }
 
-    // Warte, bis alle Promises aufgelöst sind
-    return Promise.all(promises).then(() => {
-      const bounds = this.getBoundingBoxFromLayers(drawnBoxes);
+  private drawSingleLocation(
+    map: Map,
+    location: SpatialLocationWithColor,
+  ): Observable<Polyline | GeoJSON | Rectangle | null> {
+    if (location.type === "wkt" && location.wkt) {
+      return of(this.drawWktLocation(map, location));
+    }
+    if (
+      (location.type === "free" && location.value) ||
+      location.type === "wfsgnde"
+    ) {
+      return of(this.drawBoxLocation(map, location));
+    }
+    if (location.type === "bwastr") {
+      return this.drawBwastrLocation(map, location);
+    }
+    return of(null);
+  }
 
-      if (bounds) {
-        map.fitBounds(bounds, { maxZoom: 18 });
-      }
+  private finalizeDrawing(map: Map, drawnBoxes: (Polyline<any> | GeoJSON)[]) {
+    const bounds = this.getBoundingBoxFromLayers(drawnBoxes);
 
-      return drawnBoxes;
-    });
+    if (bounds) {
+      map.fitBounds(bounds, { maxZoom: 18 });
+    }
   }
 
   getColor(index: number): string {
@@ -216,8 +225,12 @@ export class LeafletService {
   }
 
   removeDrawnBoundingBoxes(map: Map, boxes: (Polyline<any> | GeoJSON)[]) {
-    if (!boxes) return;
-    boxes.forEach((box) => setTimeout(() => map.removeLayer(box), 100));
+    if (!boxes || !map) return;
+    boxes.forEach((box) => {
+      if (box) {
+        map.removeLayer(box);
+      }
+    });
   }
 
   convertWKT(map: Map, wkt: string, focus = false) {
@@ -241,40 +254,32 @@ export class LeafletService {
     }
   }
 
-  private drawBoxLocations(
+  private drawBoxLocation(
     map: Map,
-    locations: SpatialLocationWithColor[],
-  ): Rectangle[] {
-    return locations
-      .map((location) => ({
-        box: LeafletService.getLatLngBoundsFromBox(location.value),
-        color: location.color,
-      }))
-      .map((location) => {
-        return this.drawBoundingBox(map, location.box, location.color);
-      });
+    location: SpatialLocationWithColor,
+  ): Rectangle {
+    const box = LeafletService.getLatLngBoundsFromBox(location.value);
+    return this.drawBoundingBox(map, box, location.color);
   }
 
-  private drawWktLocations(
+  private drawWktLocation(
     map: Map,
-    locations: SpatialLocationWithColor[],
-  ): GeoJSON[] {
-    return locations.map((location) =>
-      this.wktTools.mapIt(
-        map,
-        location.wkt,
-        {
-          color: location.color,
-          fillColor: location.color + "33",
-          fillOpacity: 1,
-        },
-        false,
-        false,
-      ),
+    location: SpatialLocationWithColor,
+  ): GeoJSON {
+    return this.wktTools.mapIt(
+      map,
+      location.wkt,
+      {
+        color: location.color,
+        fillColor: location.color + "33",
+        fillOpacity: 1,
+      },
+      false,
+      false,
     );
   }
 
-  private drawBwastrLocations(
+  private drawBwastrLocation(
     mapRef: Map,
     location: SpatialLocationWithColor,
   ): Observable<Polyline> {
@@ -297,10 +302,10 @@ export class LeafletService {
           );
 
           const polyline = new Polyline(latLngs, {
+            // always blue to represent water
             color: "blue",
-            weight: 1,
+            weight: 3,
           });
-          console.log("Adding polyline to map");
           polyline.addTo(mapRef);
           return polyline;
         }),

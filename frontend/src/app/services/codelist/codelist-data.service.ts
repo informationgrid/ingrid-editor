@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,6 +22,7 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { Injectable } from "@angular/core";
 import {
   CodelistBackend,
+  FreeEntry,
   PagedSearchResult,
 } from "../../store/codelist/codelist.model";
 
@@ -97,6 +98,42 @@ export class CodelistDataService {
       this.configuration.backendUrl +
         `jobs/codelist-sync?command=start&migrate=${migrate}`,
       {},
+    );
+  }
+
+  getFreeEntries(codelistId: string) {
+    return this.http.get<FreeEntry[]>(
+      this.configuration.backendUrl + "codelist/free-entries/" + codelistId,
+    );
+  }
+
+  replaceFreeEntry(
+    codelistId: string,
+    body: { fromValue: string; toKey: string },
+  ) {
+    return this.http.post<{
+      occurrences: number;
+      documentsUpdated: number;
+      uuids: string[];
+    }>(
+      this.configuration.backendUrl +
+        `codelist/free-entries/${codelistId}/replace`,
+      body,
+    );
+  }
+
+  addFreeEntryToCodelist(codelistId: string, value: string) {
+    return this.http.post<{
+      occurrences: number;
+      documentsUpdated: number;
+      uuids: string[];
+    }>(
+      this.configuration.backendUrl +
+        `codelist/free-entries/${codelistId}/add-to-codelist`,
+      value,
+      {
+        // headers: { "Content-Type": "text/plain" },
+      },
     );
   }
 }

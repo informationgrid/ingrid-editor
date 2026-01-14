@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.convertToDocument
+import de.ingrid.igeserver.exports.prettyFormatJson
 import de.ingrid.igeserver.exports.prettyFormatXml
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -59,15 +60,7 @@ fun updateDatestampInExpectedXml(xml: String): String {
 }
 
 fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
-    val input = SchemaUtils.getJsonFileContent(file)
-    val doc = convertToDocument(input)
-
-    if (additional != null) {
-        doc.data.setAll<ObjectNode>(additional)
-        doc.catalog = Catalog().apply { identifier = "test-catalog" }
-    }
-
-    val result = exporter.run(doc, "test-catalog") as String
+    val result = exportJsonToString(exporter, file, additional)
     return prettyFormatXml(result, 4).replace("\r\n", "\n")
 }
 
@@ -76,15 +69,16 @@ fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run
         .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }.also { println(it) }
 
-fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {
-    val doc = convertToDocument(json)
-    val result = exporter.run(doc, "test-catalog") as String
-    return prettyFormatXml(result, 4).replace("\r\n", "\n")
-}
+fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String = prettyFormatJson(exportJsonToString(exporter, file, additional))
 
-fun exportJsonToJson(exporter: IgeExporter, file: String): String {
+private fun exportJsonToString(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val input = SchemaUtils.getJsonFileContent(file)
     val doc = convertToDocument(input)
-    val result = exporter.run(doc, "test-catalog") as String
-    return result
+
+    if (additional != null) {
+        doc.data.setAll<ObjectNode>(additional)
+        doc.catalog = Catalog().apply { identifier = "test-catalog" }
+    }
+
+    return exporter.run(doc, "test-catalog") as String
 }

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryRequest
+import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import io.swagger.v3.oas.annotations.Hidden
@@ -92,4 +94,33 @@ interface CodelistApi {
         @Parameter() @PathVariable filter: String,
         @Parameter() @RequestParam page: Int,
     ): ResponseEntity<PagedSearchResult>
+
+    @Operation
+    @GetMapping(value = ["/free-entries/{codelistId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getFreeEntriesWithCounts(
+        principal: Principal,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
+    ): ResponseEntity<List<FreeEntryUsage>>
+
+    @Operation
+    @PostMapping(value = ["/free-entries/{codelistId}/replace"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun replaceFreeEntry(
+        principal: Principal,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
+        @Parameter(description = "Replacement instruction", required = true) @RequestBody request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult>
+
+    @Operation
+    @PostMapping(value = ["/free-entries/{codelistId}/add-to-codelist"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun addFreeEntryToCodelist(
+        principal: Principal,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
+        @Parameter(description = "Free entry value to add", required = true) @RequestBody value: String,
+    ): ResponseEntity<ReplaceFreeEntryResult>
 }
+
+data class FreeEntryUsage(
+    val value: String,
+    val count: Int,
+    val uuids: List<String> = emptyList(),
+)
