@@ -151,6 +151,16 @@ export class GeoServiceDoctype extends IngridShared {
                         onInit: (field: FormlyFieldConfig) =>
                           this.handleServiceTypeChange(field),
                       },
+                      validators: {
+                        inspireRelevant: {
+                          expression: (ctrl: FormControl) =>
+                            ctrl.root.value?.properties?.isInspireIdentified ===
+                              undefined ||
+                            ["1", "2", "3", "4"].includes(ctrl.value?.key),
+                          message:
+                            "Für INSPIRE-relevante Dienste ist dieser Wert unzulässig",
+                        },
+                      },
                     }),
                     this.addRepeatListInline(
                       "version",
@@ -200,14 +210,6 @@ export class GeoServiceDoctype extends IngridShared {
                     required: true,
                     validators: {
                       validation: ["url"],
-                      inspireRelevant: {
-                        expression: (ctrl: FormControl) =>
-                          ctrl.root.value?.properties?.isInspireIdentified ===
-                            undefined ||
-                          ["1", "2", "3", "4"].includes(ctrl.value?.key),
-                        message:
-                          "Für INSPIRE-relevante Dienste ist dieser Wert unzulässig",
-                      },
                     },
                   }),
                 ],

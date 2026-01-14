@@ -12,6 +12,7 @@
   },
   "form": {
     "alternateTitle": "Kurzbezeichnung",
+    "accessConstraints": "Zugriffsbeschränkungen",
     "description": "Beschreibung",
     "references": {
       "fileFormat": "Dateiformat"
