@@ -71,6 +71,34 @@ export class DoiPlugin extends Plugin {
         },
       },
     },
+    {
+      key: "dataCiteURL",
+      type: "input",
+      defaultValue: "https://api.test.datacite.org",
+      wrappers: ["form-field"],
+      // className: "padding",
+      props: {
+        label: "DataCite-URL",
+        appearance: "outline",
+      },
+      expressions: {
+        hide: (field: FormlyFieldConfig) => !field.model.exportDataCite,
+      },
+    },
+    {
+      key: "dataCiteDetailURL",
+      type: "input",
+      defaultValue: "https://baw.de/trefferanzeige?docuuid=",
+      wrappers: ["form-field"],
+      // className: "padding",
+      props: {
+        label: "Detail-URL im Portal",
+        appearance: "outline",
+      },
+      expressions: {
+        hide: (field: FormlyFieldConfig) => !field.model.exportDataCite,
+      },
+    },
   ];
   private eventExportDataCite = "EXPORT_DATACITE";
 
@@ -115,6 +143,7 @@ export class DoiPlugin extends Plugin {
       this.eventExportDataCite,
     );
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions = [];
   }
 
   private addDataCiteMenu() {
@@ -124,10 +153,13 @@ export class DoiPlugin extends Plugin {
       active: true,
     });
 
-    this.subscriptions.push(
-      this.docEvents
-        .onEvent(this.eventExportDataCite)
-        .subscribe(() => this.exportDataCite()),
-    );
+    // change - event is called twice somehow, so we must make sure we only subscribe once
+    if (this.subscriptions.length === 0) {
+      this.subscriptions.push(
+        this.docEvents
+          .onEvent(this.eventExportDataCite)
+          .subscribe(() => this.exportDataCite()),
+      );
+    }
   }
 }

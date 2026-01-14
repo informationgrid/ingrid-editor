@@ -10,6 +10,7 @@ import {
 import { GeneralStore } from "../../../../app/store/general.store";
 import { CodelistService } from "../../../../app/services/codelist/codelist.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
+import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 
 @Injectable({
   providedIn: "root",
@@ -18,13 +19,16 @@ export class DataSiteService {
   private http = inject(HttpClient);
   private documentService = inject(DocumentService);
   private generalStore = inject(GeneralStore);
-  private codelistService = inject(CodelistService);
   private codelistStore = inject(CodelistStore);
+  private behaviourService = inject(BehaviourService);
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
+    // event: "publish",
+    const portalURL =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi").data
+        .dataCiteDetailURL;
     return {
       doi: model.publication.doi,
-      event: "publish",
       creators: [await this.getCreator(model.pointOfContact)],
       alternateIdentifiers: [
         {
@@ -54,11 +58,13 @@ export class DataSiteService {
       ],
       rightsList: this.getRightsList(model),
       geoLocations: [this.getGeoLocations(model)],
-      url: `https://baw.de/trefferanzeige?docuuid=${metadata.uuid}`,
+      url: `${portalURL}${metadata.uuid}`,
     };
   }
 
   uploadDOI(username: string, password: string, attributes: any) {
+    const dataciteURL =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
     // TODO: handle create vs update operation
     let headers: any = {
       "Content-Type": "application/vnd.api+json",
@@ -66,7 +72,7 @@ export class DataSiteService {
     };
 
     return this.http.post<any>(
-      `https://api.test.datacite.org/dois`,
+      `${dataciteURL}/dois`,
       {
         data: {
           type: "dois",
