@@ -1,10 +1,13 @@
 <ige-dialog-template
     label="Export DataCite"
-    submitLabel="Export"
+    submitLabel="Hochladen"
     (submit)="submit()"
     [disabled]="documentResource.error() != null"
 >
     <ng-container content>
+        @if (error()) {
+            <ige-form-error>{{ error() }}</ige-form-error>
+        }
         @if (doiExistsResource.isLoading() || documentResource.isLoading()) {
             <div>
                 Dokument wird vorbereitet

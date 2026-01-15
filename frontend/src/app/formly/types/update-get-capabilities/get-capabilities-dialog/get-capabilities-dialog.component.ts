@@ -57,7 +57,10 @@ import { BreadcrumbComponent } from "../../../../+form/form-info/breadcrumb/brea
 import { MatCheckbox } from "@angular/material/checkbox";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { CodelistPipe } from "../../../../directives/codelist.pipe";
-import { CredentialsDialogComponent } from "../credentials-dialog/credentials-dialog.component";
+import {
+  CredentialsDialogComponent,
+  CredentialsDialogData,
+} from "../credentials-dialog/credentials-dialog.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -151,7 +154,13 @@ export class GetCapabilitiesDialogComponent {
 
   private retryWithCredentials(url: string) {
     this.dialog
-      .open(CredentialsDialogComponent, { width: "300px" })
+      .open(CredentialsDialogComponent, {
+        width: "300px",
+        data: {
+          message:
+            "Bitte geben Sie Ihre Anmeldedaten ein, um auf die geschützte GetCapabilities-URL zugreifen zu können.",
+        } as CredentialsDialogData,
+      })
       .afterClosed()
       .pipe(
         filter((result) => result),

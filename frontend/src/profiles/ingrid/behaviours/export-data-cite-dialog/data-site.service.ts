@@ -194,19 +194,17 @@ export class DataSiteService {
   }
 
   private getRightsList(model: any): any[] {
-    return model.useConstraints?.map((useConstraint: any) => {
-      const constraintEntry = this.codelistStore.getCodelistEntryByKey(
-        "6500",
-        useConstraint.title.key,
-      );
-      return {
-        rights: constraintEntry.fields.de,
-        rightsUri: this.mapToSpdxLicenceUrl(constraintEntry.data),
-        schemeUri: "https://spdx.org/licenses/",
-        rightsIdentifier: "cc0-1.0",
-        rightsIdentifierScheme: "SPDX",
-      };
-    });
+    return (
+      model.resource.useConstraints?.map((useConstraint: any) => {
+        const constraintEntry = this.codelistStore.getCodelistEntryByKey(
+          "6500",
+          useConstraint.title.key,
+        );
+        return {
+          rights: "Creative Commons Attribution 4.0 International",
+        };
+      }) ?? []
+    );
   }
 
   private mapToSpdxLicenceUrl(data: any): string {
