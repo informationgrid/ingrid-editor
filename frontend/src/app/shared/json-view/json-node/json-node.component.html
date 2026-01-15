@@ -1,0 +1,48 @@
+<div class="node-container" [class.root]="!key()">
+    <div
+        class="node-header"
+        [class.clickable]="isObject()"
+        (click)="isObject() && toggle()"
+    >
+        @if (isObject()) {
+            <span class="arrow" [class.rotated]="isExpanded()">▶</span>
+        }
+
+        @if (key()) {
+            <span class="key">{{ key() }}: </span>
+        }
+
+        @if (!isObject()) {
+            <span class="value" [ngClass]="valueType()">
+                {{
+                    value() === null
+                        ? "null"
+                        : valueType() === "string"
+                          ? '"' + value() + '"'
+                          : value()
+                }}
+            </span>
+        } @else {
+            <span class="bracket">
+                {{ isArray() ? "[" : "{" }}
+                @if (!isExpanded()) {
+                    <span class="collapsed-info">
+                        ... {{ isArray() ? "]" : "}" }}
+                    </span>
+                }
+            </span>
+        }
+    </div>
+
+    @if (isObject() && isExpanded()) {
+        <div class="children">
+            @for (item of value() | keyvalue; track item.key) {
+                <ige-json-node
+                    [key]="$any(item.key)"
+                    [value]="$any(item.value)"
+                />
+            }
+            <span class="bracket">{{ isArray() ? "]" : "}" }}</span>
+        </div>
+    }
+</div>
