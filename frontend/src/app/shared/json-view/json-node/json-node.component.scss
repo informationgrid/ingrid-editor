@@ -1,0 +1,59 @@
+:host {
+  --key-color: #881391;
+  --string-color: #c41a16;
+  --number-color: #1c00cf;
+  --bracket-color: #555;
+  display: block;
+}
+
+.node-container {
+  font-family: "Fira Code", monospace;
+  font-size: 0.85rem;
+  margin-left: 1.2rem;
+
+  //overflow-wrap: anywhere;
+  //word-break: break-word;
+
+  &.root {
+    margin-left: 0;
+  }
+}
+
+.node-header {
+  cursor: default;
+}
+.clickable {
+  cursor: pointer;
+}
+.clickable:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.arrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  transition: transform 0.1s ease;
+  margin-right: 5px;
+}
+.rotated {
+  transform: rotate(90deg);
+}
+
+.key {
+  color: var(--key-color);
+  font-weight: 600;
+}
+.string {
+  color: var(--string-color);
+}
+.number {
+  color: var(--number-color);
+}
+.bracket {
+  color: var(--bracket-color);
+}
+
+.children {
+  border-left: 1px solid #eee;
+  padding-left: 5px;
+}
