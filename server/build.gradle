@@ -52,7 +52,10 @@ repositories {
 }
 
 configurations {
-    webapp
+    frontendFiles {
+        canBeConsumed = false
+        canBeResolved = true
+    }
     configureEach {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
@@ -65,37 +68,10 @@ configurations {
 // Profile support
 if (!hasProperty('buildProfile') || getProperty('buildProfile') == 'cypress') apply from: "profile-dev.gradle"
 
-// for faster development ignore frontend project and its long build time
-if (hasProperty('buildProfile')) {
-    dependencies {
-        webapp project( ':frontend')
-    }
-
-    def unzippedDir = file('build/resources/main').getAbsolutePath()
-    tasks.register('unzip', Copy) {
-        dependsOn(configurations.webapp)
-        into unzippedDir from zipTree(configurations.webapp.singleFile)
-    }
-    jar.finalizedBy(unzip)
-
-    bootJar {
-        dependsOn(unzip)
-    }
-
-    resolveMainClassName {
-        dependsOn(unzip)
-    }
-
-    compileTestKotlin {
-        dependsOn(unzip)
-    }
-
-    test {
-        dependsOn(unzip)
-    }
-}
-
 dependencies {
+    if (hasProperty('buildProfile')) {
+        frontendFiles project(':frontend')
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
@@ -258,7 +234,6 @@ springBoot {
 
 if (hasProperty('filename')) {
     bootJar {
-        dependsOn(unzip)
         archiveFileName=getProperty('filename')
     }
 }
@@ -387,9 +362,11 @@ jib {
             path {
                 from = file('src/main/jib')
             }
-            path {
-                from = file('build/resources/main/static')
-                into = '/app/resources/static'
+            if (hasProperty('buildProfile')) {
+                path {
+                    from = project(':frontend').tasks.named('prepareFrontendDist').map { it.destinationDir }
+                    into = '/app/resources/static'
+                }
             }
         }
         permissions = [
@@ -402,12 +379,27 @@ jib {
     }
 }
 
+if (project.hasProperty('buildProfile')) {
+    tasks.named('processResources') {
+        // Direct link to the frontend task
+        def frontendTask = project(':frontend').tasks.named('prepareFrontendDist')
+        dependsOn frontendTask
+
+        from(frontendTask) {
+            into 'static'
+        }
+    }
+}
+
 noArg {
     annotation('de.ingrid.igeserver.annotations.NoArgs')
 }
 
 if (hasProperty('buildDockerImage')) {
-    tasks.assemble.dependsOn tasks.jib
+    // Automatically trigger jib when build is called
+    tasks.named('build') {
+        finalizedBy(tasks.named('jib'))
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
