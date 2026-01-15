@@ -71,9 +71,9 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
     }
 
     @Throws(ServerException::class)
-    override fun deserializeRecord(rdf: String?): RecordPLUProperties? {
+    override fun deserializeRecord(serializedRecordProperties: String?): RecordPLUProperties? {
         try {
-            val model = getRdfModel(rdf, Lang.RDFXML)
+            val model = getRdfModel(serializedRecordProperties, Lang.RDFXML)
 //            validationUtils.validateSyntax(model)
             val datasetProperty = model.getProperty(model.getNsPrefixURI("dcat"), "Dataset")
 

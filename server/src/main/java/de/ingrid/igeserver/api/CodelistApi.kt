@@ -99,15 +99,23 @@ interface CodelistApi {
     @GetMapping(value = ["/free-entries/{codelistId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getFreeEntriesWithCounts(
         principal: Principal,
-        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
     ): ResponseEntity<List<FreeEntryUsage>>
 
     @Operation
     @PostMapping(value = ["/free-entries/{codelistId}/replace"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun replaceFreeEntry(
         principal: Principal,
-        @Parameter(description = "Catalog codelist id", required = true) @PathVariable("codelistId") codelistId: String,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
         @Parameter(description = "Replacement instruction", required = true) @RequestBody request: ReplaceFreeEntryRequest,
+    ): ResponseEntity<ReplaceFreeEntryResult>
+
+    @Operation
+    @PostMapping(value = ["/free-entries/{codelistId}/add-to-codelist"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun addFreeEntryToCodelist(
+        principal: Principal,
+        @PathVariable @Parameter(description = "Catalog codelist id", required = true) codelistId: String,
+        @Parameter(description = "Free entry value to add", required = true) @RequestBody value: String,
     ): ResponseEntity<ReplaceFreeEntryResult>
 }
 

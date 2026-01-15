@@ -251,3 +251,11 @@ const val DISTRIBUTOR = """
                         </gmd:MD_Distributor>
                     </gmd:distributor>
 """
+
+const val USE_LIMITATION_CONSTRAINTS = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useLimitation>
+                                <gco:CharacterString>bkg useLimitation constraint</gco:CharacterString>
+                            </gmd:useLimitation>
+                        </gmd:MD_LegalConstraints>
+"""

@@ -39,9 +39,7 @@
                     [for]="picker_at"
                 ></mat-datepicker-toggle>
                 <mat-datepicker #picker_at></mat-datepicker>
-                @if (temporalForm.get("atDate").invalid) {
-                    <mat-error>Dieses Feld ist Pflicht</mat-error>
-                }
+                <mat-error>Dieses Feld ist Pflicht</mat-error>
             </mat-form-field>
         </div>
     } @else if (temporalForm.get("type")?.value === "range") {
@@ -71,9 +69,7 @@
                                 [for]="picker_from"
                             ></mat-datepicker-toggle>
                             <mat-datepicker #picker_from></mat-datepicker>
-                            @if (temporalForm.get("fromDate").invalid) {
-                                <mat-error>Dieses Feld ist Pflicht</mat-error>
-                            }
+                            <mat-error>Dieses Feld ist Pflicht</mat-error>
                         </mat-form-field>
 
                         @if (showTimepicker()) {
@@ -122,9 +118,21 @@
                                 [for]="picker_to"
                             ></mat-datepicker-toggle>
                             <mat-datepicker #picker_to></mat-datepicker>
-                            @if (temporalForm.get("tillDate").invalid) {
-                                <mat-error>Dieses Feld ist Pflicht</mat-error>
-                            }
+                            <mat-error>
+                                @if (
+                                    temporalForm
+                                        .get("tillDate")
+                                        .hasError("required")
+                                ) {
+                                    Dieses Feld ist Pflicht
+                                } @else if (
+                                    temporalForm
+                                        .get("tillDate")
+                                        .hasError("dateRange")
+                                ) {
+                                    Ende muss hinter dem Start liegen
+                                }
+                            </mat-error>
                         </mat-form-field>
 
                         @if (showTimepicker()) {

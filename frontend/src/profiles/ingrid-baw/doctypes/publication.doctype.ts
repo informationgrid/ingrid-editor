@@ -97,7 +97,7 @@ export class PublicationDoctypeBaw extends IngridShared {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     // Add new fields
     this.common.addSharedFields(this, fieldConfig);
-    const alternateTitlePosition = this.findFieldElementWithId(
+    const alternateTitlePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "alternateTitle",
     );

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "PublicationBkg",
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "../publication-base.schema.json"
+    }
+  ],
+  "properties": {
+    "resource": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "../refs/general.schema.json#/definitions/resource"
+        }
+      ],
+      "properties": {
+        "useConstraintsBkg": {
+          "anyOf": [
+            {
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessConstraintsBkg": {
+          "anyOf": [
+            {
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "useConstraintsBkgComment": {
+          "type": ["null", "string"]
+        },
+        "useConstraintsBkgSource": {
+          "type": ["null", "string"]
+        },
+        "accessConstraintsBkgComment": {
+          "type": ["null", "string"]
+        }
+      }
+    }
+  }
+}

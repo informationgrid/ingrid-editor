@@ -31,6 +31,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-ingrid-bast"));
     case "ingrid-baw":
       return from(import("./profile-ingrid-baw"));
+    case "ingrid-bkg":
+      return from(import("./profile-ingrid-bkg"));
     case "ingrid-hmdk":
       return from(import("./profile-ingrid-hmdk"));
     case "ingrid-kommunal-st":

@@ -178,4 +178,23 @@ class CodelistApiController(
         )
         return ResponseEntity.ok(result)
     }
+
+    @Transactional
+    override fun addFreeEntryToCodelist(
+        principal: Principal,
+        codelistId: String,
+        value: String,
+    ): ResponseEntity<ReplaceFreeEntryResult> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val newKey = handler.addEntryToCatalogCodelist(catalogId, codelistId, value)
+
+        val result = codelistUsageService.replaceFreeEntryWithKeyed(
+            catalogId = catalogId,
+            codelistId = codelistId,
+            fromValue = value,
+            toKey = newKey,
+            toValue = value,
+        )
+        return ResponseEntity.ok(result)
+    }
 }
