@@ -1,16 +1,15 @@
 import { inject, Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { IgeError } from "../../../../app/models/ige-error";
 import { DocumentService } from "../../../../app/services/document/document.service";
-import { firstValueFrom } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { firstValueFrom, Observable, of } from "rxjs";
 import {
   DocumentWithMetadata,
   Metadata,
 } from "../../../../app/models/ige-document";
 import { GeneralStore } from "../../../../app/store/general.store";
-import { CodelistService } from "../../../../app/services/codelist/codelist.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
+import { catchError, map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -21,6 +20,15 @@ export class DataSiteService {
   private generalStore = inject(GeneralStore);
   private codelistStore = inject(CodelistStore);
   private behaviourService = inject(BehaviourService);
+
+  doiExists(doi: string): Observable<boolean> {
+    const dataciteURL =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
+    return this.http.get<any>(`${dataciteURL}/dois/${doi}`).pipe(
+      map(() => true),
+      catchError(() => of(false)),
+    );
+  }
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
     const generalResourceType = model.publication.generalResourceType;
@@ -59,30 +67,37 @@ export class DataSiteService {
         },
       ],
       rightsList: this.getRightsList(model),
-      geoLocations: [this.getGeoLocations(model)],
+      geoLocations: this.getGeoLocations(model),
       url: `${portalURL}${metadata.uuid}`,
     };
   }
 
-  uploadDOI(username: string, password: string, attributes: any) {
+  uploadDOI(
+    username: string,
+    password: string,
+    attributes: any,
+    create: boolean,
+  ): Observable<any> {
     const dataciteURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
-    // TODO: handle create vs update operation
     let headers: any = {
       "Content-Type": "application/vnd.api+json",
       Authorization: "Basic " + btoa(username + ":" + password),
     };
-
-    return this.http.post<any>(
-      `${dataciteURL}/dois`,
-      {
-        data: {
-          type: "dois",
-          attributes: attributes,
-        },
+    const body = {
+      data: {
+        type: "dois",
+        attributes: attributes,
       },
-      { headers },
-    );
+    };
+
+    if (create) {
+      return this.http.put<any>(`${dataciteURL}/dois/${attributes.doi}`, body, {
+        headers,
+      });
+    } else {
+      return this.http.post<any>(`${dataciteURL}/dois`, body, { headers });
+    }
   }
 
   private async getCreator(contacts: any[]): Promise<any> {

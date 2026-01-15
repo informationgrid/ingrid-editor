@@ -5,18 +5,32 @@
     [disabled]="documentResource.error() != null"
 >
     <ng-container content>
-        @if (documentResource.error()) {
-            <div class="error-box">
-                {{
-                    $any(documentResource.error())?.message ||
-                        documentResource.error()
-                }}
+        @if (doiExistsResource.isLoading() || documentResource.isLoading()) {
+            <div>
+                Dokument wird vorbereitet
+                <mat-spinner [diameter]="30"></mat-spinner>
             </div>
         } @else {
-            <pre
-                >{{ document() | json }}
-                </pre
-            >
+            <div class="padding-vertical">
+                @if (doiExistsResource.value()) {
+                    Das Dokument existiert bereits und wird aktualisiert.
+                } @else {
+                    Das Dokument ist noch nicht vorhanden und wird neu erstellt.
+                }
+            </div>
+            @if (documentResource.error()) {
+                <div class="error-box">
+                    {{
+                        $any(documentResource.error())?.message ||
+                            documentResource.error()
+                    }}
+                </div>
+            } @else {
+                <div class="section-title">JSON-Ansicht</div>
+                <div class="json-wrapper">
+                    <ige-json-view [data]="document()"></ige-json-view>
+                </div>
+            }
         }
     </ng-container>
 </ige-dialog-template>

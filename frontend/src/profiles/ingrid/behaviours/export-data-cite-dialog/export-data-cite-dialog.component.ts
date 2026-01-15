@@ -6,10 +6,12 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { FormsModule } from "@angular/forms";
 import { FormStateService } from "../../../../app/+form/form-state.service";
-import { JsonPipe } from "@angular/common";
 import { CredentialsDialogComponent } from "../../../../app/formly/types/update-get-capabilities/credentials-dialog/credentials-dialog.component";
-import { filter, tap } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 import { switchMap } from "rxjs";
+import { rxResource } from "@angular/core/rxjs-interop";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { JsonViewComponent } from "../../../../app/shared/json-view/json-view.component";
 
 @Component({
   selector: "ige-export-data-cite-dialog",
@@ -18,7 +20,8 @@ import { switchMap } from "rxjs";
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    JsonPipe,
+    MatProgressSpinner,
+    JsonViewComponent,
   ],
   templateUrl: "./export-data-cite-dialog.component.html",
   styleUrl: "./export-data-cite-dialog.component.scss",
@@ -29,9 +32,6 @@ export class ExportDataCiteDialogComponent {
   formService = inject(FormStateService);
   dialog = inject(MatDialog);
 
-  username = "";
-  password = "";
-
   documentResource = resource({
     params: () => ({
       value: this.formService.getForm().value,
@@ -41,6 +41,13 @@ export class ExportDataCiteDialogComponent {
       this.dataSiteService.createDataCite(params.value, params.metadata),
   });
   document = computed(() => this.documentResource.value());
+
+  doiExistsResource = rxResource({
+    params: () => ({
+      doi: this.formService.getForm().value.publication.doi,
+    }),
+    stream: ({ params }) => this.dataSiteService.doiExists(params.doi),
+  });
 
   submit() {
     this.dialog
@@ -53,11 +60,10 @@ export class ExportDataCiteDialogComponent {
             result.username,
             result.password,
             this.document(),
+            this.doiExistsResource.value(),
           ),
         ),
       )
-      .subscribe((doi) => {
-        this.dlgRef.close(true);
-      });
+      .subscribe(() => this.dlgRef.close(true));
   }
 }
