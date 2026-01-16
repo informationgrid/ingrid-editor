@@ -1,11 +1,13 @@
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataModelTransformer
+@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataRDFTransformer
 @import gg.jte.support.ForSupport
 @import java.util.Map
 
 @param Map<String, Object> map
 
 !{var model = ((OpenDataModelTransformer)map.get("model"));}
+!{var rdf = ((OpenDataRDFTransformer)map.get("rdf"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
 
 {
@@ -123,5 +125,6 @@
             @endif
         }
         @endif
-}
+},
+"rdf": "${rdf.getRDF()}"
 }

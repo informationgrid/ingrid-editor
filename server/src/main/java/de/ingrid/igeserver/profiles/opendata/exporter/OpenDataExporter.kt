@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
@@ -57,6 +58,7 @@ class OpenDataExporter(
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
+    val generalProperties: GeneralProperties,
 ) : IgeExporter {
 
     val log = logger()
@@ -104,6 +106,7 @@ class OpenDataExporter(
             mapOf(
                 "map" to mapOf(
                     "model" to OpenDataModelTransformer(config),
+                    "rdf" to OpenDataRDFTransformer(config, generalProperties.appUrl, uploadConfig.uploadExternalUrl),
                     "catalog" to catalogService.getCatalogById(catalogId),
                 ),
             ),
