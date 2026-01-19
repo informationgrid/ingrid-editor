@@ -27,12 +27,12 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderNumber
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getSubsoilKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getPath
-import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : ProjectModelTransformer(transformerConfig) {
@@ -62,5 +62,5 @@ open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : Pr
 
     override val hierarchyLevelName = "project"
 
-    val orderNumber = if (forRepository()) null else doc.data.getString("orderNumber")
+    val orderNumber = if (forRepository()) null else getOrderNumber(this)
 }

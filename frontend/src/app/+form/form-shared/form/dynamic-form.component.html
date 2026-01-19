@@ -98,9 +98,9 @@
         @if (showJson()) {
             <as-split-area [size]="20">
                 Metadata:
-                <pre>{{ metadata() | json }}</pre>
+                <ige-json-view [data]="metadata()"></ige-json-view>
                 Document:
-                <pre>{{ form.value | json }}</pre>
+                <ige-json-view [data]="form.value"></ige-json-view>
             </as-split-area>
         }
     </as-split>

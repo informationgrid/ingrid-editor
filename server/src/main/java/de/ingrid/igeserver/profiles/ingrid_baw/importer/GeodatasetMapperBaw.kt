@@ -60,6 +60,20 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     fun getOrderNumber(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
         ?.mdAggregateInformation?.aggregateDataSetName?.citation?.identifier?.firstOrNull()?.mdIdentifier?.code?.value
 
+    fun getBawOrderInfo(): KeyValue? {
+        val number = getOrderNumber()
+        val title = getOrderTitle()
+        if (number == null && title == null) return null
+
+        val combinedValue = when {
+            number != null && title != null -> "$number - $title"
+            number != null -> number
+            else -> title!!
+        }.trim()
+
+        return KeyValue(codeListService.getCodeListEntryId("bawOrderInfo", combinedValue, "de"), combinedValue, "bawOrderInfo")
+    }
+
     fun getTimestep(): Double? = isoData.data.dataQualityInfo
         ?.mapNotNull { it.dqDataQuality }
         ?.flatMap { it.report ?: emptyList() }
