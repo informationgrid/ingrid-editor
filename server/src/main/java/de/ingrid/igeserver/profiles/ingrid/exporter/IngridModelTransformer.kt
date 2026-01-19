@@ -164,7 +164,7 @@ open class IngridModelTransformer(
         return if (number != null && unit != null) getISORepresentation(unit, number) else null
     }
 
-    private fun getISORepresentation(unit: String, number: Int): String = when (unit) {
+    internal fun getISORepresentation(unit: String, number: Int): String = when (unit) {
         "Tage" -> "P${number}D"
         "Jahre" -> "P${number}Y"
         "Monate" -> "P${number}M"

@@ -50,6 +50,9 @@ class NLPVProfile(
     override val identifier = ID
     override val title = "InGrid Katalog (NLPV)"
     override val parentProfile = "ingrid"
+
+    override val indexExportFormatID = "ingridIDFNLPV"
+
     init {
         isoImport.profileMapper[ID] = isoImportNLPV
     }

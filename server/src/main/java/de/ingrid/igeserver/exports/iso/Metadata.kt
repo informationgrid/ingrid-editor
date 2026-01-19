@@ -52,7 +52,7 @@ data class Metadata(
     val portrayalCatalogueInfo: List<PortrayalCatalogueInfo>? = null,
     val metadataConstraints: List<String>? = null,
     val applicationSchemaInfo: List<String>? = null,
-    val metadataMaintenance: String? = null,
+    val metadataMaintenance: MetadataMaintenance? = null,
     val series: List<String>? = null,
     val describes: List<String>? = null,
     val propertyType: List<String>? = null,

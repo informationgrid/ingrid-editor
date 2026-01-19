@@ -25,6 +25,10 @@ data class ResourceMaintenance(
     @JacksonXmlProperty(localName = "MD_MaintenanceInformation") val maintenanceInformation: MaintenanceInformation?,
 )
 
+data class MetadataMaintenance(
+    @JacksonXmlProperty(localName = "MD_MaintenanceInformation") val maintenanceInformation: MaintenanceInformation?,
+)
+
 data class MaintenanceInformation(
     val maintenanceAndUpdateFrequency: MaintenanceFrequencyCode,
     val userDefinedMaintenanceFrequency: UserDefinedMaintenanceFrequency?,

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_nlpv.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -32,6 +33,7 @@ import de.ingrid.mdek.upload.UploadConfig
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import kotlin.reflect.KClass
 
 @Service
 class IngridExporterNLPV(
@@ -62,5 +64,25 @@ class IngridIdfExporterNLPV(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFNLPV")
+    override val typeInfo = super.typeInfo.copy(type = "indexInGridIDFNLPV")
+
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getNlpvModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+
+    override fun getTemplateForDoctype(type: String): String = getNlpvTemplateForDocType(type) ?: super.getTemplateForDoctype(type)
+}
+
+@Service
+class IngridISOExporterNlpv(
+    idfExporter: IngridIdfExporterNLPV,
+) : IngridISOExporter(idfExporter) {
+
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridISONlpv",
+        "ISO 19139 NLPV",
+        "Export von NLPV Dokumenten in ISO für die Vorschau im Editor.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-nlpv"),
+    )
 }

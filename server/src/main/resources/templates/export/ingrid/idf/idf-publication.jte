@@ -4,7 +4,8 @@
 @import gg.jte.Content
 
 @param Map<String, Object> map
-@param Content additionalCitation
+@param Content additionalCitation = null
+@param Content extraContent = null
 
 !{var page = ((PublicationModelTransformer)map.get("model"));}
 !{var publication = page.getPublication();}
@@ -162,4 +163,7 @@
             </gmd:DQ_DataQuality>
         </gmd:dataQualityInfo>
     @endif
+
+    ${extraContent}
+
 `, abstract_text = page.getDescription())

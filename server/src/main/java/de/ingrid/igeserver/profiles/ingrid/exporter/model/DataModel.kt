@@ -478,6 +478,7 @@ data class ExtraInfo(
 data class IngridMetadata(
     val language: KeyValue,
     val characterSet: KeyValue?,
+    val maintenanceInformation: MaintenanceInformation?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

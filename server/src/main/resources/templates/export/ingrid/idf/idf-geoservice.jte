@@ -2,8 +2,10 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 @import java.util.Map
+@import gg.jte.Content
 
 @param Map<String, Object> map
+@param Content extraContent = null
 
 !{var page = ((GeodataserviceModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
@@ -103,4 +105,7 @@
         </gmd:dataQualityInfo>
     @endif
     <idf:hasAccessConstraint>${page.hasAccessConstraints()}</idf:hasAccessConstraint>
+
+    ${extraContent}
+
 `, abstract_text = page.getAbstractText())
