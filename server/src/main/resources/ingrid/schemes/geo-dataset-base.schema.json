@@ -92,32 +92,41 @@
           ]
         },
         "georectified": {
-          "checkPointAvailability": {
-            "type": "boolean"
-          },
-          "checkPointDescription": {
-            "type": "string"
-          },
-          "cornerPoints": {
-            "type": ["null", "number"]
-          },
-          "pointInPixel": {
-            "anyOf": [
-              {
-                "$ref": "../../general.schema.json#/definitions/KeyValue"
-              },
-              {
-                "type": "null"
-              }
-            ]
+          "type": "object",
+          "properties": {
+            "checkPointAvailability": {
+              "type": "boolean"
+            },
+            "checkPointDescription": {
+              "type": "string"
+            },
+            "cornerPoints": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "pointInPixel": {
+              "anyOf": [
+                {
+                  "$ref": "../../general.schema.json#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           }
         },
         "georeferenceable": {
-          "orientationParameterAvailability": {
-            "type": "boolean"
-          },
-          "controlPointAvaliability": {
-            "type": "boolean"
+          "type": "object",
+          "properties": {
+            "orientationParameterAvailability": {
+              "type": "boolean"
+            },
+            "controlPointAvaliability": {
+              "type": "boolean"
+            }
           }
         }
       }
@@ -246,28 +255,35 @@
     "vectorSpatialRepresentation": {
       "type": "array",
       "items": {
-        "topologyLevel": {
-          "anyOf": [
-            {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "geometricObjectType": {
-          "anyOf": [
-            {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "geometricObjectCount": {
-          "type": ["null", "number"]
+        "type": "object",
+        "unevaluatedProperties": false,
+        "properties": {
+          "topologyLevel": {
+            "anyOf": [
+              {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "geometricObjectType": {
+            "anyOf": [
+              {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "geometricObjectCount": {
+            "type": [
+              "null",
+              "number"
+            ]
+          }
         }
       }
     },
