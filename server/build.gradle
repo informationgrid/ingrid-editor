@@ -318,6 +318,8 @@ tasks.named('compileKotlin') {
 
 test {
     ignoreFailures = true
+    maxHeapSize = "2g"
+    forkEvery = 100
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
 }
