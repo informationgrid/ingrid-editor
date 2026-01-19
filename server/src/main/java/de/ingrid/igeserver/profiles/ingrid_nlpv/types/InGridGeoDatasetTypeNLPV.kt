@@ -43,5 +43,5 @@ class InGridGeoServiceTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridGeoServiceTyp
 @Component
 class InGridPublicationTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(PROFILE_ID)
-    override val jsonSchema = "/ingrid/schemes/nlpv/publication.schema.json"
+    override val jsonSchema = "/ingrid/schemes/nlpv/publication_nlpv.schema.json"
 }

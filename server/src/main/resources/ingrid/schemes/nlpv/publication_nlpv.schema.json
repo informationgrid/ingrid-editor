@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/nlpv/PublicationNlpv",
+  "allOf": [
+    {
+      "$ref": "../publication-base.schema.json"
+    }
+  ],
+  "properties": {
+    "fees": {
+      "type": ["null", "string"]
+    },
+    "geometryContext": {
+      "type": "array",
+      "items": {
+        "$ref": "../../../general.schema.json#/definitions/GeometryContext"
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}
