@@ -128,8 +128,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   ];
 
   imageLinks: any = [];
+  disableUpload: boolean = false;
 
   ngOnInit(): void {
+    this.disableUpload = this.props.disableUpload ?? false;
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
