@@ -214,17 +214,8 @@ open class IngridModelTransformer(
             if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
 
         val baseJson = codelists.getData("6500", constraint.title?.key)
-        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty().replace("\"", "\\\\\"")}\""
 
-        val json = baseJson?.let {
-            if (it.contains(",\"quelle\":\"\"".toRegex())) {
-                // replace existing source string
-                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
-            } else {
-                // add source string
-                it.replace("}$".toRegex(), "$sourceString}")
-            }
-        }
+        val json = getUseConstraintJson(baseJson, constraint.source)
 
         UseConstraintTemplate(
             CharacterStringModel(
@@ -238,7 +229,23 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
+    private fun getUseConstraintJson(baseJson: String?, source: String?): String? {
+        val sourceString = ",\"quelle\":\"${source.orEmpty().replace("\"", "\\\\\"")}\""
+
+        return baseJson?.let {
+            if (it.contains(",\"quelle\":\"\"".toRegex())) {
+                // replace existing source string
+                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+            } else {
+                // add source string
+                it.replace("}$".toRegex(), "$sourceString}")
+            }
+        }
+    }
+
     fun containsSpatialRepresentation(): Boolean = gridSpatialRepresentation != null && !gridSpatialRepresentation.isAllFieldsNullOrEmpty()
+
+    open val useAndAccessConstraintsCodelistValues: List<String> = listOf("otherRestrictions")
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val georectified = gridSpatialRepresentation?.georectified
@@ -474,7 +481,11 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(it.label, adaptGemetLinks(it.id), it.alternativeLabel) }
+        keywords = data.keywords?.gemet?.map {
+            val label = if (codelists.catalogLanguage == "en") it.alternativeLabel else it.label
+            val alternativeLabel = if (codelists.catalogLanguage == "en") null else it.alternativeLabel
+            KeywordIso(label, adaptGemetLinks(it.id), alternativeLabel)
+        }
             ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1",
@@ -611,11 +622,23 @@ open class IngridModelTransformer(
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
-    val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
+
+    open fun getAccessConstraints(): List<AccessConstraint> = if (availabilityAccessConstraints.isEmpty()) {
+        emptyList()
+    } else {
+        listOf(
+            AccessConstraint(
+                useAndAccessConstraintsCodelistValues,
+                availabilityAccessConstraints,
+            ),
+        )
+    }
+
+    private val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         CharacterStringModel(
-            "(?<=\\\"de\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
+            getValueFromCodelistData("6010", it.key, codelists.catalogLanguage)
                 ?: codelists.getValue("6010", it) ?: "",
-            "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value,
+            getValueFromCodelistData("6010", it.key, "url"),
         )
     } ?: emptyList()
 
@@ -1029,6 +1052,7 @@ open class IngridModelTransformer(
                     data.service.version?.firstOrNull(),
                     data.service.type?.key,
                 ),
+                functionValue = "information",
             )
         }
         ?: emptyList()
@@ -1248,7 +1272,11 @@ open class IngridModelTransformer(
         true -> if (codelists.catalogLanguage == "en") {
             codelists.getValue("6005", result.specification, "en")
         } else {
-            codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+            codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue(
+                "6005",
+                result.specification,
+                "de",
+            )
         }
 
         else -> codelists.getCatalogCodelistValue("6006", result.specification)
@@ -1283,6 +1311,20 @@ open class IngridModelTransformer(
         "scalar" -> "ScalarFeature"
         "other" -> "OtherFeature"
         else -> "OtherFeature"
+    }
+
+    fun getValueFromCodelistData(codelistId: String, key: String?, field: String): String? {
+        val jsonData = codelists.getData(
+            codelistId,
+            key,
+        )
+
+        if (jsonData.isNullOrEmpty()) return null
+
+        return jacksonObjectMapper().readValue(
+            jsonData,
+            JsonNode::class.java,
+        ).getString(field)
     }
 }
 

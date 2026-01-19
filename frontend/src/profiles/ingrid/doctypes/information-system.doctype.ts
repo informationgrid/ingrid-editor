@@ -119,7 +119,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridInformationSystem),
       this.addFileReferences(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };

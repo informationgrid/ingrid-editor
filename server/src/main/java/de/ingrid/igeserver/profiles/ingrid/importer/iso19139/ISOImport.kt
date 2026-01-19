@@ -100,6 +100,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
         } catch (ex: Exception) {
+            log.error("Error during ISO import", ex)
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
 

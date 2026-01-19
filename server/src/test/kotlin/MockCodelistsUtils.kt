@@ -24,6 +24,8 @@ import io.mockk.every
 fun mockCodelists(codelistHandler: CodelistHandler) {
     val codelists = CodeListService().initialCodelists
 
+    every { codelistHandler.initialCodelists } answers { codelists }
+
     every { codelistHandler.getCodelistValue(any(), any()) } answers {
         codelists
             .find { it.id == firstArg() }
@@ -108,6 +110,16 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
     every { codelistHandler.getCatalogCodelistValue(any(), "3390", any(), any()) } answers {
         when (thirdArg<String>()) {
             "5" -> "ComputationalNotebook"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
+
+    every { codelistHandler.getCatalogCodelistValue(any(), "6250", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "7" -> "Hessen"
             else -> {
                 println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
                 null

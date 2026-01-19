@@ -60,6 +60,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         every { catalogService.getCatalogById(any()) } returns Catalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
+        every { catalogService.getCatalogById(any()) } returns Catalog()
+        every { documentService.catalogService } returns catalogService
     }
 
     @Test

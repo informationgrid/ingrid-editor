@@ -160,7 +160,7 @@ export class PublicationDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridPublication),
       this.addFileReferences(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };
