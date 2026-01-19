@@ -351,6 +351,16 @@
               "type": "null"
             }
           ]
+        },
+        "maintenanceInformation": {
+          "anyOf": [
+            {
+              "$ref": "../refs/general.schema.json#/definitions/maintenanceInformation"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
