@@ -159,6 +159,7 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
   isGeoDataset: boolean = false;
+  disableUpload: boolean = false;
   private thesaurusTopics: boolean = false;
 
   codelistIds = {
@@ -372,6 +373,7 @@ export abstract class IngridShared extends BaseDoctype {
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
+            disableUpload: this.disableUpload,
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
