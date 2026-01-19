@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.exports.ingrid
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
@@ -58,12 +60,17 @@ fun updateDatestampInExpectedXml(xml: String): String {
     return result
 }
 
-fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
+fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null, mergeAdditional: Boolean = false): String {
     val input = SchemaUtils.getJsonFileContent(file)
     val doc = convertToDocument(input)
 
     if (additional != null) {
-        doc.data.setAll<ObjectNode>(additional)
+        if (mergeAdditional) {
+            val mapper = ObjectMapper()
+            mapper.readerForUpdating(doc.data).readValue<JsonNode>(additional)
+        } else {
+            doc.data.setAll<ObjectNode>(additional)
+        }
         doc.catalog = Catalog().apply { identifier = "test-catalog" }
     }
 
