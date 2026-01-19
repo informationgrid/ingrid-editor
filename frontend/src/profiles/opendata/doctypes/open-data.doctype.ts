@@ -24,6 +24,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
 import { of } from "rxjs";
+import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 
@@ -41,6 +42,10 @@ export class OpenDataDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
+
+  options = {
+    spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
+  };
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -248,7 +253,7 @@ export class OpenDataDoctype extends BaseDoctype {
       ]),
       this.addSection("Raumbezüge", [
         this.addSpatial("spatial", "Raumbezüge", {
-          limitTypes: ["free", "wkt"],
+          limitTypes: this.options.spatialTypes,
         }),
         this.addSelect(
           "politicalGeocodingLevel",

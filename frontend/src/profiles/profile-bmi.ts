@@ -41,6 +41,7 @@ class BmiComponent extends OpenDataComponent {
   ) {
     super(service, reportsService, dataset, folder, address);
     reportsService.setFilter((route) => route.path != "url-check");
+    dataset.options.spatialTypes = ["free", "wkt"];
   }
 }
 
