@@ -75,9 +75,11 @@ class DCATAPDEOpenDataImporter(
         return output.toString()
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains(
-        "http://dcat-ap.de/def/dcatde/",
-    )
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") &&
+        fileContent.contains("<rdf:RDF") &&
+        fileContent.contains(
+            "http://dcat-ap.de/def/dcatde/",
+        )
 
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(
