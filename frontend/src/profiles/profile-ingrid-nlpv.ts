@@ -35,6 +35,7 @@ class InGridNLPVComponent extends InGridComponent {
 
   constructor() {
     super();
+    this.isoView.isoExportFormat = "ingridISONlpv";
     this.modifyFormFieldConfiguration();
   }
 
@@ -57,11 +58,24 @@ class InGridNLPVComponent extends InGridComponent {
   }
 
   private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
+    // fees
     const orderInfoPosition = this.common.findFieldElementWithId(
       fieldConfig,
       "orderInfo",
     );
     this.common.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
+
+    // metadataMaintenance/maintenanceAndUpdateFrequency
+    const metadataLanguagePosition = this.common.findFieldElementWithId(
+      fieldConfig,
+      // "language",
+      "metadata",
+    );
+    console.log("metadataLanguagePosition", metadataLanguagePosition);
+    this.common.addAfter(
+      metadataLanguagePosition,
+      this.common.getMetadataMaintenanceGroupConfig(),
+    );
   }
 }
 
