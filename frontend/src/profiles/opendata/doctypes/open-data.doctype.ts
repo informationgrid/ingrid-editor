@@ -227,10 +227,11 @@ export class OpenDataDoctype extends BaseDoctype {
               expression: (ctrl) => ctrl.value?.length > 0,
               message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
             },
-            requiredLicense: {
-              expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
+            requiredUrlAndLicense: {
+              expression: (ctrl) =>
+                ctrl.value?.every((entry) => entry.license && entry.link?.uri),
               message:
-                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden (Ressource bearbeiten).",
+                "Fehler: Es muss für jede Ressource eine Lizenz und ein Link (bzw. Dateiname) angegeben werden (Ressource bearbeiten).",
             },
           },
         }),
