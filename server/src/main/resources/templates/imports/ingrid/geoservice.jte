@@ -6,6 +6,7 @@
 @param Content additionalKeywords = null
 @param Content additionalResource = null
 @param Content additionalProperties = null
+@param Content additionalMetadata = null
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
         @if(model.isInspireIdentified()), "isInspireIdentified": "relevant"@endif
@@ -13,6 +14,7 @@
     `)
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage())
+        ${additionalMetadata}
     },
     "service": {
         "classification": @template.imports.ingrid.partial.key-values(list = model.getServiceCategories()),

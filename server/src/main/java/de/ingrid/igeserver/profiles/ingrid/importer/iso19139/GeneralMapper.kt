@@ -27,6 +27,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Address
 import de.ingrid.igeserver.exports.iso.CIContact
 import de.ingrid.igeserver.exports.iso.Contact
+import de.ingrid.igeserver.exports.iso.MaintenanceInformation
 import de.ingrid.igeserver.exports.iso.TimePeriod
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -748,9 +749,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
             if (result.isNull()) null else result
         } ?: emptyList()
 
-    fun getMaintenanceInterval(): MaintenanceInterval {
-        val maintenanceInformation =
-            metadata.identificationInfo[0].identificationInfo?.resourceMaintenance?.maintenanceInformation
+    fun getMaintenanceInterval(): MaintenanceInterval = getGeneralMaintenanceInterval(metadata.identificationInfo[0].identificationInfo?.resourceMaintenance?.maintenanceInformation)
+
+    internal fun getGeneralMaintenanceInterval(maintenanceInformation: MaintenanceInformation?): MaintenanceInterval {
         val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
         val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "iso")
         val updateFrequencyValue = updateFrequencyKey?.let { codeListService.getCodelistValue("518", updateFrequencyKey, catalogLanguage) } ?: updateFrequency

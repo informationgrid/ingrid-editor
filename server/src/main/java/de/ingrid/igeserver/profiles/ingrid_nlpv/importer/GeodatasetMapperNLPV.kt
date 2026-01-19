@@ -21,8 +21,11 @@ package de.ingrid.igeserver.profiles.ingrid_nlpv.importer
 
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.MaintenanceInterval
 
 class GeodatasetMapperNLPV(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val fees: String = isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(0)?.mdStandardOrderProcess?.fees?.value ?: ""
+
+    fun getMetadataMaintenanceInterval(): MaintenanceInterval = getGeneralMaintenanceInterval(metadata.metadataMaintenance?.maintenanceInformation)
 }

@@ -44,6 +44,15 @@ class ISOImportNLPV : ISOImportProfile {
             )
         }
 
+        "publication" -> {
+            val nlpvIsoData = isoData.copy(importSettings = ImportSettings(importGeometryContext = true))
+            // TODO implement a publication-specific mapper
+            ImportProfileData(
+                "imports/ingrid-nlpv/geodataset.jte",
+                GeodatasetMapperNLPV(nlpvIsoData),
+            )
+        }
+
         else -> null
     }
 }

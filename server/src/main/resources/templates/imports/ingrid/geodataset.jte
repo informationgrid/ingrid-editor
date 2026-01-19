@@ -7,6 +7,7 @@
 @param Content additionalResource = null
 @param Content additionalLineageSource = null
 @param Content additionalProperties = null
+@param Content additionalMetadata = null
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
         ,
@@ -19,6 +20,7 @@
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.imports.ingrid.partial.key-value(item = model.getCharacterSet())
+        ${additionalMetadata}
     },
     "resolution": [
     @for(var resolution : ForSupport.of(model.getResolutions()))
