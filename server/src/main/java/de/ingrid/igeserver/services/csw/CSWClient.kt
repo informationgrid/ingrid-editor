@@ -183,7 +183,7 @@ class CSWClient(
     private fun createCswTransactionRequest(xmlDoc: Document, operation: String): String {
         val elementName = if (operation == "Update") "csw:Update" else "csw:Insert"
         return """
-            <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="shttp://www.opengis.net/cat/csw/2.0.2">
+            <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
                 <$elementName>${transformDocumentToString(xmlDoc)}</$elementName>
             </csw:Transaction>
         """.trimIndent()
@@ -267,7 +267,6 @@ class CSWClient(
                 "xsi" -> "http://www.w3.org/2001/XMLSchema-instance"
                 "inspire_ds" -> "http://inspire.ec.europa.eu/schemas/inspire_ds/1.0"
                 "inspire_common" -> "http://inspire.ec.europa.eu/schemas/common/1.0"
-
                 else -> null
             }
 
