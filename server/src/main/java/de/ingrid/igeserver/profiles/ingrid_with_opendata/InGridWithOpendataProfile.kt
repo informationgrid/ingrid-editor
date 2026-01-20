@@ -53,15 +53,8 @@ class InGridWithOpendataProfile(
 
     override val indexExportFormatID = "indexInGridIDFOpenInGrid"
 
-    init {
-//        openDataType.profiles = emptyList<>()
-    }
-
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-//        val catalogRef = catalogRepo.findByIdentifier(catalogId)
-
         opendataProfile.initCatalogCodelists(catalogId, codelistId)
-
         super.initCatalogCodelists(catalogId, codelistId)
     }
 
