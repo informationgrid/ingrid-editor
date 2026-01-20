@@ -374,7 +374,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         )
         try {
             userInfo.currentCatalog?.type?.let {
-                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+                userInfo.linkedProfiles = catalogService.getCatalogProfile(it).linkedProfiles
             }
         } catch (ex: NotFoundException) {
             // ignore not activated catalog
@@ -394,7 +394,9 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         if (lastLoginKeyCloak != null) {
             when (recentLogins.size) {
                 0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+
                 1 -> recentLogins.add(lastLoginKeyCloak)
+
                 else -> {
                     if (recentLogins.size > 2) {
                         logger.warn("More than two recent logins received! Using last 2 values")

@@ -176,7 +176,7 @@ class ImportTask(
             .toSet()
             .forEach {
                 // will throw an exception if document is not known in profile
-                documentService.getDocumentType(it, profile.identifier, profile.parentProfile)
+                documentService.getDocumentType(it, profile.identifier, profile.linkedProfiles)
             }
     }
 

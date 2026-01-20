@@ -52,7 +52,7 @@ class KrznProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (KRZN)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
 
@@ -69,6 +69,7 @@ class KrznProfile(
                 codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
                 return
             }
+
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
 

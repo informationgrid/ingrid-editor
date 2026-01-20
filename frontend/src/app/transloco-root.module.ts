@@ -41,7 +41,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     return this.configService.$userInfo.pipe(
       switchMap((info) => {
         const profile = info?.currentCatalog?.type;
-        const parentProfile = info?.parentProfile;
+        const linkedProfiles = info?.linkedProfiles || [];
         const assetsDir =
           this.configService.getConfiguration().contextPath + "assets";
 
@@ -50,15 +50,13 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         ];
 
         if (profile !== undefined) {
-          if (parentProfile) {
+          linkedProfiles.forEach((lp) => {
             sources.push(
               this.http
-                .get<Translation>(
-                  `${assetsDir}/${parentProfile}/i18n/${lang}.json`,
-                )
+                .get<Translation>(`${assetsDir}/${lp}/i18n/${lang}.json`)
                 .pipe(catchError(() => of({}))),
             );
-          }
+          });
           sources.push(
             this.http
               .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
@@ -67,7 +65,13 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         }
 
         return combineLatest(sources).pipe(
-          map((files) => deepMerge(files[0], files[1], files[2])),
+          map((files) => {
+            let result = files[0];
+            for (let i = 1; i < files.length; i++) {
+              result = deepMerge(result, files[i]);
+            }
+            return result;
+          }),
         );
       }),
     );

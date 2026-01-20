@@ -32,8 +32,8 @@ interface CatalogProfile {
     val title: String
     val description: String?
     val indexExportFormatID: String
-    val parentProfile: String?
-        get() = null
+    val linkedProfiles: List<String>
+        get() = emptyList()
 
     @get:JsonIgnore
     val indexIdField: IndexIdFieldConfig
