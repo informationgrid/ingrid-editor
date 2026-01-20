@@ -175,7 +175,7 @@ class CSWClient(
                 setBody(request)
             }.bodyAsText()
         } catch (e: Exception) {
-            log.error("Failed to execute CSW Request: ${e.message}", e)
+            log.error("Failed to execute CSW Request to endpoint '$endpoint': ${e.message}", e)
             null
         }
     }
