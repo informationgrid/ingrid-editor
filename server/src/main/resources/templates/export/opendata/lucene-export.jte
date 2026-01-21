@@ -11,8 +11,8 @@
 !{var catalog = ((Catalog)map.get("catalog"));}
 
 {
-"collection.name": "${catalog.getName()}",
-"collection.id": "${catalog.getIdentifier()}",
+    "collection.name": "${catalog.getName()}",
+    "collection.id": "${catalog.getIdentifier()}",
     "partner": [
 
     ],
@@ -23,9 +23,9 @@
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "${catalog.getName()}",
     "t01_object.obj_id": "${model.getUuid()}",
-"id": "${model.getUuid() }",
-    "created": "${model.getCreated() }",
-    "issued": "${model.getCreated() }",
+    "id": "${model.getUuid() }",
+<%--    "created": "${model.getCreated() }",--%>
+<%--    "issued": "${model.getCreated() }",--%>
     "modified": "${model.getModified() }",
     "title": "${model.getTitle() }",
     "description": "${model.getDescription() }",
