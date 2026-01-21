@@ -18,21 +18,24 @@
       "title": "KeyValue"
     },
     "Date": {
-      "Date": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
+      "type": "object",
+      "properties": {
+        "Date": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            }
           },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [],
-        "title": "Date"
+          "required": [],
+          "title": "Date"
+        }
       }
     },
     "PointOfContact": {
@@ -264,20 +267,32 @@
           "type": ["string", "null"]
         },
         "link": {
-          "asLink": {
-            "type": "boolean"
-          },
-          "value": {
-            "type": ["string", "null"]
-          },
-          "uri": {
-            "type": ["string", "null"]
-          },
-          "lastModified": {
-            "type": ["string", "null"]
-          },
-          "sizeInBytes": {
-            "type": "integer"
+          "type": "object",
+          "properties": {
+            "asLink": {
+              "type": "boolean"
+            },
+            "value": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "uri": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "lastModified": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sizeInBytes": {
+              "type": "integer"
+            }
           }
         },
         "format": {

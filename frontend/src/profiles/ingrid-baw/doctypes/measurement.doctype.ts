@@ -31,9 +31,12 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   iconClass = "messdaten";
 
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+  constructor() {
+    super();
     this.options.required.resourceDateType = true;
+  }
 
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
       this.addSection("Messdaten (Allgemein)", [
