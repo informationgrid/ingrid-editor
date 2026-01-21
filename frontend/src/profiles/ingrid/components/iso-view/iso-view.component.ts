@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -36,6 +43,7 @@ import { combineLatest, Observable, of } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -57,6 +65,7 @@ export class IsoViewComponent implements OnInit {
 
   private exportService: ExportService = inject(ExportService);
   private copyToClipboardFn = copyToClipboardFn();
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     public dialogRef: MatDialogRef<IsoViewComponent>,
@@ -71,6 +80,7 @@ export class IsoViewComponent implements OnInit {
     ])
       .pipe(
         tap(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
         catchError(() => {
           this.dialogRef.close();
           throw new Error(
