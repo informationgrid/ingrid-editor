@@ -1268,7 +1268,7 @@ export abstract class IngridShared extends BaseDoctype {
                               return !ctrl.value?.number || frequency === "1";
                             },
                             message:
-                              "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
+                              "Werte im Feld 'Benutzerdefiniertes Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' auf den Wert 'kontinuierlich (benutzerdefiniert)' eingestellt wurde.",
                           },
                         },
                       },
