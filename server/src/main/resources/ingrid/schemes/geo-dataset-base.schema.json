@@ -103,7 +103,7 @@
             "cornerPoints": {
               "type": [
                 "null",
-                "number"
+                "string"
               ]
             },
             "pointInPixel": {
