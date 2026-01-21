@@ -21,6 +21,7 @@ package de.ingrid.igeserver.migrations.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.JsonNodeType
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.migrations.MigrationBase
@@ -105,10 +106,19 @@ class M101MigrateBawOrderinfo : MigrationBase("0.101") {
         } while (documentsSize == pageSize)
     }
 
+    private fun getOrderNumber(doc: Document): String? {
+        val data = doc.data
+        return when (data.get("orderNumber")?.nodeType) {
+            JsonNodeType.STRING -> data.getString("orderNumber")
+            JsonNodeType.ARRAY -> data.get("orderNumber").get(0)?.asText()
+            else -> null
+        }?.trim()
+    }
+
     private fun migrateDocument(doc: Document, catalogId: String, codelist: CodeList) {
         val data = doc.data
 
-        val orderNumber = data.getString("orderNumber")?.trim() ?: return
+        val orderNumber = getOrderNumber(doc) ?: return
 
         if (orderNumber.isEmpty()) {
             data.remove("orderNumber")
