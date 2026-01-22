@@ -109,7 +109,11 @@ export class AutocompleteTypeComponent
         setTimeout(() => {
           this.currentCodelistId = this.props.dynamicCodelistId();
           if (this.formControl.value?._codelistId !== this.currentCodelistId) {
-            this.formControl.setValue(this.formControl.value?.value);
+            const id = this.formControl.value?.key;
+            const value =
+              this.parameterOptions().find((opt) => opt.key === id)?.value ??
+              this.formControl.value?.value;
+            this.formControl.setValue(value);
           }
         }, 100);
       }
