@@ -121,6 +121,7 @@ export class ImportComponent implements OnInit {
     ),
     overwriteAddresses: new FormControl<boolean>(false),
     publish: new FormControl<boolean>(false),
+    skipValidation: new FormControl<boolean>(false),
     parentDocument: new FormControl<number>(null, this.validParentValidator()),
     parentAddress: new FormControl<number>(null, this.validParentValidator()),
   });
