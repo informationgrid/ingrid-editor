@@ -10,12 +10,11 @@ docType:
   - InGridPublication
   - InGridProject
 
-
 # title, used as window title
 title: Adressen
 ---
 
-# Adressen - Information für die Fachredaktionen
+# Information für die Fachredaktionen
 
 Hinterlegung von drei Adressen: Kontakt Metadaten, fachlicher Kontakt, Vertrieb. Adressen werden aus der zentralen Adressenliste ausgewählt.
 
@@ -23,7 +22,7 @@ Hinterlegung von drei Adressen: Kontakt Metadaten, fachlicher Kontakt, Vertrieb.
 
 Landesanstalt für Umwelt Baden-Württemberg > Abteilung 5 - Kompetenzzentrum Umweltinformatik > UIS-Geodatenmanagement, RIPS-Metadaten
 
-# Adressen - Allgemein
+# Information allgemein
 
 Geben Sie hir Adressverweise zu Personen oder Organisationen an. Es sind mindestens zwei Adressen erforderlich:<br>
 <li>Es ist mindestens eine Adresse anzugeben, die weitergehende Informationen zum beschriebenen Datensatz (der Ressource) geben kann. Für diese Adresse kann aus verschiedenen Typen (z.B. Ansprechpartner, Herausgeber, ...) ausgewählt werden, siehe Liste unten.<br>

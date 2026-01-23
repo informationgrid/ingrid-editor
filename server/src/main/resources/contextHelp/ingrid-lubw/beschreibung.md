@@ -13,11 +13,11 @@ docType:
 title: Beschreibung
 ---
 
-# Beschreibung - Information für die Fachredaktionen
+# Information für die Fachredaktionen
 
 Kurz gefasste, für die Öffentlichkeit verständliche Beschreibung der Objektart. Fokus auf Inhalt und Zweck der Daten. Fachbegriffe und Abkürzungen generell sparsam verwenden und ggf. erläutern, da die Beschreibung auch für Personen außerhalb des Fachkontextes nachvollziehbar sein sollte.
 
-## Beispiel:
+## Beispiel
 
 "Alle wasserwirtschaftlich relevanten Fließgewässer Baden-Württembergs. Einschließlich ständig fließender Gewässer ab 500 m Länge, Gewässer zur Verortung von wasserwirtschaftlichen Objekten und Gewässer für Planungszwecke."
 

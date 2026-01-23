@@ -8,7 +8,7 @@ docType: InGridGeoDataset
 title: Datenführende Stelle
 ---
 
-# Datenführende Stelle
+# Information für die Fachredaktionen
 
 Institution oder Amt, das für die Pflege der Daten verantwortlich ist. Mehrfachnennungen möglich.
 
