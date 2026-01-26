@@ -4,13 +4,15 @@
         [class.clickable]="isObject()"
         (click)="isObject() && toggle()"
     >
-        @if (isObject()) {
-            <span class="arrow" [class.rotated]="isExpanded()">▶</span>
-        }
+        <span class="toggle-key">
+            @if (isObject() && !(isArray() && value().length === 0)) {
+                <span class="arrow" [class.rotated]="isExpanded()">▶</span>
+            }
 
-        @if (key()) {
-            <span class="key">{{ key() }}: </span>
-        }
+            @if (key()) {
+                <span class="key">{{ key() }}: </span>
+            }
+        </span>
 
         @if (!isObject()) {
             <span class="value" [ngClass]="valueType()">
@@ -24,7 +26,7 @@
             </span>
         } @else {
             <span class="bracket">
-                {{ isArray() ? "[" : "{" }}
+                {{ isArray() ? "[" + (value().length === 0 ? "]" : "") : "{" }}
                 @if (!isExpanded()) {
                     <span class="collapsed-info">
                         ... {{ isArray() ? "]" : "}" }}
@@ -37,12 +39,16 @@
     @if (isObject() && isExpanded()) {
         <div class="children">
             @for (item of value() | keyvalue; track item.key) {
-                <ige-json-node
-                    [key]="$any(item.key)"
-                    [value]="$any(item.value)"
-                />
+                @if (item.value !== undefined) {
+                    <ige-json-node
+                        [key]="$any(item.key)"
+                        [value]="$any(item.value)"
+                    />
+                }
             }
-            <span class="bracket">{{ isArray() ? "]" : "}" }}</span>
+            <span class="bracket">{{
+                isArray() ? (value().length > 0 ? "]" : "") : "}"
+            }}</span>
         </div>
     }
 </div>
