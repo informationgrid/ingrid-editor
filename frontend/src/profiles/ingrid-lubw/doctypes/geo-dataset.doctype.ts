@@ -113,6 +113,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       positionAccessConstraints,
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
+        wrappers: ["panel", "form-field"],
         options: [
           {
             value: "Ja",
