@@ -305,25 +305,33 @@ export class OpenDataDoctype extends BaseDoctype {
                       field.model?.rangeType?.key !== "range",
                   },
                 }),
+                this.addSelect("periodicity", "Periodizität", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect("518", "periodicity"),
+                  codelistId: "518",
+                }),
               ])
             : null,
-          this.addSelect("periodicity", "Periodizität", {
-            showSearch: true,
-            options: this.getCodelistForSelect("518", "periodicity"),
-            codelistId: "518",
-          }),
           ...(this.options.temporalLegacy
             ? null
             : [
+                this.addSelect("accrualPeriodicity", "Periodizität", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "518",
+                    "accrualPeriodicity",
+                  ),
+                  codelistId: "518",
+                }),
                 this.addUnitInput(
-                  "userDefinedMaintenanceFrequency",
+                  "userDefinedAccrualPeriodicity",
                   "Benutzerdefiniertes Intervall der Erhebung",
                   {
                     type: "number",
                     placeholder: "Bitte eingeben ...",
                     unitOptions: this.getCodelistForSelect(
                       "1230",
-                      "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
+                      "maintenanceInformation.userDefinedAccrualPeriodicity.unit",
                     ),
                     codelistId: "1230",
                     fieldGroup: [{ key: "number" }, { key: "unit" }],
@@ -333,12 +341,12 @@ export class OpenDataDoctype extends BaseDoctype {
                       className: (field: FormlyFieldConfig) => {
                         const notEmpty = !isNaN(
                           parseInt(
-                            field.form.value?.userDefinedMaintenanceFrequency
+                            field.form.value?.userDefinedAccrualPeriodicity
                               ?.number,
                           ),
                         );
                         const isNotContinuously =
-                          field.options.formState.mainModel?.periodicity
+                          field.options.formState.mainModel?.accrualPeriodicity
                             ?.key !== "1";
                         if (!notEmpty && isNotContinuously) return "hide";
                         return notEmpty
@@ -356,7 +364,7 @@ export class OpenDataDoctype extends BaseDoctype {
                       continuously: {
                         expression: (ctrl: FormControl) => {
                           const frequency =
-                            ctrl.root.get("periodicity").value?.key;
+                            ctrl.root.get("accrualPeriodicity")?.value?.key;
                           return !ctrl.value?.number || frequency === "1";
                         },
                         message:

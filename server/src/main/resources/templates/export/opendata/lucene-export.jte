@@ -84,7 +84,7 @@
         }
     },
     "legal_basis": "${model.getLegalBasis() }",
-"distributions": [
+    "distributions": [
     @for(var download : ForSupport.of(model.getDistributions()))
         {
             "format": ["${download.get().getFormat()}"],
@@ -106,14 +106,15 @@
         }@if (!download.isLast()),@endif
     @endfor
     ],
-"quality_process_uri": "${model.getQualityProcessURI() }",
     "metadata": {
-        "issued": "${model.getCreated() }",
-        "modified": "${model.getModified() }"
+        "created": "${model.getCreated() }",
+        "modified": "${model.getModified() }",
+        "issued": null
     },
-"political_geocoding_level_uri": "${model.getPoliticalGeocodingLevel() }",
-"temporal": {
-"accrual_periodicity": "${model.getPeriodicity() }"
+    "political_geocoding_level_uri": "${model.getPoliticalGeocodingLevel()}",
+    "temporal": {
+        "accrual_periodicity": "${model.getPeriodicity()}",
+        "accrual_periodicity": "${model.getPeriodicityKey()}"
         @if (model.getTemporalStart() != null || model.getTemporalEnd() != null)
             ,
         {
@@ -125,6 +126,6 @@
             @endif
         }
         @endif
-},
-"rdf": "${rdf.getRDF()}"
+    },
+    "rdf": "${rdf.getRDF()}"
 }

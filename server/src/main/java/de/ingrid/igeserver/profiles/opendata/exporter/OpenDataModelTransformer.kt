@@ -27,6 +27,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
@@ -81,7 +82,8 @@ class OpenDataModelTransformer(
 
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
-    fun getPeriodicity() = doc.data.getString("periodicity.key")?.let { codelistTransformer.getValue("518", KeyValue(it)) } ?: ""
+    val periodicityKey = doc.data.getString("accrualPeriodicity.key")
+    fun getPeriodicity() = periodicityKey?.let { codelistTransformer.getValue("518", KeyValue(it)) } ?: ""
     fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords()
     fun getAddresses() = doc.data.get("addresses").mapNotNull {
         addressExporter.toAddressModelTransformer(
@@ -130,8 +132,27 @@ class OpenDataModelTransformer(
     fun getQualityProcessURI() = doc.data.getStringOrEmpty("qualityProcessURI")
     fun getPoliticalGeocodingLevel() = doc.data.getString("politicalGeocodingLevel.key")
         ?.let { codelistTransformer.getCatalogCodelistValue("20006", KeyValue(it)) }
-    fun getTemporalStart(): String? = null
-    fun getTemporalEnd(): String? = null
+    private val resourceDateRange = doc.data.getPath("temporal.data.resourceRange")
+    private val resourceDate = doc.data.getString("temporal.data.resourceDate")
+    fun getTemporalStart(): String? = if (resourceDateRange != null) {
+        resourceDateRange.getString("start")
+    } else {
+        if (doc.data.getString("temporal.data.type") == "at" || doc.data.getString("temporal.data.intervalFrom") == "date") {
+            resourceDate
+        } else {
+            null
+        }
+    }
+
+    fun getTemporalEnd(): String? = if (resourceDateRange != null) {
+        resourceDateRange.getString("end")
+    } else {
+        if (doc.data.getString("temporal.data.type") == "at" || doc.data.getString("temporal.data.intervalTo") == "date") {
+            resourceDate
+        } else {
+            null
+        }
+    }
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {
         dist.getStringOrEmpty("link.uri") // TODO encode uri
