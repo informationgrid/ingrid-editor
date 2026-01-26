@@ -55,32 +55,36 @@ tasks.register('testFormatting', YarnTask) {
   args = ['prettier', '--check', "."]
 }
 
-tasks.register('packageNpmApp', Zip) {
+tasks.register('prepareFrontendDist', Sync) {
   dependsOn bundle
-  archiveFileName = 'ige-frontend-app.jar'
-  destinationDirectory = file("${projectDir}/build/packageApp")
+
   duplicatesStrategy = DuplicatesStrategy.INCLUDE
-  from('build/dist/browser') {
-    // optional path under which output will be visible in Java classpath, e.g. static resources path
-    into 'static'
-  }
+  from('build/dist/browser')
+
   from('src/assets') {
-    into 'static/assets'
     include 'config.prod.json'
     rename { 'config.json' }
+    into 'assets'
   }
+
+  into layout.buildDirectory.dir("frontend-dist")
 }
+
+assemble.dependsOn(prepareFrontendDist)
 
 configurations {
-  npmResources
+  frontendExport {
+    canBeConsumed = true
+    canBeResolved = false
+  }
 }
-configurations.default.extendsFrom(configurations.npmResources)
+configurations.default.extendsFrom(configurations.frontendExport)
 
 if (hasProperty('buildProfile')) {
+  def frontendDistTask = tasks.named('prepareFrontendDist', Sync)
   artifacts {
-    npmResources(packageNpmApp.archiveFile) {
-      builtBy packageNpmApp
-      type = "jar"
+    frontendExport(layout.buildDirectory.dir("frontend-dist")) {
+      builtBy(frontendDistTask)
     }
   }
 }

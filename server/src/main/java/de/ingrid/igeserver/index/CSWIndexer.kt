@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.index
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.utils.ElasticDocument
@@ -54,6 +55,9 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     }
 
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+        if (doc["isfolder"] == "true") {
+            throw IndexException.skipFolders(doc[indexinfo.docIdField].toString())
+        }
         client.insertOrUpdate(doc, catalogId, transactionId)
     }
 

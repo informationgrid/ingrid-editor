@@ -1,0 +1,181 @@
+[
+  {
+    "title": "BAW Test Dataset",
+    "_uuid": "baw-test-uuid",
+    "_parent": null,
+    "_type": "InGridGeoDataset",
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": false,
+      "subType": {
+        "key": "5",
+        "value": "Datensatz",
+        "_codelistId": "525"
+      }
+    },
+    "description": "BAW Test Abstract",
+    "alternateTitle": "",
+    "parentIdentifier": "",
+    "pointOfContact": [
+      {
+        "ref": "contact-uuid-1",
+        "type": {
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
+        }
+      }
+    ],
+    "graphicOverviews": [],
+    "advProductGroups": [],
+    "themes": [],
+    "openDataCategories": [],
+    "keywords": {
+      "free": [],
+      "bawKeywords": [
+        {
+          "key": "Schlagwort1",
+          "value": "Schlagwort1",
+          "_codelistId": "3950005"
+        }
+      ],
+      "subsoilKeywords": [
+        {
+          "key": "Schlagwort2",
+          "value": "Schlagwort2",
+          "_codelistId": "3950007"
+        }
+      ]
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "bwastr",
+          "title": "Test-Bwastr",
+          "bwastr": {
+            "bwastrid": "815",
+            "bwastr_name": "Test-Bwastr",
+            "concat_name": "Test-Bwastr",
+            "strecken_name": "Test-Strecke",
+            "start": 20.0,
+            "end": 10.5
+          }
+        }
+      ],
+      "spatialSystems": [],
+      "verticalSpatialSystems": [],
+      "description": ""
+    },
+    "temporal": {
+      "event": {
+        "created": "2024-04-01T22:00:00.000Z"
+      },
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      },
+      "description": ""
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraints": [],
+      "useConstraints": [],
+      "useLimitation": ""
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [
+      {
+        "type": {
+          "key": "9900",
+          "value": "Datendownload",
+          "_codelistId": "2000"
+        },
+        "title": "LFS Download",
+        "referenceType": "url",
+        "url": "https://dl.datenfinder.baw.de/LFS/test-file.pdf",
+        "explanation": "LFS Explanation"
+      }
+    ],
+    "fileReferences": [],
+    "invekosKeywords": [],
+    "hvdCategories": [],
+    "metadata": {
+      "language": {
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
+      },
+      "characterSet": null
+    },
+    "resolution": [],
+    "topicCategories": [],
+    "spatialRepresentationType": [],
+    "lineage": {
+      "statement": ""
+    },
+    "identifier": "",
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": null,
+      "horizontal": null,
+      "griddedDataPositionalAccuracy": null
+    },
+    "qualities": [],
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "vectorSpatialRepresentation": [],
+    "bawOrderInfo": {
+      "key": "bawOrderInfo",
+      "value": "12345 - BAW Order Title",
+      "_codelistId": "bawOrderInfo"
+    },
+    "literatureReferences": [
+      {
+        "uuid": "lit-uuid-1",
+        "isExternalRef": false
+      }
+    ]
+  },
+  {
+    "_uuid": "contact-uuid-1",
+    "_type": "InGridOrganisationDoc",
+    "title": "BAW",
+    "organization": "BAW",
+    "contact": [],
+    "positionName": "",
+    "hoursOfService": ""
+  }
+]

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -82,7 +82,6 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
-import { JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
 import {
   takeUntilDestroyed,
@@ -93,6 +92,7 @@ import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
 import { AuthenticationFactory } from "../../../security/auth.factory";
+import { JsonViewComponent } from "../../../shared/json-view/json-view.component";
 
 @Component({
   selector: "ige-form-wrapper",
@@ -109,8 +109,8 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     ReactiveFormsModule,
     FormsModule,
     FolderDashboardComponent,
-    JsonPipe,
     FormlyForm,
+    JsonViewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

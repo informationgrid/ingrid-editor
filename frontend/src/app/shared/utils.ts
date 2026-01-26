@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -124,6 +124,7 @@ export function isEmptyObject(objValue: any, ignoreFields = []) {
 }
 
 export function isNotEmptyObject(objValue: any, ignoreFields = []) {
+  if (!objValue) return false;
   return Object.keys(objValue).some((key) => {
     if (ignoreFields.indexOf(key) !== -1) return false;
     let valueElement = objValue[key];

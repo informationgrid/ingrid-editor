@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -105,9 +105,12 @@ class InGridPublishExport(
         val docsWithReferences = jdbcTemplate.queryForList<String>(
             """
             SELECT DISTINCT d.uuid 
-            FROM document d, document_wrapper dw 
+            FROM document d, document_wrapper dw, catalog cat
             WHERE (
                 dw.uuid = d.uuid
+                AND dw.catalog_id = cat.id
+                AND d.catalog_id = cat.id
+                AND cat.identifier = '${context.catalogId}'
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND $sqlFilter);

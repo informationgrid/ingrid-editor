@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -140,6 +140,8 @@ export class ConfigService {
 
   public static catalogId: string;
 
+  public static catalogLanguage: string;
+
   public static backendApiUrl: string;
 
   private config: Configuration;
@@ -185,6 +187,8 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    ConfigService.catalogLanguage =
+      userInfo.currentCatalog.settings?.config?.language ?? "de";
     this.generalStore.updateFavorites(
       userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
     );

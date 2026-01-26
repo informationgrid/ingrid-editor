@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2025 wemove digital solutions GmbH
+ * Copyright (C) 2025-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -115,7 +115,7 @@ export class TimeReferenceComponent
     }),
     intervalTo: new FormControl<string | null>(null),
     tillDate: new FormControl<Date | null>(null, {
-      validators: Validators.required,
+      validators: [Validators.required, this.validateTillDateAfterFromDate()],
       updateOn: "blur",
     }),
     timezone: new FormControl<string | null>(null),
@@ -289,5 +289,18 @@ export class TimeReferenceComponent
     return timezones.filter(
       (option) => option.label.toLowerCase().indexOf(filter) !== -1,
     );
+  }
+
+  private validateTillDateAfterFromDate() {
+    return () => {
+      const fromDate = this.temporalForm?.get("fromDate")?.value;
+      const tillDate = this.temporalForm?.get("tillDate")?.value;
+
+      if (fromDate && tillDate && tillDate < fromDate) {
+        return { dateRange: true };
+      }
+
+      return null;
+    };
   }
 }

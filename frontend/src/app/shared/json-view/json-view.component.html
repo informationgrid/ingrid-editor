@@ -1,0 +1,22 @@
+<div class="viewer-container">
+    <button
+        mat-button
+        color="primary"
+        class="view-toggle"
+        (click)="toggleView()"
+    >
+        @if (isTreeView()) {
+            RAW anzeigen
+        } @else {
+            Baum anzeigen
+        }
+    </button>
+
+    <div class="content">
+        @if (isTreeView()) {
+            <ige-json-node [value]="data()" />
+        } @else {
+            <pre class="raw-view">{{ data() | json }}</pre>
+        }
+    </div>
+</div>

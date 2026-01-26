@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,6 +23,8 @@ import io.mockk.every
 
 fun mockCodelists(codelistHandler: CodelistHandler) {
     val codelists = CodeListService().initialCodelists
+
+    every { codelistHandler.initialCodelists } answers { codelists }
 
     every { codelistHandler.getCodelistValue(any(), any()) } answers {
         codelists
@@ -108,6 +110,16 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
     every { codelistHandler.getCatalogCodelistValue(any(), "3390", any(), any()) } answers {
         when (thirdArg<String>()) {
             "5" -> "ComputationalNotebook"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
+
+    every { codelistHandler.getCatalogCodelistValue(any(), "6250", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "7" -> "Hessen"
             else -> {
                 println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
                 null

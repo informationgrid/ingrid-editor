@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,8 +39,18 @@ import {
   SpatialLocation,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { of } from "rxjs";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+} from "rxjs/operators";
+import { Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
@@ -50,6 +60,11 @@ import { NgClass } from "@angular/common";
 import { MatIcon } from "@angular/material/icon";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BwastrLocatorService } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: "ige-formly-leaflet-type",
@@ -76,6 +91,7 @@ export class LeafletTypeComponent
   private leafletService = inject(LeafletService);
   private translocoService = inject(TranslocoService);
   private destroyRef = inject(DestroyRef);
+  private bwastrLocatorService = inject(BwastrLocatorService);
 
   readonly leaflet = viewChild<ElementRef>("leaflet");
 
@@ -87,21 +103,12 @@ export class LeafletTypeComponent
     () => this.locationsWithColor().length >= this.props.max,
   );
   mapHasMoved = signal<boolean>(false);
-
   private leafletReference: L.Map;
   private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
   ngAfterViewInit() {
     this.leaflet().nativeElement.style.height = this.props.height + "px";
     this.leaflet().nativeElement.style.width = "100%";
-
-    this.formControl.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        debounceTime(0),
-        distinctUntilChanged(),
-      )
-      .subscribe((value) => this.updateBoundingBoxCatchingErrors(value || []));
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -116,9 +123,15 @@ export class LeafletTypeComponent
       (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => this.mapHasMoved.set(true));
 
-      const locations = this.formControl.value || [];
-      // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => this.updateBoundingBoxCatchingErrors(locations));
+      this.formControl.valueChanges
+        .pipe(
+          startWith(this.formControl.value),
+          takeUntilDestroyed(this.destroyRef),
+          debounceTime(0),
+          distinctUntilChanged(),
+          switchMap((value) => this.updateBoundingBoxObservable(value || [])),
+        )
+        .subscribe();
     } catch (e: any) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
@@ -127,26 +140,19 @@ export class LeafletTypeComponent
     }
   }
 
-  private updateBoundingBoxCatchingErrors(
-    locations: SpatialLocationWithColor[],
-  ) {
-    try {
-      this.updateBoundingBox(locations);
-    } catch (e) {
-      console.warn("Failed to update bounding box. Map already unloaded?", e);
-    }
-  }
-
   private updateLocations(locations: SpatialLocationWithColor[]) {
     this.locationsWithColor.set(locations);
   }
 
-  private updateBoundingBox(locations: SpatialLocation[]) {
+  private updateBoundingBoxObservable(
+    locations: SpatialLocation[],
+  ): Observable<any> {
     this.updateLocations([]);
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
       this.drawnSpatialRefs,
     );
+    this.drawnSpatialRefs = [];
 
     const hasCoordinates = locations.some((location) =>
       this.leafletService.containsCoordinates(location),
@@ -154,26 +160,30 @@ export class LeafletTypeComponent
 
     // we need to call fitBounds in order to fully initialize map (see #7508)
     this.leafletService.zoomToInitialBox(this.leafletReference);
-    if (locations.length === 0 || !hasCoordinates) {
-      this.leafletReference.dragging.disable();
-      this.leafletReference.doubleClickZoom.disable();
-    }
 
     const coloredLocations =
       this.leafletService.extendLocationsWithColor(locations);
     this.updateLocations(coloredLocations);
 
-    if (hasCoordinates) {
-      this.leafletService
-        .drawSpatialRefs(this.leafletReference, coloredLocations)
-        .then((spatialRefs) => {
-          this.drawnSpatialRefs = spatialRefs.filter(
-            (item) => item !== undefined,
-          );
+    if (locations.length === 0 || !hasCoordinates) {
+      this.leafletReference.dragging.disable();
+      this.leafletReference.doubleClickZoom.disable();
+      return of([]);
+    }
+
+    return this.leafletService
+      .drawSpatialRefs(this.leafletReference, coloredLocations)
+      .pipe(
+        tap((spatialRefs) => {
+          this.drawnSpatialRefs = spatialRefs;
           this.leafletReference.dragging.enable();
           this.leafletReference.doubleClickZoom.enable();
-        });
-    }
+        }),
+        catchError((e) => {
+          console.warn("Failed to update bounding box.", e);
+          return of([]);
+        }),
+      );
   }
 
   /**
@@ -184,9 +194,12 @@ export class LeafletTypeComponent
    */
   public ngOnDestroy(): void {
     try {
-      if (this.leafletReference && this.leafletReference.remove) {
-        this.leafletReference.clearAllEventListeners();
-        this.leafletReference.remove();
+      if (this.leafletReference) {
+        if (this.leafletReference.remove) {
+          this.leafletReference.clearAllEventListeners();
+          this.leafletReference.remove();
+        }
+        this.leafletReference = null;
       }
       const leaflet = this.leaflet();
       if (leaflet && leaflet.nativeElement.remove) {
@@ -217,15 +230,45 @@ export class LeafletTypeComponent
       .afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {
+          // Insert or update the selected location
           if (locationIndex >= 0) {
             locations[locationIndex] = result;
           } else {
             locations.push(result);
           }
 
+          // Update form control immediately with the selected location
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
-          this.updateBoundingBoxCatchingErrors(locations);
+
+          // add additional bounding box for bwastr if chosen by user
+          if (result.type === "bwastr") {
+            this.dialog
+              .open(ConfirmDialogComponent, {
+                data: <ConfirmDialogData>{
+                  title: `Bounding-Box hinzufügen?`,
+                  message: `Möchten Sie die Bounding-Box der BWasStr.-Strecke zusätzlich als Raumbezug hinzufügen?
+                  Bei „Nein“ wird in der Portalansicht ggf. kein Raumbezug angezeigt (z. B. bei Seewasserstraßen).`,
+                  buttons: [
+                    { text: "Nein" },
+                    {
+                      text: "Ja",
+                      alignRight: true,
+                      id: "confirm",
+                      emphasize: true,
+                    },
+                  ],
+                },
+              })
+              .afterClosed()
+              .pipe(filter((result) => result))
+              .subscribe(() =>
+                this.addBBoxForBwaStr(
+                  result,
+                  locationIndex ?? locations.length - 1,
+                ),
+              );
+          }
         }
       });
   }
@@ -234,8 +277,6 @@ export class LeafletTypeComponent
     this.formControl.value.splice(index, 1);
     this.formControl.setValue([...this.formControl.value]);
     this.formControl.markAsDirty();
-
-    this.updateBoundingBoxCatchingErrors(this.formControl.value);
   }
 
   highlightLocation(index: number) {
@@ -248,7 +289,14 @@ export class LeafletTypeComponent
       ]);
       if (bounds) this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBoxCatchingErrors(locations);
+      const bounds = this.leafletService.getBoundingBoxFromLayers(
+        this.drawnSpatialRefs,
+      );
+      if (bounds) {
+        this.leafletReference.fitBounds(bounds, { maxZoom: 18 });
+      } else {
+        this.leafletService.zoomToInitialBox(this.leafletReference);
+      }
     }
 
     this.mapHasMoved.set(locations.length === 1 ? false : index != null);
@@ -259,5 +307,37 @@ export class LeafletTypeComponent
       "Raumbezug",
       of(this.translocoService.translate("spatial.generalHelp")),
     );
+  }
+
+  addBBoxForBwaStr(location: SpatialLocation, neighborIndex: number) {
+    this.bwastrLocatorService
+      .getSectionBoundingBox(location.bwastr)
+      .pipe(
+        take(1),
+        catchError(() => of(undefined)),
+        map((response) =>
+          response
+            ? ({
+                type: "free",
+                title: location.title,
+                value: {
+                  lat1: response.lat1,
+                  lon1: response.lon1,
+                  lat2: response.lat2,
+                  lon2: response.lon2,
+                },
+              } as SpatialLocation)
+            : undefined,
+        ),
+        map((additionalBBox) => {
+          if (!additionalBBox) return;
+          const current = this.formControl.value ?? [];
+          current.splice(neighborIndex + 1, 0, additionalBBox);
+
+          this.formControl.setValue([...current]);
+          this.formControl.markAsDirty();
+        }),
+      )
+      .subscribe();
   }
 }

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -77,6 +77,7 @@ class SwaggerDocumentationConfig(private val stringToCatalogImportOptionsConvert
             .addResourceLocations("classpath:/META-INF/resources/webjars/")
         registry.addResourceHandler("/**/*")
             .addResourceLocations("classpath:/static/")
+//            .setCachePeriod(3600)
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource {

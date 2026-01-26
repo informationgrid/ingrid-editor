@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2025 wemove digital solutions GmbH
+ * Copyright (C) 2025-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,6 +25,7 @@ import { GeometriesDialogComponent } from "../dialogs/geometries-dialog/geometri
 import { BatchEditObjectAttributesComponent } from "../dialogs/batch-edit-object-attributes/batch-edit-object-attributes.component";
 import { FormControl } from "@angular/forms";
 import { MetadataOption } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -52,7 +53,10 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     this.addOACFieldConfig(fieldConfig);
     this.addEnvironmentDescriptionFieldConfig(fieldConfig);
 
-    const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
+    const position = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "pointOfContact",
+    );
 
     const isAuthor = this.configService.$userInfo.value.role === "author";
     if (isAuthor) {
@@ -76,7 +80,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       ),
     );
 
-    const positionAccessConstraints = this.findFieldElementWithId(
+    const positionAccessConstraints = IngridShared.findFieldElementWithId(
       fieldConfig,
       "accessConstraints",
     );
@@ -109,6 +113,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       positionAccessConstraints,
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
+        wrappers: ["panel", "form-field"],
         options: [
           {
             value: "Ja",
@@ -149,7 +154,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       ),
     );
 
-    const positionFachbezug = this.findFieldElementWithId(
+    const positionFachbezug = IngridShared.findFieldElementWithId(
       fieldConfig,
       "featureTypes",
     );
@@ -291,7 +296,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   private addEnvironmentDescriptionFieldConfig(
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const processStepPosition = this.findFieldElementWithId(
+    const processStepPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "processStep",
     );
@@ -334,7 +339,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   }
 
   addOACFieldConfig(fieldConfig: FormlyFieldConfig[]) {
-    const identifierPosition = this.findFieldElementWithId(
+    const identifierPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "identifier",
     );
@@ -444,10 +449,13 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     ].forEach((field) => {
       if (field instanceof Array) {
         this.hideField(
-          this.findFieldElementWithId(fieldConfig, field[1], field[0]).field,
+          IngridShared.findFieldElementWithId(fieldConfig, field[1], field[0])
+            .field,
         );
       } else {
-        this.hideField(this.findFieldElementWithId(fieldConfig, field).field);
+        this.hideField(
+          IngridShared.findFieldElementWithId(fieldConfig, field).field,
+        );
       }
     });
 

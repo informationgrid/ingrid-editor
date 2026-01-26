@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -136,5 +136,11 @@ interface CatalogApi {
             description = "The identifier of the catalog.",
             required = true,
         ) @PathVariable("identifier") catalogIdentifier: String,
+        @RequestBody(required = false) options: ExportCatalogOptions = ExportCatalogOptions(),
     ): ResponseEntity<ByteArray?>
 }
+
+data class ExportCatalogOptions(
+    val exportUsers: Boolean = true,
+    val exportArchivedDatasets: Boolean = true,
+)

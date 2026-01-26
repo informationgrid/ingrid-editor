@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
@@ -34,6 +34,7 @@ import { DocumentTreeStore } from "../app/store/tree/document-tree.store";
 import { ConfigService } from "../app/services/config/config.service";
 import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
 import { PagedSearchResult } from "../app/store/codelist/codelist.model";
+import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -127,7 +128,7 @@ export interface ExplanationTextOptions extends Options {
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
-  codelistId?: string;
+  codelistId?: string | BehaviorSubject<string>;
   asSelect?: boolean;
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
@@ -176,6 +177,7 @@ export interface SelectOptions extends Options {
   multiple?: boolean;
   simple?: boolean;
   useFirstValueInitially?: boolean;
+  hintStart?: string;
 }
 
 export interface TableOptions extends Options, TableProps {}
@@ -233,6 +235,14 @@ export interface UnitInputOptions extends InputOptions {
   unitOptions?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   codelistId?: string;
   fieldGroup?: any;
+}
+
+export interface SpatialOptions {
+  expressions?: any;
+  defaultValue?: any;
+  required?: boolean;
+  limitTypes?: SpatialLocationType[];
+  max?: number;
 }
 
 export class FormFieldHelper {
@@ -834,13 +844,14 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       expressions: expressions,
       props: {
+        disableUpload: options?.disableUpload,
         required: options?.required,
         externalLabel: label,
       },
     };
   }
 
-  addSpatial(id, label, options?) {
+  addSpatial(id, label, options?: SpatialOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -1038,7 +1049,22 @@ export class FormFieldHelper {
     };
   }
 
-  findFieldElementWithId(
+  findFieldElementWithIdPath(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+    let currentFieldConfigPosition = null;
+    id.split(".").forEach((idPart) => {
+      currentFieldConfigPosition = FormFieldHelper.findFieldElementWithId(
+        currentFieldConfigPosition?.fieldConfig ?? fieldConfig,
+        idPart,
+      );
+    });
+    return currentFieldConfigPosition;
+  }
+
+  static findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
     parentId?: string,
@@ -1108,6 +1134,14 @@ export class FormFieldHelper {
     return subFound;
   }
 
+  static addBefore(info: FieldConfigPosition, field: FormlyFieldConfig) {
+    info.fieldConfig.splice(info.index, 0, field);
+  }
+
+  static addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
+    info.fieldConfig.splice(info.index + 1, 0, field);
+  }
+
   findSectionWithLabel(fieldConfig: FormlyFieldConfig[], label: string) {
     if (!fieldConfig) return null;
     let result = null;
@@ -1146,7 +1180,10 @@ export class FormFieldHelper {
     },
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const fieldPosition = this.findFieldElementWithId(fieldConfig, id);
+    const fieldPosition = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      id,
+    );
     const targetField = fieldPosition.fieldConfig[fieldPosition.index];
     targetField.validators = {
       ...(targetField.validators ?? {}),

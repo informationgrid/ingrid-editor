@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,6 +37,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import kotlin.collections.sorted
 
 data class CatalogImportOptions(
     val allowUpdate: Boolean = false,
@@ -60,7 +61,7 @@ class CatalogImportService(
     private val log = logger()
 
     fun importCatalog(exportedCatalog: ExportedCatalog, options: CatalogImportOptions = CatalogImportOptions()) {
-        runPreChecks(exportedCatalog)
+        verifyCatalogVersion(exportedCatalog)
 
         val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
         val catalogId = try {
@@ -96,14 +97,10 @@ class CatalogImportService(
         log.info("Finished importing catalog ${exportedCatalog.catalog["identifier"]} with ID $catalogId")
     }
 
-    private fun runPreChecks(exportedCatalog: ExportedCatalog) {
+    private fun verifyCatalogVersion(exportedCatalog: ExportedCatalog) {
         val currentVersion = getEditorVersion()
         if (exportedCatalog.version != currentVersion) {
             throw ServerException.withReason("The editor version of the exported catalog is different from the current version: ${exportedCatalog.version} != $currentVersion")
-        }
-
-        if (catalogService.catalogExists(exportedCatalog.catalog["identifier"] as String)) {
-//            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
         }
     }
 
@@ -176,7 +173,7 @@ class CatalogImportService(
         val wrapperIdMigrationMap = mutableMapOf<Int, Int>()
 
         @Suppress("UNCHECKED_CAST")
-        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<String>).size }
+        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<String>?)?.size ?: 0 }
 
         depthToWrapper.keys.sorted().forEach { depth ->
             log.info("Importing DocumentWrapper with depth $depth ...")

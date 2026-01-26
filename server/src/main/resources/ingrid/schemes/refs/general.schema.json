@@ -510,18 +510,24 @@
           ]
         },
         "userDefinedMaintenanceFrequency": {
-          "unit": {
-            "anyOf": [
-              {
-                "$ref": "../../../general.schema.json#/definitions/KeyValue"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "number": {
-            "type": ["null", "number"]
+          "type": "object",
+          "properties": {
+            "unit": {
+              "anyOf": [
+                {
+                  "$ref": "../../../general.schema.json#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "number": {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
           }
         }
       }

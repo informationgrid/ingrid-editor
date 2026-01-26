@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,17 +32,15 @@ import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderTitle", "Auftragstitel", {
+  getBAWOrderInfoFieldConfig(
+    doc: IngridShared,
+    options: SelectOptions = {},
+  ): FormlyFieldConfig {
+    return this.addSelect("bawOrderInfo", "Auftrag", {
+      showSearch: true,
       required: true,
-      wrappers: ["panel", "form-field"],
-      ...options,
-    });
-  }
-
-  getOrderNumberFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderNumber", "Auftragsnummer", {
-      required: true,
+      options: doc.getCodelistForSelect("bawOrderInfo", "null"),
+      codelistId: "bawOrderInfo",
       wrappers: ["panel", "form-field"],
       ...options,
     });
@@ -108,7 +106,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       verticalExtent?: boolean;
     } = {},
   ) {
-    const timeRefRangePosition = this.findFieldElementWithId(
+    const timeRefRangePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "data",
     );
@@ -116,7 +114,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     timeRefRangePosition.field.props.showTimezone = true;
     timeRefRangePosition.field.props.defaultTimezone = "(GMT+01:00) Berlin";
 
-    const gemetKeywordsPosition = this.findFieldElementWithId(
+    const gemetKeywordsPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "gemet",
     );
@@ -139,7 +137,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       this.getBAWKeywordCatalogueFieldConfig(doc),
     );
 
-    const spatialSystemPosition = this.findFieldElementWithId(
+    const spatialSystemPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "spatialSystems",
     );
@@ -154,7 +152,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
 
     // replace existing vertical extent section with baw specific one
     if (!exclude.verticalExtent) {
-      const verticalExtentPosition = this.findFieldElementWithId(
+      const verticalExtentPosition = IngridShared.findFieldElementWithId(
         fieldConfig,
         "verticalExtent",
       );
@@ -165,7 +163,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       );
     }
 
-    const pointOfContactPosition = doc.findFieldElementWithId(
+    const pointOfContactPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
@@ -178,7 +176,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       );
 
     // LFS references & literature references
-    const referencesPosition = this.findFieldElementWithId(
+    const referencesPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "references",
     );
@@ -193,7 +191,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     fileReferencesPosition?.fieldConfig.splice(fileReferencesPosition.index, 1);
 
     //remove parentIdentifier as it is set automatically in baw
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const parentIdentifierPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "parentIdentifier",
     );
@@ -302,15 +300,16 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: GeoDatasetDoctypeBaw,
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const alternateTitlePosition = this.findFieldElementWithId(
+    const alternateTitlePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "alternateTitle",
     );
 
-    // Auftragsnummer
-    this.addBefore(alternateTitlePosition, this.getOrderNumberFieldConfig());
-    // Auftragstitel
-    this.addBefore(alternateTitlePosition, this.getOrderTitleFieldConfig());
+    // Auftragsnummer / -titel
+    this.addBefore(
+      alternateTitlePosition,
+      this.getBAWOrderInfoFieldConfig(doc),
+    );
 
     this.addSharedFields(doc, fieldConfig);
   }
@@ -378,7 +377,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "urlDataType",
-                required: false,
+                required: true,
               },
             ),
           ],

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -120,14 +120,16 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
             when (response.hits?.total?.value) {
                 1L -> {
-                    val docId = response.hits?.hits?.get(0)?.id
+                    val docId = response.hits?.hits?.get(0)?.id ?: throw ServerException.withReason("Could not find iPlug information document in index of: $id")
                     // add index request to queue to avoid sending of too many requests
-                    elastic.bulkProcessor.index(info, META_INDEX, docId)
+                    elastic.bulkProcessor.update(docId, info, META_INDEX)
                 }
+
                 0L -> {
                     // create document immediately so that it's available for further requests
                     elastic.client.indexDocument(META_INDEX, info)
                 }
+
                 else -> {
                     log.warn("There is more than one iPlug information document in the index of: $id")
                     log.warn("Removing items and adding new one")
