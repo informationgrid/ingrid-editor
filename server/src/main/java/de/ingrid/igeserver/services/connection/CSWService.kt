@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services.connection
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.igeserver.services.csw.CSWClient
@@ -72,7 +73,7 @@ class CSWService(val settingsService: SettingsService) : IConnection {
         config.name,
     )
 
-    fun getClient(index: String): CSWClient = clientMap[index]!!
+    fun getClient(index: String): CSWClient = clientMap[index] ?: throw ServerException.withReason("No CSW-Client found. Please check the connection.")
 
     override fun isConnected(id: String): Boolean = runBlocking {
         try {
