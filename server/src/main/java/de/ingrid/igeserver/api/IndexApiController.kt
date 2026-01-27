@@ -24,7 +24,6 @@ import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.IndexOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping

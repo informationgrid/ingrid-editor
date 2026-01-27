@@ -27,7 +27,6 @@ import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DocumentCategory

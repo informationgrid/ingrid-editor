@@ -23,7 +23,6 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.IndexOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
