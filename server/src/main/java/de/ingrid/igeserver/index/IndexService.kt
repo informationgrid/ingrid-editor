@@ -23,6 +23,7 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -167,10 +168,13 @@ class IndexService(
         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
     }
 
-    fun updateExporterConfig(catalogId: String, config: List<ExportConfig>) {
+    fun updateExporterConfig(catalogId: String, config: IndexExportOptions) {
         catalogRepo
             .findByIdentifier(catalogId)
-            .apply { settings.exports = config }
+            .apply {
+                settings.exports = config.exports
+                settings.noIndexing = config.noIndexing
+            }
             .run { catalogRepo.save(this) }
     }
 

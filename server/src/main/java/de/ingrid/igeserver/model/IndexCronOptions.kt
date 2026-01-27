@@ -25,7 +25,13 @@ data class IndexCronOptions(
     val cronPattern: String,
 )
 
+data class IndexExportOptions(
+    val noIndexing: Boolean,
+    val exports: List<ExportConfig>,
+)
+
 data class IndexOptions(
     val cronPattern: String,
+    val noIndexing: Boolean,
     val exports: List<ExportConfig>,
 )

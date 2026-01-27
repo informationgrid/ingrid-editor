@@ -39,6 +39,7 @@ export interface LogResult extends BaseLogResult {
 
 interface IndexCronConfig {
   cronPattern: string;
+  noIndexing: boolean;
   exports: IndexExportConfig[];
 }
 

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.IndexOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.services.CatalogService
@@ -45,7 +46,7 @@ class IndexApiController(
 
     override fun setExportConfig(
         principal: Principal,
-        config: List<ExportConfig>,
+        config: IndexExportOptions,
     ): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         indexService.updateExporterConfig(catalogId, config)
@@ -58,6 +59,7 @@ class IndexApiController(
         val config = catalogService.getCatalogById(catalogId).run {
             IndexOptions(
                 settings.indexCronPattern ?: "",
+                settings.noIndexing,
                 settings.exports,
             )
         }
