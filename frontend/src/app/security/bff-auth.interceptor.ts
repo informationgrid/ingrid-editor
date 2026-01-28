@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   HttpEvent,
   HttpHandler,
@@ -26,12 +26,9 @@ import {
 } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { Router } from "@angular/router";
 
 @Injectable({ providedIn: "root" })
 export class BffAuthInterceptor implements HttpInterceptor {
-  private router = inject(Router);
-
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,

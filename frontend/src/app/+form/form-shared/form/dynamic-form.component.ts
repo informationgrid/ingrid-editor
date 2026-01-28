@@ -91,7 +91,6 @@ import {
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
-import { AuthenticationFactory } from "../../../security/auth.factory";
 import { JsonViewComponent } from "../../../shared/json-view/json-view.component";
 
 @Component({
@@ -121,7 +120,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private profileService = inject(ProfileService);
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
-  private authService = inject(AuthenticationFactory);
   private destroyRef = inject(DestroyRef);
 
   readonly scrollForm = viewChild("scrollForm", { read: ElementRef });

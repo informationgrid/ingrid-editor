@@ -41,6 +41,7 @@ export class AuthGuard {
     state: RouterStateSnapshot,
   ): boolean {
     const user = this.configService.$userInfo.getValue();
+    if (!user) return false;
     const path = state.url;
     const catalogId = user.currentCatalog.id;
 

@@ -28,7 +28,6 @@ import { Observable, Subscription, timer } from "rxjs";
 import { scan, takeWhile } from "rxjs/operators";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { AuthenticationFactory } from "../security/auth.factory";
 import { GeneralStore } from "../store/general.store";
 
 @Injectable({
@@ -39,10 +38,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   timer$: Subscription;
   private oneSecondInMilliseconds = 1000;
 
-  constructor(
-    private modalService: ModalService,
-    private authFactory: AuthenticationFactory,
-  ) {}
+  constructor(private modalService: ModalService) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -97,7 +93,8 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.",
       );
       this.modalService.showIgeError(error);
-      setTimeout(() => this.authFactory.logout(), 5000);
+      // TODO: ADAPT
+      // setTimeout(() => this.authFactory.logout(), 5000);
       this.timer$.unsubscribe();
     }
   }

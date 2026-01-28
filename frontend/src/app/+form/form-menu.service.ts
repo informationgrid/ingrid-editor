@@ -49,7 +49,7 @@ export class FormMenuService {
       {
         title: "Hilfe",
         name: "help",
-        link: this.configService.$userInfo.getValue().externalHelp,
+        link: this.configService.$userInfo.getValue()?.externalHelp,
       },
     ].filter(Boolean) as FormularMenuItem[],
   };

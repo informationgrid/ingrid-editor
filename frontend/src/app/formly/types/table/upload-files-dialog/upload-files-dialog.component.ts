@@ -46,7 +46,6 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../../services/config/config.service";
-import { AuthenticationFactory } from "../../../../security/auth.factory";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { UploadComponent } from "../../../../shared/upload/upload.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
@@ -103,7 +102,6 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     formStateService: FormStateService,
     private uploadService: UploadService,
     configService: ConfigService,
-    private authFactory: AuthenticationFactory,
     @Inject(MAT_DIALOG_DATA)
     private data: {
       currentItems: any[];
@@ -140,9 +138,10 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // refresh token to in this dialog to prevent auto-save, since this might lead to
     // a removal of uploaded files (#6386)
-    this.refreshTimer$ = window.setInterval(() => {
+    // TODO: ADAPT if necessary
+    /*this.refreshTimer$ = window.setInterval(() => {
       return this.authFactory.refreshToken();
-    }, 60000);
+    }, 60000);*/
   }
 
   ngOnDestroy(): void {

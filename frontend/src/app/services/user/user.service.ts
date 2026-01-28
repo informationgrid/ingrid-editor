@@ -19,7 +19,7 @@
  */
 import { inject, Injectable, signal } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { catchError, map, tap } from "rxjs/operators";
 import { SelectOption, SelectOptionUi } from "../codelist/codelist.service";
@@ -30,7 +30,6 @@ import { ConfigService } from "../config/config.service";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { AuthenticationFactory } from "../../security/auth.factory";
 import { Group } from "../../models/user-group";
 // @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
@@ -66,7 +65,6 @@ export class UserService {
     private dataService: UserDataService,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
-    private keycloakService: AuthenticationFactory,
   ) {
     if (!this.configService.hasCatAdminRights()) {
       this.availableRoles = this.availableRoles.filter(
@@ -138,9 +136,11 @@ export class UserService {
   }
 
   updateCurrentUser(user: Partial<User>): Observable<boolean> {
-    return this.keycloakService
-      .updateUserProfile(user)
-      .pipe(catchError((error) => UserService.handleChangeEmailError(error)));
+    return of(false);
+    // TODO: ADAPT
+    // return this.keycloakService
+    //   .updateUserProfile(user)
+    //   .pipe(catchError((error) => UserService.handleChangeEmailError(error)));
   }
 
   private static handleChangeEmailError(
@@ -224,7 +224,9 @@ export class UserService {
   }
 
   updatePassword(): Promise<void> {
-    return this.keycloakService.updatePassword();
+    return Promise.resolve();
+    // TODO: ADAPT
+    // return this.keycloakService.updatePassword();
   }
 
   resetPassword(login: string) {
