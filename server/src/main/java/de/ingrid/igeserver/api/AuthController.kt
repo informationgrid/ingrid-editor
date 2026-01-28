@@ -122,6 +122,12 @@ class AuthController(
     fun me(principal: Principal): ResponseEntity<UserInfo> = usersApiController.currentUserInfo(principal)
 
     /**
+     * Show a generic access denied error page served by the backend.
+     */
+    @GetMapping("/access-denied")
+    fun accessDenied(): String = "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator."
+
+    /**
      * Show a generic login error page served by the backend.
      */
     @GetMapping("/login-error")

@@ -134,8 +134,9 @@ internal class KeycloakConfig {
                 // BFF auth endpoints
                 authorize("/auth/login", permitAll)
                 authorize("/auth/logout", permitAll)
-                authorize("/auth/me", authenticated)
+                authorize("/auth/me", authenticated) // hasAnyRole("ige-user", "ige-super-admin"))
                 authorize("/login-error", permitAll)
+                authorize("/access-denied", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
             }
