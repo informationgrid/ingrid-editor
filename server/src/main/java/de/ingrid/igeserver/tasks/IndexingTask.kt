@@ -294,13 +294,13 @@ class IndexingTask(
         category: DocumentCategory,
         docUuid: String,
     ) {
-        log.info("Export dataset from catalog '$catalogId': $docUuid")
-
         setAdminAuthentication("Indexing", "Task")
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
+
+        if (!configs.isEmpty()) log.info("Export dataset from catalog '$catalogId': $docUuid")
 
         try {
             configs
