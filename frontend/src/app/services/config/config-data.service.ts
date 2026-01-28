@@ -51,41 +51,45 @@ export class ConfigDataService {
   }
 
   async getCurrentUserInfo(): Promise<UserInfo> {
-    let auth: any;
-    try {
-      auth = await firstValueFrom(this.httpClient.get<any>(`/auth/me`));
-    } catch (e) {
-      if (typeof e === "string") {
-        if (e.indexOf("Error occurred while trying to proxy to") !== -1) {
-          console.error("No running backend");
-          throw new Error("Backend does not seem to run");
-        } else {
-          console.error("Could not get current user info", e);
-        }
-      } else if ((<XMLHttpRequest>e).status === 401) {
-        // Allow caller to handle 401 (e.g., navigate to session-expired)
-        throw e;
-      } else if ((<XMLHttpRequest>e).status === 403) {
-        throw new Error(
-          "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator.",
-        );
-      } else {
-        if (e instanceof HttpErrorResponse) {
-          const error = <IgeException>e.error;
-          if (error.errorCode === "PROFILE_NOT_FOUND") {
+    return (
+      firstValueFrom(
+        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser"),
+      )
+        // TODO: if database is not initialized then response is not JSON
+        //       change backend response or catch parse error
+        .then(ConfigDataService.mapUserInformation)
+        .catch((e: IgeException | XMLHttpRequest | string) => {
+          if (typeof e === "string") {
+            if (e.indexOf("Error occurred while trying to proxy to") !== -1) {
+              console.error("No running backend");
+              throw new Error("Backend does not seem to run");
+            } else {
+              console.error("Could not get current user info", e);
+            }
+          } else if ((<XMLHttpRequest>e).status === 401) {
+            // Allow caller to handle 401 (e.g., navigate to session-expired)
+            throw e;
+          } else if ((<XMLHttpRequest>e).status === 403) {
             throw new Error(
-              `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`,
+              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator.",
             );
           } else {
-            throw new Error(error.errorText);
+            if (e instanceof HttpErrorResponse) {
+              const error = <IgeException>e.error;
+              if (error.errorCode === "PROFILE_NOT_FOUND") {
+                throw new Error(
+                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`,
+                );
+              } else {
+                throw new Error(error.errorText);
+              }
+            } else {
+              throw new Error((<IgeException>e).errorText);
+            }
           }
-        } else {
-          throw new Error((<IgeException>e).errorText);
-        }
-      }
-      return ConfigDataService.mapUserInformation({});
-    }
-    return ConfigDataService.mapUserInformation(auth);
+          return ConfigDataService.mapUserInformation({});
+        })
+    );
   }
 
   private static mapUserInformation(json): UserInfo {

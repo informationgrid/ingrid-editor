@@ -58,7 +58,7 @@ export class BffAuthInterceptor implements HttpInterceptor {
           window.location.href = "/auth/login";
         } else if (error?.status === 403) {
           // If the user lacks the required role, redirect to the access-denied page served by the backend
-          window.location.href = "/access-denied";
+          // window.location.href = "/access-denied";
         }
         return throwError(() => error);
       }),

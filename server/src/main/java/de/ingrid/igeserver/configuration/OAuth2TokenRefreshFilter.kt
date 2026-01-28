@@ -57,7 +57,7 @@ class OAuth2TokenRefreshFilter(
                 request,
             )
 
-            if (authorizedClient != null && isExpired(authorizedClient.accessToken)) {
+            if (authorizedClient == null || isExpired(authorizedClient.accessToken)) {
                 val isAjax = isAjaxRequest(request)
                 val wrappedResponse = if (isAjax) {
                     object : HttpServletResponseWrapper(response) {
@@ -106,7 +106,7 @@ class OAuth2TokenRefreshFilter(
                     // We return 401 instead so the SPA can handle it.
                     if (isAjax) {
                         response.status = HttpServletResponse.SC_UNAUTHORIZED
-                        response.writer.write("Token refresh failed and re-authentication is required.")
+                        response.writer.write("Token refresh or client authorization failed and re-authentication is required.")
                         return
                     }
                     // For non-AJAX requests, we might let the exception propagate so Spring Security can redirect
