@@ -21,20 +21,32 @@ import { Pipe, PipeTransform } from "@angular/core";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Pipe({
-  name: "fieldToAriaLabel",
+  name: "ariaLabel",
 })
-export class FieldToAriaLabelPipe implements PipeTransform {
+export class AriaLabelPipe implements PipeTransform {
   constructor() {}
 
   transform(field: FormlyFieldConfig): string {
-    return fieldToAriaLabel(field);
+    return getAriaLabelByField(field);
   }
 }
 
-export function fieldToAriaLabel(field: FormlyFieldConfig): string {
-  if (field.props.label && field.props.label.trim().length > 0) {
+export function getAriaLabelByField(field: FormlyFieldConfig): string {
+  if (field.props?.label && field.props.label.trim().length > 0) {
     return field.props.label;
-  } else {
-    return field.props.fieldLabel;
   }
+
+  if (field.parent?.wrappers.includes("panel")) {
+    return getAriaLabelById(field.parent.id);
+  }
+
+  if (field.id) {
+    return getAriaLabelById(field.id);
+  }
+
+  return undefined;
+}
+
+export function getAriaLabelById(fieldId: string) {
+  return `label_${fieldId}`;
 }
