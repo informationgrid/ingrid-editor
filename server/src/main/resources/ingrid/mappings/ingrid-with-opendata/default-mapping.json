@@ -478,6 +478,10 @@
     "topic_categories": {
       "type": "keyword",
       "store": true
+    },
+    "rdf": {
+      "type": "text",
+      "store": true
     }
   }
 }
