@@ -64,7 +64,7 @@ import { DocumentWithMetadata } from "../../../models/ige-document";
 import { AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AriaLabelPipe } from "../../../directives/aira-label.pipe";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { waitForCondition } from "../../../services/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -79,7 +79,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     CdkDrag,
     AddressCardComponent,
     AddButtonComponent,
-    FieldToAiraLabelledbyPipe,
+    AriaLabelPipe,
     FormlyValidationMessage,
   ],
 })

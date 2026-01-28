@@ -44,6 +44,6 @@
             showError && formControl.invalid && formControl.errors?.required
         "
         [requiredMessage]="props.requiredMessage"
-        [ariaLabelledBy]="field | fieldToAriaLabelledBy"
+        [ariaLabelledBy]="field | ariaLabel"
     ></ige-add-button>
 }

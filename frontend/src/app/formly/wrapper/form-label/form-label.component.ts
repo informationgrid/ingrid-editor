@@ -17,10 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ElementRef, input, output } from "@angular/core";
+import { Component, computed, ElementRef, input, output } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { getAriaLabelById } from "../../../directives/aira-label.pipe";
 
 @Component({
   selector: "ige-form-label",
@@ -34,6 +35,11 @@ export class FormLabelComponent {
   readonly ariaLabel = input<string>(undefined);
 
   readonly contextHelp = output<HTMLElement>();
+
+  fieldLabel = computed(() => {
+    if (this.fieldId() === undefined) return undefined;
+    return getAriaLabelById(this.fieldId());
+  });
 
   showContextHelp(evt: Event) {
     if (!this.hasContextHelp()) {

@@ -34,7 +34,7 @@ import { NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
-import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe";
+import { AriaLabelPipe } from "../../../directives/aira-label.pipe";
 
 @Component({
   selector: "ige-inline-help-wrapper",
@@ -45,7 +45,7 @@ import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe"
     MatIconButton,
     MatTooltip,
     MatIcon,
-    FieldToAriaLabelPipe,
+    AriaLabelPipe,
   ],
 })
 export class InlineHelpWrapperComponent
