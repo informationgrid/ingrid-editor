@@ -120,4 +120,10 @@ class AuthController(
      */
     @GetMapping("/auth/me")
     fun me(principal: Principal): ResponseEntity<UserInfo> = usersApiController.currentUserInfo(principal)
+
+    /**
+     * Show a generic login error page served by the backend.
+     */
+    @GetMapping("/login-error")
+    fun loginError(): String = "Es konnte keine korrekte Verbindung zum Keycloak-Server hergestellt werden. Bitte prüfen Sie das ClientSecret und weitere Einstellungen."
 }

@@ -135,12 +135,18 @@ internal class KeycloakConfig {
                 authorize("/auth/login", permitAll)
                 authorize("/auth/logout", permitAll)
                 authorize("/auth/me", authenticated)
+                authorize("/login-error", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
             }
             oauth2Login {
                 // After successful OAuth2 login, send the browser to the SPA root
-                defaultSuccessUrl(generalProperties.appUrl, true)
+                authenticationSuccessHandler =
+                    org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler(
+                        generalProperties.appUrl,
+                    )
+                authenticationFailureHandler =
+                    org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler("/login-error")
                 userInfoEndpoint {
                     userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
                 }
