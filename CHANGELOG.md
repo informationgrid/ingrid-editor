@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.2.1 (29.01.2026)
+
+### Features
+
+* IGE: Bild hochladen Button entfernen oder Funktion anpassen (#8594)
+* Erstellung BKG-Basisprofil für Editor NG (#6640)
+
+### Bugfixes
+
+* Fehlertext korrigieren (#8664)
+* Open Data - Angabe Link Ressource einfügen (#8637)
+    
 ## 8.2.0 (12.01.2026)
 
 ### Features
