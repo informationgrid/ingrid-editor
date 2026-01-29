@@ -21,7 +21,7 @@ import { Component, computed, ElementRef, input, output } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { getAriaLabelById } from "../../../directives/aira-label.pipe";
+import { getAriaLabelById } from "../../../directives/aria-label.pipe";
 
 @Component({
   selector: "ige-form-label",

@@ -96,7 +96,7 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { MatInput } from "@angular/material/input";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import { AriaLabelPipe } from "../../../directives/aira-label.pipe";
+import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
 import {
   BackendOption,

@@ -26,7 +26,7 @@ import {
 import { HttpClient } from "@angular/common/http";
 import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
-import { getAriaLabelByField } from "../app/directives/aira-label.pipe";
+import { getAriaLabelByField } from "../app/directives/aria-label.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
