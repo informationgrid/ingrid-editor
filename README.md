@@ -130,7 +130,7 @@ For the server:
 Do not forget to update the lock file for the dependencies. This can be done with the following command:
 
 ```shell
-./gradlew -PbuildProfile=prod :server:build -x test -x check --write-locks
+./gradlew -PbuildProfile=prod :server:dependencies --write-locks
 ```
 
 For the frontend:

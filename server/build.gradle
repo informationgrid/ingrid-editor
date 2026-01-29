@@ -64,8 +64,10 @@ configurations {
     }
 }
 
-dependencyLocking {
-    lockAllConfigurations()
+if (hasProperty('buildDockerImage')) {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }
 
 // Profile support
