@@ -65,6 +65,10 @@ configurations {
     }
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 // Profile support
 if (!hasProperty('buildProfile') || getProperty('buildProfile') == 'cypress') apply from: "profile-dev.gradle"
 
