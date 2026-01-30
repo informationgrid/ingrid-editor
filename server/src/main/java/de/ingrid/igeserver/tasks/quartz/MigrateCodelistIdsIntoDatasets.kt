@@ -213,13 +213,14 @@ class MigrateCodelistIdsIntoDatasets(
     }
 
     private fun getFields(profile: CatalogProfile): List<FieldToCodelist> {
-        if (profile.identifier == "ingrid" || profile.linkedProfiles.contains("ingrid")) return fieldsInGrid
+        if (profile.identifier == "ingrid") return fieldsInGrid
         if (profile.identifier == "ingrid-krzn") return fieldsKrzn
         if (profile.identifier == "ingrid-hmdk") return fieldsHmdk
         if (profile.identifier == "ingrid-lfubayern") return fieldsLfUBayern
         if (profile.identifier == "uvp" || profile.linkedProfiles.contains("uvp")) return fieldsUvp
         if (profile.identifier == "opendata" || profile.linkedProfiles.contains("opendata")) return fieldsOpendata
         if (profile.identifier == "test" || profile.linkedProfiles.contains("test")) return fieldsTest
+        if (profile.linkedProfiles.contains("ingrid")) return fieldsInGrid
         return emptyList()
     }
 
