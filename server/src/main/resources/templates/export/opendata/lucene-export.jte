@@ -114,17 +114,15 @@
     "political_geocoding_level_uri": "${model.getPoliticalGeocodingLevel()}",
     "temporal": {
         "accrual_periodicity": "${model.getPeriodicity()}",
-        "accrual_periodicity": "${model.getPeriodicityKey()}"
+        "accrual_periodicity_key": "${model.getPeriodicityKey()}"
         @if (model.getTemporalStart() != null || model.getTemporalEnd() != null)
             ,
-        {
             @if (model.getTemporalStart() != null)
                 "gte": "${model.getTemporalStart()}"@if (model.getTemporalEnd() != null),@endif
             @endif
             @if (model.getTemporalEnd() != null)
                 "lte": "${model.getTemporalEnd()}"
             @endif
-        }
         @endif
     },
     "rdf": "${rdf.getRDF()}"
