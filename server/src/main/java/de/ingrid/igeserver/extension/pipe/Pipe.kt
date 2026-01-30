@@ -114,7 +114,7 @@ open class Pipe<T : Payload>(@param:Value("AnonymousPipe") override val id: Stri
             if (filter.usedInProfile(profile) || linkedProfiles.any { filter.usedInProfile(it) }) {
                 context.addMessage(Message(this, "Running filter '${filter.id}'"))
                 try {
-                    result = filter(result, context)
+                    result = filter.invoke(result, context)
                 } catch (e: Exception) {
                     log.error("Filter '${filter.id}' could not be executed, due to an error", e)
                     filterException = e

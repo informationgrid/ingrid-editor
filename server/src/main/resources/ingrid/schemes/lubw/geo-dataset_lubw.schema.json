@@ -39,6 +39,16 @@
         "$ref": "../../../general.schema.json#/definitions/KeyValue"
       }
     },
+    "responsibleDepartment": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../../../general.schema.json#/definitions/KeyValue"
+        }
+      ]
+    },
     "dataManagementAndCopyrightNotes": {
       "type": ["null", "string"]
     },

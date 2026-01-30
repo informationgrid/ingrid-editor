@@ -159,6 +159,7 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
   isGeoDataset: boolean = false;
+  disableUpload: boolean = false;
   private thesaurusTopics: boolean = false;
 
   codelistIds = {
@@ -372,6 +373,7 @@ export abstract class IngridShared extends BaseDoctype {
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
+            disableUpload: this.disableUpload,
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
@@ -1266,7 +1268,7 @@ export abstract class IngridShared extends BaseDoctype {
                               return !ctrl.value?.number || frequency === "1";
                             },
                             message:
-                              "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
+                              "Werte im Feld 'Benutzerdefiniertes Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' auf den Wert 'kontinuierlich (benutzerdefiniert)' eingestellt wurde.",
                           },
                         },
                       },
@@ -1289,7 +1291,9 @@ export abstract class IngridShared extends BaseDoctype {
             key: "data",
             type: "time-reference",
             wrappers: [],
-            defaultValue: { type: "none" },
+            defaultValue: this.options.required.resourceDateType
+              ? null
+              : { type: "none" },
             props: {
               required: this.options.required.resourceDateType,
             },

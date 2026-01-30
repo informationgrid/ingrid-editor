@@ -48,6 +48,9 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         get() = emptyArray()
 
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
+        if (payload.skipValidation) {
+            return payload
+        }
         val schema = payload.type.jsonSchema
         if (schema != null) {
             val json = payload.document.data

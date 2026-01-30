@@ -8,8 +8,8 @@
 
 .node-container {
   font-family: "Fira Code", monospace;
-  font-size: 0.85rem;
-  margin-left: 1.2rem;
+  font-size: 0.75rem;
+  margin-left: 1rem;
 
   //overflow-wrap: anywhere;
   //word-break: break-word;
@@ -31,7 +31,7 @@
 
 .arrow {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   transition: transform 0.1s ease;
   margin-right: 5px;
 }
@@ -41,7 +41,7 @@
 
 .key {
   color: var(--key-color);
-  font-weight: 600;
+  font-weight: 500;
 }
 .string {
   color: var(--string-color);
@@ -56,4 +56,8 @@
 .children {
   border-left: 1px solid #eee;
   padding-left: 5px;
+}
+
+.toggle-key {
+  white-space: nowrap;
 }

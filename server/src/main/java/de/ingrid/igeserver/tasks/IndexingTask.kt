@@ -101,6 +101,18 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
+        if (catalog.settings.noIndexing) {
+            log.info("Indexing is disabled for catalog: $catalogId")
+            notify.sendMessage(
+                message.apply {
+                    this.endTime = Date()
+                    this.infos += "Indizierung ist deaktiviert"
+                },
+            )
+            finishJob(context, message)
+            return
+        }
+
         try {
             // get all targets we want to export to
             val targets = getExporterConfigForCatalog(catalog, catalogProfile)
@@ -198,6 +210,8 @@ class IndexingTask(
         catalog: Catalog,
         catalogProfile: CatalogProfile,
     ): List<ExtendedExporterConfig> {
+        if (catalog.settings.noIndexing) return emptyList()
+
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
         val cswtConfig = settingsService.getCSWTConfig()
@@ -280,13 +294,13 @@ class IndexingTask(
         category: DocumentCategory,
         docUuid: String,
     ) {
-        log.info("Export dataset from catalog '$catalogId': $docUuid")
-
         setAdminAuthentication("Indexing", "Task")
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
+
+        if (!configs.isEmpty()) log.info("Export dataset from catalog '$catalogId': $docUuid")
 
         try {
             configs

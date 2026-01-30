@@ -4,7 +4,7 @@ plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
     id "org.jetbrains.changelog" version "1.1.2"
     id "com.diffplug.spotless" version "7.0.2" apply false
-    id 'org.cyclonedx.bom' version '1.10.0'
+    id 'org.cyclonedx.bom' version '3.1.0'
 }
 
 group = 'de.ingrid'
@@ -43,19 +43,14 @@ allprojects {
 }
 
 cyclonedxBom {
-    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
-    includeConfigs = ["runtimeClasspath"]
-    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
-    skipConfigs = ["compileClasspath", "testCompileClasspath"]
     // Specified the type of project being built. Defaults to 'library'
     projectType = "application"
     // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
-    schemaVersion = "1.5"
-    // Boms destination directory. Defaults to 'build/reports'
-    destination = file("build/reports")
-    // The file name for the generated BOMs (before the file format suffix). Defaults to 'bom'
-    outputName = "bom"
-    // The file format generated, can be xml, json or all for generating both. Defaults to 'all'
-    outputFormat = "json"
+    schemaVersion = "VERSION_15"
     componentVersion = rootProject.version
+
+    includeBuildSystem = false
+
+    xmlOutput.unsetConvention()
+    jsonOutput.set(file("build/reports/bom.json"))
 }

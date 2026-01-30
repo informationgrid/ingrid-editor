@@ -79,6 +79,7 @@ class LubwProfile(
         val codelist30004 = createCodelist30004(catalogRef)
         val codelist30005 = createCodelist30005(catalogRef)
         val codelist30006 = createCodelist30006(catalogRef)
+        val codelist30007 = createCodelist30007(catalogRef)
 
         when (codelistId) {
             "30000" -> {
@@ -112,14 +113,19 @@ class LubwProfile(
             }
 
             "30006" -> {
-                codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30006)
+                return
+            }
+
+            "30007" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30007)
                 return
             }
 
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005, codelist30006),
+                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005, codelist30006, codelist30007),
                 )
             }
         }
@@ -218,6 +224,19 @@ class LubwProfile(
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             codelist30006.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30007(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30007"
+        catalog = catalogRef
+        name = "Für die Fachredaktion zuständige Dienststelle"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30007.forEach { (key, value) ->
                 add(toCodelistEntry(key, value))
             }
         }

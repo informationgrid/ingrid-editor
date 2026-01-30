@@ -31,6 +31,7 @@ open class IndexException : ServerException {
         private const val ERROR_CODE = "INDEXING_ERROR"
         private const val ERROR_CODE_CANCEL = "INDEXING_CANCELED"
         private const val ERROR_CODE_FOLDER_WITH_NO_CHILDREN = "FOLDER_WITH_NO_CHILDREN"
+        private const val ERROR_CODE_EXPLICIT_SKIP_FOLDERS = "EXPLICIT_SKIP_FOLDERS"
         private const val ERROR_TEXT_MISSING = "Value '\${valueName}' is missing or empty."
 
         /**
@@ -44,5 +45,7 @@ open class IndexException : ServerException {
         fun withReason(reason: String, cause: Throwable? = null): IndexException = IndexException(STATUS_CODE, ERROR_CODE, reason, null, cause)
 
         fun folderWithNoPublishedDocs(uuid: String): IndexException = IndexException(STATUS_CODE, ERROR_CODE_FOLDER_WITH_NO_CHILDREN, uuid)
+
+        fun skipFolders(uuid: String): IndexException = IndexException(STATUS_CODE, ERROR_CODE_EXPLICIT_SKIP_FOLDERS, uuid)
     }
 }

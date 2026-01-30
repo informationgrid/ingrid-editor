@@ -276,7 +276,9 @@ class ImportService(
             override fun compare(a: DocumentAnalysis, b: DocumentAnalysis): Int = when {
                 // addresses should be listed first
                 a.isAddress && !b.isAddress -> -1
+
                 b.isAddress && !a.isAddress -> 1
+
                 else -> 0
             }
         }
@@ -436,35 +438,62 @@ class ImportService(
 
         val publish = options.publish || ref.forcePublish
         if (!exists && !ref.deleted) {
-            documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
+            documentService.createDocument(
+                principal,
+                catalogId,
+                ref.document,
+                ref.parent,
+                ref.isAddress,
+                publish,
+                skipValidation = options.skipValidation,
+            )
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
             // undelete first to completely delete afterwards
             removeDeletedFlag(ref.wrapperId!!)
             documentService.deleteDocument(principal, catalogId, ref.wrapperId, DeleteOptions(true, true))
-            documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
+            documentService.createDocument(
+                principal,
+                catalogId,
+                ref.document,
+                ref.parent,
+                ref.isAddress,
+                publish,
+                skipValidation = options.skipValidation,
+            )
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
-        } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            val wrapperId =
-                ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
-            setVersionInfo(catalogId, wrapperId, ref.document)
-
-            // run in parallel to greatly improve speed
-            val job = GlobalScope.async {
-                // set same principal in new context
-                SecurityContextHolder.getContext().authentication = principal
-                if (publish) {
-                    documentService.publishDocument(principal, catalogId, wrapperId, ref.document)
-                } else {
-                    documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
-                }
-            }
-
-            counter.overwritten++
-            return job
         } else {
-            counter.skipped++
+            if ((ref.isAddress && options.overwriteAddresses) || (!ref.isAddress && options.overwriteDatasets)) {
+                val wrapperId =
+                    ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(
+                        catalogId,
+                        ref.document.uuid,
+                    ).id!!
+                setVersionInfo(catalogId, wrapperId, ref.document)
+
+                // run in parallel to greatly improve speed
+                val job = GlobalScope.async {
+                    // set same principal in new context
+                    SecurityContextHolder.getContext().authentication = principal
+                    if (publish) {
+                        documentService.publishDocument(
+                            principal,
+                            catalogId,
+                            wrapperId,
+                            ref.document,
+                            skipValidation = options.skipValidation,
+                        )
+                    } else {
+                        documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                    }
+                }
+
+                counter.overwritten++
+                return job
+            } else {
+                counter.skipped++
+            }
         }
         return null
     }

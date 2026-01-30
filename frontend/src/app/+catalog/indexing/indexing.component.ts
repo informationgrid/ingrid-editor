@@ -123,7 +123,10 @@ export class IndexingComponent implements OnInit {
       .pipe(tap(() => this.initialized.set(true)))
       .subscribe((config) => {
         this.cronField.setValue(config.cronPattern);
-        this.exportModel = { "catalog-index-config": config.exports };
+        this.exportModel = {
+          "no-indexing": config.noIndexing,
+          "catalog-index-config": config.exports,
+        };
       });
 
     this.cronField.valueChanges
@@ -193,7 +196,10 @@ export class IndexingComponent implements OnInit {
 
   updateExportConfig() {
     this.indexService
-      .setExportConfig(this.exportForm.value["catalog-index-config"])
+      .setExportConfig({
+        noIndexing: this.exportForm.value["no-indexing"],
+        exports: this.exportForm.value["catalog-index-config"],
+      })
       .subscribe(() => this.snackBar.open("Konfiguration gespeichert"));
   }
 }

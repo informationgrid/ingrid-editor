@@ -56,4 +56,5 @@ data class ImportOptions(
     val overwriteAddresses: Boolean = false,
     // so far we always want to overwrite datasets
     val overwriteDatasets: Boolean = true,
+    val skipValidation: Boolean = false,
 )

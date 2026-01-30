@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.index
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.utils.ElasticDocument
@@ -54,6 +55,9 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     }
 
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+        if (doc["isfolder"] == "true") {
+            throw IndexException.skipFolders(doc[indexinfo.docIdField].toString())
+        }
         client.insertOrUpdate(doc, catalogId, transactionId)
     }
 
