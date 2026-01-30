@@ -116,6 +116,7 @@ class OpenDataModelTransformer(
         when (type) {
             "free" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
             "wkt" -> convertWktToGeoJson(spatial.getString("wkt")!!)
+            "wfsgnde" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
             else -> null
         }
     } ?: emptyList()
@@ -126,8 +127,8 @@ class OpenDataModelTransformer(
         node.get("lat2").asDouble(),
         node.get("lon2").asDouble(),
     )
-    fun getSpatialTitles() = emptyList<String>()
-    fun getArs() = emptyList<String>()
+    fun getSpatialTitles() = doc.data.get("spatial")?.map { it.getStringOrEmpty("title") } ?: emptyList()
+    fun getArs() = doc.data.get("spatial")?.map { it.getStringOrEmpty("ars") } ?: emptyList()
     fun getLegalBasis() = doc.data.getStringOrEmpty("legalBasis")
     fun getQualityProcessURI() = doc.data.getStringOrEmpty("qualityProcessURI")
     fun getPoliticalGeocodingLevel() = doc.data.getString("politicalGeocodingLevel.key")
