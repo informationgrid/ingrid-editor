@@ -64,7 +64,7 @@ configurations {
     }
 }
 
-if (hasProperty('buildDockerImage')) {
+if (hasProperty('lock')) {
     dependencyLocking {
         lockAllConfigurations()
     }
