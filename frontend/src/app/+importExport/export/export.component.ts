@@ -203,12 +203,13 @@ export class ExportComponent implements OnInit {
 
   private async handleError(error: HttpErrorResponse): Promise<any> {
     const jsonError = await this.getErrorFromBlob(error);
+    let message = jsonError.errorText;
     if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
-      throw new IgeError(
-        "Es können nur veröffentlichte Versionen exportiert werden.",
-      );
+      message = "Es können nur veröffentlichte Versionen exportiert werden.";
+    } else if (jsonError.errorCode === "NO_EXPORTER_ERROR") {
+      message = `Für den Dokumenttyp '${jsonError.data.documentType}' ist kein Exporter im '${jsonError.data.exporterClassName}' definiert.`;
     }
-    throw new IgeError(jsonError.errorText);
+    throw new IgeError(message);
   }
 
   private getErrorFromBlob(error: HttpErrorResponse) {
