@@ -226,12 +226,15 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             this.addCheckboxInline("timeDimension", "Zeit"),
           ]),
           this.addRepeatList("level", "Level der Untersuchung", {
+            required: true,
+            asSelect: true,
             options: [
               { label: "mean", value: "mean" },
               { label: "design", value: "design" },
             ],
           }),
           this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
+            asSelect: true,
             options: [
               { label: "A", value: "A" },
               { label: "B", value: "B" },

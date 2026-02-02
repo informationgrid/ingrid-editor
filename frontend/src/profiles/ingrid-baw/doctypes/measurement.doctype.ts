@@ -84,7 +84,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
             ],
           }),
 
-          this.addSelect("measurementDirection", "Messrichtung", {
+          this.addAutocomplete("measurementDirection", "Messrichtung", {
             options: [
               { label: "horizontal", value: "horizontal" },
               { label: "vertikal", value: "vertikal" },
