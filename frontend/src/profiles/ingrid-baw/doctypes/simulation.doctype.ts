@@ -215,7 +215,6 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.addGroup("dimension", "Dimensionen", [
             this.addSelect("spatialDimension", null, {
               fieldLabel: "Räumliche Dimensionen",
-              showSearch: true,
               wrappers: ["form-field"],
               options: [
                 { label: "1D", value: "1D" },
