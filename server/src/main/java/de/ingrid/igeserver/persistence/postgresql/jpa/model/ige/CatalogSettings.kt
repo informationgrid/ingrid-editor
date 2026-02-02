@@ -26,6 +26,7 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 
 data class CatalogSettings(
     var indexCronPattern: String? = null,
+    var noIndexing: Boolean = false,
     // TODO: store summary in Quartz Job
     var lastLogSummary: IndexMessage? = null,
     @JsonSetter(nulls = Nulls.SKIP)

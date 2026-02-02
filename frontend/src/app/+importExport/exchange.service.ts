@@ -106,6 +106,16 @@ export interface ImportTypeInfo {
   description: string;
 }
 
+export interface ImportOptions {
+  importer?: string;
+  parentDocument?: number;
+  parentAddress?: number;
+  publish?: boolean;
+  overwriteAddresses?: boolean;
+  overwriteDatasets?: boolean;
+  skipValidation?: boolean;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -155,7 +165,7 @@ export class ExchangeService {
     );
   }
 
-  import(options: any) {
+  import(options: ImportOptions) {
     return this.http
       .post(
         `${this.configuration.backendUrl}jobs/import?command=start`,

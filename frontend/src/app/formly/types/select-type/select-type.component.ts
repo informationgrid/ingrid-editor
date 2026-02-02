@@ -44,7 +44,7 @@ import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatDivider } from "@angular/material/divider";
-import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
@@ -79,7 +79,7 @@ interface SelectTypeProps extends FormlyFieldProps {
     NgxMatSelectSearchModule,
     NgTemplateOutlet,
     MatDivider,
-    FieldToAiraLabelledbyPipe,
+    AriaLabelPipe,
     FormlyAttributes,
   ],
 })

@@ -78,6 +78,17 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         "Hinweise zu Datenführung und Urheberschaft",
         this.id,
       ),
+      this.addSelect(
+        "responsibleDepartment",
+        "Für die Fachredaktion zuständige Dienststelle",
+        {
+          codelistId: "30007",
+          options: this.getCodelistForSelect("30007", "responsibleDepartment"),
+          expressions: {
+            "props.disabled": (_: FormlyFieldConfig) => isAuthor,
+          },
+        },
+      ),
     );
 
     const positionAccessConstraints = IngridShared.findFieldElementWithId(
@@ -113,6 +124,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       positionAccessConstraints,
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
+        wrappers: ["panel", "form-field"],
         options: [
           {
             value: "Ja",

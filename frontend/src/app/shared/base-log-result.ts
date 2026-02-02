@@ -22,5 +22,6 @@ export interface BaseLogResult {
   endTime: Date;
   message: string;
   errors: string[];
+  infos: string[];
   progress: number;
 }

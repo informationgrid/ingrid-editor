@@ -20,7 +20,7 @@
     [multiple]="props.multiple"
     (selectionChange)="change($event)"
     [errorStateMatcher]="errorStateMatcher"
-    [aria-labelledby]="field | fieldToAriaLabelledBy"
+    [aria-labelledby]="field | ariaLabel"
     [disableOptionCentering]="props.disableOptionCentering"
 >
     @if (props.showSearch) {

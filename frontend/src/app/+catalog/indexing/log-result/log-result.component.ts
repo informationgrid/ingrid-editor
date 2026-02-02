@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   OnInit,
 } from "@angular/core";
@@ -36,6 +37,12 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 })
 export class LogResultComponent implements OnInit {
   log = input.required<LogResult>();
+  protected readonly skippedDatasets = computed<number>(() => {
+    return (
+      this.log().targets?.reduce((sum, target) => sum + target.numSkipped, 0) ??
+      0
+    );
+  });
 
   constructor() {}
 

@@ -128,6 +128,7 @@ open class PrePublishPayload(
     document: Document,
     wrapper: DocumentWrapper,
     val publishDate: Date? = null,
+    val skipValidation: Boolean = false,
 ) : PrePersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**

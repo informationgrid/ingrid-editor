@@ -26,7 +26,7 @@ import {
 import { HttpClient } from "@angular/common/http";
 import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
-import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
+import { getAriaLabelByField } from "../app/directives/aria-label.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 import { TableProps } from "../app/formly/types/table/table-type.component";
 import { LongTermFileStorageTreeStore } from "../app/store/tree/long-term-file-storage-tree.store";
@@ -346,7 +346,7 @@ export class FormFieldHelper {
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
-          toAriaLabelledBy(field),
+          getAriaLabelByField(field),
       },
     };
   }
@@ -686,7 +686,7 @@ export class FormFieldHelper {
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
-          toAriaLabelledBy(field),
+          getAriaLabelByField(field),
       },
       validation: options?.validation,
       validators: options?.validators,
@@ -742,7 +742,7 @@ export class FormFieldHelper {
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
-          toAriaLabelledBy(field),
+          getAriaLabelByField(field),
       },
       validation: options?.validation,
       validators: options?.validators,

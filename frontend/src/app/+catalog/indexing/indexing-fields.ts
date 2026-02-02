@@ -37,6 +37,10 @@ export class IndexingFields extends FormFieldHelper {
   exchangeService = inject(ExchangeService);
 
   fields: FormlyFieldConfig[] = [
+    this.addCheckbox("no-indexing", null, {
+      wrappers: [],
+      fieldLabel: "Indizierung deaktivieren",
+    }),
     this.addRepeat("catalog-index-config", "", {
       wrappers: [],
       className: "space-bottom flex-1",

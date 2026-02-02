@@ -34,11 +34,13 @@ export interface LogResult extends BaseLogResult {
     numAddresses: number;
     progressDocuments: number;
     progressAddresses: number;
+    numSkipped: number;
   }[];
 }
 
 interface IndexCronConfig {
   cronPattern: string;
+  noIndexing: boolean;
   exports: IndexExportConfig[];
 }
 
@@ -84,7 +86,7 @@ export class IndexService {
     return this.http
       .get<any>(`${this.configuration.backendUrl}jobs/index/info`)
       .pipe(
-        map((data) => {
+        map((data: any) => {
           return <LogResult>{
             ...data.info,
             targets: data.info?.report,

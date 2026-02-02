@@ -351,6 +351,7 @@ class DocumentService(
         address: Boolean = false,
         publish: Boolean = false,
         initiator: InitiatorAction = InitiatorAction.DEFAULT,
+        skipValidation: Boolean = false,
     ): DocumentData {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docTypeName = document.type
@@ -393,7 +394,13 @@ class DocumentService(
             preUpdatePayload.document.state = DocumentState.PUBLISHED
 
             val prePublishPayload =
-                PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
+                PrePublishPayload(
+                    docType,
+                    catalogId,
+                    preUpdatePayload.document,
+                    preUpdatePayload.wrapper,
+                    skipValidation = skipValidation,
+                )
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
 
@@ -569,6 +576,7 @@ class DocumentService(
         id: Int,
         data: Document,
         publishDate: Date? = null,
+        skipValidation: Boolean = false,
     ): DocumentData {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
 
@@ -600,7 +608,14 @@ class DocumentService(
 
         // run pre-publish pipe(s)
         val prePublishPayload =
-            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper, publishDate)
+            PrePublishPayload(
+                docType,
+                catalogId,
+                preUpdatePayload.document,
+                preUpdatePayload.wrapper,
+                publishDate,
+                skipValidation,
+            )
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
