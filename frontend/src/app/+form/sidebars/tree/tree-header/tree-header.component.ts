@@ -25,12 +25,13 @@ import {
   output,
   inject,
   DestroyRef,
+  signal,
 } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { UntypedFormControl } from "@angular/forms";
+import { FormsModule, UntypedFormControl } from "@angular/forms";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIconButton } from "@angular/material/button";
@@ -60,6 +61,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     DocumentListItemComponent,
     AsyncPipe,
     MatSlideToggle,
+    FormsModule,
   ],
 })
 export class TreeHeaderComponent implements OnInit {
@@ -87,6 +89,7 @@ export class TreeHeaderComponent implements OnInit {
   searchResult = new BehaviorSubject<TreeNode[]>([]);
   query = new UntypedFormControl("");
   searchSub: Subscription;
+  protected readonly writeAccessState = signal<boolean>(false);
 
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component
@@ -138,5 +141,10 @@ export class TreeHeaderComponent implements OnInit {
   deactivateMultiSelection() {
     this.multiSelectionModeEnabled = false;
     this.edit.emit(false);
+  }
+
+  protected toggleWriteAccessState(checked: boolean) {
+    this.writeAccessState.set(checked);
+    this.toggleWriteAccess.emit(checked);
   }
 }
