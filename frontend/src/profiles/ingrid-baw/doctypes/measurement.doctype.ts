@@ -83,7 +83,16 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
               },
             ],
           }),
-
+          this.addSelect("measurementType", "Art der Messung", {
+            wrappers: ["panel", "form-field"],
+            options: [
+              { label: "Dauermessung", value: "ongoing" },
+              { label: "Einzelmessung", value: "single" },
+            ],
+          }),
+          this.addInput("windID", "Objekt-Ident-Nr. WInD", {
+            wrappers: ["panel", "form-field"],
+          }),
           this.addAutocomplete("measurementDirection", "Messrichtung", {
             options: [
               { label: "horizontal", value: "horizontal" },
@@ -91,7 +100,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "3D", value: "3D" },
             ],
           }),
-          this.addRepeatList("parameter", "Messparameter", {
+          this.addRepeatList("parameter", "Messgrößen", {
             options: [
               { label: "Koordinaten", value: "Koordinaten" },
               { label: "Bild", value: "Bild" },

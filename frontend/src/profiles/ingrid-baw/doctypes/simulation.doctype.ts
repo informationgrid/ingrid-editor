@@ -235,12 +235,12 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
             asSelect: true,
             options: [
-              { label: "A", value: "A" },
-              { label: "B", value: "B" },
-              { label: "C", value: "C" },
-              { label: "I", value: "I" },
-              { label: "II", value: "II" },
-              { label: "III", value: "III" },
+              { label: "TbW A", value: "TbW A" },
+              { label: "TbW B", value: "TbW B" },
+              { label: "TbW C", value: "TbW C" },
+              { label: "TbVS I", value: "TbVS I" },
+              { label: "TbVS II", value: "TbVS II" },
+              { label: "TbVS III", value: "TbVS III" },
             ],
           }),
           this.addGroup("concept", "Berechnungskonzepte", [
