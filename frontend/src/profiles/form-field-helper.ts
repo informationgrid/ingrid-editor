@@ -35,6 +35,7 @@ import { ConfigService } from "../app/services/config/config.service";
 import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
 import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
+import { ToggleOption } from "../app/formly/types/toggles-type/toggles-type.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -123,6 +124,10 @@ export interface RepeatDetailListOptions extends Options {
 export interface ExplanationTextOptions extends Options {
   explanation: string;
   buttonLink?: string;
+}
+
+export interface TogglesOptions extends Options {
+  options?: ToggleOption[];
 }
 
 export interface RepeatListOptions extends Options {
@@ -526,6 +531,20 @@ export class FormFieldHelper {
         label: label,
         explanation: options?.explanation,
         buttonLink: options?.buttonLink,
+      },
+    };
+  }
+
+  addToggles(id, label, options?: TogglesOptions): FormlyFieldConfig {
+    return {
+      key: id,
+      type: "toggles",
+      wrappers: ["panel"],
+      props: {
+        label: label,
+        externalLabel: label,
+        options: options?.options,
+        contextHelpId: options?.contextHelpId,
       },
     };
   }
