@@ -548,6 +548,7 @@ export class FormFieldHelper {
         externalLabel: label,
         options: options?.options,
         contextHelpId: options?.contextHelpId,
+        hideLabel: options?.hideLabel,
       },
     };
   }

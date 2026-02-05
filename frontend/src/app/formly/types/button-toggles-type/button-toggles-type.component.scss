@@ -11,18 +11,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
 
-.toggle-group.has-label {
-  padding: 8px 8px 8px 12px;
-  border-radius: 6px;
-  background-color: variables.$ige-background;
+  &.has-label {
+    padding: 8px 8px 8px 12px;
+    border-radius: 6px;
+    background-color: variables.$ige-background;
+  }
 }
 
 mat-button-toggle {
   --mat-button-toggle-height: 32px;
+
+  &.mat-button-toggle-checked {
+    background-color: variables.$ige-secondary;
+  }
 }
 
-mat-button-toggle.mat-button-toggle-checked {
-  background-color: variables.$ige-secondary;
-}

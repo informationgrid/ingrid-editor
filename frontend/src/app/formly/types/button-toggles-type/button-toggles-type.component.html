@@ -2,9 +2,7 @@
     @for (toggle of props.options; track toggle) {
         <div class="toggle-group" [class.has-label]="!props.hideLabel">
             @if (toggle.label && !props.hideLabel) {
-                <div class="toggle-group-label">
-                    {{ toggle.label }}
-                </div>
+                <div>{{ toggle.label }}</div>
             }
             <mat-button-toggle-group
                 [name]="toggle.key"
