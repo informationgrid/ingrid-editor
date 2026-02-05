@@ -8,7 +8,7 @@
             }
             <mat-button-toggle-group
                 [name]="toggle.key"
-                [value]="value ? value[toggle.key] : toggle.options[0].value"
+                [value]="value ? value[toggle.key] : undefined"
                 [attr.aria-label]="toggle.label"
                 hideSingleSelectionIndicator
                 (change)="onToggled(toggle.key, $event.value)"
