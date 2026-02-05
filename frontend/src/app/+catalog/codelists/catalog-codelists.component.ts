@@ -27,8 +27,12 @@ import {
   signal,
 } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { filter, tap } from "rxjs/operators";
+import {
+  Codelist,
+  CodelistEntry,
+  FreeEntry,
+} from "../../store/codelist/codelist.model";
+import { filter, take, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -58,6 +62,7 @@ import { MatDivider } from "@angular/material/divider";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 import { MatInput } from "@angular/material/input";
+import { FreeEntryListComponent } from "./free-entry-list/free-entry-list.component";
 
 @Component({
   selector: "ige-catalog-codelists",
@@ -81,6 +86,7 @@ import { MatInput } from "@angular/material/input";
     MatInput,
     MatLabel,
     FormsModule,
+    FreeEntryListComponent,
   ],
 })
 export class CatalogCodelistsComponent implements OnInit {
@@ -118,6 +124,9 @@ export class CatalogCodelistsComponent implements OnInit {
   showSyncButton = signal<boolean>(false);
   private ctrlKeyPressCount = 0;
   codelistIdInput: string;
+
+  // Free entries by selected codelist.
+  freeEntries = signal<FreeEntry[]>([]);
 
   constructor(
     private codelistService: CodelistService,
@@ -227,6 +236,7 @@ export class CatalogCodelistsComponent implements OnInit {
     });
     this.favorites = this.codelistService.getFavorite(option.id);
     this.favoriteIds = this.favorites.map((f) => f.id);
+    this.updateFreeEntries();
   }
 
   setAsDefault(entry: CodelistEntry) {
@@ -234,24 +244,87 @@ export class CatalogCodelistsComponent implements OnInit {
     this.save();
   }
 
-  openFreeEntries() {
-    // Open the dedicated dialog to select and replace free entries
+  private updateFreeEntries() {
+    console.log("update!");
+    this.codelistService
+      .getFreeEntries(this.selectedCodelist.id)
+      .pipe(take(1))
+      .subscribe((entries) => this.freeEntries.set(entries));
+  }
+
+  openFreeEntryReplaceDialog(entry: FreeEntry) {
     this.dialog
       .open(FreeEntryReplaceDialogComponent, {
         data: {
           codelistId: this.selectedCodelist.id,
-          codelistName: this.selectedCodelist.name,
+          entries: this.freeEntries(),
+          selectedEntry: entry,
         },
       })
       .afterClosed()
       .subscribe((result) => {
-        if (result?.occurrences >= 0) {
-          this._snackBar.open(
-            `Freie Einträge ersetzt: ${result.occurrences}`,
-            undefined,
-            { duration: 3000 },
-          );
-        }
+        const fromValue = entry.value;
+        const toKey = result?.trim();
+        if (toKey == undefined || toKey.length == 0) return;
+
+        this.codelistService
+          .replaceFreeEntry(this.selectedCodelist.id, fromValue, toKey)
+          .pipe(take(1))
+          .subscribe({
+            next: (result) => {
+              this.updateFreeEntries();
+              this._snackBar.open(
+                `Ersetzt ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en)`,
+                undefined,
+                { duration: 4000 },
+              );
+            },
+            error: () => {
+              this._snackBar.open(
+                "Fehler beim Ersetzen des freien Eintrags",
+                undefined,
+                { duration: 4000 },
+              );
+            },
+          });
+      });
+  }
+
+  openFreeEntryAddDialog(entry: FreeEntry) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "In Codelist übernehmen",
+          message:
+            "Möchten Sie den freien Eintrag wirklich in die Codelist übernehmen?",
+          list: [entry.value],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+        const fromValue = entry.value;
+        this.codelistService
+          .addFreeEntryToCodelist(this.selectedCodelist.id, fromValue)
+          .pipe(take(1))
+          .subscribe({
+            next: (result) => {
+              this._snackBar.open(
+                `In Codelist übernommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en) ersetzt`,
+                undefined,
+                { duration: 4000 },
+              );
+            },
+            error: () => {
+              this._snackBar.open(
+                "Fehler beim Übernehmen in die Codelist",
+                undefined,
+                {
+                  duration: 4000,
+                },
+              );
+            },
+          });
       });
   }
 

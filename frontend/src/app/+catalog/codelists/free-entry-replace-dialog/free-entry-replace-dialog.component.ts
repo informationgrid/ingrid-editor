@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, Inject, OnInit, signal } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -29,25 +29,20 @@ import {
 import { CodelistService } from "../../../services/codelist/codelist.service";
 import { FreeEntry } from "../../../store/codelist/codelist.model";
 import {
-  FormControl,
   FormsModule,
   ReactiveFormsModule,
   UntypedFormGroup,
-  Validators,
 } from "@angular/forms";
-import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatOption, MatSelect } from "@angular/material/select";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { startWith, take } from "rxjs/operators";
+import { map, startWith } from "rxjs/operators";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 export interface FreeEntryReplaceDialogData {
   codelistId: string;
-  codelistName?: string;
+  selectedEntry?: FreeEntry;
 }
 
 @Component({
@@ -55,12 +50,8 @@ export interface FreeEntryReplaceDialogData {
   templateUrl: "./free-entry-replace-dialog.component.html",
   styles: [
     `
-      .row {
-        margin-top: 8px;
-      }
-      .hint {
-        color: rgba(0, 0, 0, 0.6);
-        margin-top: 8px;
+      mat-dialog-content {
+        --mat-dialog-with-actions-content-padding: 20px 24px 0px 24px;
       }
     `,
   ],
@@ -69,10 +60,6 @@ export interface FreeEntryReplaceDialogData {
     MatDialogContent,
     MatDialogActions,
     MatDialogClose,
-    MatFormField,
-    MatLabel,
-    MatSelect,
-    MatOption,
     ReactiveFormsModule,
     FormsModule,
     MatIcon,
@@ -80,82 +67,29 @@ export interface FreeEntryReplaceDialogData {
     MatIconButton,
     NgxMatSelectSearchModule,
     FormlyForm,
-    MatProgressSpinner,
   ],
 })
 export class FreeEntryReplaceDialogComponent implements OnInit {
-  isReplacing = signal(false);
-  isAdding = signal(false);
-  loadingEntries = signal(false);
-
-  freeEntries = signal<FreeEntry[]>([]);
-  filteredFreeEntries: FreeEntry[] = [];
-
-  // mirror form validity into signals to prevent ExpressionChanged errors
-  fromInvalid = signal(true);
-  toInvalid = signal(true);
-
-  // derived state
-  noFreeEntries = computed(() => this.freeEntries().length === 0);
-  actionDisabled = computed(
-    () =>
-      this.fromInvalid() ||
-      this.toInvalid() ||
-      this.isReplacing() ||
-      this.isAdding() ||
-      this.noFreeEntries(),
-  );
-  addDisabled = computed(
-    () =>
-      this.fromInvalid() ||
-      this.isReplacing() ||
-      this.isAdding() ||
-      this.noFreeEntries(),
-  );
-
-  fromCtrl = new FormControl<string | null>(null, Validators.required);
-  freeFilterCtrl = new FormControl<string>("");
-
-  // Formly configuration for selecting the target keyed entry
+  selectedEntry?: FreeEntry;
   toForm = new UntypedFormGroup({});
-  toModel: any = {};
   toFields: FormlyFieldConfig[] = [];
 
-  get selectedFreeEntry(): FreeEntry | undefined {
-    const val = this.fromCtrl.value ?? "";
-    return this.freeEntries().find((e) => e.value === val);
-  }
+  isToFormInvalid = toSignal(
+    this.toForm.statusChanges.pipe(
+      startWith(this.toForm.status),
+      map(() => this.toForm.invalid),
+    ),
+    { initialValue: this.toForm.invalid },
+  );
 
   constructor(
     private dialogRef: MatDialogRef<FreeEntryReplaceDialogComponent>,
     private codelistService: CodelistService,
-    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: FreeEntryReplaceDialogData,
   ) {}
 
   ngOnInit(): void {
-    // Load free entries with counts
-    this.loadingEntries.set(true);
-    this.codelistService
-      .getFreeEntries(this.data.codelistId)
-      .pipe(take(1))
-      .subscribe({
-        next: (entries) => {
-          this.freeEntries.set(entries || []);
-          this.applyFreeFilter();
-          this.loadingEntries.set(false);
-        },
-        error: () => {
-          this.loadingEntries.set(false);
-          this.snackBar.open(
-            "Fehler beim Laden der freien Einträge",
-            undefined,
-            { duration: 4000 },
-          );
-          this.dialogRef.close();
-        },
-      });
-
+    this.selectedEntry = this.data.selectedEntry;
     this.toFields = [
       {
         key: "toKey",
@@ -174,94 +108,11 @@ export class FreeEntryReplaceDialogComponent implements OnInit {
         },
       },
     ];
-
-    this.freeFilterCtrl.valueChanges.subscribe(() => this.applyFreeFilter());
-
-    // track validity via signals (avoid reading form.invalid directly in template)
-    this.fromInvalid.set(this.fromCtrl.invalid);
-    this.fromCtrl.statusChanges
-      .pipe(startWith(this.fromCtrl.status))
-      .subscribe(() =>
-        Promise.resolve().then(() =>
-          this.fromInvalid.set(this.fromCtrl.invalid),
-        ),
-      );
-
-    this.toInvalid.set(this.toForm.invalid);
-    this.toForm.statusChanges
-      .pipe(startWith(this.toForm.status))
-      .subscribe(() =>
-        Promise.resolve().then(() => this.toInvalid.set(this.toForm.invalid)),
-      );
-  }
-
-  private applyFreeFilter() {
-    const term = (this.freeFilterCtrl.value || "").toLowerCase();
-    this.filteredFreeEntries = this.freeEntries().filter((e) =>
-      e.value.toLowerCase().includes(term),
-    );
   }
 
   replace() {
-    const fromValue = this.fromCtrl.value?.toString().trim();
-    const toKey = (this.toModel?.toKey ?? this.toForm.value?.toKey)
-      ?.toString()
-      .trim();
-    if (!fromValue || !toKey) return;
-
-    this.isReplacing.set(true);
-    this.codelistService
-      .replaceFreeEntry(this.data.codelistId, fromValue, toKey)
-      .pipe(take(1))
-      .subscribe({
-        next: (result) => {
-          this.isReplacing.set(false);
-          this.snackBar.open(
-            `Ersetzt ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en)`,
-            undefined,
-            { duration: 4000 },
-          );
-          this.dialogRef.close(result);
-        },
-        error: () => {
-          this.isReplacing.set(false);
-          this.snackBar.open(
-            "Fehler beim Ersetzen des freien Eintrags",
-            undefined,
-            { duration: 4000 },
-          );
-        },
-      });
-  }
-
-  addToCodelist() {
-    const fromValue = this.fromCtrl.value?.toString().trim();
-    if (!fromValue) return;
-
-    this.isAdding.set(true);
-    this.codelistService
-      .addFreeEntryToCodelist(this.data.codelistId, fromValue)
-      .pipe(take(1))
-      .subscribe({
-        next: (result) => {
-          this.isAdding.set(false);
-          this.snackBar.open(
-            `In Codelist übernommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en) ersetzt`,
-            undefined,
-            { duration: 4000 },
-          );
-          this.dialogRef.close(result);
-        },
-        error: () => {
-          this.isAdding.set(false);
-          this.snackBar.open(
-            "Fehler beim Übernehmen in die Codelist",
-            undefined,
-            {
-              duration: 4000,
-            },
-          );
-        },
-      });
+    const toKey = this.toForm.value?.toKey?.trim();
+    if (!toKey) return;
+    this.dialogRef.close(toKey);
   }
 }

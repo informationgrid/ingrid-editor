@@ -1,0 +1,43 @@
+<div class="section-title">Freie Einträge</div>
+<mat-list role="list">
+    @for (entry of freeEntries(); track entry.value; let isLast = $last) {
+        <mat-list-item role="listitem">
+            <div
+                matListItemTitle
+                class="flex-col gap-6"
+            >
+                <div class="font-medium">
+                    {{ entry.value }}
+                </div>
+                <div class="text-sm text-hint">
+                    Bereits {{ entry.count }}-mal verwendet
+                </div>
+            </div>
+
+            <div
+                matListItemMeta
+                class="flex-row align-items-center"
+            >
+                <button
+                    matIconButton
+                    [matMenuTriggerFor]="menu"
+                    aria-label="Mehr"
+                >
+                    <mat-icon svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" xPosition="before">
+                    <button mat-menu-item (click)="onReplaceClicked.emit(entry)">
+                        Ersetzen
+                    </button>
+                    <button mat-menu-item (click)="onAddClicked.emit(entry)">
+                        In Codelist Übernehmen
+                    </button>
+                </mat-menu>
+            </div>
+        </mat-list-item>
+
+        @if (!isLast) {
+            <mat-divider></mat-divider>
+        }
+    }
+</mat-list>
