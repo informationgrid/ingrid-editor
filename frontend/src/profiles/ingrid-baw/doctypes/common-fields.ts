@@ -171,6 +171,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     // reuse existing ingrid field validators
     pointOfContactPosition.fieldConfig[pointOfContactPosition.index] =
       this.getBAWPointOfContactFieldConfig(
+        doc,
         pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
           .validators,
       );
@@ -202,12 +203,22 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getBAWPointOfContactFieldConfig(
+    doctype: IngridShared,
     additionalValidators: {} = {},
   ): FormlyFieldConfig {
+    // all types except "Verfahrensbetreuung" (13) and "Entwickler" (14)
+    const allGeneralTypes = Array.from({ length: 12 }, (_, i) =>
+      (i + 1).toString(),
+    );
+
     return this.addAddressCard("pointOfContact", "Adressen", {
       required: true,
-      // only "Herausgeber" and "Autor"
-      allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
+      // allow all types for BawSoftware Doctype (based on InGridInformationSystem).
+      // allow only allGeneralTypes for all other doctypes
+      allowedTypes:
+        doctype.id != "InGridInformationSystem" ? allGeneralTypes : null,
+      // only "Herausgeber" (10) and "Autor" (11) for PublicationAddressDocs
+      allowedTypesByAddressType: { PublicationAddressDoc: ["10", "11"] },
       validators: {
         // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
         // deactivated for now as it was deactivated in the production ige classic as well

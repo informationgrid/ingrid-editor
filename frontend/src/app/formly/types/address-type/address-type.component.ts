@@ -225,7 +225,7 @@ export class AddressTypeComponent
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,
-            allowedTypesByDoctype: this.props.allowedTypesByDoctype,
+            allowedTypesByAddressType: this.props.allowedTypesByAddressType,
             disabledCondition: this.props.disabledCondition,
             skipToType: skipToType,
           },

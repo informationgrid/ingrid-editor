@@ -376,7 +376,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
-        allowedTypesByDoctype: options?.allowedTypesByDoctype,
+        allowedTypesByAddressType: options?.allowedTypesByAddressType,
         disabledCondition: options?.disabledCondition,
         max: options?.max,
       },
