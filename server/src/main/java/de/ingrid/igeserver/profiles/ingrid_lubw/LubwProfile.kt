@@ -59,7 +59,7 @@ class LubwProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (LUBW)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 
     override val indexExportFormatID = "indexInGridIDFLubw"
 

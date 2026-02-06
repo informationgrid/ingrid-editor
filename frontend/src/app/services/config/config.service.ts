@@ -79,7 +79,7 @@ export interface UserInfo {
 
   useElasticsearch?: boolean;
   permissions: string[];
-  parentProfile?: string;
+  linkedProfiles: string[];
   plugins?: BehaviourFormatBackend[];
 }
 

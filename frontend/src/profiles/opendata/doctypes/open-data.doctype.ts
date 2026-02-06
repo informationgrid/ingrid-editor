@@ -24,6 +24,8 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
 import { of } from "rxjs";
+import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
+import { FormControl } from "@angular/forms";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 
@@ -41,6 +43,11 @@ export class OpenDataDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
+
+  options = {
+    spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
+    temporalLegacy: false,
+  };
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -227,10 +234,11 @@ export class OpenDataDoctype extends BaseDoctype {
               expression: (ctrl) => ctrl.value?.length > 0,
               message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
             },
-            requiredLicense: {
-              expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
+            requiredUrlAndLicense: {
+              expression: (ctrl) =>
+                ctrl.value?.every((entry) => entry.license && entry.link?.uri),
               message:
-                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden (Ressource bearbeiten).",
+                "Fehler: Es muss für jede Ressource eine Lizenz und ein Link (bzw. Dateiname) angegeben werden (Ressource bearbeiten).",
             },
           },
         }),
@@ -247,7 +255,7 @@ export class OpenDataDoctype extends BaseDoctype {
       ]),
       this.addSection("Raumbezüge", [
         this.addSpatial("spatial", "Raumbezüge", {
-          limitTypes: ["free", "wkt"],
+          limitTypes: this.options.spatialTypes,
         }),
         this.addSelect(
           "politicalGeocodingLevel",
@@ -261,49 +269,128 @@ export class OpenDataDoctype extends BaseDoctype {
           },
         ),
       ]),
-      this.addSection("Zeitbezüge", [
-        this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
-          this.addSelect("rangeType", null, {
-            showSearch: false,
-            className: "flex-1",
-            wrappers: ["form-field"],
-            options: [
-              { label: "am", value: "at" },
-              { label: "seit", value: "since" },
-              { label: "bis", value: "till" },
-              { label: "von - bis", value: "range" },
-            ],
-          }),
-          this.addDatepicker("timeSpanDate", null, {
-            placeholder: "TT.MM.JJJJ",
-            wrappers: ["form-field"],
-            fieldLabel: "Datum",
-            required: true,
-            expressions: {
-              hide: (field: FormlyFieldConfig) =>
-                field.model?.rangeType?.key == null ||
-                field.model?.rangeType?.key === "range",
-            },
-          }),
-          this.addDateRange("timeSpanRange", null, {
-            wrappers: [],
-            fieldLabel: "Datum",
-            required: true,
-            expressions: {
-              hide: (field: FormlyFieldConfig) =>
-                field.model?.rangeType?.key !== "range",
-            },
-          }),
-        ]),
-        this.addSelect("periodicity", "Periodizität", {
-          showSearch: true,
-          options: this.getCodelistForSelectWithEmptyOption(
-            "518",
-            "periodicity",
-          ),
-          codelistId: "518",
-        }),
-      ]),
+      this.addSection(
+        "Zeitbezüge",
+        [
+          this.options.temporalLegacy
+            ? this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
+                this.addSelect("rangeType", null, {
+                  showSearch: false,
+                  className: "flex-1",
+                  wrappers: ["form-field"],
+                  options: [
+                    { label: "am", value: "at" },
+                    { label: "seit", value: "since" },
+                    { label: "bis", value: "till" },
+                    { label: "von - bis", value: "range" },
+                  ],
+                }),
+                this.addDatepicker("timeSpanDate", null, {
+                  placeholder: "TT.MM.JJJJ",
+                  wrappers: ["form-field"],
+                  fieldLabel: "Datum",
+                  required: true,
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.model?.rangeType?.key == null ||
+                      field.model?.rangeType?.key === "range",
+                  },
+                }),
+                this.addDateRange("timeSpanRange", null, {
+                  wrappers: [],
+                  fieldLabel: "Datum",
+                  required: true,
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.model?.rangeType?.key !== "range",
+                  },
+                }),
+                this.addSelect("periodicity", "Periodizität", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect("518", "periodicity"),
+                  codelistId: "518",
+                }),
+              ])
+            : null,
+          ...(this.options.temporalLegacy
+            ? null
+            : [
+                this.addSelect("accrualPeriodicity", "Periodizität", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "518",
+                    "accrualPeriodicity",
+                  ),
+                  codelistId: "518",
+                }),
+                this.addUnitInput(
+                  "userDefinedAccrualPeriodicity",
+                  "Benutzerdefiniertes Intervall der Erhebung",
+                  {
+                    type: "number",
+                    placeholder: "Bitte eingeben ...",
+                    unitOptions: this.getCodelistForSelect(
+                      "1230",
+                      "maintenanceInformation.userDefinedAccrualPeriodicity.unit",
+                    ),
+                    codelistId: "1230",
+                    fieldGroup: [{ key: "number" }, { key: "unit" }],
+                    hintStart:
+                      "Wenn ein Intervall angegeben werden kann, geben Sie das Intervall an, in dem der Datensatz aktualisiert wird.",
+                    expressions: {
+                      className: (field: FormlyFieldConfig) => {
+                        const notEmpty = !isNaN(
+                          parseInt(
+                            field.form.value?.userDefinedAccrualPeriodicity
+                              ?.number,
+                          ),
+                        );
+                        const isNotContinuously =
+                          field.options.formState.mainModel?.accrualPeriodicity
+                            ?.key !== "1";
+                        if (!notEmpty && isNotContinuously) return "hide";
+                        return notEmpty
+                          ? "right-align"
+                          : "right-align optional";
+                      },
+                    },
+                    validators: {
+                      min: {
+                        expression: (ctrl: FormControl) =>
+                          ctrl.value.number === undefined ||
+                          ctrl.value.number >= 0,
+                        message: "Der Wert darf nicht negativ sein",
+                      },
+                      continuously: {
+                        expression: (ctrl: FormControl) => {
+                          const frequency =
+                            ctrl.root.get("accrualPeriodicity")?.value?.key;
+                          return !ctrl.value?.number || frequency === "1";
+                        },
+                        message:
+                          "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
+                      },
+                    },
+                  },
+                ),
+                this.addSubSection(
+                  "temporal",
+                  "Zeitbezug der Daten im Datensatz",
+                  [
+                    {
+                      key: "data",
+                      type: "time-reference",
+                      wrappers: [],
+                      defaultValue: { type: "none" },
+                      props: {
+                        // required: this.options.required.resourceDateType,
+                      },
+                    },
+                  ],
+                ),
+              ]),
+        ].filter(Boolean),
+      ),
     ];
 
   private handleHVDClick(field: FormlyFieldConfig) {

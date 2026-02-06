@@ -35,7 +35,7 @@ class GeoserviceTransformerKrzn(transformerConfig: TransformerConfig) : Geodatas
         ?.joinToString(",")
         ?.let outer@{ coupledUuids ->
             coupledUuids.split(",").firstOrNull()?.let { uuid ->
-                getMapLink(getLastPublishedDocument(uuid)?.data, coupledUuids, codelists)
+                getMapLink(addressExporter.getLastPublishedDocument(uuid)?.data, coupledUuids, codelists)
             }
         }
 

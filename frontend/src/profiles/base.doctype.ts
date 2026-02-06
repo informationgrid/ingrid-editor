@@ -106,6 +106,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.fields;
   }
 
+  /**
+   * @deprecated
+   */
   getCodelistForSelectWithEmptyOption(
     codelistId: string,
     field: string,

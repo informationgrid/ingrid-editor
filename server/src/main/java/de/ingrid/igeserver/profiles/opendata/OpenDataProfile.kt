@@ -51,7 +51,7 @@ class OpenDataProfile(
     override val title = "Open-Data Katalog"
     override val description: String? = null
 
-    override val indexExportFormatID = "indexOpenDataIDF"
+    override val indexExportFormatID = "indexOpenData"
 
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 

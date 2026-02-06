@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exceptions.NoExporterException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
@@ -132,7 +133,7 @@ class IngridIDFExporter(
         "InGridInformationSystem" -> "export/ingrid/idf/idf-informationSystem.jte"
         "InGridOrganisationDoc" -> "export/ingrid/idf/idf-address.jte"
         "InGridPersonDoc" -> "export/ingrid/idf/idf-address.jte"
-        else -> throw ServerException.withReason("Cannot get template for type: $type")
+        else -> throw NoExporterException.forExporter(this.javaClass.simpleName, type)
     }
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {

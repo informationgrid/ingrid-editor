@@ -56,7 +56,7 @@ class HmdkProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (HMDK)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 
     init {
         isoImport.profileMapper[ID] = isoImportHMDK

@@ -40,7 +40,7 @@ class JsonSchemaService(
 
     fun getSchemaOfDocType(catalogId: String, docType: String): JsonNode {
         val profile = catalogService.getProfileFromCatalog(catalogId)
-        val docType = documentService.getDocumentType(docType, profile.identifier, null)
+        val docType = documentService.getDocumentType(docType, profile.identifier)
         val schemaPath = docType.jsonSchema
         val resource = PreJsonSchemaValidator::class.java.getResource(schemaPath as String)
             ?: error("Schema file not found: $schemaPath")

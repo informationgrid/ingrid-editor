@@ -26,10 +26,10 @@ import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
 import de.ingrid.dcatparser.dcatapeia.model.dct.Location
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.exporter.model.AddressRefModel
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.AddressInfo
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.Communication
-import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport.JsonStringOutput
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.PointOfContact
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService

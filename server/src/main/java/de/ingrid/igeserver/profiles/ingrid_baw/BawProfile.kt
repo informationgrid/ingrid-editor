@@ -63,7 +63,7 @@ class BawProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (BAW)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 
     init {
         isoImport.profileMapper[ID] = isoImportBaw

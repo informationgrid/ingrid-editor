@@ -222,7 +222,7 @@ class DatasetsApiController(
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
-        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.parentProfile)
+        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
         val refQuery = docType.getIncomingReferenceQuery(doc, options + "forResearch")
 
         if (refQuery.isEmpty()) {
