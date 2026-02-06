@@ -96,12 +96,14 @@ export interface BackendConnections {
   ibus: ConnectionInfo[];
   elasticsearch: ConnectionInfoElastic[];
   cswt: ConnectionInfoCswt[];
+  piveau: ConnectionInfoPiveau[];
 }
 
 export type GeneralConnectionInfo =
   | ConnectionInfo
   | ConnectionInfoElastic
-  | ConnectionInfoCswt;
+  | ConnectionInfoCswt
+  | ConnectionInfoPiveau;
 
 export interface ConnectionInfo {
   _type: "ibus";
@@ -113,6 +115,16 @@ export interface ConnectionInfo {
 
 export interface ConnectionInfoCswt {
   _type: "cswt";
+  id: number;
+  name: string;
+  url: string;
+  isSecure: boolean;
+  username: string;
+  password: string;
+}
+
+export interface ConnectionInfoPiveau {
+  _type: "piveau";
   id: number;
   name: string;
   url: string;
@@ -333,6 +345,9 @@ export class ConfigService {
       cswt: value.connections.filter(
         (item) => item._type === "cswt",
       ) as ConnectionInfoCswt[],
+      piveau: value.connections.filter(
+        (item) => item._type === "piveau",
+      ) as ConnectionInfoPiveau[],
     };
   }
 
@@ -360,11 +375,20 @@ export class ConfigService {
             return newConn;
           }),
         ),
+        ...this.addType(
+          "piveau",
+          value.piveau?.map((conn) => {
+            const newConn = <ConnectionInfoPiveau>conn;
+            newConn.isSecure =
+              newConn.username?.length > 0 && newConn.password?.length > 0;
+            return newConn;
+          }),
+        ),
       ],
     };
   }
 
-  private addType(type: "ibus" | "elastic" | "cswt", value: any[]) {
+  private addType(type: "ibus" | "elastic" | "cswt" | "piveau", value: any[]) {
     return (value ?? []).map((item) => {
       item._type = type;
       return item;
@@ -373,6 +397,6 @@ export class ConfigService {
 
   private handleGetConnectionsError(err: any): Observable<BackendConnections> {
     console.error("Das Laden der Verbindungen ist fehlgeschlagen", err);
-    return of({ ibus: [], elasticsearch: [], cswt: [] });
+    return of({ ibus: [], elasticsearch: [], cswt: [], piveau: [] });
   }
 }

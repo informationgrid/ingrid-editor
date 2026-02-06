@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.PiveauConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
@@ -53,8 +54,14 @@ class SettingsService(
 
         return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWConfig>>() {})
     }
+    fun getPiveauConfig(): List<PiveauConfig> {
+        val piveauJson = repoSettings.findByKey("piveau")?.value ?: return emptyList()
 
-    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id } ?: getCSWTConfig().find { it.id!! == id }
+        return jacksonObjectMapper().convertValue(piveauJson, object : TypeReference<List<PiveauConfig>>() {})
+    }
+
+    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
+        ?: getCSWTConfig().find { it.id!! == id } ?: getPiveauConfig().find { it.id!! == id }
 
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)
@@ -86,6 +93,11 @@ class SettingsService(
     fun setCSWTConfig(config: List<CSWConfig>) {
         addIdIfNeeded(config)
         this.updateItem("cswt", config)
+    }
+
+    fun setPiveauConfig(config: List<PiveauConfig>) {
+        addIdIfNeeded(config)
+        this.updateItem("piveau", config)
     }
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {

@@ -24,14 +24,17 @@ import de.ingrid.igeserver.index.CSWIndexer
 import de.ingrid.igeserver.index.ElasticIndexer
 import de.ingrid.igeserver.index.IBusIndexer
 import de.ingrid.igeserver.index.IIndexManager
+import de.ingrid.igeserver.index.PiveauIndexer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.PiveauConfig
 import de.ingrid.igeserver.services.connection.CSWService
 import de.ingrid.igeserver.services.connection.ElasticsearchService
 import de.ingrid.igeserver.services.connection.IBusService
 import de.ingrid.igeserver.services.connection.IConnection
 import de.ingrid.igeserver.services.connection.InvalidConnectionService
+import de.ingrid.igeserver.services.connection.PiveauService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
@@ -40,17 +43,23 @@ class ConnectionService(
     private val iBusService: IBusService,
     private val elasticsearchService: ElasticsearchService,
     private val cswService: CSWService,
+    private val piveauService: PiveauService,
     private val settingsService: SettingsService,
 ) {
     private val log = logger()
 
     fun getIndexerForConnection(id: String): IIndexManager = when (val connection = settingsService.getConnectionConfig(id)) {
         is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
+
         is ElasticConfig -> ElasticIndexer(
             connection.name,
             elasticsearchService.getClient(id),
         )
+
         is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
+
+        is PiveauConfig -> PiveauIndexer(connection.name, piveauService.getClient(id))
+
         else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
     }
 
@@ -60,6 +69,8 @@ class ConnectionService(
         elasticsearchService
     } else if (cswService.containsId(id)) {
         cswService
+    } else if (piveauService.containsId(id)) {
+        piveauService
     } else {
         log.warn("Connection-ID not found: $id")
         InvalidConnectionService()
@@ -71,5 +82,6 @@ class ConnectionService(
         iBusService.setupConnections()
         elasticsearchService.setupConnections()
         cswService.setupConnections()
+        piveauService.setupConnections()
     }
 }

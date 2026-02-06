@@ -65,6 +65,7 @@ data class ConnectionConfig(
     val ibus: List<IBusConfig>? = null,
     val elasticsearch: List<ElasticConfig>? = null,
     val cswt: List<CSWConfig>? = null,
+    val piveau: List<PiveauConfig>? = null,
 )
 
 interface WithId {
@@ -96,4 +97,14 @@ data class CSWConfig(
     val url: String,
     val username: String? = null,
     val password: String? = null,
+) : WithId
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class PiveauConfig(
+    override var id: String? = null,
+    val name: String,
+    val url: String,
+    val username: String? = null,
+    val password: String? = null,
+    val apiKey: String? = null,
 ) : WithId

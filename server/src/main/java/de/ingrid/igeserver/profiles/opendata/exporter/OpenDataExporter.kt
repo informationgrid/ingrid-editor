@@ -69,6 +69,8 @@ class OpenDataExporter(
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
                 listOf("opendata"),
+                isPublic = true,
+                useForPublish = true,
             )
         }
 

@@ -66,6 +66,7 @@ class ConfigApiController(
             settingsService.getIBusConfig(),
             settingsService.getElasticConfig(),
             settingsService.getCSWTConfig(),
+            settingsService.getPiveauConfig(),
         ),
     )
 
@@ -80,6 +81,9 @@ class ConfigApiController(
         }
         config.cswt?.let {
             settingsService.setCSWTConfig(it)
+        }
+        config.piveau?.let {
+            settingsService.setPiveauConfig(it)
         }
         connectionService.setupConnections()
         return ResponseEntity.ok().body(config)

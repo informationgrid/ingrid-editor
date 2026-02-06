@@ -51,6 +51,13 @@ export class ConnectionForm extends FormFieldHelper {
             fieldGroup: [...this.addFieldsForCSWT()],
           },
         },
+        {
+          key: "piveau",
+          value: "Piveau",
+          fields: {
+            fieldGroup: [...this.addFieldsForPiveau()],
+          },
+        },
       ],
     }),
   ];
@@ -186,6 +193,53 @@ export class ConnectionForm extends FormFieldHelper {
             required: true,
             updateOn: "change",
             type: "password",
+          }),
+        ],
+        {
+          hideExpression: (field: FormlyFieldConfig) => !field.model.isSecure,
+          fieldGroupClassName: "flex-row gap-6",
+        },
+      ),
+    ];
+  }
+  private addFieldsForPiveau() {
+    return [
+      { key: "_type" },
+      { key: "id" },
+      this.addInputInline("name", "Name", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        validators: {
+          validation: ["valid_es_alias"],
+        },
+      }),
+      this.addInputInline("url", "URL", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        validators: {
+          validation: ["url"],
+        },
+      }),
+      this.addCheckboxInline("isSecure", "ist abgesichert"),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("username", "Benutzername", {
+            className: "flex-1 white-bg ip",
+            required: true,
+            updateOn: "change",
+          }),
+          this.addInputInline("password", "Passwort", {
+            className: "flex-1 white-bg port",
+            required: true,
+            updateOn: "change",
+            type: "password",
+          }),
+          this.addInputInline("apiKey", "API Key", {
+            className: "flex-1 white-bg port",
+            updateOn: "change",
           }),
         ],
         {
