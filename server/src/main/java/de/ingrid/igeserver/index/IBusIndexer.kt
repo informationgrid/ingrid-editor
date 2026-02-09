@@ -74,7 +74,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         sendCallToIBus(iBus, call)
     }
 
-    override fun update(indexinfo: IndexInfo, docAny: Any) {
+    override fun update(indexinfo: IndexInfo, docAny: Any, uuid: String) {
         val call = prepareCall("update")
         call.parameter = mapOf(
             "indexinfo" to indexinfo,

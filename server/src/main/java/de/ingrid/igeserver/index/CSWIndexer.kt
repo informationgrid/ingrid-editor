@@ -55,7 +55,7 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     override fun checkAndCreateInformationIndex() {
     }
 
-    override fun update(indexinfo: IndexInfo, docAny: Any) {
+    override fun update(indexinfo: IndexInfo, docAny: Any, uuid: String) {
         val doc = convertToElasticDocument(docAny)
         if (doc["isfolder"] == "true") {
             throw IndexException.skipFolders(doc[indexinfo.docIdField].toString())

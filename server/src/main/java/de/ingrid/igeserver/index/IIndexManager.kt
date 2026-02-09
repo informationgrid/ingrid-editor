@@ -40,7 +40,7 @@ interface IIndexManager {
 
     fun checkAndCreateInformationIndex()
 
-    fun update(indexinfo: IndexInfo, docAny: Any)
+    fun update(indexinfo: IndexInfo, docAny: Any, uuid: String)
 
     fun updateIPlugInformation(id: String, info: String)
 

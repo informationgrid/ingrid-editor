@@ -173,7 +173,7 @@ class IndexTargetWorker(
             Pair(config.exporter.run(doc, catalogId, exportOptions), config.exporter.typeInfo.type)
 
         config.target.setCatalogId(catalogId)
-        config.target.update(indexInfo, exportedDoc)
+        config.target.update(indexInfo, exportedDoc, doc.uuid)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
         postIndexPipe.runFilters(

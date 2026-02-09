@@ -19,15 +19,16 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.exporter.AddressExport
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.jena.vocabulary.RDFSyntax.doc
 
 class OpenDataRDFTransformer(
     val transformerConfig: OpenDataTransformerConfig,
@@ -76,7 +77,7 @@ class OpenDataRDFTransformer(
 
     val distributions: List<Distribution> = doc.data.get("distributions")?.map { dist ->
         Distribution(
-            accessURL = dist.getStringOrEmpty("link.uri"),
+            accessURL = getDownloadLink(dist, uuid),
             format = dist.getStringOrEmpty("format.key"),
             title = dist.getStringOrEmpty("title"),
             modified = dist.getStringOrEmpty("modified"),
@@ -87,6 +88,12 @@ class OpenDataRDFTransformer(
             availability = dist.getStringOrEmpty("availability.key"),
         )
     } ?: emptyList()
+
+    private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {
+        dist.getStringOrEmpty("link.uri") // TODO encode uri
+    } else {
+        "${uploadConfig.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
+    }
 }
 
 private class XMLStringOutput2 : StringOutput() {

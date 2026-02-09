@@ -20,10 +20,8 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.piveau.PiveauClient
-import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.util.*
@@ -58,11 +56,8 @@ class PiveauIndexer(override val name: String, private val client: PiveauClient)
     override fun checkAndCreateInformationIndex() {
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
-        if (doc["isfolder"] == "true") {
-            throw IndexException.skipFolders(doc[indexinfo.docIdField].toString())
-        }
-        client.insertOrUpdate(doc, catalogId, transactionId)
+    override fun update(indexinfo: IndexInfo, docAny: Any, uuid: String) {
+        client.insertOrUpdate(uuid, docAny as String, catalogId, transactionId)
     }
 
     override fun updateIPlugInformation(id: String, info: String) {

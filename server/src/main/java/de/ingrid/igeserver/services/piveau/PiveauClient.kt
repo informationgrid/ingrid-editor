@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.services.piveau
 
 import de.ingrid.igeserver.exceptions.IndexException
-import de.ingrid.utils.ElasticDocument
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -88,18 +87,14 @@ class PiveauClient(
         }
     }
 
-    fun insertOrUpdate(doc: ElasticDocument, catalogId: String, transactionId: String) = runBlocking {
-        val datasetId = doc["t01_object.id"] ?: doc["id"]
-        log.info("Piveau index update: $datasetId for catalog $catalogId")
-
-        val rdf = doc["rdf"]?.toString()
-            ?: throw RuntimeException("Document $datasetId does not contain DCAT-AP data. Skipping it.")
+    fun insertOrUpdate(uuid: String, rdf: String, catalogId: String, transactionId: String) = runBlocking {
+        log.info("Piveau index update: $uuid for catalog $catalogId")
 
         // According to Piveau API: PUT /datasets/{id}
         // The catalogId might be part of the URL or a parameter, but usually Piveau Hub Repo API
         // has /datasets/{id} where the dataset belongs to a catalog.
         // Documentation says: PUT /datasets/{id}?catalogue={catalogueId}
-        val requestUrl = "${url.removeSuffix("/")}/catalogues/$catalogId/datasets/origin?originalId=$datasetId"
+        val requestUrl = "${url.removeSuffix("/")}/catalogues/$catalogId/datasets/origin?originalId=$uuid"
 
         val response = client.put(requestUrl) {
             contentType(ContentType.parse("application/rdf+xml")) // Or JSON-LD depending on what Piveau expects/provides
@@ -111,7 +106,7 @@ class PiveauClient(
             log.error("Failed to create Piveau dataset in $catalogId: ${response.status}")
             throw IndexException.withReason("Failed to create Piveau dataset in catalogue $catalogId: ${response.status}")
         }
-        log.debug("Successfully updated dataset $datasetId in Piveau catalog $catalogId")
+        log.debug("Successfully updated dataset $uuid in Piveau catalog $catalogId")
     }
 
     fun delete(uuid: String) = runBlocking {
