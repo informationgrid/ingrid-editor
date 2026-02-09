@@ -7,7 +7,7 @@
 @param Map<String, Object> map
 
 !{var model = ((OpenDataModelTransformer)map.get("model"));}
-!{var rdf = ((OpenDataRDFTransformer)map.get("rdf"));}
+!{var rdf = ((String)map.get("rdf"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
 
 {
@@ -125,5 +125,5 @@
             @endif
         @endif
     },
-    "rdf": "${rdf.getRDF()}"
+    "rdf": "${rdf}"
 }
