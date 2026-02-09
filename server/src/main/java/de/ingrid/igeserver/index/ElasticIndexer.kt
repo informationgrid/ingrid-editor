@@ -57,6 +57,11 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
     private val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
+    companion object {
+
+        fun convertToElasticDocument(doc: Any): ElasticDocument = jacksonObjectMapper().readValue(doc.toString(), ElasticDocument::class.java)
+    }
+
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? = runBlocking {
         val aliases = try {
             elastic.client.getAliases(indexAlias)
@@ -103,8 +108,9 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
         }
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+    override fun update(indexinfo: IndexInfo, docAny: Any) {
         runBlocking {
+            val doc = convertToElasticDocument(docAny)
             elastic.bulkProcessor.index(jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(), indexinfo.getRealIndexName(), doc[indexinfo.docIdField].toString())
         }
     }

@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.profiles.opendata.exporter
 
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -41,25 +41,13 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
-data class OpenDataTransformerConfig(
-    override val catalogIdentifier: String,
-    override val codelists: CodelistTransformer,
-    override val uploadConfig: UploadConfig,
-    override val catalogService: CatalogService,
-    override val cache: TransformerCache,
-    override val doc: Document,
-    override val documentService: DocumentService,
-    override val tags: List<String>,
-) : GeneralTransformerConfig
-
 @Service
-class OpenDataExporter(
+class OpenDataRDFExporter(
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
     val generalProperties: GeneralProperties,
-    val openDataRDFExporter: OpenDataRDFExporter,
 ) : IgeExporter {
 
     val log = logger()
@@ -68,11 +56,11 @@ class OpenDataExporter(
 
     override val typeInfo: ExportTypeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexOpenData",
-        "Open-Data Index",
-        "Export der Datensätze für die weitere Verwendung im InGrid-System.",
+        "indexOpenDataRDF",
+        "Open-Data RDF",
+        "Export der Datensätze ins RDF/XML-Format",
         MediaType.APPLICATION_JSON_VALUE,
-        "json",
+        "xml",
         listOf("opendata", "ingrid-with-opendata"),
         isPublic = true,
         useForPublish = true,
@@ -80,9 +68,7 @@ class OpenDataExporter(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") {
-//            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
-//            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-//            return luceneJson.toPrettyString()
+            throw IndexException.skipFolders(doc.uuid)
         }
 
         val indexDocument = createIndexDocument(doc, catalogId, options)
@@ -105,12 +91,14 @@ class OpenDataExporter(
         )
 
         templateEngine.render(
-            "export/opendata/lucene-export.jte",
+            "export/opendata/rdf-export.jte",
             mapOf(
                 "map" to mapOf(
-                    "model" to OpenDataModelTransformer(config),
-                    "rdf" to openDataRDFExporter.run(doc, catalogId, options),
-                    "catalog" to catalogService.getCatalogById(catalogId),
+                    "model" to OpenDataRDFTransformer(
+                        config,
+                        generalProperties.appUrl,
+                        uploadConfig.uploadExternalUrl,
+                    ),
                 ),
             ),
             this,
