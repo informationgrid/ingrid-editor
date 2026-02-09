@@ -36,6 +36,7 @@ import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
+import gg.jte.output.StringOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
@@ -76,7 +77,7 @@ class OpenDataRDFExporter(
         return indexDocument.toString()
     }
 
-    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = JsonStringOutput().apply {
+    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = StringOutput().apply {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
         val config = OpenDataTransformerConfig(
