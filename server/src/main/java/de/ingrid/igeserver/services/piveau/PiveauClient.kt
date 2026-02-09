@@ -95,23 +95,23 @@ class PiveauClient(
         val rdf = doc["rdf"]?.toString()
             ?: throw RuntimeException("Document $datasetId does not contain DCAT-AP data. Skipping it.")
 
-        try {
-            // According to Piveau API: PUT /datasets/{id}
-            // The catalogId might be part of the URL or a parameter, but usually Piveau Hub Repo API
-            // has /datasets/{id} where the dataset belongs to a catalog.
-            // Documentation says: PUT /datasets/{id}?catalogue={catalogueId}
-            val cleanCatalogId = catalogId.replace("catalog:", "")
-            val requestUrl = "${url.removeSuffix("/")}/datasets/$datasetId?catalogue=$cleanCatalogId"
+        // According to Piveau API: PUT /datasets/{id}
+        // The catalogId might be part of the URL or a parameter, but usually Piveau Hub Repo API
+        // has /datasets/{id} where the dataset belongs to a catalog.
+        // Documentation says: PUT /datasets/{id}?catalogue={catalogueId}
+        val requestUrl = "${url.removeSuffix("/")}/catalogues/$catalogId/datasets/origin?originalId=$datasetId"
 
-            client.put(requestUrl) {
-                contentType(ContentType.parse("application/rdf+xml")) // Or JSON-LD depending on what Piveau expects/provides
-                apiKey?.let { header("X-API-Key", it) }
-                setBody(rdf)
-            }
-            log.debug("Successfully updated dataset $datasetId in Piveau catalog $cleanCatalogId")
-        } catch (e: Exception) {
-            log.error("Failed to update dataset $datasetId in Piveau: ${e.message}", e)
+        val response = client.put(requestUrl) {
+            contentType(ContentType.parse("application/rdf+xml")) // Or JSON-LD depending on what Piveau expects/provides
+            apiKey?.let { header("X-API-Key", it) }
+            setBody(rdf.trimIndent()) // TODO: escape access URL which can contain spaces which do not seem to be allowed in Piveau
         }
+        log.debug("Piveau index update response: $response")
+        if (response.status !in listOf(HttpStatusCode.Created, HttpStatusCode.NoContent, HttpStatusCode.NotModified)) {
+            log.error("Failed to create Piveau dataset in $catalogId: ${response.status}")
+            throw IndexException.withReason("Failed to create Piveau dataset in catalogue $catalogId: ${response.status}")
+        }
+        log.debug("Successfully updated dataset $datasetId in Piveau catalog $catalogId")
     }
 
     fun delete(uuid: String) = runBlocking {
