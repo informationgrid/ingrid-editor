@@ -174,7 +174,7 @@ open class PostDeletePayload(type: EntityType, catalogIdentifier: String, docume
 /**
  * Payload holding index data after indexing the document
  */
-open class PostIndexPayload(var indexDoc: ElasticDocument, var category: String, val exportType: String) : Payload
+open class PostIndexPayload(var indexDoc: Any, var category: String, val exportType: String) : Payload
 
 /**
  * Payload holding document data after archiving the document

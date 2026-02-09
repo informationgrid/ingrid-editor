@@ -38,7 +38,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
-import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.data.domain.Page
 import java.io.IOException
@@ -173,13 +172,12 @@ class IndexTargetWorker(
         val (exportedDoc, exporterType) =
             Pair(config.exporter.run(doc, catalogId, exportOptions), config.exporter.typeInfo.type)
 
-        val elasticDocument = convertToElasticDocument(exportedDoc)
         config.target.setCatalogId(catalogId)
-        config.target.update(indexInfo, elasticDocument)
+        config.target.update(indexInfo, exportedDoc)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
         postIndexPipe.runFilters(
-            PostIndexPayload(elasticDocument, config.category.name, exporterType),
+            PostIndexPayload(exportedDoc, config.category.name, exporterType),
             simpleContext,
         )
     }
@@ -261,8 +259,6 @@ class IndexTargetWorker(
             }
             .toString()
     }
-
-    private fun convertToElasticDocument(doc: Any): ElasticDocument = jacksonObjectMapper().readValue(doc.toString(), ElasticDocument::class.java)
 
     private fun prepareIPlugName(infoId: String): String {
         val splitted = infoId.split(":")
