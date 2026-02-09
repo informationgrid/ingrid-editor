@@ -47,6 +47,7 @@ class OpenDataModelTransformer(
     val documentService = transformerConfig.documentService
     val tags = transformerConfig.tags
     val doc = transformerConfig.doc
+    val contentField: MutableList<String> = mutableListOf()
 
     fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
         Distribution(
@@ -153,6 +154,12 @@ class OpenDataModelTransformer(
         } else {
             null
         }
+    }
+
+    fun handleContent(value: String?): String? {
+        if (value == null) return null
+        contentField.add(value)
+        return value
     }
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {

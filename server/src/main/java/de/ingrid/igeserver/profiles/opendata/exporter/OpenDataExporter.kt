@@ -103,6 +103,7 @@ class OpenDataExporter(
             documentService,
             options.tags,
         )
+        val catalog = catalogService.getCatalogById(catalogId)
 
         templateEngine.render(
             "export/opendata/lucene-export.jte",
@@ -111,9 +112,13 @@ class OpenDataExporter(
                     "model" to OpenDataModelTransformer(config),
                     "rdf" to openDataRDFExporter.run(doc, catalogId, options),
                     "catalog" to catalogService.getCatalogById(catalogId),
+                    "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                    "provider" to mapCodelistValue("111", catalog.settings.config.provider),
                 ),
             ),
             this,
         )
     }
+
+    private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
 }

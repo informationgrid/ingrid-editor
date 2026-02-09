@@ -9,21 +9,23 @@
 !{var model = ((OpenDataModelTransformer)map.get("model"));}
 !{var rdf = ((String)map.get("rdf"));}
 !{var catalog = ((Catalog)map.get("catalog"));}
+!{var partner = ((String)map.get("partner"));}
+!{var provider = ((String)map.get("provider"));}
 
 {
     "collection.name": "${catalog.getName()}",
     "collection.id": "${catalog.getIdentifier()}",
     "partner": [
-
+        "${partner}"
     ],
     "provider": [
-
+        "${provider}"
     ],
     "datatype": ["metadata"],
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "${catalog.getName()}",
     "t01_object.obj_id": "${model.getUuid()}",
-    "id": "${model.getUuid() }",
+    "id": "${model.handleContent(model.getUuid())}",
 <%--    "created": "${model.getCreated() }",--%>
 <%--    "issued": "${model.getCreated() }",--%>
     "modified": "${model.getModified() }",
@@ -125,5 +127,10 @@
             @endif
         @endif
     },
+    "content": [
+    @for(var entry : ForSupport.of(model.getContentField()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "rdf": "${rdf}"
 }
