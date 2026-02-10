@@ -844,6 +844,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       expressions: expressions,
       props: {
+        additionalSelectors: options?.additionalSelectors,
         disableUpload: options?.disableUpload,
         required: options?.required,
         externalLabel: label,

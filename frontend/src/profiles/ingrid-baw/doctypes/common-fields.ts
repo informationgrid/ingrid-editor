@@ -29,6 +29,11 @@ import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { tap } from "rxjs/operators";
 import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
+import {
+  PreviewImageComponent,
+  PreviewImageSelector,
+} from "../../../app/formly/types/preview-image/preview-image.component";
+import { LfsSelectorDialogComponent } from "../components/lfs-selector/lfs-selector-dialog.component";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -163,6 +168,14 @@ export class CommonFieldsBaw extends FormFieldHelper {
       );
     }
 
+    // add lfs picker to preview image / graphicOverviews
+    const graphicOverviewsPosition = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "graphicOverviews",
+    );
+    graphicOverviewsPosition.fieldConfig[graphicOverviewsPosition.index] =
+      this.getBAWGraphicOverviewsFieldConfig();
+
     const pointOfContactPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
@@ -226,6 +239,37 @@ export class CommonFieldsBaw extends FormFieldHelper {
         ...additionalValidators,
       },
     });
+  }
+
+  getBAWGraphicOverviewsFieldConfig() {
+    return this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
+      disableUpload: true,
+      className: "optional",
+      additionalSelectors: [
+        <PreviewImageSelector>{
+          label: "Aus LFS wählen",
+          action: this.lfsLinkDialog,
+        },
+      ],
+    });
+  }
+
+  lfsLinkDialog(ref: PreviewImageComponent) {
+    ref.dialog
+      .open(LfsSelectorDialogComponent)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          ref.add(null, {
+            fileName: {
+              asLink: true,
+              uri: "https://dl.datenfinder.baw.de/LFS/" + result.lfs.uuid,
+              value: result.lfs.uuid,
+            },
+            fileDescription: result.description,
+          });
+        }
+      });
   }
 
   getBAWVerticalExtentFieldConfig(doc: IngridShared) {
