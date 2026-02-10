@@ -16,7 +16,6 @@ import { rxResource } from "@angular/core/rxjs-interop";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { JsonViewComponent } from "../../../../app/shared/json-view/json-view.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ErrorPanelComponent } from "../../../../app/+form/form-shared/form/error-panel/error-panel.component";
 import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -29,7 +28,6 @@ import { HttpErrorResponse } from "@angular/common/http";
     FormsModule,
     MatProgressSpinner,
     JsonViewComponent,
-    ErrorPanelComponent,
     FormErrorComponent,
   ],
   templateUrl: "./export-data-cite-dialog.component.html",

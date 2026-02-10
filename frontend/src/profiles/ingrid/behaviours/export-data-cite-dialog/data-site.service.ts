@@ -34,11 +34,11 @@ export class DataSiteService {
     const generalResourceType = model.publication.generalResourceType;
     if (!generalResourceType) throw new Error("No resource type found");
 
-    // event: "publish",
     const portalURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data
         .dataCiteDetailURL;
     return {
+      event: "publish",
       doi: model.publication.doi,
       creators: [await this.getCreator(model.pointOfContact)],
       alternateIdentifiers: [
@@ -200,34 +200,31 @@ export class DataSiteService {
           "6500",
           useConstraint.title.key,
         );
+        let license = null;
+        try {
+          license = JSON.parse(useConstraint.data)?.dataCite;
+          if (license) return { rights: license };
+        } catch (_) {
+          /* IGNORE */
+        }
+
         return {
-          rights: "Creative Commons Attribution 4.0 International",
+          rights: this.mapToSpdxLicenceUrl(constraintEntry),
         };
       }) ?? []
     );
   }
 
-  private mapToSpdxLicenceUrl(data: any): string {
-    if (!data) return "";
+  private mapToSpdxLicenceUrl(entry: any): string {
+    if (!entry) return "";
 
-    const entry = JSON.parse(data);
     const id = entry.id;
-    if (id === "odby") {
-      return "https://opendatacommons.org/licenses/by/1.0/";
-    } else if (id === "cc-by-nd/3.0") {
-      return "https://creativecommons.org/licenses/by/3.0/legalcode";
-    } else if (id === "cc-by/4.0") {
-      return "https://creativecommons.org/licenses/by/4.0/legalcode";
-    } else if (id === "cc-by-nc/4.0") {
-      return "https://creativecommons.org/licenses/by-nc/4.0/legalcode";
-    } else if (id === "cc-by-nd/4.0") {
-      return "https://creativecommons.org/licenses/by-nd/4.0/legalcode";
-    } else if (id === "cc-by-sa/4.0") {
-      return "https://creativecommons.org/licenses/by-sa/4.0/legalcode";
-    } else if (id === "mozilla") {
-      return "https://opensource.org/licenses/MPL/2.0/";
+    if (id === "25") {
+      return "Data licence Germany – zero – version 2.0";
+    } else if (id === "27") {
+      return "Creative Commons Attribution 4.0 International";
     } else {
-      return "";
+      return entry.fields.de;
     }
   }
 
