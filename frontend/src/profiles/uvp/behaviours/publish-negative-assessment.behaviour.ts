@@ -141,7 +141,13 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
       .subscribe((newTag: string) => {
         if (!newTag) return;
         this.tagsService
-          .addTags(doc.id as number, [newTag], this.forAddress())
+          .addTags(
+            doc.id as number,
+            [newTag],
+            this.forAddress(),
+            newTag === "internet" ? ["negative-assessment-not-publish"] : [],
+          )
+          .pipe(filter((tags) => tags.length === 1 && tags[0] === newTag))
           .subscribe(() => {
             this.documentService.reload$.next({
               uuid: doc._uuid,

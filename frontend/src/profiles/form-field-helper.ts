@@ -376,7 +376,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
-        allowedTypesByDoctype: options?.allowedTypesByDoctype,
+        allowedTypesByAddressType: options?.allowedTypesByAddressType,
         disabledCondition: options?.disabledCondition,
         max: options?.max,
       },
@@ -844,6 +844,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       expressions: expressions,
       props: {
+        additionalSelectors: options?.additionalSelectors,
         disableUpload: options?.disableUpload,
         required: options?.required,
         externalLabel: label,

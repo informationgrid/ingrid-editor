@@ -266,6 +266,7 @@ export class DocumentService {
           },
           forAddress,
         );
+        this.generalStore.openedDocument()._tags = newTags;
       }),
     );
   }
