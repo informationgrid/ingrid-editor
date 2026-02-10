@@ -31,4 +31,18 @@
           font-family="Roboto">S
     </text>
   </symbol>
+  <symbol id="labordaten" viewBox="0 0 24 24">
+    <defs>
+      <linearGradient id="myGradient">
+        <stop offset="50%" stop-color="#F27100"/>
+        <stop offset="50%" stop-color="#000000"/>
+      </linearGradient>
+    </defs>
+    <path class="coloring"
+          d="M6.00030518,3 C5.17530518,3 5.0075,3.12 5.0075,4 L5,19.9984741 C5,20.8784741 5.17530518,21 6.00030518,21 L18,21 C18.825,21 19,20.8784741 19,19.9984741 L19,8 L14,3 L6.00030518,3 Z"
+          fill="#000000" fill-rule="nonzero"></path>
+    <text x="50%" y="50%" text-anchor="middle" stroke="#fff" fill="#fff" dy="5" font-size="12" stroke-width="0.5px"
+          font-family="Roboto">L
+    </text>
+  </symbol>
 </svg>

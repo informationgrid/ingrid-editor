@@ -29,6 +29,7 @@ class DocumentTypesBaw : DocumentTypes() {
         "BawPublication",
         "BawMeasurement",
         "BawSimulation",
+        "BawLaboratoryData",
     ) +
         super.parameters
 }

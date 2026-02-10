@@ -44,6 +44,15 @@ class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTyp
 }
 
 @Component
+class BawLaboratoryData(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTypeBaw(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
+    override val className = "BawLaboratoryData"
+    override fun parentClassName() = super.className
+}
+
+@Component
 class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
