@@ -245,7 +245,6 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   private updateFreeEntries() {
-    console.log("update!");
     this.codelistService
       .getFreeEntries(this.selectedCodelist.id)
       .pipe(take(1))
@@ -266,26 +265,10 @@ export class CatalogCodelistsComponent implements OnInit {
         const fromValue = entry.value;
         const toKey = result?.trim();
         if (toKey == undefined || toKey.length == 0) return;
-
         this.codelistService
           .replaceFreeEntry(this.selectedCodelist.id, fromValue, toKey)
-          .pipe(take(1))
-          .subscribe({
-            next: (result) => {
-              this.updateFreeEntries();
-              this._snackBar.open(
-                `Ersetzt ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en)`,
-                undefined,
-                { duration: 4000 },
-              );
-            },
-            error: () => {
-              this._snackBar.open(
-                "Fehler beim Ersetzen des freien Eintrags",
-                undefined,
-                { duration: 4000 },
-              );
-            },
+          .subscribe((result) => {
+            if (result !== undefined) this.updateFreeEntries();
           });
       });
   }
@@ -294,9 +277,10 @@ export class CatalogCodelistsComponent implements OnInit {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
-          title: "In Codelist übernehmen",
+          title: "In Codeliste aufnehmen",
           message:
-            "Möchten Sie den freien Eintrag wirklich in die Codelist übernehmen?",
+            "Möchten Sie den freien Eintrag in die Codeliste aufnehmen?" +
+            "<br>Diese Aktion kann nicht rückgängig gemacht werden.",
           list: [entry.value],
         },
       })
@@ -306,24 +290,8 @@ export class CatalogCodelistsComponent implements OnInit {
         const fromValue = entry.value;
         this.codelistService
           .addFreeEntryToCodelist(this.selectedCodelist.id, fromValue)
-          .pipe(take(1))
-          .subscribe({
-            next: (result) => {
-              this._snackBar.open(
-                `In Codelist übernommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument(en) ersetzt`,
-                undefined,
-                { duration: 4000 },
-              );
-            },
-            error: () => {
-              this._snackBar.open(
-                "Fehler beim Übernehmen in die Codelist",
-                undefined,
-                {
-                  duration: 4000,
-                },
-              );
-            },
+          .subscribe((result) => {
+            if (result !== undefined) this.updateFreeEntries();
           });
       });
   }
