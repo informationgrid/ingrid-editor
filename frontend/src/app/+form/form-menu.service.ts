@@ -19,6 +19,7 @@
  */
 import { Injectable } from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
+import { ToolbarMenuItem } from "./form-shared/toolbar/form-toolbar.service";
 
 export interface FormularMenuItem {
   name: string;
@@ -54,6 +55,10 @@ export class FormMenuService {
     ].filter(Boolean) as FormularMenuItem[],
   };
 
+  private toolbarMenuItems = {
+    publish: [] as ToolbarMenuItem[],
+  };
+
   private excludedMenuItems: Partial<Record<MenuId, string[]>> = {};
 
   constructor(private configService: ConfigService) {}
@@ -81,5 +86,24 @@ export class FormMenuService {
       this.excludedMenuItems[menuId] = [];
     }
     this.excludedMenuItems[menuId].push(...items);
+  }
+
+  addToolbarMenuItem(menuId: MenuId, menuItem: ToolbarMenuItem): void {
+    const exists = this.toolbarMenuItems[menuId].some(
+      (item) => item.eventId === menuItem.eventId,
+    );
+    if (!exists) {
+      this.toolbarMenuItems[menuId].push(menuItem);
+    }
+  }
+
+  getToolbarMenuItems(menuId: MenuId): ToolbarMenuItem[] {
+    return this.toolbarMenuItems[menuId];
+  }
+
+  removeToolbarMenuItems(menuId: MenuId, eventId: string) {
+    this.toolbarMenuItems[menuId] = this.toolbarMenuItems[menuId].filter(
+      (item) => item.eventId !== eventId,
+    );
   }
 }
