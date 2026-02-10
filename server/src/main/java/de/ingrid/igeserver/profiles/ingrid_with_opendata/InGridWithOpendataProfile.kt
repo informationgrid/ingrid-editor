@@ -20,8 +20,11 @@
 package de.ingrid.igeserver.profiles.ingrid_with_opendata
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_with_opendata.quickfilter.DocumentTypesInGridWithOpenData
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
@@ -59,4 +62,17 @@ class InGridWithOpendataProfile(
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/ingrid-with-opendata/default-mapping.json")?.readText() ?: ""
+
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = super.getFacetDefinitionsForDocuments().map {
+        if (it.id == "docType") {
+            FacetGroup(
+                "docType",
+                "Datensatztyp",
+                arrayOf(DocumentTypesInGridWithOpenData()),
+                viewComponent = ViewComponent.SELECT,
+            )
+        } else {
+            it
+        }
+    }.toTypedArray()
 }
