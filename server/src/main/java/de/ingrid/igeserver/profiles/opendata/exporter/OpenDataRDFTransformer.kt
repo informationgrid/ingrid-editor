@@ -70,7 +70,10 @@ class OpenDataRDFTransformer(
     val catalogDescription = catalog.description
     val catalogTitle = catalog.name
     val uploadUrl = "$documentsUrl$catalogId/${doc.uuid}"
-    val themes = doc.data.get("DCATThemes").map { it.getStringOrEmpty("key") }
+    val themes = doc.data.get("DCATThemes").map {
+        "http://publications.europa.eu/resource/authority/data-theme/" +
+            codelistTransformer.getData("6400", it.getStringOrEmpty("key"))
+    }
     val publisher = doc.data.get("addresses").find { it.getString("type.key") == "10" }?.getStringOrEmpty("ref") ?: ""
     val creator = doc.data.get("addresses").find { it.getString("type.key") == "11" }?.getStringOrEmpty("ref")
 
