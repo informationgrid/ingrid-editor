@@ -2,31 +2,22 @@
     <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
         <mat-icon>close</mat-icon>
     </button>
-    <h1 mat-dialog-title>
-        Freien Eintrag ersetzen
-    </h1>
+    <h1 mat-dialog-title>Freien Eintrag ersetzen</h1>
 </div>
 
 <mat-dialog-content>
     <div class="space-bottom-field">
-        <div class="text-hint text-sm">
-            Ausgewählter Eintrag
-        </div>
+        <div class="text-hint text-sm">Ausgewählter Eintrag</div>
         <div class="font-medium">
             {{ selectedEntry.value }}
         </div>
     </div>
 
-    <formly-form
-        [form]="toForm"
-        [fields]="toFields"
-    ></formly-form>
+    <formly-form [form]="toForm" [fields]="toFields"></formly-form>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close color="primary">
-        Abbrechen
-    </button>
+    <button mat-button mat-dialog-close color="primary">Abbrechen</button>
 
     <div class="flex-1"></div>
 
