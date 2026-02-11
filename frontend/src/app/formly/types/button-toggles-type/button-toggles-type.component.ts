@@ -28,6 +28,7 @@ import {
 
 export interface ButtonTogglesProps {
   options?: ButtonToggle[];
+  // if true, the leading label is hidden, but still used as aria-label
   hideLabel?: boolean;
 }
 
