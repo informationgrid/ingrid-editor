@@ -85,7 +85,7 @@ class OpenDataModelTransformer(
     fun getModified() = doc.modified.toString()
     val periodicityKey = doc.data.getString("accrualPeriodicity.key")
     fun getPeriodicity() = periodicityKey?.let { codelistTransformer.getValue("518", KeyValue(it)) } ?: ""
-    fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords()
+    fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords() + Keyword(null, "opendata", "FREE")
     fun getAddresses() = doc.data.get("addresses").mapNotNull {
         addressExporter.toAddressModelTransformer(
             AddressRefModel(
