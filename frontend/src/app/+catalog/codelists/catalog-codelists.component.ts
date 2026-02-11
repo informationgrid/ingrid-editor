@@ -126,7 +126,7 @@ export class CatalogCodelistsComponent implements OnInit {
   codelistIdInput: string;
 
   // Free entries by selected codelist.
-  freeEntries = signal<FreeEntry[]>([]);
+  freeEntries: FreeEntry[];
 
   constructor(
     private codelistService: CodelistService,
@@ -248,7 +248,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.codelistService
       .getFreeEntries(this.selectedCodelist.id)
       .pipe(take(1))
-      .subscribe((entries) => this.freeEntries.set(entries));
+      .subscribe((entries) => (this.freeEntries = entries));
   }
 
   openFreeEntryReplaceDialog(entry: FreeEntry) {
@@ -256,7 +256,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .open(FreeEntryReplaceDialogComponent, {
         data: {
           codelistId: this.selectedCodelist.id,
-          entries: this.freeEntries(),
+          entries: this.freeEntries,
           selectedEntry: entry,
         },
       })

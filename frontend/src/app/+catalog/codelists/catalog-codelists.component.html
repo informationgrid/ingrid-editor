@@ -134,9 +134,9 @@
 
                 <mat-divider></mat-divider>
             }
-            @if (freeEntries().length > 0) {
+            @if (freeEntries?.length > 0) {
                 <ige-free-entry-list
-                    [freeEntries]="freeEntries()"
+                    [freeEntries]="freeEntries"
                     (onReplaceClicked)="openFreeEntryReplaceDialog($event)"
                     (onAddClicked)="openFreeEntryAddDialog($event)"
                 ></ige-free-entry-list>
