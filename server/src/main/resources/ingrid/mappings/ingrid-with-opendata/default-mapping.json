@@ -3,13 +3,17 @@
     "enabled": true
   },
   "properties": {
-    "collection.id": {
-      "type": "keyword",
-      "store": true
-    },
-    "collection.name": {
-      "type": "keyword",
-      "store": true
+    "collection": {
+      "properties": {
+        "id": {
+          "type": "keyword",
+          "store": true
+        },
+        "name": {
+          "type": "keyword",
+          "store": true
+        }
+      }
     },
     "spatial": {
       "type": "nested",
@@ -65,6 +69,19 @@
         "languages": {
           "type": "keyword",
           "store": true
+        }
+      }
+    },
+    "keywords": {
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "term": {
+          "type": "keyword"
+        },
+        "source": {
+          "type": "keyword"
         }
       }
     },
