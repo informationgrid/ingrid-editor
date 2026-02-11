@@ -243,11 +243,34 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "TbVS III", value: "TbVS III" },
             ],
           }),
-          this.addGroup("concept", "Berechnungskonzepte", [
-            this.addCheckboxInline("materiell", "materiell linear"),
-            this.addCheckboxInline("geometrisch", "geometrisch linear"),
-            this.addCheckboxInline("imperfections", "Imperfektionen"),
-          ]),
+          this.addButtonToggles("calculationConcept", "Berechnungskonzepte", {
+            options: [
+              {
+                key: "isMaterialLinear",
+                label: "materiell",
+                options: [
+                  { label: "linear", value: true },
+                  { label: "nicht linear", value: false },
+                ],
+              },
+              {
+                key: "isGeometricLinear",
+                label: "geometrisch",
+                options: [
+                  { label: "linear", value: true },
+                  { label: "nicht linear", value: false },
+                ],
+              },
+              {
+                key: "hasImperfections",
+                label: "Imperfektionen",
+                options: [
+                  { label: "mit", value: true },
+                  { label: "ohne", value: false },
+                ],
+              },
+            ],
+          }),
           this.addRepeatList("materials", "Werkstoffe", {
             options: [
               { label: "Beton", value: "Beston" },
