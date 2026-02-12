@@ -72,6 +72,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.addSection("Messdaten (Bautechnik)", [
           { key: "type" },
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
+            required: true,
             options: [
               {
                 label: "Zustand des Bauwerks (Gutachten)",

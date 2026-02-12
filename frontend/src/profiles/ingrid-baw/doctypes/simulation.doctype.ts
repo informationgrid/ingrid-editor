@@ -107,15 +107,17 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             this.addAutocomplete("name", null, {
               fieldLabel: "Name",
               wrappers: ["form-field"],
+              required: true,
               options: [{ label: "Dlubal", value: "Dlubal" }],
             }),
-            this.addAutocomplete("version", null, {
+            this.addInput("version", null, {
+              required: true,
               fieldLabel: "Version",
               wrappers: ["form-field"],
-              options: [{ label: "1", value: "1" }],
             }),
           ]),
           this.addRepeatList("object", "Objekt", {
+            required: true,
             options: [
               { label: "Schleusen: Kammern", value: "Schleusen: Kammern" },
               { label: "Schleusen: Häupter", value: "Schleusen: Häupter" },
@@ -201,6 +203,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             ],
           }),
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
+            required: true,
             options: [
               {
                 label: "Tragfähigkeitsnachweis",
