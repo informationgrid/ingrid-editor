@@ -28,7 +28,7 @@ import {
 
 export interface ButtonTogglesProps {
   options?: ButtonToggle[];
-  // if true, the leading label is hidden, but still used as aria-label
+  // If true, the leading label is hidden but still used as aria-label.
   hideLabel?: boolean;
 }
 
@@ -51,9 +51,18 @@ export class ButtonTogglesTypeComponent
   ngOnInit(): void {}
 
   onToggled(key: string, value: any) {
+    let newValue = value;
+    if (
+      this.formControl?.value &&
+      Object.keys(this.formControl.value).includes(key)
+    ) {
+      // Set value to undefined if the value is the same as the current value.
+      if (this.formControl.value[key] === value) newValue = undefined;
+    }
+
     this.formControl?.patchValue({
       ...this.formControl.value,
-      ...{ [key]: value },
+      ...{ [key]: newValue },
     });
     this.formControl?.markAsDirty();
     this.formControl?.markAsTouched();

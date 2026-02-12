@@ -9,10 +9,12 @@
                 [value]="value ? value[toggle.key] : undefined"
                 [attr.aria-label]="toggle.label"
                 hideSingleSelectionIndicator
-                (change)="onToggled(toggle.key, $event.value)"
             >
                 @for (option of toggle.options; track option) {
-                    <mat-button-toggle [value]="option.value">
+                    <mat-button-toggle
+                        [value]="option.value"
+                        (change)="onToggled(toggle.key, $event.value)"
+                    >
                         {{ option.label }}
                     </mat-button-toggle>
                 }
