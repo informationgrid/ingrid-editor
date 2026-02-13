@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -69,7 +69,7 @@ export interface FreeEntryReplaceDialogData {
     FormlyForm,
   ],
 })
-export class FreeEntryReplaceDialogComponent implements OnInit {
+export class FreeEntryReplaceDialogComponent {
   selectedEntry?: FreeEntry;
   toForm = new UntypedFormGroup({});
   toFields: FormlyFieldConfig[] = [];
@@ -86,9 +86,7 @@ export class FreeEntryReplaceDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<FreeEntryReplaceDialogComponent>,
     private codelistService: CodelistService,
     @Inject(MAT_DIALOG_DATA) public data: FreeEntryReplaceDialogData,
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.selectedEntry = this.data.selectedEntry;
     this.toFields = [
       {

@@ -322,7 +322,6 @@ export class CodelistService {
     return this.dataService
       .replaceFreeEntry(codelistId, { fromValue, toKey })
       .pipe(
-        take(1),
         tap((result) => {
           this.snackBar.open(
             `Ersetzt ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument${result.documentsUpdated > 1 ? "en" : ""}`,
@@ -343,7 +342,6 @@ export class CodelistService {
 
   addFreeEntryToCodelist(codelistId: string, value: string) {
     return this.dataService.addFreeEntryToCodelist(codelistId, value).pipe(
-      take(1),
       tap((result) => {
         this.snackBar.open(
           `In Codelist aufgenommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument${result.documentsUpdated > 1 ? "en" : ""} ersetzt`,

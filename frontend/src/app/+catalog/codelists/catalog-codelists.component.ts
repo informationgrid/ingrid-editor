@@ -247,7 +247,6 @@ export class CatalogCodelistsComponent implements OnInit {
   private updateFreeEntries() {
     this.codelistService
       .getFreeEntries(this.selectedCodelist.id)
-      .pipe(take(1))
       .subscribe((entries) => (this.freeEntries = entries));
   }
 
@@ -264,7 +263,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .subscribe((result) => {
         const fromValue = entry.value;
         const toKey = result?.trim();
-        if (toKey == undefined || toKey.length == 0) return;
+        if (!toKey) return;
         this.codelistService
           .replaceFreeEntry(this.selectedCodelist.id, fromValue, toKey)
           .subscribe((result) => {

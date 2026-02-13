@@ -41,11 +41,9 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
     MatMenuItem,
   ],
 })
-export class FreeEntryListComponent implements OnInit {
+export class FreeEntryListComponent {
   freeEntries = input<FreeEntry[]>();
 
   onReplaceClicked = output<FreeEntry>();
   onAddClicked = output<FreeEntry>();
-
-  ngOnInit(): void {}
 }
