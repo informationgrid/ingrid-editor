@@ -62,7 +62,7 @@
     </dcat:Dataset>
     @for(var distribution : model.getDistributions())
         <dcat:Distribution rdf:about="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution">
-            <dcat:accessURL rdf:resource="${model.getUploadUrl()}/${distribution.getAccessURL()}" />
+            <dcat:accessURL rdf:resource="${distribution.getAccessURL()}" />
             @if(distribution.getLicense() != null)
                 <dcterms:license rdf:resource="${distribution.getLicense().getUrl()}" />
             @endif
