@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.2.2 (13.02.2026)
+
+### Features
+
+* Ergänzende Informationen "Für die Fachredaktion zuständige Dienststelle" als neues Feld (#8614)
+* Kontexthilfe um Informationen für Fachredaktionen ergänzen (#8562)
+
+### Bugfixes
+
+* UVP: Fehlermeldung Datensatz inkonsistent (#8743)
+* "mit Schreibzugriff"-Schieberegler resettet nach "Auswahl"-Checkbox Aktivierung (#8638)
+    
 ## 8.2.1 (29.01.2026)
 
 ### Features
