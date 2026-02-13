@@ -44,6 +44,9 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 export class FreeEntryListComponent {
   freeEntries = input<FreeEntry[]>();
 
+  // If true, the codelist is internal. Thus, the entries can be added.
+  isCatalog = input<boolean>();
+
   onReplaceClicked = output<FreeEntry>();
   onAddClicked = output<FreeEntry>();
 }

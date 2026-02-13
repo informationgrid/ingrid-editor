@@ -26,9 +26,14 @@
                     >
                         Ersetzen
                     </button>
-                    <button mat-menu-item (click)="onAddClicked.emit(entry)">
-                        In Codeliste aufnehmen
-                    </button>
+                    @if (isCatalog()) {
+                        <button
+                            mat-menu-item
+                            (click)="onAddClicked.emit(entry)"
+                        >
+                            In Codeliste aufnehmen
+                        </button>
+                    }
                 </mat-menu>
             </div>
         </mat-list-item>

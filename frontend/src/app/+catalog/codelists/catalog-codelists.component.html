@@ -137,6 +137,7 @@
             @if (freeEntries?.length > 0) {
                 <ige-free-entry-list
                     [freeEntries]="freeEntries"
+                    [isCatalog]="selectedCodelist?.isCatalog"
                     (onReplaceClicked)="openFreeEntryReplaceDialog($event)"
                     (onAddClicked)="openFreeEntryAddDialog($event)"
                 ></ige-free-entry-list>
