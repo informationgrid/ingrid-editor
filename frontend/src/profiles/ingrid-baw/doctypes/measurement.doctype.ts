@@ -82,6 +82,10 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
                 label: "Forschung & Entwicklung (F&E)",
                 value: "Forschung & Entwicklung (F&E)",
               },
+              {
+                label: "Grundlagenuntersuchung",
+                value: "Grundlagenuntersuchung",
+              },
             ],
           }),
           this.addSelect("measurementType", "Art der Messung", {
