@@ -229,16 +229,18 @@ export class DataSiteService {
   }
 
   private getGeoLocations(model: any): any[] {
-    return model.spatial?.references?.map((spatial: any) => {
-      return {
-        geoLocationBox: {
-          eastBoundLongitude: spatial.value.lon1,
-          northBoundLatitude: spatial.value.lat1,
-          southBoundLatitude: spatial.value.lat2,
-          westBoundLongitude: spatial.value.lon2,
-        },
-        geoLocationPlace: spatial.title,
-      };
-    });
+    return (
+      model.spatial?.references?.map((spatial: any) => {
+        return {
+          geoLocationBox: {
+            eastBoundLongitude: spatial.value.lon1,
+            northBoundLatitude: spatial.value.lat1,
+            southBoundLatitude: spatial.value.lat2,
+            westBoundLongitude: spatial.value.lon2,
+          },
+          geoLocationPlace: spatial.title,
+        };
+      }) ?? []
+    );
   }
 }
