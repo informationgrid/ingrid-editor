@@ -1,6 +1,7 @@
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CoordinateType
+@import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 @import gg.jte.support.ForSupport
 @import java.util.Map
 @import gg.jte.Content
@@ -90,7 +91,7 @@
     "t012_obj_adr.special_ref": "",
     "t012_obj_adr.typ": "",
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
-    "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
+    "t01_object.obj_class": "${page.handleContent(page.getDocumentTypeId())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
     "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)
@@ -156,7 +157,7 @@
 
     "t01_object.org_obj_id": null,
     "t011_obj_serv.has_access_constraint": "${page.hasAccessConstraints() ? 'Y' : 'N'}",
-    @if("3".equals(page.getDocumentType()))
+    @if("3".equals(page.getDocumentTypeId()))
     "t011_obj_serv.type": "${page.getServiceType(null)}",
     @if(page.getData().getService().getType() != null)
         "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
@@ -192,10 +193,10 @@
         "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()))
+    @if(InGridDocType.InGridGeoService.getTypeId().equals(page.getDocumentTypeId()))
     "capabilities_url": "${page.getCapabilitiesUrl()}",
     "capabilities_download_url": "${page.getCapabilitiesDownloadUrl()}",
-    @elseif("1".equals(page.getDocumentType()))
+    @elseif(InGridDocType.InGridGeoDataset.getTypeId().equals(page.getDocumentTypeId()))
     "capabilities_url": [
         @for(var entry : ForSupport.of(page.getCapabilitiesUrlsFromService()))
             "${entry.get()}"@if (!entry.isLast()),@endif

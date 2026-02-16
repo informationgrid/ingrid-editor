@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -114,7 +114,7 @@ open class Pipe<T : Payload>(@param:Value("AnonymousPipe") override val id: Stri
             if (filter.usedInProfile(profile) || filter.usedInProfile(parentProfile)) {
                 context.addMessage(Message(this, "Running filter '${filter.id}'"))
                 try {
-                    result = filter(result, context)
+                    result = filter.invoke(result, context)
                 } catch (e: Exception) {
                     log.error("Filter '${filter.id}' could not be executed, due to an error", e)
                     filterException = e

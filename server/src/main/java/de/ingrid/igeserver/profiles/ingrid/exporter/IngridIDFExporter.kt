@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -132,9 +132,7 @@ class IngridIDFExporter(
         "InGridInformationSystem" -> "export/ingrid/idf/idf-informationSystem.jte"
         "InGridOrganisationDoc" -> "export/ingrid/idf/idf-address.jte"
         "InGridPersonDoc" -> "export/ingrid/idf/idf-address.jte"
-        else -> {
-            throw ServerException.withReason("Cannot get template for type: $type")
-        }
+        else -> throw ServerException.withReason("Cannot get template for type: $type")
     }
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
@@ -213,7 +211,7 @@ class IngridIDFExporter(
                 date,
             )
         }
-        return XMLUtils.toString(xmlDoc)
+        return XMLUtils.toString(xmlDoc, false)
     }
 
     override fun calculateFingerprint(doc: Any): String {

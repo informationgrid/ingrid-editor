@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -74,7 +74,7 @@ class CswtApiController(
         @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
         @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
-        @Parameter(description = "## Override existing Addresses \n **Custom Parameter** \n\n Whether existing referenced Addresses should be overridden") @RequestParam(value = "overwriteAddresses", required = false) overwriteAddresses: Boolean = true,
+        @Parameter(description = "## Override existing Addresses \n **Custom Parameter** \n\n Whether existing referenced Addresses should be overridden") @RequestParam(value = "overwriteAddresses", required = false) overwriteAddresses: Boolean = false,
         @Parameter(description = "## Override existing Datasets \n **Custom Parameter** \n\n Whether existing referenced Datasets should be overridden") @RequestParam(value = "overwriteDatasets", required = false) overwriteDatasets: Boolean = true,
     ): ResponseEntity<ByteArray> {
         var transactionResult: CSWTransactionResult

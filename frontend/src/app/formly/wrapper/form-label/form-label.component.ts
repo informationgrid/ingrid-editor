@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,10 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ElementRef, input, output } from "@angular/core";
+import { Component, computed, ElementRef, input, output } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { getAriaLabelById } from "../../../directives/aria-label.pipe";
 
 @Component({
   selector: "ige-form-label",
@@ -34,6 +35,11 @@ export class FormLabelComponent {
   readonly ariaLabel = input<string>(undefined);
 
   readonly contextHelp = output<HTMLElement>();
+
+  fieldLabel = computed(() => {
+    if (this.fieldId() === undefined) return undefined;
+    return getAriaLabelById(this.fieldId());
+  });
 
   showContextHelp(evt: Event) {
     if (!this.hasContextHelp()) {

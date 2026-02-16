@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,10 +23,10 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DocumentCategory
@@ -167,10 +167,13 @@ class IndexService(
         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
     }
 
-    fun updateExporterConfig(catalogId: String, config: List<ExportConfig>) {
+    fun updateExporterConfig(catalogId: String, config: IndexExportOptions) {
         catalogRepo
             .findByIdentifier(catalogId)
-            .apply { settings.exports = config }
+            .apply {
+                settings.exports = config.exports
+                settings.noIndexing = config.noIndexing
+            }
             .run { catalogRepo.save(this) }
     }
 

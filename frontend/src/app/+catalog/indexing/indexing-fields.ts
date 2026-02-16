@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,6 +37,10 @@ export class IndexingFields extends FormFieldHelper {
   exchangeService = inject(ExchangeService);
 
   fields: FormlyFieldConfig[] = [
+    this.addCheckbox("no-indexing", null, {
+      wrappers: [],
+      fieldLabel: "Indizierung deaktivieren",
+    }),
     this.addRepeat("catalog-index-config", "", {
       wrappers: [],
       className: "space-bottom flex-1",

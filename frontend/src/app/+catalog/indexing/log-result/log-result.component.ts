@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   OnInit,
 } from "@angular/core";
@@ -36,6 +37,12 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 })
 export class LogResultComponent implements OnInit {
   log = input.required<LogResult>();
+  protected readonly skippedDatasets = computed<number>(() => {
+    return (
+      this.log().targets?.reduce((sum, target) => sum + target.numSkipped, 0) ??
+      0
+    );
+  });
 
   constructor() {}
 

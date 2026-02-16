@@ -1,0 +1,24 @@
+<div class="toggle-groups-wrapper">
+    @for (toggle of props.options; track toggle) {
+        <div class="toggle-group" [class.has-label]="!props.hideLabel">
+            @if (toggle.label && !props.hideLabel) {
+                <div>{{ toggle.label }}</div>
+            }
+            <mat-button-toggle-group
+                [name]="toggle.key"
+                [value]="value ? value[toggle.key] : undefined"
+                [attr.aria-label]="toggle.label"
+                hideSingleSelectionIndicator
+            >
+                @for (option of toggle.options; track option) {
+                    <mat-button-toggle
+                        [value]="option.value"
+                        (change)="onToggled(toggle.key, $event.value)"
+                    >
+                        {{ option.label }}
+                    </mat-button-toggle>
+                }
+            </mat-button-toggle-group>
+        </div>
+    }
+</div>

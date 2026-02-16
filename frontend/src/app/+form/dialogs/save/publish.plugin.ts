@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { Observable, of } from "rxjs";
 import {
@@ -41,6 +41,7 @@ import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { FormMenuService } from "../../form-menu.service";
 import { DocumentService } from "../../../services/document/document.service";
+import { ToolbarMenuItem } from "../../form-shared/toolbar/form-toolbar.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -114,7 +115,7 @@ export class PublishPlugin extends SaveBase {
 
   // TODO: Menu should be separated into additional plugins, that use FormMenuService to register menu items
   private addToolbarButtons() {
-    const publishMenu = [
+    const publishMenu: ToolbarMenuItem[] = [
       {
         eventId: this.eventPublishId,
         label: "Jetzt veröffentlichen",
@@ -144,6 +145,8 @@ export class PublishPlugin extends SaveBase {
         active: true,
       });
     }
+
+    publishMenu.push(...this.formMenuService.getToolbarMenuItems("publish"));
 
     this.formToolbarService.addButton({
       type: "button",

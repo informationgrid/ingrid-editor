@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -55,6 +55,8 @@ import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { GeneralStore } from "../../../app/store/general.store";
+import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
+import { validateDateResourceOrder } from "./validations";
 import { CopyFilesService } from "../../../app/+form/dialogs/copy-cut-paste/copy-files.service";
 
 interface GeneralSectionOptions {
@@ -107,6 +109,9 @@ export abstract class IngridShared extends BaseDoctype {
       dataFormat: (_: FormlyFieldConfig) => false,
       spatialScope: (_: FormlyFieldConfig) => false,
       events: (_: FormlyFieldConfig) => true,
+      inspireTopics: (field: FormlyFieldConfig) =>
+        field.options.formState.mainModel?.properties?.isInspireIdentified !==
+        undefined,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
@@ -131,13 +136,18 @@ export abstract class IngridShared extends BaseDoctype {
       temporalStatus: false,
       legalBasicsDescriptions: false,
     },
-    spatialTypes: ["free", "wkt", "wfsgnde"],
+    spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
+    validate: {
+      downloadLinkWhenOpenData: true,
+    },
   };
 
-  private inspireChangeMessage =
-    "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
-  private inspireDeleteMessage =
-    "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
+  private inspireChangeMessage = this.transloco.translate(
+    "form.dialog.INSPIRE_CHANGE",
+  );
+  private inspireDeleteMessage = this.transloco.translate(
+    "form.dialog.INSPIRE_DELETE",
+  );
 
   showInVeKoSField: boolean = false;
   showInspireRelevant: boolean = false;
@@ -146,10 +156,12 @@ export abstract class IngridShared extends BaseDoctype {
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
   showDoiFields: boolean = false;
+  showFileReferences: boolean = true;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
   isGeoDataset: boolean = false;
+  disableUpload: boolean = false;
   private thesaurusTopics: boolean = false;
 
   codelistIds = {
@@ -157,6 +169,7 @@ export abstract class IngridShared extends BaseDoctype {
     urlDataType: "1320",
     fileReferenceFormat: "1320",
   };
+  metadataDefaultValue: any = undefined;
 
   protected metadataOptions(): MetadataOption[] {
     return [
@@ -305,7 +318,7 @@ export abstract class IngridShared extends BaseDoctype {
               <FormlyFieldConfig>{
                 key: "properties",
                 type: "metadata",
-
+                defaultValue: this.metadataDefaultValue,
                 props: <MetadataProps>{
                   availableOptions: availableOptions,
                   disabledOptions: {},
@@ -362,6 +375,7 @@ export abstract class IngridShared extends BaseDoctype {
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
+            disableUpload: this.disableUpload,
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
@@ -445,13 +459,7 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message = `
-      Bei Auswahl dieses Merkmals wird:
-      <ul>
-        <li>"Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
-        <li>die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
-        <li>dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
-      </ul>`;
+    const message = this.transloco.translate("form.confirmation.opendata");
     return this.showConfirmDialog(message, cookieId).pipe(
       map((decision) => {
         if (decision === "ok") {
@@ -611,9 +619,7 @@ export abstract class IngridShared extends BaseDoctype {
               options: this.getCodelistForSelect("6100", "themes"),
               codelistId: "6100",
               expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.properties
-                    ?.isInspireIdentified !== undefined,
+                "props.required": this.options.dynamicRequired.inspireTopics,
                 className: (field: FormlyFieldConfig) =>
                   field.props.required ? "" : "optional",
                 hide: (field: FormlyFieldConfig) =>
@@ -941,7 +947,6 @@ export abstract class IngridShared extends BaseDoctype {
         [
           this.addSpatial("references", "Raumbezug", {
             limitTypes: this.options.spatialTypes,
-            hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {
               "props.required": (field: FormlyFieldConfig) =>
@@ -962,7 +967,10 @@ export abstract class IngridShared extends BaseDoctype {
                 fetchCodelist: (query: string, page: number) =>
                   this.getExternalCodelistForSelect("EPSG", query, page),
                 deduplicate: (options, externalOptions) => {
-                  const localLabels = options.map((r) => r.label.split(":")[0]);
+                  if (!options) return [];
+
+                  const localLabels =
+                    options.map((r) => r.label.split(":")[0]) ?? [];
                   return [
                     ...options,
                     ...externalOptions.filter(
@@ -1153,6 +1161,11 @@ export abstract class IngridShared extends BaseDoctype {
                         message:
                           "Es muss entweder ein Datum der Erstellung, der erstmaligen Veröffentlichung oder der letzten Änderung angegeben werden",
                       },
+                      dateOrder: {
+                        expression: validateDateResourceOrder,
+                        message:
+                          "Die Reihenfolge der Daten ist ungültig: 'Erstellung' muss vor 'Erstmalige Veröffentlichung' und vor 'Letzte Änderung' liegen.",
+                      },
                     },
                   },
                 ),
@@ -1186,7 +1199,6 @@ export abstract class IngridShared extends BaseDoctype {
                           "maintenanceInformation.maintenanceAndUpdateFrequency",
                         ),
                         codelistId: "518",
-                        hintStart: "Wie oft wird der Datensatz aktualisiert?",
                         className: "optional",
                         change: (field: FormlyFieldConfig) => {
                           const isNotContinuously =
@@ -1197,6 +1209,16 @@ export abstract class IngridShared extends BaseDoctype {
                               .get("userDefinedMaintenanceFrequency")
                               .setValue({ number: null, unit: null });
                           }
+                        },
+                        expressions: {
+                          "props.hintStart": (field: FormlyFieldConfig) => {
+                            const value = field.formControl.value;
+                            // if selected value is "unbekannt", "unregelmäßig" or "bei Bedarf"
+                            if (["9", "10", "12"].includes(value?.key))
+                              return "Bitte fügen Sie im untenstehenden Feld eine Erläuterung zu diesem Intervall hinzu";
+                            else
+                              return "Wie oft wird der Datensatz aktualisiert?";
+                          },
                         },
                       },
                     ),
@@ -1248,7 +1270,7 @@ export abstract class IngridShared extends BaseDoctype {
                               return !ctrl.value?.number || frequency === "1";
                             },
                             message:
-                              "Werte im Feld 'Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' nicht auf den Wert 'kontinuierlich' eingestellt wurde.",
+                              "Werte im Feld 'Benutzerdefiniertes Intervall der Erhebung' dürfen nur angegeben werden, wenn das Feld 'Pflege- und Aktualisierungsintervall' auf den Wert 'kontinuierlich (benutzerdefiniert)' eingestellt wurde.",
                           },
                         },
                       },
@@ -1271,7 +1293,9 @@ export abstract class IngridShared extends BaseDoctype {
             key: "data",
             type: "time-reference",
             wrappers: [],
-            defaultValue: { type: "none" },
+            defaultValue: this.options.required.resourceDateType
+              ? null
+              : { type: "none" },
             props: {
               required: this.options.required.resourceDateType,
             },
@@ -1294,7 +1318,7 @@ export abstract class IngridShared extends BaseDoctype {
             codelistId: "99999999",
             required: true,
             defaultValue: {
-              key: "150",
+              key: ConfigService.catalogLanguage === "en" ? "123" : "150",
             },
             contextHelpId: "languageInfo",
           }),
@@ -1368,7 +1392,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "pass",
                   type: "ige-select",
                   label: "Grad",
-                  width: "130px",
+                  width: "135px",
                   props: {
                     required: true,
                     label: "Grad",
@@ -1525,21 +1549,25 @@ export abstract class IngridShared extends BaseDoctype {
       "Verfügbarkeit",
       [
         this.addGroupSimple("resource", [
-          this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-            asSelect: false,
-            showSearch: true,
-            options: this.getCodelistForSelect(
-              "6010",
-              "resource.accessConstraints",
-            ),
-            codelistId: "6010",
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.accessConstraints(field),
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
+          this.addRepeatList(
+            "accessConstraints",
+            this.transloco.translate("form.accessConstraints"),
+            {
+              asSelect: false,
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                "6010",
+                "resource.accessConstraints",
+              ),
+              codelistId: "6010",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  this.options.dynamicRequired.accessConstraints(field),
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
             },
-          }),
+          ),
           this.addRepeat("useConstraints", "Nutzungsbedingungen", {
             required: this.options.required.useConstraints,
             expressions: {
@@ -1648,14 +1676,16 @@ export abstract class IngridShared extends BaseDoctype {
         fields: [this.urlRefFields(docClass)],
         viewComponent: ReferenceViewComponent,
         validators: {
-          downloadLinkWhenOpenData: {
-            expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-              !field.form.value.properties?.isOpenData ||
-              ctrl.value?.some((row: any) => row.type?.key === "9990") || // one reference of type "Datendownload"
-              field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
-            message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
-          },
+          ...(this.options.validate.downloadLinkWhenOpenData && {
+            downloadLinkWhenOpenData: {
+              expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+                !field.form.value.properties?.isOpenData ||
+                ctrl.value?.some((row: any) => row.type?.key === "9990") || // one reference of type "Datendownload"
+                field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
+              message:
+                "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
+            },
+          }),
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
               !ctrl.value ||
@@ -1676,6 +1706,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addFileReferences() {
+    if (!this.showFileReferences) return null;
     return this.addSection("Dateien", [
       this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
         required: false,
@@ -1981,9 +2012,7 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message = this.inspireChangeMessage;
-
-    return this.showConfirmDialog(message, cookieId).pipe(
+    return this.showConfirmDialog(this.inspireChangeMessage, cookieId).pipe(
       map((decision) => {
         if (decision === "ok") this.handleActivateInspireIdentified(field);
         else

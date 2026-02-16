@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -109,7 +109,11 @@ export class AutocompleteTypeComponent
         setTimeout(() => {
           this.currentCodelistId = this.props.dynamicCodelistId();
           if (this.formControl.value?._codelistId !== this.currentCodelistId) {
-            this.formControl.setValue(this.formControl.value?.value);
+            const id = this.formControl.value?.key;
+            const value =
+              this.parameterOptions().find((opt) => opt.key === id)?.value ??
+              this.formControl.value?.value;
+            this.formControl.setValue(value);
           }
         }, 100);
       }

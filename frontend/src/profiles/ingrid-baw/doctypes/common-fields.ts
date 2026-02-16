@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,20 +29,23 @@ import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { tap } from "rxjs/operators";
 import { LfsViewComponent } from "../components/lfs-view/lfs-view.component";
+import {
+  PreviewImageComponent,
+  PreviewImageSelector,
+} from "../../../app/formly/types/preview-image/preview-image.component";
+import { LfsSelectorDialogComponent } from "../components/lfs-selector/lfs-selector-dialog.component";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderTitle", "Auftragstitel", {
+  getBAWOrderInfoFieldConfig(
+    doc: IngridShared,
+    options: SelectOptions = {},
+  ): FormlyFieldConfig {
+    return this.addSelect("bawOrderInfo", "Auftrag", {
+      showSearch: true,
       required: true,
-      wrappers: ["panel", "form-field"],
-      ...options,
-    });
-  }
-
-  getOrderNumberFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
-    return this.addInput("orderNumber", "Auftragsnummer", {
-      required: true,
+      options: doc.getCodelistForSelect("bawOrderInfo", "null"),
+      codelistId: "bawOrderInfo",
       wrappers: ["panel", "form-field"],
       ...options,
     });
@@ -108,7 +111,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       verticalExtent?: boolean;
     } = {},
   ) {
-    const timeRefRangePosition = this.findFieldElementWithId(
+    const timeRefRangePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "data",
     );
@@ -116,7 +119,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     timeRefRangePosition.field.props.showTimezone = true;
     timeRefRangePosition.field.props.defaultTimezone = "(GMT+01:00) Berlin";
 
-    const gemetKeywordsPosition = this.findFieldElementWithId(
+    const gemetKeywordsPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "gemet",
     );
@@ -139,7 +142,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       this.getBAWKeywordCatalogueFieldConfig(doc),
     );
 
-    const spatialSystemPosition = this.findFieldElementWithId(
+    const spatialSystemPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "spatialSystems",
     );
@@ -154,7 +157,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
 
     // replace existing vertical extent section with baw specific one
     if (!exclude.verticalExtent) {
-      const verticalExtentPosition = this.findFieldElementWithId(
+      const verticalExtentPosition = IngridShared.findFieldElementWithId(
         fieldConfig,
         "verticalExtent",
       );
@@ -165,7 +168,15 @@ export class CommonFieldsBaw extends FormFieldHelper {
       );
     }
 
-    const pointOfContactPosition = doc.findFieldElementWithId(
+    // add lfs picker to preview image / graphicOverviews
+    const graphicOverviewsPosition = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "graphicOverviews",
+    );
+    graphicOverviewsPosition.fieldConfig[graphicOverviewsPosition.index] =
+      this.getBAWGraphicOverviewsFieldConfig();
+
+    const pointOfContactPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
@@ -173,12 +184,13 @@ export class CommonFieldsBaw extends FormFieldHelper {
     // reuse existing ingrid field validators
     pointOfContactPosition.fieldConfig[pointOfContactPosition.index] =
       this.getBAWPointOfContactFieldConfig(
+        doc,
         pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
           .validators,
       );
 
     // LFS references & literature references
-    const referencesPosition = this.findFieldElementWithId(
+    const referencesPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "references",
     );
@@ -193,7 +205,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     fileReferencesPosition?.fieldConfig.splice(fileReferencesPosition.index, 1);
 
     //remove parentIdentifier as it is set automatically in baw
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const parentIdentifierPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "parentIdentifier",
     );
@@ -204,12 +216,22 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getBAWPointOfContactFieldConfig(
+    doctype: IngridShared,
     additionalValidators: {} = {},
   ): FormlyFieldConfig {
+    // all types except "Verfahrensbetreuung" (13) and "Entwickler" (14)
+    const allGeneralTypes = Array.from({ length: 12 }, (_, i) =>
+      (i + 1).toString(),
+    );
+
     return this.addAddressCard("pointOfContact", "Adressen", {
       required: true,
-      // only "Herausgeber" and "Autor"
-      allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
+      // allow all types for BawSoftware Doctype (based on InGridInformationSystem).
+      // allow only allGeneralTypes for all other doctypes
+      allowedTypes:
+        doctype.id != "InGridInformationSystem" ? allGeneralTypes : null,
+      // only "Herausgeber" (10) and "Autor" (11) for PublicationAddressDocs
+      allowedTypesByAddressType: { PublicationAddressDoc: ["10", "11"] },
       validators: {
         // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
         // deactivated for now as it was deactivated in the production ige classic as well
@@ -217,6 +239,37 @@ export class CommonFieldsBaw extends FormFieldHelper {
         ...additionalValidators,
       },
     });
+  }
+
+  getBAWGraphicOverviewsFieldConfig() {
+    return this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
+      disableUpload: true,
+      className: "optional",
+      additionalSelectors: [
+        <PreviewImageSelector>{
+          label: "Aus LFS wählen",
+          action: this.lfsLinkDialog,
+        },
+      ],
+    });
+  }
+
+  lfsLinkDialog(ref: PreviewImageComponent) {
+    ref.dialog
+      .open(LfsSelectorDialogComponent)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          ref.add(null, {
+            fileName: {
+              asLink: true,
+              uri: "https://dl.datenfinder.baw.de/LFS/" + result.lfs.uuid,
+              value: result.lfs.uuid,
+            },
+            fileDescription: result.description,
+          });
+        }
+      });
   }
 
   getBAWVerticalExtentFieldConfig(doc: IngridShared) {
@@ -302,15 +355,16 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: GeoDatasetDoctypeBaw,
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const alternateTitlePosition = this.findFieldElementWithId(
+    const alternateTitlePosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "alternateTitle",
     );
 
-    // Auftragsnummer
-    this.addBefore(alternateTitlePosition, this.getOrderNumberFieldConfig());
-    // Auftragstitel
-    this.addBefore(alternateTitlePosition, this.getOrderTitleFieldConfig());
+    // Auftragsnummer / -titel
+    this.addBefore(
+      alternateTitlePosition,
+      this.getBAWOrderInfoFieldConfig(doc),
+    );
 
     this.addSharedFields(doc, fieldConfig);
   }
@@ -378,7 +432,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "urlDataType",
-                required: false,
+                required: true,
               },
             ),
           ],

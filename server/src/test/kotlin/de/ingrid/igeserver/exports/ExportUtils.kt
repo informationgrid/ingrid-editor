@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -54,3 +55,5 @@ fun prettyFormatXml(input: String, indent: Int): String = try {
 } catch (e: Exception) {
     throw RuntimeException(e) // simple exception handling, please review it
 }
+
+fun prettyFormatJson(json: String): String = jacksonObjectMapper().readValue(json, JsonNode::class.java).toPrettyString()

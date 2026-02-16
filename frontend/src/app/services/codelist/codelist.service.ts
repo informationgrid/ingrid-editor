@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -309,6 +309,18 @@ export class CodelistService {
         codelists.forEach((codelist) => this.store.updateCodelist(codelist)),
       ),
     );
+  }
+
+  getFreeEntries(codelistId: string) {
+    return this.dataService.getFreeEntries(codelistId);
+  }
+
+  replaceFreeEntry(codelistId: string, fromValue: string, toKey: string) {
+    return this.dataService.replaceFreeEntry(codelistId, { fromValue, toKey });
+  }
+
+  addFreeEntryToCodelist(codelistId: string, value: string) {
+    return this.dataService.addFreeEntryToCodelist(codelistId, value);
   }
 
   observe(

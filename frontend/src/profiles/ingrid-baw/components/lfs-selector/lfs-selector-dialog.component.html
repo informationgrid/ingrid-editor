@@ -1,0 +1,30 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>LFS-Link Hinzufügen</h1>
+    </div>
+
+    <mat-dialog-content>
+        <formly-form
+            [form]="form"
+            [fields]="fields"
+            [model]="model"
+        ></formly-form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button
+            type="submit"
+            color="primary"
+            mat-flat-button
+            [mat-dialog-close]="model"
+            [disabled]="form.invalid"
+        >
+            Hinzufügen
+        </button>
+    </mat-dialog-actions>
+</div>

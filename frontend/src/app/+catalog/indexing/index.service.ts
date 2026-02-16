@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,11 +34,13 @@ export interface LogResult extends BaseLogResult {
     numAddresses: number;
     progressDocuments: number;
     progressAddresses: number;
+    numSkipped: number;
   }[];
 }
 
 interface IndexCronConfig {
   cronPattern: string;
+  noIndexing: boolean;
   exports: IndexExportConfig[];
 }
 
@@ -84,7 +86,7 @@ export class IndexService {
     return this.http
       .get<any>(`${this.configuration.backendUrl}jobs/index/info`)
       .pipe(
-        map((data) => {
+        map((data: any) => {
           return <LogResult>{
             ...data.info,
             targets: data.info?.report,

@@ -56,15 +56,17 @@
 
 @if (!formControl.disabled) {
     <div class="button-wrapper">
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showUploadFilesDialog()"
-        >
-            Dateien hochladen
-        </button>
-        oder
+        @if (!disableUpload) {
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="showUploadFilesDialog()"
+            >
+                Dateien hochladen
+            </button>
+            oder
+        }
         <button
             type="button"
             mat-stroked-button
@@ -73,5 +75,19 @@
         >
             Link angeben
         </button>
+        @for (
+            additionalSelector of additionalSelectors;
+            track additionalSelector
+        ) {
+            oder
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="additionalSelector.action(this)"
+            >
+                {{ additionalSelector.label }}
+            </button>
+        }
     </div>
 }

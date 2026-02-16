@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -123,7 +123,10 @@ export class IndexingComponent implements OnInit {
       .pipe(tap(() => this.initialized.set(true)))
       .subscribe((config) => {
         this.cronField.setValue(config.cronPattern);
-        this.exportModel = { "catalog-index-config": config.exports };
+        this.exportModel = {
+          "no-indexing": config.noIndexing,
+          "catalog-index-config": config.exports,
+        };
       });
 
     this.cronField.valueChanges
@@ -193,7 +196,10 @@ export class IndexingComponent implements OnInit {
 
   updateExportConfig() {
     this.indexService
-      .setExportConfig(this.exportForm.value["catalog-index-config"])
+      .setExportConfig({
+        noIndexing: this.exportForm.value["no-indexing"],
+        exports: this.exportForm.value["catalog-index-config"],
+      })
       .subscribe(() => this.snackBar.open("Konfiguration gespeichert"));
   }
 }

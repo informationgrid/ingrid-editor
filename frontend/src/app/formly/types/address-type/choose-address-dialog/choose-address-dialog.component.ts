@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -64,7 +64,7 @@ import { GeneralStore } from "../../../../store/general.store";
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
   allowedTypes: string[];
-  allowedTypesByDoctype: { [key: string]: string[] } | null;
+  allowedTypesByAddressType: { [key: string]: string[] } | null;
   skipToType: boolean;
   disabledCondition: (node: TreeNode) => boolean | null;
 }
@@ -229,7 +229,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   private filterByAllowedTypes(items: DocumentAbstract[]) {
     const filterTypes =
-      this.data.allowedTypesByDoctype?.[this.selection()?._type] ??
+      this.data.allowedTypesByAddressType?.[this.selection()?._type] ??
       this.data.allowedTypes;
 
     // if no allowed types are set, we return all

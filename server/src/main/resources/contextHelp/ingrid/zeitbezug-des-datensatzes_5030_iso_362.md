@@ -17,7 +17,7 @@ title: Zeitbezug des Datensatzes (der Ressource)
 
 # Zeitbezug des Datensatzes (der Ressource)
 
-Angabe, wann der Datensatz erstellt, geändert und/oder publiziert wurde.
+Angabe, wann der Datensatz erstellt wurde.
 
 ## Beispiel:
 
@@ -25,6 +25,6 @@ Erstellung: 11.11.2003
 
 # ISO Abbildung
 
-Datumsangaben: Datum der Erzeugung, Veröffentlichung oder Überarbeitung der Ressource
+Datumsangaben: Datum der Erzeugung der Ressource
 
 Domain: 362 (gmd:date)

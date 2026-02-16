@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,27 +17,25 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Pipe, PipeTransform } from "@angular/core";
+import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
-@Pipe({
-  name: "fieldToAriaLabelledBy",
-})
-export class FieldToAiraLabelledbyPipe implements PipeTransform {
-  constructor() {}
+export function validateDateResourceOrder(
+  ctrl: FormControl,
+  _: FormlyFieldConfig,
+) {
+  const event = ctrl.value;
+  if (!event) return true;
 
-  transform(field: FormlyFieldConfig): string {
-    return toAriaLabelledBy(field);
-  }
-}
+  const toTime = (d: any) => (d ? new Date(d).setHours(0, 0, 0, 0) : null);
+  const created = toTime(event.created);
+  const firstPublished = toTime(event.firstPublished);
+  const lastModified = toTime(event.lastModified);
 
-export function toAriaLabelledBy(field: FormlyFieldConfig): string {
-  // if label is already provided, angular material associates label to field automatically.
-  if (field.props.label) return undefined;
-  // if field has parent label on the left side of the form constructed by "panel", use parent id instead.
-  if (field?.parent?.wrappers.includes("panel")) {
-    return field.parent.id;
-  } else {
-    return field?.id ?? "";
+  if (created) {
+    if (firstPublished && created > firstPublished) return false;
+    if (lastModified && created > lastModified) return false;
   }
+
+  return true;
 }

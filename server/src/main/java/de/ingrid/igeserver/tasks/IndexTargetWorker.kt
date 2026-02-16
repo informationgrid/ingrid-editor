@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -191,6 +191,9 @@ class IndexTargetWorker(
     ): Nothing? {
         if (ex is IndexException && ex.errorCode == "FOLDER_WITH_NO_CHILDREN") {
             log.debug("Ignore folder with no published datasets: ${ex.message}")
+        } else if (ex is IndexException && ex.errorCode == "EXPLICIT_SKIP_FOLDERS") {
+            log.debug("Skip folder explicitly: ${ex.message}")
+            targetMessage.numSkipped++
         } else {
             val errorMessage =
                 "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"

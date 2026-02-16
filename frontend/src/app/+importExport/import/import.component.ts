@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -121,6 +121,7 @@ export class ImportComponent implements OnInit {
     ),
     overwriteAddresses: new FormControl<boolean>(false),
     publish: new FormControl<boolean>(false),
+    skipValidation: new FormControl<boolean>(false),
     parentDocument: new FormControl<number>(null, this.validParentValidator()),
     parentAddress: new FormControl<number>(null, this.validParentValidator()),
   });
@@ -262,7 +263,6 @@ export class ImportComponent implements OnInit {
         data: <PasteDialogOptions>{
           forAddress: isAddress,
           titleText: "Ordner auswählen",
-          typeToInsert: isAddress ? "organization" : "FOLDER",
         },
       })
       .afterClosed()

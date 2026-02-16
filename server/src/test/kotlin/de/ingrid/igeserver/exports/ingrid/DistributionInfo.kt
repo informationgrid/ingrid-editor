@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -265,18 +265,5 @@ class DistributionInfo : GeodatasetBase() {
             additionalJson.trimIndent(),
             ObjectNode::class.java,
         ) as ObjectNode,
-    ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-
-    private fun exportGeoDataset(additionalJson: String? = null): String = exportJsonToXML(
-        this@DistributionInfo.exporter,
-        "/export/ingrid/geo-dataset.minimal.sample.json",
-        if (additionalJson != null) {
-            jacksonObjectMapper().readValue(
-                additionalJson.trimIndent(),
-                ObjectNode::class.java,
-            ) as ObjectNode
-        } else {
-            null
-        },
     ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }

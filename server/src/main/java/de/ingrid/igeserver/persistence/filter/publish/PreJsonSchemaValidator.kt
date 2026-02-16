@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -48,6 +48,9 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         get() = emptyArray()
 
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
+        if (payload.skipValidation) {
+            return payload
+        }
         val schema = payload.type.jsonSchema
         if (schema != null) {
             val json = payload.document.data

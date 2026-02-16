@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,9 +41,12 @@ export class TagsService {
     });
   }
 
-  addTags(id: number, newTags: string[], forAddress: boolean) {
-    const tagsToRemove = [];
-
+  addTags(
+    id: number,
+    newTags: string[],
+    forAddress: boolean,
+    tagsToRemove: string[] = [],
+  ) {
     // handle publication tags
     if (newTags.indexOf("internet") !== -1) {
       newTags = newTags.filter((item) => item !== "internet");

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -165,7 +165,11 @@ class CodelistSyncTask(
         catalogLanguage: String,
     ): Boolean {
         val codelistId = node.getString("_codelistId")
-            ?: throw ServerException.withReason("Key field is null at path: $path for uuid: $uuid")
+        if (codelistId == null) {
+            log.debug("Codelist-ID field is null at path: $path for uuid: $uuid")
+            return false
+        }
+
         val entryKey = node.getString("key")
         val codelist = codelistHandler.getCodelists(listOf(codelistId)).firstOrNull()
             ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistId }

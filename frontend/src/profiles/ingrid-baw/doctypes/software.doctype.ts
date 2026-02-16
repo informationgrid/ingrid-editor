@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,6 +22,7 @@ import { inject, Injectable } from "@angular/core";
 import { CommonFieldsBaw } from "./common-fields";
 import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
 import { TextAreaOptions } from "../../form-field-helper";
+import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -60,7 +61,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     });
 
     // Allgemeines
-    const pointOfContactPosition = this.findFieldElementWithId(
+    const pointOfContactPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
@@ -74,7 +75,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     );
 
     // Fachbezug
-    const serviceUrlsPosition = this.findFieldElementWithId(
+    const serviceUrlsPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "serviceUrls",
     );
@@ -99,14 +100,14 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     moreInfo.fieldConfig.splice(moreInfo.index, 1);
 
     // Raumbezug
-    const spatialSystems = this.findFieldElementWithId(
+    const spatialSystems = IngridShared.findFieldElementWithId(
       fieldConfig,
       "spatialSystems",
     );
     spatialSystems.fieldConfig.splice(spatialSystems.index, 1);
 
     // Verfügbarkeit
-    const useLimitationPosition = this.findFieldElementWithId(
+    const useLimitationPosition = IngridShared.findFieldElementWithId(
       fieldConfig,
       "useLimitation",
     );
@@ -118,7 +119,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
         ...this.getNutzungsrechteFieldConfig(),
       ],
     );
-    const useConstraintsField = this.findFieldElementWithId(
+    const useConstraintsField = IngridShared.findFieldElementWithId(
       fieldConfig,
       "useConstraints",
     );

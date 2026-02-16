@@ -1,5 +1,5 @@
 @for (type of types(); track type) {
-    @for (location of typedLocations()[type]; track location.color) {
+    @for (location of typedLocations()[type]; track location.indexNumber) {
         <div
             class="clickable small-padding-right wrapper"
             (click)="selectLocation.emit(location.indexNumber)"
@@ -63,8 +63,38 @@
                         </div>
                     }
                     @if (location.type === "wkt") {
-                        <div matLine>
-                            {{ location.wkt }}
+                        <div class="wkt-container">
+                            <div
+                                #wktElement
+                                matLine
+                                class="wkt-text"
+                                [class.expanded]="
+                                    expandedWkt().has(location.indexNumber)
+                                "
+                            >
+                                {{ location.wkt }}
+                            </div>
+                            @if (
+                                wktElement.scrollHeight >
+                                    wktElement.offsetHeight ||
+                                expandedWkt().has(location.indexNumber)
+                            ) {
+                                <button
+                                    type="button"
+                                    mat-button
+                                    class="expand-button"
+                                    (click)="
+                                        toggleWkt(location.indexNumber);
+                                        $event.stopPropagation()
+                                    "
+                                >
+                                    {{
+                                        expandedWkt().has(location.indexNumber)
+                                            ? "Weniger anzeigen"
+                                            : "Mehr anzeigen"
+                                    }}
+                                </button>
+                            }
                         </div>
                     }
                     @if (

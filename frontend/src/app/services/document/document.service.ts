@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -266,6 +266,8 @@ export class DocumentService {
           },
           forAddress,
         );
+        if (forAddress) this.generalStore.openedAddress()._tags = newTags;
+        else this.generalStore.openedDocument()._tags = newTags;
       }),
     );
   }

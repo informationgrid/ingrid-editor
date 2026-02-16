@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -64,7 +64,7 @@ import { DocumentWithMetadata } from "../../../models/ige-document";
 import { AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { waitForCondition } from "../../../services/utils";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -79,7 +79,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     CdkDrag,
     AddressCardComponent,
     AddButtonComponent,
-    FieldToAiraLabelledbyPipe,
+    AriaLabelPipe,
     FormlyValidationMessage,
   ],
 })
@@ -225,7 +225,7 @@ export class AddressTypeComponent
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,
-            allowedTypesByDoctype: this.props.allowedTypesByDoctype,
+            allowedTypesByAddressType: this.props.allowedTypesByAddressType,
             disabledCondition: this.props.disabledCondition,
             skipToType: skipToType,
           },

@@ -1,16 +1,21 @@
 @media print {
   #print-content,
   .cdk-overlay-container,
-  .mat-mdc-dialog-surface {
-    position: absolute !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: 0 !important;
-    bottom: 0 !important;
+  .mat-mdc-dialog-surface,
+  .cdk-global-overlay-wrapper,
+  .cdk-overlay-pane {
+    position: static !important;
   }
+
+  #print-content {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
   #print-content,
-  .mat-mdc-dialog-surface {
-    overflow: unset !important;
+  .mat-mdc-dialog-surface,
+  .mat-mdc-dialog-content {
+    overflow: visible !important;
   }
 
   .dialog-title-wrapper,

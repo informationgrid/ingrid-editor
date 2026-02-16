@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -57,7 +57,10 @@ import { BreadcrumbComponent } from "../../../../+form/form-info/breadcrumb/brea
 import { MatCheckbox } from "@angular/material/checkbox";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { CodelistPipe } from "../../../../directives/codelist.pipe";
-import { CredentialsDialogComponent } from "../credentials-dialog/credentials-dialog.component";
+import {
+  CredentialsDialogComponent,
+  CredentialsDialogData,
+} from "../credentials-dialog/credentials-dialog.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -151,10 +154,16 @@ export class GetCapabilitiesDialogComponent {
 
   private retryWithCredentials(url: string) {
     this.dialog
-      .open(CredentialsDialogComponent, { width: "300px" })
+      .open(CredentialsDialogComponent, {
+        width: "300px",
+        data: {
+          message:
+            "Bitte geben Sie Ihre Anmeldedaten ein, um auf die geschützte GetCapabilities-URL zugreifen zu können.",
+        } as CredentialsDialogData,
+      })
       .afterClosed()
       .pipe(
-        filter((result) => result !== ""),
+        filter((result) => result),
         tap((result) => {
           this.analyze(url, result.username, result.password);
         }),

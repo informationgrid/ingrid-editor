@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,11 +37,13 @@ import {
   Codelist,
   PagedSearchResult,
 } from "../app/store/codelist/codelist.model";
+import { GeneralStore } from "../app/store/general.store";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
   protected codelistStore = inject(CodelistStore);
   protected formStateService = inject(FormStateService);
+  protected generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 

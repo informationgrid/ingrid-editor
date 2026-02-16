@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -59,6 +59,20 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     fun getOrderNumber(): String? = identificationInfo?.aggregationInfo?.find { it.mdAggregateInformation?.associationType?.code?.codeListValue == "largerWorkCitation" }
         ?.mdAggregateInformation?.aggregateDataSetName?.citation?.identifier?.firstOrNull()?.mdIdentifier?.code?.value
+
+    fun getBawOrderInfo(): KeyValue? {
+        val number = getOrderNumber()
+        val title = getOrderTitle()
+        if (number == null && title == null) return null
+
+        val combinedValue = when {
+            number != null && title != null -> "$number - $title"
+            number != null -> number
+            else -> title!!
+        }.trim()
+
+        return KeyValue(codeListService.getCodeListEntryId("bawOrderInfo", combinedValue, "de"), combinedValue, "bawOrderInfo")
+    }
 
     fun getTimestep(): Double? = isoData.data.dataQualityInfo
         ?.mapNotNull { it.dqDataQuality }

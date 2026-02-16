@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -103,14 +103,13 @@ export class ApprovalProcedureDoctype extends UvpShared {
               ],
             },
             validators: {
-              consistent: (control, field) => {
-                const missingType = field.model?.some((item) => !item.type);
-                if (missingType) {
-                  throw new Error(
-                    "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut.",
-                  );
-                }
-                return true;
+              consistent: {
+                expression: (control, field) => {
+                  const missingType = field.model?.some((item) => !item.type);
+                  return !missingType;
+                },
+                message:
+                  "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut.",
               },
             },
           },

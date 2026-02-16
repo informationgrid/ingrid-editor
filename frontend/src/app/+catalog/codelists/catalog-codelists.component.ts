@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -35,6 +35,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
+import { FreeEntryReplaceDialogComponent } from "./free-entry-replace-dialog/free-entry-replace-dialog.component";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
@@ -231,6 +232,27 @@ export class CatalogCodelistsComponent implements OnInit {
   setAsDefault(entry: CodelistEntry) {
     this.selectedCodelist.default = entry?.id ?? null;
     this.save();
+  }
+
+  openFreeEntries() {
+    // Open the dedicated dialog to select and replace free entries
+    this.dialog
+      .open(FreeEntryReplaceDialogComponent, {
+        data: {
+          codelistId: this.selectedCodelist.id,
+          codelistName: this.selectedCodelist.name,
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.occurrences >= 0) {
+          this._snackBar.open(
+            `Freie Einträge ersetzt: ${result.occurrences}`,
+            undefined,
+            { duration: 3000 },
+          );
+        }
+      });
   }
 
   resetCodelist() {

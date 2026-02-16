@@ -52,7 +52,11 @@
             "pass": {
               "type": "object",
               "properties": {
-                "key": { "const": "2" }
+                "key": {
+                  "not": {
+                    "const": "1"
+                  }
+                }
               },
               "required": ["key"]
             }

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,8 +21,8 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.IndexOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -55,7 +55,7 @@ interface IndexApi {
     fun setExportConfig(
         principal: Principal,
         @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
-        @RequestBody config: @Valid List<ExportConfig>,
+        @RequestBody config: @Valid IndexExportOptions,
     ): ResponseEntity<Void>
 
     @Operation

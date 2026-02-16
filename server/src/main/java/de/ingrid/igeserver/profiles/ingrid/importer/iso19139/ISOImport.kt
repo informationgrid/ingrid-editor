@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -100,6 +100,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
         } catch (ex: Exception) {
+            log.error("Error during ISO import", ex)
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
 

@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,24 +17,31 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Pipe, PipeTransform } from "@angular/core";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Component, computed, input, signal } from "@angular/core";
+import { KeyValuePipe, NgClass } from "@angular/common";
 
-@Pipe({
-  name: "fieldToAriaLabel",
+@Component({
+  selector: "ige-json-node",
+  imports: [KeyValuePipe, NgClass],
+  templateUrl: "./json-node.component.html",
+  styleUrl: "./json-node.component.scss",
 })
-export class FieldToAriaLabelPipe implements PipeTransform {
-  constructor() {}
+export class JsonNodeComponent {
+  key = input<string | null>(null);
+  value = input.required<any>();
 
-  transform(field: FormlyFieldConfig): string {
-    return fieldToAriaLabel(field);
-  }
-}
+  isExpanded = signal(true);
 
-export function fieldToAriaLabel(field: FormlyFieldConfig): string {
-  if (field.props.label && field.props.label.trim().length > 0) {
-    return field.props.label;
-  } else {
-    return field.props.fieldLabel;
+  isObject = computed(() => {
+    const val = this.value();
+    return val !== null && typeof val === "object";
+  });
+
+  isArray = computed(() => Array.isArray(this.value()));
+
+  valueType = computed(() => typeof this.value());
+
+  toggle() {
+    this.isExpanded.update((v) => !v);
   }
 }

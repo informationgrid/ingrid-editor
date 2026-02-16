@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,7 +34,7 @@ import { NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
-import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe";
+import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 
 @Component({
   selector: "ige-inline-help-wrapper",
@@ -45,7 +45,7 @@ import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe"
     MatIconButton,
     MatTooltip,
     MatIcon,
-    FieldToAriaLabelPipe,
+    AriaLabelPipe,
   ],
 })
 export class InlineHelpWrapperComponent

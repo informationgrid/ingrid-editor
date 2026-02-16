@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,8 +22,8 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexExportOptions
 import de.ingrid.igeserver.model.IndexOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -45,7 +45,7 @@ class IndexApiController(
 
     override fun setExportConfig(
         principal: Principal,
-        config: List<ExportConfig>,
+        config: IndexExportOptions,
     ): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         indexService.updateExporterConfig(catalogId, config)
@@ -58,6 +58,7 @@ class IndexApiController(
         val config = catalogService.getCatalogById(catalogId).run {
             IndexOptions(
                 settings.indexCronPattern ?: "",
+                settings.noIndexing,
                 settings.exports,
             )
         }

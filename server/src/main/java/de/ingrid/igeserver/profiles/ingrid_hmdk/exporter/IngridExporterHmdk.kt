@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -48,7 +48,7 @@ class IngridExporterHmdk(
         DocumentCategory.DATA,
         "indexInGridIDFHmdk",
         "Ingrid IDF HMDK (Elasticsearch)",
-        "Export von Ingrid Dokumenten ins IDF Format für HMDK für die Anzeige im Portal ins Elasticsearch-Format.",
+        "Export von InGrid Dokumenten ins IDF Format für HMDK für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
         listOf("ingrid-hmdk"),
@@ -67,7 +67,7 @@ class IngridExporterHmdkMetaver(
         DocumentCategory.DATA,
         "indexInGridIDFHmdkMetaver",
         "Ingrid IDF Metaver (Elasticsearch)",
-        "Export von HMDK Ingrid Dokumenten für die Anzeige im externen Metaver Portal.",
+        "Export von HMDK InGrid Dokumenten für die Anzeige im externen Metaver Portal.",
         "application/json",
         "json",
         listOf("ingrid-hmdk"),

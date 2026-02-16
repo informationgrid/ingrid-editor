@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -44,7 +44,7 @@ import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatDivider } from "@angular/material/divider";
-import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
@@ -79,7 +79,7 @@ interface SelectTypeProps extends FormlyFieldProps {
     NgxMatSelectSearchModule,
     NgTemplateOutlet,
     MatDivider,
-    FieldToAiraLabelledbyPipe,
+    AriaLabelPipe,
     FormlyAttributes,
   ],
 })

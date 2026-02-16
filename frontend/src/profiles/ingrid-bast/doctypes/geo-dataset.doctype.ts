@@ -1,6 +1,6 @@
-/**
+/*
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,6 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { CommonFieldsBast } from "./common-fields";
+import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -36,7 +37,7 @@ export class GeoDatasetDoctypeBast extends GeoDatasetDoctype {
     const section = this.findSectionWithLabel(fieldConfig, "Allgemeines");
     section.fieldGroup.push(...this.common.getFields());
 
-    const useConstraints = this.findFieldElementWithId(
+    const useConstraints = IngridShared.findFieldElementWithId(
       fieldConfig,
       "useConstraints",
     );
@@ -46,7 +47,7 @@ export class GeoDatasetDoctypeBast extends GeoDatasetDoctype {
     );
 
     // do not set default value for temporal data since it's required
-    const temporalData = this.findFieldElementWithId(
+    const temporalData = IngridShared.findFieldElementWithId(
       fieldConfig,
       "data",
       "temporal",
