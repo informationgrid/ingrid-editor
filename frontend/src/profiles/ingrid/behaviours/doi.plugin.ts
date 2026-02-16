@@ -40,13 +40,14 @@ export class DoiPlugin extends Plugin {
   id = "plugin.ingrid.doi";
   name = "DOI-Felder anzeigen";
   description = `Zeigt DOI-Felder im Formular unter der Rubrik "Fachbezug" an. In der Objektklasse "Literatur" wird dadurch das Feld "Dokumenttyp" ersetzt.
-<p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p>`;
+<p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p><p>Bitte nach Änderung des Default-Präfix die Seite neu laden.</p>`;
   defaultActive = false;
   fields: FormlyFieldConfig[] = [
     {
       key: "doiPrefix",
       type: "input",
       props: {
+        label: "Default-Präfix",
         placeholder: "Default-Präfix für DOI-Einträge, Format: 10.VXYZ",
         appearance: "outline",
         required: false,
