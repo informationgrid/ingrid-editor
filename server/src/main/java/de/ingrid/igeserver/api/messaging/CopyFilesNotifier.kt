@@ -27,6 +27,7 @@ data class CopyFilesMessage(
     val catalogId: String,
     val sourceDatasetId: String,
     val targetDatasetId: String,
+    var jobId: String = "",
     var currentFile: String = "",
     var copiedFiles: Int = 0,
     var totalFiles: Int = 0,

@@ -875,8 +875,10 @@ public class FileSystemStorage implements Storage {
 
     @Override
     public void copyToUnpublished(String catalog, String sourceDatasetId, String targetDatasetId) {
-        var jobKey = JobKey.jobKey(CopyFilesTask.JOB_KEY, catalog);
+        var jobId = String.format("%s-%s-%s", CopyFilesTask.JOB_KEY, targetDatasetId, System.currentTimeMillis());
+        var jobKey = JobKey.jobKey(jobId, catalog);
         var jobDataMap = new JobDataMap();
+        jobDataMap.put("jobId", jobId);
         jobDataMap.put("catalogId", catalog);
         jobDataMap.put("sourceDatasetId", sourceDatasetId);
         jobDataMap.put("targetDatasetId", targetDatasetId);

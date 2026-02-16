@@ -25,6 +25,7 @@ interface CopyFilesMessage {
   catalogId: string;
   sourceDatasetId: string;
   targetDatasetId: string;
+  jobId: string;
   copiedFiles: number;
   totalFiles: number;
   progress: number;
@@ -36,17 +37,63 @@ interface CopyFilesMessage {
 export class CopyFilesService extends SnackBarMessageService {
   status: WritableSignal<CopyFilesMessage>;
 
+  private jobs: Map<string, CopyFilesMessage> = new Map();
+
+  protected onMessage(data: CopyFilesMessage): boolean {
+    if (!data?.jobId) {
+      // fallback to single-job behavior
+      return super.onMessage(data);
+    }
+
+    // update or add job
+    this.jobs.set(data.jobId, data);
+
+    // remove finished jobs
+    if (data.progress >= 100) {
+      this.jobs.delete(data.jobId);
+    }
+
+    // build a concise message for all active jobs
+    if (this.jobs.size === 0) {
+      this.message.set(`Dateikopieren abgeschlossen.`);
+    } else if (this.jobs.size === 1) {
+      const only = Array.from(this.jobs.values())[0];
+      this.message.set(
+        `Kopiere Dateien nach ${only.targetDatasetId}: ${only.copiedFiles}/${only.totalFiles} (${only.progress}%)`,
+      );
+    } else {
+      const parts: string[] = [];
+      this.jobs.forEach((j) =>
+        parts.push(
+          `${j.targetDatasetId}: ${j.copiedFiles}/${j.totalFiles} (${j.progress}%)`,
+        ),
+      );
+      this.message.set(
+        `Mehrere Kopiervorgänge (${this.jobs.size}): ` + parts.join(" | "),
+      );
+    }
+
+    // all done when no active jobs left
+    return this.jobs.size === 0;
+  }
+
   protected updateMessage(data: CopyFilesMessage) {
+    // kept for fallback behavior
     this.message.set(
       `Dateikopierfortschritt: ${data.copiedFiles}/${data.totalFiles} (${data.progress}%)`,
     );
   }
 
   isCopyInProgress(targetId: string) {
-    return this.status()?.targetDatasetId == targetId && !this.isDone();
+    // check if any active job targets this dataset
+    for (const j of this.jobs.values()) {
+      if (j.targetDatasetId === targetId && j.progress < 100) return true;
+    }
+    return false;
   }
 
   protected isDone() {
+    // single-job fallback
     return this.status()?.progress >= 100;
   }
 

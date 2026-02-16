@@ -26,6 +26,7 @@ import { MatSnackBar, MatSnackBarRef } from "@angular/material/snack-bar";
 export abstract class SnackBarMessageService {
   private currentSnackBarRef: MatSnackBarRef<UpdatableMatSnackBar>;
 
+  // optional single-job status for legacy services; multi-job services can ignore
   protected status: WritableSignal<any> = signal(null);
   public message: WritableSignal<string> = signal("Waiting");
 
@@ -45,12 +46,10 @@ export abstract class SnackBarMessageService {
         tap((msg) => console.log("new message received", msg)),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => {
-          // TODO: data should have status of all files to be copied
-          this.status.set(data);
-          this.updateMessage(data);
+          const allDone = this.onMessage(data);
           if (!this.currentSnackBarRef) {
             this.openSnackBar();
-          } else if (this.isDone()) {
+          } else if (allDone) {
             this.destroy$.next();
             this.destroy$.complete();
             this.destroy$.unsubscribe();
@@ -81,6 +80,13 @@ export abstract class SnackBarMessageService {
         this.status.set(null);
       }
     });
+  }
+
+  // default single-job behavior; can be overridden to support multi-job aggregation
+  protected onMessage(data: any): boolean {
+    this.status.set(data);
+    this.updateMessage(data);
+    return this.isDone();
   }
 
   protected abstract updateMessage(data: any): void;
