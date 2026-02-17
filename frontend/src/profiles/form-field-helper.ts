@@ -274,6 +274,9 @@ export class FormFieldHelper {
       props: {
         label: label,
       },
+      expressions: {
+        hide: options?.hideExpression,
+      },
       fieldGroup: fields,
       ...options,
     };

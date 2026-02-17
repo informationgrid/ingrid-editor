@@ -46,8 +46,8 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
             items: [
               {
                 label: "Zulassungsprüfung",
-                key: "isApprovalType",
-                value: false,
+                key: "isApprovalProcedure",
+                value: true,
                 contextHelpKey: "isOpenData",
               },
             ],
@@ -181,25 +181,35 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
           wrappers: ["panel", "form-field"],
         }),
         this.addDatepicker("standardIssueDate", "Ausgabedatum der Norm"),
-      ]),
-      this.addSection("Zulassung", [
-        this.addInput("testNumber", "Prüfnummer", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addTextArea("systemSetup", "Aufbau des Systems", {
-          className: "width-100",
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addRepeatList(
-          "datasetVisibility",
-          "Sichtbarkeit des Datensatzes",
+
+        this.addSubSection(
+          "approvalProcedure",
+          "Zulassungsprüfung",
+          [
+            this.addInput("testNumber", "Prüfnummer", {
+              wrappers: ["panel", "form-field"],
+            }),
+            this.addTextArea("systemSetup", "Aufbau des Systems", {
+              className: "width-100",
+              wrappers: ["panel", "form-field"],
+            }),
+            this.addRepeatList(
+              "datasetVisibility",
+              "Sichtbarkeit des Datensatzes",
+              {
+                required: true,
+                asSelect: true,
+                options: [
+                  { label: "Öffentlich", value: "Öffentlich" },
+                  { label: "Beschränkt", value: "Beschränkt" },
+                ],
+              },
+            ),
+          ],
           {
-            required: true,
-            asSelect: true,
-            options: [
-              { label: "Öffentlich", value: "Öffentlich" },
-              { label: "Beschränkt", value: "Beschränkt" },
-            ],
+            hideExpression: (field: FormlyFieldConfig) =>
+              !field.options.formState.mainModel?.properties
+                ?.isApprovalProcedure,
           },
         ),
       ]),
