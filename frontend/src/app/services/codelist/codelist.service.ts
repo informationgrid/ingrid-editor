@@ -33,11 +33,10 @@ import {
   concatMap,
   distinct,
   Observable,
-  of,
   Subject,
   throwError,
 } from "rxjs";
-import { catchError, filter, map, take, tap } from "rxjs/operators";
+import { catchError, filter, map, tap } from "rxjs/operators";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
 import { CodelistStore } from "../../store/codelist/codelist.store";
@@ -329,14 +328,6 @@ export class CodelistService {
             { duration: 4000 },
           );
         }),
-        catchError((e) => {
-          this.snackBar.open(
-            "Fehler beim Ersetzen des freien Eintrags",
-            undefined,
-            { duration: 4000 },
-          );
-          return of(undefined);
-        }),
       );
   }
 
@@ -348,14 +339,6 @@ export class CodelistService {
           undefined,
           { duration: 4000 },
         );
-      }),
-      catchError((e) => {
-        this.snackBar.open(
-          "Fehler beim Übernehmen in die Codelist",
-          undefined,
-          { duration: 4000 },
-        );
-        return of(undefined);
       }),
     );
   }
