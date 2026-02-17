@@ -55,9 +55,10 @@ class CopyFilesTask(
         val docsDir = context.mergedJobDataMap.getString("docsDir")
         val sourceDatasetId = context.mergedJobDataMap.getString("sourceDatasetId")
         val targetDatasetId = context.mergedJobDataMap.getString("targetDatasetId")
+        val targetDatasetTitle = context.mergedJobDataMap.getString("targetDatasetTitle") ?: ""
 
         log.info("Starting Task: Copy files from dataset $sourceDatasetId to $targetDatasetId")
-        val message = CopyFilesMessage(catalogId, sourceDatasetId, targetDatasetId, jobId)
+        val message = CopyFilesMessage(catalogId, sourceDatasetId, targetDatasetId, targetDatasetTitle, jobId)
         try {
             val files = listOf(Scope.UNPUBLISHED, Scope.ARCHIVED, Scope.ARCHIVED_UNPUBLISHED, Scope.PUBLISHED).map {
                 fileStore.listFiles(catalogId, null, sourceDatasetId, docsDir, it)

@@ -874,7 +874,7 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void copyToUnpublished(String catalog, String sourceDatasetId, String targetDatasetId) {
+    public void copyToUnpublished(String catalog, String sourceDatasetId, String targetDatasetId, String targetDatasetTitle) {
         var jobId = String.format("%s-%s-%s", CopyFilesTask.JOB_KEY, targetDatasetId, System.currentTimeMillis());
         var jobKey = JobKey.jobKey(jobId, catalog);
         var jobDataMap = new JobDataMap();
@@ -882,6 +882,7 @@ public class FileSystemStorage implements Storage {
         jobDataMap.put("catalogId", catalog);
         jobDataMap.put("sourceDatasetId", sourceDatasetId);
         jobDataMap.put("targetDatasetId", targetDatasetId);
+        jobDataMap.put("targetDatasetTitle", targetDatasetTitle);
         jobDataMap.put("docsDir", this.docsDir);
 
         // we cannot schedule here directly because that needs to be done in a fresh transactional context

@@ -25,6 +25,7 @@ interface CopyFilesMessage {
   catalogId: string;
   sourceDatasetId: string;
   targetDatasetId: string;
+  targetDatasetTitle: string;
   jobId: string;
   copiedFiles: number;
   totalFiles: number;
@@ -55,17 +56,17 @@ export class CopyFilesService extends SnackBarMessageService {
 
     // build a concise message for all active jobs
     if (this.jobs.size === 0) {
-      this.message.set(`Dateikopieren abgeschlossen.`);
+      this.message.set(`Kopieren der Dateien abgeschlossen`);
     } else if (this.jobs.size === 1) {
       const only = Array.from(this.jobs.values())[0];
       this.message.set(
-        `Kopiere Dateien nach ${only.targetDatasetId}: ${only.copiedFiles}/${only.totalFiles} (${only.progress}%)`,
+        `Kopiere Dateien nach "${only.targetDatasetTitle || only.targetDatasetId}": ${only.copiedFiles}/${only.totalFiles} (${only.progress}%)`,
       );
     } else {
       const parts: string[] = [];
       this.jobs.forEach((j) =>
         parts.push(
-          `${j.targetDatasetId}: ${j.copiedFiles}/${j.totalFiles} (${j.progress}%)`,
+          `${j.targetDatasetTitle || j.targetDatasetId}: ${j.copiedFiles}/${j.totalFiles} (${j.progress}%)`,
         ),
       );
       this.message.set(
