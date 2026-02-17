@@ -39,7 +39,7 @@ import org.w3c.dom.Document
 @Service
 class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
 
-    private lateinit var xPathUtils: XPathUtils
+    private var xPathUtils: XPathUtils
     val log = logger()
 
     init {
@@ -103,26 +103,40 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
     private fun getServiceType(doc: Document): ServiceType = when {
         // WMS Version 1.3.0
         isServiceType(doc, ServiceType.WMS130) -> ServiceType.WMS130
+
         // WMS Version 1.1.1
         isServiceType(doc, ServiceType.WMS111) -> ServiceType.WMS111
+
         // WCS Version 1.0.0. Doesn't have a Service or ServiceType/Name Element. Just check if WCS_Capabilities exists
         isServiceType(doc, ServiceType.WCS) -> ServiceType.WCS
+
         isServiceType(doc, ServiceType.WCS11) -> ServiceType.WCS11
+
         isServiceType(doc, ServiceType.WCS201) -> ServiceType.WCS201
+
         isServiceType(doc, ServiceType.WCTS) -> ServiceType.WCTS
+
         isServiceType(doc, ServiceType.WFS110) -> ServiceType.WFS110
+
         isServiceType(doc, ServiceType.WFS200) -> ServiceType.WFS200
+
         isServiceType(doc, ServiceType.WMTS) -> ServiceType.WMTS
+
         else -> {
             val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")
                 ?.uppercase()
                 ?: throw RuntimeException("Service Type not found")
             when { // TODO: handle lowercase!
                 value.contains(SERVICE_TYPE_WMS) -> ServiceType.WMS130
+
                 value.contains(SERVICE_TYPE_WFS) -> ServiceType.WFS200
+
                 value.contains(SERVICE_TYPE_WCS) -> ServiceType.WCS
+
                 value.contains(SERVICE_TYPE_CSW) -> ServiceType.CSW
+
                 value.contains(SERVICE_TYPE_WCTS) -> ServiceType.WCTS
+
                 else -> {
                     log.debug("Invalid service type: $value")
                     throw RuntimeException("Invalid service type: $value")
@@ -133,7 +147,9 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
 
     private fun isServiceType(doc: Document, serviceType: ServiceType): Boolean = when (serviceType) {
         ServiceType.WMS130 -> xPathUtils.getString(doc, "/wms:WMS_Capabilities/wms:Service/wms:Name[1]") != null
+
         ServiceType.WMS111 -> xPathUtils.getString(doc, "/WMT_MS_Capabilities/Service/Name[1]") != null
+
         ServiceType.WFS110 -> xPathUtils.getString(
             doc,
             "/wfs:WFS_Capabilities/ows:ServiceIdentification/ows:ServiceType[1]",
@@ -145,6 +161,7 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
         ) != null
 
         ServiceType.WCS -> xPathUtils.getString(doc, "/wcs:WCS_Capabilities") != null
+
         ServiceType.WCS11 -> xPathUtils.getString(
             doc,
             "/wcs11:Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]",

@@ -45,7 +45,7 @@ interface BodyFormatter {
         mapper.registerModule(JavaTimeModule())
         mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val node = mapper.convertValue(data, ObjectNode::class.java)
-        node.fields().forEach { entry ->
+        node.properties().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
         return node

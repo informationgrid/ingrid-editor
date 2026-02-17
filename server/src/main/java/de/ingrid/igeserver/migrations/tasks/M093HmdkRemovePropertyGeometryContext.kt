@@ -81,8 +81,8 @@ class M093HmdkRemovePropertyGeometryContext : MigrationBase("0.93") {
     private fun migrate(doc: Document?): Boolean {
         val hasGeometryContext = doc?.data?.has("geometryContext") ?: false
         if (hasGeometryContext) {
-            log.info("Remove 'geometryContext': ${doc?.data?.get("geometryContext")}")
-            doc?.data?.remove("geometryContext")
+            log.info("Remove 'geometryContext': ${doc.data.get("geometryContext")}")
+            doc.data.remove("geometryContext")
             return true
         } else {
             return false

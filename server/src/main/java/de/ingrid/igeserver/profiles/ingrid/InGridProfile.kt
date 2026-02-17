@@ -157,12 +157,19 @@ class InGridProfile(
 
         when (codelistId) {
             "6006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6006)
+
             "1350" -> codelistHandler.removeAndAddCodelist(catalogId, codelist1350)
+
             "6250" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6250)
+
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
+
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
+
             "3386" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3386)
+
             "3390" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3390)
+
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
@@ -317,7 +324,7 @@ class InGridProfile(
         description =
             "Die Liste der Ressourcentypen ist initial eine Kopie der Codeliste 3385: Objektklasse 2 - Dokumenttyp"
         data = jacksonObjectMapper().createArrayNode().apply {
-            codelistHandler.getCodelists(listOf("3385"))?.get(0)?.entries?.let { codelist3385 ->
+            codelistHandler.getCodelists(listOf("3385"))[0].entries?.let { codelist3385 ->
                 codelist3385.forEach { entry ->
                     val de = entry.fields.get("de") ?: entry.fields.get("en") ?: ""
                     add(toCodelistEntry(entry.id, de, null, entry.fields.get("en")))

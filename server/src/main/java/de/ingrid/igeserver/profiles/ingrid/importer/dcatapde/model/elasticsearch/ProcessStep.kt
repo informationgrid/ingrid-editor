@@ -36,14 +36,14 @@ class ProcessStep : Serializable {
 
     var distributions: Set<Distribution>? = null
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o == null || javaClass != o.javaClass) {
+        if (other == null || javaClass != other.javaClass) {
             return false
         }
-        val that = o as ProcessStep
+        val that = other as ProcessStep
         return identifier == that.identifier && passNumber == that.passNumber && processStepType == that.processStepType && temporal == that.temporal && title == that.title && distributions == that.distributions
     }
 

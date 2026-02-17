@@ -116,14 +116,14 @@ class RecordPLUProperties : Serializable {
 
     var themes: Set<String>? = null
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o == null || javaClass != o.javaClass) {
+        if (other == null || javaClass != other.javaClass) {
             return false
         }
-        val that = o as RecordPLUProperties
+        val that = other as RecordPLUProperties
         return id == that.id && bbox == that.bbox && geometry == that.geometry && centroid == that.centroid && geographicName == that.geographicName && extras == that.extras && contact == that.contact && description == that.description && identifier == that.identifier && title == that.title && planName == that.planName && planState == that.planState && procedureState == that.procedureState && procedureStartDate == that.procedureStartDate && procedurePeriod == that.procedurePeriod && developmentFreezePeriod == that.developmentFreezePeriod && publisher == that.publisher && maintainers == that.maintainers && contributors == that.contributors && distributions == that.distributions && issued == that.issued && modified == that.modified && relation == that.relation && notification == that.notification && admsIdentifier == that.admsIdentifier && planType == that.planType && planTypeFine == that.planTypeFine && procedureType == that.procedureType && processSteps == that.processSteps
     }
 

@@ -45,9 +45,9 @@ class M098UpdateInGridDoiCatalogCodelists : MigrationBase("0.98") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-            var ingridCatalogs = catalogRepo.findAll()?.filter { it.type.startsWith("ingrid") }
+            val ingridCatalogs = catalogRepo.findAll()?.filter { it.type.startsWith("ingrid") }
             ingridCatalogs?.forEach { catalog ->
-                var catalogCodelists = ingridProfile.codelistHandler.getCatalogCodelists(catalog.identifier)
+                val catalogCodelists = ingridProfile.codelistHandler.getCatalogCodelists(catalog.identifier)
                 if (catalogCodelists.none { it.id == "3386" }) {
                     ingridProfile.initCatalogCodelists(catalog.identifier, "3386")
                 }
