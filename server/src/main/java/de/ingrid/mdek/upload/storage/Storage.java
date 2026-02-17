@@ -234,7 +234,7 @@ public interface Storage {
      * @param targetDatasetId The UUID of the target dataset
      * @throws IOException
      */
-    void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException;
+    void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId, String targetDatasetTitle) throws IOException;
 
     /**
      * remove files from unsaved state
