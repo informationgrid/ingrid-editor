@@ -69,7 +69,7 @@ export class CopyFilesService extends SnackBarMessageService {
         ),
       );
       this.message.set(
-        `Mehrere Kopiervorgänge (${this.jobs.size}): ` + parts.join(" | "),
+        `Mehrere Kopiervorgänge (${this.jobs.size}): <ul><li>${parts.join("</li><li>")}</li></ul>`,
       );
     }
 

@@ -21,6 +21,7 @@ import { Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import {
   MAT_SNACK_BAR_DATA,
+  MatSnackBarAction,
   MatSnackBarRef,
 } from "@angular/material/snack-bar";
 import { SnackBarMessageService } from "./snackbar-message.service";
@@ -32,10 +33,14 @@ import { SnackBarMessageService } from "./snackbar-message.service";
 @Component({
   selector: "app-updatable-mat-snack-bar",
   standalone: true,
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, MatSnackBarAction],
   template: `
-    <span class="snack-bar-message">{{ service.message() }}</span>
-    <button mat-button (click)="snackBarRef.dismissWithAction()">
+    <span [innerHTML]="service.message()"></span>
+    <button
+      mat-button
+      matSnackBarAction
+      (click)="snackBarRef.dismissWithAction()"
+    >
       Ausblenden
     </button>
   `,
@@ -46,9 +51,7 @@ import { SnackBarMessageService } from "./snackbar-message.service";
         justify-content: space-between;
         align-items: center;
         width: 100%;
-      }
-      .snack-bar-message {
-        margin-right: 16px;
+        gap: 16px;
       }
     `,
   ],

@@ -43,7 +43,6 @@ export abstract class SnackBarMessageService {
     this.rxStompService
       .watch(this.getWatchPath())
       .pipe(
-        tap((msg) => console.log("new message received", msg)),
         map((msg) => JSON.parse(msg.body)),
         tap((data) => {
           const allDone = this.onMessage(data);
@@ -59,10 +58,7 @@ export abstract class SnackBarMessageService {
       )
       .subscribe({
         complete: () => {
-          setTimeout(
-            () => this.currentSnackBarRef?.dismiss(),
-            this.getExitDelay(),
-          );
+          setTimeout(() => this.currentSnackBarRef?.dismiss(), 2000);
         },
       });
   }
@@ -92,10 +88,6 @@ export abstract class SnackBarMessageService {
   protected abstract updateMessage(data: any): void;
 
   protected abstract isDone(): boolean;
-
-  protected getExitDelay(): number {
-    return 2000;
-  }
 
   protected abstract getWatchPath(): string;
 }
