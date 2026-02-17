@@ -20,6 +20,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
+import { SelectOption } from "../../../app/services/codelist/codelist.service";
 
 @Injectable({
   providedIn: "root",
@@ -366,30 +367,57 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "Leichtmetal", value: "Leichtmetal" },
             ],
           }),
-          this.addRepeat("concrete", "Grundlegende Werkstoffparameter", {
-            fields: [
-              this.addInputInline("denominator", "Betondruckfestigkeit", {
-                type: "number",
+          this.addSubSection(
+            "materialParameters",
+            "Grundlegende Werkstoffparameter",
+            [
+              this.addRepeat("reinforcement", "Fließgrenze der Bewehrung", {
+                fields: [
+                  this.addInput("yieldLimit", "Fließgrenze der Bewehrung", {
+                    type: "number",
+                    className: "right-align",
+                    wrappers: ["form-field", "addons"],
+                    suffix: {
+                      text: "f_y",
+                    },
+                  }),
+                ],
               }),
-              this.addInputInline(
-                "distanceMeter",
-                "Fließgrenze der Bewehrung",
-                {
-                  type: "number",
-                  className: "flex-1 right-align",
-                  wrappers: ["form-field"],
-                  suffix: {
-                    text: "m",
-                  },
-                },
-              ),
-              this.addInputInline("distanceDPI", "Fließgrenze Stahl", {
-                type: "number",
-                className: "flex-1 right-align",
-                wrappers: ["form-field"],
+              this.addRepeat("steel", "Fließgrenze Stahl", {
+                fields: [
+                  this.addInput("yieldLimit", "Fließgrenze Stahl", {
+                    type: "number",
+                    className: "right-align",
+                    wrappers: ["form-field", "addons"],
+                    suffix: {
+                      text: "f_y",
+                    },
+                  }),
+                ],
+              }),
+              this.addRepeat("concrete", "Betondruckfestigkeit", {
+                fields: [
+                  this.addUnitInput(
+                    "compressiveStrength",
+                    "Betondruckfestigkeit",
+                    {
+                      type: "number",
+                      wrappers: ["form-field"],
+                      className: "right-align",
+                      unitOptions: <SelectOption[]>[
+                        new SelectOption("f_cm", "f_cm"),
+                        new SelectOption("f_ck", "f_ck"),
+                        new SelectOption("f_cd", "f_cd"),
+                      ],
+                      fieldGroup: [{ key: "value" }, { key: "unit" }],
+                    },
+                  ),
+                ],
               }),
             ],
-          }),
+          ),
+          // subsection only for visual separation
+          this.addSubSection(null, "", []),
           this.addRepeatList("materialModel", "Materialmodell", {
             options: [
               { label: "Stahl", value: "Stahl" },
