@@ -1149,7 +1149,7 @@ export abstract class IngridShared extends BaseDoctype {
                       oneDateRequired: {
                         expression: (
                           ctrl: FormControl,
-                          field: FormlyFieldConfig,
+                          _field: FormlyFieldConfig,
                         ) => {
                           const event = ctrl.value;
                           return (
@@ -1786,9 +1786,12 @@ export abstract class IngridShared extends BaseDoctype {
               "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
           },
           copyCompleted: {
-            expression: (ctrl: FormControl, field: FormlyFieldConfig): boolean => {
+            expression: (
+              _ctrl: FormControl,
+              field: FormlyFieldConfig,
+            ): boolean => {
               // check if copy task is running
-              const metadata = field.options.formState.metadata
+              const metadata = field.options.formState.metadata;
               console.log(metadata);
               return (
                 !metadata ||
@@ -1797,7 +1800,7 @@ export abstract class IngridShared extends BaseDoctype {
               );
             },
             message: "Das Kopieren von Dateien ist noch nicht abgeschlossen.",
-          }
+          },
         },
       }),
     ]);
