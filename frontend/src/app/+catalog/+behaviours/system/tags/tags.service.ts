@@ -41,9 +41,12 @@ export class TagsService {
     });
   }
 
-  addTags(id: number, newTags: string[], forAddress: boolean) {
-    const tagsToRemove = [];
-
+  addTags(
+    id: number,
+    newTags: string[],
+    forAddress: boolean,
+    tagsToRemove: string[] = [],
+  ) {
     // handle publication tags
     if (newTags.indexOf("internet") !== -1) {
       newTags = newTags.filter((item) => item !== "internet");

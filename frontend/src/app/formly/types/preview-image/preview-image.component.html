@@ -75,5 +75,19 @@
         >
             Link angeben
         </button>
+        @for (
+            additionalSelector of additionalSelectors;
+            track additionalSelector
+        ) {
+            oder
+            <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                (click)="additionalSelector.action(this)"
+            >
+                {{ additionalSelector.label }}
+            </button>
+        }
     </div>
 }

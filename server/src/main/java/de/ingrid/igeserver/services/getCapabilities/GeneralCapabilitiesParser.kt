@@ -121,15 +121,6 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val params
         .filter { it.isNotEmpty() }
         .toMutableList()
 
-    protected fun transformKeywordListToStrings(keywords: List<String?>): List<String> {
-        val snsTopics: MutableList<String> = ArrayList()
-        for (keyword in keywords) {
-            val snsTopic = "???"
-            snsTopics.add(snsTopic)
-        }
-        return snsTopics
-    }
-
     protected fun mapToOperationBean(
         doc: Document,
         xPathsOfMethods: Array<String>,
@@ -266,8 +257,8 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val params
         } else if (nameParts.size == 1) {
             ab.lastName = nameParts[0]
         } else if (nameParts.size == 2) {
-            ab.firstName = nameParts[0]?.trim()
-            ab.lastName = nameParts[1]?.trim()
+            ab.firstName = nameParts[0].trim()
+            ab.lastName = nameParts[1].trim()
         }
         return ab
     }
@@ -292,7 +283,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val params
     ): List<KeyValue> = versionList.map {
         val entryId = versionSyslistMap[it]
         if (entryId != null) {
-            val value = params.codelistHandler.getCodelistValue(listId, entryId.toString())
+            val value = params.codelistHandler.getCodelistValue(listId, entryId)
             if (value == null) {
                 log.warn("Version could not be mapped!")
             }
@@ -468,7 +459,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val params
             val itemId: String? = try {
                 val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 splittedItem[splittedItem.size - 1]
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
                 val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 splittedItem[splittedItem.size - 1]

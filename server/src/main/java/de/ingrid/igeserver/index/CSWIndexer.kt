@@ -74,8 +74,8 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
 
     override fun getIndices(filter: String): List<String> = emptyList()
 
-    override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
-        client.delete(id)
+    override fun delete(indexinfo: IndexInfo, uuid: String, updateOldIndex: Boolean) {
+        client.delete(uuid)
     }
 
     override fun indexExists(indexName: String): Boolean = runBlocking { true }

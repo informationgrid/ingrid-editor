@@ -44,6 +44,42 @@ It also disables Keycloak.
 
 ==== Dependency Injection
 
+The standard Spring Dependency Injection functionality is used.
+
+=== Authentication
+
+The authentication is handled by Keycloak. It is the central management for users. A user needs to have the Realm role "ige-user" to be accepted as a user for the InGrid-Editor.
+
+The frontend checks if a user is already logged in by redirecting to the Keycloak-Login page. If the user is already logged in, then a cookie is set and the user is redirected again to the application. By default an iframe is being used to do the check for the logged-in state to avoid redirects. This however might not be allowed in highly secured environments.
+
+The frontend adds to each request to the backend a bearer-token, which contains the access-token, which the backend verifies. If no bearer-token was added or the access-token has been expired, a 401-error is being returned.
+
+The frontend gets a new access token in case it expires before a request to the backend is initiated. If the refresh token has expired, the frontend redirects to the login form in Keycloak.
+
+[IMPORTANT]
+.New authentication prozess
+====
+The authentication process is being refactored to be more secure and more performant. The new process is described below.
+====
+
+The InGrid-Editor is secured by the Backend-For-Frontend Pattern (BFF). Here the frontend does not know anything about the authentication. The backend is completely responsible to handle the access- and refresh-token, as well as the login- and logout-process.
+
+When the application is accessed, the backend checks for a valid session (JSessionID). If there is none, a redirect response to the Keycloak-Login page is sent to the browser. This also includes a state-ID, which is needed to pair the new session with the user who is about to be logged in.
+
+After a successful login, the user is redirected to a special endpoint in the backend to handle the log in. There a session ID is generated, and the access- and refresh-token are stored. The session ID is stored in a secure httpOnly-cookie, which the browser will send automatically with each request. From now on, the backend verifies the session. If the corresponding access-token expires, the backend automatically requests a new one with the refresh-token. If it was successful, the browser will get a valid response. Otherwise a 401-error is being send and the browser is redirected to the Keycloak login page.
+
+
+=== Authorization
+
+While Keycloak is being used for authentication, the backend handles authorization. This is done by using roles, groups and permissions. The InGrid-Editor has the following roles:
+
+* Super-Admin
+* Catalog-Administrator
+* Metadata-Administrator
+* Author
+
+These roles are used to define access to system functions. For controlling access to the documents, permissions are being used. Permissions are organized in groups. One can create a group and apply various permissions to documents and addresses. The group can then be associated with a user. The information about the user is managed by Keycloak, but the application-specific information is stored on the application-side and the user is connected to Keycloak by the login-name.
+
 === Model View Controller
 
 ==== REST API / Swagger

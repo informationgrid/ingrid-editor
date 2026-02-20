@@ -19,11 +19,9 @@
  */
 package de.ingrid.mdek.upload.storage.impl;
 
-import de.ingrid.mdek.upload.storage.Storage;
 import de.ingrid.mdek.upload.storage.StorageItem;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -159,7 +157,7 @@ public class FileSystemItem implements StorageItem {
      * Get the real absolute path of the file in the file system
      * @return Path
      */
-    Path getRealPath() {
+    public Path getRealPath() {
         String relativePath = getRelativePath();
         Path realPath = storage.getRealPath(catalog, document, relativePath, storage.getDocsDir());
         if (this.state == Scope.UNSAVED) realPath = storage.getUnsavedPath(catalog, user, document, relativePath, storage.getDocsDir());
@@ -170,6 +168,7 @@ public class FileSystemItem implements StorageItem {
         else if (this.state == Scope.TRASH_UNPUBLISHED) realPath = storage.getTrashPath(catalog, document, relativePath, storage.getDocsDir(), Scope.UNPUBLISHED);
         return realPath;
     }
+
     @Override
     public String getRelativePath() {
         final FileSystem fileSystem = FileSystems.getDefault();

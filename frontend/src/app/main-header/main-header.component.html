@@ -10,9 +10,7 @@
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
         >
-        <div class="main-page-title">
-            {{ pageTitle() ? t(pageTitle()) : "" }}
-        </div>
+        <div class="main-page-title">{{ pageTitle() }}</div>
 
         <div class="center-header flex-grow">
             @if (timeout(); as timer) {
@@ -144,7 +142,7 @@
                             }}</strong></mat-card-title
                         >
                     </div>
-                    @if (menuItems.length > 0 && isAdmin) {
+                    @if (menuItems.length > 0 && isAdmin()) {
                         <div
                             class="popup-leading upper-case flex-row align-items-center"
                         >
@@ -178,11 +176,11 @@
                     <div (click)="$event.stopPropagation()" class="versioninfo">
                         <div>Version</div>
                         <div>
-                            {{ version.version }},
-                            {{ version.date | date: "dd.LL.yyyy, HH:mm" }}
+                            {{ version().version }},
+                            {{ version().date | date: "dd.LL.yyyy, HH:mm" }}
                         </div>
                         <div>GIT Commit ID</div>
-                        <div>{{ version.commitId }}</div>
+                        <div>{{ version().commitId }}</div>
                     </div>
                 </mat-menu>
             </span>

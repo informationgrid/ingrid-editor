@@ -35,6 +35,7 @@ import { ConfigService } from "../app/services/config/config.service";
 import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.component";
 import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
+import { ButtonTogglesProps } from "../app/formly/types/button-toggles-type/button-toggles-type.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -124,6 +125,8 @@ export interface ExplanationTextOptions extends Options {
   explanation: string;
   buttonLink?: string;
 }
+
+export interface ButtonTogglesOptions extends Options, ButtonTogglesProps {}
 
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
@@ -376,7 +379,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
-        allowedTypesByDoctype: options?.allowedTypesByDoctype,
+        allowedTypesByAddressType: options?.allowedTypesByAddressType,
         disabledCondition: options?.disabledCondition,
         max: options?.max,
       },
@@ -526,6 +529,26 @@ export class FormFieldHelper {
         label: label,
         explanation: options?.explanation,
         buttonLink: options?.buttonLink,
+      },
+    };
+  }
+
+  addButtonToggles(
+    id: string,
+    label: string,
+    options?: ButtonTogglesOptions,
+  ): FormlyFieldConfig {
+    return {
+      key: id,
+      type: "button-toggles",
+      wrappers: ["panel"],
+      defaultValue: options?.defaultValue,
+      props: {
+        label: label,
+        externalLabel: label,
+        options: options?.options,
+        contextHelpId: options?.contextHelpId,
+        hideLabel: options?.hideLabel,
       },
     };
   }
@@ -844,6 +867,7 @@ export class FormFieldHelper {
       wrappers: options?.wrappers ?? ["panel"],
       expressions: expressions,
       props: {
+        additionalSelectors: options?.additionalSelectors,
         disableUpload: options?.disableUpload,
         required: options?.required,
         externalLabel: label,

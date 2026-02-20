@@ -37,7 +37,7 @@ import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { default as settingsRoutes } from "../+settings/routes";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
-import { TranslocoDirective } from "@jsverse/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
 import { SessionTimeoutInfoComponent } from "./session-timeout-info/session-timeout-info.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -49,7 +49,7 @@ import { MatDivider } from "@angular/material/divider";
 import { DatePipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-main-header",
@@ -77,6 +77,13 @@ import { toSignal } from "@angular/core/rxjs-interop";
 })
 export class MainHeaderComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private configService = inject(ConfigService);
+  private catalogService = inject(CatalogService);
+  private router = inject(Router);
+  private authFactory = inject(AuthenticationFactory);
+  private storageService = inject(StorageService);
+  private formMenuService = inject(FormMenuService);
+  private translocoService = inject(TranslocoService);
   readonly onLogout = output<void>();
 
   showShadow = signal<boolean>(false);
@@ -84,10 +91,10 @@ export class MainHeaderComponent implements OnInit {
   userInfo = toSignal(this.configService.$userInfo);
   currentCatalog$ = computed(() => this.userInfo().currentCatalog?.label);
 
-  version: Version;
+  version = signal<Version>(null);
   timeout = this.generalStore.sessionTimeoutIn;
   initials = computed(() => this.getInitials(this.userInfo()));
-  isAdmin: boolean;
+  isAdmin = signal<boolean>(false);
   otherAssignedCatalogs = computed(() =>
     this.getOtherAssignedCatalogs(this.userInfo()),
   );
@@ -97,28 +104,21 @@ export class MainHeaderComponent implements OnInit {
     .filter((item) => this.configService.hasPermission(item.data?.permission));
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
-  constructor(
-    private configService: ConfigService,
-    private catalogService: CatalogService,
-    private router: Router,
-    private authFactory: AuthenticationFactory,
-    private storageService: StorageService,
-    private formMenuService: FormMenuService,
-  ) {}
-
-  ngOnInit() {
-    let userInfo = this.configService.$userInfo.getValue();
-    this.isAdmin = this.configService.hasCatAdminRights();
-    this.version = userInfo?.version;
-
-    this.router.events.subscribe((event: any) => {
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         const rootPath = this.router.parseUrl(this.router.url).root.children
           .primary?.segments[1]?.path;
         this.showShadow.set(rootPath !== "dashboard");
-        this.pageTitle.set(rootPath);
+        this.pageTitle.set(this.translocoService.translate(`menu.${rootPath}`));
       }
     });
+  }
+
+  ngOnInit() {
+    let userInfo = this.configService.$userInfo.getValue();
+    this.isAdmin.set(this.configService.hasCatAdminRights());
+    this.version.set(userInfo?.version);
   }
 
   private getOtherAssignedCatalogs(userInfo: UserInfo) {

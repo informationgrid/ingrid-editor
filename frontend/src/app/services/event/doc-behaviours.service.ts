@@ -80,7 +80,6 @@ export class DocBehavioursService {
   }
 
   showOnlyFoldersInTreeForDestinationSelection(forAddress: boolean): boolean {
-    console.warn(this.showOnlyFoldersInTreeAlternative);
     return this.showOnlyFoldersInTreeAlternative
       ? this.showOnlyFoldersInTreeAlternative(forAddress)
       : this.showOnlyFoldersInTree(forAddress);

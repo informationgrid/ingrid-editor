@@ -48,7 +48,7 @@ class HomeController(val settingsService: SettingsService) {
             val inputStream = object {}.javaClass.classLoader.getResourceAsStream("content/accessibility.html")
             inputStream?.bufferedReader()?.readText() ?: "FEHLER!!!"
         } else {
-            page?.get("content") ?: ""
+            page["content"] ?: ""
         }
         return content
     }

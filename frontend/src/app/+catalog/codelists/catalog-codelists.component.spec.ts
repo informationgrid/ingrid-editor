@@ -27,7 +27,11 @@ import { CodelistService } from "../../services/codelist/codelist.service";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
+import {
+  Codelist,
+  CodelistEntry,
+  FreeEntry,
+} from "../../store/codelist/codelist.model";
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatSlideToggleHarness } from "@angular/material/slide-toggle/testing";
 import { HarnessLoader } from "@angular/cdk/testing";
@@ -84,6 +88,9 @@ describe("CatalogCodelistsComponent", () => {
         },
         getFavorite(id: string): CodelistEntry[] {
           return [];
+        },
+        getFreeEntries(codelistId: string): Observable<FreeEntry[]> {
+          return of([]);
         },
       }),
     ],
