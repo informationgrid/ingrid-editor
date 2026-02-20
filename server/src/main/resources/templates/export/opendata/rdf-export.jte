@@ -120,8 +120,9 @@
             </dcterms:spatial>
         @endfor
         @if (model.getPoliticalGeocodingLevelKey() != null)
-        <dcatde:politicalGeocodingLevelURI>
-            http://dcat-ap.de/def/politicalGeocoding/Level/${model.getPoliticalGeocodingLevelKey()}</dcatde:politicalGeocodingLevelURI>@endif
+            <dcatde:politicalGeocodingLevelURI
+                    rdf:resource="http://dcat-ap.de/def/politicalGeocoding/Level/${model.getPoliticalGeocodingLevelKey()}" />
+        @endif
     </dcat:Dataset>
     @for(var distribution : model.getDistributions())
         <dcat:Distribution rdf:about="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution">
