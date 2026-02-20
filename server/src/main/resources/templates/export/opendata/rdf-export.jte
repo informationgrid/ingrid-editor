@@ -36,7 +36,9 @@
     <dcat:Dataset rdf:about="${model.getAppUrl()}/exporter/datasets/2b9db5fc-024f-48ac-984b-fe3c53c2d26e">
         <dcterms:description>${model.getDescription()}</dcterms:description>
         <dcterms:title>${model.getTitle()}</dcterms:title>
-        <dcat:landingPage>${model.getLandingPage()}</dcat:landingPage>
+        @if (!model.getLandingPage().isEmpty())
+            <dcat:landingPage>${model.getLandingPage()}</dcat:landingPage>
+        @endif
         <dcatde:contributorID rdf:resource="http://dcat-ap.de/def/contributors/openDataBund" />
         @for(var distribution : model.getDistributions())
             <dcat:distribution rdf:resource="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution" />
