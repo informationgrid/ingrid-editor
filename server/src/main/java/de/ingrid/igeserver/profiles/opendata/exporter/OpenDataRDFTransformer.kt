@@ -103,6 +103,24 @@ class OpenDataRDFTransformer(
         else -> null
     }
 
+    val temporalResolution = doc.data.get("userDefinedAccrualPeriodicity")?.let {
+        val number = it.get("number")?.asText()?.toIntOrNull()
+        val unit = it.get("unit")?.get("key")?.asText()
+        if (number != null && unit != null) {
+            when (unit) {
+                "1" -> "PT${number}S"
+                "2" -> "PT${number}M"
+                "3" -> "PT${number}H"
+                "4" -> "P${number}D"
+                "5" -> "P${number}M"
+                "6" -> "P${number}Y"
+                else -> null
+            }
+        } else {
+            null
+        }
+    }
+
     val legalBasis = doc.data.getStringOrEmpty("legalBasis")
     var politicalGeocodingLevelKey: String? = doc.data.getString("politicalGeocodingLevel.key")
 

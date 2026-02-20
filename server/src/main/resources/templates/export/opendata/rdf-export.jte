@@ -71,6 +71,10 @@
         @if (model.getAccrualPeriodicity() != null)
             <dcterms:accrualPeriodicity rdf:resource="${model.getAccrualPeriodicity()}" />
         @endif
+        @if (model.getTemporalResolution() != null)
+            <dcat:temporalResolution
+                    rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">${model.getTemporalResolution()}</dcat:temporalResolution>
+        @endif
         @if (!model.getLegalBasis().isEmpty())
             <dcatde:legalBasis xml:lang="de">${model.getLegalBasis()}</dcatde:legalBasis>
         @endif
