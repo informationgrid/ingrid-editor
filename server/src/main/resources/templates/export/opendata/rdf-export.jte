@@ -51,17 +51,17 @@
         @endif
         @if (model.getPointOfContact() != null)
             <dcat:contactPoint>
-                @template.export.opendata.rdf-address(address = model.getCreator())
+                @template.export.opendata.rdf-address(address = model.getPointOfContact())
             </dcat:contactPoint>
         @endif
         @if (model.getOriginator() != null)
             <dcterms:originator>
-                @template.export.opendata.rdf-address(address = model.getCreator())
+                @template.export.opendata.rdf-address(address = model.getOriginator())
             </dcterms:originator>
         @endif
         @if (model.getMaintainer() != null)
             <dcterms:maintainer>
-                @template.export.opendata.rdf-address(address = model.getCreator())
+                @template.export.opendata.rdf-address(address = model.getMaintainer())
             </dcterms:maintainer>
         @endif
         <dcterms:identifier>${model.getUuid()}</dcterms:identifier>
