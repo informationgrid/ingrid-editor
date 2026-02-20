@@ -13,8 +13,10 @@
 !{var provider = ((String)map.get("provider"));}
 
 {
-    "collection.name": "${catalog.getName()}",
-    "collection.id": "${catalog.getIdentifier()}",
+    "collection": {
+        "id": "${catalog.getIdentifier()}",
+        "name": "${catalog.getName()}"
+    },
     "partner": [
         "${partner}"
     ],

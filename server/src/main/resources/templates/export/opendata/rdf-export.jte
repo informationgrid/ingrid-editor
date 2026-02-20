@@ -36,29 +36,88 @@
     <dcat:Dataset rdf:about="${model.getAppUrl()}/exporter/datasets/2b9db5fc-024f-48ac-984b-fe3c53c2d26e">
         <dcterms:description>${model.getDescription()}</dcterms:description>
         <dcterms:title>${model.getTitle()}</dcterms:title>
+        <dcat:landingPage>${model.getLandingPage()}</dcat:landingPage>
         <dcatde:contributorID rdf:resource="http://dcat-ap.de/def/contributors/openDataBund" />
         @for(var distribution : model.getDistributions())
             <dcat:distribution rdf:resource="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution" />
         @endfor
         <dcterms:publisher>
-            <foaf:Agent>
-                <foaf:name>${model.getPublisher()}</foaf:name>
-            </foaf:Agent>
+            @template.export.opendata.rdf-address(address = model.getPublisher())
         </dcterms:publisher>
         @if (model.getCreator() != null)
             <dcterms:creator>
-                <foaf:Organization>
-                    <foaf:name>${model.getCreator()}</foaf:name>
-                </foaf:Organization>
+                @template.export.opendata.rdf-address(address = model.getCreator())
             </dcterms:creator>
         @endif
+        @if (model.getPointOfContact() != null)
+            <dcat:contactPoint>
+                @template.export.opendata.rdf-address(address = model.getCreator())
+            </dcat:contactPoint>
+        @endif
+        @if (model.getOriginator() != null)
+            <dcterms:originator>
+                @template.export.opendata.rdf-address(address = model.getCreator())
+            </dcterms:originator>
+        @endif
+        @if (model.getMaintainer() != null)
+            <dcterms:maintainer>
+                @template.export.opendata.rdf-address(address = model.getCreator())
+            </dcterms:maintainer>
+        @endif
         <dcterms:identifier>${model.getUuid()}</dcterms:identifier>
+        @if (!model.getQualityProcessURI().isEmpty())
+            <dcatde:qualityProcessURI rdf:resource="${model.getQualityProcessURI()}" />
+        @endif
+        @if (model.getAccrualPeriodicity() != null)
+            <dcterms:accrualPeriodicity rdf:resource="${model.getAccrualPeriodicity()}" />
+        @endif
+        @if (!model.getLegalBasis().isEmpty())
+            <dcatde:legalBasis xml:lang="de">${model.getLegalBasis()}</dcatde:legalBasis>
+        @endif
         <dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">${model.getIssued()}</dcterms:issued>
         <dcterms:modified
                 rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">${model.getModified()}</dcterms:modified>
         @for (var theme : model.getThemes())
             <dcat:theme rdf:resource="${theme}" />
         @endfor
+        @for (var keyword : model.getKeywords())
+            <dcat:keyword>${keyword}</dcat:keyword>
+        @endfor
+        @for (var spatial : model.getSpatials())
+            <dcterms:spatial>
+                <dcterms:Location>
+                    @if ("free".equals(spatial.getType()) && spatial.getValue() != null)
+                        <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">
+                            POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}
+                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}
+                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat2()}
+                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}
+                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))
+                        </locn:geometry>
+                        <dcat:bbox rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">
+                            POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}
+                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}
+                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat2()}
+                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}
+                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))
+                        </dcat:bbox>
+                    @elseif ("wkt".equals(spatial.getType()) && spatial.getWkt() != null)
+                        <locn:geometry
+                                rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${spatial.getWkt()}</locn:geometry>
+                        @if (spatial.getWktCoordinatesISO() != null)
+                            <locn:geometry
+                                    rdf:datatype="http://www.opengis.net/ont/geosparql#gmlLiteral">$unsafe{spatial.getWktCoordinatesISO()}</locn:geometry>
+                        @endif
+                    @endif
+                    @if (spatial.getTitle() != null)
+                        <skos:prefLabel>${spatial.getTitle()}</skos:prefLabel>
+                    @endif
+                </dcterms:Location>
+            </dcterms:spatial>
+        @endfor
+        @if (model.getPoliticalGeocodingLevelKey() != null)
+        <dcatde:politicalGeocodingLevelURI>
+            http://dcat-ap.de/def/politicalGeocoding/Level/${model.getPoliticalGeocodingLevelKey()}</dcatde:politicalGeocodingLevelURI>@endif
     </dcat:Dataset>
     @for(var distribution : model.getDistributions())
         <dcat:Distribution rdf:about="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution">
@@ -66,16 +125,22 @@
             @if(distribution.getLicense() != null)
                 <dcterms:license rdf:resource="${distribution.getLicense().getUrl()}" />
             @endif
+            @if(!distribution.getByClause().isEmpty())
+                <dcatde:licenseAttributionByText>${distribution.getByClause()}</dcatde:licenseAttributionByText>
+            @endif
             <dcterms:format
                     rdf:resource="http://publications.europa.eu/resource/authority/file-type/${distribution.getFormat()}" />
             <dcterms:description>${distribution.getDescription()}</dcterms:description>
-            <dcat:downloadURL rdf:resource="${model.getUploadUrl()}/${distribution.getAccessURL()}" />
+            <dcat:downloadURL rdf:resource="${distribution.getAccessURL()}" />
             <dcterms:title>${distribution.getTitle()}</dcterms:title>
             <dcterms:modified
                     rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">${distribution.getModified()}</dcterms:modified>
             @for(var lang : distribution.getLanguages())
                 <dcterms:language rdf:resource="http://publications.europa.eu/resource/authority/language/${lang}" />
             @endfor
+            @if (!distribution.getAvailability().isEmpty())
+                <dcatap:availability>${distribution.getAvailability()}</dcatap:availability>
+            @endif
         </dcat:Distribution>
     @endfor
 </rdf:RDF>

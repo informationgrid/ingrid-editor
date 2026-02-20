@@ -21,13 +21,17 @@ package de.ingrid.igeserver.profiles.opendata.exporter
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.exporter.AddressExport
+import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
+import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.jena.vocabulary.RDFSyntax.doc
 
 class OpenDataRDFTransformer(
     val transformerConfig: OpenDataTransformerConfig,
@@ -66,25 +70,102 @@ class OpenDataRDFTransformer(
     val issued = doc.created.toString()
     val modified = doc.modified.toString()
     val description = doc.data.getStringOrEmpty("description")
+    val landingPage = doc.data.getStringOrEmpty("landingPage")
     val catalog = transformerConfig.catalogService.getCatalogById(transformerConfig.catalogIdentifier)
     val catalogDescription = catalog.description
     val catalogTitle = catalog.name
     val uploadUrl = "$documentsUrl$catalogId/${doc.uuid}"
-    val themes = doc.data.get("DCATThemes").map {
+    val themes = doc.data.get("DCATThemes")?.map {
         "http://publications.europa.eu/resource/authority/data-theme/" +
             codelistTransformer.getData("6400", it.getStringOrEmpty("key"))
+    } ?: emptyList()
+
+    val keywords = (doc.data.get("keywords")?.map { it.asText() } ?: emptyList())
+
+    val qualityProcessURI = doc.data.getStringOrEmpty("qualityProcessURI")
+    val accrualPeriodicity = doc.data.getString("accrualPeriodicity.key")
+        ?.let { mapPeriodicity(it) }
+        ?.let { "http://publications.europa.eu/resource/authority/frequency/$it" }
+
+    private fun mapPeriodicity(key: String): String? = when (key) {
+        "1" -> "CONT"
+        "2" -> "DAILY"
+        "3" -> "WEEKLY"
+        "4" -> "BIWEEKLY"
+        "5" -> "MONTHLY"
+        "6" -> "QUARTERLY"
+        "7" -> "ANNUAL_2"
+        "8" -> "ANNUAL"
+        "9" -> "AS_NEEDED"
+        "10" -> "IRREG"
+        "11" -> "NOT_PLANNED"
+        "12" -> "UNKNOWN"
+        else -> null
     }
-    val publisher = doc.data.get("addresses").find { it.getString("type.key") == "10" }?.getStringOrEmpty("ref") ?: ""
-    val creator = doc.data.get("addresses").find { it.getString("type.key") == "11" }?.getStringOrEmpty("ref")
+
+    val legalBasis = doc.data.getStringOrEmpty("legalBasis")
+    var politicalGeocodingLevelKey: String? = doc.data.getString("politicalGeocodingLevel.key")
+
+    val publisher = mapAddress("10")
+    val creator = mapAddress("11")
+    val pointOfContact = mapAddress("7")
+    val originator = mapAddress("6")
+    val maintainer = mapAddress("2")
+
+    private fun mapAddress(type: String): AddressModelTransformer? {
+        val addressUuid = doc.data.get("addresses").find { it.getString("type.key") == type }?.getStringOrEmpty("ref")
+        return getAddress(addressUuid)
+    }
+
+    private fun getAddress(uuid: String?): AddressModelTransformer? {
+        if (uuid.isNullOrBlank()) return null
+        val doc = documentService.getLastPublishedDocument(catalogId, uuid)
+        // TODO: handle tags
+        return AddressModelTransformer(
+            AddressTransformerConfig(
+                catalogId,
+                codelistTransformer,
+                null,
+                doc,
+                documentService,
+                uploadConfig,
+                emptyList(),
+            ),
+        )
+    }
+
+    val spatials: List<SpatialModel> = doc.data.get("spatial")?.map { spatial ->
+        SpatialModel(
+            type = spatial.getStringOrEmpty("type.key"),
+            title = spatial.getStringOrEmpty("title"),
+            value = spatial.get("value")?.let {
+                SpatialModel.BoundingBoxModel(
+                    lat1 = it.get("lat1")?.asDouble() ?: 0.0,
+                    lon1 = it.get("lon1")?.asDouble() ?: 0.0,
+                    lat2 = it.get("lat2")?.asDouble() ?: 0.0,
+                    lon2 = it.get("lon2")?.asDouble() ?: 0.0,
+                )
+            },
+            wkt = spatial.getStringOrEmpty("wkt"),
+            ars = spatial.getStringOrEmpty("ars"),
+        )
+    } ?: emptyList()
 
     val distributions: List<Distribution> = doc.data.get("distributions")?.map { dist ->
+        val isLink = dist.getBoolean("link.asLink") ?: false
+        val accessURL = if (isLink) dist.getStringOrEmpty("link.uri") else uploadUrl + "/" + dist.getString("link.uri")
         Distribution(
-            accessURL = dist.getStringOrEmpty("link.uri"),
+            accessURL = accessURL,
             format = dist.getStringOrEmpty("format.key"),
             title = dist.getStringOrEmpty("title"),
             modified = dist.getStringOrEmpty("modified"),
             description = dist.getStringOrEmpty("description"),
-            license = null, // dist.getStringOrEmpty("title"),
+            license = dist.get("license")?.let {
+                License(
+                    it.getStringOrEmpty("key"),
+                    codelistTransformer.getValue("20004", KeyValue(it.getStringOrEmpty("key"))) ?: "",
+                )
+            },
             byClause = dist.getStringOrEmpty("byClause"),
             languages = (dist.get("languages") as ArrayNode).map { it.getStringOrEmpty("key") },
             availability = dist.getStringOrEmpty("availability.key"),
