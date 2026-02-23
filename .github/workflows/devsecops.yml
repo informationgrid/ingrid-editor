@@ -13,8 +13,8 @@ jobs:
         uses: l3montree-dev/devguard-action/.github/workflows/secret-scanning.yml@main
         with:
             asset-name: "wemove/projects/ingrid/assets/ingrid-editor"
-            api-url: "https://api.devguard.org"
-            web-ui: "http://localhost:3000"
+            api-url: "https://api.devguard.wemove.com"
+            web-ui: "https://devguard.wemove.com"
         secrets:
             devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings
 
@@ -22,8 +22,8 @@ jobs:
         uses: l3montree-dev/devguard-action/.github/workflows/static-application-security-testing.yml@main
         with:
             asset-name: "wemove/projects/ingrid/assets/ingrid-editor"
-            api-url: "https://api.devguard.org"
-            web-ui: "http://localhost:3000"
+            api-url: "https://api.devguard.wemove.com"
+            web-ui: "https://devguard.wemove.com"
         secrets:
             devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings
 
@@ -31,8 +31,8 @@ jobs:
         uses: l3montree-dev/devguard-action/.github/workflows/iac.yml@main
         with:
             asset-name: "wemove/projects/ingrid/assets/ingrid-editor"
-            api-url: "https://api.devguard.org"
-            web-ui: "http://localhost:3000"
+            api-url: "https://api.devguard.wemove.com"
+            web-ui: "https://devguard.wemove.com"
         secrets:
             devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings
 
@@ -40,7 +40,7 @@ jobs:
         uses: l3montree-dev/devguard-action/.github/workflows/software-composition-analysis.yml@main
         with:
             asset-name: "wemove/projects/ingrid/assets/ingrid-editor"
-            api-url: "https://api.devguard.org"
-            web-ui: "http://localhost:3000"
+            api-url: "https://api.devguard.wemove.com"
+            web-ui: "https://devguard.wemove.com"
         secrets:
             devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings 
