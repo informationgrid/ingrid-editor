@@ -140,6 +140,9 @@ open class AddressModelTransformer(
     val poBox = displayAddress.data.getString("address.po-box")
     val street = displayAddress.data.getString("address.street")
     val city = displayAddress.data.getString("address.city")
+    fun getFullAddress() = """$street, $zipCode $city"""
+    fun hasAddress() = street != null || city != null || zipCode != null
+    fun hasAnyAddress() = hasAddress() || poBox != null || country != null || administrativeArea != null
     val postBoxAddress =
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display

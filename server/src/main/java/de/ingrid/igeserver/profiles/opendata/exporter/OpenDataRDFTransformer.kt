@@ -121,6 +121,17 @@ class OpenDataRDFTransformer(
         }
     }
 
+    fun getTemporal(): SimpleTemporal? {
+        val type = doc.data.getString("temporal.data.type")
+        if (type == "none") return null
+
+        val temporalStart = doc.data.getString("temporal.data.resourceRange.start")
+            ?: doc.data.getStringOrEmpty("temporal.data.resourceDate")
+        val temporalEnd = doc.data.getString("temporal.data.resourceRange.end")
+            ?: doc.data.getStringOrEmpty("temporal.data.resourceDate")
+        return SimpleTemporal(temporalStart, temporalEnd)
+    }
+
     val legalBasis = doc.data.getStringOrEmpty("legalBasis")
     var politicalGeocodingLevelKey: String? = doc.data.getString("politicalGeocodingLevel.key")
 
@@ -154,7 +165,7 @@ class OpenDataRDFTransformer(
 
     val spatials: List<SpatialModel> = doc.data.get("spatial")?.map { spatial ->
         SpatialModel(
-            type = spatial.getStringOrEmpty("type.key"),
+            type = spatial.getStringOrEmpty("type"),
             title = spatial.getStringOrEmpty("title"),
             value = spatial.get("value")?.let {
                 SpatialModel.BoundingBoxModel(
@@ -202,3 +213,5 @@ private class XMLStringOutput2 : StringOutput() {
         )
     }
 }
+
+data class SimpleTemporal(val start: String, val end: String)

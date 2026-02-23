@@ -1,5 +1,4 @@
 @import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataRDFTransformer
-@import gg.jte.support.ForSupport
 @import java.util.Map
 
 @param Map<String, Object> map
@@ -77,6 +76,14 @@
             <dcat:temporalResolution
                     rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">${model.getTemporalResolution()}</dcat:temporalResolution>
         @endif
+        @if (model.getTemporal() != null)
+            <dcterms:temporal>
+                <dcterms:PeriodOfTime>
+                    <dcat:startDate>${model.getTemporal().getStart()}</dcat:startDate>
+                    <dcat:endDate>${model.getTemporal().getEnd()}</dcat:endDate>
+                </dcterms:PeriodOfTime>
+            </dcterms:temporal>
+        @endif
         @if (!model.getLegalBasis().isEmpty())
             <dcatde:legalBasis xml:lang="de">${model.getLegalBasis()}</dcatde:legalBasis>
         @endif
@@ -92,7 +99,7 @@
         @for (var spatial : model.getSpatials())
             <dcterms:spatial>
                 <dcterms:Location>
-                    @if ("free".equals(spatial.getType()) && spatial.getValue() != null)
+                    @if (!"wkt".equals(spatial.getType()) && spatial.getValue() != null)
                         <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">
                             POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}
                             , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}
@@ -100,13 +107,6 @@
                             , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}
                             , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))
                         </locn:geometry>
-                        <dcat:bbox rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">
-                            POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}
-                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}
-                            , ${spatial.getValue().getLon2()} ${spatial.getValue().getLat2()}
-                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}
-                            , ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))
-                        </dcat:bbox>
                     @elseif ("wkt".equals(spatial.getType()) && spatial.getWkt() != null)
                         <locn:geometry
                                 rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${spatial.getWkt()}</locn:geometry>
@@ -146,7 +146,8 @@
                 <dcterms:language rdf:resource="http://publications.europa.eu/resource/authority/language/${lang}" />
             @endfor
             @if (!distribution.getAvailability().isEmpty())
-                <dcatap:availability>${distribution.getAvailability()}</dcatap:availability>
+                <dcatap:availability
+                        rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/${distribution.getAvailability()}" />
             @endif
         </dcat:Distribution>
     @endfor
