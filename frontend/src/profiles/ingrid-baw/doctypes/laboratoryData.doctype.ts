@@ -193,12 +193,11 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
               className: "width-100",
               wrappers: ["panel", "form-field"],
             }),
-            this.addRepeatList(
+            this.addSelect(
               "datasetVisibility",
               "Sichtbarkeit des Datensatzes",
               {
                 required: true,
-                asSelect: true,
                 options: [
                   { label: "Öffentlich", value: "Öffentlich" },
                   { label: "Beschränkt", value: "Beschränkt" },

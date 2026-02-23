@@ -27,6 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLaboratoryData
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderNumber
@@ -74,10 +75,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override val hierarchyLevelName = when (doc.type) {
         "BawMeasurement" -> "Messdaten"
         "BawSimulation" -> "Simulationsdaten"
+        "BawLaboratoryData" -> "Labordaten"
         else -> super.hierarchyLevelName
     }
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
+    fun getLaboratoryData() = getLaboratoryData(this)
 
     val orderTitle = if (forRepository()) null else getOrderTitle(this)
     val orderNumber = if (forRepository()) null else getOrderNumber(this)

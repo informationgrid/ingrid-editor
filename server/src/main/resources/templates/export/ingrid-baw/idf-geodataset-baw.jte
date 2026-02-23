@@ -95,6 +95,60 @@ aggregateInformation = @`
             </gmd:MD_AggregateInformation>
         </gmd:aggregationInfo>
     @endfor
+    @if(page.getLaboratoryData() != null)
+        !{var lab = page.getLaboratoryData();}
+        <labordaten>
+            @for(String reason : lab.getDataCollectionReason())
+                <AnlassDerDatenerhebung>
+                    <anlassDerDatenerhebung>${reason}</anlassDerDatenerhebung>
+                </AnlassDerDatenerhebung>
+            @endfor
+            @for(String origin : lab.getSampleOrigin())
+                <Probenherkunft>
+                    <probenherkunft>${origin}</probenherkunft>
+                </Probenherkunft>
+            @endfor
+            @for(String material : lab.getTestedMaterial())
+                <GeprueftesMaterial>
+                    <geprueftesMaterial>${material}</geprueftesMaterial>
+                </GeprueftesMaterial>
+            @endfor
+            @for(String method : lab.getUsedTestMethods())
+                <MessUndPruefverfahren>
+                    <messUndPruefverfahren>${method}</messUndPruefverfahren>
+                </MessUndPruefverfahren>
+            @endfor
+            @for(String instrument : lab.getUsedInstruments())
+                <Messgeraete>
+                    <messgeraete>${instrument}</messgeraete>
+                </Messgeraete>
+            @endfor
+            @if(TransformationTools.hasValue(lab.getUnderlyingStandard()))
+                <Norm>
+                    <normBezeichnung>${lab.getUnderlyingStandard()}</normBezeichnung>
+                    @if(TransformationTools.hasValue(lab.getStandardIssueDate()))
+                        <ausgabedatum>${lab.getStandardIssueDate()}</ausgabedatum>
+                    @endif
+                </Norm>
+            @endif
+            <Zulassungspruefung>
+                <zulassungspruefung>
+                    <gco:Boolean>${lab.isApprovalProcedure()}</gco:Boolean>
+                </zulassungspruefung>
+                @if(TransformationTools.hasValue(lab.getTestNumber()))
+                    <pruefnummer>${lab.getTestNumber()}</pruefnummer>
+                @endif
+                @if(TransformationTools.hasValue(lab.getSystemSetup()))
+                    <aufbauDesSystems>${lab.getSystemSetup()}</aufbauDesSystems>
+                @endif
+                @for(String visibility : lab.getDatasetVisibility())
+                    <Sichtbarkeit>
+                        <sichtbarkeit>${visibility}</sichtbarkeit>
+                    </Sichtbarkeit>
+                @endfor
+            </Zulassungspruefung>
+        </labordaten>
+    @endif
 `,
 additionalIdentification = @`
     <measurementInfo>

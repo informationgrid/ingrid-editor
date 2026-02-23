@@ -37,6 +37,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTr
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.ProjectModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SoftwareModelTransformerBaw
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -45,13 +46,14 @@ import de.ingrid.igeserver.utils.prefixIfNot
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Locale
+import java.util.*
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerBaw::class
     "BawMeasurement" -> GeodatasetTransformerBaw::class
     "BawSimulation" -> GeodatasetTransformerBaw::class
+    "BawLaboratoryData" -> GeodatasetTransformerBaw::class
     "InGridGeoService" -> GeoserviceTransformerBaw::class
     "BawPublication" -> PublicationModelTransformerBaw::class
     "InGridProject" -> ProjectModelTransformerBaw::class
@@ -66,6 +68,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "InGridGeoDataset" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawMeasurement" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+    "BawLaboratoryData" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
@@ -74,7 +77,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
 }
 
 fun mapDocumentTypeBaw(type: String): String? = when (type) {
-    "BawMeasurement", "BawSimulation" -> InGridDocType.InGridGeoDataset.typeId
+    "BawMeasurement", "BawSimulation", "BawLaboratoryData" -> InGridDocType.InGridGeoDataset.typeId
     "BawPublication" -> InGridDocType.InGridPublication.typeId
     else -> null
 }
@@ -265,6 +268,43 @@ fun getLiteratureAggregates(transformer: IngridModelTransformer): List<Literatur
     val litDoc = transformer.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
     calcLiteratureAggregate(transformer, litDoc)
 } ?: emptyList()
+
+fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
+    if (transformer.doc.type != "BawLaboratoryData") return null
+    val data = transformer.doc.data
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    return LaboratoryDataBaw(
+        dataCollectionReason = getList("dataCollectionReason"),
+        sampleOrigin = getList("sampleOrigin"),
+        testedMaterial = getList("testedMaterial"),
+        usedTestMethods = getList("usedTestMethods"),
+        usedInstruments = getList("usedInstruments"),
+        underlyingStandard = data.getString("underlyingStandard"),
+        standardIssueDate = data.getString("standardIssueDate"),
+        testNumber = data.getString("approvalProcedure.testNumber"),
+        systemSetup = data.getString("approvalProcedure.systemSetup"),
+        datasetVisibility = getList("approvalProcedure.datasetVisibility"),
+        isApprovalProcedure = data.getBoolean("properties.isApprovalProcedure") ?: false,
+    )
+}
+
+data class LaboratoryDataBaw(
+    val dataCollectionReason: List<String>,
+    val sampleOrigin: List<String>,
+    val testedMaterial: List<String>,
+    val usedTestMethods: List<String>,
+    val usedInstruments: List<String>,
+    val underlyingStandard: String?,
+    val standardIssueDate: String?,
+    val testNumber: String?,
+    val systemSetup: String?,
+    val datasetVisibility: List<String>,
+    val isApprovalProcedure: Boolean,
+)
 
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
     uuid = litDoc.uuid,
