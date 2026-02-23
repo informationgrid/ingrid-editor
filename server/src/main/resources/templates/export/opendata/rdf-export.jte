@@ -66,7 +66,7 @@
             </dcat:contactPoint>
         @endif
         <dcterms:publisher>
-            @template.export.opendata.rdf-address(address = model.getPublisher())
+            @template.export.opendata.rdf-address(address = model.getPublisher(), forceAgent = true)
         </dcterms:publisher>
         @if (model.getCreator() != null)
             <dcterms:creator>
@@ -80,7 +80,7 @@
         @endif
         @if (model.getMaintainer() != null)
             <dcterms:maintainer>
-                @template.export.opendata.rdf-address(address = model.getMaintainer())
+                @template.export.opendata.rdf-address(address = model.getMaintainer(), forceAgent = true)
             </dcterms:maintainer>
         @endif
         <dcterms:identifier>${model.getUuid()}</dcterms:identifier>

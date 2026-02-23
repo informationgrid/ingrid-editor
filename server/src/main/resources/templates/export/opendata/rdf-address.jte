@@ -1,7 +1,8 @@
 @import de.ingrid.igeserver.exporter.AddressModelTransformer
 
 @param AddressModelTransformer address
-@if (address.isPerson())
+@param Boolean forceAgent = false
+@if (forceAgent || address.isPerson())
     <foaf:Agent>
         <foaf:name>${address.getFirstName()} ${address.getLastName()}</foaf:name>
         @if (address.getHomepage() != null)
