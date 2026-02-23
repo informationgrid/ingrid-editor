@@ -266,7 +266,7 @@ export class LeafletTypeComponent
               .subscribe(() =>
                 this.addBBoxForBwaStr(
                   result,
-                  locationIndex ?? locations.size - 1,
+                  locationIndex ?? locations.length - 1,
                 ),
               );
           }
