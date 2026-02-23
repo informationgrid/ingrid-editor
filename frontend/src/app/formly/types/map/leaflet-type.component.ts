@@ -106,6 +106,28 @@ export class LeafletTypeComponent
   private leafletReference: L.Map;
   private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
+  private applyMapInteractivity() {
+    if (!this.leafletReference) return;
+    const isDisabled = this.formControl?.disabled;
+    const zoomContainer: HTMLElement | undefined = (
+      this.leafletReference as any
+    ).zoomControl?.getContainer?.();
+
+    if (isDisabled) {
+      this.leafletReference.dragging.disable();
+      this.leafletReference.doubleClickZoom.disable();
+      if (zoomContainer) zoomContainer.style.display = "none";
+    } else {
+      // Show zoom buttons again when enabled
+      if (zoomContainer) zoomContainer.style.display = "";
+      // Only enable interactions if something is drawn/shown on the map
+      if (this.drawnSpatialRefs.length > 0) {
+        this.leafletReference.dragging.enable();
+        this.leafletReference.doubleClickZoom.enable();
+      }
+    }
+  }
+
   ngAfterViewInit() {
     this.leaflet().nativeElement.style.height = this.props.height + "px";
     this.leaflet().nativeElement.style.width = "100%";
@@ -122,6 +144,14 @@ export class LeafletTypeComponent
       // @ts-ignore
       (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => this.mapHasMoved.set(true));
+
+      // Keep map interactivity in sync with control enabled/disabled state
+      this.formControl.statusChanges
+        .pipe(
+          startWith(this.formControl.status),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe(() => this.applyMapInteractivity());
 
       this.formControl.valueChanges
         .pipe(
@@ -176,8 +206,11 @@ export class LeafletTypeComponent
       .pipe(
         tap((spatialRefs) => {
           this.drawnSpatialRefs = spatialRefs;
-          this.leafletReference.dragging.enable();
-          this.leafletReference.doubleClickZoom.enable();
+          // Enable interactions only if the form control is enabled
+          if (!this.formControl.disabled) {
+            this.leafletReference.dragging.enable();
+            this.leafletReference.doubleClickZoom.enable();
+          }
         }),
         catchError((e) => {
           console.warn("Failed to update bounding box.", e);
