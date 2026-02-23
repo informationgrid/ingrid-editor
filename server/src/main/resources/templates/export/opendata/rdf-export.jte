@@ -42,6 +42,29 @@
         @for(var distribution : model.getDistributions())
             <dcat:distribution rdf:resource="${model.getUploadUrl()}/${distribution.getAccessURL()}#distribution" />
         @endfor
+        @if (model.getPointOfContact() != null)
+            <dcat:contactPoint>
+                <vcard:Organization>
+                    <vcard:fn>${model.getPointOfContact().getOrganization()}</vcard:fn>
+                    @if (!model.getPointOfContact().getTelephones().isEmpty())
+                        <vcard:hasTelephone rdf:parseType="Resource">
+                            <vcard:hasValue rdf:resource="tel:${model.getPointOfContact().getTelephones().get(0)}" />
+                        </vcard:hasTelephone>@endif
+                    @if (!model.getPointOfContact().getEmails().isEmpty())
+                        <vcard:hasEmail rdf:resource="mailto:${model.getPointOfContact().getEmails().get(0)}" />@endif
+                    @if (model.getPointOfContact().getHomepage() != null)
+                        <vcard:hasUrl rdf:resource="${model.getPointOfContact().getHomepage()}" />@endif
+                    @if (model.getPointOfContact().hasAnyAddress())
+                        <vcard:hasAddress rdf:parseType="Resource">
+                            <vcard:hasStreetAddress>${model.getPointOfContact().getStreet()}</vcard:hasStreetAddress>
+                            <vcard:hasLocality>${model.getPointOfContact().getCity()}</vcard:hasLocality>
+                            <vcard:hasPostalCode>${model.getPointOfContact().getZipCode()}</vcard:hasPostalCode>
+                            <vcard:hasCountryName>${model.getPointOfContact().getCountryIso3166()}</vcard:hasCountryName>
+                        </vcard:hasAddress>
+                    @endif
+                </vcard:Organization>
+            </dcat:contactPoint>
+        @endif
         <dcterms:publisher>
             @template.export.opendata.rdf-address(address = model.getPublisher())
         </dcterms:publisher>
@@ -49,11 +72,6 @@
             <dcterms:creator>
                 @template.export.opendata.rdf-address(address = model.getCreator())
             </dcterms:creator>
-        @endif
-        @if (model.getPointOfContact() != null)
-            <dcat:contactPoint>
-                @template.export.opendata.rdf-address(address = model.getPointOfContact())
-            </dcat:contactPoint>
         @endif
         @if (model.getOriginator() != null)
             <dcterms:originator>
