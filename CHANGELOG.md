@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.2.3 (23.02.2026)
+
+
+### Bugfixes
+
+* Druckvorschau - Es wird nur die erste Seite gedruckt (#8752)
+    
 ## 8.2.2 (13.02.2026)
 
 ### Features
