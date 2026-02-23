@@ -32,6 +32,8 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 class OpenDataRDFTransformer(
     val transformerConfig: OpenDataTransformerConfig,
@@ -125,10 +127,18 @@ class OpenDataRDFTransformer(
         val type = doc.data.getString("temporal.data.type")
         if (type == "none") return null
 
-        val temporalStart = doc.data.getString("temporal.data.resourceRange.start")
-            ?: doc.data.getStringOrEmpty("temporal.data.resourceDate")
-        val temporalEnd = doc.data.getString("temporal.data.resourceRange.end")
-            ?: doc.data.getStringOrEmpty("temporal.data.resourceDate")
+        val temporalStart = (
+            doc.data.getString("temporal.data.resourceRange.start")
+                ?: doc.data.getString("temporal.data.resourceDate")
+            )?.let {
+            OffsetDateTime.parse(it).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate().toString()
+        } ?: ""
+        val temporalEnd = (
+            doc.data.getString("temporal.data.resourceRange.end")
+                ?: doc.data.getString("temporal.data.resourceDate")
+            )?.let {
+            OffsetDateTime.parse(it).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate().toString()
+        } ?: ""
         return SimpleTemporal(temporalStart, temporalEnd)
     }
 
