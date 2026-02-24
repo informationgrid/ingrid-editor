@@ -277,14 +277,20 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
         node.getString("value") ?: node.asText()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
+    val testProcedures = data.getPath("testProcedures")?.map { tp ->
+        TestProcedure(
+            testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
+            instrument = tp.getString("instrument"),
+            standard = tp.getString("standard"),
+            standardIssueDate = tp.getString("standardIssueDate"),
+        )
+    } ?: emptyList()
+
     return LaboratoryDataBaw(
         dataCollectionReason = getList("dataCollectionReason"),
         sampleOrigin = getList("sampleOrigin"),
         testedMaterial = getList("testedMaterial"),
-        usedTestMethods = getList("usedTestMethods"),
-        usedInstruments = getList("usedInstruments"),
-        underlyingStandard = data.getString("underlyingStandard"),
-        standardIssueDate = data.getString("standardIssueDate"),
+        testProcedures = testProcedures,
         testNumber = data.getString("approvalProcedure.testNumber"),
         systemSetup = data.getString("approvalProcedure.systemSetup"),
         datasetVisibility = getList("approvalProcedure.datasetVisibility"),
@@ -292,14 +298,18 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     )
 }
 
+data class TestProcedure(
+    val testMethod: String?,
+    val instrument: String?,
+    val standard: String?,
+    val standardIssueDate: String?,
+)
+
 data class LaboratoryDataBaw(
     val dataCollectionReason: List<String>,
     val sampleOrigin: List<String>,
     val testedMaterial: List<String>,
-    val usedTestMethods: List<String>,
-    val usedInstruments: List<String>,
-    val underlyingStandard: String?,
-    val standardIssueDate: String?,
+    val testProcedures: List<TestProcedure>,
     val testNumber: String?,
     val systemSetup: String?,
     val datasetVisibility: List<String>,

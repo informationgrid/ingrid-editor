@@ -24,6 +24,7 @@ import {
   MetadataOption,
   MetadataOptionItems,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -34,6 +35,10 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
   label = "Labordaten";
 
   iconClass = "labordaten";
+
+  showInspireRelevant = false;
+  showInspireConform = false;
+  showDataQualitySection = false;
 
   metadataOptions() {
     return [
@@ -48,7 +53,7 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
                 label: "Zulassungsprüfung",
                 key: "isApprovalProcedure",
                 value: true,
-                contextHelpKey: "isOpenData",
+                //contextHelpKey: "isApprovalProcedure",
               },
             ],
           },
@@ -60,6 +65,57 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
+
+    // remove keywords (Baugrunddynamik)
+    const subsoilKeywordsPos = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "subsoilKeywords",
+    );
+    if (subsoilKeywordsPos) {
+      subsoilKeywordsPos.fieldConfig.splice(subsoilKeywordsPos.index, 1);
+    }
+
+    // remove sections (Fachbezug, Raumbezug, Zeitbezug)
+    const sectionsToRemove = ["Fachbezug", "Raumbezug", "Zeitbezug"];
+    sectionsToRemove.forEach((label) => {
+      const section = this.findSectionWithLabel(fieldConfig, label);
+      if (section) {
+        const index = fieldConfig.indexOf(section);
+        if (index !== -1) {
+          fieldConfig.splice(index, 1);
+        }
+      }
+    });
+
+    // remove Erstellungsmaßstab (resolution)
+    const resolutionPos = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "resolution",
+    );
+    if (resolutionPos) {
+      resolutionPos.fieldConfig.splice(resolutionPos.index, 1);
+    }
+
+    // add spatialRepresentationType to general section (since Fachbezug was removed)
+    const generalSection = this.findSectionWithLabel(fieldConfig, "Allgemein");
+    if (generalSection) {
+      generalSection.fieldGroup.push(
+        this.addRepeatList(
+          "spatialRepresentationType",
+          "Digitale Repräsentation",
+          {
+            asSelect: true,
+            showSearch: true,
+            options: this.getCodelistForSelect(
+              "526",
+              "spatialRepresentationType",
+            ),
+            codelistId: "526",
+            className: "optional",
+          },
+        ),
+      );
+    }
 
     fieldConfig.push(
       this.addSection("Labordaten", [
@@ -86,6 +142,7 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
           required: true,
           options: [
             { label: "Beton", value: "Beton" },
+            { label: "Boden", value: "Boden" },
             { label: "Gesteinskörnung", value: "Gesteinskörnung" },
             { label: "Zement", value: "Zement" },
             { label: "Schlauchwehr", value: "Schlauchwehr" },
@@ -98,89 +155,114 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
             { label: "Elastomer", value: "Elastomer" },
           ],
         }),
-        this.addRepeatList(
-          "usedTestMethods",
-          "Verwendete Mess- und Prüfverfahren",
+        this.addRepeat(
+          "testProcedures",
+          "Mess- und Prüfverfahren / Gerät / Norm",
           {
-            required: true,
-            options: [
-              {
-                label: "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
-                value: "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
-              },
-              { label: "Betondruckfestigkeit", value: "Betondruckfestigkeit" },
-              { label: "Spaltzugsfestigkeit", value: "Spaltzugsfestigkeit" },
-              { label: "Sieblinie", value: "Sieblinie" },
-              { label: "Kornform", value: "Kornform" },
-              { label: "Knickversuch", value: "Knickversuch" },
-              { label: "Dauerstand", value: "Dauerstand" },
-              { label: "Zugfestigkeit", value: "Zugfestigkeit" },
-              { label: "Durchschlagprüfung", value: "Durchschlagprüfung" },
-              {
-                label:
-                  "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
-                value:
-                  "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
-              },
-              {
-                label:
-                  "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
-                value:
-                  "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
-              },
-              {
-                label: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
-                value: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
-              },
-              {
-                label: "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
-                value: "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
-              },
-              {
-                label:
-                  "Bestimmung des Widerstandes gegen kathodische Enthaftung",
-                value:
-                  "Bestimmung des Widerstandes gegen kathodische Enthaftung",
-              },
-              {
-                label: "Zyklische Alterungsprüfung",
-                value: "Zyklische Alterungsprüfung",
-              },
-              {
-                label: "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
-                value: "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
-              },
-              {
-                label: "VOC-Gehalt (Gravimetrisch)",
-                value: "VOC-Gehalt (Gravimetrisch)",
-              },
-              {
-                label: "Gaschromatographie (GC)",
-                value: "Gaschromatographie (GC)",
-              },
-              {
-                label: "Infrarotspektroskopie (FTIR)",
-                value: "Infrarotspektroskopie (FTIR)",
-              },
-              { label: "Elementanalyse", value: "Elementanalyse" },
-              {
-                label: "Simultane Thermische Analyse (STA)",
-                value: "Simultane Thermische Analyse (STA)",
-              },
-              { label: "Mikroskopie", value: "Mikroskopie" },
-              { label: "Metallographie", value: "Metallographie" },
-              {
-                label: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
-                value: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
-              },
+            fields: [
+              this.addSelectInline("testMethod", "Mess- und Prüfverfahren", {
+                required: true,
+                className: "flex-3",
+                options: [
+                  {
+                    label:
+                      "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
+                    value:
+                      "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
+                  },
+                  {
+                    label: "Betondruckfestigkeit",
+                    value: "Betondruckfestigkeit",
+                  },
+                  {
+                    label: "Spaltzugsfestigkeit",
+                    value: "Spaltzugsfestigkeit",
+                  },
+                  { label: "Sieblinie", value: "Sieblinie" },
+                  { label: "Kornform", value: "Kornform" },
+                  { label: "Knickversuch", value: "Knickversuch" },
+                  { label: "Dauerstand", value: "Dauerstand" },
+                  { label: "Zugfestigkeit", value: "Zugfestigkeit" },
+                  { label: "Durchschlagprüfung", value: "Durchschlagprüfung" },
+                  {
+                    label:
+                      "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
+                    value:
+                      "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
+                  },
+                  {
+                    label:
+                      "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
+                    value:
+                      "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
+                  },
+                  {
+                    label: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
+                    value: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
+                  },
+                  {
+                    label:
+                      "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
+                    value:
+                      "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
+                  },
+                  {
+                    label:
+                      "Bestimmung des Widerstandes gegen kathodische Enthaftung",
+                    value:
+                      "Bestimmung des Widerstandes gegen kathodische Enthaftung",
+                  },
+                  {
+                    label: "Zyklische Alterungsprüfung",
+                    value: "Zyklische Alterungsprüfung",
+                  },
+                  {
+                    label:
+                      "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
+                    value:
+                      "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
+                  },
+                  {
+                    label: "VOC-Gehalt (Gravimetrisch)",
+                    value: "VOC-Gehalt (Gravimetrisch)",
+                  },
+                  {
+                    label: "Gaschromatographie (GC)",
+                    value: "Gaschromatographie (GC)",
+                  },
+                  {
+                    label: "Infrarotspektroskopie (FTIR)",
+                    value: "Infrarotspektroskopie (FTIR)",
+                  },
+                  { label: "Elementanalyse", value: "Elementanalyse" },
+                  {
+                    label: "Simultane Thermische Analyse (STA)",
+                    value: "Simultane Thermische Analyse (STA)",
+                  },
+                  { label: "Mikroskopie", value: "Mikroskopie" },
+                  { label: "Metallographie", value: "Metallographie" },
+                  {
+                    label: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
+                    value: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
+                  },
+                ],
+              }),
+              this.addInputInline("instrument", "Messgerät", {
+                className: "flex-2",
+              }),
+              this.addInputInline("standard", "Norm", {
+                className: "flex-2",
+              }),
+              this.addDatepickerInline(
+                "standardIssueDate",
+                "Ausgabedatum der Norm",
+                {
+                  className: "flex-1",
+                },
+              ),
             ],
           },
         ),
-        this.addRepeatList("usedInstruments", "Verwendete Messgeräte"),
-        this.addInput("underlyingStandard", "Zugrundeliegende Norm", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addDatepicker("standardIssueDate", "Ausgabedatum der Norm"),
 
         this.addSubSection(
           "approvalProcedure",

@@ -1,6 +1,7 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestProcedure
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
@@ -113,24 +114,24 @@ aggregateInformation = @`
                     <geprueftesMaterial>${material}</geprueftesMaterial>
                 </GeprueftesMaterial>
             @endfor
-            @for(String method : lab.getUsedTestMethods())
+            @for(TestProcedure tp : lab.getTestProcedures())
                 <MessUndPruefverfahren>
-                    <messUndPruefverfahren>${method}</messUndPruefverfahren>
+                    @if(TransformationTools.hasValue(tp.getTestMethod()))
+                        <messUndPruefverfahren>${tp.getTestMethod()}</messUndPruefverfahren>
+                    @endif
+                    @if(TransformationTools.hasValue(tp.getInstrument()))
+                        <messgeraete>${tp.getInstrument()}</messgeraete>
+                    @endif
+                    @if(TransformationTools.hasValue(tp.getStandard()))
+                        <Norm>
+                            <normBezeichnung>${tp.getStandard()}</normBezeichnung>
+                            @if(TransformationTools.hasValue(tp.getStandardIssueDate()))
+                                <ausgabedatum>${tp.getStandardIssueDate()}</ausgabedatum>
+                            @endif
+                        </Norm>
+                    @endif
                 </MessUndPruefverfahren>
             @endfor
-            @for(String instrument : lab.getUsedInstruments())
-                <Messgeraete>
-                    <messgeraete>${instrument}</messgeraete>
-                </Messgeraete>
-            @endfor
-            @if(TransformationTools.hasValue(lab.getUnderlyingStandard()))
-                <Norm>
-                    <normBezeichnung>${lab.getUnderlyingStandard()}</normBezeichnung>
-                    @if(TransformationTools.hasValue(lab.getStandardIssueDate()))
-                        <ausgabedatum>${lab.getStandardIssueDate()}</ausgabedatum>
-                    @endif
-                </Norm>
-            @endif
             <Zulassungspruefung>
                 <zulassungspruefung>
                     <gco:Boolean>${lab.isApprovalProcedure()}</gco:Boolean>
