@@ -46,12 +46,12 @@ export abstract class SnackBarMessageService {
         map((msg) => JSON.parse(msg.body)),
         tap((data) => {
           const allDone = this.onMessage(data);
-          if (!this.currentSnackBarRef) {
-            this.openSnackBar();
-          } else if (allDone) {
+          if (allDone) {
             this.destroy$.next();
             this.destroy$.complete();
             this.destroy$.unsubscribe();
+          } else if (!this.currentSnackBarRef) {
+            this.openSnackBar();
           }
         }),
         takeUntil(this.destroy$),
