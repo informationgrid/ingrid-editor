@@ -256,11 +256,11 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     return this.addRepeat("targetParameters", "Zielparameter", {
       fields: [
         this.addGroupSimple(null, [
-          this.addSelectInline("name", "Name", {
+          this.addAutoCompleteInline("name", "Name", {
             required: true,
             options: this.getCodelistForSelect("3950021", "null"),
           }),
-          this.addSelectInline("type", "Art", {
+          this.addAutoCompleteInline("type", "Art", {
             required: true,
             options: this.getCodelistForSelect("3950014", "null"),
           }),
