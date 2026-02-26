@@ -24,6 +24,8 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBautechnikMeasurement
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBautechnikSimulation
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
@@ -81,6 +83,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
     fun getLaboratoryData() = getLaboratoryData(this)
+    fun getBautechnikMeasurement() = getBautechnikMeasurement(this)
+    fun getBautechnikSimulation() = getBautechnikSimulation(this)
 
     val orderTitle = if (forRepository()) null else getOrderTitle(this)
     val orderNumber = if (forRepository()) null else getOrderNumber(this)

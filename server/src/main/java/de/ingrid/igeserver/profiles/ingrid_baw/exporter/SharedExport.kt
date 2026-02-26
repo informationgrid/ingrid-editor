@@ -298,6 +298,144 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     )
 }
 
+fun getBautechnikMeasurement(transformer: IngridModelTransformer): BautechnikMeasurementBaw? {
+    if (transformer.doc.type != "BawMeasurement") return null
+    val data = transformer.doc.data.getPath("measurementPhases")?.find { it.getString("type") == "bautechnikMeasurement" } ?: return null
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    return BautechnikMeasurementBaw(
+        researchGoals = getList("researchGoal"),
+        measurementType = when (data.getString("measurementType")) {
+            "ongoing" -> "Dauermessung"
+            "single" -> "Einzelmessung"
+            else -> data.getString("measurementType")
+        },
+        windID = data.getString("windID"),
+        measurementDirection = data.getString("measurementDirection"),
+        parameters = getList("parameter"),
+    )
+}
+
+fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimulationBaw? {
+    if (transformer.doc.type != "BawSimulation") return null
+    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    val softwareNode = data.getPath("software")
+    val software = if (softwareNode != null) {
+        SoftwareBaw(
+            name = softwareNode.getString("name"),
+            version = softwareNode.getString("version"),
+        )
+    } else {
+        null
+    }
+
+    val calcNode = data.getPath("calculationConcept")
+    val calculationConcept = if (calcNode != null) {
+        CalculationConceptBaw(
+            materialLinear = calcNode.getBoolean("isMaterialLinear"),
+            geometricLinear = calcNode.getBoolean("isGeometricLinear"),
+            imperfections = calcNode.getBoolean("hasImperfections"),
+        )
+    } else {
+        null
+    }
+
+    val matParamsNode = data.getPath("materialParameters")
+    val materialParameters = if (matParamsNode != null) {
+        MaterialParametersBaw(
+            reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength.value"), it.getString("compressiveStrength.unit")) } ?: emptyList(),
+        )
+    } else {
+        null
+    }
+
+    return BautechnikSimulationBaw(
+        software = software,
+        objects = getList("object"),
+        objectParts = getList("objectPart"),
+        researchGoals = getList("researchGoal"),
+        spatialDimension = data.getString("dimension.spatialDimension"),
+        timeDimension = data.getBoolean("dimension.timeDimension"),
+        levels = getList("level"),
+        phases = getList("phase"),
+        calculationConcept = calculationConcept,
+        materials = getList("materials"),
+        materialParameters = materialParameters,
+        materialModels = getList("materialModel"),
+        elementTypes = getList("elementTypes"),
+        einwirkungen = getList("einwirkung"),
+        physics = getList("physics"),
+        analysisTypes = getList("analysisType"),
+    )
+}
+
+data class SoftwareBaw(
+    val name: String?,
+    val version: String?,
+)
+
+data class CalculationConceptBaw(
+    val materialLinear: Boolean?,
+    val geometricLinear: Boolean?,
+    val imperfections: Boolean?,
+)
+
+data class ReinforcementBaw(
+    val yieldLimit: Double?,
+)
+
+data class SteelBaw(
+    val yieldLimit: Double?,
+)
+
+data class ConcreteBaw(
+    val value: Double?,
+    val unit: String?,
+)
+
+data class MaterialParametersBaw(
+    val reinforcement: List<ReinforcementBaw>,
+    val steel: List<SteelBaw>,
+    val concrete: List<ConcreteBaw>,
+)
+
+data class BautechnikSimulationBaw(
+    val software: SoftwareBaw?,
+    val objects: List<String>,
+    val objectParts: List<String>,
+    val researchGoals: List<String>,
+    val spatialDimension: String?,
+    val timeDimension: Boolean?,
+    val levels: List<String>,
+    val phases: List<String>,
+    val calculationConcept: CalculationConceptBaw?,
+    val materials: List<String>,
+    val materialParameters: MaterialParametersBaw?,
+    val materialModels: List<String>,
+    val elementTypes: List<String>,
+    val einwirkungen: List<String>,
+    val physics: List<String>,
+    val analysisTypes: List<String>,
+)
+
+data class BautechnikMeasurementBaw(
+    val researchGoals: List<String>,
+    val measurementType: String?,
+    val windID: String?,
+    val measurementDirection: String?,
+    val parameters: List<String>,
+)
+
 data class TestProcedure(
     val testMethod: String?,
     val instrument: String?,
