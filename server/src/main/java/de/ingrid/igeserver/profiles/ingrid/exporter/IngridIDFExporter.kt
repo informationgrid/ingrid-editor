@@ -68,7 +68,7 @@ class IngridIDFExporter(
 
     protected val mapper = ObjectMapper().registerKotlinModule()
 
-    private lateinit var xpathUtils: XPathUtils
+    private var xpathUtils: XPathUtils
 
     val elementsRemovedFromIsoBeforeFingerprint = arrayOf("/gmd:MD_Metadata/gmd:dateStamp", "//@gml:id")
 

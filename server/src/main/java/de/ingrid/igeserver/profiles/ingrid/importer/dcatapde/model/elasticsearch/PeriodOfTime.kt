@@ -28,14 +28,14 @@ class PeriodOfTime : Serializable {
 
     var endDate: Instant? = null
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o == null || javaClass != o.javaClass) {
+        if (other == null || javaClass != other.javaClass) {
             return false
         }
-        val temporal = o as PeriodOfTime
+        val temporal = other as PeriodOfTime
         return startDate == temporal.startDate && endDate == temporal.endDate
     }
 

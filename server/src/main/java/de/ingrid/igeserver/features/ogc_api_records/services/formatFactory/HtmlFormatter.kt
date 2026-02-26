@@ -46,7 +46,7 @@ class HtmlFormatter(
         var response = ""
         for (catalog in collections) response += catalog.toString()
 
-        val wrappedResponse = ogcHtmlConverterService.wrapperForHtml(response as String, links, queryMetadata)
+        val wrappedResponse = ogcHtmlConverterService.wrapperForHtml(response, links, queryMetadata)
         return wrappedResponse.toByteArray()
     }
 

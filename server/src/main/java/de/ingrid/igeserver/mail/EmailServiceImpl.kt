@@ -66,8 +66,8 @@ class EmailServiceImpl(
         )
     }
 
-    fun sendEmail(to: String, subject: String, text: String) {
-        if (mailProps.useHtmlEmails) {
+    fun sendEmail(to: String, subject: String, text: String, forceNonHtml: Boolean = false) {
+        if (!forceNonHtml && mailProps.useHtmlEmails) {
             sendHTMLEmail(to, subject, text)
             return
         }

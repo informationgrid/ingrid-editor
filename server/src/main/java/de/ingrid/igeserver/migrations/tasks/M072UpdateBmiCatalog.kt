@@ -147,7 +147,7 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
         adresses.forEach {
             val oldAddressType = (it as ObjectNode).get("type")?.get("key")?.textValue()
             val newAddressType = mapAddressType(oldAddressType)
-            ((it as ObjectNode).get("type") as ObjectNode).put("key", newAddressType)
+            (it.get("type") as ObjectNode).put("key", newAddressType)
         }
 
         return true

@@ -88,7 +88,7 @@ class CswtService(
         val updateDocs = xmlDoc.getElementsByTagName("csw:Update")
         val deleteDocs = xmlDoc.getElementsByTagName("csw:Delete")
 
-        /**
+        /*
          * INSERT DOCS
          */
         for (i in 0 until insertDocs.length) {
@@ -99,14 +99,14 @@ class CswtService(
             val docData = xmlNodeToString(metadataDoc) // convert Node to String
             importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
         }
-        /**
+        /*
          * UPDATE DOCS
          */
         for (i in 0 until updateDocs.length) {
             val item = updateDocs.item(i) as Element
             val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
             val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-            if (("uuid" == propName || patternIdentifier.matcher(propName).matches()) && propValue != null) {
+            if ("uuid" == propName || patternIdentifier.matcher(propName).matches()) {
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
                 val docData = xmlNodeToString(metadataDoc) // convert Node to String
                 importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile)
@@ -115,7 +115,7 @@ class CswtService(
                 throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
             }
         }
-        /**
+        /*
          * DELETE DOCS
          */
         for (i in 0 until deleteDocs.length) {
@@ -127,7 +127,7 @@ class CswtService(
             propValue = propValue.replace("\\s".toRegex(), "")
 
             // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
-            if (("uuid" == propName || patternIdentifier.matcher(propName).matches()) && propValue != null) {
+            if ("uuid" == propName || patternIdentifier.matcher(propName).matches()) {
                 val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
                 wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
             }

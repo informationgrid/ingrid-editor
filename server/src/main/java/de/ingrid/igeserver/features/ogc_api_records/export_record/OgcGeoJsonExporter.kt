@@ -73,7 +73,7 @@ class OgcGeoJsonExporter(
     private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
         val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
         getRawJsonFromDocument(document)
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
         // allow to export only draft versions
         null
     }
@@ -103,7 +103,7 @@ class OgcGeoJsonExporter(
         mapper.registerModule(JavaTimeModule())
 
         val node = mapper.convertValue(record, ObjectNode::class.java)
-        node.fields().forEach { entry ->
+        node.properties().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
         return node

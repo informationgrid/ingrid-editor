@@ -91,9 +91,9 @@
     "t012_obj_adr.special_ref": "",
     "t012_obj_adr.typ": "",
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
-    "t01_object.obj_class": "${page.handleContent(page.getDocumentTypeId())}",
-    "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
-    "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
+"t01_object.obj_class": "${page.getDocumentTypeId()}",
+"t01_object.obj_id": "${page.getModel().getUuid()}",
+"t01_object.id": "${page.getModel().getUuid()}",
     @if(page.getContact() != null)
         "t021_communication.comm_type": [
         @for(var entry : ForSupport.of(page.getContact().getContactsComTypeValues()))
@@ -107,7 +107,7 @@
         ],
         "t021_communication.comm_value": [
         @for(var entry : ForSupport.of(page.getContact().getContactsComConnections()))
-            "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
+            "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
         ],
         "t021_communication.commtype_key": [
@@ -117,7 +117,7 @@
         ],
         "t021_communication.descr": "",
         "t02_address.adr_id": [
-            "${page.handleContent(page.getContact().getUuid())}"
+        "${page.getContact().getUuid()}"
             @for(var entry : ForSupport.of(page.getPointOfContact()))
                 ,"${entry.get().getUuid()}"
             @endfor
@@ -216,7 +216,7 @@
     ],
     "t04_search.searchterm": [
     @for(var entry : ForSupport.of(page.getKeywordsAsList()))
-        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
+        "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "refering.object_reference.obj_uuid": [
@@ -360,7 +360,7 @@
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
     "topic_categories": [
     @for(var entry : ForSupport.of(page.getTopicCategories()))
-        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
+        "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],
 
@@ -412,11 +412,6 @@
     "object_conformity.specification_key": "",
     "t0110_avail_format.name": [],
     "object_types_catalogue.title_key": "",
-    "searchterm_value.alternate_term": [],
     ${extraFields}@if (extraFields != null),@endif
-    "content": [
-    @for(var entry : ForSupport.of(page.getContentField()))
-        "${entry.get()}"@if (!entry.isLast()),@endif
-    @endfor
-    ]
+"searchterm_value.alternate_term": []
 }

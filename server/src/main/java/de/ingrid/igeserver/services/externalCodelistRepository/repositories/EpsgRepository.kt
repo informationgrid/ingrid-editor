@@ -52,7 +52,7 @@ data class EpsgCodelistEntry(
 )
 
 @Service("EPSG")
-open class EpsgRepository(
+class EpsgRepository(
     @Value("\${codelist.external.epsgUrl}") val epsgUrl: String,
 ) : ExternalCodelistRepository {
 
@@ -70,7 +70,7 @@ open class EpsgRepository(
         )
 
         try {
-            val inputStream: InputStream = sendRequest("GET", this.epsgUrl, params) ?: return PagedSearchResult.EMPTY
+            val inputStream: InputStream = sendRequest("GET", this.epsgUrl, params)
             val jsonString = inputStream.bufferedReader().use { it.readText() }
             val apiResponse = mapper.readValue<EpsgApiResponse>(jsonString)
             return PagedSearchResult(

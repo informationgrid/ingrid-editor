@@ -40,9 +40,9 @@ class MigrateUrlDataTypeTask(
 
     private data class DataTypeInfo(val url: String, val key: String, val value: String)
 
-    override fun executeTaskOnCatalog(catalog: String) {
-        val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-$catalog.csv")
-            ?: throw Exception("CSV file not found for migration: url-data-types-$catalog.csv")
+    override fun executeTaskOnCatalog(catalogIdentifier: String) {
+        val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-$catalogIdentifier.csv")
+            ?: throw Exception("CSV file not found for migration: url-data-types-$catalogIdentifier.csv")
         val migrateData = readCsv(resource.openStream())
 
         migrateData.forEach {

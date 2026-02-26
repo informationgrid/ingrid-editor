@@ -1230,12 +1230,6 @@ open class IngridModelTransformer(
 
     private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso") != null
 
-    fun handleContent(value: String?): String? {
-        if (value == null) return null
-        contentField.add(value)
-        return value
-    }
-
     fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
         distributionFormats.isNotEmpty() ||
         hasDistributorInfo() ||

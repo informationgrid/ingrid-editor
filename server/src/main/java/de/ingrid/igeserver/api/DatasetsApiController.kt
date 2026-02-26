@@ -305,7 +305,7 @@ class DatasetsApiController(
                 InitiatorAction.COPY,
             )
 
-        storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid)
+        storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid, copiedParent.document.title!!)
 
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent.wrapper.id!!, origParentId, isAddress)

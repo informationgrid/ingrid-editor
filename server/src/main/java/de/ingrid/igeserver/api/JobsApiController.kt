@@ -102,7 +102,7 @@ class JobsApiController(
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(getJobIdString(URLChecker.JOB_KEY, principal), catalogId)
 
-        // get only documents with write permission
+        // get only documents with write-permission
         val groups = authUtils.getCurrentUserRoles(catalogId)
         var docIds = emptyList<Int>()
 

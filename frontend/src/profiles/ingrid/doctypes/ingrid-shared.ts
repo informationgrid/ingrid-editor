@@ -57,6 +57,7 @@ import { DocumentService } from "../../../app/services/document/document.service
 import { GeneralStore } from "../../../app/store/general.store";
 import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
 import { validateDateResourceOrder } from "./validations";
+import { CopyFilesService } from "../../../app/+form/dialogs/copy-cut-paste/copy-files.service";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -91,6 +92,7 @@ export abstract class IngridShared extends BaseDoctype {
   documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+  private copyFilesService = inject(CopyFilesService);
 
   protected codelistStore = inject(CodelistStore);
   protected generalStore = inject(GeneralStore);
@@ -1147,7 +1149,7 @@ export abstract class IngridShared extends BaseDoctype {
                       oneDateRequired: {
                         expression: (
                           ctrl: FormControl,
-                          field: FormlyFieldConfig,
+                          _field: FormlyFieldConfig,
                         ) => {
                           const event = ctrl.value;
                           return (
@@ -1782,6 +1784,22 @@ export abstract class IngridShared extends BaseDoctype {
             },
             message:
               "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
+          },
+          copyCompleted: {
+            expression: (
+              _ctrl: FormControl,
+              field: FormlyFieldConfig,
+            ): boolean => {
+              // check if copy task is running
+              const metadata = field.options.formState.metadata;
+              console.log(metadata);
+              return (
+                !metadata ||
+                !metadata.uuid ||
+                !this.copyFilesService.isCopyInProgress(metadata.uuid)
+              );
+            },
+            message: "Das Kopieren von Dateien ist noch nicht abgeschlossen.",
           },
         },
       }),

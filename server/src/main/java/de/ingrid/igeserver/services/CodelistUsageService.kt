@@ -128,7 +128,6 @@ class CodelistUsageService(
 
         idsAndData.forEach { (id, uuid, dataStr) ->
             val root = objectMapper.readTree(dataStr) as? ObjectNode ?: return@forEach
-            val countBefore = totalReplacements
             val replaced = replaceInNode(root, codelistId, fromValue, toKey, toValue)
             if (replaced > 0) {
                 totalReplacements += replaced
@@ -168,9 +167,7 @@ class CodelistUsageService(
             }
 
             // Recurse into object fields
-            val fields = node.fields()
-            while (fields.hasNext()) {
-                val entry = fields.next()
+            node.properties().forEach { entry ->
                 count += replaceInNode(entry.value, codelistId, fromValue, toKey, toValue)
             }
         } else if (node is ArrayNode) {

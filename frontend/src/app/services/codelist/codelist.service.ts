@@ -42,6 +42,7 @@ import { IgeError } from "../../models/ige-error";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { GeneralStore } from "../../store/general.store";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export class SelectOption {
   label: string;
@@ -84,6 +85,7 @@ export class CodelistService {
   private store = inject(CodelistStore);
   private generalStore = inject(GeneralStore);
   private destroyRef = inject(DestroyRef);
+  private snackBar = inject(MatSnackBar);
 
   private codelistStore$ = toObservable(this.store.entityMap);
   private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
@@ -316,11 +318,29 @@ export class CodelistService {
   }
 
   replaceFreeEntry(codelistId: string, fromValue: string, toKey: string) {
-    return this.dataService.replaceFreeEntry(codelistId, { fromValue, toKey });
+    return this.dataService
+      .replaceFreeEntry(codelistId, { fromValue, toKey })
+      .pipe(
+        tap((result) => {
+          this.snackBar.open(
+            `Ersetzt ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument${result.documentsUpdated > 1 ? "en" : ""}`,
+            undefined,
+            { duration: 4000 },
+          );
+        }),
+      );
   }
 
   addFreeEntryToCodelist(codelistId: string, value: string) {
-    return this.dataService.addFreeEntryToCodelist(codelistId, value);
+    return this.dataService.addFreeEntryToCodelist(codelistId, value).pipe(
+      tap((result) => {
+        this.snackBar.open(
+          `In Codelist aufgenommen und ${result.occurrences} Vorkommen in ${result.documentsUpdated} Dokument${result.documentsUpdated > 1 ? "en" : ""} ersetzt`,
+          undefined,
+          { duration: 4000 },
+        );
+      }),
+    );
   }
 
   observe(

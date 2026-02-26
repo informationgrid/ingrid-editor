@@ -2,6 +2,7 @@
     @if (docs | async; as allDocs) {
         <mat-selection-list
             class="doc-item"
+            [disabled]="disabled()"
             [multiple]="false"
             [class.dense]="denseMode()"
             [class.hide-divider]="hideDivider()"
