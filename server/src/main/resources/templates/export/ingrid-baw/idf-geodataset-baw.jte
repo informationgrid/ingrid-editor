@@ -96,8 +96,8 @@ aggregateInformation = @`
             </gmd:MD_AggregateInformation>
         </gmd:aggregationInfo>
     @endfor
-    @if(page.getLaboratoryData() != null)
-        !{var lab = page.getLaboratoryData();}
+    !{var lab = page.getLaboratoryData();}
+    @if(lab != null)
         <labordaten>
             @for(String reason : lab.getDataCollectionReason())
                 <AnlassDerDatenerhebung>
