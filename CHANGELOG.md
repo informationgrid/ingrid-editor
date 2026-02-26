@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.2.4 (26.02.2026)
+
+### Features
+
+* IGE: Messdaten (Allgmein) Selectboxen in Comboboxen ändern (#8796)
+
+    
 ## 8.2.3 (23.02.2026)
 
 
