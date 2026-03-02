@@ -16,16 +16,12 @@
             cdkDropListOrientation="vertical"
             (cdkDropListDropped)="drop($event)"
         >
-            @if (menuSections) {
+            @if (menuSections && key !== "none") {
                 <div class="section-title">
                     {{ menuSections[key] }}
                 </div>
             }
-            @for (
-                fieldRef of groupedFields[key];
-                track fieldRef;
-                let i = $index
-            ) {
+            @for (fieldRef of groupedFields[key]; track fieldRef) {
                 <div
                     class="flex-row"
                     cdkDrag
