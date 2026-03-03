@@ -2,12 +2,6 @@
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestProcedure
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.BautechnikMeasurementBaw
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.BautechnikSimulationBaw
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.SoftwareBaw
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CalculationConceptBaw
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.MaterialParametersBaw
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LaboratoryDataBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
@@ -278,7 +272,7 @@ aggregateInformation = @`
                     <elementtypen>${elementType}</elementtypen>
                 </Elementtypen>
             @endfor
-            @for(String einwirkung : bautechnikS.getEinwirkungen())
+            @for(String einwirkung : bautechnikS.getEffects())
                 <Einwirkung>
                     <einwirkung>${einwirkung}</einwirkung>
                 </Einwirkung>

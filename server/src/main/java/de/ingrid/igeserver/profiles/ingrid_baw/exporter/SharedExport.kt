@@ -373,7 +373,7 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
         materialParameters = materialParameters,
         materialModels = getList("materialModel"),
         elementTypes = getList("elementTypes"),
-        einwirkungen = getList("einwirkung"),
+        effects = getList("effects"),
         physics = getList("physics"),
         analysisTypes = getList("analysisType"),
     )
@@ -423,7 +423,7 @@ data class BautechnikSimulationBaw(
     val materialParameters: MaterialParametersBaw?,
     val materialModels: List<String>,
     val elementTypes: List<String>,
-    val einwirkungen: List<String>,
+    val effects: List<String>,
     val physics: List<String>,
     val analysisTypes: List<String>,
 )

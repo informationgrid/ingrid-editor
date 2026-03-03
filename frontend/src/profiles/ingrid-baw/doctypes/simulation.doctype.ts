@@ -445,7 +445,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "Interface/Kontakt", value: "Interface/Kontakt" },
             ],
           }),
-          this.addRepeatList("einwirkung", "Einwirkung", {
+          this.addRepeatList("effects", "Einwirkung", {
             options: [
               { label: "experimentell", value: "experimentell" },
               { label: "Eigengewicht", value: "Eigengewicht" },
