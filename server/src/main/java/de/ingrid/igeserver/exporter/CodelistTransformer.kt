@@ -28,8 +28,6 @@ open class CodelistTransformer(
     val catalogLanguage: String,
 ) {
 
-    fun getValue(codelistId: String, entry: KeyValue?): String? = getValue(codelistId, entry, catalogLanguage)
-
     fun getCatalogCodelistValue(codelistId: String, entry: KeyValue?): String? = if (entry?.key != null) {
         codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, catalogLanguage)
             ?: codelistHandler.getCatalogCodelistValue(
@@ -42,12 +40,18 @@ open class CodelistTransformer(
         entry?.value
     }
 
-    fun getValue(codelistId: String, entry: KeyValue?, field: String): String? = if (entry?.key != null) {
-        codelistHandler.getCodelistValue(codelistId, entry.key, field)
-            ?: codelistHandler.getCodelistValue(codelistId, entry.key, "de")
+    fun getValue(codelistId: String, entry: KeyValue?): String? = getValue(codelistId, entry, catalogLanguage)
+
+    fun getValue(codelistId: String, entry: KeyValue?, field: String): String? = getValue(codelistId, entry, field, false)
+
+    fun getValue(codelistId: String, entry: KeyValue?, field: String, restrictToField: Boolean? = false): String? = if (entry?.key != null) {
+        val value = codelistHandler.getCodelistValue(codelistId, entry.key, field)
+        if (restrictToField == true) return value
+        value ?: codelistHandler.getCodelistValue(codelistId, entry.key, "de")
             ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, field)
             ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, "de")
     } else {
+        if (restrictToField == true) return null
         entry?.value
     }
 

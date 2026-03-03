@@ -102,7 +102,7 @@
                         <gmd:dimensionName>
                             <gmd:MD_DimensionNameTypeCode
                                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
-                                    codeListValue="${page.getCodelists().getValue("514", axisDimensionProperties.getName(), "iso")}" />
+                                    codeListValue="${page.getCodelists().getValue("514", axisDimensionProperties.getName(), "iso", true)}" />
                         </gmd:dimensionName>
                         @else
                         <gmd:dimensionName gco:nilReason="unknown" />
@@ -182,14 +182,14 @@
     <gmd:spatialRepresentationInfo>
         <gmd:MD_VectorSpatialRepresentation>
             <gmd:topologyLevel>
-                <gmd:MD_TopologyLevelCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_TopologyLevelCode" codeListValue="${page.getCodelists().getValue("528", vec.getTopologyLevel(), "iso")}"/>
+                <gmd:MD_TopologyLevelCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_TopologyLevelCode" codeListValue="${page.getCodelists().getValue("528", vec.getTopologyLevel(), "iso", true)}"/>
             </gmd:topologyLevel>
             @if(vec.getGeometricObjectType() != null || vec.getGeometricObjectCount() != null)
                 <gmd:geometricObjects>
                     <gmd:MD_GeometricObjects>
                         @if(vec.getGeometricObjectType() != null)
                             <gmd:geometricObjectType>
-                                <gmd:MD_GeometricObjectTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="${page.getCodelists().getValue("515", vec.getGeometricObjectType(), "iso")}"/>
+                                <gmd:MD_GeometricObjectTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="${page.getCodelists().getValue("515", vec.getGeometricObjectType(), "iso", true)}"/>
                             </gmd:geometricObjectType>
                         @endif
                         @if(vec.getGeometricObjectCount() != null)
@@ -680,7 +680,7 @@
                                     <gml:axis>
                                         <gml:CoordinateSystemAxis
                                                 gml:id="coordinateSystemAxis_ID_${TransformationTools.getRandomUUID()}"
-                                                uom="${ page.getCodelists().getValue("102", verticalExtent.getUnitOfMeasure(), "iso")}">
+                                                uom="${ page.getCodelists().getValue("102", verticalExtent.getUnitOfMeasure(), "iso", true)}">
                                             <gml:identifier codeSpace="" />
                                             <gml:axisAbbrev />
                                             <gml:axisDirection codeSpace="" />
@@ -946,7 +946,7 @@ ${contentInfo}
                                 <gmd:name>
                                     <gmd:MD_MediumNameCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MediumNameCode"
-                                            codeListValue="${page.getCodelists().getValue("520",digitalTransferOption.getName(),"iso")}" />
+                                            codeListValue="${page.getCodelists().getValue("520",digitalTransferOption.getName(),"iso", true)}" />
                                 </gmd:name>
                                 <gmd:mediumNote>
                                     <gco:CharacterString>${digitalTransferOption.getMediumNote()}</gco:CharacterString>
