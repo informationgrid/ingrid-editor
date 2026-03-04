@@ -73,66 +73,29 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           { key: "type" },
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
             required: true,
-            options: [
-              {
-                label: "Zustand des Bauwerks (Gutachten)",
-                value: "Zustand des Bauwerks (Gutachten)",
-              },
-              {
-                label: "Forschung & Entwicklung (F&E)",
-                value: "Forschung & Entwicklung (F&E)",
-              },
-              {
-                label: "Grundlagenuntersuchung",
-                value: "Grundlagenuntersuchung",
-              },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_measurementResearchGoal",
+              "null",
+            ),
           }),
           this.addSelect("measurementType", "Art der Messung", {
             wrappers: ["panel", "form-field"],
-            options: [
-              { label: "Dauermessung", value: "ongoing" },
-              { label: "Einzelmessung", value: "single" },
-            ],
+            options: this.getCodelistForSelect("BAW_measurementType", "null"),
           }),
           this.addInput("windID", "Objekt-Ident-Nr. WInD", {
             wrappers: ["panel", "form-field"],
           }),
           this.addAutocomplete("measurementDirection", "Messrichtung", {
-            options: [
-              { label: "horizontal", value: "horizontal" },
-              { label: "vertikal", value: "vertikal" },
-              { label: "3D", value: "3D" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_measurementDirection",
+              "null",
+            ),
           }),
           this.addRepeatList("parameter", "Messgrößen", {
-            options: [
-              { label: "Koordinaten", value: "Koordinaten" },
-              { label: "Bild", value: "Bild" },
-              {
-                label: "Räumliche Verschiebung",
-                value: "Räumliche Verschiebung",
-              },
-              { label: "Strecke / Länge", value: "Strecke / Länge" },
-              {
-                label: "Horizontale Verschiebung",
-                value: "Horizontale Verschiebung",
-              },
-              {
-                label: "Vertikale Verschiebung (Setzung)",
-                value: "Vertikale Verschiebung (Setzung)",
-              },
-              {
-                label: "Bewegung von Riss und Fugen",
-                value: "Bewegung von Riss und Fugen",
-              },
-              { label: "Dehnung", value: "Dehnung" },
-              { label: "Neigung", value: "Neigung" },
-              { label: "Kräfte / Spannungen", value: "Kräfte / Spannungen" },
-              { label: "Wasserstand", value: "Wasserstand" },
-              { label: "Wasserdruck", value: "Wasserdruck" },
-              { label: "Temperatur", value: "Temperatur" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_measurementParameter",
+              "null",
+            ),
           }),
         ]),
       ],

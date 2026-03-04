@@ -20,7 +20,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
-import { SelectOption } from "../../../app/services/codelist/codelist.service";
 
 @Injectable({
   providedIn: "root",
@@ -109,27 +108,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               fieldLabel: "Name",
               wrappers: ["form-field"],
               required: true,
-              options: [
-                { label: "Dlubal", value: "Dlubal" },
-                { label: "Dlubal: RStab", value: "Dlubal: RStab" },
-                { label: "Dlubal: RFEM", value: "Dlubal: RFEM" },
-                { label: "Dlubal: DUENQ", value: "Dlubal: DUENQ" },
-                { label: "Dlubal: FE-Beul", value: "Dlubal: FE-Beul" },
-                { label: "Dlubal: RWIND", value: "Dlubal: RWIND" },
-                { label: "Dlubal: RSECTION", value: "Dlubal: RSECTION" },
-                { label: "Dlubal: DICKQ", value: "Dlubal: DICKQ" },
-                { label: "PTC Mathcad", value: "PTC Mathcad" },
-                { label: "RIB Rohr", value: "RIB Rohr" },
-                { label: "GGU Retain", value: "GGU Retain" },
-                { label: "Matlab", value: "Matlab" },
-                { label: "Sofistik", value: "Sofistik" },
-                { label: "Atena", value: "Atena" },
-                { label: "LS-Dyna", value: "LS-Dyna" },
-                { label: "ANSYS", value: "ANSYS" },
-                { label: "INCA", value: "INCA" },
-                { label: "Frilo", value: "Frilo" },
-                { label: "NiNoSp", value: "NiNoSp" },
-              ],
+              options: this.getCodelistForSelect(
+                "BAW_simulationSoftware",
+                "null",
+              ),
             }),
             this.addInput("version", null, {
               required: true,
@@ -139,186 +121,40 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           ]),
           this.addRepeatList("object", "Objekt", {
             required: true,
-            options: [
-              { label: "Schleusen: Kammern", value: "Schleusen: Kammern" },
-              { label: "Schleusen: Häupter", value: "Schleusen: Häupter" },
-              {
-                label: "Schleusen: Oberhäupter",
-                value: "Schleusen: Oberhäupter",
-              },
-              {
-                label: "Schleusen: Unterhäupter",
-                value: "Schleusen: Unterhäupter",
-              },
-              { label: "Wehre: Wehrpfeiler", value: "Wehre: Wehrpfeiler" },
-              { label: "Wehre: Wehrfelder", value: "Wehre: Wehrfelder" },
-              { label: "Brücken", value: "Brücken" },
-              { label: "Kanalbrücken", value: "Kanalbrücken" },
-              { label: "Molen", value: "Molen" },
-              { label: "Talsperren", value: "Talsperren" },
-              { label: "Leuchttürme", value: "Leuchttürme" },
-              {
-                label: "Unterführungsbauwerke",
-                value: "Unterführungsbauwerke",
-              },
-              {
-                label: "Fischaufstiegsanlagen",
-                value: "Fischaufstiegsanlagen",
-              },
-              {
-                label: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
-                value: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
-              },
-              {
-                label: "Verschlusskörper: Sparbecken",
-                value: "Verschlusskörper: Sparbecken",
-              },
-              {
-                label: "Verschlusskörper: Wehre",
-                value: "Verschlusskörper: Wehre",
-              },
-              {
-                label: "Verschlusskörper: Hochwasserentlastungen",
-                value: "Verschlusskörper: Hochwasserentlastungen",
-              },
-              {
-                label: "Verschlusskörper: Grundablässe",
-                value: "Verschlusskörper: Grundablässe",
-              },
-              {
-                label: "Verschlusskörper: Revisionen",
-                value: "Verschlusskörper: Revisionen",
-              },
-              { label: "Schiffshebewerke", value: "Schiffshebewerke" },
-              { label: "Schleusentore", value: "Schleusentore" },
-              { label: "Stoßschütze", value: "Stoßschütze" },
-              { label: "Spundwände", value: "Spundwände" },
-              { label: "Düker", value: "Düker" },
-              { label: "Feste Teile", value: "Feste Teile" },
-              { label: "Maschinenteile", value: "Maschinenteile" },
-              {
-                label: "Überbauten: Wehrstege/-brücken",
-                value: "Überbauten: Wehrstege/-brücken",
-              },
-              {
-                label: "Überbauten: Hubportale",
-                value: "Überbauten: Hubportale",
-              },
-              { label: "Verbindungselemente", value: "Verbindungselemente" },
-              { label: "Sperrwerke", value: "Sperrwerke" },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationObject", "null"),
           }),
           this.addRepeatList("objectPart", "Objektteil", {
-            options: [
-              { label: "Aufsatzklappe", value: "Aufsatzklappe" },
-              { label: "Dammbalken", value: "Dammbalken" },
-              {
-                label: "Doppelklappen/Dachwehr",
-                value: "Doppelklappen/Dachwehr",
-              },
-              { label: "Doppelschütz", value: "Doppelschütz" },
-              {
-                label: "Drucksegement (mit/ohne Aufsatzklappe)",
-                value: "Drucksegement (mit/ohne Aufsatzklappe)",
-              },
-              { label: "Gleitschütz", value: "Gleitschütz" },
-              { label: "Klapptore", value: "Klapptore" },
-              { label: "Nadelwehr", value: "Nadelwehr" },
-              { label: "Rollschütz", value: "Rollschütz" },
-              { label: "Schiebetor", value: "Schiebetor" },
-              { label: "Schlagtor", value: "Schlagtor" },
-              { label: "Schlauchwehr", value: "Schlauchwehr" },
-              { label: "Sektorflügeltor", value: "Sektorflügeltor" },
-              { label: "Sektorwehr", value: "Sektorwehr" },
-              { label: "Stauklappe", value: "Stauklappe" },
-              { label: "Stemmtor", value: "Stemmtor" },
-              { label: "Trommelwehr", value: "Trommelwehr" },
-              { label: "Walzenwehr", value: "Walzenwehr" },
-              {
-                label: "Zugsegment (mit/ohne Aufsatzklappe)",
-                value: "Zugsegment (mit/ohne Aufsatzklappe)",
-              },
-              { label: "Zylinderschütz", value: "Zylinderschütz" },
-              { label: "Poller", value: "Poller" },
-              { label: "Membran", value: "Membran" },
-              {
-                label: "Klemmleiste/Klemmschiene",
-                value: "Klemmleiste/Klemmschiene",
-              },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationObjectPart",
+              "null",
+            ),
           }),
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
             required: true,
-            options: [
-              {
-                label: "Tragfähigkeitsnachweis",
-                value: "Tragfähigkeitsnachweis",
-              },
-              {
-                label: "Verformungsberechnung",
-                value: "Verformungsberechnung",
-              },
-              { label: "Versagensabbildung", value: "Versagensabbildung" },
-              { label: "Temperaturberechnung", value: "Temperaturberechnung" },
-              {
-                label: "Wissenschaftliche Untersuchung",
-                value: "Wissenschaftliche Untersuchung",
-              },
-              {
-                label: "Forschung & Entwicklung (F&E)",
-                value: "Forschung & Entwicklung (F&E)",
-              },
-              {
-                label: "Grenzzustandsbetrachtung",
-                value: "Grenzzustandsbetrachtung",
-              },
-              { label: "Ermüdung", value: "Ermüdung" },
-              {
-                label: "Nachrechnung Bestand (TbW, TbVS)",
-                value: "Nachrechnung Bestand (TbW, TbVS)",
-              },
-              { label: "Bemessung Neubau", value: "Bemessung Neubau" },
-              {
-                label: "Bruchmechanische Untersuchung",
-                value: "Bruchmechanische Untersuchung",
-              },
-              {
-                label: "Ermittlung Eigengewicht",
-                value: "Ermittlung Eigengewicht",
-              },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationResearchGoal",
+              "null",
+            ),
           }),
           this.addGroup("dimension", "Dimensionen", [
             this.addSelect("spatialDimension", null, {
               fieldLabel: "Räumliche Dimensionen",
               wrappers: ["form-field"],
-              options: [
-                { label: "1D", value: "1D" },
-                { label: "2D", value: "2D" },
-                { label: "3D", value: "3D" },
-              ],
+              options: this.getCodelistForSelect(
+                "BAW_simulationSpatialDimension",
+                "null",
+              ),
             }),
             this.addCheckboxInline("timeDimension", "Zeit"),
           ]),
           this.addRepeatList("level", "Level der Untersuchung", {
             required: true,
             asSelect: true,
-            options: [
-              { label: "mean", value: "mean" },
-              { label: "characteristic", value: "characteristic" },
-              { label: "design", value: "design" },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationLevel", "null"),
           }),
           this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
             asSelect: true,
-            options: [
-              { label: "TbW A", value: "TbW A" },
-              { label: "TbW B", value: "TbW B" },
-              { label: "TbW C", value: "TbW C" },
-              { label: "TbVS I", value: "TbVS I" },
-              { label: "TbVS II", value: "TbVS II" },
-              { label: "TbVS III", value: "TbVS III" },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationPhase", "null"),
           }),
           this.addButtonToggles("calculationConcept", "Berechnungskonzepte", {
             options: [
@@ -349,23 +185,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             ],
           }),
           this.addRepeatList("materials", "Werkstoffe", {
-            options: [
-              { label: "Beton", value: "Beton" },
-              { label: "Bewehrung", value: "Bewehrung" },
-              { label: "Stahl", value: "Stahl" },
-              { label: "Mauerwerk", value: "Mauerwerk" },
-              { label: "Erdreich/Fels", value: "Erdreich/Fels" },
-              {
-                label: "Kunststoffe/Elastomere/Thermoplaste",
-                value: "Kunststoffe/Elastomere/Thermoplaste",
-              },
-              {
-                label: "Faserverstärkte Werkstoffe",
-                value: "Faserverstärkte Werkstoffe",
-              },
-              { label: "Holz", value: "Holz" },
-              { label: "Leichtmetal", value: "Leichtmetal" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationMaterial",
+              "null",
+            ),
           }),
           this.addSubSection(
             "materialParameters",
@@ -404,11 +227,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                       type: "number",
                       wrappers: ["form-field"],
                       className: "right-align",
-                      unitOptions: <SelectOption[]>[
-                        new SelectOption("f_cm", "f_cm"),
-                        new SelectOption("f_ck", "f_ck"),
-                        new SelectOption("f_cd", "f_cd"),
-                      ],
+                      unitOptions: this.getCodelistForSelect(
+                        "BAW_simulationConcreteUnit",
+                        "null",
+                      ),
                       fieldGroup: [{ key: "value" }, { key: "unit" }],
                     },
                   ),
@@ -419,140 +241,28 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           // subsection only for visual separation
           this.addSubSection(null, "", []),
           this.addRepeatList("materialModel", "Materialmodell", {
-            options: [
-              { label: "Stahl", value: "Stahl" },
-              { label: "Stahl: Fließplateau", value: "Stahl: Fließplateau" },
-              {
-                label: "Stahl: Wiederverfestigung",
-                value: "Stahl: Wiederverfestigung",
-              },
-              {
-                label: "Stahl: multilineare Spannungs-Dehnungslinie",
-                value: "Stahl: multilineare Spannungs-Dehnungslinie",
-              },
-              { label: "Bruchmechanik", value: "Bruchmechanik" },
-              { label: "Hyperelastizität", value: "Hyperelastizität" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationMaterialModel",
+              "null",
+            ),
           }),
           this.addRepeatList("elementTypes", "Elementtypen", {
-            options: [
-              { label: "Stab/Balken", value: "Stab/Balken" },
-              { label: "Scheiben", value: "Scheiben" },
-              { label: "Platten", value: "Platten" },
-              { label: "Schalen", value: "Schalen" },
-              { label: "Volumen", value: "Volumen" },
-              { label: "Federn", value: "Federn" },
-              { label: "Interface/Kontakt", value: "Interface/Kontakt" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationElementType",
+              "null",
+            ),
           }),
           this.addRepeatList("effects", "Einwirkung", {
-            options: [
-              { label: "experimentell", value: "experimentell" },
-              { label: "Eigengewicht", value: "Eigengewicht" },
-              { label: "Innerer Wasserdruck", value: "Innerer Wasserdruck" },
-              { label: "Erddruck", value: "Erddruck" },
-              { label: "Wasserdruck", value: "Wasserdruck" },
-              { label: "Grundwasserdruck", value: "Grundwasserdruck" },
-              {
-                label: "Ständige Einwirkungen",
-                value: "Ständige Einwirkungen",
-              },
-              {
-                label: "Veränderliche Einwirkungen",
-                value: "Veränderliche Einwirkungen",
-              },
-              {
-                label: "Hydrostatische Einwirkungen",
-                value: "Hydrostatische Einwirkungen",
-              },
-              {
-                label: "Hydrodynamische Einwirkungen",
-                value: "Hydrodynamische Einwirkungen",
-              },
-              {
-                label:
-                  "Hydrodynamische Einwirkungen bei Bewegung des Verschlußkörpers",
-                value:
-                  "Hydrodynamische Einwirkungen bei Bewegung des Verschlußkörpers",
-              },
-              { label: "Eisauflast", value: "Eisauflast" },
-              { label: "Eisdruck", value: "Eisdruck" },
-              { label: "Verkehrslast", value: "Verkehrslast" },
-              { label: "Massenkräfte", value: "Massenkräfte" },
-              {
-                label: "Änderung der Stützbedingungen",
-                value: "Änderung der Stützbedingungen",
-              },
-              { label: "Temperatureinflüsse", value: "Temperatureinflüsse" },
-              { label: "Schiffsreibung", value: "Schiffsreibung" },
-              { label: "Schiffsstoß", value: "Schiffsstoß" },
-              { label: "Windlast", value: "Windlast" },
-              {
-                label: "Trossenzugkräfte auf Poller",
-                value: "Trossenzugkräfte auf Poller",
-              },
-              { label: "Frischbetondruck", value: "Frischbetondruck" },
-              {
-                label: "Außergewöhnliche Einwirkungen",
-                value: "Außergewöhnliche Einwirkungen",
-              },
-              {
-                label: "Leckwerden von Luftkammern",
-                value: "Leckwerden von Luftkammern",
-              },
-              {
-                label: "Transport-, Montage- und Reparaturzustände",
-                value: "Transport-, Montage- und Reparaturzustände",
-              },
-              {
-                label: "Weitere vorzugebende Einwirkungen",
-                value: "Weitere vorzugebende Einwirkungen",
-              },
-              {
-                label: "Zweiseitig angetriebene Verschlußkörper",
-                value: "Zweiseitig angetriebene Verschlußkörper",
-              },
-              {
-                label: "Bewegungsbehinderung durch Fremdkörper",
-                value: "Bewegungsbehinderung durch Fremdkörper",
-              },
-              {
-                label: "Außergewöhnliche Einwirkungen des Antriebs im Störfall",
-                value: "Außergewöhnliche Einwirkungen des Antriebs im Störfall",
-              },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationEffect", "null"),
           }),
           this.addRepeatList("physics", "Physik", {
-            options: [
-              { label: "Strukturmechanik", value: "Strukturmechanik" },
-              { label: "Strukturdynamik", value: "Strukturdynamik" },
-              { label: "Fluiddynamik", value: "Fluiddynamik" },
-              { label: "Thermomechanik", value: "Thermomechanik" },
-              { label: "Thermodynamik", value: "Thermodynamik" },
-              {
-                label: "gekoppelt Temperatur/Struktur",
-                value: "gekoppelt Temperatur/Struktur",
-              },
-              {
-                label: "gekoppelt Fluid/Struktur",
-                value: "gekoppelt Fluid/Struktur",
-              },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationPhysics", "null"),
           }),
           this.addRepeatList("analysisType", "Analysetyp", {
-            options: [
-              { label: "Spannungsanalyse", value: "Spannungsanalyse" },
-              { label: "Modalanalyse", value: "Modalanalyse" },
-              { label: "Schwingungsanalyse", value: "Schwingungsanalyse" },
-              { label: "Eigenwertanalyse", value: "Eigenwertanalyse" },
-              {
-                label: "Wärmeleitung und Diffusion",
-                value: "Wärmeleitung und Diffusion",
-              },
-              { label: "Transportproblem", value: "Transportproblem" },
-              { label: "Beulanalyse", value: "Beulanalyse" },
-              { label: "Verformung", value: "Verformung" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationAnalysisType",
+              "null",
+            ),
           }),
         ]),
       ],

@@ -121,39 +121,24 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
       this.addSection("Labordaten", [
         this.addRepeatList("dataCollectionReason", "Anlass der Datenerhebung", {
           required: true,
-          options: [
-            { label: "Kontrollprüfung", value: "Kontrollprüfung" },
-            { label: "Bauwerksuntersuchung", value: "Bauwerksuntersuchung" },
-            { label: "Forschungsvorhaben", value: "Forschungsvorhaben" },
-            { label: "Zulassungsprüfung", value: "Zulassungsprüfung" },
-          ],
+          options: this.getCodelistForSelect(
+            "BAW_laboratoryCollectionReason",
+            "null",
+          ),
         }),
         this.addRepeatList("sampleOrigin", "Probenherkunft", {
           required: true,
-          options: [
-            { label: "Bauwerk", value: "Bauwerk" },
-            { label: "Baustelle", value: "Baustelle" },
-            { label: "Labor", value: "Labor" },
-            { label: "Lieferant/Hersteller", value: "Lieferant/Hersteller" },
-            { label: "Externe (z.B. Uni xy)", value: "Externe (z.B. Uni xy)" },
-          ],
+          options: this.getCodelistForSelect(
+            "BAW_laboratorySampleOrigin",
+            "null",
+          ),
         }),
         this.addRepeatList("testedMaterial", "Geprüftes Material", {
           required: true,
-          options: [
-            { label: "Beton", value: "Beton" },
-            { label: "Boden", value: "Boden" },
-            { label: "Gesteinskörnung", value: "Gesteinskörnung" },
-            { label: "Zement", value: "Zement" },
-            { label: "Schlauchwehr", value: "Schlauchwehr" },
-            { label: "Geotextil", value: "Geotextil" },
-            { label: "Wasserbausteine", value: "Wasserbausteine" },
-            { label: "Wasser", value: "Wasser" },
-            { label: "Beschichtung", value: "Beschichtung" },
-            { label: "Korrosionsprodukte", value: "Korrosionsprodukte" },
-            { label: "Stahl", value: "Stahl" },
-            { label: "Elastomer", value: "Elastomer" },
-          ],
+          options: this.getCodelistForSelect(
+            "BAW_laboratoryTestedMaterial",
+            "null",
+          ),
         }),
         this.addRepeat(
           "testProcedures",
@@ -163,89 +148,10 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
               this.addSelectInline("testMethod", "Mess- und Prüfverfahren", {
                 required: true,
                 className: "flex-3",
-                options: [
-                  {
-                    label:
-                      "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
-                    value:
-                      "Festbetoneigenschaften (i.R.v. Bestandsuntersuchungen)",
-                  },
-                  {
-                    label: "Betondruckfestigkeit",
-                    value: "Betondruckfestigkeit",
-                  },
-                  {
-                    label: "Spaltzugsfestigkeit",
-                    value: "Spaltzugsfestigkeit",
-                  },
-                  { label: "Sieblinie", value: "Sieblinie" },
-                  { label: "Kornform", value: "Kornform" },
-                  { label: "Knickversuch", value: "Knickversuch" },
-                  { label: "Dauerstand", value: "Dauerstand" },
-                  { label: "Zugfestigkeit", value: "Zugfestigkeit" },
-                  { label: "Durchschlagprüfung", value: "Durchschlagprüfung" },
-                  {
-                    label:
-                      "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
-                    value:
-                      "Grundprüfung Im1 (KWW, Kondensation, Flüssigkeit, Abrieb LZA)",
-                  },
-                  {
-                    label:
-                      "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
-                    value:
-                      "Grundprüfung Im2/3 (Flüssigkeit, Salzsprühnebel, Abrieb, LZA)",
-                  },
-                  {
-                    label: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
-                    value: "Verlängerungsprüfung Im1 (KWW, Abrieb)",
-                  },
-                  {
-                    label:
-                      "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
-                    value:
-                      "Verlängerungsprüfung Im2/3 (Salzsprühnebel, Abrieb)",
-                  },
-                  {
-                    label:
-                      "Bestimmung des Widerstandes gegen kathodische Enthaftung",
-                    value:
-                      "Bestimmung des Widerstandes gegen kathodische Enthaftung",
-                  },
-                  {
-                    label: "Zyklische Alterungsprüfung",
-                    value: "Zyklische Alterungsprüfung",
-                  },
-                  {
-                    label:
-                      "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
-                    value:
-                      "Bestimmung des Abriebwiderstandes ohne Wasserlagerung",
-                  },
-                  {
-                    label: "VOC-Gehalt (Gravimetrisch)",
-                    value: "VOC-Gehalt (Gravimetrisch)",
-                  },
-                  {
-                    label: "Gaschromatographie (GC)",
-                    value: "Gaschromatographie (GC)",
-                  },
-                  {
-                    label: "Infrarotspektroskopie (FTIR)",
-                    value: "Infrarotspektroskopie (FTIR)",
-                  },
-                  { label: "Elementanalyse", value: "Elementanalyse" },
-                  {
-                    label: "Simultane Thermische Analyse (STA)",
-                    value: "Simultane Thermische Analyse (STA)",
-                  },
-                  { label: "Mikroskopie", value: "Mikroskopie" },
-                  { label: "Metallographie", value: "Metallographie" },
-                  {
-                    label: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
-                    value: "Korrosionswahrscheinlichkeit nach DIN 50929-3",
-                  },
-                ],
+                options: this.getCodelistForSelect(
+                  "BAW_laboratoryTestMethod",
+                  "null",
+                ),
               }),
               this.addInputInline("instrument", "Messgerät", {
                 className: "flex-2",
@@ -280,10 +186,10 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
               "Sichtbarkeit des Datensatzes",
               {
                 required: true,
-                options: [
-                  { label: "Öffentlich", value: "Öffentlich" },
-                  { label: "Beschränkt", value: "Beschränkt" },
-                ],
+                options: this.getCodelistForSelect(
+                  "BAW_laboratoryDatasetVisibility",
+                  "null",
+                ),
               },
             ),
           ],
