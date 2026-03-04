@@ -28,6 +28,7 @@ import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -57,23 +58,21 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
         val doc = try {
             val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)
             documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // create new dataset
             log.debug("Create new dataset for JsonMergePatch import")
 
             Document().apply {
                 this.uuid = input.uuid
                 this.type = input.type
-                this.data = jacksonObjectMapper().createObjectNode().apply {
-                    put("_type", input.type)
-                    put("_uuid", input.uuid)
-                }
             }
         }
         if (input.jsonPatch == null && input.jsonMerge == null) throw ServerException.withReason("No patch found")
         if (input.jsonPatch != null && input.jsonMerge != null) throw ServerException.withReason("Both patch and merge patch found")
 
-        val patchedNode: JsonNode? = input.jsonPatch?.apply(doc.data) ?: input.jsonMerge?.apply(doc.data)
+        // get complete json as if from internal export
+        val jsonDoc = getRawJsonFromDocument(doc, true)
+        val patchedNode: JsonNode? = input.jsonPatch?.apply(jsonDoc) ?: input.jsonMerge?.apply(jsonDoc)
 
         // TODO: handle title differently since it is not in data-field
 
