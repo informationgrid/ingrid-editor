@@ -20,6 +20,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 
 @Injectable({
   providedIn: "root",
@@ -198,6 +199,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                 fields: [
                   this.addInput("yieldLimit", "Fließgrenze der Bewehrung", {
                     type: "number",
+                    required: true,
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
@@ -210,6 +212,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                 fields: [
                   this.addInput("yieldLimit", "Fließgrenze Stahl", {
                     type: "number",
+                    required: true,
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
@@ -220,20 +223,25 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               }),
               this.addRepeat("concrete", "Betondruckfestigkeit", {
                 fields: [
-                  this.addUnitInput(
-                    "compressiveStrength",
-                    "Betondruckfestigkeit",
-                    {
-                      type: "number",
-                      wrappers: ["form-field"],
-                      className: "right-align",
-                      unitOptions: this.getCodelistForSelect(
-                        "BAW_simulationConcreteUnit",
-                        "null",
-                      ),
-                      fieldGroup: [{ key: "value" }, { key: "unit" }],
+                  this.addInput("compressiveStrength", "Betondruckfestigkeit", {
+                    type: "number",
+                    required: true,
+                    wrappers: ["form-field"],
+                    className: "right-align",
+                  }),
+                  this.addSelectInline("unitOfMeasure", "Maßeinheit", {
+                    options: this.getCodelistForSelect(
+                      "BAW_simulationConcreteUnit",
+                      null,
+                    ),
+                    codelistId: "BAW_simulationConcreteUnit",
+                    allowNoValue: false,
+                    wrappers: ["form-field"],
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
                     },
-                  ),
+                  }),
                 ],
               }),
             ],

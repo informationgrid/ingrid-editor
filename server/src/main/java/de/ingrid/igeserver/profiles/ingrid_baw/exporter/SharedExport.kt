@@ -353,7 +353,7 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
         MaterialParametersBaw(
             reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
             steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength.value"), it.getString("compressiveStrength.unit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
         )
     } else {
         null
