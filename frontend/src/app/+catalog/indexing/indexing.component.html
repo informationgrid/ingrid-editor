@@ -5,52 +5,46 @@
         ></ige-indexing-explanation>
     </ng-container>
 
-    @if (isActivated()) {
-        <ng-container main-header>
-            <ige-job-handler-header
-                [message]="status()"
-                [isRunning]="indexingIsRunning()"
-                (showMore)="showMore.set($event)"
-            >
-                <div class="index-btn">
-                    @if (!indexingIsRunning()) {
-                        <button
-                            mat-flat-button
-                            color="primary"
-                            class="start-index"
-                            [disabled]="!initialized() || hasNoConnections()"
-                            (click)="index()"
-                            matomoClickCategory="Indexing"
-                            matomoClickAction="StartIndexing"
-                        >
-                            Indizieren
-                        </button>
-                    } @else {
-                        <button
-                            mat-flat-button
-                            (click)="cancelIndexing()"
-                            class="cancel-index"
-                            matomoClickCategory="Indexing"
-                            matomoClickAction="CancelIndexing"
-                        >
-                            Indizierung abbrechen
-                        </button>
-                    }
-                </div>
-            </ige-job-handler-header>
-            @if (hasNoConnections()) {
-                <p>
-                    In der Systemkonfiguration unter "Verbindungen" sind noch
-                    keine definiert. Diese müssen von einem
-                    Katalog-Administrator konfiguriert werden, um eine
-                    Indizierung starten zu können.
-                </p>
-            }
-        </ng-container>
-    } @else {
-        Elasticsearch ist nicht im Backend aktiviert, welches für die
-        Indizierung benötigt wird.
-    }
+    <ng-container main-header>
+        <ige-job-handler-header
+            [message]="status()"
+            [isRunning]="indexingIsRunning()"
+            (showMore)="showMore.set($event)"
+        >
+            <div class="index-btn">
+                @if (!indexingIsRunning()) {
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        class="start-index"
+                        [disabled]="!initialized() || hasNoConnections()"
+                        (click)="index()"
+                        matomoClickCategory="Indexing"
+                        matomoClickAction="StartIndexing"
+                    >
+                        Indizieren
+                    </button>
+                } @else {
+                    <button
+                        mat-flat-button
+                        (click)="cancelIndexing()"
+                        class="cancel-index"
+                        matomoClickCategory="Indexing"
+                        matomoClickAction="CancelIndexing"
+                    >
+                        Indizierung abbrechen
+                    </button>
+                }
+            </div>
+        </ige-job-handler-header>
+        @if (hasNoConnections()) {
+            <p>
+                In der Systemkonfiguration unter "Verbindungen" sind noch keine
+                definiert. Diese müssen von einem Katalog-Administrator
+                konfiguriert werden, um eine Indizierung starten zu können.
+            </p>
+        }
+    </ng-container>
 
     <div status class="status" [class.hide]="!showMore()">
         <div class="copy-button-area">

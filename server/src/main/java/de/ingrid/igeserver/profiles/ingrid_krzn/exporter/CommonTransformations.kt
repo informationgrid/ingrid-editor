@@ -56,7 +56,7 @@ fun getInternalReferences(modelTransformer: IngridModelTransformer, codelists: C
         it.title,
         "${getPortalUrl(modelTransformer.transformerConfig)}/trefferanzeige?docuuid=${it.uuidRef}",
         it.explanation,
-        functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information",
+        functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso", true) ?: "information",
     )
 }
 

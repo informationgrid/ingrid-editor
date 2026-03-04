@@ -75,7 +75,6 @@ export class IndexingComponent implements OnInit {
 
   hint = signal<string>("");
   valid = signal<boolean>(true);
-  isActivated = signal<boolean>(false);
   showMore = signal<boolean>(false);
   indexingIsRunning = signal<boolean>(false);
   initialized = signal<boolean>(false);
@@ -94,15 +93,9 @@ export class IndexingComponent implements OnInit {
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private rxStompService: RxStompService,
-  ) {
-    this.isActivated.set(configService.$userInfo.value.useElasticsearch);
-  }
+  ) {}
 
   ngOnInit(): void {
-    if (!this.isActivated()) {
-      return;
-    }
-
     this.indexService
       .fetchLastLog()
       .pipe(tap((data) => this.status.set(data)))

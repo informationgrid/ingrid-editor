@@ -105,7 +105,7 @@
         <gmd:role>
             <gmd:CI_RoleCode
                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                    codeListValue="${address.getCodelist().getValue("505", address.getRelationType(), "iso")}" />
+                    codeListValue="${address.getCodelist().getValue("505", address.getRelationType(), "iso", true)}" />
         </gmd:role>
     @else
         <gmd:role gco:nilReason="inapplicable" />

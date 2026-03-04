@@ -37,7 +37,6 @@ data class UserInfo(
     val version: Version,
     val lastLogin: Date?,
     val externalHelp: String?,
-    val useElasticsearch: Boolean?,
     val permissions: List<String>,
     var parentProfile: String? = null,
     val plugins: List<Behaviour> = emptyList(),

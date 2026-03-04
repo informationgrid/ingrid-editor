@@ -1792,7 +1792,6 @@ export abstract class IngridShared extends BaseDoctype {
             ): boolean => {
               // check if copy task is running
               const metadata = field.options.formState.metadata;
-              console.log(metadata);
               return (
                 !metadata ||
                 !metadata.uuid ||

@@ -368,7 +368,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             version = getVersion(),
             lastLogin = lastLogin,
             externalHelp = generalProperties.externalHelp,
-            useElasticsearch = env.activeProfiles.contains("elasticsearch"),
             permissions = permissions,
             plugins = behaviourService.get(currentCatalog?.identifier ?: "???"),
         )
@@ -394,7 +393,9 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         if (lastLoginKeyCloak != null) {
             when (recentLogins.size) {
                 0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+
                 1 -> recentLogins.add(lastLoginKeyCloak)
+
                 else -> {
                     if (recentLogins.size > 2) {
                         logger.warn("More than two recent logins received! Using last 2 values")

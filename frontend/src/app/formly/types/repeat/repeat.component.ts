@@ -81,7 +81,7 @@ export class RepeatComponent
 
   canBeDragged = false;
 
-  groupedFields: any;
+  groupedFields: { [key: string]: number[] };
   groupedFieldsKeys = signal<string[]>([]);
   menuSections: any;
 
@@ -158,7 +158,10 @@ export class RepeatComponent
   }
 
   private createGroupedFields(value: any[]) {
-    this.groupedFields = groupByWithIndexReference(value, (i) => i._type);
+    this.groupedFields = groupByWithIndexReference(
+      value,
+      (i) => i?._type ?? "none",
+    );
     this.groupedFieldsKeys.set(Object.keys(this.groupedFields));
   }
 }
