@@ -218,3 +218,13 @@ textarea {
 .mat-mdc-standard-chip.mdc-evolution-chip--disabled {
   opacity: 0.7 !important;
 }
+
+.no-wrap.mat-mdc-list-option {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  --mat-list-list-item-one-line-container-height: auto;
+
+  .mdc-list-item__primary-text {
+    white-space: normal;
+  }
+}

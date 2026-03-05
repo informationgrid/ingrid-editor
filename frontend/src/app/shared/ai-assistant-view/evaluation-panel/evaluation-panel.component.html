@@ -1,0 +1,42 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header expandedHeight="48px" collapsedHeight="48px">
+        KI-Analyse
+    </mat-expansion-panel-header>
+
+    @switch (loadState()) {
+        @case ("default") {
+            <div class="flex-col gap-12">
+                <div>
+                    Den Datensatz durch KI analysieren und bewerten, um mögliche
+                    Fehler und Verbesserungspotenziale zu identifizieren.
+                </div>
+                <button matButton="filled" color="primary" (click)="evaluate()">
+                    Analyse starten
+                </button>
+            </div>
+        }
+        @case ("loaded") {
+            <div class="flex-col gap-24">
+                <div>
+                    {{ evaluationResult().summary }}
+                </div>
+
+                @for (evaluation of evaluations(); track evaluation) {
+                    <ige-evaluation-entry
+                        [evaluation]="evaluation"
+                        (onSuggestionApply)="onSuggestionApply($event)"
+                    />
+                }
+
+                <mat-divider></mat-divider>
+
+                <button matButton="filled" color="primary" (click)="evaluate()">
+                    Erneut analysieren
+                </button>
+            </div>
+        }
+        @case ("loading") {
+            <ige-hint-loading-view [hints]="loadingHints" />
+        }
+    }
+</mat-expansion-panel>
