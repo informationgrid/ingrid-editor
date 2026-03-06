@@ -74,8 +74,6 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
         val jsonDoc = getRawJsonFromDocument(doc, true)
         val patchedNode: JsonNode? = input.jsonPatch?.apply(jsonDoc) ?: input.jsonMerge?.apply(jsonDoc)
 
-        // TODO: handle title differently since it is not in data-field
-
         return jacksonObjectMapper().treeToValue(patchedNode, JsonNode::class.java)
     }
 
