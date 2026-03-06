@@ -222,6 +222,7 @@ export class RepeatDistributionDetailListComponent
             index === undefined
               ? this.getEmptyEntry()
               : JSON.parse(JSON.stringify(this.model[this.key + ""][index])),
+          isNew: index === undefined,
         },
         delayFocusTrap: true,
       })

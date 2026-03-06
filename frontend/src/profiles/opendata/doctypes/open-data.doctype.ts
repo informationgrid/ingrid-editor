@@ -147,9 +147,6 @@ export class OpenDataDoctype extends BaseDoctype {
                   required: true,
                   hasInlineContextHelp: true,
                   contextHelpId: "distribution_link",
-                  validators: {
-                    validation: ["url"],
-                  },
                   onClick: (docUuid, uri, $event) => {
                     this.uploadService.downloadFile(docUuid, uri, $event);
                   },

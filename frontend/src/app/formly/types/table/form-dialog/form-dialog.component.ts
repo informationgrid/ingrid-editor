@@ -31,6 +31,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
+  isNew: boolean;
 }
 
 @Component({
@@ -50,7 +51,7 @@ export class FormDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
     private dlgRef: MatDialogRef<string>,
   ) {
-    this.isExistingEntry = data.model != null;
+    this.isExistingEntry = data.isNew === false;
     this.titleText.set(
       this.isExistingEntry ? "Eintrag bearbeiten" : "Eintrag hinzufügen",
     );
@@ -63,7 +64,7 @@ export class FormDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.isExistingEntry) {
       setTimeout(() => {
-        // this.form.markAllAsTouched();
+        this.form.markAllAsTouched();
         // @ts-ignore
         // this.form._updateTreeValidity();
       });

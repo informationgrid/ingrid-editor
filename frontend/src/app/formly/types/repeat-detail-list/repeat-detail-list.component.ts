@@ -131,6 +131,7 @@ export class RepeatDetailListComponent
         data: <FormDialogData>{
           fields: [...this.props.fields, dialogType],
           model: existingModel,
+          isNew: index === null,
         },
       })
       .afterClosed()

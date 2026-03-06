@@ -185,6 +185,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         hasBackdrop: true,
         data: {
           fields: this.linkFields,
+          isNew: true,
         } as FormDialogData,
         delayFocusTrap: true,
       })
@@ -203,6 +204,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         data: {
           fields: this.linkFields,
           model: this.model[index],
+          isNew: false,
         } as FormDialogData,
       })
       .afterClosed()
