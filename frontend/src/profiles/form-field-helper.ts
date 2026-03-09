@@ -101,6 +101,7 @@ export interface RepeatOptions extends Options {
   hasExtendedGap?: boolean;
   showBorder?: boolean;
   addButtonTitle?: string;
+  allwaysShowButtonTitle?: boolean;
   noDrag?: boolean;
   maxLength?: number;
 }
@@ -626,6 +627,7 @@ export class FormFieldHelper {
         hasExtendedGap: options?.hasExtendedGap,
         showBorder: options?.showBorder,
         addButtonTitle: options?.addButtonTitle,
+        allwaysShowButtonTitle: options?.allwaysShowButtonTitle,
         noDrag: options?.noDrag,
         attributes: { "data-cy": `repeat-${id}` },
       },

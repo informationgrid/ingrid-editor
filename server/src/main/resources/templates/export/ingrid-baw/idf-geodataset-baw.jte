@@ -1,7 +1,10 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.InstrumentBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.NormBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestProcedure
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestedMaterialBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
@@ -109,28 +112,34 @@ aggregateInformation = @`
                     <probenherkunft>${origin}</probenherkunft>
                 </Probenherkunft>
             @endfor
-            @for(String material : lab.getTestedMaterial())
+            @for(TestedMaterialBaw tm : lab.getTestedMaterials())
                 <GeprueftesMaterial>
-                    <geprueftesMaterial>${material}</geprueftesMaterial>
-                </GeprueftesMaterial>
-            @endfor
-            @for(TestProcedure tp : lab.getTestProcedures())
-                <MessUndPruefverfahren>
-                    @if(TransformationTools.hasValue(tp.getTestMethod()))
-                        <messUndPruefverfahren>${tp.getTestMethod()}</messUndPruefverfahren>
+                    @if(TransformationTools.hasValue(tm.getMaterial()))
+                        <geprueftesMaterial>${tm.getMaterial()}</geprueftesMaterial>
                     @endif
-                    @if(TransformationTools.hasValue(tp.getInstrument()))
-                        <messgeraete>${tp.getInstrument()}</messgeraete>
-                    @endif
-                    @if(TransformationTools.hasValue(tp.getStandard()))
-                        <Norm>
-                            <normBezeichnung>${tp.getStandard()}</normBezeichnung>
-                            @if(TransformationTools.hasValue(tp.getStandardIssueDate()))
-                                <ausgabedatum>${tp.getStandardIssueDate()}</ausgabedatum>
+                    @for(TestProcedure tp : tm.getTestProcedures())
+                        <MessUndPruefverfahren>
+                            @if(TransformationTools.hasValue(tp.getTestMethod()))
+                                <messUndPruefverfahren>${tp.getTestMethod()}</messUndPruefverfahren>
                             @endif
-                        </Norm>
-                    @endif
-                </MessUndPruefverfahren>
+                            @for(InstrumentBaw inst : tp.getInstruments())
+                                <Messgeraete>
+                                    @if(TransformationTools.hasValue(inst.getInstrument()))
+                                        <messgeraete>${inst.getInstrument()}</messgeraete>
+                                    @endif
+                                    @for(NormBaw norm : inst.getNorms())
+                                        <Norm>
+                                            <normBezeichnung>${norm.getStandard()}</normBezeichnung>
+                                            @if(TransformationTools.hasValue(norm.getStandardIssueDate()))
+                                                <ausgabedatum>${norm.getStandardIssueDate()}</ausgabedatum>
+                                            @endif
+                                        </Norm>
+                                    @endfor
+                                </Messgeraete>
+                            @endfor
+                        </MessUndPruefverfahren>
+                    @endfor
+                </GeprueftesMaterial>
             @endfor
             <Zulassungspruefung>
                 <zulassungspruefung>
