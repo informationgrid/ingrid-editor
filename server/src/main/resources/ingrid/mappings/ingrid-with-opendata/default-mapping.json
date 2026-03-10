@@ -23,7 +23,7 @@
         }
       }
     },
-    "distribution": {
+    "distributions": {
       "properties": {
         "license": {
           "type": "nested",
@@ -48,7 +48,7 @@
         },
         "description": {
           "type": "text",
-          "store": true,
+          "store": false,
           "copy_to": "content"
         },
         "availability": {
