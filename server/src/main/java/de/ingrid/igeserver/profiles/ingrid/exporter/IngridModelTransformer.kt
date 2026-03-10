@@ -849,7 +849,7 @@ open class IngridModelTransformer(
                 Reference(
                     it.title ?: url,
                     KeyValue("9990", null),
-                    null,
+                    it.description,
                     url,
                     null,
                     KeyValue(it.applicationProfile, null),

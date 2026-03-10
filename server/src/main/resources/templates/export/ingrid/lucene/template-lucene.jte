@@ -254,6 +254,11 @@
         "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
     @endfor
     ],
+    "t017_url_ref.explanation": [
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
+        "${entry.get().getExplanation()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "t017_url_ref.special_ref": [
     @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
         @if(entry.get().getType().getKey() != null)
@@ -282,6 +287,11 @@
     "object_reference.obj_name": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "object_reference.explanation": [
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
+        "${entry.get().getExplanation()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.obj_class": [
