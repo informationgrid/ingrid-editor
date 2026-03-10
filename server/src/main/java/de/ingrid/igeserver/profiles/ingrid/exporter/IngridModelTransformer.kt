@@ -110,7 +110,7 @@ open class IngridModelTransformer(
     var resourceIdentifier: String? = null
     val data = model.data
     val purpose = data.resource?.purpose
-    val status = codelists.getValue("523", data.temporal.status, "iso")
+    val status = codelists.getValue("523", data.temporal.status, "iso", true)
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
@@ -155,7 +155,7 @@ open class IngridModelTransformer(
             else -> ""
         }
     val maintenanceAndUpdateFrequency =
-        codelists.getValue("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency, "iso")
+        codelists.getValue("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency, "iso", true)
 
     fun getUserDefinedMaintenanceFrequency(): String? {
         val number = data.maintenanceInformation?.userDefinedMaintenanceFrequency?.number
@@ -250,7 +250,7 @@ open class IngridModelTransformer(
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val georectified = gridSpatialRepresentation?.georectified
     val georefenceable = gridSpatialRepresentation?.georeferenceable
-    val cellGeometry = codelists.getValue("509", gridSpatialRepresentation?.cellGeometry, "iso")
+    val cellGeometry = codelists.getValue("509", gridSpatialRepresentation?.cellGeometry, "iso", true)
 
     val gridType = when (gridSpatialRepresentation?.type?.key) {
         "basis" -> "GridSpatialRepresentation"
@@ -379,11 +379,11 @@ open class IngridModelTransformer(
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639v2Value(KeyValue(it, null)) }
             ?: emptyList()
 
-    val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso")
+    val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso", true)
     val topicCategories = data.topicCategories?.map { codelists.getValue("527", it) } ?: emptyList()
-    val topicCategoriesISO = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
+    val topicCategoriesISO = data.topicCategories?.map { codelists.getValue("527", it, "iso", true) } ?: emptyList()
 
-    val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso") }
+    val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso", true) }
         ?: emptyList()
     val spatialResolution = data.resolution ?: emptyList()
 
@@ -502,7 +502,7 @@ open class IngridModelTransformer(
     val serviceTypeKeywords = Thesaurus(
         keywords = data.service.classification?.map {
             KeywordIso(
-                name = codelists.getValue("5200", it, "iso"),
+                name = codelists.getValue("5200", it, "iso", true),
                 link = null,
             )
         }
@@ -663,6 +663,7 @@ open class IngridModelTransformer(
         if (model.type == "InGridInformationSystem") "5300" else "5100",
         type ?: data.service.type,
         "iso",
+        true,
     )
 
     val serviceTypeVersions = data.service.version?.map { getVersion(it, data.service.type?.key) } ?: emptyList()
@@ -773,7 +774,7 @@ open class IngridModelTransformer(
     private val externalReferences: List<ServiceUrl> by lazy {
         references.filter { it.uuidRef.isNullOrEmpty() }.mapNotNull {
             // if type not in codelist, use "information" #6017
-            val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
+            val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso", true) ?: "information"
             val applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de")
             val attachedField = if (it.type.key == null) {
                 null
@@ -864,7 +865,7 @@ open class IngridModelTransformer(
                 Reference(
                     it.title ?: url,
                     KeyValue("9990", null),
-                    null,
+                    it.description,
                     url,
                     null,
                     KeyValue(it.applicationProfile, null),
@@ -1166,19 +1167,24 @@ open class IngridModelTransformer(
         }
     }
 
-    private fun addressIsPointContactMD(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
+    fun getLastPublishedDocument(uuid: String): Document? {
+        if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
+        return try {
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
+                .also { cache.documents[uuid] = it }
+        } catch (e: Exception) {
+            log.warn("Could not get last published document: $uuid")
+            null
+        }
+    }
+
+    private fun addressIsPointContactMD(it: AddressRefModel) = codelists.getValue("505", it.type, "iso", true).equals("pointOfContactMd")
 
     private fun addressHasEmail(it: AddressModelTransformer) = it.emails.isNotEmpty()
 
-    private fun addressIsDistributor(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("distributor")
+    private fun addressIsDistributor(it: AddressRefModel) = codelists.getValue("505", it.type, "iso", true).equals("distributor")
 
-    private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso") != null
-
-    fun handleContent(value: String?): String? {
-        if (value == null) return null
-        contentField.add(value)
-        return value
-    }
+    private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso", true) != null
 
     fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
         distributionFormats.isNotEmpty() ||
@@ -1216,7 +1222,7 @@ open class IngridModelTransformer(
         true -> if (codelists.catalogLanguage == "en") {
             codelists.getValue("6005", result.specification, "en")
         } else {
-            codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue(
+            codelists.getValue("6005", result.specification, "iso", true) ?: codelists.getValue(
                 "6005",
                 result.specification,
                 "de",

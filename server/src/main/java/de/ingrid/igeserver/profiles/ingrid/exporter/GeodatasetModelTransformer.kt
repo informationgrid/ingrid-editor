@@ -138,6 +138,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
             }
 
             "relativeInternalPositionalAccuracy" -> return "28"
+
             else -> ""
         }
     }
@@ -218,6 +219,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
             }
 
             "relativeInternalPositionalAccuracy" -> meterValueUnit("relative internal positional accuracy")
+
             else -> ""
         }
     }
@@ -266,6 +268,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                         return@mapNotNull null
                     }
                 }
+
                 else -> {
                     title = it.title
                     identifier = it.identifier
@@ -276,7 +279,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                 title,
                 identifier,
                 date = it.date,
-                dateType = (codelists.getValue("502", it.dateType, "iso")),
+                dateType = (codelists.getValue("502", it.dateType, "iso", true)),
                 uuidRef = it.uuidRef,
                 url = it.url,
             )

@@ -368,7 +368,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             version = getVersion(),
             lastLogin = lastLogin,
             externalHelp = generalProperties.externalHelp,
-            useElasticsearch = env.activeProfiles.contains("elasticsearch"),
             permissions = permissions,
             plugins = behaviourService.get(currentCatalog?.identifier ?: "???"),
         )

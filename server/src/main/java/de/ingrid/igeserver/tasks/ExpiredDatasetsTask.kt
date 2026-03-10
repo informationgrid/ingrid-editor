@@ -180,7 +180,7 @@ class ExpiredDatasetsTask(
         query.setParameter("catalog", catalog)
         query.setParameter("date", date)
         if (limitDate != null) query.setParameter("beginDate", beginDate)
-        if (expiryState != null)query.setParameter("expiryState", expiryState.value)
+        if (expiryState != null) query.setParameter("expiryState", expiryState.value)
         return (query.resultList as List<Array<Any?>>).map { mapToDataset(it) }
     }
 
@@ -227,6 +227,7 @@ class ExpiredDatasetsTask(
                 recipient,
                 subject,
                 text,
+                true,
             )
         }
     }

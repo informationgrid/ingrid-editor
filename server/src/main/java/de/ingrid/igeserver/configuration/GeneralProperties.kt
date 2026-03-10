@@ -36,4 +36,5 @@ data class GeneralProperties(
     val indexPageSize: Int = 100,
     val openAIToken: String? = null,
     val frontendStacktrace: Boolean = false,
+    val actuatorPermitAll: Boolean = false,
 )

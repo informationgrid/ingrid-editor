@@ -101,6 +101,7 @@ export class QuickSearchComponent implements OnInit {
       this.documentService.findInTitleOrUuid(value, 5, true),
     ])
       .pipe(
+        takeUntilDestroyed(this.destroyRef),
         catchError(() => of([this.emptySearchResult, this.emptySearchResult])),
       )
       .subscribe((result) => {

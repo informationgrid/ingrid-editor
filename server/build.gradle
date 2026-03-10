@@ -93,6 +93,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation('org.springframework.boot:spring-boot-starter-actuator') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {

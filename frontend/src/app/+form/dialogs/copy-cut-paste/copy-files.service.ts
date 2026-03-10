@@ -50,7 +50,7 @@ export class CopyFilesService extends SnackBarMessageService {
     this.jobs.set(data.jobId, data);
 
     // remove finished jobs
-    if (data.progress >= 100) {
+    if (data.progress >= 100 || data.totalFiles === 0) {
       this.jobs.delete(data.jobId);
     }
 

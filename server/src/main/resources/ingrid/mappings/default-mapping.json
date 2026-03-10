@@ -3,13 +3,17 @@
     "enabled": true
   },
   "properties": {
-    "collection.id": {
-      "type": "keyword",
-      "store": true
-    },
-    "collection.name": {
-      "type": "keyword",
-      "store": true
+    "collection": {
+      "properties": {
+        "id": {
+          "type": "keyword",
+          "store": true
+        },
+        "name": {
+          "type": "keyword",
+          "store": true
+        }
+      }
     },
     "spatial": {
       "type": "nested",
@@ -71,13 +75,20 @@
       "type": "keyword",
       "store": true
     },
+    "t01_object.id": {
+      "type": "keyword",
+      "store": true,
+      "copy_to": "content"
+    },
     "t01_object.obj_id": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t01_object.obj_class": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t01_object.org_obj_id": {
       "type": "keyword",
@@ -111,6 +122,10 @@
     "t011_obj_geo.datasource_uuid": {
       "type": "keyword"
     },
+    "t021_communication.comm_value": {
+      "type": "text",
+      "copy_to": "content"
+    },
     "t022_adr_adr.adr_to_id": {
       "type": "keyword"
     },
@@ -123,7 +138,13 @@
     },
     "object_reference.obj_name": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "object_reference.explanation": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "object_reference.obj_class": {
       "type": "keyword",
@@ -159,7 +180,8 @@
     },
     "t02_address.adr_id": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t02_address.typ": {
       "type": "keyword",
@@ -325,7 +347,13 @@
     },
     "location": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "location_description": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "x1": {
       "type": "double",
@@ -361,7 +389,8 @@
     },
     "t04_search.searchterm": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t017_url_ref.url_link": {
       "type": "keyword",
@@ -369,7 +398,13 @@
     },
     "t017_url_ref.content": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "t017_url_ref.explanation": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "t017_url_ref.special_ref": {
       "type": "keyword",
@@ -427,7 +462,8 @@
     },
     "topic_categories": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     }
   }
 }

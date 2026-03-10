@@ -151,7 +151,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         } catch (e: Exception) {
             // TODO: log error for frontend!
             log.error("Error relaying index message: " + call.method, e)
-            return null
+            throw e
         }
     }
 

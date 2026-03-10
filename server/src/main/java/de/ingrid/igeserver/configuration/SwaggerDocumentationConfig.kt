@@ -80,7 +80,10 @@ class SwaggerDocumentationConfig(private val stringToCatalogImportOptionsConvert
 //            .setCachePeriod(3600)
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
-                override fun getResource(resourcePath: String, location: Resource): Resource {
+                override fun getResource(resourcePath: String, location: Resource): Resource? {
+                    if (resourcePath.startsWith("actuator")) {
+                        return null
+                    }
                     val requestedResource = location.createRelative(resourcePath)
                     return if (requestedResource.exists() && requestedResource.isReadable) {
                         requestedResource

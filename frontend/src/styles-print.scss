@@ -4,7 +4,8 @@
   .mat-mdc-dialog-surface,
   .cdk-global-overlay-wrapper,
   .cdk-overlay-pane {
-    position: static !important;
+    position: absolute !important;
+    top: 0 !important;
   }
 
   #print-content {
@@ -34,5 +35,9 @@
   ige-one-column-wrapper > div > formly-field-mat-input,
   ige-date-range-type {
     padding-top: 10px;
+  }
+
+  button.infoIcon {
+    display: none;
   }
 }

@@ -46,6 +46,8 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.setAdminAuthentication
+import io.micrometer.observation.Observation
+import io.micrometer.observation.ObservationRegistry
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -74,6 +76,7 @@ class IndexingTask(
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties,
     private val connectionService: ConnectionService,
+    private val observationRegistry: ObservationRegistry,
 ) : IgeJob() {
 
     override val log = logger()
@@ -114,44 +117,50 @@ class IndexingTask(
         }
 
         try {
-            // get all targets we want to export to
-            val targets = getExporterConfigForCatalog(catalog, catalogProfile)
+            Observation.createNotStarted("indexing", observationRegistry)
+                .contextualName("index-target-$catalogId")
+//                .lowCardinalityKeyValue("type", target.category.value)
+                .observe {
+                    // get all targets we want to export to
+                    val targets = getExporterConfigForCatalog(catalog, catalogProfile)
 
-            setTotalDatasetsToMessage(message, targets)
+                    // make sure the ingrid_meta index is there and remove targets not reachable
+                    val validTargets = handleInformationIndex(targets, message)
 
-            // make sure the ingrid_meta index is there
-            handleInformationIndex(targets)
+                    setTotalDatasetsToMessage(message, validTargets)
 
-            run indexingLoop@{
-                targets
-                    .forEach { target ->
-                        val plugInfo = createIPlugInfo(catalog, target)
-                        log.debug("Running export on thread: ${Thread.currentThread()}")
+                    run indexingLoop@{
+                        validTargets
+                            .forEach { target ->
+                                val plugInfo = createIPlugInfo(catalog, target)
+                                log.debug("Running export on thread: ${Thread.currentThread()}")
 
-                        IndexTargetWorker(
-                            target,
-                            message,
-                            catalogProfile,
-                            notify,
-                            indexService,
-                            catalogId,
-                            generalProperties,
-                            plugInfo,
-                            postIndexPipe,
-                            settingsService,
-                            cancellations,
-                            (currentThread ?: Thread.currentThread()).threadId(),
-                        ).indexAll()
+                                // 2. Everything inside this block is "observed"
+                                IndexTargetWorker(
+                                    target,
+                                    message,
+                                    catalogProfile,
+                                    notify,
+                                    indexService,
+                                    catalogId,
+                                    generalProperties,
+                                    plugInfo,
+                                    postIndexPipe,
+                                    settingsService,
+                                    cancellations,
+                                    (currentThread ?: Thread.currentThread()).threadId(),
+                                ).indexAll()
 
-                        // make sure to write everything to elasticsearch
-                        // if another indexing starts right afterward, then the previous index could still be there
-                        try {
-                            target.target.flush()
-                        } catch (ex: ServerException) {
-                            notify.addAndSendMessageError(message, ex, "Error during flush: ")
-                        }
+                                // make sure to write everything to elasticsearch
+                                // if another indexing starts right afterward, then the previous index could still be there
+                                try {
+                                    target.target.flush()
+                                } catch (ex: ServerException) {
+                                    notify.addAndSendMessageError(message, ex, "Error during flush: ")
+                                }
+                            }
                     }
-            }
+                }
         } catch (_: InterruptedException) {
             notify.addAndSendMessageError(message, null, "Indexing was cancelled")
         } catch (ex: Exception) {
@@ -199,11 +208,25 @@ class IndexingTask(
         )
     }
 
-    private fun handleInformationIndex(configs: List<ExtendedExporterConfig>) {
-        configs
-            .map { it.target }
-            .toSet()
-            .forEach { it.checkAndCreateInformationIndex() }
+    private fun handleInformationIndex(configs: List<ExtendedExporterConfig>, message: IndexMessage): List<ExtendedExporterConfig> {
+        val targets = configs.map { it.target }.toSet()
+        val failedTargets = mutableSetOf<IIndexManager>()
+        for (target in targets) {
+            try {
+                target.checkAndCreateInformationIndex()
+            } catch (e: Exception) {
+                val msg = "Failed to check/create information index for target ${target.name}"
+                observationRegistry.currentObservation?.error(e)
+                log.error(msg, e)
+                notify.addAndSendMessageError(message, e, "$msg: ")
+                failedTargets.add(target)
+            }
+        }
+        return if (failedTargets.isEmpty()) {
+            configs
+        } else {
+            configs.filter { it.target !in failedTargets }
+        }
     }
 
     fun getExporterConfigForCatalog(

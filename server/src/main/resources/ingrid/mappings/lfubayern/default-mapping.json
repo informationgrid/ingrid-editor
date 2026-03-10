@@ -3,13 +3,17 @@
     "enabled": true
   },
   "properties": {
-    "collection.id": {
+    "collection": {
+      "properties": {
+        "id": {
       "type": "keyword",
       "store": true
     },
-    "collection.name": {
+        "name": {
       "type": "keyword",
       "store": true
+        }
+      }
     },
     "spatial": {
       "type": "nested",
@@ -55,6 +59,10 @@
       "type": "keyword",
       "store": true
     },
+    "capabilities_download_url": {
+      "type": "keyword",
+      "store": true
+    },
     "capabilities_url_with_client": {
       "type": "keyword",
       "store": true
@@ -71,13 +79,20 @@
       "type": "keyword",
       "store": true
     },
+    "t01_object.id": {
+      "type": "keyword",
+      "store": true,
+      "copy_to": "content"
+    },
     "t01_object.obj_id": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t01_object.obj_class": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t01_object.org_obj_id": {
       "type": "keyword",
@@ -110,6 +125,10 @@
     },
     "t011_obj_geo.datasource_uuid": {
       "type": "keyword"
+    },
+    "t021_communication.comm_value": {
+      "type": "text",
+      "copy_to": "content"
     },
     "t022_adr_adr.adr_to_id": {
       "type": "keyword"
@@ -159,7 +178,8 @@
     },
     "t02_address.adr_id": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t02_address.typ": {
       "type": "keyword",
@@ -361,7 +381,8 @@
     },
     "t04_search.searchterm": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     },
     "t017_url_ref.url_link": {
       "type": "keyword",
@@ -427,7 +448,8 @@
     },
     "topic_categories": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
     }
   }
 }
