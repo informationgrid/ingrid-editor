@@ -64,7 +64,8 @@ class LuceneExport : GeodatasetBase() {
                 """,
             )
 
-            result shouldContain """"object_use_constraint.license_key" : [ "2" ]"""
+            // license key is removed for now, since it conflicts with portal because codelist cannot be determined
+            result shouldContain """"object_use_constraint.license_key" : [ "" ]"""
             result shouldContain """"object_use_constraint.license_value" : [ "Die Daten sind urheberrechtlich geschützt. Der Datensatz wird geldleistungsfrei mit der Lizenz zur freien Nutzung (https://sg.geodatenzentrum.de/web_public/gdz/lizenz/webatlasde_freie_nutzung.pdf) zur Verfügung gestellt. Der Quellenvermerk ist zu beachten." ]"""
         }
     }
