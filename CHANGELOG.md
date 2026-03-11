@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.2.5 (11.03.2026)
+
+### Features
+
+* Beschreibungselement "Herstellungsprozess" sollte in ein normales editierbares Textfeld geändert werden (#8632)
+
+    
 ## 8.2.4 (26.02.2026)
 
 ### Features
