@@ -64,7 +64,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
                 ),
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgSource"),
                 json,
-                bkgUseConstraintsTitleKey,
+                null, // TODO: bkgUseConstraintsTitleKey should be used but then it cannot be correctly transformed in portal since codelist is not clear
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgComment"),
             ),
         )
