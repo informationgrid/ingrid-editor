@@ -20,6 +20,7 @@
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
+import { OpenDataInitProfile } from "./opendata/open-data-init-profile.service";
 
 @Component({
   template: "",
@@ -27,6 +28,7 @@ import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 })
 class InGridWithOpendataComponent extends InGridComponent {
   openDataDoc = inject(OpenDataDoctype);
+  private initOpendata = inject(OpenDataInitProfile);
 
   protected getDocTypes = () => [
     this.folder,
@@ -49,6 +51,8 @@ class InGridWithOpendataComponent extends InGridComponent {
 
     this.isoView.isoExportFormat = "indexOpenData";
     // this.modifyFormFieldConfiguration();
+
+    this.initOpendata.initProfile();
   }
 
   /*

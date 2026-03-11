@@ -23,56 +23,29 @@ import { ProfileService } from "../app/services/profile.service";
 import { ReportsService } from "../app/+reports/reports.service";
 import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
-import { CodelistStore } from "../app/store/codelist/codelist.store";
-import { filter, take } from "rxjs/operators";
-import { toObservable } from "@angular/core/rxjs-interop";
+import { OpenDataInitProfile } from "./opendata/open-data-init-profile.service";
 
 @Component({
   template: "",
   standalone: true,
 })
 export class OpenDataComponent {
-  private codelistStore = inject(CodelistStore);
-
-  private codelists$ = toObservable(this.codelistStore.entityMap);
+  private profileService = inject(ProfileService);
+  protected reportsService = inject(ReportsService);
+  protected opendata = inject(OpenDataDoctype);
+  private folder = inject(FolderDoctype);
+  private opendataAddress = inject(OpenDataAddressDoctype);
+  private init = inject(OpenDataInitProfile);
 
   // TODO: bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
-  constructor(
-    service: ProfileService,
-    // contextHelpService: ContextHelpService,
-    reportsService: ReportsService,
-    opendata: OpenDataDoctype,
-    folder: FolderDoctype,
-    opendataAddress: OpenDataAddressDoctype,
-    // isoViewPlugin: IsoViewPlugin,
-  ) {
-    const types = [opendata, folder, opendataAddress];
+  constructor() {
+    const types = [this.opendata, this.folder, this.opendataAddress];
 
-    service.registerDoctypes(types);
+    this.profileService.registerDoctypes(types);
 
-    reportsService.setFilter((route) => route.path != "url-check");
-    // rename codelist entry (should be done in codelist repo!?)
-    this.codelists$
-      .pipe(
-        filter((map) => map["505"] !== undefined),
-        take(1),
-      )
-      .subscribe((data) => this.modifyAddressTypeCodelist(data));
-  }
+    this.reportsService.setFilter((route) => route.path != "url-check");
 
-  private modifyAddressTypeCodelist(data) {
-    const modified505 = {
-      ...data["505"],
-      entries: data["505"].entries.map((item) =>
-        item.id === "10"
-          ? {
-              ...item,
-              fields: { ...item.fields, de: "Veröffentlichende Stelle" },
-            }
-          : item,
-      ),
-    };
-    this.codelistStore.updateCodelist(modified505);
+    this.init.initProfile();
   }
 }
 

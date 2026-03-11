@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,26 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
-import { NgxFlowModule } from "@flowjs/ngx-flow";
-import { OpenDataComponent } from "./profile-opendata";
+import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
+import { Injectable } from "@angular/core";
 
-@Component({
-  template: "",
-  standalone: true,
-  imports: [NgxFlowModule],
-})
-class BmiComponent extends OpenDataComponent {
-  constructor() {
-    super();
-    this.reportsService.setFilter((route) => route.path != "url-check");
-    this.opendata.options.spatialTypes = ["free", "wkt"];
-    this.opendata.options.temporalLegacy = true;
-  }
-}
-
-export class ProfilePack {
-  static getMyComponent() {
-    return BmiComponent;
-  }
+@Injectable({ providedIn: "root" })
+export class OpendataPlugin extends Plugin {
+  id = "plugin.opendata.flexibleDoctype";
+  name = "Erlaube Datensätze, die nicht Open-Data sind";
+  description =
+    "Erlaubt Datensätze zu veröffentlichen, die nicht Open-Data-konform sind";
+  defaultActive = false;
+  group = "Datensätze";
 }
