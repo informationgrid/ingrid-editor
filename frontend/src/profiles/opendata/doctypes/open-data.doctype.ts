@@ -162,7 +162,7 @@ export class OpenDataDoctype extends BaseDoctype {
             expressions: {
               hide: (field: FormlyFieldConfig) =>
                 field.model.isHvd !== true &&
-                field.model.properties.isHvd !== true,
+                field.model.properties?.isHvd !== true,
             },
             options: this.getCodelistForSelect(
               "hvdCategories",
