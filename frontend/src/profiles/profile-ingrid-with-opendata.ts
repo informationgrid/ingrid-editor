@@ -47,8 +47,6 @@ class InGridWithOpendataComponent extends InGridComponent {
   constructor() {
     super();
 
-    this.openDataDoc.iconClass = "opendata";
-
     this.isoView.isoExportFormat = "indexOpenData";
     // this.modifyFormFieldConfiguration();
 

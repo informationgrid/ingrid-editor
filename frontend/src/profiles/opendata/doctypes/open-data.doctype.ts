@@ -150,11 +150,14 @@ export class OpenDataDoctype extends BaseDoctype {
           }),
           this.showOpendata
             ? null
-            : this.addCheckbox("isHvd", "High-Value-Dataset (HVD)", {
-                className: "flex-1",
-                click: (field: FormlyFieldConfig) =>
-                  this.handleHVDClick(field).subscribe(),
-              }),
+            : this.addGroupSimple("properties", [
+                <FormlyFieldConfig>{ key: "isOpenData", defaultValue: true },
+                this.addCheckbox("isHvd", "High-Value-Dataset (HVD)", {
+                  className: "flex-1",
+                  click: (field: FormlyFieldConfig) =>
+                    this.handleHVDClick(field).subscribe(),
+                }),
+              ]),
           this.addRepeatList("hvdCategories", "HVD-Kategorien", {
             view: "chip",
             showSearch: true,
