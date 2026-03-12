@@ -30,6 +30,7 @@ import kotlin.math.abs
 @Profile("ogc-api | csw-t")
 class ApiValidationService(
     private val catalogService: CatalogService,
+    private val documentService: DocumentService,
 ) {
 
     fun validateCollection(collectionId: String) {
@@ -66,5 +67,11 @@ class ApiValidationService(
         val long2 = array[1].first // bbox[2]
         val lat2 = array[1].second // bbox[3]
         if (long1 > long2 && lat1 > lat2) throw ClientException.withReason("Bbox Error: Wrong order of bbox values.")
+    }
+
+    fun validateOnlyPublishedVersionExists(collectionId: String, recordId: String) {
+        val catalog = catalogService.getCatalogById(collectionId)
+        val record = documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(catalog, recordId)
+        if (record.state != DocumentState.PUBLISHED) throw ClientException.withReason("Record with ID '$recordId' is not published or has an additional unpublished version.")
     }
 }
