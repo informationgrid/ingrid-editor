@@ -41,7 +41,7 @@ export class OpenDataDoctype extends BaseDoctype {
 
   label = "Open Data Dokument";
 
-  iconClass = "Fachaufgabe";
+  iconClass = "dataset";
 
   showOpendata: boolean = false;
 
