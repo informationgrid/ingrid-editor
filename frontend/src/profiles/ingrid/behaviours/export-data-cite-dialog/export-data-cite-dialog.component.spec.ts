@@ -223,7 +223,7 @@ describe("ExportDataCiteDialogComponent", () => {
     await spectator.fixture.whenStable();
 
     expect(spectator.query(".padding-vertical")).toHaveText(
-      "Das Dokument ist noch nicht vorhanden und wird neu erstellt.",
+      'Das Dokument ist noch nicht vorhanden oder nicht im Status "veröffentlicht" und wird neu erstellt.',
     );
   });
 
