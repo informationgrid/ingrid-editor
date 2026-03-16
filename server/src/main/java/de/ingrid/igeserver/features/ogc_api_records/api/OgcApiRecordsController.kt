@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
@@ -377,7 +378,7 @@ class OgcApiRecordsController(
             explode = Explode.FALSE,
         ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<JsonNode> {
-        if (!patchingEnabled) throw UnsupportedOperationException("Patching is disabled. Please set ogc.enable.patching=true in application.properties to enable it.")
+        if (!patchingEnabled) throw ClientException.withReason("Patching is disabled. Please set ogc.enable.patching=true in application.properties to enable it.")
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("state"))
 
