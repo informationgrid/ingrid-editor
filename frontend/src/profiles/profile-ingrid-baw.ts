@@ -61,7 +61,8 @@ class InGridBawComponent extends InGridComponent {
     this.software,
     this.simulation,
     this.measurement,
-    this.laboratoryData,
+    // TODO: Re-enable when laboratory data implementation is finalized.
+    // this.laboratoryData,
     this.person,
     this.organisation,
     this.publicationAddress,
