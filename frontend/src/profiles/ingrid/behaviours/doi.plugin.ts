@@ -27,6 +27,9 @@ import { ExportDataCiteDialogComponent } from "./export-data-cite-dialog/export-
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { MatCheckboxChange } from "@angular/material/checkbox";
+import { FormUtils } from "../../../app/+form/form.utils";
+import { FormStateService } from "../../../app/+form/form-state.service";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 @Injectable({
   providedIn: "root",
@@ -36,6 +39,8 @@ export class DoiPlugin extends Plugin {
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
   private behaviourService = inject(BehaviourService);
+  private formStateService = inject(FormStateService);
+  private documentService = inject(DocumentService);
 
   id = "plugin.ingrid.doi";
   name = "DOI-Felder anzeigen";
@@ -89,7 +94,7 @@ export class DoiPlugin extends Plugin {
     {
       key: "dataCiteDetailURL",
       type: "input",
-      defaultValue: "https://baw.de/trefferanzeige?docuuid=",
+      defaultValue: "https://datenrepository.baw.de/trefferanzeige?docuuid=",
       wrappers: ["form-field"],
       // className: "padding",
       props: {
@@ -133,9 +138,14 @@ export class DoiPlugin extends Plugin {
     this.removeDataCiteMenu();
   }
 
-  private exportDataCite() {
-    console.log("Export DataCite");
-    this.dialog.open(ExportDataCiteDialogComponent);
+  private async exportDataCite() {
+    const handled = await FormUtils.handleDirtyForm(
+      this.formStateService,
+      this.documentService,
+      this.dialog,
+      this.forAddress(),
+    );
+    if (handled) this.dialog.open(ExportDataCiteDialogComponent);
   }
 
   private removeDataCiteMenu() {
