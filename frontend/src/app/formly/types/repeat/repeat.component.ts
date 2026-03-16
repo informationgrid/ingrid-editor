@@ -54,7 +54,6 @@ export interface RepeatProps extends FormlyFieldProps {
   hasExtendedGap: boolean;
   showBorder: boolean;
   addButtonTitle: string;
-  allwaysShowButtonTitle?: boolean;
 }
 
 @Component({

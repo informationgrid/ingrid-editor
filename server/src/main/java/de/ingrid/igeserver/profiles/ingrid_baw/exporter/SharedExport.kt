@@ -277,32 +277,20 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
         node.getString("value") ?: node.asText()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
-    val testedMaterials = data.getPath("testedMaterials")?.map { tm ->
-        TestedMaterialBaw(
-            material = tm.getString("material") ?: tm.getString("material.value"),
-            testProcedures = tm.getPath("testProcedures")?.map { tp ->
-                TestProcedure(
-                    testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
-                    instruments = tp.getPath("instruments")?.map { inst ->
-                        InstrumentBaw(
-                            instrument = inst.getString("instrument"),
-                            norms = inst.getPath("norms")?.map { norm ->
-                                NormBaw(
-                                    standard = norm.getString("standard"),
-                                    standardIssueDate = norm.getString("standardIssueDate"),
-                                )
-                            } ?: emptyList(),
-                        )
-                    } ?: emptyList(),
-                )
-            } ?: emptyList(),
+    val testProcedures = data.getPath("testProcedures")?.map { tp ->
+        TestProcedure(
+            testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
+            instrument = tp.getString("instrument"),
+            standard = tp.getString("standard"),
+            standardIssueDate = tp.getString("standardIssueDate"),
         )
     } ?: emptyList()
 
     return LaboratoryDataBaw(
         dataCollectionReason = getList("dataCollectionReason"),
         sampleOrigin = getList("sampleOrigin"),
-        testedMaterials = testedMaterials,
+        testedMaterial = getList("testedMaterial"),
+        testProcedures = testProcedures,
         testNumber = data.getString("approvalProcedure.testNumber"),
         systemSetup = data.getString("approvalProcedure.systemSetup"),
         datasetVisibility = getList("approvalProcedure.datasetVisibility"),
@@ -427,30 +415,18 @@ data class BautechnikMeasurementBaw(
     val parameters: List<String>,
 )
 
-data class NormBaw(
-    val standard: String?,
-    val standardIssueDate: String?,
-)
-
-data class InstrumentBaw(
-    val instrument: String?,
-    val norms: List<NormBaw>,
-)
-
 data class TestProcedure(
     val testMethod: String?,
-    val instruments: List<InstrumentBaw>,
-)
-
-data class TestedMaterialBaw(
-    val material: String?,
-    val testProcedures: List<TestProcedure>,
+    val instrument: String?,
+    val standard: String?,
+    val standardIssueDate: String?,
 )
 
 data class LaboratoryDataBaw(
     val dataCollectionReason: List<String>,
     val sampleOrigin: List<String>,
-    val testedMaterials: List<TestedMaterialBaw>,
+    val testedMaterial: List<String>,
+    val testProcedures: List<TestProcedure>,
     val testNumber: String?,
     val systemSetup: String?,
     val datasetVisibility: List<String>,

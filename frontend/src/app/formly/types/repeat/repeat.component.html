@@ -77,9 +77,7 @@
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
-        [showTitle]="
-            groupedFieldsKeys().length == 0 || props.allwaysShowButtonTitle
-        "
+        [showTitle]="groupedFieldsKeys().length == 0"
         [matTooltip]="
             groupedFieldsKeys().length == 0 ? undefined : 'Hinzufügen'
         "

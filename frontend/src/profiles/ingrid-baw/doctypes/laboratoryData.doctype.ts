@@ -133,25 +133,42 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
             "null",
           ),
         }),
-        this.addRepeat("testedMaterials", "Material", {
+        this.addRepeatList("testedMaterial", "Geprüftes Material", {
           required: true,
-          fieldGroupClassName: "",
-          wrappers: ["full-panel"],
-          showBorder: true,
-          addButtonTitle: "Material hinzufügen",
-          allwaysShowButtonTitle: true,
-          fields: [
-            this.addSelectInline("material", null, {
-              required: true,
-              className: "flex-1 bold-label",
-              placeholder: "Material auswählen",
-              options: this.getCodelistForSelect(
-                "BAW_laboratoryTestedMaterial",
-                "null",
-              ),
-            }),
-          ],
+          options: this.getCodelistForSelect(
+            "BAW_laboratoryTestedMaterial",
+            "null",
+          ),
         }),
+        this.addRepeat(
+          "testProcedures",
+          "Mess- und Prüfverfahren / Gerät / Norm",
+          {
+            fields: [
+              this.addSelectInline("testMethod", "Mess- und Prüfverfahren", {
+                required: true,
+                className: "flex-3",
+                options: this.getCodelistForSelect(
+                  "BAW_laboratoryTestMethod",
+                  "null",
+                ),
+              }),
+              this.addInputInline("instrument", "Messgerät", {
+                className: "flex-2",
+              }),
+              this.addInputInline("standard", "Norm", {
+                className: "flex-2",
+              }),
+              this.addDatepickerInline(
+                "standardIssueDate",
+                "Ausgabedatum der Norm",
+                {
+                  className: "flex-1",
+                },
+              ),
+            ],
+          },
+        ),
 
         this.addSubSection(
           "approvalProcedure",
@@ -187,58 +204,4 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
 
     return fieldConfig;
   };
-
-  getForMats() {
-    return [
-      this.addRepeat("testProcedures", "Messverfahren", {
-        required: true,
-        fieldGroupClassName: "",
-        wrappers: ["full-panel"],
-        showBorder: true,
-        addButtonTitle: "Verfahren hinzufügen",
-        allwaysShowButtonTitle: true,
-        fields: [
-          this.addSelectInline("testMethod", null, {
-            required: true,
-            className: "flex-1",
-            placeholder: "Verfahren auswählen",
-            options: this.getCodelistForSelect(
-              "BAW_laboratoryTestMethod",
-              "null",
-            ),
-          }),
-          this.addRepeat("instruments", "Gerät", {
-            fieldGroupClassName: "",
-            wrappers: ["full-panel"],
-            showBorder: true,
-            addButtonTitle: "Gerät hinzufügen",
-            allwaysShowButtonTitle: true,
-            fields: [
-              this.addInputInline("instrument", null, {
-                className: "flex-1",
-                placeholder: "Gerätename",
-              }),
-              this.addRepeat("norms", "Normen", {
-                wrappers: ["full-panel"],
-                className: "compact-list",
-                showBorder: false,
-                addButtonTitle: "Norm hinzufügen",
-                allwaysShowButtonTitle: true,
-                fields: [
-                  this.addInputInline("standard", null, {
-                    className: "flex-2",
-                    placeholder: "Norm",
-                  }),
-                  this.addDatepickerInline("standardIssueDate", null, {
-                    className: "flex-1",
-                    placeholder: "Ausgabedatum",
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ];
-  }
 }
