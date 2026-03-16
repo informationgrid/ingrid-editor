@@ -79,7 +79,6 @@ describe("ExportDataCiteDialogComponent", () => {
   };
 
   const mockDocument = {
-    event: "publish",
     doi: "10.1234/test-doi",
     creators: [{ name: "Organization Creator", nameType: "Organizational" }],
     alternateIdentifiers: [
@@ -95,7 +94,7 @@ describe("ExportDataCiteDialogComponent", () => {
         dateType: "Created",
       },
     ],
-    types: { resourceTypeGeneral: "Text" },
+    types: { resourceType: undefined, resourceTypeGeneral: "Text" },
     titles: [
       {
         lang: "de",
