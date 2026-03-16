@@ -48,7 +48,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.waterMeasurement(), this.bautechnikMeasurement()],
+          fieldGroup: [this.waterMeasurement()],
         },
         props: {
           docType: "Messdaten",
@@ -57,50 +57,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     );
     return fieldConfig;
   };
-
-  bautechnikMeasurement() {
-    return {
-      name: "bautechnikMeasurement",
-      expressions: {
-        hide: (field: FormlyFieldConfig) =>
-          field.model?.type !== "bautechnikMeasurement",
-      },
-      props: {
-        label: "Messdaten (Bautechnik)",
-      },
-      fieldGroup: [
-        this.addSection("Messdaten (Bautechnik)", [
-          { key: "type" },
-          this.addRepeatList("researchGoal", "Untersuchungsziel", {
-            required: true,
-            options: this.getCodelistForSelect(
-              "BAW_measurementResearchGoal",
-              "null",
-            ),
-          }),
-          this.addSelect("measurementType", "Art der Messung", {
-            wrappers: ["panel", "form-field"],
-            options: this.getCodelistForSelect("BAW_measurementType", "null"),
-          }),
-          this.addInput("windID", "Objekt-Ident-Nr. WInD", {
-            wrappers: ["panel", "form-field"],
-          }),
-          this.addAutocomplete("measurementDirection", "Messrichtung", {
-            options: this.getCodelistForSelect(
-              "BAW_measurementDirection",
-              "null",
-            ),
-          }),
-          this.addRepeatList("parameter", "Messgrößen", {
-            options: this.getCodelistForSelect(
-              "BAW_measurementParameter",
-              "null",
-            ),
-          }),
-        ]),
-      ],
-    };
-  }
 
   waterMeasurement() {
     return {

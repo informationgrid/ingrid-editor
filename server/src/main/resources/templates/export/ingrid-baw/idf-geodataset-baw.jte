@@ -159,30 +159,6 @@ aggregateInformation = @`
             </Zulassungspruefung>
         </labordaten>
     @endif
-    !{var bautechnikM = page.getBautechnikMeasurement();}
-    @if(bautechnikM != null)
-        <bautechnikMessdaten>
-            @for(String goal : bautechnikM.getResearchGoals())
-                <Untersuchungsziel>
-                    <untersuchungsziel>${goal}</untersuchungsziel>
-                </Untersuchungsziel>
-            @endfor
-            @if(TransformationTools.hasValue(bautechnikM.getMeasurementType()))
-                <artDerMessung>${bautechnikM.getMeasurementType()}</artDerMessung>
-            @endif
-            @if(TransformationTools.hasValue(bautechnikM.getWindID()))
-                <objektIdentNrWind>${bautechnikM.getWindID()}</objektIdentNrWind>
-            @endif
-            @if(TransformationTools.hasValue(bautechnikM.getMeasurementDirection()))
-                <messrichtung>${bautechnikM.getMeasurementDirection()}</messrichtung>
-            @endif
-            @for(String param : bautechnikM.getParameters())
-                <Messgroessen>
-                    <messgroessen>${param}</messgroessen>
-                </Messgroessen>
-            @endfor
-        </bautechnikMessdaten>
-    @endif
     !{var bautechnikS = page.getBautechnikSimulation();}
     @if(bautechnikS != null)
         <bautechnikSimulationsdaten>

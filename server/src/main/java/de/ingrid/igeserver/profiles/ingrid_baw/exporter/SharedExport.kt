@@ -310,27 +310,6 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     )
 }
 
-fun getBautechnikMeasurement(transformer: IngridModelTransformer): BautechnikMeasurementBaw? {
-    if (transformer.doc.type != "BawMeasurement") return null
-    val data = transformer.doc.data.getPath("measurementPhases")?.find { it.getString("type") == "bautechnikMeasurement" } ?: return null
-
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
-    }?.filter { it.isNotBlank() } ?: emptyList()
-
-    return BautechnikMeasurementBaw(
-        researchGoals = getList("researchGoal"),
-        measurementType = when (data.getString("measurementType")) {
-            "ongoing" -> "Dauermessung"
-            "single" -> "Einzelmessung"
-            else -> data.getString("measurementType")
-        },
-        windID = data.getString("windID"),
-        measurementDirection = data.getString("measurementDirection"),
-        parameters = getList("parameter"),
-    )
-}
-
 fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
     val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
