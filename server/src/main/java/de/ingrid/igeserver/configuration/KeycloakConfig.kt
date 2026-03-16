@@ -90,6 +90,12 @@ internal class KeycloakConfig {
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/actuator/health", permitAll)
+                if (generalProperties.actuatorPermitAll) {
+                    authorize("/actuator/**", permitAll)
+                } else {
+                    authorize("/actuator/**", hasAnyRole("ige-super-admin"))
+                }
                 authorize(anyRequest, permitAll)
             }
             oauth2Login {}

@@ -2,7 +2,7 @@
 name: DevGuard DevSecOps
 
 on:
-    push:
+    workflow_dispatch:
 
 permissions:
     contents: read

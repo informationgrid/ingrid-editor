@@ -138,7 +138,13 @@
     },
     "object_reference.obj_name": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "object_reference.explanation": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "object_reference.obj_class": {
       "type": "keyword",
@@ -341,7 +347,13 @@
     },
     "location": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "location_description": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "x1": {
       "type": "double",
@@ -386,7 +398,13 @@
     },
     "t017_url_ref.content": {
       "type": "keyword",
-      "store": true
+      "store": true,
+      "copy_to": "content"
+    },
+    "t017_url_ref.explanation": {
+      "type": "text",
+      "store": false,
+      "copy_to": "content"
     },
     "t017_url_ref.special_ref": {
       "type": "keyword",
