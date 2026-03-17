@@ -26,7 +26,6 @@
     "distributions": {
       "properties": {
         "license": {
-          "type": "nested",
           "properties": {
             "url": {
               "type": "text",
