@@ -151,8 +151,6 @@ aggregateInformation = @`
         </labordaten>
     @endif
     !{var bautechnikS = page.getBautechnikSimulation();}
-<%--
-    TODO: Reenable after release or replace with ISO Mapping when clear
     @if(bautechnikS != null)
         <bautechnikSimulationsdaten>
             @if(bautechnikS.getSoftware() != null)
@@ -266,7 +264,7 @@ aggregateInformation = @`
                 </Analysetyp>
             @endfor
         </bautechnikSimulationsdaten>
-    @endif--%>
+    @endif
 `,
 additionalIdentification = @`
     <measurementInfo>
