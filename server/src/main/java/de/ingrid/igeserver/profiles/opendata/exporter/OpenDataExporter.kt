@@ -28,6 +28,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
@@ -50,6 +51,7 @@ data class OpenDataTransformerConfig(
     override val doc: Document,
     override val documentService: DocumentService,
     override val tags: List<String>,
+    val flexOpenData: Boolean = false,
 ) : GeneralTransformerConfig
 
 @Service
@@ -60,6 +62,7 @@ class OpenDataExporter(
     @Lazy val documentService: DocumentService,
     val generalProperties: GeneralProperties,
     val openDataRDFExporter: OpenDataRDFExporter,
+    val behaviourService: BehaviourService,
 ) : IgeExporter {
 
     val log = logger()
@@ -93,6 +96,7 @@ class OpenDataExporter(
     private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = JsonStringOutput().apply {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
+        val flexOpenData = behaviourService.get(catalogId, "plugin.opendata.flexibleDoctype")?.active ?: false
         val config = OpenDataTransformerConfig(
             catalogId,
             codelistTransformer,
@@ -102,6 +106,7 @@ class OpenDataExporter(
             doc,
             documentService,
             options.tags,
+            flexOpenData,
         )
         val catalog = catalogService.getCatalogById(catalogId)
 
