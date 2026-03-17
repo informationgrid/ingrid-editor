@@ -287,10 +287,6 @@ export class OpenDataDoctype extends BaseDoctype {
               ]),
             ],
             validators: {
-              requiredEntry: {
-                expression: (ctrl) => ctrl.value?.length > 0,
-                message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
-              },
               requiredUrlAndLicense: {
                 expression: (ctrl) =>
                   ctrl.value?.every(
