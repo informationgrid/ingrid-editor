@@ -33,7 +33,7 @@
               "store": true
             },
             "name": {
-              "type": "text",
+              "type": "keyword",
               "store": true
             },
             "attribution_by_text": {
