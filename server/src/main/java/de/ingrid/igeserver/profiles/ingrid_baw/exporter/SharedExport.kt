@@ -299,7 +299,7 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
         testProcedures = testProcedures,
         testNumber = data.getString("approvalProcedure.testNumber"),
         systemSetup = data.getString("approvalProcedure.systemSetup"),
-        datasetVisibility = getList("approvalProcedure.datasetVisibility", "BAW_laboratoryDatasetVisibility"),
+        datasetVisibility = data.getPath("approvalProcedure.datasetVisibility")?.mapToKeyValue().let { transformer.codelists.getValue("BAW_laboratoryDatasetVisibility", it) ?: it?.value },
         isApprovalProcedure = data.getBoolean("properties.isApprovalProcedure") ?: false,
     )
 }
@@ -438,7 +438,7 @@ data class LaboratoryDataBaw(
     val testProcedures: List<TestProcedure>,
     val testNumber: String?,
     val systemSetup: String?,
-    val datasetVisibility: List<String>,
+    val datasetVisibility: String?,
     val isApprovalProcedure: Boolean,
 )
 

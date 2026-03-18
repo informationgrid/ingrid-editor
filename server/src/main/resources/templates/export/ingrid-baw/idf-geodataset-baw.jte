@@ -142,11 +142,11 @@ aggregateInformation = @`
                 @if(TransformationTools.hasValue(lab.getSystemSetup()))
                     <aufbauDesSystems>${lab.getSystemSetup()}</aufbauDesSystems>
                 @endif
-                @for(String visibility : lab.getDatasetVisibility())
+                @if(TransformationTools.hasValue(lab.getDatasetVisibility()))
                     <Sichtbarkeit>
-                        <sichtbarkeit>${visibility}</sichtbarkeit>
+                        <sichtbarkeit>${lab.getDatasetVisibility()}</sichtbarkeit>
                     </Sichtbarkeit>
-                @endfor
+                @endif
             </Zulassungspruefung>
         </labordaten>
     @endif
