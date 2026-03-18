@@ -203,7 +203,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
-                      text: "f_y",
+                      text: "N/mm²",
                     },
                   }),
                 ],
@@ -216,7 +216,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
-                      text: "f_y",
+                      text: "N/mm²",
                     },
                   }),
                 ],
@@ -226,10 +226,13 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                   this.addInput("compressiveStrength", "Betondruckfestigkeit", {
                     type: "number",
                     required: true,
-                    wrappers: ["form-field"],
+                    wrappers: ["form-field", "addons"],
                     className: "right-align",
+                    suffix: {
+                      text: "N/mm²",
+                    },
                   }),
-                  this.addSelectInline("unitOfMeasure", "Maßeinheit", {
+                  this.addSelectInline("unitOfMeasure", "Kennwert", {
                     options: this.getCodelistForSelect(
                       "BAW_simulationConcreteUnit",
                       null,
