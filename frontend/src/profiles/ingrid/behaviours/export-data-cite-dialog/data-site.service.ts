@@ -28,7 +28,7 @@ import {
 import { GeneralStore } from "../../../../app/store/general.store";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
-import { catchError, map } from "rxjs/operators";
+import { catchError, map, switchMap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -40,13 +40,15 @@ export class DataSiteService {
   private codelistStore = inject(CodelistStore);
   private behaviourService = inject(BehaviourService);
 
-  doiExists(doi: string): Observable<boolean> {
+  doiExists(doi: string, authHeader: any = {}): Observable<boolean> {
     const dataciteURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
-    return this.http.get<any>(`${dataciteURL}/dois/${doi}`).pipe(
-      map(() => true),
-      catchError(() => of(false)),
-    );
+    return this.http
+      .get<any>(`${dataciteURL}/dois/${doi}`, { headers: authHeader })
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
   }
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
@@ -58,7 +60,7 @@ export class DataSiteService {
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data
         .dataCiteDetailURL;
     try {
-      const result = {
+      return {
         // event: "publish", // do not publish since dataset cannot be removed from datacite anymore
         doi: model.publication.doi,
         creators: [await this.getCreator(model.pointOfContact)],
@@ -95,8 +97,6 @@ export class DataSiteService {
         geoLocations: this.getGeoLocations(model),
         url: `${portalURL}${metadata.uuid}`,
       };
-
-      return result;
     } catch (error) {
       console.error("Failed to generate DataCite metadata:", error);
       throw error;
@@ -107,7 +107,6 @@ export class DataSiteService {
     username: string,
     password: string,
     attributes: any,
-    create: boolean,
   ): Observable<any> {
     const dataciteURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
@@ -122,13 +121,21 @@ export class DataSiteService {
       },
     };
 
-    if (create) {
-      return this.http.put<any>(`${dataciteURL}/dois/${attributes.doi}`, body, {
-        headers,
-      });
-    } else {
-      return this.http.post<any>(`${dataciteURL}/dois`, body, { headers });
-    }
+    return this.doiExists(attributes.doi, headers).pipe(
+      switchMap((exists) => {
+        if (exists) {
+          return this.http.put<any>(
+            `${dataciteURL}/dois/${attributes.doi}`,
+            body,
+            {
+              headers,
+            },
+          );
+        } else {
+          return this.http.post<any>(`${dataciteURL}/dois`, body, { headers });
+        }
+      }),
+    );
   }
 
   private async getCreator(contacts: any[]): Promise<any> {
@@ -345,17 +352,20 @@ export class DataSiteService {
 
   private getGeoLocations(model: any): any[] {
     return (
-      model.spatial?.references?.map((spatial: any) => {
-        return {
-          geoLocationBox: {
-            eastBoundLongitude: spatial.value.lon1,
-            northBoundLatitude: spatial.value.lat1,
-            southBoundLatitude: spatial.value.lat2,
-            westBoundLongitude: spatial.value.lon2,
-          },
-          geoLocationPlace: spatial.title,
-        };
-      }) ?? []
+      model.spatial?.references
+        ?.map((spatial: any) => {
+          if (!spatial.value) return null;
+          return {
+            geoLocationBox: {
+              eastBoundLongitude: spatial.value.lon1,
+              northBoundLatitude: spatial.value.lat1,
+              southBoundLatitude: spatial.value.lat2,
+              westBoundLongitude: spatial.value.lon2,
+            },
+            geoLocationPlace: spatial.title,
+          };
+        })
+        .filter((geoLocation: any) => geoLocation !== null) ?? []
     );
   }
 }
