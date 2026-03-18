@@ -95,7 +95,6 @@ export class ExportDataCiteDialogComponent {
             result.username,
             result.password,
             this.document(),
-            this.doiExistsResource.value(),
           ),
         ),
         catchError((error) => {
