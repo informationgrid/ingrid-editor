@@ -203,7 +203,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
-                      text: "f_y",
+                      text: "N/mm²",
                     },
                   }),
                 ],
@@ -216,7 +216,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                     className: "right-align",
                     wrappers: ["form-field", "addons"],
                     suffix: {
-                      text: "f_y",
+                      text: "N/mm²",
                     },
                   }),
                 ],
@@ -229,7 +229,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                     wrappers: ["form-field"],
                     className: "right-align",
                   }),
-                  this.addSelectInline("unitOfMeasure", "Maßeinheit", {
+                  this.addSelectInline("unitOfMeasure", "Kennwert", {
                     options: this.getCodelistForSelect(
                       "BAW_simulationConcreteUnit",
                       null,
