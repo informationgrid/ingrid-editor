@@ -273,27 +273,33 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     if (transformer.doc.type != "BawLaboratoryData") return null
     val data = transformer.doc.data
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String, codelistId: String? = null): List<String> = data.getPath(path)?.map { node ->
+        node.mapToKeyValue()?.let { kv ->
+            if (codelistId != null) {
+                transformer.codelists.getValue(codelistId, kv) ?: kv.value
+            } else {
+                kv.value
+            }
+        } ?: node.asText()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     val testProcedures = data.getPath("testProcedures")?.map { tp ->
         TestProcedure(
-            testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
-            instrument = tp.getString("instrument"),
+            testMethod = tp.getPath("testMethod")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_laboratoryTestMethod", it) ?: it.value } ?: tp.getString("testMethod"),
+            instrument = tp.getPath("instrument")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_laboratoryInstrument", it) ?: it.value } ?: tp.getString("instrument"),
             standard = tp.getString("standard"),
             standardIssueDate = tp.getString("standardIssueDate"),
         )
     } ?: emptyList()
 
     return LaboratoryDataBaw(
-        dataCollectionReason = getList("dataCollectionReason"),
-        sampleOrigin = getList("sampleOrigin"),
-        testedMaterial = getList("testedMaterial"),
+        dataCollectionReason = getList("dataCollectionReason", "BAW_laboratoryCollectionReason"),
+        sampleOrigin = getList("sampleOrigin", "BAW_laboratorySampleOrigin"),
+        testedMaterial = getList("testedMaterial", "BAW_laboratoryTestedMaterial"),
         testProcedures = testProcedures,
         testNumber = data.getString("approvalProcedure.testNumber"),
         systemSetup = data.getString("approvalProcedure.systemSetup"),
-        datasetVisibility = getList("approvalProcedure.datasetVisibility"),
+        datasetVisibility = getList("approvalProcedure.datasetVisibility", "BAW_laboratoryDatasetVisibility"),
         isApprovalProcedure = data.getBoolean("properties.isApprovalProcedure") ?: false,
     )
 }
@@ -302,14 +308,20 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     if (transformer.doc.type != "BawSimulation") return null
     val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String, codelistId: String? = null): List<String> = data.getPath(path)?.map { node ->
+        node.mapToKeyValue()?.let { kv ->
+            if (codelistId != null) {
+                transformer.codelists.getValue(codelistId, kv) ?: kv.value
+            } else {
+                kv.value
+            }
+        } ?: node.asText()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     val softwareNode = data.getPath("software")
     val software = if (softwareNode != null) {
         SoftwareBaw(
-            name = softwareNode.getString("name"),
+            name = softwareNode.getPath("name")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_simulationSoftware", it) ?: it.value } ?: softwareNode.getString("name"),
             version = softwareNode.getString("version"),
         )
     } else {
@@ -332,7 +344,12 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
         MaterialParametersBaw(
             reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
             steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.map { c ->
+                ConcreteBaw(
+                    c.getDouble("compressiveStrength"),
+                    c.getPath("unitOfMeasure")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_simulationConcreteUnit", it) ?: it.value } ?: c.getString("unitOfMeasure.value"),
+                )
+            } ?: emptyList(),
         )
     } else {
         null
@@ -340,21 +357,21 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
 
     return BautechnikSimulationBaw(
         software = software,
-        objects = getList("object"),
-        objectParts = getList("objectPart"),
-        researchGoals = getList("researchGoal"),
-        spatialDimension = data.getString("dimension.spatialDimension"),
+        objects = getList("object", "BAW_simulationObject"),
+        objectParts = getList("objectPart", "BAW_simulationObjectPart"),
+        researchGoals = getList("researchGoal", "BAW_simulationResearchGoal"),
+        spatialDimension = data.getPath("dimension.spatialDimension")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_simulationSpatialDimension", it) ?: it.value } ?: data.getString("dimension.spatialDimension"),
         timeDimension = data.getBoolean("dimension.timeDimension"),
-        levels = getList("level"),
-        phases = getList("phase"),
+        levels = getList("level", "BAW_simulationLevel"),
+        phases = getList("phase", "BAW_simulationPhase"),
         calculationConcept = calculationConcept,
-        materials = getList("materials"),
+        materials = getList("materials", "BAW_simulationMaterial"),
         materialParameters = materialParameters,
-        materialModels = getList("materialModel"),
-        elementTypes = getList("elementTypes"),
-        effects = getList("effects"),
-        physics = getList("physics"),
-        analysisTypes = getList("analysisType"),
+        materialModels = getList("materialModel", "BAW_simulationMaterialModel"),
+        elementTypes = getList("elementTypes", "BAW_simulationElementType"),
+        effects = getList("effects", "BAW_simulationEffect"),
+        physics = getList("physics", "BAW_simulationPhysics"),
+        analysisTypes = getList("analysisType", "BAW_simulationAnalysisType"),
     )
 }
 
@@ -405,14 +422,6 @@ data class BautechnikSimulationBaw(
     val effects: List<String>,
     val physics: List<String>,
     val analysisTypes: List<String>,
-)
-
-data class BautechnikMeasurementBaw(
-    val researchGoals: List<String>,
-    val measurementType: String?,
-    val windID: String?,
-    val measurementDirection: String?,
-    val parameters: List<String>,
 )
 
 data class TestProcedure(
