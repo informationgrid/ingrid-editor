@@ -19,8 +19,7 @@
  */
 import { inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../../app/services/document/document.service";
-import { HttpClient } from "@angular/common/http";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import {
   DocumentWithMetadata,
   Metadata,
@@ -28,27 +27,27 @@ import {
 import { GeneralStore } from "../../../../app/store/general.store";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
-import { catchError, map, switchMap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
 })
 export class DataSiteService {
-  private http = inject(HttpClient);
   private documentService = inject(DocumentService);
   private generalStore = inject(GeneralStore);
   private codelistStore = inject(CodelistStore);
   private behaviourService = inject(BehaviourService);
 
-  doiExists(doi: string, authHeader: any = {}): Observable<boolean> {
+  async doiExists(doi: string, authHeader: any = {}): Promise<boolean> {
     const dataciteURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
-    return this.http
-      .get<any>(`${dataciteURL}/dois/${doi}`, { headers: authHeader })
-      .pipe(
-        map(() => true),
-        catchError(() => of(false)),
-      );
+    try {
+      const response = await fetch(`${dataciteURL}/dois/${doi}`, {
+        headers: authHeader,
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 
   async createDataCite(model: any, metadata: Metadata): Promise<any> {
@@ -103,11 +102,11 @@ export class DataSiteService {
     }
   }
 
-  uploadDOI(
+  async uploadDOI(
     username: string,
     password: string,
     attributes: any,
-  ): Observable<any> {
+  ): Promise<any> {
     const dataciteURL =
       this.behaviourService.getBehaviour("plugin.ingrid.doi").data.dataCiteURL;
     let headers: any = {
@@ -121,21 +120,23 @@ export class DataSiteService {
       },
     };
 
-    return this.doiExists(attributes.doi, headers).pipe(
-      switchMap((exists) => {
-        if (exists) {
-          return this.http.put<any>(
-            `${dataciteURL}/dois/${attributes.doi}`,
-            body,
-            {
-              headers,
-            },
-          );
-        } else {
-          return this.http.post<any>(`${dataciteURL}/dois`, body, { headers });
-        }
-      }),
-    );
+    const exists = await this.doiExists(attributes.doi, headers);
+    const url = exists
+      ? `${dataciteURL}/dois/${attributes.doi}`
+      : `${dataciteURL}/dois`;
+    const method = exists ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw response;
+    }
+
+    return response.json();
   }
 
   private async getCreator(contacts: any[]): Promise<any> {

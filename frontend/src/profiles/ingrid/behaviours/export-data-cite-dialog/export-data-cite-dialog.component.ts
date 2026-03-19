@@ -30,13 +30,11 @@ import {
   CredentialsDialogData,
 } from "../../../../app/formly/types/update-get-capabilities/credentials-dialog/credentials-dialog.component";
 import { catchError, filter } from "rxjs/operators";
-import { of, switchMap } from "rxjs";
-import { rxResource } from "@angular/core/rxjs-interop";
+import { from, of, switchMap } from "rxjs";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { JsonViewComponent } from "../../../../app/shared/json-view/json-view.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "ige-export-data-cite-dialog",
@@ -69,11 +67,11 @@ export class ExportDataCiteDialogComponent {
   });
   document = computed(() => this.documentResource.value());
 
-  doiExistsResource = rxResource({
+  doiExistsResource = resource({
     params: () => ({
       doi: this.formService.getForm().value.publication.doi,
     }),
-    stream: ({ params }) => this.dataSiteService.doiExists(params.doi),
+    loader: ({ params }) => this.dataSiteService.doiExists(params.doi),
   });
   protected readonly error = signal<string | null>(null);
 
@@ -91,10 +89,12 @@ export class ExportDataCiteDialogComponent {
       .pipe(
         filter((result) => result),
         switchMap((result) =>
-          this.dataSiteService.uploadDOI(
-            result.username,
-            result.password,
-            this.document(),
+          from(
+            this.dataSiteService.uploadDOI(
+              result.username,
+              result.password,
+              this.document(),
+            ),
           ),
         ),
         catchError((error) => {
@@ -114,13 +114,15 @@ export class ExportDataCiteDialogComponent {
       });
   }
 
-  private translateError(error: HttpErrorResponse) {
-    if (error.status === 401) {
-      return "Ungültige Zugangsdaten";
-    } else if (error.status === 403) {
-      return "Keine Berechtigung zum Hochladen der DOI";
-    } else {
-      return "DOI konnte nicht hochgeladen werden: " + error.message;
+  private translateError(error: any) {
+    if (error instanceof Response) {
+      if (error.status === 401) {
+        return "Ungültige Zugangsdaten";
+      } else if (error.status === 403) {
+        return "Keine Berechtigung zum Hochladen der DOI";
+      }
+      return "DOI konnte nicht hochgeladen werden. Bitte prüfen Sie Ihre Zugangsdaten!";
     }
+    return "DOI konnte nicht hochgeladen werden: " + error.message;
   }
 }
