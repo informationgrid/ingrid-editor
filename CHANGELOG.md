@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.2.6 (20.03.2026)
+
+### Features
+
+* Minimallösung JSON MERGE PATCHes in der OGC-API Records Schnittstelle (#8868)
+
+    
 ## 8.2.5 (11.03.2026)
 
 ### Features
