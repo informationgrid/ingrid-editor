@@ -1080,13 +1080,11 @@ open class IngridModelTransformer(
             }
         val service: JsonNode? = refTrans.data.get("service")
 
-        val refType = type // type is null only for incoming references and parents, where we don't know the type yet
-            ?: if (refTrans.data.getString("parentIdentifier") == this.doc.uuid) {
-                KeyValue(null, null)
-            } else {
-                getRefTypeFromIncomingReference(refTrans.data)
-                    ?: throw ServerException.withReason("Could not find reference type for '${this.doc.uuid}' in '$uuid'.")
-            }
+        val refType = type // type is null only for incoming references and parents
+            ?: getRefTypeFromIncomingReference(refTrans.data)
+            ?: KeyValue(null, null)
+        // if no RefType is set or found assume Reference is a subordinate (child) dataset
+        val isSubordinate = refType == KeyValue(null, null)
 
         val firstOperation =
             service?.get("operations")?.find { it.getString("name.key") == "1" } ?: service?.get("operations")?.get(0)
@@ -1110,7 +1108,7 @@ open class IngridModelTransformer(
                 service?.getString("type.key"),
             ),
             hasAccessConstraints = service?.getBoolean("hasAccessConstraints") ?: false,
-            isSubordinate = refTrans.data.getString("parentIdentifier") == model.uuid,
+            isSubordinate = isSubordinate,
         )
     }
 

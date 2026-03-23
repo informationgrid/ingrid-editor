@@ -508,3 +508,6 @@ fun transformUrlForDatenrepository(url: String?): String? {
     val whitelist = BawPropertiesHolder.domainWhitelist
     return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
 }
+
+// filter for documents that are children of the wrapper. needed as BAW does not use the parentIdentifier field but the actual Datatree structure
+fun getParentWrapperFilter(wrapperId: Int) = " OR ( document_wrapper.parent_id = $wrapperId AND document_wrapper.type != 'FOLDER' )"

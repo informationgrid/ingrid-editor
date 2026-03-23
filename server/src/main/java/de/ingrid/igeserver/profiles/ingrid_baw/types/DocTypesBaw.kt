@@ -19,9 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentWrapperFilter
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -59,6 +61,7 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawPublication"
     override fun parentClassName() = super.className
+    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = (super.getIncomingReferenceQuery(doc, options) + getParentWrapperFilter(doc.wrapperId!!)).trimIndent()
 }
 
 @Component

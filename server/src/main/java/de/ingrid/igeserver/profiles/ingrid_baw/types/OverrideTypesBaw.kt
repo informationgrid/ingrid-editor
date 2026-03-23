@@ -19,11 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentWrapperFilter
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Component
 class InGridGeoDatasetTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/baw/geo-dataset_baw.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
+    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = (super.getIncomingReferenceQuery(doc, options) + getParentWrapperFilter(doc.wrapperId!!)).trimIndent()
 }
 
 @Component
@@ -38,6 +41,7 @@ class InGridGeoServiceTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
+    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = (super.getIncomingReferenceQuery(doc, options) + getParentWrapperFilter(doc.wrapperId!!)).trimIndent()
 }
 
 @Component
@@ -45,6 +49,7 @@ class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbc
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
+    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = (super.getIncomingReferenceQuery(doc, options) + getParentWrapperFilter(doc.wrapperId!!)).trimIndent()
 }
 
 @Component
@@ -52,4 +57,5 @@ class BawProject(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
+    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = (super.getIncomingReferenceQuery(doc, options) + getParentWrapperFilter(doc.wrapperId!!)).trimIndent()
 }
