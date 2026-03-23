@@ -44,7 +44,7 @@
     "UvpAddressDoc": "Person"
   },
   "tags": {
-    "negative-assessment-not-publish": "wird nicht veröffentlicht"
+    "negative-assessment-not-publish": "Veröffentlichung unterdrückt"
   },
   "processStep": {
     "publicDisclosure": "Öffentliche Auslegung",
