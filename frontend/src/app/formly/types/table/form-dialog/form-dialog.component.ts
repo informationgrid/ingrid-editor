@@ -17,15 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  DestroyRef,
-  inject,
-  Inject,
-  OnDestroy,
-  OnInit,
-  signal,
-} from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit, signal } from "@angular/core";
 import {
   FormlyFieldConfig,
   FormlyForm,
@@ -39,6 +31,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
+  isNew: boolean;
 }
 
 @Component({
@@ -48,8 +41,6 @@ export interface FormDialogData {
   imports: [DialogTemplateComponent, FormlyForm],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
-  private destroyRef = inject(DestroyRef);
-
   form = new FormGroup({});
   titleText = signal<string>("");
   options: FormlyFormOptions = {};
@@ -60,16 +51,14 @@ export class FormDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
     private dlgRef: MatDialogRef<string>,
   ) {
-    this.isExistingEntry = data.model != null;
+    this.isExistingEntry = data.isNew === false;
     this.titleText.set(
       this.isExistingEntry ? "Eintrag bearbeiten" : "Eintrag hinzufügen",
     );
-    this.form.statusChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        if (value === "VALID") this.disabled.set(false);
-        else if (value === "INVALID") this.disabled.set(true);
-      });
+    this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      if (value === "VALID") this.disabled.set(false);
+      else if (value === "INVALID") this.disabled.set(true);
+    });
   }
 
   ngOnInit() {
@@ -77,7 +66,7 @@ export class FormDialogComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.form.markAllAsTouched();
         // @ts-ignore
-        this.form._updateTreeValidity();
+        // this.form._updateTreeValidity();
       });
     }
   }

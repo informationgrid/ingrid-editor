@@ -76,7 +76,7 @@ class PipeTest : IntegrationTest() {
     fun `a pipe should run all contained filters`() {
         val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
         val payload = TestPayloadUpdate(data)
-        val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
+        val context = DefaultContext("", "", emptyList(), BasicUserPrincipal("meier"))
 
         val result = updatePipe.runFilters(payload, context)
 
@@ -101,7 +101,7 @@ class PipeTest : IntegrationTest() {
     fun `a pipe should run all filters in the configured sequence`() {
         val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
         val payload = TestPayloadPublish(data)
-        val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
+        val context = DefaultContext("", "", emptyList(), BasicUserPrincipal("meier"))
 
         val result = publishPipe.runFilters(payload, context)
 
@@ -125,7 +125,7 @@ class PipeTest : IntegrationTest() {
     fun `a pipe should not run filters that are disabled by configuration`() {
         val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
         val payload = TestPayloadCreate(data)
-        val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
+        val context = DefaultContext("", "", emptyList(), BasicUserPrincipal("meier"))
 
         val result = createPipe.runFilters(payload, context)
 
@@ -146,7 +146,7 @@ class PipeTest : IntegrationTest() {
     fun `a pipe should run all filters that match the profile of the context`() {
         val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
         val payload = TestPayloadPublish(data)
-        val context = DefaultContext("", "profileA", null, BasicUserPrincipal("meier"))
+        val context = DefaultContext("", "profileA", emptyList(), BasicUserPrincipal("meier"))
 
         val result = publishPipe.runFilters(payload, context)
 
@@ -173,7 +173,7 @@ class PipeTest : IntegrationTest() {
     fun `a pipe should not run profile specific filters if the context has no profile`() {
         val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
         val payload = TestPayloadPublish(data)
-        val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
+        val context = DefaultContext("", "", emptyList(), BasicUserPrincipal("meier"))
 
         val result = publishPipe.runFilters(payload, context)
 

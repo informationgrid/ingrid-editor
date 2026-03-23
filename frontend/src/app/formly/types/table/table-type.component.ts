@@ -255,6 +255,7 @@ export class TableTypeComponent
           model: newEntry
             ? null
             : JSON.parse(JSON.stringify(this.dataSource().data[index])),
+          isNew: newEntry,
         } as FormDialogData,
       })
       .afterClosed()
@@ -433,6 +434,7 @@ export class TableTypeComponent
         hasBackdrop: true,
         data: {
           fields: this.props.columns,
+          isNew: true,
         } as FormDialogData,
       })
       .afterClosed()

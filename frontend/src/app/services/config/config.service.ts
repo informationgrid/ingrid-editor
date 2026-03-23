@@ -78,7 +78,7 @@ export interface UserInfo {
   externalHelp?: string;
 
   permissions: string[];
-  parentProfile?: string;
+  linkedProfiles: string[];
   plugins?: BehaviourFormatBackend[];
 }
 

@@ -38,7 +38,7 @@ data class UserInfo(
     val lastLogin: Date?,
     val externalHelp: String?,
     val permissions: List<String>,
-    var parentProfile: String? = null,
+    var linkedProfiles: List<String> = emptyList(),
     val plugins: List<Behaviour> = emptyList(),
 )
 

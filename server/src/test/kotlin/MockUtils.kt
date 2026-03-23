@@ -95,7 +95,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             }
         }
         if (document.id != null) {
-            every { documentService.getWrapperById(document.id.toInt()) } answers {
+            every { documentService.getWrapperById(document.id) } answers {
                 mockedDocumentSimple(document.id, document)
             }
         }

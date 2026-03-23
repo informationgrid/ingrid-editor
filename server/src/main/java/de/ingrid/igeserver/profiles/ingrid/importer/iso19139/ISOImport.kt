@@ -29,6 +29,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.BwastrLocatorService
@@ -40,8 +41,6 @@ import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -69,7 +68,14 @@ data class ImportSettings(
 )
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, @Lazy val bwastrLocatorService: BwastrLocatorService, val uploadConfig: UploadConfig) : IgeImporter {
+class ISOImport(
+    val codelistService: CodelistHandler,
+    @Lazy val catalogService: CatalogService,
+    @Lazy val documentService: DocumentService,
+    @Lazy val researchService: ResearchService,
+    @Lazy val bwastrLocatorService: BwastrLocatorService,
+    val uploadConfig: UploadConfig,
+) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -95,7 +101,18 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val defaultImportSettings = ImportSettings(importGeometryContext = false)
 
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, bwastrLocatorService, uploadConfig, catalogLanguage, defaultImportSettings)
+        val isoData = IsoImportData(
+            finalObject,
+            codelistService,
+            catalogId,
+            documentService,
+            addressMaps,
+            researchService,
+            bwastrLocatorService,
+            uploadConfig,
+            catalogLanguage,
+            defaultImportSettings,
+        )
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
@@ -154,7 +171,11 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
     protected fun handleAddressReferences(model: GeneralMapper): ArrayNode {
         val outputReferences: TemplateOutput = JsonStringOutput()
-        templateEngine.render("imports/ingrid/address.jte", mapOf("contacts" to model.getUniquePointOfContacts()), outputReferences)
+        templateEngine.render(
+            "imports/ingrid/address.jte",
+            mapOf("contacts" to model.getUniquePointOfContacts()),
+            outputReferences,
+        )
         return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
     }
 
@@ -171,15 +192,6 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/xml" == contentType && !fileContent.contains("<rdf:RDF")
-
-    internal class JsonStringOutput : StringOutput() {
-        override fun writeUserContent(value: String?) {
-            if (value == null) return
-            super.writeUserContent(
-                escapeJson(value),
-            )
-        }
-    }
 
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(

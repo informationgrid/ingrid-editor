@@ -373,7 +373,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         )
         try {
             userInfo.currentCatalog?.type?.let {
-                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+                userInfo.linkedProfiles = catalogService.getCatalogProfile(it).linkedProfiles
             }
         } catch (ex: NotFoundException) {
             // ignore not activated catalog

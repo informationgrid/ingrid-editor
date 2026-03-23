@@ -21,7 +21,6 @@ package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.utils.ElasticDocument
 
 /**
  * Interface representing a manager for handling index-related operations.
@@ -41,7 +40,7 @@ interface IIndexManager {
 
     fun checkAndCreateInformationIndex()
 
-    fun update(indexinfo: IndexInfo, doc: ElasticDocument)
+    fun update(indexinfo: IndexInfo, docAny: Any)
 
     fun updateIPlugInformation(id: String, info: String)
 

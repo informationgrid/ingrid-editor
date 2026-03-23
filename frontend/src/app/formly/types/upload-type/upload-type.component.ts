@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input, inject, DestroyRef } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { IgeDocument } from "../../../models/ige-document";
@@ -42,6 +49,7 @@ interface LinkType {
   templateUrl: "./upload-type.component.html",
   styleUrls: ["./upload-type.component.scss"],
   imports: [MatInput, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadTypeComponent
   extends FieldType<FieldTypeConfig>
@@ -61,10 +69,6 @@ export class UploadTypeComponent
 
   control: UntypedFormControl;
 
-  constructor() {
-    super();
-  }
-
   ngOnInit(): void {
     this.upload =
       this.mapStringValue(this.formControl.value) || this.defaultValue;
@@ -78,6 +82,9 @@ export class UploadTypeComponent
         map((value) => this.mapStringValue(value)),
       )
       .subscribe((value) => (this.upload = value || this.defaultValue));
+
+    // Initial sync
+    this.updateValue();
   }
 
   private setControl() {

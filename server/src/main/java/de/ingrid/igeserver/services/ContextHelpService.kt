@@ -44,15 +44,19 @@ class ContextHelpService(
         helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
-        val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
-        val parentDocType = getParentDoctype(docType, profile, parentProfile)
-        val help: MarkdownContextHelpItem = listOfNotNull(
-            getContextHelp(profile, docType, id),
-            getContextHelp(profile, parentDocType, id),
-            getContextHelp(parentProfile, docType, id),
-            getContextHelp(parentProfile, parentDocType, id),
-            getContextHelp("all", "all", id),
-        ).firstOrNull() ?: run {
+        val linkedProfiles = catalogService.getCatalogProfile(profile).linkedProfiles
+        val parentDocTypes = getParentDocTypes(docType, profile, linkedProfiles)
+
+        val lookupList = mutableListOf<MarkdownContextHelpItem?>()
+        lookupList.add(getContextHelp(profile, docType, id))
+        parentDocTypes.forEach { lookupList.add(getContextHelp(profile, it, id)) }
+        linkedProfiles.forEach { lp ->
+            lookupList.add(getContextHelp(lp, docType, id))
+            parentDocTypes.forEach { lookupList.add(getContextHelp(lp, it, id)) }
+        }
+        lookupList.add(getContextHelp("all", "all", id))
+
+        val help: MarkdownContextHelpItem = lookupList.filterNotNull().firstOrNull() ?: run {
             log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: $DEFAULT_LANGUAGE}.")
             throw NotFoundException.withMissingResource(id, "ContextHelp")
         }
@@ -68,16 +72,16 @@ class ContextHelpService(
     }
 
     fun getHelpIDs(profile: String, docType: String): List<String> {
-        val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
-        val parentDocType = getParentDoctype(docType, profile, parentProfile)
+        val linkedProfiles = catalogService.getCatalogProfile(profile).linkedProfiles
+        val parentDocTypes = getParentDocTypes(docType, profile, linkedProfiles)
         return markdownContextHelp.keys
             .filter {
-                matchProfileAndParentProfile(
+                matchProfileAndLinkedProfiles(
                     it,
                     profile,
-                    parentProfile,
+                    linkedProfiles,
                     docType,
-                    parentDocType,
+                    parentDocTypes,
                 ) ||
                     matchCommonIDs(it)
             }
@@ -87,16 +91,17 @@ class ContextHelpService(
 
     private fun matchCommonIDs(key: MarkdownContextHelpItemKey) = key.profile == "all"
 
-    private fun matchProfileAndParentProfile(
+    private fun matchProfileAndLinkedProfiles(
         key: MarkdownContextHelpItemKey,
         profile: String,
-        parentProfile: String?,
+        linkedProfiles: List<String>,
         docType: String,
-        parentDocType: String?,
-    ): Boolean = (key.profile == profile && key.docType == docType) ||
-        (key.profile == profile && key.docType == parentDocType) ||
-        (key.profile == parentProfile && key.docType == docType) ||
-        (key.profile == parentProfile && key.docType == parentDocType)
+        parentDocTypes: List<String>,
+    ): Boolean {
+        if (key.profile == profile && (key.docType == docType || parentDocTypes.contains(key.docType))) return true
+        if (linkedProfiles.contains(key.profile) && (key.docType == docType || parentDocTypes.contains(key.docType))) return true
+        return false
+    }
 
     private fun getContextHelp(profile: String?, docType: String?, id: String?): MarkdownContextHelpItem? {
         if (profile == null || docType == null || id == null) return null
@@ -109,10 +114,10 @@ class ContextHelpService(
         return markdownContextHelp[itemKey]
     }
 
-    private fun getParentDoctype(docType: String, profile: String, parentProfile: String?): String? = try {
-        documentService.getDocumentType(docType, profile, parentProfile).parentClassName()
+    private fun getParentDocTypes(docType: String, profile: String, linkedProfiles: List<String>): List<String> = try {
+        listOfNotNull(documentService.getDocumentType(docType, profile, linkedProfiles).parentClassName())
     } catch (e: Exception) {
         log.debug { "Error getting parent doctype for $docType in profile $profile: ${e.message}" }
-        null
+        emptyList()
     }
 }
