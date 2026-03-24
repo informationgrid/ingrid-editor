@@ -46,6 +46,4 @@ class WsvProfile(
     override val identifier = ID
     override val title = "InGrid Katalog (WSV)"
     override val linkedProfiles = listOf("ingrid")
-
-    override val indexExportFormatID = "indexInGridIDFWsv"
 }
