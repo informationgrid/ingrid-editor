@@ -75,10 +75,15 @@ export class IsoViewPlugin extends Plugin {
       .onEvent("ISO")
       .subscribe(() => this.showISODialog());
 
+    const toolbarEventLongSubscription = this.docEvents
+      .onEvent("ISO_LONGPRESS")
+      .subscribe(() => this.showISODialog(true));
+
     this.formSubscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventLongSubscription);
   }
 
-  private showISODialog() {
+  private showISODialog(noFilter: boolean = false) {
     const currentDocument = this.generalStore.getOpenedDocument(
       this.forAddress(),
     );
@@ -90,6 +95,7 @@ export class IsoViewPlugin extends Plugin {
         availableExportFormats: this.availableExportFormats(
           currentDocument._type,
         ),
+        noFilter: noFilter,
       },
     });
   }

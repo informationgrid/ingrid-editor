@@ -73,15 +73,14 @@ export class IsoViewComponent {
 
   private exchangeService: ExchangeService = inject(ExchangeService);
   exportFormats = toSignal(
-    this.exchangeService
-      .getExportTypes(true)
-      .pipe(
-        map((type) =>
-          type.filter(
-            (t) => this.data.availableExportFormats.indexOf(t.type) !== -1,
-          ),
-        ),
-      ),
+    this.exchangeService.getExportTypes(true).pipe(
+      map((type) => {
+        if (this.data.noFilter) return type;
+        return type.filter(
+          (t) => this.data.availableExportFormats.indexOf(t.type) !== -1,
+        );
+      }),
+    ),
     {
       initialValue: [],
     },
