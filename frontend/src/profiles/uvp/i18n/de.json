@@ -46,6 +46,11 @@
   "tags": {
     "negative-assessment-not-publish": "Veröffentlichung unterdrückt"
   },
+  "docStateWithTag": {
+    "P_negative-assessment-not-publish": "Veröffentlichung unterdrückt",
+    "PW_negative-assessment-not-publish": "In Bearbeitung, Veröffentlichung unterdrückt",
+    "W_negative-assessment-not-publish": "In Bearbeitung, Veröffentlichung unterdrückt"
+  },
   "processStep": {
     "publicDisclosure": "Öffentliche Auslegung",
     "decisionOfAdmission": "Entscheidung über die Zulassung",

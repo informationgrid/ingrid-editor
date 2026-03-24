@@ -86,23 +86,27 @@ export class DocumentIconComponent implements OnChanges {
   ): string {
     const tooltipDocType = this.translocoService.translate(`docType.${type}`);
 
-    const tooltipState = this.translocoService.translate(`docState.${state}`);
+    const combinedStateKey = `docStateWithTag.${state}_${publicationType}`;
+    let combinedState = this.translocoService.translate(combinedStateKey);
+    if (combinedState === combinedStateKey) {
+      const tooltipState = this.translocoService.translate(`docState.${state}`);
 
-    let tooltipPubTyp = "";
-    if (publicationType) {
-      const pubTypeLocalized = this.translocoService.translate(
-        `tags.${publicationType}`,
-      );
-      // in case publication type has been disabled then it should be set to an empty string to avoid the display
-      // the tag, which is still set in backend
-      if (pubTypeLocalized.trim().length !== 0) {
-        tooltipPubTyp = `, ${pubTypeLocalized}`;
+      let tooltipPubTyp = "";
+      if (publicationType) {
+        const tagState = `tags.${publicationType}`;
+        const pubTypeLocalized = this.translocoService.translate(tagState);
+        // TODO?: in case publication-type has been disabled then it should be set to an empty string
+        //        to avoid the display of the tag, which is still set in backend
+        if (pubTypeLocalized !== tagState) {
+          tooltipPubTyp = `, ${pubTypeLocalized}`;
+        }
       }
+      combinedState = `${tooltipState}${tooltipPubTyp}`;
     }
 
     return type == "FOLDER" || state == null
       ? tooltipDocType
-      : `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
+      : `${tooltipDocType} (${combinedState})`;
   }
 
   private getStateClass(state: DocumentState, type: string, tags: string) {
