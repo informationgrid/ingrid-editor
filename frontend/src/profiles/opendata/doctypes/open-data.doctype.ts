@@ -334,48 +334,50 @@ export class OpenDataDoctype extends BaseDoctype {
       this.addSection(
         "Zeitbezüge",
         [
-          this.options.temporalLegacy
-            ? this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
-                this.addSelect("rangeType", null, {
-                  showSearch: false,
-                  className: "flex-1",
-                  wrappers: ["form-field"],
-                  options: [
-                    { label: "am", value: "at" },
-                    { label: "seit", value: "since" },
-                    { label: "bis", value: "till" },
-                    { label: "von - bis", value: "range" },
-                  ],
-                }),
-                this.addDatepicker("timeSpanDate", null, {
-                  placeholder: "TT.MM.JJJJ",
-                  wrappers: ["form-field"],
-                  fieldLabel: "Datum",
-                  required: true,
-                  expressions: {
-                    hide: (field: FormlyFieldConfig) =>
-                      field.model?.rangeType?.key == null ||
-                      field.model?.rangeType?.key === "range",
-                  },
-                }),
-                this.addDateRange("timeSpanRange", null, {
-                  wrappers: [],
-                  fieldLabel: "Datum",
-                  required: true,
-                  expressions: {
-                    hide: (field: FormlyFieldConfig) =>
-                      field.model?.rangeType?.key !== "range",
-                  },
-                }),
+          ...(this.options.temporalLegacy
+            ? [
+                this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
+                  this.addSelect("rangeType", null, {
+                    showSearch: false,
+                    className: "flex-1",
+                    wrappers: ["form-field"],
+                    options: [
+                      { label: "am", value: "at" },
+                      { label: "seit", value: "since" },
+                      { label: "bis", value: "till" },
+                      { label: "von - bis", value: "range" },
+                    ],
+                  }),
+                  this.addDatepicker("timeSpanDate", null, {
+                    placeholder: "TT.MM.JJJJ",
+                    wrappers: ["form-field"],
+                    fieldLabel: "Datum",
+                    required: true,
+                    expressions: {
+                      hide: (field: FormlyFieldConfig) =>
+                        field.model?.rangeType?.key == null ||
+                        field.model?.rangeType?.key === "range",
+                    },
+                  }),
+                  this.addDateRange("timeSpanRange", null, {
+                    wrappers: [],
+                    fieldLabel: "Datum",
+                    required: true,
+                    expressions: {
+                      hide: (field: FormlyFieldConfig) =>
+                        field.model?.rangeType?.key !== "range",
+                    },
+                  }),
+                ]),
                 this.addSelect("periodicity", "Periodizität", {
                   showSearch: true,
                   options: this.getCodelistForSelect("518", "periodicity"),
                   codelistId: "518",
                 }),
-              ])
-            : null,
+              ]
+            : [null]),
           ...(this.options.temporalLegacy
-            ? null
+            ? [null]
             : [
                 this.addSelect("accrualPeriodicity", "Periodizität", {
                   showSearch: true,

@@ -22,7 +22,7 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
 import { OpenDataComponent } from "./profile-opendata";
 
 @Component({
-  template: "",
+  template: "bmi",
   standalone: true,
   imports: [NgxFlowModule],
 })
