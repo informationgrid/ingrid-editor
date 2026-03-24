@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
@@ -26,11 +27,13 @@ import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_krzn.importer.ISOImportKRZN
+import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
@@ -44,6 +47,7 @@ class KrznProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportKRZN: ISOImportKRZN,
+    @JsonIgnore @Qualifier("openDataProfile") val opendataProfile: OpenDataProfile,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -52,7 +56,7 @@ class KrznProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (KRZN)"
-    override val linkedProfiles = listOf("ingrid")
+    override val linkedProfiles = listOf("ingrid", "opendata")
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
 
@@ -73,6 +77,7 @@ class KrznProfile(
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
 
+        opendataProfile.initCatalogCodelists(catalogId, codelistId)
         super.initCatalogCodelists(catalogId, codelistId)
     }
 

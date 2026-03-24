@@ -26,7 +26,7 @@ import { OpenDataInitProfile } from "./opendata/open-data-init-profile.service";
   template: "",
   standalone: true,
 })
-class InGridWithOpendataComponent extends InGridComponent {
+export class InGridWithOpendataComponent extends InGridComponent {
   openDataDoc = inject(OpenDataDoctype);
   private initOpendata = inject(OpenDataInitProfile);
 
