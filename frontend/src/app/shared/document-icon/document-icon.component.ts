@@ -86,13 +86,18 @@ export class DocumentIconComponent implements OnChanges {
   ): string {
     const tooltipDocType = this.translocoService.translate(`docType.${type}`);
 
-    const combinedStateKey = `docStateWithTag.${state}_${publicationType}`;
-    let combinedState = this.translocoService.translate(combinedStateKey);
-    if (combinedState === combinedStateKey) {
-      const tooltipState = this.translocoService.translate(`docState.${state}`);
+    let combinedState: string;
+    if (!publicationType) {
+      combinedState = this.translocoService.translate(`docState.${state}`);
+    } else {
+      const combinedStateKey = `docStateWithTag.${state}_${publicationType}`;
+      combinedState = this.translocoService.translate(combinedStateKey);
+      if (combinedState === combinedStateKey) {
+        const tooltipState = this.translocoService.translate(
+          `docState.${state}`,
+        );
 
-      let tooltipPubTyp = "";
-      if (publicationType) {
+        let tooltipPubTyp = "";
         const tagState = `tags.${publicationType}`;
         const pubTypeLocalized = this.translocoService.translate(tagState);
         // TODO?: in case publication-type has been disabled then it should be set to an empty string
@@ -100,8 +105,8 @@ export class DocumentIconComponent implements OnChanges {
         if (pubTypeLocalized !== tagState) {
           tooltipPubTyp = `, ${pubTypeLocalized}`;
         }
+        combinedState = `${tooltipState}${tooltipPubTyp}`;
       }
-      combinedState = `${tooltipState}${tooltipPubTyp}`;
     }
 
     return type == "FOLDER" || state == null
