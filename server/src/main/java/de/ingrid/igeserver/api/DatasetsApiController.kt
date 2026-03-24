@@ -32,6 +32,7 @@ import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -223,7 +224,8 @@ class DatasetsApiController(
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
         val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
-        val refQuery = docType.getIncomingReferenceQuery(doc, options + "forResearch")
+        // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
+        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources")))
 
         if (refQuery.isEmpty()) {
             return ResponseEntity.ok(ResearchResponse(0, emptyList()))

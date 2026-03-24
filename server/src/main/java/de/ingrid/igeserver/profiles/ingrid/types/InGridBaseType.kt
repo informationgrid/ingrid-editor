@@ -20,9 +20,24 @@
 package de.ingrid.igeserver.profiles.ingrid.types
 
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
+
+/**
+ * Holds configuration options for retrieving incoming references.
+ *
+ * @property docStateFilter Specifies a filter to determine the document state to consider when retrieving references.
+ * @property onlyInCoupledResources Indicates whether to restrict references to coupled resources only.
+ * @property addStructuralChildren Determines whether structural child references should be included. Only works with [onlyInCoupledResources] set to false.
+ */
+data class IngridIncomingReferenceOptions(
+    override val docStateFilter: DocStateFilter = DocStateFilter.LATEST,
+    val onlyInCoupledResources: Boolean = false,
+    val addStructuralChildren: Boolean = false,
+) : IncomingReferenceOptions
 
 @Component
 abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
@@ -32,14 +47,17 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
         address.path("ref").textValue()
     }
 
-    override fun getIncomingReferenceUUIDs(doc: Document, options: List<String>): List<String> {
-        val sqlQuery = getIncomingReferenceQuery(doc, options)
+    override fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> {
+        val ingridOptions = options as? IngridIncomingReferenceOptions ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
+        val sqlQuery = getIncomingReferenceQuery(doc, ingridOptions)
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }
     }
 
-    override fun getIncomingReferenceQuery(doc: Document, options: List<String>): String = """
+    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String {
+        val ingridOptions = options as? IngridIncomingReferenceOptions ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
+        return """
             SELECT DISTINCT document1.uuid
             FROM document document1, document_wrapper
             WHERE (
@@ -47,31 +65,42 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND document_wrapper.catalog_id = ${doc.catalog!!.id}
                 AND document_wrapper.catalog_id = document1.catalog_id
                 AND document_wrapper.uuid = document1.uuid
-                AND ${
-        if (options.contains("onlyPublished")) {
-            "document1.state = 'PUBLISHED'"
-        } else if (options.contains("pendingOrPublished")) {
-            "(document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
-        } else if (options.contains("allStates")) {
-            "(document1.state = 'DRAFT' OR document1.state = 'DRAFT_AND_PUBLISHED' OR document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
-        } else {
-            // get latest
-            "document1.is_latest = true"
-        }
-    }
-                AND (
-                    data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' 
-    ${if (!options.contains("onlyInCoupledResources")) {
-        """
-                    OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' 
-                    OR data->'parentIdentifier' @> (jsonb('"${doc.uuid}"'))
+                AND ( ${ingridOptions.docStateFilter.toSql()} )
+                AND ( ${getIncomingRelationSubquery(doc, ingridOptions)} )
+            )
         """.trimIndent()
-    } else {
-        ""
-    }})
-                    
-                )
-    """.trimIndent()
+    }
+
+    /**
+     * Constructs a subquery to retrieve incoming relations for the specified document
+     * based on various filtering criteria.
+     *
+     * @param doc The document for which the incoming relation subquery is to be generated.
+     *            Must contain a valid UUID and wrapper ID to build the query.
+     * @param options Options that influence the filtering logic of the query.
+     * @return A SQL subquery string that can be used to identify documents linked
+     *         to the specified document through various relation types.
+     */
+    private fun getIncomingRelationSubquery(doc: Document, options: IngridIncomingReferenceOptions): String {
+        val coupledResourceFilter =
+            """ data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
+        val referenceFilter = """ data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' """
+        val parentIdentifierFilter = """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
+        val structuralParentFilter =
+            """ ( document_wrapper.parent_id = ${doc.wrapperId} AND document_wrapper.type != 'FOLDER' ) """
+
+        val useFilters = mutableListOf(coupledResourceFilter)
+
+        if (!options.onlyInCoupledResources) {
+            useFilters.add(referenceFilter)
+            useFilters.add(parentIdentifierFilter)
+            if (options.addStructuralChildren) {
+                useFilters.add(structuralParentFilter)
+            }
+        }
+
+        return useFilters.joinToString(" OR ", "(", ")")
+    }
 
     override fun getUploads(doc: Document): List<String> {
         val graphicOverviews: List<String> = doc.data.get("graphicOverviews")?.let {

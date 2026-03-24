@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
@@ -110,10 +111,10 @@ abstract class EntityType {
     /**
      * Get all document UUIDs which reference this document
      */
-    open fun getIncomingReferenceUUIDs(doc: Document, options: List<String> = emptyList<String>()): List<String> = emptyList()
+    open fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> = emptyList()
 
     // TODO: evaluate refactoring with builder pattern
-    open fun getIncomingReferenceQuery(doc: Document, options: List<String> = emptyList<String>()): String = ""
+    open fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = ""
 
     /**
      * Extract referenced uploads

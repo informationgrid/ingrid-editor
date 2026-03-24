@@ -60,6 +60,7 @@ import de.ingrid.igeserver.persistence.filter.PreUnpublishPipe
 import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import de.ingrid.igeserver.persistence.filter.PreUpdatePipe
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -1002,7 +1003,7 @@ class DocumentService(
     fun getIncomingReferenceUUIDs(
         document: Document?,
         catalogId: String,
-        options: List<String>,
+        options: IncomingReferenceOptions,
     ): Set<String> {
         if (document == null) return setOf()
         val profile = catalogService.getProfileFromCatalog(catalogId)

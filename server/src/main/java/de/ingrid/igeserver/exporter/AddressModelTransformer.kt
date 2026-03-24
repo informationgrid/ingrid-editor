@@ -21,6 +21,8 @@ package de.ingrid.igeserver.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
+import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
@@ -199,7 +201,11 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map { uuid ->
+        return documentService.getIncomingReferenceUUIDs(
+            addressDoc,
+            catalogIdentifier,
+            SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
+        ).map { uuid ->
             val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }

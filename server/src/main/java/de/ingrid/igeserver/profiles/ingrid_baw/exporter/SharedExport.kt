@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.model.Authority
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
@@ -509,5 +511,8 @@ fun transformUrlForDatenrepository(url: String?): String? {
     return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
 }
 
-// filter for documents that are children of the wrapper. needed as BAW does not use the parentIdentifier field but the actual Datatree structure
-fun getParentWrapperFilter(wrapperId: Int) = " OR ( document_wrapper.parent_id = $wrapperId AND document_wrapper.type != 'FOLDER' )"
+fun convertToIngridOptionsWithStructuralChildren(options: IncomingReferenceOptions): IngridIncomingReferenceOptions {
+    val ingridOptions = options as? IngridIncomingReferenceOptions
+        ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
+    return ingridOptions.copy(addStructuralChildren = true)
+}

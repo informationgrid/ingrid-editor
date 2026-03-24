@@ -32,6 +32,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
@@ -52,6 +53,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
@@ -729,7 +731,7 @@ open class IngridModelTransformer(
 
     fun getCapabilitiesUrlsFromService(serviceTypeKey: String): List<String> = if (model.type == "InGridGeoDataset") {
         val doc = addressExporter.getLastPublishedDocument(model.uuid)
-        documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished"))
+        documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED))
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
                 it.type == "InGridGeoService" &&
@@ -1160,7 +1162,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = addressExporter.getLastPublishedDocument(model.uuid)
-        return documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished")).mapNotNull {
+        return documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED)).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }

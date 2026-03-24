@@ -21,6 +21,9 @@ package de.ingrid.igeserver.persistence.model.document.impl
 
 import de.ingrid.igeserver.exceptions.IsReferencedException
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
+import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
@@ -44,7 +47,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)
-        val result = this.getIncomingReferenceUUIDs(doc, listOf("allStates"))
+        val result = this.getIncomingReferenceUUIDs(doc, SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ALL_STATES))
 
         if (result.isNotEmpty()) {
             throw IsReferencedException.byUuids(result)
@@ -53,14 +56,14 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override fun onUnpublish(doc: Document) {
         super.onUnpublish(doc)
-        val result = getIncomingReferenceUUIDs(doc, listOf("pendingOrPublished"))
+        val result = getIncomingReferenceUUIDs(doc, SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.PENDING_OR_PUBLISHED))
 
         if (result.isNotEmpty()) {
             throw IsReferencedException.addressByPublishedDatasets(result)
         }
     }
 
-    override fun getIncomingReferenceUUIDs(doc: Document, options: List<String>): List<String> {
+    override fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> {
         val sqlQuery = getIncomingReferenceQuery(doc, options)
         val result = jdbcTemplate.queryForList(sqlQuery)
 
@@ -69,7 +72,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override fun getIncomingReferenceQuery(
         doc: Document,
-        options: List<String>,
+        options: IncomingReferenceOptions,
     ): String = """
                 SELECT DISTINCT document1.uuid
                 FROM document document1, document_wrapper
@@ -77,18 +80,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                     document_wrapper.deleted = 0
                     AND document_wrapper.catalog_id = ${doc.catalog!!.id}
                     AND document_wrapper.uuid = document1.uuid
-                    AND ${
-        if (options.contains("onlyPublished")) {
-            "document1.state = 'PUBLISHED'"
-        } else if (options.contains("pendingOrPublished")) {
-            "(document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
-        } else if (options.contains("allStates")) {
-            "(document1.state = 'DRAFT' OR document1.state = 'DRAFT_AND_PUBLISHED' OR document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
-        } else {
-            // get latest
-            "document1.is_latest = true"
-        }
-    }
+                    AND ( ${options.docStateFilter.toSql()} )
                     AND ( ${
         referenceFieldsInDocuments.joinToString(separator = " OR ", transform = { field ->
             "data->'$field' @> '[{\"ref\": \"${doc.uuid}\"}]'"
