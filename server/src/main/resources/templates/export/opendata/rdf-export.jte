@@ -118,15 +118,11 @@
             <dcterms:spatial>
                 <dcterms:Location>
                     @if (!"wkt".equals(spatial.getType()) && spatial.getValue() != null)
-                        <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">
-                            POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}, ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}, ${spatial.getValue().getLon2()} ${spatial.getValue().getLat2()}, ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}, ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))
-                        </locn:geometry>
+                        <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">POLYGON((${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}, ${spatial.getValue().getLon2()} ${spatial.getValue().getLat1()}, ${spatial.getValue().getLon2()} ${spatial.getValue().getLat2()}, ${spatial.getValue().getLon1()} ${spatial.getValue().getLat2()}, ${spatial.getValue().getLon1()} ${spatial.getValue().getLat1()}))</locn:geometry>
                     @elseif ("wkt".equals(spatial.getType()) && spatial.getWkt() != null)
-                        <locn:geometry
-                                rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${spatial.getWkt()}</locn:geometry>
+                        <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${spatial.getWkt()}</locn:geometry>
                         @if (spatial.getWktCoordinatesISO() != null)
-                            <locn:geometry
-                                    rdf:datatype="http://www.opengis.net/ont/geosparql#gmlLiteral">$unsafe{spatial.getWktCoordinatesISO()}</locn:geometry>
+                            <locn:geometry rdf:datatype="http://www.opengis.net/ont/geosparql#gmlLiteral">$unsafe{spatial.getWktCoordinatesISO()}</locn:geometry>
                         @endif
                     @endif
                     @if (spatial.getTitle() != null)
