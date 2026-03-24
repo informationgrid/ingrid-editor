@@ -4,7 +4,7 @@
 @param Boolean forceAgent = false
 @if (forceAgent || address.isPerson())
     <foaf:Agent>
-        <foaf:name>${address.getFirstName()} ${address.getLastName()}</foaf:name>
+        <foaf:name>@if (address.isPerson())${address.getFirstName()}${address.getLastName()}@else${address.getOrganization()}@endif</foaf:name>
         @if (address.getHomepage() != null)
         <foaf:homepage rdf:resource="${address.getHomepage()}" />@endif
         @if (!address.getEmails().isEmpty())
