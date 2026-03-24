@@ -47,30 +47,16 @@ class InGridWithOpendataComponent extends InGridComponent {
   constructor() {
     super();
 
-    this.isoView.isoExportFormat = "indexOpenData";
-    // this.modifyFormFieldConfiguration();
+    this.isoView.defaultExportFormat = (docType: string) =>
+      docType === "OpenDataDoc" ? "indexOpenData" : "ingridISO";
+
+    this.isoView.availableExportFormats = (docType: string) =>
+      docType === "OpenDataDoc"
+        ? ["indexOpenData", "indexOpenDataRDF"]
+        : ["ingridISO"];
 
     this.initOpendata.initProfile();
   }
-
-  /*
-  private modifyFormFieldConfiguration() {
-    [
-      this.specialisedTask,
-      this.geoDataset,
-      this.publication,
-      this.geoService,
-      this.project,
-      this.dataCollection,
-      this.informationSystem,
-    ].forEach((docType) => {
-      docType.options.dynamicRequired.accessConstraints = () => true;
-      if (docType === this.informationSystem) {
-        docType.options.required.useConstraints = true;
-      }
-    });
-  }
-*/
 }
 
 @NgModule({

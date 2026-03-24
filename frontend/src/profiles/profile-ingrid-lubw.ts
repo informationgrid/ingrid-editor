@@ -45,7 +45,7 @@ class InGridLUBWComponent extends InGridComponent {
 
   constructor() {
     super();
-    this.isoView.isoExportFormat = "ingridISOLUBW";
+    this.isoView.defaultExportFormat = () => "ingridISOLUBW";
     const isAuthor = this.configService.$userInfo.value.role === "author";
     // pre-fetch 505 codelist for validation message in addresses
     this.geoDataset.getCodelistForSelect("505", "");

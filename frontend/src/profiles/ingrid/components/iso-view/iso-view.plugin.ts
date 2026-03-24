@@ -22,8 +22,6 @@ import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/fo
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
-import { ExchangeService } from "../../../../app/+importExport/exchange.service";
-import { of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 
@@ -36,14 +34,14 @@ export class IsoViewPlugin extends Plugin {
     "Fügt einen Button hinzu, um sich eine Vorschau des ISO Exports anzeigen zu lassen.";
   defaultActive = false;
 
-  isoExportFormat = "ingridISO";
+  defaultExportFormat = (_docType?: string) => "ingridISO";
+  availableExportFormats = (_docType?: string) => [this.defaultExportFormat()];
 
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private toolbarService: FormToolbarService,
-    private exportService: ExchangeService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -84,25 +82,14 @@ export class IsoViewPlugin extends Plugin {
     const currentDocument = this.generalStore.getOpenedDocument(
       this.forAddress(),
     );
-    const options = {
-      ids: [currentDocument.id as number],
-      useDraft: true,
-      exportFormat: this.isoExportFormat,
-    };
-    const optionsOnlyPublished = {
-      ids: [currentDocument.id as number],
-      useDraft: false,
-      exportFormat: this.isoExportFormat,
-    };
-
     this.dialog.open(IsoViewComponent, {
       data: {
         uuid: currentDocument._uuid,
-        isoText: this.exportService.export(options),
-        isoTextPublished:
-          currentDocument._state === "PW"
-            ? this.exportService.export(optionsOnlyPublished)
-            : of(null),
+        document: currentDocument,
+        defaultExportFormat: this.defaultExportFormat(currentDocument._type),
+        availableExportFormats: this.availableExportFormats(
+          currentDocument._type,
+        ),
       },
     });
   }
