@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.regex.Pattern
 
-@Profile("ingrid")
 @Component
 class ValidationUtils(@Autowired validatorFactory: ValidatorFactory) {
     private val validator: Validator = validatorFactory.validator

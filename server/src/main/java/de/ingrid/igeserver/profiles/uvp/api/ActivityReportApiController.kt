@@ -31,7 +31,6 @@ import java.time.Instant
 
 @RestController
 @RequestMapping(path = ["/api/uvp/activity-report"])
-@Profile("uvp")
 class ActivityReportApiController(
     val entityManager: EntityManager,
     val catalogService: CatalogService,

@@ -34,7 +34,6 @@ import java.security.Principal
 import java.time.Instant
 
 @Tag(name = "Activity Report", description = "API to create Activity reports")
-@Profile("uvp")
 interface ActivityReportApi {
 
     @Operation
