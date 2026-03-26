@@ -19,8 +19,8 @@
             "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
     ],
-    "hvd": ${data.isHvd()},
-    @if(data.isHvd())
+    "hvd": ${page.isHvd()},
+    @if(page.isHvd())
         "hvdCategories": [
             @for(var entry : ForSupport.of(data.getHvdCategories()))
                 "${entry.get().getKey()}"@if (!entry.isLast()),@endif
