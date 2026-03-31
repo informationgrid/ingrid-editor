@@ -73,6 +73,7 @@ class ZabbixService(
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
         val documentsToDelete = getUploadedDocuments(remoteUploads)
 
+        // TODO: explain what is happening here or use more functions
         data.uploads.forEach { upload ->
             val remoteUpload = remoteUploads.find { upload.url == it.url }
             if (remoteUpload == null) {
@@ -291,6 +292,7 @@ class ZabbixService(
     }
 
     private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document ->
+        // TODO: explain why webscenario is updated and not deleted as the function name suggests
         updateWebscenario(document.webscenarioId)
         deleteTrigger(listOf(document.triggerId))
     }

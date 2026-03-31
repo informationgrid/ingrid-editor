@@ -66,6 +66,7 @@ class ExpiredZabbixTask(
         zabbixService.cleanupExpiredWebscenarios()
     }
 
+    // TODO: this function needs more comments, also the name is misleading, since deleteDocuments is called inside
     private fun findDocuments(catalogId: String, configs: List<ExtendedExporterConfig>) {
         configs
             .filter { it.category == DocumentCategory.DATA }
@@ -78,6 +79,8 @@ class ExpiredZabbixTask(
                 )
                 val docsPublished = mutableListOf<String>()
                 val totalHits = indexService.getNumberOfPublishableDocuments(queryInfo)
+
+                // TODO: extract this loop into a function
                 var page = -1
                 do {
                     page++
@@ -94,6 +97,7 @@ class ExpiredZabbixTask(
                 val docsZabbix = zabbixService.getHostIds(catalogId)
                 val docsToDelete = docsZabbix.toMutableList()
                 // uuid pattern
+                // TODO: pattern should be defined in class-field and default-pattern should be defined in application.properties
                 val pattern = zabbixProperties.cleanup.pattern.ifEmpty {
                     "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
                 }
@@ -116,6 +120,7 @@ class ExpiredZabbixTask(
                 log.warn("Number of documents to delete (${docsToDelete.size}) exceeds ${zabbixProperties.cleanup.threshold}% of published documents ($totalPublishedDocs) in catalog $catalogId, skipping.")
                 return
             }
+            // TODO: this is confusing, since the docsToDelete are not the documents to delete, but the documents to update!?
             docsToDelete.forEach {
                 zabbixService.updateDocument(it)
                 log.info("Delete Zabbix document $it for catalog $catalogId")
