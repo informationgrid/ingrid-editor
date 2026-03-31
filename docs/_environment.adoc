@@ -211,6 +211,10 @@
 |
 |20
 
+|ZABBIX_CLEANUP_DAYS
+|
+|365
+
 |===
 
 === System configuration
