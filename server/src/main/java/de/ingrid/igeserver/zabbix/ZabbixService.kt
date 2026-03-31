@@ -61,6 +61,7 @@ class ZabbixService(
     private val userGroupId = zabbixProperties.userGroupId
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
+    private val cleanupDays = zabbixProperties.cleanup.days
 
     private val jsonRpc: ContentType
         get() = ContentType("application", "json-rpc")
@@ -289,7 +290,10 @@ class ZabbixService(
         }
     }
 
-    private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document -> deleteWebscenario(listOf(document.webscenarioId)) }
+    private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document ->
+        updateWebscenario(document.webscenarioId)
+        deleteTrigger(listOf(document.triggerId))
+    }
 
     private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)

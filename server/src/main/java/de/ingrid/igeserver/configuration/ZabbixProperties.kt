@@ -36,5 +36,6 @@ data class ZabbixProperties(
     data class Cleanup(
         val pattern: String,
         val threshold: Int,
+        val days: Long,
     )
 }

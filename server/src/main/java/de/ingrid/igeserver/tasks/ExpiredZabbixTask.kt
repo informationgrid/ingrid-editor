@@ -52,7 +52,7 @@ class ExpiredZabbixTask(
     fun cleanup() {
         setAdminAuthentication("ExpiredZabbix", "Task")
         zabbixService.activatedCatalogs
-            .map { catalogId ->
+            .forEach { catalogId ->
                 try {
                     log.info("Run ExpiredZabbixTask for catalog $catalogId")
                     val catalog = catalogRepo.findByIdentifier(catalogId)
@@ -63,6 +63,7 @@ class ExpiredZabbixTask(
                     log.warn("Documents not found in catalog $catalogId", e)
                 }
             }
+        zabbixService.cleanupExpiredWebscenarios()
     }
 
     private fun findDocuments(catalogId: String, configs: List<ExtendedExporterConfig>) {
@@ -116,7 +117,7 @@ class ExpiredZabbixTask(
                 return
             }
             docsToDelete.forEach {
-                zabbixService.deleteDocument(it)
+                zabbixService.updateDocument(it)
                 log.info("Delete Zabbix document $it for catalog $catalogId")
             }
             log.info("Deleted ${docsToDelete.size} Zabbix documents for catalog $catalogId")
