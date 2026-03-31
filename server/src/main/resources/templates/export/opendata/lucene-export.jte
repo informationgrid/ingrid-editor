@@ -85,7 +85,25 @@
                 "${entry.get()}"@if (!entry.isLast()),@endif
                 @endfor
             ]
-        }
+        },
+        "bboxes": [
+            @for(var entry : ForSupport.of(model.getSpatialBBoxes()))
+            {
+                "title": "${entry.get().getTitle()}",
+                "sw": [${entry.get().getBbox().getLat1()},${entry.get().getBbox().getLon1()}],
+                "ne": [${entry.get().getBbox().getLat2()},${entry.get().getBbox().getLon2()}],
+                "regional_key": "${entry.get().getArs()}"
+            }
+            @endfor
+        ],
+        "wkt": [
+            @for(var entry : ForSupport.of(model.getWkts()))
+            {
+                "title": "${entry.get().getTitle()}",
+                "value": "${entry.get().getWkt()}"
+            }
+            @endfor
+        ]
     },
     "legal_basis": "${model.getLegalBasis() }",
     "distributions": [

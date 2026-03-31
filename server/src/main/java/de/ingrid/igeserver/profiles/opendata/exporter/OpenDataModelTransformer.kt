@@ -37,6 +37,17 @@ data class Keyword(
     val source: String,
 )
 
+data class SpatialBBox(
+    val title: String?,
+    val bbox: SpatialModel.BoundingBoxModel,
+    val ars: String? = null,
+)
+
+data class SpatialWkt(
+    val title: String?,
+    val wkt: String?,
+)
+
 class OpenDataModelTransformer(
     val transformerConfig: OpenDataTransformerConfig,
 ) {
@@ -128,6 +139,33 @@ class OpenDataModelTransformer(
             "wkt" -> convertWktToGeoJson(spatial.getString("wkt")!!)
             "wfsgnde" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
             else -> null
+        }
+    } ?: emptyList()
+
+    fun getSpatialBBoxes(): List<SpatialBBox> = doc.data.get("spatial")?.mapNotNull { spatial ->
+        val type = spatial.getString("type")
+        val bbox = when (type) {
+            "free" -> getBoundingBox(spatial.get("value"))
+            "wfsgnde" -> getBoundingBox(spatial.get("value"))
+            else -> null
+        }
+        if (bbox != null) {
+            SpatialBBox(spatial.getStringOrEmpty("title"), bbox)
+        } else {
+            null
+        }
+    } ?: emptyList()
+
+    fun getWkts(): List<SpatialWkt> = doc.data.get("spatial")?.mapNotNull { spatial ->
+        val type = spatial.getString("type")
+        val wkt = when (type) {
+            "wkt" -> spatial.getString("wkt")
+            else -> null
+        }
+        if (wkt != null) {
+            SpatialWkt(spatial.getStringOrEmpty("title"), wkt)
+        } else {
+            null
         }
     } ?: emptyList()
 
