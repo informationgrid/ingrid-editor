@@ -41,6 +41,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.security.MessageDigest
+import java.time.LocalDateTime
+import kotlin.collections.plus
 import kotlin.text.contains
 
 const val JSONRPC = "2.0"
@@ -214,9 +216,58 @@ class ZabbixService(
         getFromStepsAsString(item, "name"),
         getFromStepsAsString(item, "url"),
         getWebscenarioId(item),
+        getTriggerId(item),
     )
 
     private fun getWebscenarioId(response: JsonNode) = response.get("httptestid").asText()
+
+    private fun getTrigger(name: String): JsonNode {
+        val jsonTriggerGet =
+            """{"jsonrpc":"$JSONRPC","method":"trigger.get","params":{"output":["triggerid","description"],"filter":{"description":["$name"]}},"id":1}"""
+        val responseTriggerGet = requestApi(jsonTriggerGet)
+        if (resultArrayIsEmpty(responseTriggerGet)) {
+            log.debug("No trigger found for name $name")
+        }
+        return responseTriggerGet
+    }
+
+    private fun getTriggerId(response: JsonNode): String {
+        val webscenarioName = getFromStepsAsString(response, "name")
+        val trigger = getTrigger("Dokument: $webscenarioName")
+        val triggerResult = trigger.get("result")
+
+        if (triggerResult?.isEmpty == true && !isUploadExpired(webscenarioName)) {
+            createTrigger(
+                getTag(response, "id"),
+                getTag(response, "document name"),
+                getFromStepsAsString(response, "url"),
+            )
+            return getTriggerId(response)
+        }
+
+        return if (triggerResult?.isEmpty == false) {
+            getFromResultArray(trigger, "triggerid").asText()
+        } else {
+            ""
+        }
+    }
+
+    private fun isUploadExpired(name: String): Boolean {
+        val response = requestApi(
+            """{
+                    "jsonrpc":"$JSONRPC",
+                    "method":"httptest.get",
+                    "params":{
+                        "output":["httptestid"],
+                        "selectTags": "extend",
+                        "filter":{"name":["$name"]}
+                    },
+                    "id":1
+                }
+            """.trimIndent(),
+        )
+        return getTag(response.get("result")?.get(0) ?: return false, "expired").isNotEmpty()
+    }
 
     private fun createZabbixJob(
         catalogIdentifier: String,
@@ -260,6 +311,13 @@ class ZabbixService(
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"id":1}"""
         val responseHostGet = requestApi(jsonHostGet)
         return responseHostGet.get("result").get(0)?.get("hostid")?.asText()
+    }
+
+    fun getHostById(hostId: String): JsonNode? {
+        val jsonHostGet =
+            """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","hostids":["$hostId"]},"id":1}"""
+        val responseHostGet = requestApi(jsonHostGet)
+        return responseHostGet.get("result")?.get(0)
     }
 
     private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
@@ -329,6 +387,24 @@ class ZabbixService(
         severity = item.get("severity").asText(),
     )
 
+    private fun getWebscenarioByNameAndHost(name: String, hostId: String): JsonNode? {
+        val request =
+            """
+                {
+                    "jsonrpc":"$JSONRPC",
+                    "method":"httptest.get",
+                    "params":{
+                        "output":["httptestid","name"],
+                        "selectTags":"extend",
+                        "filter":{"name":["$name"]},
+                        "hostids":["$hostId"]
+                    },
+                    "id":1
+                }
+            """.trimIndent()
+        return requestApi(request).get("result")?.get(0)
+    }
+
     private fun getWebscenarioById(id: String): JsonNode? {
         val request =
             """
@@ -346,6 +422,29 @@ class ZabbixService(
         return requestApi(request).get("result")?.get(0)
     }
 
+    private fun removeTagsIfPresent(webscenario: JsonNode, tagsToRemove: List<String>) {
+        val tagsNode = webscenario.get("tags") ?: return
+        val httptestId = webscenario.get("httptestid")?.asText().orEmpty()
+        if (httptestId.isEmpty()) return
+
+        val existingTags = tagsNode
+            .mapNotNull { tag ->
+                val tagName = tag.get("tag")?.asText() ?: return@mapNotNull null
+                val tagValue = tag.get("value")?.asText().orEmpty()
+                ZabbixModel.Tag(tagName, tagValue)
+            }
+
+        val updatedTags = existingTags
+            .filterNot { it.tag in tagsToRemove }
+            .distinctBy { it.tag }
+
+        if (updatedTags.size == existingTags.size) return
+
+        val params = ZabbixModel.UpdateWebscenarioParams(httptestId, updatedTags)
+        val update = ZabbixModel.UpdateWebscenario(method = "httptest.update", params = params)
+        requestApi(jacksonObjectMapper().writeValueAsString(update))
+    }
+
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
         val docNameStep = createDocumentName(docName, docUrl)
         val docNameTag = shortenString(docName, 255)
@@ -356,6 +455,12 @@ class ZabbixService(
             ZabbixModel.Tag("document name", docNameTag),
             ZabbixModel.Tag("document url", docUrlTag),
         )
+
+        getWebscenarioByNameAndHost(docNameStep, hostId)?.let { existing ->
+            removeTagsIfPresent(existing, listOf("expired"))
+            return
+        }
+
         val steps =
             listOf(ZabbixModel.Step(name = docNameStep, retrieve_mode = retrieveMode, url = docUrl, required = required))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
