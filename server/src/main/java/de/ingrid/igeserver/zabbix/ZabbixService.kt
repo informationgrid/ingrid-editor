@@ -71,12 +71,21 @@ class ZabbixService(
         val documentsToDelete = getUploadedDocuments(remoteUploads)
 
         data.uploads.forEach { upload ->
-            remoteUploads
-                .find { upload.url == it.url }
-                ?.let { documentsToDelete.remove(it) }
-                ?: documentsToAdd.add(upload).also {
-                    log.debug("Remote document not found: ${upload.url} in $remoteUploads")
-                }
+            val remoteUpload = remoteUploads.find { upload.url == it.url }
+            if (remoteUpload == null) {
+                documentsToAdd.add(upload)
+                log.debug("Remote document not found: ${upload.url} in $remoteUploads")
+                return@forEach
+            }
+
+            val existingWebscenario = getWebscenarioById(remoteUpload.webscenarioId)
+            if (isExpiredWebscenario(existingWebscenario)) {
+                documentsToAdd.add(upload)
+                documentsToDelete.remove(remoteUpload)
+                log.debug("Remote document ${upload.url} is expired, update document")
+            } else {
+                documentsToDelete.remove(remoteUpload)
+            }
         }
 
         log.debug("Delete documents: $documentsToDelete")
@@ -299,7 +308,14 @@ class ZabbixService(
         return response.get("result").map { getProblem(it) }
     }
 
-    private fun getTag(item: JsonNode, tagName: String) = item.get("tags").filter { it.get("tag")?.asText() == tagName }.map { it.get("value") }[0].asText()
+    private fun getTag(item: JsonNode, tagName: String): String {
+        val tags = item.get("tags") ?: item.get(0)?.get("tags") ?: return ""
+        return tags
+            .firstOrNull { it.get("tag")?.asText() == tagName }
+            ?.get("value")
+            ?.asText()
+            .orEmpty()
+    }
 
     private fun getProblem(item: JsonNode) = ZabbixModel.Problem(
         eventid = item.get("eventid").asText(),
@@ -312,6 +328,23 @@ class ZabbixService(
         docUuid = getTag(item, "id"),
         severity = item.get("severity").asText(),
     )
+
+    private fun getWebscenarioById(id: String): JsonNode? {
+        val request =
+            """
+                    {
+                        "jsonrpc":"$JSONRPC",
+                        "method":"httptest.get",
+                        "params":{
+                            "output":"extend",
+                            "selectTags":"extend",
+                            "httptestids":["$id"]
+                        },
+                        "id":1
+                    }
+            """.trimIndent()
+        return requestApi(request).get("result")?.get(0)
+    }
 
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
         val docNameStep = createDocumentName(docName, docUrl)
@@ -355,6 +388,8 @@ class ZabbixService(
         requestApi(values)
     }
 
+    private fun isExpiredWebscenario(webscenario: JsonNode?): Boolean = webscenario?.let { getTag(it, "expired").isNotEmpty() } == true
+
     private fun deleteHosts(ids: List<String>) {
         val host = ZabbixModel.Delete(method = "host.delete", params = ids)
         val values = jacksonObjectMapper().writeValueAsString(host)
@@ -362,6 +397,7 @@ class ZabbixService(
     }
 
     private fun deleteWebscenario(ids: List<String>) {
+        if (ids.isEmpty()) return
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         requestApi(values)
