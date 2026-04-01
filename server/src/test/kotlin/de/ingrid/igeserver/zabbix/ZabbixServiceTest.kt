@@ -34,7 +34,7 @@ import io.ktor.http.headersOf
 
 class ZabbixServiceTest : ShouldSpec() {
 
-    val props = ZabbixProperties("", "https://abc.de", "", emptyList(), "", 0, "", ZabbixProperties.Cleanup("", 20))
+    val props = ZabbixProperties("", "https://abc.de", "", emptyList(), "", 0, "", ZabbixProperties.Cleanup("", 20, 365))
     private lateinit var service: ZabbixService
     private lateinit var client: HttpClient
     private var requestCount: Int = 0
@@ -71,7 +71,7 @@ class ZabbixServiceTest : ShouldSpec() {
             service.addOrUpdateDocument(data)
 
             // requests for document, httptest, hostgroup and host
-            requestCount shouldBe 6
+            requestCount shouldBe 7
         }
 
         should("get Problems for a catalog") {

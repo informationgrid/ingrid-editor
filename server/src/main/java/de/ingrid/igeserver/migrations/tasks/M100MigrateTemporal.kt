@@ -61,9 +61,14 @@ class M100MigrateTemporal : MigrationBase("0.100") {
 
                 documents.forEach {
                     it as Document
-                    val temporal = Migrate150.getTemporalOfDocument(it.data)
-                    it.data.set<JsonNode>("temporal", temporal)
-                    log.info("Migrated doc with dbID ${it.id}")
+
+                    try {
+                        val temporal = Migrate150.getTemporalOfDocument(it.data)
+                        it.data.set<JsonNode>("temporal", temporal)
+                        log.info("Migrated doc with dbID ${it.id}")
+                    } catch (e: Exception) {
+                        log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")
+                    }
                 }
                 page++
             } while (documents.size == pageSize)

@@ -28,6 +28,8 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid_with_opendata.exporter.InGridExporterOpenDataInGrid
+import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -42,7 +44,8 @@ import kotlin.reflect.KClass
 class IngridExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+    openDataExporter: OpenDataExporter,
+) : InGridExporterOpenDataInGrid(IngridIndexExporter(idfExporter, luceneExporter), openDataExporter) {
 
     override val typeInfo =
         ExportTypeInfo(

@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2025-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,46 +17,44 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_wsv.exporter
+package de.ingrid.igeserver.profiles.ingrid_with_opendata.exporter
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataExporter
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class IngridExporterCswWsv(
-    @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+class InGridExporterOpenDataInGrid(
+    @Qualifier("ingridIndexExporter") val ingridExporter: IngridIndexExporter,
+    val openDataExporter: OpenDataExporter,
+) : IgeExporter {
 
     override val typeInfo =
         ExportTypeInfo(
             DocumentCategory.DATA,
-            "indexInGridIDFCswWsv",
-            "Index ohne Warenkorb (WSV)",
-            "Export von Ingrid Dokumenten ins IDF Format für WSV für CSW-Export.",
+            "indexInGridIDFOpenInGrid",
+            "InGrid IDF OpenData + InGrid (Elasticsearch)",
+            "Export von InGrid und OpenData Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
             "application/json",
             "json",
-            listOf("ingrid-wsv"),
+            listOf("ingrid-with-opendata"),
             isPublic = true,
             useForPublish = true,
         )
 
-    @Value("\${wsv.cart.types:10900,10901,10902,10903,10904}")
-    private val specialType: List<String> = emptyList()
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        if (doc.data.get("references") != null) {
-            (doc.data.get("references") as ArrayNode).removeAll { ref -> specialType.contains(ref.get("type")?.get("key")?.textValue()) }
-        }
-
-        return super.run(doc, catalogId, options)
+    override fun run(
+        doc: Document,
+        catalogId: String,
+        options: ExportOptions,
+    ): Any = if (doc.type == "OpenDataDoc") {
+        openDataExporter.run(doc, catalogId, options)
+    } else {
+        ingridExporter.run(doc, catalogId, options)
     }
 }

@@ -23,7 +23,20 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
-@Profile("ingrid")
+@Profile(
+    "ingrid",
+    "ingrid-krzn",
+    "ingrid-bast",
+    "ingrid-baw",
+    "ingrid-bkg",
+    "ingrid-hmdk",
+    "ingrid-kommunal-st",
+    "ingrid-lfubayern",
+    "ingrid-lubw",
+    "ingrid-up-sh",
+    "ingrid-with-opendata",
+    "ingrid-wsv",
+)
 @Configuration
 @ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.ingrid"])
 class InGridConfig

@@ -69,7 +69,7 @@ class InGridBawComponent extends InGridComponent {
 
   constructor() {
     super();
-    this.isoView.isoExportFormat = "ingridISOBaw";
+    this.isoView.defaultExportFormat = () => "ingridISOBaw";
     this.modifyFormFieldConfiguration();
   }
 

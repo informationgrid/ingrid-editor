@@ -1,0 +1,7 @@
+.mat-icon + .document-icon-tag {
+  border: none;
+}
+
+.mat-icon + .document-icon-tag.negative-assessment-not-publish {
+  background-color: #a1a1a1;
+}

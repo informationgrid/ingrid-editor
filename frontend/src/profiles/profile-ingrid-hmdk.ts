@@ -52,7 +52,7 @@ class InGridHMDKComponent extends InGridComponent {
 
   constructor() {
     super();
-    this.isoView.isoExportFormat = "ingridISOHmdk";
+    this.isoView.defaultExportFormat = () => "ingridISOHmdk";
     this.modifyFormFieldConfiguration();
     this.pluginService.registerPlugin(this.modifyPublishedBehaviour);
   }

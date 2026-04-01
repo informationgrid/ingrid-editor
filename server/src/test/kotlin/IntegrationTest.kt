@@ -20,15 +20,12 @@
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.services.UserManagementService
-import io.kotest.core.extensions.ApplyExtension
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.extensions.spring.SpringExtension
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import org.testcontainers.postgresql.PostgreSQLContainer
@@ -37,8 +34,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 @AutoConfigureMockMvc(addFilters = false)
-@ApplyExtension(SpringExtension::class)
-@ContextConfiguration(classes = [(IgeServer::class)])
 @ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud", "ingrid-krzn", "opendata", "ingrid-hmdk", "ingrid-lfubayern"])
 class IntegrationTest : AnnotationSpec() {
 

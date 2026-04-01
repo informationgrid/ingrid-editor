@@ -19,9 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.convertToIngridOptionsWithStructuralChildren
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -59,6 +62,7 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawPublication"
     override fun parentClassName() = super.className
+    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
 }
 
 @Component

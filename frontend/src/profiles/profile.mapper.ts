@@ -53,6 +53,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-opendata"));
     case "test":
       return from(import("./profile-test"));
+    case "ingrid-with-opendata":
+      return from(import("./profile-ingrid-with-opendata"));
     default:
       throw new Error(`Profile ${profileId} not found`);
   }

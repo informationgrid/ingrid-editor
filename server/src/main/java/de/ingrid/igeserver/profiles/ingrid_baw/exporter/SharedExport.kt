@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.model.Authority
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
@@ -265,7 +267,7 @@ data class CitedResponsibleParty(
 )
 
 fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.mapNotNull {
-    val litDoc = transformer.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
+    val litDoc = transformer.addressExporter.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
     calcLiteratureAggregate(transformer, litDoc)
 } ?: emptyList()
 
@@ -516,4 +518,10 @@ fun transformUrlForDatenrepository(url: String?): String? {
     // Only allow URLs that are in the domain whitelist. Return null for other URLs.
     val whitelist = BawPropertiesHolder.domainWhitelist
     return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
+}
+
+fun convertToIngridOptionsWithStructuralChildren(options: IncomingReferenceOptions): IngridIncomingReferenceOptions {
+    val ingridOptions = options as? IngridIncomingReferenceOptions
+        ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
+    return ingridOptions.copy(addStructuralChildren = true)
 }

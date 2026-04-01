@@ -52,7 +52,7 @@ class LfuBayernProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (LfU Bayern)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 
     override val indexExportFormatID = "indexInGridIDFLfuBayern"
 
@@ -108,8 +108,11 @@ class LfuBayernProfile(
 
         when (codelistId) {
             "20000" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20000)
+
             "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+
             "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002)
+
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,

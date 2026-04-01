@@ -60,6 +60,7 @@ import de.ingrid.igeserver.persistence.filter.PreUnpublishPipe
 import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
 import de.ingrid.igeserver.persistence.filter.PreUpdatePipe
 import de.ingrid.igeserver.persistence.model.EntityType
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -330,13 +331,13 @@ class DocumentService(
         }
     }
 
-    fun getDocumentType(docType: String, profile: String, parentProfile: String?): EntityType {
+    fun getDocumentType(docType: String, profile: String, linkedProfiles: List<String> = emptyList()): EntityType {
         val profileDocumentType = documentTypes.find {
             it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true)
         }
 
         return profileDocumentType ?: documentTypes.find {
-            it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(parentProfile) == true)
+            it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.any { p -> linkedProfiles.contains(p) } == true)
         } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
     }
 
@@ -355,7 +356,7 @@ class DocumentService(
     ): DocumentData {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docTypeName = document.type
-        val docType = getDocumentType(docTypeName, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(docTypeName, filterContext.profile, filterContext.linkedProfiles)
 
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(
@@ -452,7 +453,7 @@ class DocumentService(
                     wrapper.pending_date = null
                     val updatedWrapper = docWrapperRepo.save(wrapper)
                     val docType =
-                        getDocumentType(updatedWrapper.type, filterContext.profile, filterContext.parentProfile)
+                        getDocumentType(updatedWrapper.type, filterContext.profile, filterContext.linkedProfiles)
                     runPostUpdatePipes(docType, catalogId, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
                     log.error("Error during publishing pending document: ${wrapper.uuid}", e)
@@ -471,7 +472,7 @@ class DocumentService(
 
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.linkedProfiles)
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
@@ -582,7 +583,7 @@ class DocumentService(
 
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.linkedProfiles)
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
@@ -738,7 +739,7 @@ class DocumentService(
         // run pre-delete pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
         val docTypeName = docData.document.type
-        val docType = getDocumentType(docTypeName, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(docTypeName, filterContext.profile, filterContext.linkedProfiles)
 
         val preDeletePayload = PreDeletePayload(docType, catalogId, docData.document, docData.wrapper)
 
@@ -801,7 +802,7 @@ class DocumentService(
 
         // run pre-revert pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile, filterContext.linkedProfiles)
         val preRevertPayload = PreRevertPayload(docType, catalogId, docData.document, docData.wrapper)
         preRevertPipe.runFilters(preRevertPayload, filterContext)
 
@@ -877,7 +878,7 @@ class DocumentService(
 
         // run pre-unpublish pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        val docType = getDocumentType(currentDoc.document.type, filterContext.profile, filterContext.parentProfile)
+        val docType = getDocumentType(currentDoc.document.type, filterContext.profile, filterContext.linkedProfiles)
         val preUnpublishPayload = PreUnpublishPayload(docType, catalogId, lastPublished, currentDoc.wrapper)
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
@@ -992,7 +993,7 @@ class DocumentService(
 
         val profile = document.catalog!!.type
         val catalogProfile = catalogService.getCatalogProfile(profile)
-        val docType = getDocumentType(document.type, profile, catalogProfile.parentProfile)
+        val docType = getDocumentType(document.type, profile, catalogProfile.linkedProfiles)
         return docType.getReferenceUUIDs(document).toSet()
     }
 
@@ -1002,19 +1003,19 @@ class DocumentService(
     fun getIncomingReferenceUUIDs(
         document: Document?,
         catalogId: String,
-        options: List<String>,
+        options: IncomingReferenceOptions,
     ): Set<String> {
         if (document == null) return setOf()
         val profile = catalogService.getProfileFromCatalog(catalogId)
-        val docType = getDocumentType(document.type, profile.identifier, profile.parentProfile)
+        val docType = getDocumentType(document.type, profile.identifier, profile.linkedProfiles)
         return docType.getIncomingReferenceUUIDs(document, options).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {
         val docData = getDocumentFromCatalog(catalogId, docId)
         val profile = catalogService.getProfileFromCatalog(catalogId)
-        val filterContext = DefaultContext(catalogId, profile.identifier, profile.parentProfile, principal)
-        val docType = getDocumentType(docData.wrapper.type, profile.identifier, filterContext.parentProfile)
+        val filterContext = DefaultContext(catalogId, profile.identifier, profile.linkedProfiles, principal)
+        val docType = getDocumentType(docData.wrapper.type, profile.identifier, filterContext.linkedProfiles)
         val prePublishPayload = PrePublishPayload(docType, catalogId, docData.document, docData.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
     }

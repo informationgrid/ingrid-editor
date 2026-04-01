@@ -174,7 +174,7 @@ class MigrateCodelistIdsIntoDatasets(
             }
         }
 
-        if (profile.identifier == "ingrid" || profile.parentProfile == "ingrid") {
+        if (profile.identifier == "ingrid" || profile.linkedProfiles.contains("ingrid")) {
             getSQLForDynamicOperationsCodelistId(catalogIdentifier).let { operationSql ->
                 log.debug("Executing SQL for dynamic operations")
                 jdbcTemplate.update(operationSql)
@@ -212,21 +212,16 @@ class MigrateCodelistIdsIntoDatasets(
         finishJob(context, message)
     }
 
-    private fun getFields(profile: CatalogProfile): List<FieldToCodelist> = when (profile.identifier) {
-        "ingrid" -> fieldsInGrid
-        "ingrid-krzn" -> fieldsKrzn
-        "ingrid-hmdk" -> fieldsHmdk
-        "ingrid-lfubayern" -> fieldsLfUBayern
-        "uvp" -> fieldsUvp
-        "opendata" -> fieldsOpendata
-        "test" -> fieldsTest
-        else -> when (profile.parentProfile) {
-            "ingrid" -> fieldsInGrid
-            "uvp" -> fieldsUvp
-            "opendata" -> fieldsOpendata
-            "test" -> fieldsTest
-            else -> emptyList()
-        }
+    private fun getFields(profile: CatalogProfile): List<FieldToCodelist> {
+        if (profile.identifier == "ingrid") return fieldsInGrid
+        if (profile.identifier == "ingrid-krzn") return fieldsKrzn
+        if (profile.identifier == "ingrid-hmdk") return fieldsHmdk
+        if (profile.identifier == "ingrid-lfubayern") return fieldsLfUBayern
+        if (profile.identifier == "uvp" || profile.linkedProfiles.contains("uvp")) return fieldsUvp
+        if (profile.identifier == "opendata" || profile.linkedProfiles.contains("opendata")) return fieldsOpendata
+        if (profile.identifier == "test" || profile.linkedProfiles.contains("test")) return fieldsTest
+        if (profile.linkedProfiles.contains("ingrid")) return fieldsInGrid
+        return emptyList()
     }
 
     private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String): String {
@@ -364,6 +359,7 @@ class MigrateCodelistIdsIntoDatasets(
             when {
                 // last element with ->>
                 index == parts.size - 1 -> " ->> '$part'"
+
                 else -> " -> '$part'"
             }
         }.joinToString("")

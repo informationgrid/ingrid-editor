@@ -17,30 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FolderDoctype } from "./folder/folder.doctype";
 import { Component } from "@angular/core";
-import { ProfileService } from "../app/services/profile.service";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
-import { ReportsService } from "../app/+reports/reports.service";
 import { OpenDataComponent } from "./profile-opendata";
-import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
-import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 
 @Component({
-  template: "",
+  template: "bmi",
   standalone: true,
   imports: [NgxFlowModule],
 })
 class BmiComponent extends OpenDataComponent {
-  constructor(
-    service: ProfileService,
-    reportsService: ReportsService,
-    dataset: OpenDataDoctype,
-    folder: FolderDoctype,
-    address: OpenDataAddressDoctype,
-  ) {
-    super(service, reportsService, dataset, folder, address);
-    reportsService.setFilter((route) => route.path != "url-check");
+  constructor() {
+    super();
+    this.reportsService.setFilter((route) => route.path != "url-check");
+    this.opendata.options.spatialTypes = ["free", "wkt"];
+    this.opendata.options.temporalLegacy = true;
   }
 }
 

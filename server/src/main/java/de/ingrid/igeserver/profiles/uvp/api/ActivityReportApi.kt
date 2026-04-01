@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -34,7 +33,6 @@ import java.security.Principal
 import java.time.Instant
 
 @Tag(name = "Activity Report", description = "API to create Activity reports")
-@Profile("uvp")
 interface ActivityReportApi {
 
     @Operation

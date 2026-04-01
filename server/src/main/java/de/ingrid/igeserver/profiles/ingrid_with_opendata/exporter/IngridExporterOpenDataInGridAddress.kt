@@ -17,31 +17,30 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_wsv.exporter
+package de.ingrid.igeserver.profiles.ingrid_with_opendata.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterAddress
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
-class IngridExporterCswWsvAddress(
+class IngridExporterOpenDataInGridAddress(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridIndexExporterAddress(idfExporter, luceneExporter) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
-    override val typeInfo =
-        ExportTypeInfo(
-            DocumentCategory.ADDRESS,
-            "indexInGridIDFCswWsv",
-            "Index ohne Warenkorb (WSV)",
-            "Export von Ingrid Dokumenten ins IDF Format für WSV für CSW-Export.",
-            "application/json",
-            "json",
-            listOf("ingrid-wsv"),
-            isPublic = true,
-        )
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.ADDRESS,
+        "indexInGridIDFOpenInGrid",
+        "Ingrid IDF Address (Elasticsearch)",
+        "Export von Ingrid Adressen ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
+        "application/json",
+        "json",
+        listOf("ingrid-with-opendata"),
+        false,
+    )
 }

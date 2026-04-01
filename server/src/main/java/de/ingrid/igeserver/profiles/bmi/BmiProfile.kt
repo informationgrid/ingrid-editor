@@ -51,7 +51,7 @@ class BmiProfile(
     override val indexExportFormatID = "index"
     override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
-    override val parentProfile = "opendata"
+    override val linkedProfiles = listOf("opendata")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
         FacetGroup(

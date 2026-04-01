@@ -19,230 +19,111 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.JsonStringOutput
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.services.BehaviourService
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.getPath
-import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
+data class OpenDataTransformerConfig(
+    override val catalogIdentifier: String,
+    override val codelists: CodelistTransformer,
+    override val uploadConfig: UploadConfig,
+    override val catalogService: CatalogService,
+    override val cache: TransformerCache,
+    override val doc: Document,
+    override val documentService: DocumentService,
+    override val tags: List<String>,
+    val flexOpenData: Boolean = false,
+) : GeneralTransformerConfig
+
 @Service
 class OpenDataExporter(
-    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
-    val ingridIndexExporter: IngridIndexExporter,
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
+    val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
+    val generalProperties: GeneralProperties,
+    val openDataRDFExporter: OpenDataRDFExporter,
+    val behaviourService: BehaviourService,
 ) : IgeExporter {
 
     val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override val typeInfo: ExportTypeInfo
-        get() {
-            return ExportTypeInfo(
-                DocumentCategory.DATA,
-                "indexOpenDataIDF",
-                "Open-Data Index",
-                "Export der Datensätze für die weitere Verwendung im Exporter.",
-                MediaType.APPLICATION_JSON_VALUE,
-                "json",
-                listOf("opendata"),
-            )
-        }
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        val mapper = jacksonObjectMapper()
-        if (doc.type == "FOLDER") {
-            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
-            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-            return luceneJson.toPrettyString()
-        }
-
-        // modify doc type and other fields to be mapped correctly during InGrid export
-        val modifiedDoc = addDefaultValues(doc)
-
-        val luceneDoc = ingridIndexExporter.run(modifiedDoc, catalogId, options) as String
-
-        val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-
-        val additionalIdf = createAdditionalIdf(modifiedDoc, catalogId)
-        appendToIdf(luceneJson, additionalIdf)
-
-        val additionalLuceneJson = getAdditionalLuceneJsonForDCATExporter(doc, catalogId)
-        // apply all bmi fields to ingrid lucene document
-        additionalLuceneJson.fieldNames().forEach {
-            if (luceneJson.has(it)) log.error("Conflict between BMI export document and InGrid on field: $it")
-            luceneJson.set<JsonNode>(it, additionalLuceneJson.get(it))
-        }
-
-        // TODO: support fingerprint in this profile for additionalIDF
-        /*
-                if (doc.type != "FOLDER") {
-                    val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
-                    luceneJson.put("idf", idfFingerprintChecked)
-                }
-         */
-
-        return luceneJson.toPrettyString()
-    }
-
-    private fun getAdditionalLuceneJsonForDCATExporter(doc: Document, catalogId: String): JsonNode {
-        val output: TemplateOutput = JsonStringOutput()
-        templateEngine.render("export/opendata/lucene-export.jte", getMapFromObject(doc, catalogId), output)
-
-        return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
-    }
-
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> = mapOf(
-        "map" to mapOf(
-            "model" to OpenDataModelTransformerAdditional(
-                json,
-                codelistHandler,
-                catalogId,
-                uploadConfig,
-                documentService,
-            ),
-            "catalogId" to catalogId,
-        ),
+    override val typeInfo: ExportTypeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "indexOpenData",
+        "Open-Data Index",
+        "Export der Datensätze für die weitere Verwendung im InGrid-System.",
+        MediaType.APPLICATION_JSON_VALUE,
+        "json",
+        listOf("opendata", "ingrid-with-opendata"),
+        isPublic = true,
+        useForPublish = true,
     )
 
-    private fun appendToIdf(json: ObjectNode?, additionalIdf: String) {
-        val updatedIdf = json?.getString("idf")?.replace("</idf:idfMdMetadata>", "$additionalIdf</idf:idfMdMetadata>")
-        json?.put("idf", updatedIdf)
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        if (doc.type == "FOLDER") {
+//            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
+//            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
+//            return luceneJson.toPrettyString()
+        }
+
+        val indexDocument = createIndexDocument(doc, catalogId, options)
+
+        return indexDocument.toString()
     }
 
-    private fun createAdditionalIdf(doc: Document, catalogId: String): String {
-        val output: TemplateOutput = XMLStringOutput()
+    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = JsonStringOutput().apply {
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
+        val flexOpenData = behaviourService.get(catalogId, "plugin.opendata.flexibleDoctype")?.active ?: false
+        val config = OpenDataTransformerConfig(
+            catalogId,
+            codelistTransformer,
+            uploadConfig,
+            catalogService,
+            TransformerCache(),
+            doc,
+            documentService,
+            options.tags,
+            flexOpenData,
+        )
+        val catalog = catalogService.getCatalogById(catalogId)
+
         templateEngine.render(
-            "export/opendata/additional.jte",
+            "export/opendata/lucene-export.jte",
             mapOf(
                 "map" to mapOf(
-                    "model" to OpenDataModelTransformerAdditional(
-                        doc,
-                        codelistHandler,
-                        catalogId,
-                        uploadConfig,
-                        documentService,
-                    ),
+                    "model" to OpenDataModelTransformer(config),
+                    "rdf" to openDataRDFExporter.run(doc, catalogId, options),
+                    "catalog" to catalogService.getCatalogById(catalogId),
+                    "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                    "provider" to mapCodelistValue("111", catalog.settings.config.provider),
                 ),
             ),
-            output,
+            this,
         )
-        return output.toString()
     }
 
-    private fun addDefaultValues(doc: Document): Document {
-        val mapper = jacksonObjectMapper()
-        return doc.apply {
-            type = "InGridSpecialisedTask"
-            data.apply {
-                val outer = this
-
-                set<JsonNode>("pointOfContact", get("addresses"))
-                put("alternateTitle", getString("landingPage"))
-                set<JsonNode>("openDataCategories", get("openDataCategories"))
-                set<JsonNode>(
-                    "spatial",
-                    mapper.createObjectNode().apply {
-                        set<JsonNode>(
-                            "references",
-                            if (outer.get("spatial") == null || outer.get("spatial").isEmpty) {
-                                mapper.createArrayNode()
-                            } else {
-                                outer.get(
-                                    "spatial",
-                                )
-                            },
-                        )
-                        set<JsonNode>("spatialSystems", null)
-                    },
-                )
-                get("keywords")?.let {
-                    set<JsonNode>(
-                        "keywords",
-                        mapper.createObjectNode().apply {
-                            set<JsonNode>(
-                                "free",
-                                mapper.createArrayNode().apply {
-                                    it.forEach {
-                                        add(
-                                            mapper.createObjectNode().apply {
-                                                put("id", null as String?)
-                                                put("label", it.asText())
-                                            },
-                                        )
-                                    }
-                                },
-                            )
-                        },
-                    )
-                }
-                set<JsonNode>(
-                    "metadata",
-                    mapper.createObjectNode().apply {
-                        set<JsonNode>(
-                            "language",
-                            mapper.createObjectNode().apply {
-                                put("key", 150)
-                            },
-                        )
-                    },
-                )
-                put("isOpenData", true)
-                set<JsonNode>("openDataCategories", get("DCATThemes"))
-                set<JsonNode>(
-                    "resource",
-                    mapper.createObjectNode().apply {
-                        put("purpose", outer.getString("legalBasis"))
-                        put("specificUsage", outer.getString("specificUsage"))
-                    },
-                )
-                set<JsonNode>(
-                    "temporal",
-                    mapper.createObjectNode().apply {
-                        set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
-                        set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
-                        set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
-                    },
-                )
-                set<JsonNode>(
-                    "maintenanceInformation",
-                    mapper.createObjectNode().apply {
-                        set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
-                    },
-                )
-            }
-        }
-    }
-
-    private class XMLStringOutput : StringOutput() {
-        override fun writeUserContent(value: String?) {
-            if (value == null) return
-            super.writeUserContent(
-                StringEscapeUtils.escapeXml10(value),
-            )
-        }
-    }
+    private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
 }
