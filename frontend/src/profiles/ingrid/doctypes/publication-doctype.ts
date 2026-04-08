@@ -156,7 +156,10 @@ export class PublicationDoctype extends IngridShared {
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ extraInfoLangData: true }),
+      this.addAdditionalInformationSection({
+        extraInfoLangData: true,
+        optionalSection: this.options.optional.additionalInformationSection,
+      }),
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridPublication),
       this.addFileReferences(),

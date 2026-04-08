@@ -67,6 +67,7 @@ interface AdditionalInformationSectionOptions {
   conformity?: boolean;
   extraInfoCharSetData?: boolean;
   extraInfoLangData?: boolean;
+  optionalSection?: boolean;
 }
 
 export enum IngridClass {
@@ -135,6 +136,10 @@ export abstract class IngridShared extends BaseDoctype {
       maintenanceInformation: false,
       temporalStatus: false,
       legalBasicsDescriptions: false,
+    },
+    optional: {
+      doi: false,
+      additionalInformationSection: false,
     },
     spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
     validate: {
@@ -1541,6 +1546,7 @@ export abstract class IngridShared extends BaseDoctype {
               { className: "optional" },
             ),
       ].filter(Boolean),
+      { optional: options.optionalSection },
     );
   }
 
@@ -1838,32 +1844,43 @@ export abstract class IngridShared extends BaseDoctype {
   addDoiFields(): FormlyFieldConfig {
     let doiPrefix =
       this.behaviourService.getBehaviour("plugin.ingrid.doi")?.data?.doiPrefix;
-    return this.addGroup(null, "DOI", [
-      this.addInputInline("doi", "DOI", {
-        defaultValue: doiPrefix ? doiPrefix + "/" : "",
-        validators: {
-          validation: ["doi"],
-        },
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-      }),
-      this.addSelectInline("generalResourceType", "Ressourcen Typ (generell)", {
-        options: this.getCodelistForSelect("3390", "generalResourceType"),
-        codelistId: "3390",
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-        expressions: {
-          "props.required": (field: FormlyFieldConfig) =>
-            field.options.formState.mainModel?.publication?.doi?.length > 0,
-        },
-      }),
-      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
-        options: this.getCodelistForSelect("3386", "resourceType"),
-        codelistId: "3386",
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-      }),
-    ]);
+    return this.addGroup(
+      null,
+      "DOI",
+      [
+        this.addInputInline("doi", "DOI", {
+          defaultValue: doiPrefix ? doiPrefix + "/" : "",
+          validators: {
+            validation: ["doi"],
+          },
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        }),
+        this.addSelectInline(
+          "generalResourceType",
+          "Ressourcen Typ (generell)",
+          {
+            options: this.getCodelistForSelect("3390", "generalResourceType"),
+            codelistId: "3390",
+            hasInlineContextHelp: true,
+            wrappers: ["inline-help", "form-field"],
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                field.options.formState.mainModel?.publication?.doi?.length > 0,
+            },
+          },
+        ),
+        this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+          options: this.getCodelistForSelect("3386", "resourceType"),
+          codelistId: "3386",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        }),
+      ],
+      {
+        className: this.options.optional.doi ? "optional" : "",
+      },
+    );
   }
 
   protected urlRefFields(docClass: IngridClass) {

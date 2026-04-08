@@ -341,7 +341,10 @@ export class GeoServiceDoctype extends IngridShared {
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ conformity: true }),
+      this.addAdditionalInformationSection({
+        conformity: true,
+        optionalSection: this.options.optional.additionalInformationSection,
+      }),
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridGeoService),
     ].filter(Boolean);
