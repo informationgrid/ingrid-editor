@@ -23,12 +23,12 @@ import { interval } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: "ige-analysis-loading-view",
-  templateUrl: "./analysis-loading-view.component.html",
-  styleUrls: ["./analysis-loading-view.component.scss"],
+  selector: "ige-hint-loading-view",
+  templateUrl: "./hint-loading-view.component.html",
+  styleUrls: ["./hint-loading-view.component.scss"],
   imports: [MatProgressSpinner],
 })
-export class AnalysisLoadingViewComponent {
+export class HintLoadingViewComponent {
   private destroyRef = inject(DestroyRef);
 
   hints = input.required<string[]>();
