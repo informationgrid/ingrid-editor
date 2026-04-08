@@ -257,9 +257,10 @@ export class FormFieldHelper {
   // remember view components for print view
   protected viewComponents: { [field: string]: Component } = {};
 
-  addSection(label: string, fields: any[]) {
+  addSection(label: string, fields: any[], options?: any) {
     return {
       wrappers: ["section"],
+      className: options?.optional ? "optional" : undefined,
       props: {
         label: label,
       },
