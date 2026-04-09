@@ -231,6 +231,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         ]);
       }
     });
+
+    effect(() => {
+      // needed to register change but actual value irrelevant
+      const _ = this.showAllFields();
+      this.formularService.getSectionsForDoctype(this.fields);
+    });
   }
 
   ngOnDestroy() {

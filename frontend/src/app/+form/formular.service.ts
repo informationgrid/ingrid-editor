@@ -101,7 +101,9 @@ export class FormularService {
         mergeMap((item) => getSectionItem(item)),
         filter((item) => item?.wrappers?.indexOf("section") >= 0),
         map((item) =>
-          item.className === "hide" ? "_" + item.props.label : item.props.label,
+          this.isSectionHidden(item)
+            ? "_" + item.props.label
+            : item.props.label,
         ),
         toArray(),
       )
@@ -109,6 +111,15 @@ export class FormularService {
         this.doctypeSections = sections;
         this.sections$.next(sections);
       });
+  }
+
+  private isSectionHidden(item: FormlyFieldConfig): boolean {
+    if (item.className === "hide") return true;
+    if (
+      item.className?.includes("optional") &&
+      !this.uiStore.toggleFieldsButtonShowAll()
+    )
+      return true;
   }
 
   setAdditionalSections(sections: string[]) {
