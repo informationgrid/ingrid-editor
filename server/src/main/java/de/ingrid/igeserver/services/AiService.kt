@@ -46,10 +46,9 @@ class AiService(
             logging = LoggingConfig(logger = Logger.Empty),
         )
 
-        val json = Json.parseToJsonElement(body).jsonObject
         val chatCompletionRequest = ChatCompletionRequest(
             model = ModelId(generalProperties.openAIModel),
-            reasoningEffort = Effort("low"),
+            reasoningEffort = Effort("medium"),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.System,
@@ -57,7 +56,7 @@ class AiService(
                 ),
                 ChatMessage(
                     role = ChatRole.User,
-                    content = getUserPrompt(json),
+                    content = body,
                 ),
             ),
             responseFormat = ChatResponseFormat.jsonSchema(
@@ -73,83 +72,67 @@ class AiService(
     private fun getSystemPrompt(): String {
         return """
             Du bist ein Experte für die Bewertung der Qualität von Geodaten-Metadaten.
-    
-            Deine Aufgabe ist es, Metadatenfelder eines Datensatzes zu bewerten.
-            Manche Felder können "undefined" erscheinen, die ignoriert werden sollen.
-            
-            Die Bewertung muss den Gesamtkontext des Datensatzes berücksichtigen.
-            Wenn der Datensatz beispielsweise Standorte von Kindergärten beschreibt, sollten Name, Beschreibung und Schlagwörter diesen Kontext widerspiegeln.
-            
-            Bewerte jede Eigenschaft mit einer Punktzahl von 1 bis 10.
-            
-            Bedeutung der Bewertung:
-            1–3 = sehr schlecht
-            4–6 = mittelmäßig
-            7–8 = gut
-            9–10 = ausgezeichnet
-                
-            Wenn die Bewertung einer Eigenschaft unter 6 liegt:
-            - Generiere 3 alternative Vorschläge, die direkt den Wert der Eigenschaft ersetzen können.
-            - Gib einen Grund, warum die Bewertung unter 6 liegt.
-            
-            Zu beachten für den Grund:
-            - Der ist nur erforderlich, wenn die Bewertung unter 6 liegt, sonst bleibt der leer.
-            - Der Grund sollte kurz, prägnant und nicht länger als 3 Sätze sein.
-            
-            Bewerte nur die Eigenschaften, die spezifisch genannt sind.
-            Zum Schluss, gib eine kurze Zusammenfassung der Bewertungen, die nicht länger als 3 Sätze sein sollte.
-            Wenn alls in Ordnung ist, halte die nur in einem Satz, ohne alle Eigenschaften erwähnen zu müssen.
-            
-            Der Key jeder Eigenschaft wird in die Bewertung unverändert übertragen.
-            Der Label ist der Name der Eigenschaft.
-            
-            Sonderreglungen für Vorschläge der unten genannten Eigenschaften mit ihren Keys:
-            
-            - [title], [alternateTitle], [description]:
-            Die Vorschläge müssen menschlich verständlich sein, d.h. ohne kryptische Zeichen wie "_", "#" und weitere Sonderzeichen.
-            
-            - [description]:
-            Die Verschläge können mit Abschnitten formuliert werden.
-        """.trimIndent()
-    }
 
-    private fun getUserPrompt(data: JsonObject): String {
-        return """
-            Datensatz:
-      
-            Name:
-            ${data["title"]?.jsonPrimitive?.content}
-            Key: title
+            Ziel:
+            Bewerte ausgewählte Metadatenfelder eines Datensatzes anhand ihres Inhalts und im Kontext des gesamten Datensatzes.
+    
+            Allgemeine Regeln:
+            - Bewerte ausschließlich die unter "Zu bewertende Felder" aufgeführten Werte.
+            - Berücksichtige bei jeder Bewertung den Gesamtkontext aller unter "Bedeutung der Felder" beschriebenen Metadaten.
+            - Beispiel: Beschreibt der Datensatz Standorte von Kindergärten, müssen Titel und Beschreibung diesen Kontext klar widerspiegeln.
+            - Werte können "null" oder leere Arrays "[]" sein. Diese müssen ignoriert werden (keine Bewertung).
+    
+            Bewertung:
+            - Vergib für jedes Feld eine Punktzahl von 1 bis 10.
+    
+            Bedeutung der Bewertung:
+            - 1–3 = sehr schlecht
+            - 4–6 = mittelmäßig
+            - 7–8 = gut
+            - 9–10 = ausgezeichnet
+    
+            Regeln für Begründung (reasoning) und Vorschläge (suggestions):
+            - Wenn die Bewertung < 7:
+              - Gib eine kurze, prägnante Begründung für die niedrige Bewertung.
+              - Erstelle 3 Vorschläge.
+            - Wenn die Bewertung ≥ 7:
+              - Setze Begründung = null
+              - Setze Vorschläge = null
+
+            Anforderungen an Vorschläge:
+            - Müssen den Wert direkt ersetzen können.
+            - Müssen konkret und verständlich sein.
+            - Keine Sonderzeichen wie "_", "#", etc.
+            - Müssen zum Datensatzkontext passen.
             
-            Kurzbezeichnung:
-            ${data["alternateTitle"]?.jsonPrimitive?.content}
-            Key: alternateTitle
-            
-            Beschreibung:
-            ${data["description"]?.jsonPrimitive?.content}
-            Key: description
-            
-            Freie Schlagworte:
-            ${data["keywords"]?.jsonObject["free"]?.jsonArray?.map { it.jsonObject["label"]?.jsonPrimitive?.content }?.joinToString(", ")}
-            Key: keywords
-            
-            Fachliche Grundlage:
-            ${data["lineage"]?.jsonObject["statement"]?.jsonPrimitive?.content}
-            Key: lineage.statement
-            
-            INSPIRE-Themen:
-            ${data["themes"]?.jsonArray?.map { it.jsonObject["value"]?.jsonPrimitive?.content }?.joinToString(", ")}
-            Key: themes
-            
-            ISO-Themenkategorie:
-            ${data["topicCategories"]?.jsonArray?.map { it.jsonObject["category"]?.jsonPrimitive?.content }?.joinToString(", ")}
-            Key: topicCategories
-            
-            Bitte bewerte:
-            - Name
-            - Kurzbezeichnung
-            - Beschreibung
-        """
+            Bedeutung der Felder:
+            - title
+              - Label: Name
+              - Bedeutung: Der Name des Datensatzes.
+            - alternateTitle
+              - Label: Kurzbezeichnung
+              - Bedeutung: Die Kurzbezeichnung des Datensatzes.
+            - description
+              - Label: Beschreibung
+              - Bedeutung: Die Beschreibung des Datensatzes.
+            - keywords
+              - Label: Schlagworte
+              - Bedeutung: Die Verschlagwortung dient der Klassifizierung und dem einfacheren Wiederauffinden eines Datensatzes.
+            - lineage.statement
+              - Label: Fachliche Grundlage
+              - Bedeutung: Kurze zusammenfassende Aussage zur Erstellung dieser Geodatenressource. Hierzu können die Datengrundlage, die Methode der Datenerhebung und der Verarbeitungsprozess erwähnt werden.
+            - themes
+              - Label: INSPIRE-Themen
+              - Bedeutung: Auswahl eines INSPIRE Themengebiets zur Verschlagwortung des Datensatzes.
+            - topicCategories
+              - Label: ISO-Themenkategorie
+              - Bedeutung: Angabe der Hauptthemen, welche die Metadaten beschreiben.
+
+            Zu bewertende Felder:
+            - title
+            - alternateTitle
+            - description
+        """.trimIndent()
     }
 
     private fun getResponseFormat(): JsonSchema {

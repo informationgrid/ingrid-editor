@@ -41,7 +41,9 @@ export class AiAssistantViewComponent {
   metadata = input.required<any>();
   form = input.required<FormGroup>();
 
+  // Only support InGridGeoDataset at the moment.
   isEvaluationPanelEnabled = computed(() => {
+    if (Object.keys(this.form().value).length === 0) return false;
     return this.metadata()?.docType === "InGridGeoDataset";
   });
 
