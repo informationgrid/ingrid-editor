@@ -19,7 +19,13 @@
  */
 package de.ingrid.igeserver.services
 
-import com.aallam.openai.api.chat.*
+import com.aallam.openai.api.chat.ChatCompletion
+import com.aallam.openai.api.chat.ChatCompletionRequest
+import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatResponseFormat
+import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.chat.Effort
+import com.aallam.openai.api.chat.JsonSchema
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.Logger
 import com.aallam.openai.api.model.ModelId
@@ -27,13 +33,18 @@ import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.seconds
 
 @Service
 class AiService(
-    private val generalProperties: GeneralProperties
+    private val generalProperties: GeneralProperties,
 ) {
     suspend fun evaluate(body: String): String? {
         if (generalProperties.openAIToken.isNullOrEmpty()) {
@@ -69,8 +80,7 @@ class AiService(
         return completion.choices.firstOrNull()?.message?.content
     }
 
-    private fun getSystemPrompt(): String {
-        return """
+    private fun getSystemPrompt(): String = """
             Du bist ein Experte für die Bewertung der Qualität von Geodaten-Metadaten.
 
             Ziel:
@@ -132,61 +142,63 @@ class AiService(
             - title
             - alternateTitle
             - description
-        """.trimIndent()
-    }
+    """.trimIndent()
 
-    private fun getResponseFormat(): JsonSchema {
-        return JsonSchema(
-            name = "EvaluationSummary",
-            strict = true,
-            schema = buildJsonObject {
-                put("type", "object")
-                putJsonObject("properties") {
-                    putJsonObject("summary") {
-                        put("type", "string")
-                    }
-                    putJsonObject("evaluations") {
-                        put("type", "array")
-                        putJsonObject("items") {
-                            put("type", "object")
-                            putJsonObject("properties") {
-                                putJsonObject("key") { put("type", "string") }
-                                putJsonObject("label") { put("type", "string") }
-                                putJsonObject("score") {
-                                    put("type", "number")
-                                    put("minimum", 1)
-                                    put("maximum", 10)
+    private fun getResponseFormat(): JsonSchema = JsonSchema(
+        name = "EvaluationSummary",
+        strict = true,
+        schema = buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("summary") {
+                    put("type", "string")
+                }
+                putJsonObject("evaluations") {
+                    put("type", "array")
+                    putJsonObject("items") {
+                        put("type", "object")
+                        putJsonObject("properties") {
+                            putJsonObject("key") { put("type", "string") }
+                            putJsonObject("label") { put("type", "string") }
+                            putJsonObject("score") {
+                                put("type", "number")
+                                put("minimum", 1)
+                                put("maximum", 10)
+                            }
+                            putJsonObject("reasoning") {
+                                putJsonArray("anyOf") {
+                                    addJsonObject { put("type", "string") }
+                                    addJsonObject { put("type", "null") }
                                 }
-                                putJsonObject("reasoning") {
-                                    putJsonArray("anyOf") {
-                                        addJsonObject { put("type", "string") }
-                                        addJsonObject { put("type", "null") }
-                                    }
-                                }
-                                putJsonObject("suggestions") {
-                                    putJsonArray("anyOf") {
-                                        addJsonObject {
-                                            put("type", "array")
-                                            putJsonObject("items") {
-                                                put("type", "string")
-                                            }
+                            }
+                            putJsonObject("suggestions") {
+                                putJsonArray("anyOf") {
+                                    addJsonObject {
+                                        put("type", "array")
+                                        putJsonObject("items") {
+                                            put("type", "string")
                                         }
-                                        addJsonObject { put("type", "null") }
                                     }
+                                    addJsonObject { put("type", "null") }
                                 }
                             }
-                            putJsonArray("required") {
-                                add("key"); add("label"); add("score"); add("reasoning"); add("suggestions")
-                            }
-                            put("additionalProperties", false)
                         }
+                        putJsonArray("required") {
+                            add("key")
+                            add("label")
+                            add("score")
+                            add("reasoning")
+                            add("suggestions")
+                        }
+                        put("additionalProperties", false)
                     }
                 }
-                putJsonArray("required") {
-                    add("evaluations"); add("summary")
-                }
-                put("additionalProperties", false)
-            },
-        );
-    }
+            }
+            putJsonArray("required") {
+                add("evaluations")
+                add("summary")
+            }
+            put("additionalProperties", false)
+        },
+    )
 }

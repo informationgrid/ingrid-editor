@@ -30,14 +30,14 @@ import java.security.Principal
 @RestController
 @RequestMapping("/api")
 class AiApiController(
-    private val aiService: AiService
+    private val aiService: AiService,
 ) : AiApi {
 
     override fun evaluate(
         principal: Principal,
-        body: String
+        body: String,
     ): ResponseEntity<String> {
-        var response: String? = null;
+        var response: String? = null
         runBlocking {
             launch {
                 response = aiService.evaluate(body)
