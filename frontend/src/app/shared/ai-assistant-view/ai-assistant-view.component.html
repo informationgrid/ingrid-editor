@@ -1,0 +1,12 @@
+<h1>
+    <mat-icon>auto_awesome</mat-icon>
+    <span>QS Assistent</span>
+</h1>
+<mat-divider></mat-divider>
+<mat-accordion displayMode="flat">
+    <ige-validator-panel />
+
+    @if (isEvaluationPanelEnabled()) {
+        <ige-evaluation-panel [form]="form()" />
+    }
+</mat-accordion>

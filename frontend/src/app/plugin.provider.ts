@@ -43,6 +43,7 @@ import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expired
 import { DocumentsAsParentBehaviour } from "./+catalog/+behaviours/system/AllowDocumentsAsParent/documents-as-parent.behaviour";
 import { ArchivePlugin } from "./+catalog/+behaviours/system/Archive/archive.plugin";
 import { ToggleWriteAccessInTreeBehaviour } from "./+catalog/+behaviours/system/ToggleWriteAccessInTree/toggle-write-access-in-tree.behaviour";
+import { ShowAiAssistantBehaviour } from "./+catalog/+behaviours/system/ShowAiAssistant/show-ai-assistant-behaviour.service";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -90,4 +91,5 @@ export const pluginProvider = [
   },
   { provide: PluginToken, useClass: ExpiredDocumentsBehaviour, multi: true },
   { provide: PluginToken, useClass: ArchivePlugin, multi: true },
+  { provide: PluginToken, useClass: ShowAiAssistantBehaviour, multi: true },
 ];

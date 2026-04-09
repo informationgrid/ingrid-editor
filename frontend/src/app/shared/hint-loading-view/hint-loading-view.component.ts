@@ -17,25 +17,28 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+import { Component, DestroyRef, inject, input, signal } from "@angular/core";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { interval } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
+@Component({
+  selector: "ige-hint-loading-view",
+  templateUrl: "./hint-loading-view.component.html",
+  styleUrls: ["./hint-loading-view.component.scss"],
+  imports: [MatProgressSpinner],
+})
+export class HintLoadingViewComponent {
+  private destroyRef = inject(DestroyRef);
 
-@ConfigurationProperties("app")
-data class GeneralProperties(
-    val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIToken: String? = null,
-    val openAIModel: String,
-    val frontendStacktrace: Boolean = false,
-    val actuatorPermitAll: Boolean = false,
-)
+  hints = input.required<string[]>();
+  currentIndex = signal(0);
+
+  constructor() {
+    interval(4000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.currentIndex.set((this.currentIndex() + 1) % this.hints().length);
+      });
+  }
+}

@@ -4,7 +4,7 @@
 at.yawk.lz4:lz4-java:1.10.1=testRuntimeClasspath
 ch.qos.logback:logback-classic:1.5.32=ktlint
 ch.qos.logback:logback-core:1.5.32=ktlint
-com.aallam.openai:openai-client-bom:4.0.1=compileClasspath,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+com.aallam.openai:openai-client-bom:4.1.0=compileClasspath,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.aallam.openai:openai-client-jvm:4.0.1=compileClasspath,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.aallam.openai:openai-client:4.0.1=compileClasspath,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 com.aallam.openai:openai-core-jvm:4.0.1=compileClasspath,productionRuntimeClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath

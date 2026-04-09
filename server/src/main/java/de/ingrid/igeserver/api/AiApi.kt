@@ -17,25 +17,25 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.api
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import java.security.Principal
 
-@ConfigurationProperties("app")
-data class GeneralProperties(
-    val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIToken: String? = null,
-    val openAIModel: String,
-    val frontendStacktrace: Boolean = false,
-    val actuatorPermitAll: Boolean = false,
-)
+@Hidden
+@Tag(name = "AI", description = "handle AI-related requests")
+interface AiApi {
+
+    @PostMapping(value = ["/ai/dataset/evaluate"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(summary = "Evaluate dataset using AI")
+    fun evaluate(
+        principal: Principal,
+        @RequestBody body: String,
+    ): ResponseEntity<String>
+}

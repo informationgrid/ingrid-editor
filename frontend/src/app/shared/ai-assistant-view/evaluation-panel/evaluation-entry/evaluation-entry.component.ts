@@ -17,25 +17,29 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
+import { Component, input, output } from "@angular/core";
+import { Evaluation } from "../../../../services/ai-assistant/ai-assistant.service";
+import { MatButton } from "@angular/material/button";
+import { MatListOption, MatSelectionList } from "@angular/material/list";
 
-@ConfigurationProperties("app")
-data class GeneralProperties(
-    val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIToken: String? = null,
-    val openAIModel: String,
-    val frontendStacktrace: Boolean = false,
-    val actuatorPermitAll: Boolean = false,
-)
+@Component({
+  selector: "ige-evaluation-entry",
+  templateUrl: "./evaluation-entry.component.html",
+  styleUrls: ["./evaluation-entry.component.scss"],
+  imports: [MatButton, MatListOption, MatSelectionList],
+})
+export class EvaluationEntryComponent {
+  evaluation = input.required<Evaluation>();
+
+  onSuggestionApply = output<any>();
+
+  constructor() {}
+
+  protected apply(value: any) {
+    this.onSuggestionApply.emit({
+      key: this.evaluation().key,
+      value: value,
+    });
+  }
+}
