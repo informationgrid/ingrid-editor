@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  effect,
+  input,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   AiAssistantService,
   EvaluationResult,
@@ -31,7 +38,7 @@ import { MatDivider } from "@angular/material/list";
 import { FormGroup } from "@angular/forms";
 import { HintLoadingViewComponent } from "../../hint-loading-view/hint-loading-view.component";
 import { EvaluationEntryComponent } from "./evaluation-entry/evaluation-entry.component";
-import { finalize } from "rxjs/operators";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-evaluation-panel",
@@ -44,12 +51,13 @@ import { finalize } from "rxjs/operators";
     MatDivider,
     HintLoadingViewComponent,
     EvaluationEntryComponent,
+    MatIcon,
   ],
 })
 export class EvaluationPanelComponent implements OnInit {
   form = input.required<FormGroup>();
 
-  loadState = signal<"default" | "loading" | "loaded">("default");
+  loadState = signal<"default" | "loading" | "loaded" | "error">("default");
   evaluationResult = signal<EvaluationResult>(undefined);
   evaluations = computed(() =>
     this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
@@ -66,12 +74,11 @@ export class EvaluationPanelComponent implements OnInit {
 
   evaluate() {
     this.loadState.set("loading");
-    this.aiService
-      .evaluateDataset(this.form().value)
-      .pipe(finalize(() => this.loadState.set("loaded")))
-      .subscribe({
-        next: (result) => this.evaluationResult.set(result),
-      });
+    this.aiService.evaluateDataset(this.form().value).subscribe({
+      next: (result) => this.evaluationResult.set(result),
+      error: (error) => this.loadState.set("error"),
+      complete: () => this.loadState.set("loaded"),
+    });
   }
 
   protected onSuggestionApply(event: { key: string; value: any }) {

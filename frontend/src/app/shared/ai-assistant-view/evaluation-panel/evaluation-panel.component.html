@@ -38,5 +38,19 @@
         @case ("loading") {
             <ige-hint-loading-view [hints]="loadingHints" />
         }
+        @case ("error") {
+            <div class="flex-col align-items-center gap-12">
+                <mat-icon>error_outline</mat-icon>
+                <span>Oops! Da ging was schief.</span>
+                <button
+                    class="align-self-stretch"
+                    matButton="filled"
+                    color="primary"
+                    (click)="evaluate()"
+                >
+                    Erneut analysieren
+                </button>
+            </div>
+        }
     }
 </mat-expansion-panel>
