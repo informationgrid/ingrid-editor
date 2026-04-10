@@ -4,9 +4,10 @@
 </h1>
 <mat-divider></mat-divider>
 <mat-accordion displayMode="flat">
-    <ige-validator-panel />
+    <ige-validator-panel></ige-validator-panel>
 
-    @if (isEvaluationPanelEnabled()) {
-        <ige-evaluation-panel [form]="form()" />
-    }
+    <ige-evaluation-panel
+        [metadata]="metadata()"
+        [form]="form()"
+    ></ige-evaluation-panel>
 </mat-accordion>

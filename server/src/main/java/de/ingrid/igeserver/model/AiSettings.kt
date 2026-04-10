@@ -17,18 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
-import {
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-} from "@angular/material/expansion";
+package de.ingrid.igeserver.model
 
-@Component({
-  selector: "ige-validator-panel",
-  templateUrl: "./validator-panel.component.html",
-  styleUrls: ["./validator-panel.component.scss"],
-  imports: [MatExpansionPanel, MatExpansionPanelHeader],
-})
-export class ValidatorPanelComponent {
-  constructor() {}
-}
+data class AiSettings(
+    var hostUrl: String?,
+    var modelId: String?,
+    var apiToken: String?,
+    var systemPrompt: String?,
+    var effort: String?,
+)

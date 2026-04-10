@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  effect,
+  input,
+  signal,
+  untracked,
+} from "@angular/core";
 import {
   AiAssistantService,
   EvaluationResult,
@@ -31,7 +38,7 @@ import { MatDivider } from "@angular/material/list";
 import { FormGroup } from "@angular/forms";
 import { HintLoadingViewComponent } from "../../hint-loading-view/hint-loading-view.component";
 import { EvaluationEntryComponent } from "./evaluation-entry/evaluation-entry.component";
-import { finalize } from "rxjs/operators";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-evaluation-panel",
@@ -44,34 +51,63 @@ import { finalize } from "rxjs/operators";
     MatDivider,
     HintLoadingViewComponent,
     EvaluationEntryComponent,
+    MatIcon,
   ],
 })
-export class EvaluationPanelComponent implements OnInit {
+export class EvaluationPanelComponent {
+  metadata = input.required<any>();
   form = input.required<FormGroup>();
 
-  loadState = signal<"default" | "loading" | "loaded">("default");
-  evaluationResult = signal<EvaluationResult>(undefined);
-  evaluations = computed(() =>
-    this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
-  );
-
+  // Load control.
+  loadingUuid = signal<string>(null);
   loadingHints = [
     "Ihre Angaben werden analysiert...",
     "Bitte haben Sie etwas Geduld...",
   ];
+  isIdle = computed(
+    () => !this.loadingUuid() && !this.evaluationResult() && !this.hasError(),
+  );
+  isLoading = computed(() => this.loadingUuid() !== null);
+  isLoaded = computed(() => !this.loadingUuid() && this.evaluationResult());
+  hasError = signal<boolean>(false);
 
-  constructor(private aiService: AiAssistantService) {}
+  // Evaluation result.
+  evaluationResult = signal<EvaluationResult>(null);
+  evaluations = computed(() =>
+    this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
+  );
 
-  ngOnInit() {}
+  // Only support InGridGeoDataset at the moment.
+  isSupported = computed(() => {
+    if (Object.keys(this.form().value).length === 0) return false;
+    return this.metadata()?.docType === "InGridGeoDataset";
+  });
+
+  constructor(private aiService: AiAssistantService) {
+    // Track uuid changes.
+    effect(() => {
+      this.metadata()?.uuid;
+      untracked(() => this.reset());
+    });
+  }
+
+  private reset() {
+    this.hasError.set(false);
+    this.loadingUuid.set(null);
+    this.evaluationResult.set(null);
+  }
 
   evaluate() {
-    this.loadState.set("loading");
-    this.aiService
-      .evaluateDataset(this.form().value)
-      .pipe(finalize(() => this.loadState.set("loaded")))
-      .subscribe({
-        next: (result) => this.evaluationResult.set(result),
-      });
+    this.reset();
+    this.loadingUuid.set(this.metadata()?.uuid);
+    this.aiService.evaluateDataset(this.form().value).subscribe({
+      next: (result) => {
+        if (this.loadingUuid() !== this.metadata()?.uuid) return;
+        this.loadingUuid.set(null);
+        this.evaluationResult.set(result);
+      },
+      error: (error) => this.hasError.set(true),
+    });
   }
 
   protected onSuggestionApply(event: { key: string; value: any }) {

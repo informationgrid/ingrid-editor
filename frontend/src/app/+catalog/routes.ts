@@ -23,6 +23,7 @@ import { CatalogCodelistsComponent } from "./codelists/catalog-codelists.compone
 import { IndexingComponent } from "./indexing/indexing.component";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { ConfigurationComponent } from "./configuration/configuration.component";
+import { AiConfigurationComponent } from "./ai-configuration/ai-configuration.component";
 import { Route } from "@angular/router";
 
 export default [
@@ -64,6 +65,13 @@ export default [
         component: ConfigurationComponent,
         data: {
           title: "Konfiguration",
+        },
+      },
+      {
+        path: "ai-configuration",
+        component: AiConfigurationComponent,
+        data: {
+          title: "KI-Kofiguration",
         },
       },
     ],

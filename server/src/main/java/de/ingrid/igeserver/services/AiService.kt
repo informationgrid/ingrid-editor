@@ -31,8 +31,14 @@ import com.aallam.openai.api.logging.Logger
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
+import com.aallam.openai.client.OpenAIHost
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.model.AiSettings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
+import de.ingrid.igeserver.repository.SettingsRepository
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -45,25 +51,63 @@ import kotlin.time.Duration.Companion.seconds
 @Service
 class AiService(
     private val generalProperties: GeneralProperties,
+    private val settingsRepo: SettingsRepository,
 ) {
+    fun updateSettings(settings: AiSettings): AiSettings {
+        val aiSettings = getSettings() ?: settings
+        aiSettings.apply {
+            if (settings.hostUrl.isNullOrEmpty()) {
+                // Reset api token if the host url is not given.
+                apiToken = null
+            } else if (!settings.apiToken.isNullOrEmpty()) {
+                // Only set api token if it is given.
+                apiToken = settings.apiToken
+            }
+            hostUrl = settings.hostUrl?.takeIf { it.isNotEmpty() }
+            modelId = settings.modelId?.takeIf { it.isNotEmpty() }
+            systemPrompt = settings.systemPrompt?.takeIf { it.isNotEmpty() }
+            effort = settings.effort?.takeIf { it.isNotEmpty() }
+        }
+
+        val dbSettings = settingsRepo.findByKey("aiSettings") ?: Settings().apply { this.key = "aiSettings" }
+        dbSettings.value = aiSettings
+        settingsRepo.save(dbSettings)
+        return aiSettings
+    }
+
+    fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiToken = null)
+
+    private fun getSettings(): AiSettings? {
+        val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
+        return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
+    }
+
     suspend fun evaluate(body: String): String? {
-        if (generalProperties.openAIToken.isNullOrEmpty()) {
+        val settings = getSettings()
+        val hostUrl = settings?.hostUrl ?: generalProperties.openAIHost
+        val apiToken = settings?.apiToken ?: generalProperties.openAIToken
+        val modelId = settings?.modelId ?: generalProperties.openAIModel
+        val systemPrompt = settings?.systemPrompt ?: getSystemPrompt()
+        val effort = settings?.effort
+
+        if (apiToken.isNullOrEmpty()) {
             throw ServerException.withReason("No OpenAI-Token configured")
         }
 
         val openAI = OpenAI(
-            token = generalProperties.openAIToken,
+            host = OpenAIHost(baseUrl = hostUrl),
+            token = apiToken,
             timeout = Timeout(socket = 60.seconds),
             logging = LoggingConfig(logger = Logger.Empty),
         )
 
         val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId(generalProperties.openAIModel),
-            reasoningEffort = Effort("medium"),
+            model = ModelId(modelId),
+            reasoningEffort = effort?.let { Effort(it) },
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.System,
-                    content = getSystemPrompt(),
+                    content = systemPrompt,
                 ),
                 ChatMessage(
                     role = ChatRole.User,
