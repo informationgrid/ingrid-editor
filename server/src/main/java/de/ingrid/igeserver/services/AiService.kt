@@ -97,7 +97,7 @@ class AiService(
         val openAI = OpenAI(
             host = OpenAIHost(baseUrl = hostUrl),
             token = apiToken,
-            timeout = Timeout(socket = 60.seconds),
+            timeout = Timeout(socket = 600.seconds),
             logging = LoggingConfig(logger = Logger.Empty),
         )
 
