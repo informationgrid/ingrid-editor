@@ -74,7 +74,9 @@ export class EvaluationPanelComponent {
   // Evaluation result.
   evaluationResult = signal<EvaluationResult>(null);
   evaluations = computed(() =>
-    this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
+    this.evaluationResult()?.evaluations.filter(
+      (e) => e.reasoning !== null || e.suggestions !== null,
+    ),
   );
 
   // Only support InGridGeoDataset at the moment.

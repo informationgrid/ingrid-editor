@@ -30,7 +30,7 @@ export interface EvaluationResult {
 export interface Evaluation {
   key: string;
   label: string;
-  score: number;
+  score?: number;
   reasoning?: string;
   suggestions?: Array<string>;
 }
