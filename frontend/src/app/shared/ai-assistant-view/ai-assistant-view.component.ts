@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { MatAccordion } from "@angular/material/expansion";
 import { MatDivider } from "@angular/material/list";
 import { MatIcon } from "@angular/material/icon";
@@ -40,12 +40,6 @@ import { ValidatorPanelComponent } from "./validator-panel/validator-panel.compo
 export class AiAssistantViewComponent {
   metadata = input.required<any>();
   form = input.required<FormGroup>();
-
-  // Only support InGridGeoDataset at the moment.
-  isEvaluationPanelEnabled = computed(() => {
-    if (Object.keys(this.form().value).length === 0) return false;
-    return this.metadata()?.docType === "InGridGeoDataset";
-  });
 
   constructor() {}
 }

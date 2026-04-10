@@ -22,8 +22,8 @@ import {
   computed,
   effect,
   input,
-  OnInit,
   signal,
+  untracked,
 } from "@angular/core";
 import {
   AiAssistantService,
@@ -54,30 +54,59 @@ import { MatIcon } from "@angular/material/icon";
     MatIcon,
   ],
 })
-export class EvaluationPanelComponent implements OnInit {
+export class EvaluationPanelComponent {
+  metadata = input.required<any>();
   form = input.required<FormGroup>();
 
-  loadState = signal<"default" | "loading" | "loaded" | "error">("default");
-  evaluationResult = signal<EvaluationResult>(undefined);
-  evaluations = computed(() =>
-    this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
-  );
-
+  // Load control.
+  loadingUuid = signal<string>(null);
   loadingHints = [
     "Ihre Angaben werden analysiert...",
     "Bitte haben Sie etwas Geduld...",
   ];
+  isIdle = computed(
+    () => !this.loadingUuid() && !this.evaluationResult() && !this.hasError(),
+  );
+  isLoading = computed(() => this.loadingUuid() !== null);
+  isLoaded = computed(() => !this.loadingUuid() && this.evaluationResult());
+  hasError = signal<boolean>(false);
 
-  constructor(private aiService: AiAssistantService) {}
+  // Evaluation result.
+  evaluationResult = signal<EvaluationResult>(null);
+  evaluations = computed(() =>
+    this.evaluationResult()?.evaluations.filter((e) => e.score < 6),
+  );
 
-  ngOnInit() {}
+  // Only support InGridGeoDataset at the moment.
+  isSupported = computed(() => {
+    if (Object.keys(this.form().value).length === 0) return false;
+    return this.metadata()?.docType === "InGridGeoDataset";
+  });
+
+  constructor(private aiService: AiAssistantService) {
+    // Track uuid changes.
+    effect(() => {
+      this.metadata()?.uuid;
+      untracked(() => this.reset());
+    });
+  }
+
+  private reset() {
+    this.hasError.set(false);
+    this.loadingUuid.set(null);
+    this.evaluationResult.set(null);
+  }
 
   evaluate() {
-    this.loadState.set("loading");
+    this.reset();
+    this.loadingUuid.set(this.metadata()?.uuid);
     this.aiService.evaluateDataset(this.form().value).subscribe({
-      next: (result) => this.evaluationResult.set(result),
-      error: (error) => this.loadState.set("error"),
-      complete: () => this.loadState.set("loaded"),
+      next: (result) => {
+        if (this.loadingUuid() !== this.metadata()?.uuid) return;
+        this.loadingUuid.set(null);
+        this.evaluationResult.set(result);
+      },
+      error: (error) => this.hasError.set(true),
     });
   }
 

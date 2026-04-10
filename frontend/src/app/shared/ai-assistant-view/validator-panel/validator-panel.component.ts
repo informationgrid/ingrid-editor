@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
@@ -29,8 +29,6 @@ import {
   styleUrls: ["./validator-panel.component.scss"],
   imports: [MatExpansionPanel, MatExpansionPanelHeader],
 })
-export class ValidatorPanelComponent implements OnInit {
+export class ValidatorPanelComponent {
   constructor() {}
-
-  ngOnInit() {}
 }

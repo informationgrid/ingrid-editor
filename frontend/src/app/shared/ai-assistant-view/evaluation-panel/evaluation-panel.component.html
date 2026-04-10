@@ -3,8 +3,8 @@
         KI-Analyse
     </mat-expansion-panel-header>
 
-    @switch (loadState()) {
-        @case ("default") {
+    @if (isSupported()) {
+        @if (isIdle()) {
             <div class="flex-col gap-12">
                 <div>
                     Den Datensatz durch KI analysieren und bewerten, um mögliche
@@ -15,7 +15,12 @@
                 </button>
             </div>
         }
-        @case ("loaded") {
+
+        @if (isLoading()) {
+            <ige-hint-loading-view [hints]="loadingHints" />
+        }
+
+        @if (isLoaded()) {
             <div class="flex-col gap-24">
                 <div>
                     {{ evaluationResult().summary }}
@@ -35,10 +40,8 @@
                 </button>
             </div>
         }
-        @case ("loading") {
-            <ige-hint-loading-view [hints]="loadingHints" />
-        }
-        @case ("error") {
+
+        @if (hasError()) {
             <div class="flex-col align-items-center gap-12">
                 <mat-icon>error_outline</mat-icon>
                 <span>Oops! Da ging was schief.</span>
@@ -52,5 +55,10 @@
                 </button>
             </div>
         }
+    } @else {
+        <div class="flex-col align-items-center gap-12">
+            <mat-icon>handyman</mat-icon>
+            <span>Dieser Datentyp befindet sich noch auf der Baustelle.</span>
+        </div>
     }
 </mat-expansion-panel>
