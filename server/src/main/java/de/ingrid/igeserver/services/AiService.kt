@@ -83,12 +83,12 @@ class AiService(
     }
 
     suspend fun evaluate(body: String): String? {
-        val dbSettings = getSettings()
-        val hostUrl = dbSettings?.hostUrl ?: generalProperties.openAIHost
-        val apiToken = dbSettings?.apiToken ?: generalProperties.openAIToken
-        val modelId = dbSettings?.modelId ?: generalProperties.openAIModel
-        val systemPrompt = dbSettings?.systemPrompt ?: getSystemPrompt()
-        val effort = dbSettings?.effort
+        val settings = getSettings()
+        val hostUrl = settings?.hostUrl ?: generalProperties.openAIHost
+        val apiToken = settings?.apiToken ?: generalProperties.openAIToken
+        val modelId = settings?.modelId ?: generalProperties.openAIModel
+        val systemPrompt = settings?.systemPrompt ?: getSystemPrompt()
+        val effort = settings?.effort
 
         if (apiToken.isNullOrEmpty()) {
             throw ServerException.withReason("No OpenAI-Token configured")

@@ -25,7 +25,6 @@ import { MatButton } from "@angular/material/button";
 import { FormlyForm } from "@ngx-formly/core";
 import { AiAssistantService } from "../../services/ai-assistant/ai-assistant.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { tap } from "rxjs/operators";
 
 @Component({
   selector: "ige-ai-configuration",
@@ -40,7 +39,6 @@ export class AiConfigurationComponent implements OnInit {
 
   constructor(
     private aiService: AiAssistantService,
-
     private snackbar: MatSnackBar,
   ) {}
 
