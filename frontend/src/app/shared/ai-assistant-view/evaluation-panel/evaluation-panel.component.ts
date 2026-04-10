@@ -106,7 +106,11 @@ export class EvaluationPanelComponent {
         this.loadingUuid.set(null);
         this.evaluationResult.set(result);
       },
-      error: (error) => this.hasError.set(true),
+      error: (error) => {
+        if (this.loadingUuid() !== this.metadata()?.uuid) return;
+        this.loadingUuid.set(null);
+        this.hasError.set(true);
+      },
     });
   }
 
