@@ -20,9 +20,9 @@
 package de.ingrid.igeserver.model
 
 data class AiSettings(
-    var hostUrl: String,
-    var modelId: String,
-    var aiToken: String,
+    var hostUrl: String?,
+    var modelId: String?,
+    var apiToken: String?,
     var systemPrompt: String?,
     var effort: String?,
 )

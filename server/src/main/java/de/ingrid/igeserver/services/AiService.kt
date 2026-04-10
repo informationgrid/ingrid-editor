@@ -54,13 +54,30 @@ class AiService(
     private val settingsRepo: SettingsRepository,
 ) {
     fun updateSettings(settings: AiSettings): AiSettings {
+        val aiSettings = getSettings() ?: settings
+        aiSettings.apply {
+            if (settings.hostUrl.isNullOrEmpty()) {
+                // Reset api token if the host url is not given.
+                apiToken = null
+            } else if (!settings.apiToken.isNullOrEmpty()) {
+                // Only set api token if it is given.
+                apiToken = settings.apiToken
+            }
+            hostUrl = settings.hostUrl?.takeIf { it.isNotEmpty() }
+            modelId = settings.modelId?.takeIf { it.isNotEmpty() }
+            systemPrompt = settings.systemPrompt?.takeIf { it.isNotEmpty() }
+            effort = settings.effort?.takeIf { it.isNotEmpty() }
+        }
+
         val dbSettings = settingsRepo.findByKey("aiSettings") ?: Settings().apply { this.key = "aiSettings" }
-        dbSettings.value = settings
+        dbSettings.value = aiSettings
         settingsRepo.save(dbSettings)
-        return settings
+        return aiSettings
     }
 
-    fun getSettings(): AiSettings? {
+    fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiToken = null)
+
+    private fun getSettings(): AiSettings? {
         val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
         return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
     }
@@ -68,18 +85,18 @@ class AiService(
     suspend fun evaluate(body: String): String? {
         val dbSettings = getSettings()
         val hostUrl = dbSettings?.hostUrl ?: generalProperties.openAIHost
-        val aiToken = dbSettings?.aiToken ?: generalProperties.openAIToken
+        val apiToken = dbSettings?.apiToken ?: generalProperties.openAIToken
         val modelId = dbSettings?.modelId ?: generalProperties.openAIModel
         val systemPrompt = dbSettings?.systemPrompt ?: getSystemPrompt()
         val effort = dbSettings?.effort
 
-        if (aiToken.isNullOrEmpty()) {
+        if (apiToken.isNullOrEmpty()) {
             throw ServerException.withReason("No OpenAI-Token configured")
         }
 
         val openAI = OpenAI(
             host = OpenAIHost(baseUrl = hostUrl),
-            token = aiToken,
+            token = apiToken,
             timeout = Timeout(socket = 60.seconds),
             logging = LoggingConfig(logger = Logger.Empty),
         )

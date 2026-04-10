@@ -48,7 +48,7 @@ class AiApiController(
     }
 
     override fun getSettings(principal: Principal): ResponseEntity<AiSettings?> {
-        val settings = aiService.getSettings()
+        val settings = aiService.getSettingsWithoutToken()
         return ResponseEntity.ok(settings)
     }
 
