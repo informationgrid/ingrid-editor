@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.AiSettings
 import de.ingrid.igeserver.services.AiService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -36,13 +37,23 @@ class AiApiController(
     override fun evaluate(
         principal: Principal,
         body: String,
-    ): ResponseEntity<String> {
+    ): ResponseEntity<String?> {
         var response: String? = null
         runBlocking {
             launch {
                 response = aiService.evaluate(body)
             }
         }
-        return ResponseEntity.ok(response ?: "")
+        return ResponseEntity.ok(response)
+    }
+
+    override fun getSettings(principal: Principal): ResponseEntity<AiSettings?> {
+        val settings = aiService.getSettings()
+        return ResponseEntity.ok(settings)
+    }
+
+    override fun updateSettings(principal: Principal, settings: AiSettings): ResponseEntity<AiSettings?> {
+        val updatedSettings = aiService.updateSettings(settings)
+        return ResponseEntity.ok(updatedSettings)
     }
 }

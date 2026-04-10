@@ -17,26 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.model
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
-
-@ConfigurationProperties("app")
-data class GeneralProperties(
-    val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIHost: String,
-    val openAIToken: String? = null,
-    val openAIModel: String,
-    val frontendStacktrace: Boolean = false,
-    val actuatorPermitAll: Boolean = false,
+data class AiSettings(
+    var hostUrl: String,
+    var modelId: String,
+    var aiToken: String,
+    var systemPrompt: String?,
+    var effort: String?,
 )
