@@ -88,7 +88,7 @@ export class FormularService {
     this.uiStore.setSidebarWidth(size);
   }
 
-  getSectionsForDoctype(fields: FormlyFieldConfig[]): void {
+  updateSectionsForDoctype(fields: FormlyFieldConfig[]): void {
     const getSectionItem = (item: FormlyFieldConfig) => {
       return item?.wrappers?.indexOf("section") >= 0
         ? [item]

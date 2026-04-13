@@ -234,8 +234,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     effect(() => {
       // needed to register change but actual value irrelevant
-      const _ = this.showAllFields();
-      this.formularService.getSectionsForDoctype(this.fields);
+      this.showAllFields();
+      this.formularService.updateSectionsForDoctype(this.fields);
     });
   }
 
@@ -509,7 +509,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsForDoctype(this.fields);
+    this.formularService.updateSectionsForDoctype(this.fields);
     this.hasOptionalFields.set(
       this.profileService.getDoctype(doctypeId).hasOptionalFields,
     );
