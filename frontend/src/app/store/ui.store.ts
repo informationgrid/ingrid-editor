@@ -30,6 +30,7 @@ export type UiState = {
   showAiAssistant?: boolean;
   userTableWidth?: number;
   toggleFieldsButtonShowAll?: boolean;
+  alwaysShowContextHelp?: boolean;
   currentSubpage: {
     research: string;
     manage: string;
@@ -51,6 +52,7 @@ const initialState: UiState = {
   showAiAssistant: false,
   userTableWidth: 35,
   toggleFieldsButtonShowAll: false,
+  alwaysShowContextHelp: false,
   currentSubpage: {
     research: null,
     manage: null,
@@ -76,6 +78,9 @@ export const UiStore = signalStore(
     },
     setToggleFieldsButtonShowAll(value: boolean): void {
       patchState(store, { toggleFieldsButtonShowAll: value });
+    },
+    setAlwaysShowContextHelp(value: boolean): void {
+      patchState(store, { alwaysShowContextHelp: value });
     },
     toggleJsonView(forceValue?: boolean) {
       patchState(store, (state) => ({

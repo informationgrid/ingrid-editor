@@ -17,17 +17,28 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, ElementRef, input, output } from "@angular/core";
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { getAriaLabelById } from "../../../directives/aria-label.pipe";
+import { UiStore } from "../../../store/ui.store";
 
 @Component({
   selector: "ige-form-label",
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
   imports: [MatIconModule, MatTooltipModule],
+  host: {
+    "[class.always-show-context-help]": "alwaysShowContextHelp()",
+  },
 })
 export class FormLabelComponent {
   readonly fieldId = input<string>(undefined);
@@ -35,6 +46,9 @@ export class FormLabelComponent {
   readonly ariaLabel = input<string>(undefined);
 
   readonly contextHelp = output<HTMLElement>();
+
+  private uiStore = inject(UiStore);
+  readonly alwaysShowContextHelp = this.uiStore.alwaysShowContextHelp;
 
   fieldLabel = computed(() => {
     if (this.fieldId() === undefined) return undefined;
