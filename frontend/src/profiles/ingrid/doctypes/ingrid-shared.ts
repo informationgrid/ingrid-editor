@@ -1103,7 +1103,7 @@ export abstract class IngridShared extends BaseDoctype {
               [
                 this.addSubSection(
                   "event",
-                  "",
+                  "Versionshistorie*",
                   [
                     this.addDatepicker("created", "Erstellung", {
                       hintStart:
@@ -1148,8 +1148,12 @@ export abstract class IngridShared extends BaseDoctype {
                     }),
                   ],
                   {
-                    props: { hasValidation: true, hideDivider: true },
-                    className: "eventGroup required",
+                    props: {
+                      hasValidation: true,
+                      indent: true,
+                      comment: "(Es muss ein Datum angegeben werden)",
+                    },
+                    className: "eventGroup",
                     validators: {
                       oneDateRequired: {
                         expression: (
@@ -1292,6 +1296,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ].filter(Boolean),
                 ),
           ].filter(Boolean),
+          { props: { hideDivider: true } },
         ),
         this.addSubSection("temporal", "Zeitbezug der Daten im Datensatz", [
           {

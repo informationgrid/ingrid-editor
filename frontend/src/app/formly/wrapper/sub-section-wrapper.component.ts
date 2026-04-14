@@ -18,18 +18,33 @@
  * limitations under the Licence.
  */
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
-import { FieldWrapper, FormlyValidationMessage } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FieldWrapper,
+  FormlyFieldProps,
+  FormlyValidationMessage,
+} from "@ngx-formly/core";
 import { MatDivider } from "@angular/material/divider";
 import { FormErrorComponent } from "../../+form/form-shared/ige-form-error/form-error.component";
+
+export interface SubSectionWrapperProps extends FormlyFieldProps {
+  indent?: boolean;
+  hideDivider?: boolean;
+  hasValidation?: boolean;
+  comment?: string;
+}
 
 @Component({
   selector: "ige-sub-section-wrapper",
   template: `
-    @if (!props.hideDivider) {
-      <mat-divider aria-hidden="true"></mat-divider>
-    }
+    <mat-divider aria-hidden="true"></mat-divider>
     @if (props.label) {
-      <h4 role="heading">{{ props.label }}</h4>
+      <h4 role="heading" [class.no-margin]="props.comment">
+        {{ props.label }}
+      </h4>
+    }
+    @if (props.comment) {
+      <div class="comment" role="contentinfo">{{ props.comment }}</div>
     }
     @if (showError && props.hasValidation && field.form.invalid) {
       <ige-form-error>
@@ -37,11 +52,19 @@ import { FormErrorComponent } from "../../+form/form-shared/ige-form-error/form-
       </ige-form-error>
     }
     <ng-container #fieldComponent></ng-container>
+    @if (!props.hideDivider) {
+      <mat-divider aria-hidden="true" class="space-bottom-field"></mat-divider>
+    }
   `,
+  host: {
+    "[class.indent]": "props.indent",
+  },
   styleUrls: ["./sub-section-wrapper.component.scss"],
   imports: [MatDivider, FormErrorComponent, FormlyValidationMessage],
 })
-export class SubSectionWrapper extends FieldWrapper {
+export class SubSectionWrapper extends FieldWrapper<
+  FieldTypeConfig<SubSectionWrapperProps>
+> {
   @ViewChild("fieldComponent", { read: ViewContainerRef, static: true })
   fieldComponent: ViewContainerRef;
 }

@@ -269,18 +269,18 @@ export class FormFieldHelper {
   }
 
   addSubSection(id: string, label: string, fields: any[], options?: any) {
-    return {
+    const value = {
       key: id,
       wrappers: ["sub-section"],
-      props: {
-        label: label,
-      },
+      props: {},
       expressions: {
         hide: options?.hideExpression,
       },
       fieldGroup: fields,
       ...options,
     };
+    value.props.label = label;
+    return value;
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
