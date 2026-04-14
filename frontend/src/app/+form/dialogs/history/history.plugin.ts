@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -77,13 +77,6 @@ export class HistoryPlugin extends Plugin {
         this.addDocToStack(doc);
       }
     });
-    effect(() => {
-      if (!this.isActive() || !this.formRegistered()) return;
-      const info = this.generalStore.getDatasetsChanged(this.forAddress());
-      if (info?.type === UpdateType.Delete) {
-        this.removeDeletedDocsFromStack(info.data);
-      }
-    });
   }
 
   registerForm() {
@@ -94,6 +87,8 @@ export class HistoryPlugin extends Plugin {
     this.addToolbarButtons();
 
     this.handleEvents();
+
+    this.addDeleteDatasetSubscription();
   }
 
   private setupFields() {
@@ -102,6 +97,18 @@ export class HistoryPlugin extends Plugin {
     } else {
       this.navigatePath = "/form";
     }
+  }
+
+  private addDeleteDatasetSubscription() {
+    this.formSubscriptions.push(
+      this.documentService
+        .getDatasetsChanged(this.forAddress())
+        .subscribe((info) => {
+          if (info?.type === UpdateType.Delete) {
+            this.removeDeletedDocsFromStack(info.data);
+          }
+        }),
+    );
   }
 
   private addDocToStack(doc: DocumentAbstract) {
