@@ -240,6 +240,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         ]);
       }
     });
+
+    effect(() => {
+      // needed to register change but actual value irrelevant
+      this.showAllFields();
+      this.formularService.updateSectionsForDoctype(this.fields);
+    });
   }
 
   ngOnDestroy() {
@@ -512,7 +518,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsForDoctype(this.fields);
+    this.formularService.updateSectionsForDoctype(this.fields);
     this.hasOptionalFields.set(
       this.profileService.getDoctype(doctypeId).hasOptionalFields,
     );

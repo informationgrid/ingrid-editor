@@ -33,6 +33,9 @@ export function dataOrigin(
     "Datengrundlage/Herkunft",
     {
       required: false,
+      className: geoDatasetDoctype.geodatasetOptions.optional.dataOrigin
+        ? "optional"
+        : "",
       viewComponent: DataOriginViewComponent,
       _types: [
         {
