@@ -22,6 +22,7 @@ import {
   FieldTypeConfig,
   FormlyFieldConfig,
   FormlyFieldProps,
+  FormlyValidationMessage,
 } from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -36,7 +37,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, KeyValuePipe } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -83,7 +84,7 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
     MatExpansionModule,
     MatButtonModule,
     FormErrorComponent,
-    KeyValuePipe,
+    FormlyValidationMessage,
     MatTooltipModule,
   ],
 })
@@ -222,6 +223,7 @@ export class RepeatDistributionDetailListComponent
             index === undefined
               ? this.getEmptyEntry()
               : JSON.parse(JSON.stringify(this.model[this.key + ""][index])),
+          isNew: index === undefined,
         },
         delayFocusTrap: true,
       })

@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { DestroyRef, inject, Injectable } from "@angular/core";
 import { firstValueFrom, Observable, of, Subject } from "rxjs";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { DocumentService } from "../../../services/document/document.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { map } from "rxjs/operators";
-import { GeneralStore } from "../../../store/general.store";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -32,8 +32,8 @@ import { GeneralStore } from "../../../store/general.store";
  */
 @Injectable()
 export class DynamicDatabase {
-  private generalStore = inject(GeneralStore);
   private treeStore = null;
+  private destroyRef = inject(DestroyRef);
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
@@ -41,16 +41,18 @@ export class DynamicDatabase {
 
   private isAddress = false;
 
-  constructor(private docService: DocumentService) {
-    effect(() => {
-      const info = this.generalStore.getDatasetsChanged(this.isAddress);
-      if (info) this.treeUpdates.next(info);
-    });
-  }
+  constructor(private docService: DocumentService) {}
 
   init(forAdresses: boolean, store: any): void {
     this.isAddress = forAdresses;
     this.treeStore = store;
+
+    this.docService
+      .getDatasetsChanged(this.isAddress)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((info) => {
+        if (info) this.treeUpdates.next(info);
+      });
   }
 
   /** Initial data from database */

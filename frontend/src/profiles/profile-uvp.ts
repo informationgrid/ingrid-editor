@@ -32,12 +32,9 @@ import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { TranslocoService } from "@jsverse/transloco";
-import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";
 import { AuthGuard } from "../app/security/auth.guard";
-import { CatalogService } from "../app/+catalog/services/catalog.service";
-import { CatalogRoutesService } from "../app/+catalog/catalog-routes.service";
 import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
 
 @Component({
@@ -45,13 +42,11 @@ import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
   standalone: true,
 })
 class UVPComponent {
-  private catalogRouteService = inject(CatalogRoutesService);
   private uvpArchiveBehaviour = inject(UvpArchiveBehaviour);
 
   constructor(
     private profileService: ProfileService,
     private translocoService: TranslocoService,
-    private tagsService: TagsService,
     private renderer: Renderer2,
     reportsService: ReportsService,
     folder: FolderDoctype,
@@ -68,7 +63,7 @@ class UVPComponent {
     private activityReportBehaviour: ActivityReportBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
-    this.addStylesheet();
+    this.initStylesheet();
 
     profileService.registerDoctypes([
       folder,
@@ -145,51 +140,33 @@ class UVPComponent {
     });
   }
 
-  private addUVPArchiveTab(catalogRouteService: CatalogRoutesService) {
-    catalogRouteService.addRoute({
-      canActivate: [AuthGuard],
-      path: "uvp-archive",
-      loadComponent: () =>
-        import("./uvp/config/uvp-archive/uvp-archive.component").then(
-          (m) => m.UvpArchiveComponent,
-        ),
-      data: {
-        title: "UVP Archivierung",
-        permission: "can_create_uvp_report",
-      },
-    });
-  }
-
   private removeExpiredDocumentsTab(reportsService: ReportsService) {
     reportsService.removeRoute("expiration");
   }
 
-  private addStylesheet() {
-    const style = this.getStyle(this.publishNegativeAssessmentBehaviour);
-
-    const styleElement = this.renderer.createElement("style");
-    this.renderer.appendChild(styleElement, document.createTextNode(style));
-    this.renderer.appendChild(
-      this.renderer.selectRootElement("head", true),
-      styleElement,
-    );
-  }
-
-  private getStyle(behaviour: PublishNegativeAssessmentBehaviour) {
-    if (!behaviour.isActive() || !behaviour.data.controlledByDataset) {
+  private initStylesheet() {
+    if (
+      !this.publishNegativeAssessmentBehaviour.isActive() ||
+      !this.publishNegativeAssessmentBehaviour.data.controlledByDataset
+    ) {
       // set tag-translation to an empty string to suppress the tooltip, which contains the information of the tag
       // this only can happen if tagging was switch on and off again
       this.translocoService.setTranslationKey(
         "tags.negative-assessment-not-publish",
         " ", // needs an extra space!
       );
-      return ".mat-icon + .document-icon-tag { border: none; }";
-    } else {
-      return `
-      .mat-icon + .document-icon-tag.negative-assessment-not-publish {
-        background-color: #a1a1a1;
-      }`;
     }
+    const linkElement = this.renderer.createElement("link");
+    this.renderer.setAttribute(linkElement, "rel", "stylesheet");
+    this.renderer.setAttribute(
+      linkElement,
+      "href",
+      "assets/profiles/uvp/assets/css/profile-uvp.css",
+    );
+    this.renderer.appendChild(
+      this.renderer.selectRootElement("head", true),
+      linkElement,
+    );
   }
 }
 

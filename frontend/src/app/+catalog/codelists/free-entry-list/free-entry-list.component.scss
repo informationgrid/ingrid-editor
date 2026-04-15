@@ -1,0 +1,27 @@
+@use "../../../../variables";
+
+.section-title {
+  margin-top: 20px;
+}
+
+.title {
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: variables.$ige-hint-color;
+}
+
+mat-list {
+  padding: 0;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  background-color: white;
+  box-shadow: var(--mat-expansion-container-elevation-shadow);
+}
+
+mat-list-item {
+  padding: 12px 16px 12px 24px;
+  --mat-list-list-item-one-line-container-height: auto;
+}

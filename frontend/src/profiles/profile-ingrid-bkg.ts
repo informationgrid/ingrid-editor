@@ -39,7 +39,7 @@ class InGridBkgComponent extends InGridComponent {
 
   constructor() {
     super();
-    this.isoView.isoExportFormat = "ingridISOBkg";
+    this.isoView.defaultExportFormat = () => "ingridISOBkg";
     this.pluginService.registerPlugin(this.opendataBehaviour);
     this.manipulateFields();
   }

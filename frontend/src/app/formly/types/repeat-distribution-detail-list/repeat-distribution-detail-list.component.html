@@ -1,10 +1,6 @@
 @if (showError && formControl.invalid && formControl.errors) {
     <ige-form-error [ariaLabel]="$any(props).ariaLabel">
-        @for (error of formControl.errors | keyvalue; track error) {
-            <div>
-                {{ error.value.message }}
-            </div>
-        }
+        <formly-validation-message [field]="field"></formly-validation-message>
     </ige-form-error>
 }
 
@@ -252,6 +248,11 @@
                     type="button"
                     mat-stroked-button
                     color="primary"
+                    [class.error-outline]="
+                        showError &&
+                        formControl.invalid &&
+                        formControl.hasError('required')
+                    "
                     (click)="showUploadFilesDialog()"
                     [attr.aria-label]="$any(props)?.ariaLabel"
                     aria-haspopup="dialog"
@@ -268,6 +269,11 @@
                     type="button"
                     mat-stroked-button
                     color="primary"
+                    [class.error-outline]="
+                        showError &&
+                        formControl.invalid &&
+                        formControl.hasError('required')
+                    "
                     (click)="openDialog()"
                     [attr.aria-label]="$any(props)?.ariaLabel"
                     aria-haspopup="dialog"

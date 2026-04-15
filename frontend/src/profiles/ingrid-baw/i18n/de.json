@@ -4,6 +4,7 @@
     "InGridProject": "Projekt / Auftrag",
     "BawSimulation": "Simulationsdaten",
     "BawMeasurement": "Messdaten",
+    "BawLaboratoryData": "Labordaten",
     "InGridInformationSystem": "Software",
     "PublicationAddressDoc": "Literaturadresse",
     "ExternalFileReference": "Externe Datei aus Langfristspeicher (LFS)"

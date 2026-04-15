@@ -92,7 +92,7 @@ open class Pipe<T : Payload>(@param:Value("AnonymousPipe") override val id: Stri
      */
     fun runFilters(payload: T, context: Context): T {
         val profile = context.profile
-        val parentProfile = context.parentProfile
+        val linkedProfiles = context.linkedProfiles
 
         context.addMessage(Message(this, "Running filters on pipe '$id' for profile '$profile'"))
 
@@ -111,10 +111,10 @@ open class Pipe<T : Payload>(@param:Value("AnonymousPipe") override val id: Stri
         var result: T = payload
         var filterException: Exception? = null
         for (filter in filters) {
-            if (filter.usedInProfile(profile) || filter.usedInProfile(parentProfile)) {
+            if (filter.usedInProfile(profile) || linkedProfiles.any { filter.usedInProfile(it) }) {
                 context.addMessage(Message(this, "Running filter '${filter.id}'"))
                 try {
-                    result = filter(result, context)
+                    result = filter.invoke(result, context)
                 } catch (e: Exception) {
                     log.error("Filter '${filter.id}' could not be executed, due to an error", e)
                     filterException = e

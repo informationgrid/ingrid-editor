@@ -1,0 +1,28 @@
+@use "../../../../variables";
+
+.toggle-groups-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  padding-bottom: 22px;
+}
+
+.toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &.has-label {
+    padding: 8px 8px 8px 12px;
+    border-radius: 6px;
+    background-color: variables.$ige-background;
+  }
+}
+
+mat-button-toggle {
+  --mat-button-toggle-height: 32px;
+
+  &.mat-button-toggle-checked {
+    background-color: variables.$ige-secondary;
+  }
+}

@@ -49,7 +49,7 @@ class UPSHProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (UP-SH)"
-    override val parentProfile = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
     init {
         isoImport.profileMapper[ID] = isoImportUPSH
     }

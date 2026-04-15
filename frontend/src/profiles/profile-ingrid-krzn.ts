@@ -18,20 +18,27 @@
  * limitations under the Licence.
  */
 import { Component, inject } from "@angular/core";
-import { InGridComponent } from "./profile-ingrid";
-import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
+import { GeoDatasetDoctypeKrzn } from "./ingrid-krzn/doctypes/geo-dataset.doctype";
+import { InGridWithOpendataComponent } from "./profile-ingrid-with-opendata";
 
 @Component({
   template: "",
   standalone: true,
 })
-class InGridKrznComponent extends InGridComponent {
+class InGridKrznComponent extends InGridWithOpendataComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);
 
   constructor() {
     super();
 
-    this.isoView.isoExportFormat = "ingridISOKrzn";
+    this.isoView.defaultExportFormat = (docType: string) =>
+      docType === "OpenDataDoc" ? "indexOpenData" : "ingridISOKrzn";
+
+    this.isoView.availableExportFormats = (docType: string) =>
+      docType === "OpenDataDoc"
+        ? ["indexOpenData", "indexOpenDataRDF"]
+        : ["ingridISOKrzn"];
+
     this.modifyFormFieldConfiguration();
   }
 

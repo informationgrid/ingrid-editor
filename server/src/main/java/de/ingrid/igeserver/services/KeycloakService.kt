@@ -258,9 +258,9 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : Us
         firstName = user.firstName ?: "",
         lastName = user.lastName ?: "",
         email = user.email ?: "",
-        phoneNumber = user.attributes?.get("phoneNumber")?.get(0)?.toString() ?: "",
-        organisation = user.attributes?.get("institution")?.get(0)?.toString() ?: "",
-        department = user.attributes?.get("department")?.get(0)?.toString() ?: "",
+        phoneNumber = user.attributes?.get("phoneNumber")?.get(0) ?: "",
+        organisation = user.attributes?.get("institution")?.get(0) ?: "",
+        department = user.attributes?.get("department")?.get(0) ?: "",
         latestLogin = null,
         fromLdap = user.federationLink != null,
     )

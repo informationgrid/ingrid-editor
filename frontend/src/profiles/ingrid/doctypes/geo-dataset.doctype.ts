@@ -62,6 +62,10 @@ export class GeoDatasetDoctype extends IngridShared {
     hide: {
       geometryContext: true,
     },
+    optional: {
+      dataOrigin: false,
+      dataQualitySection: false,
+    },
   };
 
   showInspireRelevant = true;
@@ -565,120 +569,124 @@ export class GeoDatasetDoctype extends IngridShared {
         ].filter(Boolean),
       ),
       this.showDataQualitySection
-        ? this.addSection("Datenqualität", [
-            this.addGroupSimple("dataQuality", [
-              this.addGroupSimple("completenessOmission", [
-                this.addInput("measResult", "Datendefizit", {
-                  wrappers: ["panel", "form-field", "addons"],
-                  className: "single-field width-25 right-align",
-                  type: "number",
-                  min: 0,
-                  max: 100,
-                  suffix: {
-                    text: "%",
-                  },
-                }),
+        ? this.addSection(
+            "Datenqualität",
+            [
+              this.addGroupSimple("dataQuality", [
+                this.addGroupSimple("completenessOmission", [
+                  this.addInput("measResult", "Datendefizit", {
+                    wrappers: ["panel", "form-field", "addons"],
+                    className: "single-field width-25 right-align",
+                    type: "number",
+                    min: 0,
+                    max: 100,
+                    suffix: {
+                      text: "%",
+                    },
+                  }),
+                ]),
               ]),
-            ]),
-            this.addGroup(
-              "absoluteExternalPositionalAccuracy",
-              "Genauigkeit",
-              [
-                this.addInput("griddedDataPositionalAccuracy", null, {
-                  fieldLabel: "Rasterpositionsgenauigkeit",
-                  type: "number",
-                  className: "optional right-align",
-                  expressions: {
-                    hide: (field: FormlyFieldConfig) =>
-                      !field.options.formState.mainModel?.spatialRepresentationType?.find(
-                        (x) => x.key === "2",
-                      ),
+              this.addGroup(
+                "absoluteExternalPositionalAccuracy",
+                "Genauigkeit",
+                [
+                  this.addInput("griddedDataPositionalAccuracy", null, {
+                    fieldLabel: "Rasterpositionsgenauigkeit",
+                    type: "number",
+                    className: "optional right-align",
+                    expressions: {
+                      hide: (field: FormlyFieldConfig) =>
+                        !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                          (x) => x.key === "2",
+                        ),
+                    },
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field", "addons"],
+                    suffix: {
+                      text: "m",
+                    },
+                  }),
+                  this.addInput("vertical", null, {
+                    fieldLabel: "Höhengenauigkeit",
+                    type: "number",
+                    hasInlineContextHelp: true,
+                    className: "right-align",
+                    wrappers: ["inline-help", "form-field", "addons"],
+                    suffix: {
+                      text: "m",
+                    },
+                  }),
+                  this.addInput("horizontal", null, {
+                    fieldLabel: "Lagegenauigkeit",
+                    type: "number",
+                    hasInlineContextHelp: true,
+                    className: "right-align",
+                    wrappers: ["inline-help", "form-field", "addons"],
+                    suffix: {
+                      text: "m",
+                    },
+                  }),
+                ],
+                { fieldGroupClassName: "flex-row" },
+              ),
+              this.addRepeat("qualities", "Qualitätsinformationen", {
+                className: "optional",
+                menuOptions: [
+                  {
+                    key: "completenessComission",
+                    value: "Datenüberschuss",
+                    fields: this.getQualityFields("7109"),
                   },
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field", "addons"],
-                  suffix: {
-                    text: "m",
+                  {
+                    key: "conceptualConsistency",
+                    value: "Konzeptionelle Konsistenz",
+                    fields: this.getQualityFields("7112"),
                   },
-                }),
-                this.addInput("vertical", null, {
-                  fieldLabel: "Höhengenauigkeit",
-                  type: "number",
-                  hasInlineContextHelp: true,
-                  className: "right-align",
-                  wrappers: ["inline-help", "form-field", "addons"],
-                  suffix: {
-                    text: "m",
+                  {
+                    key: "domainConsistency",
+                    value: "Konsistenz des Wertebereichs",
+                    fields: this.getQualityFields("7113"),
                   },
-                }),
-                this.addInput("horizontal", null, {
-                  fieldLabel: "Lagegenauigkeit",
-                  type: "number",
-                  hasInlineContextHelp: true,
-                  className: "right-align",
-                  wrappers: ["inline-help", "form-field", "addons"],
-                  suffix: {
-                    text: "m",
+                  {
+                    key: "formatConsistency",
+                    value: "Formatkonsistenz",
+                    fields: this.getQualityFields("7114"),
                   },
-                }),
-              ],
-              { fieldGroupClassName: "flex-row" },
-            ),
-            this.addRepeat("qualities", "Qualitätsinformationen", {
-              className: "optional",
-              menuOptions: [
-                {
-                  key: "completenessComission",
-                  value: "Datenüberschuss",
-                  fields: this.getQualityFields("7109"),
-                },
-                {
-                  key: "conceptualConsistency",
-                  value: "Konzeptionelle Konsistenz",
-                  fields: this.getQualityFields("7112"),
-                },
-                {
-                  key: "domainConsistency",
-                  value: "Konsistenz des Wertebereichs",
-                  fields: this.getQualityFields("7113"),
-                },
-                {
-                  key: "formatConsistency",
-                  value: "Formatkonsistenz",
-                  fields: this.getQualityFields("7114"),
-                },
-                {
-                  key: "topologicalConsistency",
-                  value: "Topologische Konsistenz",
-                  fields: this.getQualityFields("7115"),
-                },
-                {
-                  key: "temporalConsistency",
-                  value: "Zeitliche Konsistenz",
-                  fields: this.getQualityFields("7120"),
-                },
-                {
-                  key: "thematicClassificationCorrectness",
-                  value: "Korrektheit der thematischen Klassifizierung",
-                  fields: this.getQualityFields("7125"),
-                },
-                {
-                  key: "nonQuantitativeAttributeAccuracy",
-                  value: "Genauigkeit nicht-quantitativer Attribute",
-                  fields: this.getQualityFields("7126"),
-                },
-                {
-                  key: "quantitativeAttributeAccuracy",
-                  value: "Genauigkeit quantitativer Attribute",
-                  fields: this.getQualityFields("7127"),
-                },
-                {
-                  key: "relativeInternalPositionalAccuracy",
-                  value: "Relative Positionsgenauigkeit",
-                  fields: this.getQualityFields("7128"),
-                },
-              ],
-            }),
-          ])
+                  {
+                    key: "topologicalConsistency",
+                    value: "Topologische Konsistenz",
+                    fields: this.getQualityFields("7115"),
+                  },
+                  {
+                    key: "temporalConsistency",
+                    value: "Zeitliche Konsistenz",
+                    fields: this.getQualityFields("7120"),
+                  },
+                  {
+                    key: "thematicClassificationCorrectness",
+                    value: "Korrektheit der thematischen Klassifizierung",
+                    fields: this.getQualityFields("7125"),
+                  },
+                  {
+                    key: "nonQuantitativeAttributeAccuracy",
+                    value: "Genauigkeit nicht-quantitativer Attribute",
+                    fields: this.getQualityFields("7126"),
+                  },
+                  {
+                    key: "quantitativeAttributeAccuracy",
+                    value: "Genauigkeit quantitativer Attribute",
+                    fields: this.getQualityFields("7127"),
+                  },
+                  {
+                    key: "relativeInternalPositionalAccuracy",
+                    value: "Relative Positionsgenauigkeit",
+                    fields: this.getQualityFields("7128"),
+                  },
+                ],
+              }),
+            ],
+            { optional: this.geodatasetOptions.optional.dataQualitySection },
+          )
         : null,
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
@@ -686,6 +694,7 @@ export class GeoDatasetDoctype extends IngridShared {
         extraInfoCharSetData: true,
         conformity: true,
         extraInfoLangData: true,
+        optionalSection: this.options.optional.additionalInformationSection,
       }),
       this.addAvailabilitySection(),
       this.addLinksSection(IngridClass.InGridGeoDataset),

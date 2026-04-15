@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.index.ElasticIndexer.Companion.convertToElasticDocument
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.IBus
 import de.ingrid.utils.IngridCall
 import de.ingrid.utils.IngridDocument
@@ -74,11 +74,11 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         sendCallToIBus(iBus, call)
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+    override fun update(indexinfo: IndexInfo, docAny: Any) {
         val call = prepareCall("update")
         call.parameter = mapOf(
             "indexinfo" to indexinfo,
-            "doc" to doc,
+            "doc" to convertToElasticDocument(docAny),
             "updateOldIndex" to false,
         )
 
@@ -151,7 +151,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         } catch (e: Exception) {
             // TODO: log error for frontend!
             log.error("Error relaying index message: " + call.method, e)
-            return null
+            throw e
         }
     }
 

@@ -48,11 +48,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [
-            this.waterMeasurement(),
-            // not completed yet
-            // this.bautechnikMeasurement()
-          ],
+          fieldGroup: [this.waterMeasurement()],
         },
         props: {
           docType: "Messdaten",
@@ -61,73 +57,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     );
     return fieldConfig;
   };
-
-  bautechnikMeasurement() {
-    return {
-      name: "bautechnikMeasurement",
-      expressions: {
-        hide: (field: FormlyFieldConfig) =>
-          field.model?.type !== "bautechnikMeasurement",
-      },
-      props: {
-        label: "Messdaten (Bautechnik)",
-      },
-      fieldGroup: [
-        this.addSection("Messdaten (Bautechnik)", [
-          { key: "type" },
-          this.addRepeatList("researchGoal", "Untersuchungsziel", {
-            options: [
-              {
-                label: "Zustand des Bauwerks (Gutachten)",
-                value: "Zustand des Bauwerks (Gutachten)",
-              },
-              {
-                label: "Forschung & Entwicklung (F&E)",
-                value: "Forschung & Entwicklung (F&E)",
-              },
-            ],
-          }),
-
-          this.addSelect("measurementDirection", "Messrichtung", {
-            options: [
-              { label: "horizontal", value: "horizontal" },
-              { label: "vertikal", value: "vertikal" },
-              { label: "3D", value: "3D" },
-            ],
-          }),
-          this.addRepeatList("parameter", "Messparameter", {
-            options: [
-              { label: "Koordinaten", value: "Koordinaten" },
-              { label: "Bild", value: "Bild" },
-              {
-                label: "Räumliche Verschiebung",
-                value: "Räumliche Verschiebung",
-              },
-              { label: "Strecke / Länge", value: "Strecke / Länge" },
-              {
-                label: "Horizontale Verschiebung",
-                value: "Horizontale Verschiebung",
-              },
-              {
-                label: "Vertikale Verschiebung (Setzung)",
-                value: "Vertikale Verschiebung (Setzung)",
-              },
-              {
-                label: "Bewegung von Riss und Fugen",
-                value: "Bewegung von Riss und Fugen",
-              },
-              { label: "Dehnung", value: "Dehnung" },
-              { label: "Neigung", value: "Neigung" },
-              { label: "Kräfte / Spannungen", value: "Kräfte / Spannungen" },
-              { label: "Wasserstand", value: "Wasserstand" },
-              { label: "Wasserdruck", value: "Wasserdruck" },
-              { label: "Temperatur", value: "Temperatur" },
-            ],
-          }),
-        ]),
-      ],
-    };
-  }
 
   waterMeasurement() {
     return {
@@ -262,11 +191,11 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
       required: true,
       fields: [
         this.addGroupSimple(null, [
-          this.addSelectInline("name", "Name", {
+          this.addAutoCompleteInline("name", "Name", {
             required: true,
             options: this.getCodelistForSelect("3950021", "null"),
           }),
-          this.addSelectInline("type", "Art", {
+          this.addAutoCompleteInline("type", "Art", {
             required: true,
             options: this.getCodelistForSelect("3950014", "null"),
           }),

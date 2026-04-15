@@ -629,6 +629,10 @@ ige-one-column-wrapper formly-group {
   align-self: flex-end;
 }
 
+.align-self-stretch {
+  align-self: stretch;
+}
+
 .justify-content-space-between {
   justify-content: space-between;
 }
@@ -1463,4 +1467,16 @@ table.big-font {
     height: 10px !important;
     display: block !important;
   }
+}
+
+.text-hint {
+  color: vars.$ige-hint-color;
+}
+
+.text-sm {
+  font-size: 14px;
+}
+
+.font-medium {
+  font-weight: 500;
 }

@@ -20,6 +20,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 
 @Injectable({
   providedIn: "root",
@@ -42,17 +43,16 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.getSimulationModelTypeFieldConfig(),
         this.getSimulationParameterFieldConfig(),
       ]),
-      // not completed yet
-      // {
-      //   key: "simulationPhases",
-      //   type: "bawPhases",
-      //   fieldArray: {
-      //     fieldGroup: [this.bautechnikSimulation()],
-      //   },
-      //   props: {
-      //     docType: "Simulationsdaten",
-      //   },
-      // },
+      {
+        key: "simulationPhases",
+        type: "bawPhases",
+        fieldArray: {
+          fieldGroup: [this.bautechnikSimulation()],
+        },
+        props: {
+          docType: "Simulationsdaten",
+        },
+      },
     );
 
     return fieldConfig;
@@ -108,205 +108,172 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             this.addAutocomplete("name", null, {
               fieldLabel: "Name",
               wrappers: ["form-field"],
-              options: [{ label: "Dlubal", value: "Dlubal" }],
+              required: true,
+              options: this.getCodelistForSelect(
+                "BAW_simulationSoftware",
+                "null",
+              ),
             }),
-            this.addAutocomplete("version", null, {
+            this.addInput("version", null, {
+              required: true,
               fieldLabel: "Version",
               wrappers: ["form-field"],
-              options: [{ label: "1", value: "1" }],
             }),
           ]),
           this.addRepeatList("object", "Objekt", {
-            options: [
-              { label: "Schleusen: Kammern", value: "Schleusen: Kammern" },
-              { label: "Schleusen: Häupter", value: "Schleusen: Häupter" },
-              {
-                label: "Schleusen: Oberhäupter",
-                value: "Schleusen: Oberhäupter",
-              },
-              {
-                label: "Schleusen: Unterhäupter",
-                value: "Schleusen: Unterhäupter",
-              },
-              { label: "Wehre: Wehrpfeiler", value: "Wehre: Wehrpfeiler" },
-              { label: "Wehre: Wehrfelder", value: "Wehre: Wehrfelder" },
-              { label: "Brücken", value: "Brücken" },
-              { label: "Kanalbrücken", value: "Kanalbrücken" },
-              { label: "Molen", value: "Molen" },
-              { label: "Talsperren", value: "Talsperren" },
-              { label: "Leuchttürme", value: "Leuchttürme" },
-              {
-                label: "Unterführungsbauwerke",
-                value: "Unterführungsbauwerke",
-              },
-              {
-                label: "Fischaufstiegsanlagen",
-                value: "Fischaufstiegsanlagen",
-              },
-              {
-                label: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
-                value: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
-              },
-              {
-                label: "Verschlusskörper: Sparbecken",
-                value: "Verschlusskörper: Sparbecken",
-              },
-              {
-                label: "Verschlusskörper: Wehre",
-                value: "Verschlusskörper: Wehre",
-              },
-              {
-                label: "Verschlusskörper: Hochwasserentlastungen",
-                value: "Verschlusskörper: Hochwasserentlastungen",
-              },
-              {
-                label: "Verschlusskörper: Grundablässe",
-                value: "Verschlusskörper: Grundablässe",
-              },
-              {
-                label: "Verschlusskörper: Revisionen",
-                value: "Verschlusskörper: Revisionen",
-              },
-              { label: "Schiffshebewerke", value: "Schiffshebewerke" },
-              { label: "Schleusentore", value: "Schleusentore" },
-              { label: "Poller", value: "Poller" },
-              { label: "Stoßschütze", value: "Stoßschütze" },
-              {
-                label: "Schlauchwehre: Menbran",
-                value: "Schlauchwehre: Menbran",
-              },
-              {
-                label: "Schlauchwehre: Klemmleiste/Klemmschiene",
-                value: "Schlauchwehre: Klemmleiste/Klemmschiene",
-              },
-              { label: "Spundwände", value: "Spundwände" },
-              { label: "Düker", value: "Düker" },
-              { label: "Feste Teile", value: "Feste Teile" },
-              { label: "Maschinenteile", value: "Maschinenteile" },
-              {
-                label: "Überbauten: Wehrstege/-brücken",
-                value: "Überbauten: Wehrstege/-brücken",
-              },
-              {
-                label: "Überbauten: Hubportale",
-                value: "Überbauten: Hubportale",
-              },
-              { label: "Verbindungselemente", value: "Verbindungselemente" },
-              { label: "Sperrwerke", value: "Sperrwerke" },
-            ],
+            required: true,
+            options: this.getCodelistForSelect("BAW_simulationObject", "null"),
           }),
           this.addRepeatList("objectPart", "Objektteil", {
-            options: [
-              { label: "Aufsatzklappe", value: "Aufsatzklappe" },
-              { label: "Dammbalken", value: "Dammbalken" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationObjectPart",
+              "null",
+            ),
           }),
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
-            options: [
-              {
-                label: "Tragfähigkeitsnachweis",
-                value: "Tragfähigkeitsnachweis",
-              },
-              {
-                label: "Verformungsberechnung",
-                value: "Verformungsberechnung",
-              },
-            ],
+            required: true,
+            options: this.getCodelistForSelect(
+              "BAW_simulationResearchGoal",
+              "null",
+            ),
           }),
           this.addGroup("dimension", "Dimensionen", [
             this.addSelect("spatialDimension", null, {
               fieldLabel: "Räumliche Dimensionen",
-              showSearch: true,
               wrappers: ["form-field"],
-              options: [
-                { label: "1D", value: "1D" },
-                { label: "2D", value: "2D" },
-                { label: "3D", value: "3D" },
-              ],
+              options: this.getCodelistForSelect(
+                "BAW_simulationSpatialDimension",
+                "null",
+              ),
             }),
             this.addCheckboxInline("timeDimension", "Zeit"),
           ]),
           this.addRepeatList("level", "Level der Untersuchung", {
-            options: [
-              { label: "mean", value: "mean" },
-              { label: "design", value: "design" },
-            ],
+            required: true,
+            asSelect: true,
+            options: this.getCodelistForSelect("BAW_simulationLevel", "null"),
           }),
           this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
+            asSelect: true,
+            options: this.getCodelistForSelect("BAW_simulationPhase", "null"),
+          }),
+          this.addButtonToggles("calculationConcept", "Berechnungskonzepte", {
             options: [
-              { label: "A", value: "A" },
-              { label: "B", value: "B" },
-              { label: "C", value: "C" },
-              { label: "I", value: "I" },
-              { label: "II", value: "II" },
-              { label: "III", value: "III" },
+              {
+                key: "isMaterialLinear",
+                label: "materiell",
+                options: [
+                  { label: "linear", value: true },
+                  { label: "nicht linear", value: false },
+                ],
+              },
+              {
+                key: "isGeometricLinear",
+                label: "geometrisch",
+                options: [
+                  { label: "linear", value: true },
+                  { label: "nicht linear", value: false },
+                ],
+              },
+              {
+                key: "hasImperfections",
+                label: "Imperfektionen",
+                options: [
+                  { label: "mit", value: true },
+                  { label: "ohne", value: false },
+                ],
+              },
             ],
           }),
-          this.addGroup("concept", "Berechnungskonzepte", [
-            this.addCheckboxInline("materiell", "materiell linear"),
-            this.addCheckboxInline("geometrisch", "geometrisch linear"),
-            this.addCheckboxInline("imperfections", "Imperfektionen"),
-          ]),
           this.addRepeatList("materials", "Werkstoffe", {
-            options: [
-              { label: "Beton", value: "Beston" },
-              { label: "Bewehrung", value: "Bewehrung" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationMaterial",
+              "null",
+            ),
           }),
-          this.addRepeat("concrete", "Grundlegende Werkstoffparameter", {
-            fields: [
-              this.addInputInline("denominator", "Betondruckfestigkeit", {
-                type: "number",
+          this.addSubSection(
+            "materialParameters",
+            "Grundlegende Werkstoffparameter",
+            [
+              this.addRepeat("reinforcement", "Fließgrenze der Bewehrung", {
+                fields: [
+                  this.addInput("yieldLimit", "Fließgrenze der Bewehrung", {
+                    type: "number",
+                    required: true,
+                    className: "right-align",
+                    wrappers: ["form-field", "addons"],
+                    suffix: {
+                      text: "N/mm²",
+                    },
+                  }),
+                ],
               }),
-              this.addInputInline(
-                "distanceMeter",
-                "Fließgrenze der Bewehrung",
-                {
-                  type: "number",
-                  className: "flex-1 right-align",
-                  wrappers: ["form-field"],
-                  suffix: {
-                    text: "m",
-                  },
-                },
-              ),
-              this.addInputInline("distanceDPI", "Fließgrenze Stahl", {
-                type: "number",
-                className: "flex-1 right-align",
-                wrappers: ["form-field"],
+              this.addRepeat("steel", "Fließgrenze Stahl", {
+                fields: [
+                  this.addInput("yieldLimit", "Fließgrenze Stahl", {
+                    type: "number",
+                    required: true,
+                    className: "right-align",
+                    wrappers: ["form-field", "addons"],
+                    suffix: {
+                      text: "N/mm²",
+                    },
+                  }),
+                ],
+              }),
+              this.addRepeat("concrete", "Betondruckfestigkeit", {
+                fields: [
+                  this.addInput("compressiveStrength", "Betondruckfestigkeit", {
+                    type: "number",
+                    required: true,
+                    wrappers: ["form-field", "addons"],
+                    className: "right-align",
+                    suffix: {
+                      text: "N/mm²",
+                    },
+                  }),
+                  this.addSelectInline("unitOfMeasure", "Kennwert", {
+                    options: this.getCodelistForSelect(
+                      "BAW_simulationConcreteUnit",
+                      null,
+                    ),
+                    codelistId: "BAW_simulationConcreteUnit",
+                    allowNoValue: false,
+                    wrappers: ["form-field"],
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
+                    },
+                  }),
+                ],
               }),
             ],
-          }),
+          ),
+          // subsection only for visual separation
+          this.addSubSection(null, "", []),
           this.addRepeatList("materialModel", "Materialmodell", {
-            options: [
-              { label: "Stahl", value: "Stahl" },
-              { label: "Fließplateau", value: "Fließplateau" },
-              { label: "Bruchmechanik", value: "Bruchmechanik" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationMaterialModel",
+              "null",
+            ),
           }),
           this.addRepeatList("elementTypes", "Elementtypen", {
-            options: [
-              { label: "Stab/Balken", value: "StabBalken" },
-              { label: "Scheiben", value: "Scheiben" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationElementType",
+              "null",
+            ),
           }),
-          this.addRepeatList("einwirkung", "Einwirkung", {
-            options: [
-              { label: "Eigengewicht", value: "Eigengewicht" },
-              { label: "Erddruck", value: "Erddruck" },
-            ],
+          this.addRepeatList("effects", "Einwirkung", {
+            options: this.getCodelistForSelect("BAW_simulationEffect", "null"),
           }),
           this.addRepeatList("physics", "Physik", {
-            options: [
-              { label: "Strukturmechanik", value: "Strukturmechanik" },
-              { label: "Strukturdynamik", value: "Strukturdynamik" },
-            ],
+            options: this.getCodelistForSelect("BAW_simulationPhysics", "null"),
           }),
           this.addRepeatList("analysisType", "Analysetyp", {
-            options: [
-              { label: "Spannungsanalyse", value: "Spannungsanalyse" },
-              { label: "Schwingungsanalyse", value: "Schwingungsanalyse" },
-            ],
+            options: this.getCodelistForSelect(
+              "BAW_simulationAnalysisType",
+              "null",
+            ),
           }),
         ]),
       ],

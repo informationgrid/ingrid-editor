@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.model.Authority
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
@@ -31,12 +32,14 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.ProjectModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SoftwareModelTransformerBaw
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -45,13 +48,14 @@ import de.ingrid.igeserver.utils.prefixIfNot
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Locale
+import java.util.*
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerBaw::class
     "BawMeasurement" -> GeodatasetTransformerBaw::class
     "BawSimulation" -> GeodatasetTransformerBaw::class
+    "BawLaboratoryData" -> GeodatasetTransformerBaw::class
     "InGridGeoService" -> GeoserviceTransformerBaw::class
     "BawPublication" -> PublicationModelTransformerBaw::class
     "InGridProject" -> ProjectModelTransformerBaw::class
@@ -66,6 +70,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "InGridGeoDataset" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawMeasurement" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+    "BawLaboratoryData" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
     "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
@@ -74,7 +79,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
 }
 
 fun mapDocumentTypeBaw(type: String): String? = when (type) {
-    "BawMeasurement", "BawSimulation" -> InGridDocType.InGridGeoDataset.typeId
+    "BawMeasurement", "BawSimulation", "BawLaboratoryData" -> InGridDocType.InGridGeoDataset.typeId
     "BawPublication" -> InGridDocType.InGridPublication.typeId
     else -> null
 }
@@ -262,9 +267,173 @@ data class CitedResponsibleParty(
 )
 
 fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.mapNotNull {
-    val litDoc = transformer.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
+    val litDoc = transformer.addressExporter.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
     calcLiteratureAggregate(transformer, litDoc)
 } ?: emptyList()
+
+fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
+    if (transformer.doc.type != "BawLaboratoryData") return null
+    val data = transformer.doc.data
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    val testProcedures = data.getPath("testProcedures")?.map { tp ->
+        TestProcedure(
+            testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
+            instrument = tp.getString("instrument"),
+            standard = tp.getString("standard"),
+            standardIssueDate = tp.getString("standardIssueDate"),
+        )
+    } ?: emptyList()
+
+    return LaboratoryDataBaw(
+        dataCollectionReason = getList("dataCollectionReason"),
+        sampleOrigin = getList("sampleOrigin"),
+        testedMaterial = getList("testedMaterial"),
+        testProcedures = testProcedures,
+        testNumber = data.getString("approvalProcedure.testNumber"),
+        systemSetup = data.getString("approvalProcedure.systemSetup"),
+        datasetVisibility = getList("approvalProcedure.datasetVisibility"),
+        isApprovalProcedure = data.getBoolean("properties.isApprovalProcedure") ?: false,
+    )
+}
+
+fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimulationBaw? {
+    if (transformer.doc.type != "BawSimulation") return null
+    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    val softwareNode = data.getPath("software")
+    val software = if (softwareNode != null) {
+        SoftwareBaw(
+            name = softwareNode.getString("name"),
+            version = softwareNode.getString("version"),
+        )
+    } else {
+        null
+    }
+
+    val calcNode = data.getPath("calculationConcept")
+    val calculationConcept = if (calcNode != null) {
+        CalculationConceptBaw(
+            materialLinear = calcNode.getBoolean("isMaterialLinear"),
+            geometricLinear = calcNode.getBoolean("isGeometricLinear"),
+            imperfections = calcNode.getBoolean("hasImperfections"),
+        )
+    } else {
+        null
+    }
+
+    val matParamsNode = data.getPath("materialParameters")
+    val materialParameters = if (matParamsNode != null) {
+        MaterialParametersBaw(
+            reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
+        )
+    } else {
+        null
+    }
+
+    return BautechnikSimulationBaw(
+        software = software,
+        objects = getList("object"),
+        objectParts = getList("objectPart"),
+        researchGoals = getList("researchGoal"),
+        spatialDimension = data.getString("dimension.spatialDimension"),
+        timeDimension = data.getBoolean("dimension.timeDimension"),
+        levels = getList("level"),
+        phases = getList("phase"),
+        calculationConcept = calculationConcept,
+        materials = getList("materials"),
+        materialParameters = materialParameters,
+        materialModels = getList("materialModel"),
+        elementTypes = getList("elementTypes"),
+        effects = getList("effects"),
+        physics = getList("physics"),
+        analysisTypes = getList("analysisType"),
+    )
+}
+
+data class SoftwareBaw(
+    val name: String?,
+    val version: String?,
+)
+
+data class CalculationConceptBaw(
+    val materialLinear: Boolean?,
+    val geometricLinear: Boolean?,
+    val imperfections: Boolean?,
+)
+
+data class ReinforcementBaw(
+    val yieldLimit: Double?,
+)
+
+data class SteelBaw(
+    val yieldLimit: Double?,
+)
+
+data class ConcreteBaw(
+    val value: Double?,
+    val unit: String?,
+)
+
+data class MaterialParametersBaw(
+    val reinforcement: List<ReinforcementBaw>,
+    val steel: List<SteelBaw>,
+    val concrete: List<ConcreteBaw>,
+)
+
+data class BautechnikSimulationBaw(
+    val software: SoftwareBaw?,
+    val objects: List<String>,
+    val objectParts: List<String>,
+    val researchGoals: List<String>,
+    val spatialDimension: String?,
+    val timeDimension: Boolean?,
+    val levels: List<String>,
+    val phases: List<String>,
+    val calculationConcept: CalculationConceptBaw?,
+    val materials: List<String>,
+    val materialParameters: MaterialParametersBaw?,
+    val materialModels: List<String>,
+    val elementTypes: List<String>,
+    val effects: List<String>,
+    val physics: List<String>,
+    val analysisTypes: List<String>,
+)
+
+data class BautechnikMeasurementBaw(
+    val researchGoals: List<String>,
+    val measurementType: String?,
+    val windID: String?,
+    val measurementDirection: String?,
+    val parameters: List<String>,
+)
+
+data class TestProcedure(
+    val testMethod: String?,
+    val instrument: String?,
+    val standard: String?,
+    val standardIssueDate: String?,
+)
+
+data class LaboratoryDataBaw(
+    val dataCollectionReason: List<String>,
+    val sampleOrigin: List<String>,
+    val testedMaterial: List<String>,
+    val testProcedures: List<TestProcedure>,
+    val testNumber: String?,
+    val systemSetup: String?,
+    val datasetVisibility: List<String>,
+    val isApprovalProcedure: Boolean,
+)
 
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
     uuid = litDoc.uuid,
@@ -340,4 +509,10 @@ fun transformUrlForDatenrepository(url: String?): String? {
     // Only allow URLs that are in the domain whitelist. Return null for other URLs.
     val whitelist = BawPropertiesHolder.domainWhitelist
     return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
+}
+
+fun convertToIngridOptionsWithStructuralChildren(options: IncomingReferenceOptions): IngridIncomingReferenceOptions {
+    val ingridOptions = options as? IngridIncomingReferenceOptions
+        ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
+    return ingridOptions.copy(addStructuralChildren = true)
 }

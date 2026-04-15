@@ -22,7 +22,7 @@ pipeline {
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x check'
+                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
             }
         }
 

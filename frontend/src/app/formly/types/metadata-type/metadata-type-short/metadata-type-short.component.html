@@ -1,9 +1,9 @@
 <div class="flex-row gap-12">
-    <mat-chip-listbox [hideSingleSelectionIndicator]="true">
+    <mat-chip-listbox [hideSingleSelectionIndicator]="true" selectable="false">
         @for (option of filteredOptions(); track option.id) {
             <mat-chip-option
                 [selected]="true"
-                [selectable]="false"
+                [disabled]="true"
                 [attr.data-cy]="option.id"
                 >{{ option.label }}</mat-chip-option
             >

@@ -133,7 +133,7 @@ class CodelistSyncTask(
                     if (jsonPaths.isNotEmpty()) {
                         log.debug("Found ${jsonPaths.size} paths with key field in document: $jsonPaths")
                     }
-                    message.progress = (((processedCount + index) / totalDocuments) * 100).toInt()
+                    message.progress = (((processedCount + index) / totalDocuments) * 100)
                     notifier.sendMessage(notificationType, message)
 
                     1 // Return 1 for each document processed

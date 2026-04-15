@@ -18,11 +18,12 @@
  * limitations under the Licence.
  */
 package de.ingrid.igeserver.index
+
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.exceptions.IndexException
+import de.ingrid.igeserver.index.ElasticIndexer.Companion.convertToElasticDocument
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.csw.CSWClient
-import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.util.*
@@ -54,7 +55,8 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     override fun checkAndCreateInformationIndex() {
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+    override fun update(indexinfo: IndexInfo, docAny: Any) {
+        val doc = convertToElasticDocument(docAny)
         if (doc["isfolder"] == "true") {
             throw IndexException.skipFolders(doc[indexinfo.docIdField].toString())
         }
@@ -72,8 +74,8 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
 
     override fun getIndices(filter: String): List<String> = emptyList()
 
-    override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
-        client.delete(id)
+    override fun delete(indexinfo: IndexInfo, uuid: String, updateOldIndex: Boolean) {
+        client.delete(uuid)
     }
 
     override fun indexExists(indexName: String): Boolean = runBlocking { true }

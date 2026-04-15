@@ -71,7 +71,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   ],
 })
 export class PreviewImageComponent extends FieldArrayType implements OnInit {
-  private dialog = inject(MatDialog);
+  dialog = inject(MatDialog);
   private uploadService = inject(UploadService);
   private messageService = inject(FormMessageService);
   private translocoService = inject(TranslocoService);
@@ -129,8 +129,11 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   imageLinks = signal<any>({});
   disableUpload: boolean = false;
 
+  additionalSelectors: PreviewImageSelector[] = [];
+
   ngOnInit(): void {
     this.disableUpload = this.props.disableUpload ?? false;
+    this.additionalSelectors = this.props.additionalSelectors ?? [];
     this.formControl.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -182,6 +185,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         hasBackdrop: true,
         data: {
           fields: this.linkFields,
+          isNew: true,
         } as FormDialogData,
         delayFocusTrap: true,
       })
@@ -190,7 +194,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .subscribe((result) => this.addLink(result));
   }
 
-  private addLink(result: any) {
+  addLink(result: ImageLink) {
     this.add(null, result);
   }
 
@@ -200,6 +204,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         data: {
           fields: this.linkFields,
           model: this.model[index],
+          isNew: false,
         } as FormDialogData,
       })
       .afterClosed()
@@ -340,4 +345,14 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     const src = img.src.toLowerCase();
     return src.includes(".png") || src.includes(".gif") || src.includes("svg");
   }
+}
+
+export class PreviewImageSelector {
+  label: string;
+  action: (componentRef: PreviewImageComponent) => void;
+}
+
+export class ImageLink {
+  fileName: string;
+  fileDescription: string;
 }

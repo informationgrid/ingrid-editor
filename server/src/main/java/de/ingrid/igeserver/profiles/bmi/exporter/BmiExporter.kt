@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.bmi.exporter.model.BmiModel
 import de.ingrid.igeserver.services.CatalogService
@@ -34,8 +35,6 @@ import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -108,15 +107,6 @@ class BmiExporter(
                 documentService,
                 exportOptions.tags,
             ),
-        )
-    }
-}
-
-class JsonStringOutput : StringOutput() {
-    override fun writeUserContent(value: String?) {
-        if (value == null) return
-        super.writeUserContent(
-            escapeJson(value),
         )
     }
 }

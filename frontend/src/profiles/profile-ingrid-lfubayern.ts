@@ -36,8 +36,11 @@ class InGridLFUBayernComponent extends InGridComponent {
 
   constructor() {
     super();
-    // this.isoView.isoExportFormat = "ingridISOLfuExternalBayern";
-    this.isoView.isoExportFormat = "ingridISOLfuBayern";
+    this.isoView.defaultExportFormat = () => "ingridISOLfuBayern";
+    this.isoView.availableExportFormats = () => [
+      "ingridISOLfuBayern",
+      "ingridISOLfuExternalBayern",
+    ];
     this.modifyFormFieldConfiguration();
     this.pluginService.registerPlugin(this.anonymousAddressPlugin);
   }

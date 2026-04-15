@@ -46,7 +46,7 @@ enum class ProcedureTypeEnum(val value: String) {
         )
 
     @JsonValue
-    override fun toString(): String = value.toString()
+    override fun toString(): String = value
 
     companion object {
         private const val URI_PREFIX = "https://specs.diplanung.de/resource/procedureType#"
@@ -57,7 +57,7 @@ enum class ProcedureTypeEnum(val value: String) {
                 return null
             }
             for (b in entries) {
-                if (b.value.toString() == stripPrefix(text)) {
+                if (b.value == stripPrefix(text)) {
                     return b
                 }
             }

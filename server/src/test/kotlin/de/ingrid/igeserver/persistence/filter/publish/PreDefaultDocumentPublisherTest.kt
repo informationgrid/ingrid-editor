@@ -62,14 +62,14 @@ class PreDefaultDocumentPublisherTest :
             mockRefWithTag(emptyList())
 
             val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
 
         test("internet should not accept intranet references") {
             mockRefWithTag(listOf("intranet"))
             val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
             shouldThrow<ValidationException> {
-                publisher.invoke(payload, DefaultContext("", "", null, null))
+                publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
             }.also {
                 it.data?.get("error").toString() shouldContain "Reference has wrong publication type condition"
             }
@@ -79,7 +79,7 @@ class PreDefaultDocumentPublisherTest :
             mockRefWithTag(listOf("amtsintern"))
             val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
             shouldThrow<ValidationException> {
-                publisher.invoke(payload, DefaultContext("", "", null, null))
+                publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
             }
         }
 
@@ -87,14 +87,14 @@ class PreDefaultDocumentPublisherTest :
             mockRefWithTag(emptyList())
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
 
         test("intranet should accept intranet references") {
             mockRefWithTag(listOf("intranet"))
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
 
         test("intranet should not accept amtsintern references") {
@@ -102,7 +102,7 @@ class PreDefaultDocumentPublisherTest :
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
             shouldThrow<ValidationException> {
-                publisher.invoke(payload, DefaultContext("", "", null, null))
+                publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
             }
         }
 
@@ -110,20 +110,20 @@ class PreDefaultDocumentPublisherTest :
             mockRefWithTag(emptyList())
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
 
         test("amtsintern should accept intranet references") {
             mockRefWithTag(listOf("intranet"))
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
 
         test("amtsintern should accept amtsintern references") {
             mockRefWithTag(listOf("amtsintern"))
             val payload =
                 PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-            publisher.invoke(payload, DefaultContext("", "", null, null))
+            publisher.invoke(payload, DefaultContext("", "", emptyList(), null))
         }
     })

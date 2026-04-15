@@ -76,6 +76,23 @@
                 </ul>
             </div>
         }
+        @if (log().infos?.length > 0) {
+            <div>
+                Informationen:
+                <span data-cy="count-infos">{{ log().infos.length }}</span>
+                <ul>
+                    @for (info of log().infos; track info) {
+                        <li>{{ info }}</li>
+                    }
+                </ul>
+            </div>
+        }
+        @if (skippedDatasets() > 0) {
+            <div>
+                Übersprungen:
+                <span data-cy="count-errors">{{ skippedDatasets() }}</span>
+            </div>
+        }
     </div>
 } @else {
     Keine Logausgabe vorhanden.

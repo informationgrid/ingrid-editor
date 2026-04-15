@@ -77,9 +77,8 @@ export interface UserInfo {
   version: Version;
   externalHelp?: string;
 
-  useElasticsearch?: boolean;
   permissions: string[];
-  parentProfile?: string;
+  linkedProfiles: string[];
   plugins?: BehaviourFormatBackend[];
 }
 

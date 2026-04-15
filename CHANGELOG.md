@@ -1,5 +1,60 @@
 # Changelog
 
+## 8.3.0 (01.04.2026)
+
+### Features
+
+* Minimallösung JSON MERGE PATCHes in der OGC-API Records Schnittstelle (#8868)
+* Health Check für InGrid Editor (#8846)
+* IGE: Messdaten (Allgmein) Selectboxen in Comboboxen ändern (#8796)
+* Verbesserung des Index-Mappings für die Suche (#8788)
+* Editor: OpenData-Objektklasse ("Datensatz) flexibilisieren (#8753)
+* Editor: Felder für Grundlegende Werkstoffparameter umgestalten (#8714)
+* Bautechnik Formular: Toggle Switch für Berechnungskonzepte (#8708)
+* Builds, die auf gradle basieren, sollen automatisch die Erzeugung dependency LOCK files prüfen (#8693)
+* CSW-T Import, Anpassung/Optimierung (#8692)
+* Indizierung abschalten für einen Katalog (#8686)
+* IGE: Vorschaugrafik aus LFS-Dateien Wählen (#8663)
+* ingrid-with-opendata - Einbindung in anderen Profilen/Katalogen (#8650)
+* IGE: Adresstypen-Auswahlliste für Objektklasse "Software" ergänzen (#8644)
+* Integration Bautechnik-Felder in Editor wieder herstellen (#8643)
+* Open Data - Raumbezug setzen Geo-Thesaurus (#8636)
+* Beschreibungselement "Herstellungsprozess" sollte in ein normales editierbares Textfeld geändert werden (#8632)
+* Suche im Portal sollte auch die Erläuterungstexte von Verweisen, insb. Download und Basisdaten, mitnehmen (#8625)
+* Ergänzende Informationen "Für die Fachredaktion zuständige Dienststelle" als neues Feld (#8614)
+* IGE: Abgedeckte Zeitspanne und Zielparameter in der Objektklasse zu Pflichtfelder machen (#8602)
+* IGE: Bild hochladen Button entfernen oder Funktion anpassen (#8594)
+* "Übernahme freie Einträge" Funktionalität aus IGE Classic Teil 2 (#8580)
+* Kontexthilfe um Informationen für Fachredaktionen ergänzen (#8562)
+* opensearch Schnittstelle erweitern um Abgabe der neuen OpenData-Metadaten (#8314)
+* Editor - Objektklasse für OpenData in Geometadaten-Katalog integrieren können (#8313)
+* Auftragsnr./-titel Felder durch Selectbox ersetzen (#8227)
+* Unit Tests erstellen (#8080)
+* Monitoring: Verbesserung der Synchronisation gelöschter UVP Dokumente  (#7017)
+* DOI Registrierung/Aktualisierung über die DataCite REST-API implementieren (#6695)
+* Erstellung BKG-Basisprofil für Editor NG (#6640)
+* Umgang mit hochgeladenen Dateien beim Kopieren von Datensätzen (#6555)
+* IGE-NG: Umstrukturierung uvp-upload-check (#5011)
+
+### Bugfixes
+
+* IGE: Untergeordnete Objekte werden nicht im Portal angezeigt (#8878)
+* Bezeichnung von nicht zu veröffentlichenden neg. Vorprüfungen unglücklich (#8851)
+* JSON Merge / Patch im Importer schlägt fehl bei updates (#8831)
+* Code-Liste 2000 - Mapping für deutsche Verweis-Typen korrigieren (#8783)
+* Seite Titel wird nicht immer angezeigt (#8769)
+* Druckvorschau - Es wird nur die erste Seite gedruckt (#8752)
+* UVP: Fehlermeldung Datensatz inkonsistent (#8743)
+* Fehlertext korrigieren (#8664)
+* "mit Schreibzugriff"-Schieberegler resettet nach "Auswahl"-Checkbox Aktivierung (#8638)
+* Open Data - Angabe Link Ressource einfügen (#8637)
+* Open Data - Angabe Link in Ressource (#8635)
+* IGE: Raumbezüge von BWaStr.-Strecken Löschen fehlerhaft (#8600)
+* Formatierungen bei der Mail mit Betreff "InGrid-Editor: Dataset expired" nicht mehr vorhanden (#8532)
+* Veröffentlichungssteuerung bei Negative Vorprüfungen lässt sich nicht mehr auf ' Veröffentlichen' setzen (#8305)
+* Doppelte IDs im Formular (#6251)
+* Problem Katalog/CSW-Output (#143)
+    
 ## 8.2.0 (12.01.2026)
 
 ### Features

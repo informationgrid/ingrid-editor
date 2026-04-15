@@ -20,7 +20,6 @@
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { Query } from "./query/query.model";
 import { DocumentAbstract } from "./document/document.model";
-import { UpdateDatasetInfo } from "../models/update-dataset-info.model";
 import { ShortTreeNode } from "../+form/sidebars/tree/tree.types";
 
 export interface ValidationError {
@@ -36,8 +35,6 @@ type GeneralState = {
   activeQuery: Query;
   openedAddress: DocumentAbstract;
   openedDocument: DocumentAbstract;
-  datasetsChanged: UpdateDatasetInfo;
-  addressesChanged: UpdateDatasetInfo;
   explicitActiveNode: ShortTreeNode;
   explicitActiveNodeAddress: ShortTreeNode;
   activeTreeNodes: number[];
@@ -65,8 +62,6 @@ const initialState: GeneralState = {
   activeQuery: null,
   openedAddress: null,
   openedDocument: null,
-  datasetsChanged: null,
-  addressesChanged: null,
   explicitActiveNode: null,
   explicitActiveNodeAddress: null,
   activeTreeNodes: [],
@@ -125,14 +120,6 @@ export const GeneralStore = signalStore(
     },
     getOpenedDocument(isAddress: boolean): DocumentAbstract {
       return isAddress ? store.openedAddress() : store.openedDocument();
-    },
-    setDatasetsChanged(info: UpdateDatasetInfo, isAddress: boolean): void {
-      if (isAddress) patchState(store, { addressesChanged: info });
-      else patchState(store, { datasetsChanged: info });
-    },
-    getDatasetsChanged(forAddress: boolean): UpdateDatasetInfo {
-      if (forAddress) return store.addressesChanged();
-      else return store.datasetsChanged();
     },
     setDocumentLoading(value: boolean): void {
       patchState(store, { isDocumentLoading: value });

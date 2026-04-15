@@ -1,6 +1,7 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestProcedure
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
@@ -95,6 +96,177 @@ aggregateInformation = @`
             </gmd:MD_AggregateInformation>
         </gmd:aggregationInfo>
     @endfor
+    !{var lab = page.getLaboratoryData();}
+    @if(lab != null)
+        <labordaten>
+            @for(String reason : lab.getDataCollectionReason())
+                <AnlassDerDatenerhebung>
+                    <anlassDerDatenerhebung>${reason}</anlassDerDatenerhebung>
+                </AnlassDerDatenerhebung>
+            @endfor
+            @for(String origin : lab.getSampleOrigin())
+                <Probenherkunft>
+                    <probenherkunft>${origin}</probenherkunft>
+                </Probenherkunft>
+            @endfor
+            @for(String material : lab.getTestedMaterial())
+                <GeprueftesMaterial>
+                    <geprueftesMaterial>${material}</geprueftesMaterial>
+                </GeprueftesMaterial>
+            @endfor
+            @for(TestProcedure tp : lab.getTestProcedures())
+                <MessUndPruefverfahren>
+                    @if(TransformationTools.hasValue(tp.getTestMethod()))
+                        <messUndPruefverfahren>${tp.getTestMethod()}</messUndPruefverfahren>
+                    @endif
+                    @if(TransformationTools.hasValue(tp.getInstrument()))
+                        <messgeraete>${tp.getInstrument()}</messgeraete>
+                    @endif
+                    @if(TransformationTools.hasValue(tp.getStandard()))
+                        <Norm>
+                            <normBezeichnung>${tp.getStandard()}</normBezeichnung>
+                            @if(TransformationTools.hasValue(tp.getStandardIssueDate()))
+                                <ausgabedatum>${tp.getStandardIssueDate()}</ausgabedatum>
+                            @endif
+                        </Norm>
+                    @endif
+                </MessUndPruefverfahren>
+            @endfor
+            <Zulassungspruefung>
+                <zulassungspruefung>
+                    <gco:Boolean>${lab.isApprovalProcedure()}</gco:Boolean>
+                </zulassungspruefung>
+                @if(TransformationTools.hasValue(lab.getTestNumber()))
+                    <pruefnummer>${lab.getTestNumber()}</pruefnummer>
+                @endif
+                @if(TransformationTools.hasValue(lab.getSystemSetup()))
+                    <aufbauDesSystems>${lab.getSystemSetup()}</aufbauDesSystems>
+                @endif
+                @for(String visibility : lab.getDatasetVisibility())
+                    <Sichtbarkeit>
+                        <sichtbarkeit>${visibility}</sichtbarkeit>
+                    </Sichtbarkeit>
+                @endfor
+            </Zulassungspruefung>
+        </labordaten>
+    @endif
+    !{var bautechnikS = page.getBautechnikSimulation();}
+<%--
+    TODO: Reenable after release or replace with ISO Mapping when clear
+    @if(bautechnikS != null)
+        <bautechnikSimulationsdaten>
+            @if(bautechnikS.getSoftware() != null)
+                <Software>
+                    <name>${bautechnikS.getSoftware().getName()}</name>
+                    <version>${bautechnikS.getSoftware().getVersion()}</version>
+                </Software>
+            @endif
+            @for(String obj : bautechnikS.getObjects())
+                <Objekt>
+                    <objekt>${obj}</objekt>
+                </Objekt>
+            @endfor
+            @for(String part : bautechnikS.getObjectParts())
+                <Objektteil>
+                    <objektteil>${part}</objektteil>
+                </Objektteil>
+            @endfor
+            @for(String goal : bautechnikS.getResearchGoals())
+                <Untersuchungsziel>
+                    <untersuchungsziel>${goal}</untersuchungsziel>
+                </Untersuchungsziel>
+            @endfor
+            <Dimensionen>
+                @if(TransformationTools.hasValue(bautechnikS.getSpatialDimension()))
+                    <raeumlicheDimensionen>${bautechnikS.getSpatialDimension()}</raeumlicheDimensionen>
+                @endif
+                @if(bautechnikS.getTimeDimension() != null)
+                    <zeit>
+                        <gco:Boolean>${bautechnikS.getTimeDimension()}</gco:Boolean>
+                    </zeit>
+                @endif
+            </Dimensionen>
+            @for(String level : bautechnikS.getLevels())
+                <LevelDerUntersuchung>
+                    <levelDerUntersuchung>${level}</levelDerUntersuchung>
+                </LevelDerUntersuchung>
+            @endfor
+            @for(String phase : bautechnikS.getPhases())
+                <Untersuchungsstufe>
+                    <untersuchungsstufe>${phase}</untersuchungsstufe>
+                </Untersuchungsstufe>
+            @endfor
+            @if(bautechnikS.getCalculationConcept() != null)
+                <Berechnungskonzepte>
+                    @if(bautechnikS.getCalculationConcept().getMaterialLinear() != null)
+                        <materiellLinear>
+                            <gco:Boolean>${bautechnikS.getCalculationConcept().getMaterialLinear()}</gco:Boolean>
+                        </materiellLinear>
+                    @endif
+                    @if(bautechnikS.getCalculationConcept().getGeometricLinear() != null)
+                        <geometrischLinear>
+                            <gco:Boolean>${bautechnikS.getCalculationConcept().getGeometricLinear()}</gco:Boolean>
+                        </geometrischLinear>
+                    @endif
+                    @if(bautechnikS.getCalculationConcept().getImperfections() != null)
+                        <imperfektionen>
+                            <gco:Boolean>${bautechnikS.getCalculationConcept().getImperfections()}</gco:Boolean>
+                        </imperfektionen>
+                    @endif
+                </Berechnungskonzepte>
+            @endif
+            @for(String material : bautechnikS.getMaterials())
+                <Werkstoffe>
+                    <werkstoffe>${material}</werkstoffe>
+                </Werkstoffe>
+            @endfor
+            @if(bautechnikS.getMaterialParameters() != null)
+                <GrundlegendeWerkstoffparameter>
+                    @for(var r : bautechnikS.getMaterialParameters().getReinforcement())
+                        <Bewehrung>
+                            <fliessgrenzeBewehrung>${r.getYieldLimit()}</fliessgrenzeBewehrung>
+                        </Bewehrung>
+                    @endfor
+                    @for(var s : bautechnikS.getMaterialParameters().getSteel())
+                        <Stahl>
+                            <fliessgrenzeStahl>${s.getYieldLimit()}</fliessgrenzeStahl>
+                        </Stahl>
+                    @endfor
+                    @for(var c : bautechnikS.getMaterialParameters().getConcrete())
+                        <Betondruckfestigkeit>
+                            <betondruckfestigkeit>${c.getValue()}</betondruckfestigkeit>
+                            <einheit>${c.getUnit()}</einheit>
+                        </Betondruckfestigkeit>
+                    @endfor
+                </GrundlegendeWerkstoffparameter>
+            @endif
+            @for(String model : bautechnikS.getMaterialModels())
+                <Materialmodell>
+                    <materialmodell>${model}</materialmodell>
+                </Materialmodell>
+            @endfor
+            @for(String elementType : bautechnikS.getElementTypes())
+                <Elementtypen>
+                    <elementtypen>${elementType}</elementtypen>
+                </Elementtypen>
+            @endfor
+            @for(String einwirkung : bautechnikS.getEffects())
+                <Einwirkung>
+                    <einwirkung>${einwirkung}</einwirkung>
+                </Einwirkung>
+            @endfor
+            @for(String physics : bautechnikS.getPhysics())
+                <Physik>
+                    <physik>${physics}</physik>
+                </Physik>
+            @endfor
+            @for(String analysis : bautechnikS.getAnalysisTypes())
+                <Analysetyp>
+                    <analysetyp>${analysis}</analysetyp>
+                </Analysetyp>
+            @endfor
+        </bautechnikSimulationsdaten>
+    @endif--%>
 `,
 additionalIdentification = @`
     <measurementInfo>

@@ -75,7 +75,6 @@ export class IndexingComponent implements OnInit {
 
   hint = signal<string>("");
   valid = signal<boolean>(true);
-  isActivated = signal<boolean>(false);
   showMore = signal<boolean>(false);
   indexingIsRunning = signal<boolean>(false);
   initialized = signal<boolean>(false);
@@ -94,15 +93,9 @@ export class IndexingComponent implements OnInit {
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private rxStompService: RxStompService,
-  ) {
-    this.isActivated.set(configService.$userInfo.value.useElasticsearch);
-  }
+  ) {}
 
   ngOnInit(): void {
-    if (!this.isActivated()) {
-      return;
-    }
-
     this.indexService
       .fetchLastLog()
       .pipe(tap((data) => this.status.set(data)))
@@ -123,7 +116,10 @@ export class IndexingComponent implements OnInit {
       .pipe(tap(() => this.initialized.set(true)))
       .subscribe((config) => {
         this.cronField.setValue(config.cronPattern);
-        this.exportModel = { "catalog-index-config": config.exports };
+        this.exportModel = {
+          "no-indexing": config.noIndexing,
+          "catalog-index-config": config.exports,
+        };
       });
 
     this.cronField.valueChanges
@@ -193,7 +189,10 @@ export class IndexingComponent implements OnInit {
 
   updateExportConfig() {
     this.indexService
-      .setExportConfig(this.exportForm.value["catalog-index-config"])
+      .setExportConfig({
+        noIndexing: this.exportForm.value["no-indexing"],
+        exports: this.exportForm.value["catalog-index-config"],
+      })
       .subscribe(() => this.snackBar.open("Konfiguration gespeichert"));
   }
 }

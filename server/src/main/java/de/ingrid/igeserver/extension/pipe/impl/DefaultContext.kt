@@ -32,7 +32,7 @@ import java.util.*
 open class DefaultContext(
     override val catalogId: String,
     override val profile: String,
-    override val parentProfile: String?,
+    override val linkedProfiles: List<String>,
     override val principal: Principal?,
 ) : Context {
 
@@ -46,7 +46,7 @@ open class DefaultContext(
             principal: Principal?,
         ): DefaultContext {
             val profile = catalogService.getProfileFromCatalog(catalogId)
-            return DefaultContext(catalogId, profile.identifier, profile.parentProfile, principal)
+            return DefaultContext(catalogId, profile.identifier, profile.linkedProfiles, principal)
         }
     }
 
@@ -67,4 +67,4 @@ open class DefaultContext(
     override var properties: Map<String, Any?> = mutableMapOf()
 }
 
-class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) : DefaultContext(catalogId, profile, null, null)
+class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) : DefaultContext(catalogId, profile, emptyList(), null)

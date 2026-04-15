@@ -78,6 +78,17 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         "Hinweise zu Datenführung und Urheberschaft",
         this.id,
       ),
+      this.addSelect(
+        "responsibleDepartment",
+        "Für die Fachredaktion zuständige Dienststelle",
+        {
+          codelistId: "30007",
+          options: this.getCodelistForSelect("30007", "responsibleDepartment"),
+          expressions: {
+            "props.disabled": (_: FormlyFieldConfig) => isAuthor,
+          },
+        },
+      ),
     );
 
     const positionAccessConstraints = IngridShared.findFieldElementWithId(
@@ -300,6 +311,20 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       fieldConfig,
       "processStep",
     );
+
+    const processStepasTextarea = this.addRepeat(
+      "description",
+      "Herstellungsprozess",
+      {
+        id: "processStep",
+        className: "optional flex-1",
+        fields: [this.addTextAreaInline("value", null, "processStep")],
+        contextHelpId: "processStep",
+      },
+    );
+    // replace description field inside processStep with repeat-field of text-areas
+    processStepPosition.field.fieldGroup = [processStepasTextarea];
+
     this.addAfter(
       processStepPosition,
       this.addSelect("environmentDescription", "Produktionsumgebung", {

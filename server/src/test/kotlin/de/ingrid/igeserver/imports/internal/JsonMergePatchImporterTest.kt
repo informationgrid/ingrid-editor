@@ -41,10 +41,16 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
 
     @BeforeEach
     fun setup() {
-        every { documentService.getWrapperByCatalogAndDocumentUuid(catalogId, "1") } returns DocumentWrapper().apply { id = 2 }
+        every { documentService.getWrapperByCatalogAndDocumentUuid(catalogId, "1") } returns DocumentWrapper().apply {
+            id = 2
+            type = "SomeDocType"
+            uuid = "fb93bbb7-f5b8-4cc2-af4e-a2e9f264e6a9"
+        }
         every { documentService.getDocumentByWrapperId(catalogId, 2) } returns Document().apply {
             id = 2
             title = "Test Document"
+            type = "SomeDocType"
+            uuid = "fb93bbb7-f5b8-4cc2-af4e-a2e9f264e6a9"
             data = jacksonObjectMapper().readValue("""{"test": "abc"}""", ObjectNode::class.java)
         }
     }
@@ -59,7 +65,7 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
 
         // Verify that the result is a JsonNode
         result.shouldBeInstanceOf<JsonNode>()
-        result.toString() shouldBe """{"test":"xyz"}"""
+        result.toString() shouldBe """{"test":"xyz","title":"Test Document","_uuid":"fb93bbb7-f5b8-4cc2-af4e-a2e9f264e6a9","_type":"SomeDocType"}"""
     }
 
     @Test
@@ -72,7 +78,7 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
 
         // Verify that the result is a JsonNode
         result.shouldBeInstanceOf<JsonNode>()
-        result.toString() shouldBe """{"test":"xyz"}"""
+        result.toString() shouldBe """{"test":"xyz","title":"Test Document","_uuid":"fb93bbb7-f5b8-4cc2-af4e-a2e9f264e6a9","_type":"SomeDocType"}"""
     }
 
     @Test

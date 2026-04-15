@@ -32,6 +32,7 @@ import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -222,8 +223,9 @@ class DatasetsApiController(
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
-        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.parentProfile)
-        val refQuery = docType.getIncomingReferenceQuery(doc, options + "forResearch")
+        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
+        // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
+        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources")))
 
         if (refQuery.isEmpty()) {
             return ResponseEntity.ok(ResearchResponse(0, emptyList()))
@@ -305,7 +307,7 @@ class DatasetsApiController(
                 InitiatorAction.COPY,
             )
 
-        storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid)
+        storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid, copiedParent.document.title!!)
 
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent.wrapper.id!!, origParentId, isAddress)

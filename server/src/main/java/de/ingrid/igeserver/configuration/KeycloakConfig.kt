@@ -138,6 +138,12 @@ internal class KeycloakConfig {
                 authorize("/login-error", permitAll)
                 authorize("/access-denied", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/actuator/health", permitAll)
+                if (generalProperties.actuatorPermitAll) {
+                    authorize("/actuator/**", permitAll)
+                } else {
+                    authorize("/actuator/**", hasAnyRole("ige-super-admin"))
+                }
                 authorize(anyRequest, permitAll)
             }
             oauth2Login {

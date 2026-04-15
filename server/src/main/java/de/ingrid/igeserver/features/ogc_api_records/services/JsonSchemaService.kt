@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service
 import java.net.URI
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.iterator
 
 @Service
 class JsonSchemaService(
@@ -40,7 +39,7 @@ class JsonSchemaService(
 
     fun getSchemaOfDocType(catalogId: String, docType: String): JsonNode {
         val profile = catalogService.getProfileFromCatalog(catalogId)
-        val docType = documentService.getDocumentType(docType, profile.identifier, null)
+        val docType = documentService.getDocumentType(docType, profile.identifier)
         val schemaPath = docType.jsonSchema
         val resource = PreJsonSchemaValidator::class.java.getResource(schemaPath as String)
             ?: error("Schema file not found: $schemaPath")
@@ -64,7 +63,7 @@ class JsonSchemaService(
                 }
 
                 node.deepCopy<ObjectNode>().apply {
-                    fields().forEach { (field, value) ->
+                    properties().forEach { (field, value) ->
                         set<JsonNode>(field, resolveAllRefs(value, baseUri))
                     }
                 }

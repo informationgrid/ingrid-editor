@@ -44,5 +44,5 @@ class InGridKommunalStProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (Kommunal ST)"
-    override val parentProfile: String? = "ingrid"
+    override val linkedProfiles = listOf("ingrid")
 }

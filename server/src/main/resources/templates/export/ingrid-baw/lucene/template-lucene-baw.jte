@@ -14,12 +14,12 @@
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
     "bwstr-bwastr-id": [
     @for(var entry : ForSupport.of(bwastrInfos))
-        "${page.handleContent(entry.get().getBwastrId())}"@if (!entry.isLast()),@endif
+        "${entry.get().getBwastrId()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "bwstr-bwastr_name": [
     @for(var entry : ForSupport.of(bwastrInfos))
-        "${page.handleContent(entry.get().getName())}"@if (!entry.isLast()),@endif
+        "${entry.get().getName()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "bwstr-strecken_name": [

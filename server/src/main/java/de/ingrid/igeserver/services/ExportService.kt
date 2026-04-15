@@ -57,7 +57,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
         return exporterFactory.typeInfos
-            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.contains(profile.parentProfile) }
+            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.any { p -> profile.linkedProfiles.contains(p) } }
             .filter { if (onlyPublic) it.isPublic else true }
     }
 

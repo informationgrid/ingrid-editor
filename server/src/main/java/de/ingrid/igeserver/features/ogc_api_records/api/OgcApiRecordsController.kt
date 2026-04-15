@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
@@ -47,12 +48,14 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -314,6 +317,7 @@ class OgcApiRecordsController(
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Identifier of record within a collection", required = true) @Valid @PathVariable("recordId") recordId: String,
         @Parameter(description = "Data of record to be stored\n\nFor records in DRAFT state, the request body must include at least the `_type` field (if using JSON) to identify the record type.", required = true) @RequestBody data: String,
+        // TODO Adapt to work similar to patchDataset
         @Parameter(
             description = "Describes STATE of data in request body (custom parameter)" +
                 "\n\n• `PUBLISHED` – Save the record as PUBLISHED. Validates against JSON Schema." +
@@ -342,6 +346,61 @@ class OgcApiRecordsController(
             data,
             principal,
             recordMustExist = true,
+            profile,
+        )
+        return ResponseEntity.noContent().build()
+    }
+
+    @Value("\${ogc.enable.patching:false}")
+    private val patchingEnabled: Boolean = false
+
+    @PatchMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(tags = ["OGC/Records"], summary = "Partial update of an existing record in a collection.", hidden = false)
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "204", description = "No content"),
+            ApiResponse(responseCode = "400", description = "Invalid input"),
+            ApiResponse(responseCode = "404", description = "Not found"),
+        ],
+    )
+    fun patchDataset(
+        @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        @RequestHeader allHeaders: Map<String, String>,
+        principal: Authentication,
+        @PathVariable @Parameter(description = "Identifier of collection (catalog identifier)", required = true) collectionId: String,
+        @PathVariable @Parameter(description = "Identifier of record within a collection", required = true) @Valid recordId: String,
+        @Parameter(description = "Data of record to be patched", required = true) @RequestBody data: String,
+        @Parameter(
+            description = "Version to Update:" +
+                "\n\n• `PUBLISHED` – Update the PUBLISHED version. Validates against JSON Schema. Throws Error when Draft version of published record exists or no published version exists" +
+                "\n\n• `DRAFT` – Update the DRAFT version. No schema validation is performed. If only a published version exists, a new draft version will be created.",
+            style = ParameterStyle.FORM,
+            explode = Explode.FALSE,
+        ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
+    ): ResponseEntity<JsonNode> {
+        if (!patchingEnabled) throw ClientException.withReason("Patching is disabled. Please set ogc.enable.patching=true in application.properties to enable it.")
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("state"))
+
+        if (state == DocState.PUBLISHED) apiValidationService.validateOnlyPublishedVersionExists(collectionId, recordId)
+
+        val profile = catalogService.getProfileFromCatalog(collectionId)
+
+        val contentType = allHeaders["content-type"]!!
+
+        val options = ImportOptions(
+            publish = state == DocState.PUBLISHED,
+            overwriteAddresses = true,
+            overwriteDatasets = true,
+        )
+
+        ogcRecordService.transactionalPatchDocument(
+            collectionId,
+            recordId,
+            options,
+            contentType,
+            data,
+            principal,
             profile,
         )
         return ResponseEntity.noContent().build()

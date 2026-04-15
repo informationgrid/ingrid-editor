@@ -170,7 +170,7 @@ class OpenDataModelTransformerAdditional(
 data class Distribution(
     val format: String,
     val accessURL: String,
-    val modified: String,
+    val modified: String?,
     val title: String,
     val description: String,
     val license: License?,

@@ -130,6 +130,17 @@ class OgcRecordService(
     }
 
     @Transactional
+    fun transactionalPatchDocument(
+        collectionId: String,
+        recordId: String,
+        options: ImportOptions,
+        contentType: String,
+        data: String,
+        principal: Authentication,
+        profile: CatalogProfile,
+    ): URI = importDocument(collectionId, recordId, options, contentType, data, principal, recordMustExist = true, profile)
+
+    @Transactional
     fun transactionalImportDocument(
         collectionId: String,
         recordId: String?,
@@ -139,13 +150,14 @@ class OgcRecordService(
         principal: Authentication,
         recordMustExist: Boolean,
         profile: CatalogProfile,
-    ): URI = importDocument(collectionId, recordId, options, contentType, data, principal, recordMustExist, profile)
-
-    fun importDocument(collectionId: String, recordId: String?, options: ImportOptions, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, profile: CatalogProfile): URI {
+    ): URI {
         val bodyFormatter = formatFactory.getFormatter(contentType)
         val formattedData = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
+        return importDocument(collectionId, recordId, options, contentType, formattedData, principal, recordMustExist, profile)
+    }
 
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, formattedData)
+    private fun importDocument(collectionId: String, recordId: String?, options: ImportOptions, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, profile: CatalogProfile): URI {
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, data)
 
         if (optimizedImportAnalysis.existingDatasets.isEmpty()) {
             if (recordMustExist) throw NotFoundException.withMissingResource(recordId!!, "Record")

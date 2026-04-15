@@ -21,6 +21,8 @@ package de.ingrid.igeserver.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
+import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
@@ -140,6 +142,9 @@ open class AddressModelTransformer(
     val poBox = displayAddress.data.getString("address.po-box")
     val street = displayAddress.data.getString("address.street")
     val city = displayAddress.data.getString("address.city")
+    fun getFullAddress() = """$street, $zipCode $city"""
+    fun hasAddress() = street != null || city != null || zipCode != null
+    fun hasAnyAddress() = hasAddress() || poBox != null || country != null || administrativeArea != null
     val postBoxAddress =
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
@@ -169,6 +174,7 @@ open class AddressModelTransformer(
         codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(displayAddress.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridPersonDoc") 2 else 0
+    val isPerson = displayAddress.type == "InGridPersonDoc"
 
     // in ascending order
     val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1).reversed()
@@ -180,16 +186,26 @@ open class AddressModelTransformer(
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
-    val contactsComTypeKeys = displayAddress.data.get("contact")?.map { it.get("type")?.getString("key") } ?: emptyList()
-    val contactsComTypeValues = displayAddress.data.get("contact")?.map { it.get("type")?.mapToKeyValue() } ?: emptyList()
-    val contactsComConnections = displayAddress.data.get("contact")?.map { it.getString("connection") } ?: emptyList()
+    val allCommunications = displayAddress.data.get("contact")?.map {
+        KeyValue(
+            it.get("type")?.getString("key"),
+            it.getString("connection"),
+        )
+    } ?: emptyList()
+    val contactsComTypeKeys = allCommunications.map { it.key }
+    val contactsComTypeValues = allCommunications.map { KeyValue(it.key) }
+    val contactsComConnections = allCommunications.map { it.value }
 
     /**
      * Get all published objects with references to this address.
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map { uuid ->
+        return documentService.getIncomingReferenceUUIDs(
+            addressDoc,
+            catalogIdentifier,
+            SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
+        ).map { uuid ->
             val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }

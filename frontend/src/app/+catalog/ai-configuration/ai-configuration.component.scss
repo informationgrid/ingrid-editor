@@ -1,0 +1,12 @@
+:host {
+  overflow: auto;
+  flex: 1;
+
+  ::ng-deep textarea {
+    resize: vertical;
+  }
+}
+
+.main {
+  padding: 20px;
+}

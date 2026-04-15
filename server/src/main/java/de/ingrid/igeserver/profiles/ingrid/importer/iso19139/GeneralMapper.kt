@@ -218,7 +218,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
             true
         }
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 
@@ -322,7 +322,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return null
     }
 
-    private fun getSalutationKeyValue(value: String): KeyValue? {
+    private fun getSalutationKeyValue(value: String): KeyValue {
         val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, isoData.catalogLanguage) }
         return KeyValue(salutationKey, value.trim(), "4300")
     }
@@ -407,7 +407,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.map {
             val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(isoData.uploadConfig.uploadExternalUrl ?: "/documents/") ?: false
             val fileName = if (isInternalStorage) {
-                it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
+                it.mdBrowseGraphic.fileName.value.substringAfterLast('/')
             } else {
                 it.mdBrowseGraphic?.fileName?.value
             }
@@ -503,7 +503,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 }
 
                 // TODO: handle bounding polygons
-                it.boundingPolygon?.polygon?.let { polygon ->
+                it.boundingPolygon?.polygon?.let { _ ->
                     val xmlMapper = XmlMapper()
                     val xml = xmlMapper.writer().withoutRootName().writeValueAsString(it.boundingPolygon.polygon)
                     val convertedWKT = convertGml32ToWkt(xml.substring(2, xml.length - 3))
@@ -552,7 +552,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         } else {
             val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId
             val bwastr = bwastrLocatorService.search(idForSearch).firstOrNull()
-            return if (bwastr != null) {
+            if (bwastr != null) {
                 SpatialReference(
                     type = "bwastr",
                     bwastr = Bwastr(
@@ -586,7 +586,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     fun getVerticalExtent(): VerticalExtentModel? {
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.verticalElement ?: emptyList() }
-            ?.mapNotNull {
+            ?.map {
                 val uom =
                     it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
                 val uomId = codeListService.getCodeListEntryId("102", uom, "iso")
@@ -978,11 +978,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
             }
         }
         // is only being used in "literature", which cannot be imported currently - ignore for now
-        val documentType = convertToCatalogKeyValue(
+        /*val documentType = convertToCatalogKeyValue(
             "3385",
             metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
             "en",
-        )
+        )*/
         return null
     }
 

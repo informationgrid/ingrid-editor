@@ -54,6 +54,7 @@ import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
 import { UiStore } from "../../store/ui.store";
+import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -76,6 +77,9 @@ export class DocumentService {
   documentOperationFinished$ = new Subject<boolean>();
   publishState$ = new BehaviorSubject<boolean>(false);
   reload$ = new Subject<ReloadData>();
+
+  private documentUpdated$ = new Subject<UpdateDatasetInfo>();
+  private addressUpdated$ = new Subject<UpdateDatasetInfo>();
 
   private configuration: Configuration;
   private alternateAddressTitle: (doc: IgeDocument) => string = null;
@@ -259,13 +263,15 @@ export class DocumentService {
           _tags: newTags,
         });
         const info = store.entityMap()[id];
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: [info],
           },
           forAddress,
         );
+        if (forAddress) this.generalStore.openedAddress()._tags = newTags;
+        else this.generalStore.openedDocument()._tags = newTags;
       }),
     );
   }
@@ -319,7 +325,7 @@ export class DocumentService {
       });
     }
 
-    this.generalStore.setDatasetsChanged(
+    this.setDatasetsChanged(
       {
         type: saveOptions.isNewDoc ? UpdateType.New : UpdateType.Update,
         data: [info],
@@ -367,7 +373,7 @@ export class DocumentService {
     return this.dataService.unpublish(id).pipe(
       map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: json,
@@ -394,7 +400,7 @@ export class DocumentService {
     return this.dataService.cancelPendingPublishing(id).pipe(
       map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: json,
@@ -426,7 +432,7 @@ export class DocumentService {
   delete(ids: number[], isAddress: boolean): Observable<void> {
     return this.dataService.delete(ids).pipe(
       tap(() => {
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Delete,
             // @ts-ignore
@@ -485,7 +491,7 @@ export class DocumentService {
         return json;
       }),
       tap((json) =>
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: json,
@@ -551,7 +557,7 @@ export class DocumentService {
 
         this.updateStoreAfterCopy(infos, dest, isAddress);
 
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.New,
             data: infos,
@@ -819,7 +825,7 @@ export class DocumentService {
       store.update(parent, { _hasChildren: true });
     }
 
-    this.generalStore.setDatasetsChanged(
+    this.setDatasetsChanged(
       {
         type: UpdateType.Move,
         // @ts-ignore
@@ -953,7 +959,7 @@ export class DocumentService {
         this.updateTreeStore(doc, false);
         const docAbstract = this.mapToDocumentAbstracts([doc]);
         this.documentTreeStore.update(wrapperId, docAbstract[0]);
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: docAbstract,
@@ -971,7 +977,7 @@ export class DocumentService {
         this.updateTreeStore(doc, false);
         const docAbstract = this.mapToDocumentAbstracts([doc]);
         this.documentTreeStore.update(wrapperId, docAbstract[0]);
-        this.generalStore.setDatasetsChanged(
+        this.setDatasetsChanged(
           {
             type: UpdateType.Update,
             data: docAbstract,
@@ -981,6 +987,15 @@ export class DocumentService {
         );
       }),
     );
+  }
+
+  private setDatasetsChanged(info: UpdateDatasetInfo, isAddress: boolean) {
+    if (isAddress) this.addressUpdated$.next(info);
+    else this.documentUpdated$.next(info);
+  }
+
+  getDatasetsChanged(forAddress: boolean) {
+    return forAddress ? this.addressUpdated$ : this.documentUpdated$;
   }
 }
 

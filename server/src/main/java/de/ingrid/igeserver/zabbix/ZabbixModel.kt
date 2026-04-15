@@ -97,6 +97,7 @@ class ZabbixModel {
         val name: String,
         val url: String,
         val webscenarioId: String = "",
+        val triggerId: String = "",
     )
 
     data class Create(
@@ -115,6 +116,31 @@ class ZabbixModel {
         val method: String,
         val params: List<String>,
         val id: Int = 1,
+    )
+
+    data class UpdateWebscenario(
+        val jsonrpc: String = JSONRPC,
+        val method: String,
+        val params: UpdateWebscenarioParams,
+        val id: Int = 1,
+    )
+
+    data class UpdateWebscenarioParams(
+        val httptestid: String,
+        val tags: List<Tag>,
+    )
+
+    data class UpdateHost(
+        val jsonrpc: String = JSONRPC,
+        val method: String,
+        val params: UpdateHostParams,
+        val id: Int = 1,
+    )
+
+    data class UpdateHostParams(
+        val hostid: String,
+        val tags: List<Tag>,
+        val status: Int = 1,
     )
 
     data class Problem(

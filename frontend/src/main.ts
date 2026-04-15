@@ -157,6 +157,7 @@ import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sectio
 import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
 import { SubSectionWrapper } from "./app/formly/wrapper/sub-section-wrapper.component";
 import { TimeReferenceComponent } from "./app/formly/types/time-reference/time-reference.component";
+import { ButtonTogglesTypeComponent } from "./app/formly/types/button-toggles-type/button-toggles-type.component";
 
 if (environment.production) {
   enableProdMode();
@@ -295,6 +296,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "time-reference",
             component: TimeReferenceComponent,
+          },
+          {
+            name: "button-toggles",
+            component: ButtonTogglesTypeComponent,
           },
           /* FOR PREVIEW */
           {

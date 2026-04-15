@@ -29,7 +29,7 @@ data class DataModel(
     val description: String?,
     val landingPage: String?,
     val DCATThemes: List<KeyValue>?,
-    val isHvd: Boolean?,
+    val properties: DataProperties?,
     val hvdCategories: List<KeyValue>?,
     val addresses: List<AddressRefModel>?,
     val qualityProcessURI: String?,
@@ -40,4 +40,9 @@ data class DataModel(
     val temporal: TimeSpanModel?,
     val periodicity: KeyValue?,
     val keywords: List<String>?,
+)
+
+data class DataProperties(
+    val isOpenData: Boolean?,
+    val isHvd: Boolean?,
 )

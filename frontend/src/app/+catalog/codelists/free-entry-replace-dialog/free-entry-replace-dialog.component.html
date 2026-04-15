@@ -2,86 +2,31 @@
     <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
         <mat-icon>close</mat-icon>
     </button>
-    <h1 mat-dialog-title>
-        Freie Einträge ersetzen: <span>{{ data.codelistName }}</span>
-    </h1>
+    <h1 mat-dialog-title>Freien Eintrag ersetzen</h1>
 </div>
 
 <mat-dialog-content>
-    @if (loadingEntries()) {
-        <div class="flex-row align-items-center gap-12" style="padding: 12px">
-            <mat-progress-spinner
-                mode="indeterminate"
-                diameter="24"
-            ></mat-progress-spinner>
-            <span>Lade freie Einträge …</span>
+    <div class="space-bottom-field">
+        <div class="text-hint text-sm">Ausgewählter Eintrag</div>
+        <div class="font-medium">
+            {{ selectedEntry.value }}
         </div>
-    }
+    </div>
 
-    @if (!loadingEntries() && noFreeEntries()) {
-        <div class="hint" style="margin-top: 4px">
-            Keine freien Einträge vorhanden.
-        </div>
-    }
-
-    @if (!loadingEntries() && !noFreeEntries()) {
-        <div class="row">
-            <mat-form-field style="width: 100%" appearance="outline">
-                <mat-label>Freien Eintrag auswählen</mat-label>
-                <mat-select
-                    [formControl]="fromCtrl"
-                    required
-                    [disabled]="loadingEntries() || noFreeEntries()"
-                >
-                    <mat-option>
-                        <ngx-mat-select-search
-                            [formControl]="freeFilterCtrl"
-                            placeholderLabel="Suchen..."
-                        ></ngx-mat-select-search>
-                    </mat-option>
-                    @for (fe of filteredFreeEntries; track fe.value) {
-                        <mat-option [value]="fe.value">
-                            {{ fe.value }} — verwendet {{ fe.count }} mal
-                        </mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-        </div>
-
-        <div class="row">
-            <formly-form
-                [form]="toForm"
-                [fields]="toFields"
-                [model]="toModel"
-            ></formly-form>
-        </div>
-
-        @if (selectedFreeEntry) {
-            <div class="hint">
-                Es werden voraussichtlich
-                {{ selectedFreeEntry?.count }} Vorkommen ersetzt.
-            </div>
-        }
-    }
+    <formly-form [form]="toForm" [fields]="toFields"></formly-form>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <div class="flex-1"></div>
     <button mat-button mat-dialog-close color="primary">Abbrechen</button>
-    <button
-        mat-button
-        color="primary"
-        (click)="addToCodelist()"
-        [disabled]="addDisabled()"
-    >
-        {{ isAdding() ? "Übernehmen..." : "In Codelist übernehmen" }}
-    </button>
+
+    <div class="flex-1"></div>
+
     <button
         mat-flat-button
         color="primary"
         (click)="replace()"
-        [disabled]="actionDisabled()"
+        [disabled]="isToFormInvalid()"
     >
-        {{ isReplacing() ? "Ersetzen..." : "Ersetzen" }}
+        Ersetzen
     </button>
 </mat-dialog-actions>

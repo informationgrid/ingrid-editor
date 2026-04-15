@@ -1,5 +1,5 @@
 <ige-dialog-template
-    label="ISO-Ansicht"
+    label="Export-Ansicht"
     submitLabel="Herunterladen"
     (submit)="download()"
 >
@@ -8,11 +8,11 @@
         @if (isoTextPublished()) {
             <mat-button-toggle-group
                 name="compareView"
-                value="false"
+                [value]="this.compareView().toString()"
                 aria-label="Ansicht"
                 (change)="this.compareView.set(!this.compareView())"
             >
-                <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
+                <mat-button-toggle value="false">Ansicht</mat-button-toggle>
                 <mat-button-toggle value="true"
                     >Vergleichsansicht</mat-button-toggle
                 >
@@ -20,12 +20,33 @@
         }
     </ng-container>
     <div content id="print-content" class="preview-dialog">
+        @if (exportFormats().length > 1) {
+            <mat-form-field appearance="outline">
+                <mat-label>Format</mat-label>
+                <mat-select
+                    [value]="selectedFormat()"
+                    (selectionChange)="onFormatChange($event.value)"
+                >
+                    @for (format of exportFormats(); track format.type) {
+                        <mat-option [value]="format">{{
+                            format.name
+                        }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        }
+
         @if (isLoading()) {
             <div class="flex-row justify-content-center">
                 <mat-spinner></mat-spinner>
             </div>
+        } @else if (exportNotSupported()) {
+            <div class="flex-row justify-content-center gap-8 error-box">
+                <mat-icon>error</mat-icon>
+                <span>Export nicht unterstützt</span>
+            </div>
         }
-        <pre [hidden]="compareView()">{{ isoText() }}</pre>
+        <pre [hidden]="compareView()">{{ exportedText() }}</pre>
         <div [hidden]="!compareView()" id="diffView"></div>
     </div>
 

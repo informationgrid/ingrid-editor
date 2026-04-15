@@ -1,62 +1,106 @@
-@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataModelTransformerAdditional
+@import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataModelTransformer
+@import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataRDFTransformer
 @import gg.jte.support.ForSupport
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var model = ((OpenDataModelTransformerAdditional)map.get("model"));}
+!{var model = ((OpenDataModelTransformer)map.get("model"));}
+!{var rdf = ((String)map.get("rdf"));}
+!{var catalog = ((Catalog)map.get("catalog"));}
+!{var partner = ((String)map.get("partner"));}
+!{var provider = ((String)map.get("provider"));}
 
 {
-    "uuid": "${model.getUuid() }",
-    "title": "${model.getTitle() }",
-    "parent.object_node.obj_uuid": "${model.getHierarchyParent()}",
-    "description": "${model.getDescription() }",
-    "landingPage": "${model.getLandingPage() }",
-    "theme": [
-        @for(var entry : ForSupport.of(model.getThemes()))
-            "${entry.get()}"@if (!entry.isLast()),@endif
-        @endfor
+    "collection": {
+        "id": "${catalog.getIdentifier()}",
+        "name": "${catalog.getName()}"
+    },
+    "partner": [
+        "${partner}"
     ],
-    "issued": "${model.getCreated() }",
+    "provider": [
+        "${provider}"
+    ],
+    "datatype": ["metadata"],
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
+    "dataSourceName": "${catalog.getName()}",
+    "t01_object.obj_id": "${model.getUuid()}",
+    "id": "${model.handleContent(model.getUuid())}",
+<%--    "created": "${model.getCreated() }",--%>
+<%--    "issued": "${model.getCreated() }",--%>
     "modified": "${model.getModified() }",
-    "accrual_periodicity": "${model.getPeriodicity() }",
-    "keywords": [
-        @for(var entry : ForSupport.of(model.getKeywords()))
-            "${entry.get()}"@if (!entry.isLast()),@endif
-        @endfor
-    ],
-    "contact": [
-    @for(var entry : ForSupport.of(model.getAddresses()))
+    "title": "${model.getTitle() }",
+    "description": "${model.getDescription() }",
+    "dcat": {
+        "landingPage": "${model.getLandingPage() }"
+    },
+    "contacts": [
+        @for(var entry : ForSupport.of(model.getAddresses()))
         {
-            "type": "${entry.get().getType()}",
-            "organization": "${entry.get().getOrganisation()}",
-            "communication": [
-            @for(var contact : ForSupport.of(entry.get().getContacts()))
+            "role": "${entry.get().getRelationType().getKey()}",
+            "name": "${entry.get().getTitle()}",
+            "communications": [
+            @for(var contact : ForSupport.of(entry.get().getAllCommunications()))
                 {
-                    "type": "${contact.get().getType()}",
-                    "connection": "${contact.get().getValue()}"
+                    "type": "${model.mapCommunicationTyp(contact.get().getKey())}",
+                    "value": "${contact.get().getValue()}"
                 }@if (!contact.isLast()),@endif
             @endfor
             ],
-            "street": "",
-            "zip-code": "",
-            "city": "",
-            "country": ""
+            "street": "${entry.get().getStreet()}",
+            "code": "${entry.get().getZipCode()}",
+            "pocode": "",
+            "pobox": "",
+            "locality": "${entry.get().getCity()}",
+            "country": "${entry.get().getCountryKey()}",
+            "administrative_area": ""
         }@if (!entry.isLast()),@endif
     @endfor
     ],
+    "keywords": [
+        @for(var entry : ForSupport.of(model.getKeywords()))
+        {
+            "term": "${entry.get().getTerm()}",
+            "id": "${entry.get().getId()}",
+            "source": "${entry.get().getSource()}"
+        }@if (!entry.isLast()),@endif
+        @endfor
+    ],
+    "spatial": {
+        "title": [
+        @for(var entry : ForSupport.of(model.getSpatialTitles()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "geometries": [
+            @for(var entry : ForSupport.of(model.getSpatials()))
+                $unsafe{entry.get()}@if (!entry.isLast()),@endif
+            @endfor
+        ],
+        "administrative": {
+            "regional_key": [
+                @for(var entry : ForSupport.of(model.getArs()))
+                "${entry.get()}"@if (!entry.isLast()),@endif
+                @endfor
+            ]
+        }
+    },
     "legal_basis": "${model.getLegalBasis() }",
-    "distribution": [
+    "distributions": [
     @for(var download : ForSupport.of(model.getDistributions()))
         {
             "format": ["${download.get().getFormat()}"],
             "access_url": "${download.get().getAccessURL()}",
-            "modified": "${download.get().getModified() }",
+        @if(download.get().getModified() != null)"modified": "${download.get().getModified()}",@endif
             "title": "${download.get().getTitle() }",
             "description": "${download.get().getDescription() }",
-            "license": "@if(download.get().getLicense() != null)${download.get().getLicense().getUrl()}@endif",
-            "license_name": "@if(download.get().getLicense() != null)${download.get().getLicense().getName()}@endif",
-            "byClause": "${download.get().getByClause() }",
+        "license": {
+        "url": "@if(download.get().getLicense() != null)${download.get().getLicense().getUrl()}@endif",
+        "name": "@if(download.get().getLicense() != null)${download.get().getLicense().getName()}@endif",
+        "attribution_by_text": "${download.get().getByClause() }"
+        },
             "languages": [
                 @for(var entry : ForSupport.of(download.get().getLanguages()))
                     "${entry.get()}"@if (!entry.isLast()),@endif
@@ -66,43 +110,29 @@
         }@if (!download.isLast()),@endif
     @endfor
     ],
-    "qualityProcessURI": "${model.getQualityProcessURI() }",
     "metadata": {
-        "issued": "${model.getCreated() }",
-        "modified": "${model.getModified() }"
+        "created": "${model.getCreated() }",
+        "modified": "${model.getModified() }",
+        "issued": null
     },
-    "spatial": {
-        "type": "geometrycollection",
-        "geometries": [
-            @for(var entry : ForSupport.of(model.getSpatials()))
-                {
-                    "type": "",
-                    "coordinates": ""
-                }@if (!entry.isLast()),@endif
-            @endfor
-        ]
-    },
-    "spatial_text": [
-        @for(var entry : ForSupport.of(model.getSpatialTitles()))
-            "${entry.get()}"@if (!entry.isLast()),@endif
-        @endfor
-    ],
-    "ars": [
-       @for(var entry : ForSupport.of(model.getArs()))
-           "${entry.get()}"@if (!entry.isLast()),@endif
-       @endfor
-    ],
-    "politicalGeocodingLevel": "${model.getPoliticalGeocodingLevel() }",
-    "temporal": [
+    "political_geocoding_level_uri": "${model.getPoliticalGeocodingLevel()}",
+    "temporal": {
+        "accrual_periodicity": "${model.getPeriodicity()}",
+        "accrual_periodicity_key": "${model.getPeriodicityKey()}"
         @if (model.getTemporalStart() != null || model.getTemporalEnd() != null)
-        {
+            ,
             @if (model.getTemporalStart() != null)
                 "gte": "${model.getTemporalStart()}"@if (model.getTemporalEnd() != null),@endif
             @endif
             @if (model.getTemporalEnd() != null)
                 "lte": "${model.getTemporalEnd()}"
             @endif
-        }
         @endif
-    ]
+    },
+    "content": [
+    @for(var entry : ForSupport.of(model.getContentField()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "rdf": "${rdf}"
 }

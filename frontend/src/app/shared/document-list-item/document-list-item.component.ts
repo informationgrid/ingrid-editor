@@ -86,6 +86,7 @@ export class DocumentListItemComponent implements OnInit {
   // this is only needed to prevent expression has changed exception and might be removed later
   readonly removeSelectionAfter = input(false);
   readonly setActiveItem = input<Subject<Partial<DocumentAbstract>>>(undefined);
+  readonly disabled = input<boolean>(false);
   readonly select = output<DocumentAbstract | TreeNode>();
 
   readonly list = viewChild(MatSelectionList);
@@ -108,6 +109,8 @@ export class DocumentListItemComponent implements OnInit {
   }
 
   makeSelection(doc: DocumentAbstract | TreeNode) {
+    if (this.disabled()) return;
+
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
     const list = this.list();

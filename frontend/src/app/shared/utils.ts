@@ -43,16 +43,13 @@ export const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
     {} as Record<K, T[]>,
   );
 
-export const groupByWithIndexReference = <T, K extends keyof any>(
-  arr: T[],
-  key: (i: T) => number,
-) =>
+export const groupByWithIndexReference = <T>(arr: T[], key: (i: T) => string) =>
   arr.reduce(
     (groups, item, index) => {
       (groups[key(item)] ||= []).push(index);
       return groups;
     },
-    {} as Record<K, T[]>,
+    {} as Record<string, number[]>,
   );
 
 export function clone(value: any): any {

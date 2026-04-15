@@ -29,6 +29,7 @@ import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
 import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.exports.ExportOptions
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.IngridDocType
@@ -40,8 +41,6 @@ import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
@@ -183,15 +182,6 @@ class IngridLuceneExporter(
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
-
-    class JsonStringOutput : StringOutput() {
-        override fun writeUserContent(value: String?) {
-            if (value == null) return
-            super.writeUserContent(
-                escapeJson(value),
-            )
-        }
-    }
 
     enum class IngridDocType {
         ADDRESS,

@@ -3,6 +3,10 @@
 :host {
   display: flex;
   position: relative;
+
+  &.always-show-context-help mat-icon {
+    opacity: 1 !important;
+  }
 }
 
 .label-wrapper {

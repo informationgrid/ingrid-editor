@@ -74,6 +74,8 @@ open class BmiModelTransformer(
     var addresses: List<AddressModel> = emptyList()
     var themes: List<String> = emptyList()
 
+    val isHvd = data.properties?.isHvd ?: false
+
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String = if (date == null) "" else formatter.format(Date.from(date.toInstant()))
 
     init {

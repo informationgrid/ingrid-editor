@@ -57,6 +57,7 @@ import { DocumentService } from "../../../app/services/document/document.service
 import { GeneralStore } from "../../../app/store/general.store";
 import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
 import { validateDateResourceOrder } from "./validations";
+import { CopyFilesService } from "../../../app/+form/dialogs/copy-cut-paste/copy-files.service";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -66,6 +67,7 @@ interface AdditionalInformationSectionOptions {
   conformity?: boolean;
   extraInfoCharSetData?: boolean;
   extraInfoLangData?: boolean;
+  optionalSection?: boolean;
 }
 
 export enum IngridClass {
@@ -91,6 +93,7 @@ export abstract class IngridShared extends BaseDoctype {
   documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+  private copyFilesService = inject(CopyFilesService);
 
   protected codelistStore = inject(CodelistStore);
   protected generalStore = inject(GeneralStore);
@@ -133,6 +136,10 @@ export abstract class IngridShared extends BaseDoctype {
       maintenanceInformation: false,
       temporalStatus: false,
       legalBasicsDescriptions: false,
+    },
+    optional: {
+      doi: false,
+      additionalInformationSection: false,
     },
     spatialTypes: ["free", "wkt", "wfsgnde"] as SpatialLocationType[],
     validate: {
@@ -1096,7 +1103,7 @@ export abstract class IngridShared extends BaseDoctype {
               [
                 this.addSubSection(
                   "event",
-                  "",
+                  "Versionshistorie*",
                   [
                     this.addDatepicker("created", "Erstellung", {
                       hintStart:
@@ -1141,13 +1148,17 @@ export abstract class IngridShared extends BaseDoctype {
                     }),
                   ],
                   {
-                    props: { hasValidation: true, hideDivider: true },
-                    className: "eventGroup required",
+                    props: {
+                      hasValidation: true,
+                      indent: true,
+                      comment: "(Es muss ein Datum angegeben werden)",
+                    },
+                    className: "eventGroup",
                     validators: {
                       oneDateRequired: {
                         expression: (
                           ctrl: FormControl,
-                          field: FormlyFieldConfig,
+                          _field: FormlyFieldConfig,
                         ) => {
                           const event = ctrl.value;
                           return (
@@ -1285,6 +1296,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ].filter(Boolean),
                 ),
           ].filter(Boolean),
+          { props: { hideDivider: true } },
         ),
         this.addSubSection("temporal", "Zeitbezug der Daten im Datensatz", [
           {
@@ -1539,6 +1551,7 @@ export abstract class IngridShared extends BaseDoctype {
               { className: "optional" },
             ),
       ].filter(Boolean),
+      { optional: options.optionalSection },
     );
   }
 
@@ -1783,6 +1796,21 @@ export abstract class IngridShared extends BaseDoctype {
             message:
               "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
           },
+          copyCompleted: {
+            expression: (
+              _ctrl: FormControl,
+              field: FormlyFieldConfig,
+            ): boolean => {
+              // check if copy task is running
+              const metadata = field.options.formState.metadata;
+              return (
+                !metadata ||
+                !metadata.uuid ||
+                !this.copyFilesService.isCopyInProgress(metadata.uuid)
+              );
+            },
+            message: "Das Kopieren von Dateien ist noch nicht abgeschlossen.",
+          },
         },
       }),
     ]);
@@ -1821,32 +1849,43 @@ export abstract class IngridShared extends BaseDoctype {
   addDoiFields(): FormlyFieldConfig {
     let doiPrefix =
       this.behaviourService.getBehaviour("plugin.ingrid.doi")?.data?.doiPrefix;
-    return this.addGroup(null, "DOI", [
-      this.addInputInline("doi", "DOI", {
-        defaultValue: doiPrefix ? doiPrefix + "/" : "",
-        validators: {
-          validation: ["doi"],
-        },
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-      }),
-      this.addSelectInline("generalResourceType", "Ressourcen Typ (generell)", {
-        options: this.getCodelistForSelect("3390", "generalResourceType"),
-        codelistId: "3390",
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-        expressions: {
-          "props.required": (field: FormlyFieldConfig) =>
-            field.options.formState.mainModel?.publication?.doi?.length > 0,
-        },
-      }),
-      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
-        options: this.getCodelistForSelect("3386", "resourceType"),
-        codelistId: "3386",
-        hasInlineContextHelp: true,
-        wrappers: ["inline-help", "form-field"],
-      }),
-    ]);
+    return this.addGroup(
+      null,
+      "DOI",
+      [
+        this.addInputInline("doi", "DOI", {
+          defaultValue: doiPrefix ? doiPrefix + "/" : "",
+          validators: {
+            validation: ["doi"],
+          },
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        }),
+        this.addSelectInline(
+          "generalResourceType",
+          "Ressourcen Typ (generell)",
+          {
+            options: this.getCodelistForSelect("3390", "generalResourceType"),
+            codelistId: "3390",
+            hasInlineContextHelp: true,
+            wrappers: ["inline-help", "form-field"],
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                field.options.formState.mainModel?.publication?.doi?.length > 0,
+            },
+          },
+        ),
+        this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+          options: this.getCodelistForSelect("3386", "resourceType"),
+          codelistId: "3386",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        }),
+      ],
+      {
+        className: this.options.optional.doi ? "optional" : "",
+      },
+    );
   }
 
   protected urlRefFields(docClass: IngridClass) {

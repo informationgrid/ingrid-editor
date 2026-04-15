@@ -39,7 +39,7 @@ class ImporterFactory {
 
     fun getImporter(profile: CatalogProfile, contentType: String, fileContent: String): List<IgeImporter> {
         val responsibleImporter = importer
-            .filter { it.typeInfo.profiles.isEmpty() || it.typeInfo.profiles.contains(profile.identifier) || it.typeInfo.profiles.contains(profile.parentProfile) }
+            .filter { it.typeInfo.profiles.isEmpty() || it.typeInfo.profiles.contains(profile.identifier) || it.typeInfo.profiles.any { p -> profile.linkedProfiles.contains(p) } }
             .filter { it.canHandleImportFile(contentType, fileContent) }
 
         handleEmptyOrMultipleImporter(responsibleImporter, contentType)

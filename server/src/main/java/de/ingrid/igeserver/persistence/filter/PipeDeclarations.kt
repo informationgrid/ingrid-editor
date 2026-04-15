@@ -25,16 +25,11 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.InitiatorAction
-import de.ingrid.utils.ElasticDocument
 import org.springframework.stereotype.Component
 import java.util.*
 
 /**
- * Declarations of persistence related payloads
- */
-
-/**
- * Base payload for persistence related filters
+ * Base payload for persistence-related filters
  */
 open class PersistencePayload(
     var action: Action,
@@ -174,7 +169,7 @@ open class PostDeletePayload(type: EntityType, catalogIdentifier: String, docume
 /**
  * Payload holding index data after indexing the document
  */
-open class PostIndexPayload(var indexDoc: ElasticDocument, var category: String, val exportType: String) : Payload
+open class PostIndexPayload(var indexDoc: Any, var category: String, val exportType: String) : Payload
 
 /**
  * Payload holding document data after archiving the document

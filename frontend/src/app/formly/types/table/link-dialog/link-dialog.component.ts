@@ -44,7 +44,7 @@ export class LinkDialogComponent implements OnInit {
 
   options: FormlyFormOptions = {};
 
-  data = signal<FormDialogData>({ fields: [], model: null });
+  data = signal<FormDialogData>({ fields: [], model: null, isNew: true });
   valid = signal<boolean>(false);
 
   constructor(
@@ -60,6 +60,7 @@ export class LinkDialogComponent implements OnInit {
     this.data.set({
       fields: this.adaptFields(),
       model: null,
+      isNew: true,
     });
   }
 

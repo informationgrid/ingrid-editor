@@ -110,7 +110,7 @@ export class TreeDialogComponent {
   }
 
   private isDoctypeNotAllowed(docType: string) {
-    return this.docTypeFilter.length && !this.docTypeFilter.includes(docType);
+    return this.docTypeFilter?.length && !this.docTypeFilter.includes(docType);
   }
 
   async submit() {

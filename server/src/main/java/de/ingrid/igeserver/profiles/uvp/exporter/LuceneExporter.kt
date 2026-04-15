@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.exports.ExportOptions
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
@@ -30,8 +31,6 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
-import gg.jte.output.StringOutput
-import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.springframework.stereotype.Service
 
 @Service
@@ -64,13 +63,4 @@ class LuceneExporter(
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = codelistService.getCodeListValue(codelistId, partner, "ident") ?: ""
-
-    private class JsonStringOutput : StringOutput() {
-        override fun writeUserContent(value: String?) {
-            if (value == null) return
-            super.writeUserContent(
-                escapeJson(value),
-            )
-        }
-    }
 }
