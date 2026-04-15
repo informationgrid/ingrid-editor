@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-
 import { Component, input, output } from "@angular/core";
 import { Evaluation } from "../../../../services/ai-assistant/ai-assistant.service";
 import { MatButton } from "@angular/material/button";
