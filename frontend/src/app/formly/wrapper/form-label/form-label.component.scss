@@ -43,6 +43,10 @@
   font-weight: 500;
 }
 
+:host-context(.force-optional) .label-wrapper label {
+  font-weight: unset !important;
+}
+
 :host-context(.hasContextHelp) {
   label:hover,
   label:focus {
