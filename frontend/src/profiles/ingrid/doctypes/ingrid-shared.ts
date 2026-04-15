@@ -1108,7 +1108,7 @@ export abstract class IngridShared extends BaseDoctype {
                     this.addDatepicker("created", "Erstellung", {
                       hintStart:
                         "Wann wurde der Datensatz ursprünglich erstellt?",
-                      className: "width-date-medium",
+                      className: "width-date-medium force-optional",
                     }),
                     this.addDatepicker(
                       "firstPublished",
@@ -1116,11 +1116,13 @@ export abstract class IngridShared extends BaseDoctype {
                       {
                         hintStart:
                           "Wann wurde der Datensatz erstmalig veröffentlicht?",
+                        className: "force-optional",
                       },
                     ),
                     this.addDatepicker("lastModified", "Letzte Änderung", {
                       hintStart: "Wann wurde der Datensatz zuletzt geändert?",
-                      className: "ige-date-picker space-bottom-field",
+                      className:
+                        "ige-date-picker force-optional space-bottom-field",
                       validators: {
                         ...(this.showInVeKoSField && {
                           invekos: {
@@ -1153,7 +1155,7 @@ export abstract class IngridShared extends BaseDoctype {
                       indent: true,
                       comment: "(Es muss ein Datum angegeben werden)",
                     },
-                    className: "eventGroup",
+                    className: "eventGroup required",
                     validators: {
                       oneDateRequired: {
                         expression: (
