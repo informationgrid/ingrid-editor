@@ -202,7 +202,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : Us
             return keycloakClient
         } catch (_: Exception) {
             throw ServerException.withReason(
-                "Failed to access Keycloak realm '${registration.clientId}'. Please check your configuration.",
+                "Failed to access Keycloak Client-ID '${registration.clientId}'. Please check if client exists with correct secret.",
             )
         }
     }
