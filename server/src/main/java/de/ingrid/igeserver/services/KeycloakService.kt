@@ -196,7 +196,15 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : Us
             .build()
 
         keycloakClient = KeycloakWithRealm(client, realmName)
-        return keycloakClient
+
+        try {
+            keycloakClient.realm().clients().findAll()
+            return keycloakClient
+        } catch (_: Exception) {
+            throw ServerException.withReason(
+                "Failed to access Keycloak realm '${registration.clientId}'. Please check your configuration.",
+            )
+        }
     }
 
     private fun buildResteasyClient(): ResteasyClient? {
