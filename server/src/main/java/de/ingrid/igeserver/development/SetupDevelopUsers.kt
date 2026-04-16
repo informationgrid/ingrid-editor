@@ -43,7 +43,7 @@ class SetupDevelopUsers(
     fun init() {
         // delay initialization after all migrations
         Timer("IgeTasks", false).schedule(5000) {
-            val userExists = userRepo.findByUserId("userCat") != null
+            val userExists = userRepo.findByUserId("user_catadmin") != null
             if (userExists) {
                 return@schedule
             }
@@ -53,14 +53,14 @@ class SetupDevelopUsers(
                     // this.id = 1 // id cannot be set anymore, since it's auto-generated
                     this.name = "Testkatalog"
                     this.identifier = "testkatalog"
-                    this.type = "mcloud"
+                    this.type = "test"
                 }
                 catalogRepo.save(catalog)
             }
 
-            createUser("userCat", "ige-super-admin")
-            createUser("userMD", "md-admin")
-            createUser("userAuthor", "author")
+            createUser("user_catadmin", "ige-super-admin")
+            createUser("user_mdadmin", "md-admin")
+            createUser("user_author", "author")
         }
     }
 
