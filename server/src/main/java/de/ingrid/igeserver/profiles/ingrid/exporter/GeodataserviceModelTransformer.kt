@@ -33,12 +33,12 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
             var description = model.data.description ?: ""
 
             val resolution = model.data.service.resolution ?: emptyList()
-            val denominator = resolution.joinToString(", ") { "1:" + it.denominator }
-            val distanceMeter = resolution.map { it.distanceMeter }.joinToString("m, ")
-            val distanceDPI = resolution.map { it.distanceDPI }.joinToString(", ")
+            val denominator = resolution.mapNotNull { it.denominator }.joinToString(", ") { "1:$it" }
+            val distanceMeter = resolution.mapNotNull { it.distanceMeter }.joinToString(", ") { "${it}m" }
+            val distanceDPI = resolution.mapNotNull { it.distanceDPI }.joinToString(", ")
 
             if (denominator.isNotEmpty()) description += " Maßstab: $denominator;"
-            if (distanceMeter.isNotEmpty()) description += " Bodenauflösung: ${distanceMeter}m;"
+            if (distanceMeter.isNotEmpty()) description += " Bodenauflösung: $distanceMeter;"
             if (distanceDPI.isNotEmpty()) description += " Scanauflösung (DPI): $distanceDPI;"
 
             if (model.data.service.systemEnvironment.isNullOrEmpty().not()) description += " Systemumgebung: ${model.data.service.systemEnvironment};"
@@ -47,7 +47,7 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
             return description.removeSuffix(";")
         }
 
-    val abstractText = model.data.description ?: ""
+    val abstractText = this.description
     val history = data.service.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
 }
