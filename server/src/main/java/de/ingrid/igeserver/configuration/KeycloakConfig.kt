@@ -329,18 +329,39 @@ class OidcRealmRoleMapper(
         // Keep any already-present authorities
         if (authorities != null) result.addAll(authorities)
 
-        // Extract realm roles from OIDC id token
+        // Extract realm roles from OIDC id token and userInfo
         val oidcAuth = authorities?.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority
-        val idToken = oidcAuth?.idToken
-        val claims = idToken?.claims ?: emptyMap<String, Any>()
-        val realmAccess = claims["realm_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
-        val roles = (realmAccess["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+        val idTokenClaims = oidcAuth?.idToken?.claims ?: emptyMap<String, Any>()
 
-        // Add ROLE_ prefix for Spring
+        // Try both ID token and UserInfo claims (Keycloak might put them in either or both)
+        fun extractRoles(claims: Map<String, Any>): List<String> {
+            val realmAccess = claims["realm_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+            val realmRoles = (realmAccess["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+
+            val authoritiesList = mutableListOf<String>()
+            val resourceAccess = claims["resource_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+            resourceAccess.forEach { (clientName, access) ->
+                if (access is Map<*, *>) {
+                    val clientRoles = (access["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+                    clientRoles.forEach { role ->
+                        authoritiesList.add("${clientName}_$role")
+                    }
+                }
+            }
+
+            return realmRoles + authoritiesList
+        }
+
+        val rolesFromIdToken = extractRoles(idTokenClaims)
+        val rolesFromUserInfo = extractRoles(idTokenClaims)
+        val roles = (rolesFromIdToken + rolesFromUserInfo).distinct()
+
+        // Add ROLE_ prefix for Spring realm roles
         result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
 
         // Add DB-derived roles/groups similar to JWT converter
-        val username = (claims["preferred_username"] as? String) ?: (claims["email"] as? String)
+        val username = (idTokenClaims["preferred_username"] as? String)
+            ?: (idTokenClaims["email"] as? String)
         if (!username.isNullOrBlank()) {
             val isSuperAdmin = roles.contains("ige-super-admin")
             var userDb = userRepository.findByUserId(username)
