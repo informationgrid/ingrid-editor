@@ -21,7 +21,7 @@ package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -41,9 +41,9 @@ class PlannedPublishTask(val documentService: DocumentService, val catalogServic
     @Scheduled(cron = "\${cron.publish.expression}")
     fun plannedPublishTask() {
         log.info("Starting Task: Planned-Publish")
-        val principal = setAdminAuthentication("PlannedPublish", "Task")
-
-        catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
+        runAsAdmin("PlannedPublish", "Task") { principal ->
+            catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
+        }
         log.info("Task finished: Planned-Publish")
     }
 }

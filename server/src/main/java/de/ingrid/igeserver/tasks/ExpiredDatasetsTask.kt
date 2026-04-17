@@ -28,7 +28,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
@@ -66,10 +66,11 @@ class ExpiredDatasetsTask(
 
     @Scheduled(cron = "\${cron.expired.datasets.expression}")
     fun expiredDatasetsTask() {
-        catalogService.getCatalogs().forEach {
-            sendExpiryEmails(it)
+        runAsAdmin("ExpiredDatasets", "Task") { _ ->
+            catalogService.getCatalogs().forEach {
+                sendExpiryEmails(it)
+            }
         }
-        setAdminAuthentication("ExpiredDatasets", "Task")
     }
 
     private fun sendExpiryEmails(catalog: Catalog) {
