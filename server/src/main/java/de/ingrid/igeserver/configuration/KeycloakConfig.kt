@@ -251,19 +251,46 @@ class KeycloakRealmRoleConverter(
 
         val isSuperAdmin = roles.contains("ige-super-admin")
 
-        // TODO: cache this function since expensive!
-        val dbUserRoles = getDbUserRoles(jwt, isSuperAdmin)
-
-        return grantedAuthorities + dbUserRoles
-    }
-
-    private fun getDbUserRoles(jwt: Jwt, isSuperAdmin: Boolean): Collection<GrantedAuthority> {
-        val grantedAuthorities = mutableListOf<GrantedAuthority>()
-        // TODO: make function static
-        //        val username = authUtils.getUsernameFromPrincipal(jwt)
         val username = jwt.getClaimAsString("preferred_username")
+        val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
+            username,
+            isSuperAdmin,
+            userRepository,
+            roleRepository,
+        )
+
+        return (grantedAuthorities + dbUserRoles).distinct()
+    }
+}
+
+/**
+ * Common logic to enrich Spring Security authorities with data from the database.
+ * Used by both session-based OIDC login and Bearer-token-based JWT authentication.
+ */
+object KeycloakAuthorityEnricher {
+    fun getDbUserAuthorities(
+        username: String?,
+        isSuperAdmin: Boolean,
+        userRepository: UserRepository,
+        roleRepository: RoleRepository,
+    ): Collection<GrantedAuthority> {
+        if (username.isNullOrBlank()) return emptyList()
+
+        val grantedAuthorities = mutableListOf<GrantedAuthority>()
         var userDb = userRepository.findByUserId(username)
-        userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
+
+        // check and create super user if necessary
+        if (userDb == null && isSuperAdmin) {
+            val userDbUpdate = UserInfo().apply {
+                userId = username
+                role = roleRepository.findByName("ige-super-admin")
+                data = UserInfoData().apply {
+                    this.creationDate = Date()
+                    this.modificationDate = Date()
+                }
+            }
+            userDb = userRepository.save(userDbUpdate)
+        }
 
         userDb?.curCatalog?.id?.let { catalogId ->
             val groups = userDb.groups.filter { it.catalog?.id == catalogId }
@@ -291,26 +318,6 @@ class KeycloakRealmRoleConverter(
         }
 
         return grantedAuthorities
-    }
-
-    private fun checkAndCreateSuperUser(
-        userDb: UserInfo?,
-        isSuperAdmin: Boolean,
-        username: String,
-    ): UserInfo? {
-        if (userDb == null && isSuperAdmin) {
-            // create user for super admin in db
-            val userDbUpdate = UserInfo().apply {
-                userId = username
-                role = roleRepository.findByName("ige-super-admin")
-                data = UserInfoData().apply {
-                    this.creationDate = Date()
-                    this.modificationDate = Date()
-                }
-            }
-            return userRepository.save(userDbUpdate)
-        }
-        return userDb
     }
 }
 
@@ -352,9 +359,7 @@ class OidcRealmRoleMapper(
             return realmRoles + authoritiesList
         }
 
-        val rolesFromIdToken = extractRoles(idTokenClaims)
-        val rolesFromUserInfo = extractRoles(idTokenClaims)
-        val roles = (rolesFromIdToken + rolesFromUserInfo).distinct()
+        val roles = extractRoles(idTokenClaims).distinct()
 
         // Add ROLE_ prefix for Spring realm roles
         result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
@@ -362,41 +367,17 @@ class OidcRealmRoleMapper(
         // Add DB-derived roles/groups similar to JWT converter
         val username = (idTokenClaims["preferred_username"] as? String)
             ?: (idTokenClaims["email"] as? String)
-        if (!username.isNullOrBlank()) {
-            val isSuperAdmin = roles.contains("ige-super-admin")
-            var userDb = userRepository.findByUserId(username)
-            userDb = if (userDb == null && isSuperAdmin) {
-                // create user for super admin in db
-                val userDbUpdate = UserInfo().apply {
-                    userId = username
-                    role = roleRepository.findByName("ige-super-admin")
-                    data = UserInfoData().apply {
-                        this.creationDate = Date()
-                        this.modificationDate = Date()
-                    }
-                }
-                userRepository.save(userDbUpdate)
-            } else {
-                userDb
-            }
 
-            userDb?.curCatalog?.id?.let { catalogId ->
-                val groups = userDb.groups.filter { it.catalog?.id == catalogId }
-                groups.forEach {
-                    result.add(SimpleGrantedAuthority("GROUP_${it.id}"))
-                    if (it.permissions?.rootPermission == RootPermissionType.WRITE) {
-                        result.add(SimpleGrantedAuthority("SPECIAL_write_root"))
-                    } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {
-                        result.add(SimpleGrantedAuthority("SPECIAL_read_root"))
-                    }
-                }
-            }
-            userDb?.role?.name?.let {
-                result.add(SimpleGrantedAuthority("ROLE_$it"))
-                result.add(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
-            }
-        }
+        val isSuperAdmin = roles.contains("ige-super-admin")
+        val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
+            username,
+            isSuperAdmin,
+            userRepository,
+            roleRepository,
+        )
 
-        return result.toMutableSet()
+        result.addAll(dbUserRoles)
+
+        return result
     }
 }
