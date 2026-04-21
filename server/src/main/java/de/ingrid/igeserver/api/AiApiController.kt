@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.AiSettings
-import de.ingrid.igeserver.services.AiService
+import de.ingrid.igeserver.services.ai.AiService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
