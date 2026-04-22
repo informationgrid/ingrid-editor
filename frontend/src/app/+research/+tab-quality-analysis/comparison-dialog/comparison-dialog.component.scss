@@ -1,0 +1,71 @@
+@use "src/variables" as vars;
+
+.mat-mdc-dialog-content {
+  padding: 20px 24px !important;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding: 12px 18px;
+  align-items: center;
+  background-color: vars.$ige-secondary;
+
+  &:before {
+    display: none;
+  }
+
+  .mat-icon {
+    color: white;
+  }
+
+  h2 {
+    color: white;
+    font-weight: normal;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  button {
+    background-color: white;
+
+    .mat-icon {
+      color: vars.$ige-secondary;
+    }
+  }
+}
+
+.summary {
+  margin-top: 12px;
+}
+
+.evaluation:first-child {
+  margin-top: 20px;
+}
+
+.evaluation {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+
+  .mat-divider {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .mdc-list {
+    padding: 0;
+    margin-left: -18px;
+    margin-right: -18px;
+
+    .mat-mdc-list-item {
+      padding-left: 18px;
+      padding-right: 8px;
+    }
+  }
+}

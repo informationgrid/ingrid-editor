@@ -1,0 +1,105 @@
+<div class="header" mat-dialog-title>
+    <mat-icon>auto_awesome</mat-icon>
+    <h2>{{ result().title }}</h2>
+    <div class="flex-1"></div>
+    <button matIconButton mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<mat-dialog-content>
+    <div class="flex-row gap-8 align-items-center">
+        <div class="font-medium">Gesamtbewertung</div>
+        <ige-score-indicator [score]="result().totalScore" />
+    </div>
+
+    @if (result().summary) {
+        <div class="summary">{{ result().summary }}</div>
+    }
+
+    <form class="flex-col gap-24" [formGroup]="formGroup">
+        @for (evaluation of evaluations(); track evaluation.key) {
+            <div class="evaluation">
+                <div class="flex-col gap-12">
+                    <div
+                        class="flex-row justify-content-space-between align-items-center"
+                    >
+                        <div class="font-medium">{{ evaluation.label }}</div>
+                        <ige-score-indicator [score]="evaluation.score" />
+                    </div>
+
+                    @if (evaluation.reasoning) {
+                        <div>
+                            {{ evaluation.reasoning }}
+                        </div>
+                    }
+                </div>
+
+                @if (evaluation.originalValue) {
+                    <mat-divider></mat-divider>
+                    <div class="flex-col gap-6">
+                        <div class="font-medium">Originalwert</div>
+                        <div class="value">
+                            {{ evaluation.originalValue }}
+                        </div>
+                    </div>
+                }
+
+                @if (evaluation.suggestions && evaluation.suggestions.length) {
+                    <mat-divider></mat-divider>
+                    <div class="flex-col gap-6">
+                        <div class="font-medium">Vorschlag</div>
+
+                        @if (!isExpanded()[evaluation.key]) {
+                            <div>
+                                {{ list._value?.at(0) }}
+                            </div>
+                        }
+
+                        <mat-selection-list
+                            [multiple]="false"
+                            [formControlName]="evaluation.key"
+                            #list
+                        >
+                            @if (isExpanded()[evaluation.key]) {
+                                @for (
+                                    suggestion of evaluation.suggestions;
+                                    track suggestion
+                                ) {
+                                    <mat-list-option
+                                        class="no-wrap"
+                                        [value]="suggestion"
+                                    >
+                                        {{ suggestion }}
+                                    </mat-list-option>
+                                }
+                            }
+                        </mat-selection-list>
+
+                        @if (evaluation.suggestions.length > 1) {
+                            <button
+                                matButton="outlined"
+                                (click)="toggleExpansion(evaluation.key)"
+                            >
+                                {{
+                                    isExpanded()[evaluation.key]
+                                        ? "Weniger"
+                                        : "Mehr"
+                                }}
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button matButton mat-dialog-close>Schließen</button>
+    <div class="flex-1"></div>
+
+    @if (result().totalSuggestionCount) {
+        <button matButton="filled" color="primary">Übernehmen</button>
+    }
+</mat-dialog-actions>

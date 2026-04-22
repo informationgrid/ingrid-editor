@@ -20,6 +20,7 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.AiSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.seconds
 
@@ -27,6 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class AiService(
     private val generalProperties: GeneralProperties,
     private val settingsRepo: SettingsRepository,
+    private val documentService: DocumentService,
     private val promptProvider: AiPromptProvider,
     private val schemaProvider: AiJsonSchemaProvider,
 ) {
@@ -65,11 +67,36 @@ class AiService(
         val chatCompletionRequest = buildChatRequest(
             modelId = modelId,
             effort = effort,
-            systemPrompt = getSettings()?.systemPrompt ?: promptProvider.getEvaluateSystemPrompt(),
+            systemPrompt = getSettings()?.systemPrompt ?: promptProvider.getEvaluatePrompt(),
             userPrompt = body,
             jsonSchema = schemaProvider.getEvaluateResponseSchema(),
         )
 
+        val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
+        return completion.choices.firstOrNull()?.message?.content
+    }
+
+    suspend fun evaluateAll(catalogId: String, limit: Int = 5): String? {
+        // Get published documents and convert into JSON string.
+        val documents = documentService.getPublishedInGridGeoDatasets(catalogId).take(limit)
+        val documentsInJson = documents.map { document ->
+            val data = document.data.deepCopy()
+            data.put("uuid", document.uuid)
+            data.put("title", document.title)
+            jacksonObjectMapper().writeValueAsString(data)
+        }.toString()
+
+        // Submit all documents for evaluation.
+        val (openAI, modelId, effort) = getOpenAIClient()
+        val chatCompletionRequest = buildChatRequest(
+            modelId = modelId,
+            effort = effort,
+            systemPrompt = promptProvider.getEvaluateAllPrompt(
+                getSettings()?.systemPrompt ?: promptProvider.getEvaluatePrompt()
+            ),
+            userPrompt = documentsInJson,
+            jsonSchema = schemaProvider.getEvaluateAllResponseSchema(),
+        )
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
         return completion.choices.firstOrNull()?.message?.content
     }

@@ -17,35 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-
-import { Component, input, output } from "@angular/core";
-import { Evaluation } from "../../../../services/ai-assistant/ai-assistant.service";
-import { MatButton } from "@angular/material/button";
-import { MatListOption, MatSelectionList } from "@angular/material/list";
-import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
+import { Component, computed, input } from "@angular/core";
 
 @Component({
-  selector: "ige-evaluation-entry",
-  templateUrl: "./evaluation-entry.component.html",
-  styleUrls: ["./evaluation-entry.component.scss"],
-  imports: [
-    MatButton,
-    MatListOption,
-    MatSelectionList,
-    ScoreIndicatorComponent,
-  ],
+  selector: "ige-score-indicator",
+  templateUrl: "./score-indicator.component.html",
+  styleUrls: ["./score-indicator.component.scss"],
+  imports: [],
 })
-export class EvaluationEntryComponent {
-  evaluation = input.required<Evaluation>();
+export class ScoreIndicatorComponent {
+  score = input<number>(0);
+  max = input<number>(10);
 
-  onSuggestionApply = output<any>();
+  roundedScore = computed(() => Math.round(this.score()));
 
   constructor() {}
-
-  protected apply(value: any) {
-    this.onSuggestionApply.emit({
-      key: this.evaluation().key,
-      value: value,
-    });
-  }
 }

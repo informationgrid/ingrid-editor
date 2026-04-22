@@ -17,8 +17,22 @@ class AiJsonSchemaProvider {
         schema = buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
+                putJsonObject("uuid") {
+                    put("type", "string")
+                }
+                putJsonObject("title") {
+                    put("type", "string")
+                }
                 putJsonObject("summary") {
                     put("type", "string")
+                }
+                putJsonObject("totalScore") {
+                    put("type", "number")
+                    put("minimum", 1)
+                    put("maximum", 10)
+                }
+                putJsonObject("totalSuggestionCount") {
+                    put("type", "number")
                 }
                 putJsonObject("evaluations") {
                     put("type", "array")
@@ -31,6 +45,12 @@ class AiJsonSchemaProvider {
                                 put("type", "number")
                                 put("minimum", 1)
                                 put("maximum", 10)
+                            }
+                            putJsonObject("originalValue") {
+                                putJsonArray("anyOf") {
+                                    addJsonObject { put("type", "string") }
+                                    addJsonObject { put("type", "null") }
+                                }
                             }
                             putJsonObject("reasoning") {
                                 putJsonArray("anyOf") {
@@ -54,6 +74,7 @@ class AiJsonSchemaProvider {
                             add("key")
                             add("label")
                             add("score")
+                            add("originalValue")
                             add("reasoning")
                             add("suggestions")
                         }
@@ -62,8 +83,30 @@ class AiJsonSchemaProvider {
                 }
             }
             putJsonArray("required") {
-                add("evaluations")
+                add("uuid")
+                add("title")
                 add("summary")
+                add("totalScore")
+                add("totalSuggestionCount")
+                add("evaluations")
+            }
+            put("additionalProperties", false)
+        },
+    )
+
+    fun getEvaluateAllResponseSchema(): JsonSchema = JsonSchema(
+        name = "BatchEvaluationSummary",
+        strict = true,
+        schema = buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("data") {
+                    put("type", "array")
+                    put("items", getEvaluateResponseSchema().schema)
+                }
+            }
+            putJsonArray("required") {
+                add("data")
             }
             put("additionalProperties", false)
         },

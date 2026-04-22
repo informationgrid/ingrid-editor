@@ -4,8 +4,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class AiPromptProvider {
-
-    fun getEvaluateSystemPrompt(): String = """
+    fun getEvaluatePrompt(): String = """
             Du bist ein Experte für die Bewertung der Qualität von Geodaten-Metadaten.
 
             Ziel:
@@ -68,4 +67,12 @@ class AiPromptProvider {
             - alternateTitle
             - description
     """.trimIndent()
+
+    fun getEvaluateAllPrompt(basePrompt: String): String = """
+            Du bekommst eine Liste von Metadatensätze.
+            Verarbeite jeden Metadatensatz mit dem folgenden Prompt:
+            ---------------------
+            $basePrompt
+            ---------------------
+    """
 }

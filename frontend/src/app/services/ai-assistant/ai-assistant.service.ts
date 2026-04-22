@@ -23,7 +23,11 @@ import { ConfigService, Configuration } from "../config/config.service";
 import { Observable } from "rxjs";
 
 export interface EvaluationResult {
+  uuid: string;
+  title: string;
   summary: string;
+  totalScore: number;
+  totalSuggestionCount?: number;
   evaluations: Array<Evaluation>;
 }
 
@@ -31,6 +35,7 @@ export interface Evaluation {
   key: string;
   label: string;
   score?: number;
+  originalValue?: string;
   reasoning?: string;
   suggestions?: Array<string>;
 }
@@ -75,6 +80,13 @@ export class AiAssistantService {
     return this.http.post<EvaluationResult>(
       this.configuration.backendUrl + "ai/dataset/evaluate",
       data,
+    );
+  }
+
+  evaluateAll() {
+    return this.http.post<{ data: EvaluationResult[] }>(
+      this.configuration.backendUrl + "ai/dataset/evaluateAll",
+      null,
     );
   }
 }

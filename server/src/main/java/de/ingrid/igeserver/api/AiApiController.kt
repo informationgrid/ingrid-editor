@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.AiSettings
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ai.AiService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -32,6 +33,7 @@ import java.security.Principal
 @RequestMapping("/api")
 class AiApiController(
     private val aiService: AiService,
+    private val catalogService: CatalogService,
 ) : AiApi {
 
     override fun evaluate(
@@ -42,6 +44,17 @@ class AiApiController(
         runBlocking {
             launch {
                 response = aiService.evaluate(body)
+            }
+        }
+        return ResponseEntity.ok(response)
+    }
+
+    override fun evaluateAll(principal: Principal): ResponseEntity<String?> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        var response: String? = null
+        runBlocking {
+            launch {
+                response = aiService.evaluateAll(catalogId)
             }
         }
         return ResponseEntity.ok(response)

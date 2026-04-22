@@ -1,0 +1,41 @@
+@use "src/variables" as vars;
+
+.main-content {
+  background-color: white;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .leading {
+    padding: 16px;
+
+    h2 {
+      margin: 0;
+      font-weight: normal;
+      color: vars.$ige-primary;
+    }
+  }
+}
+
+.mat-mdc-row {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.mat-column-type {
+  width: 32px;
+}
+
+.mat-column-totalScore {
+  width: 40px;
+}
+
+.mat-column-settings {
+  width: 32px;
+}
+
+.mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
