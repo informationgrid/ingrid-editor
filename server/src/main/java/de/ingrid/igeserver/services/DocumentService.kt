@@ -191,13 +191,11 @@ class DocumentService(
 
     fun getWrapperById(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
-    fun getPublishedInGridGeoDatasets(catalogId: String): List<Document> {
-        return docRepo.findAllByCatalog_IdentifierAndStateAndType(
-            catalogId,
-            DocumentState.PUBLISHED,
-            "InGridGeoDataset"
-        )
-    }
+    fun getPublishedInGridGeoDatasets(catalogId: String): List<Document> = docRepo.findAllByCatalog_IdentifierAndStateAndType(
+        catalogId,
+        DocumentState.PUBLISHED,
+        "InGridGeoDataset",
+    )
 
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
 

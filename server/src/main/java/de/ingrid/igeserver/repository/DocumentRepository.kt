@@ -45,7 +45,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     fun findAllByCatalog_IdentifierAndStateAndType(
         catalog_identifier: String,
         state: DocumentState,
-        type: String
+        type: String,
     ): List<Document>
 
     /**
