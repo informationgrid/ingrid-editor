@@ -22,6 +22,7 @@ import { ResearchComponent } from "./research.component";
 import { TabSqlComponent } from "./+tab-sql/tab-sql.component";
 import { QueryManagerComponent } from "./+query-manager/query-manager.component";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
+import { TabQualityAnalysisComponent } from "./+tab-quality-analysis/tab-quality-analysis.component";
 
 export default [
   {
@@ -53,6 +54,13 @@ export default [
         component: QueryManagerComponent,
         data: {
           title: "Gespeicherte Suchen",
+        },
+      },
+      {
+        path: "quality-analysis",
+        component: TabQualityAnalysisComponent,
+        data: {
+          title: "KI Qualitätsanalyse",
         },
       },
     ],

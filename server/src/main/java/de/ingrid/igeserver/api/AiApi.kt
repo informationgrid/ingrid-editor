@@ -42,6 +42,12 @@ interface AiApi {
         @RequestBody body: String,
     ): ResponseEntity<String?>
 
+    @PostMapping(value = ["/ai/dataset/evaluateAll"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(summary = "Evaluate all datasets using AI")
+    fun evaluateAll(
+        principal: Principal,
+    ): ResponseEntity<String?>
+
     @GetMapping(value = ["/ai/settings"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get AI settings")
     fun getSettings(

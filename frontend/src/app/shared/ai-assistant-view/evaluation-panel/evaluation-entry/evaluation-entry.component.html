@@ -1,7 +1,7 @@
 <div class="flex-col gap-8">
     <div class="flex-row gap-8 justify-content-space-between font-medium">
-        <span>{{ evaluation().label }}</span>
-        <span class="score"> {{ evaluation().score ?? 0 }} / 10 </span>
+        <div>{{ evaluation().label }}</div>
+        <ige-score-indicator [score]="evaluation().score" />
     </div>
 
     @if (evaluation().reasoning) {
