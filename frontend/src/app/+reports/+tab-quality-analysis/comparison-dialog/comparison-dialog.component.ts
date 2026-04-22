@@ -26,10 +26,8 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { EvaluationResult } from "../../../services/ai-assistant/ai-assistant.service";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { ScoreIndicatorComponent } from "../../../shared/score-indicator/score-indicator.component";
 import {
   MatDivider,
   MatListOption,
@@ -37,6 +35,8 @@ import {
 } from "@angular/material/list";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { ScoreIndicatorComponent } from "../../../shared/score-indicator/score-indicator.component";
+import { EvaluationResult } from "../../../services/ai-assistant/ai-assistant.service";
 
 @Component({
   selector: "ige-comparison-dialog",

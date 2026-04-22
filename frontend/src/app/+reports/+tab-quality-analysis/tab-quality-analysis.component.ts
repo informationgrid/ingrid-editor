@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { AfterViewInit, Component, signal, viewChild } from "@angular/core";
-import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
   MatCell,
@@ -36,20 +35,21 @@ import {
 import { MatIcon } from "@angular/material/icon";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
-import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
-import {
-  AiAssistantService,
-  EvaluationResult,
-} from "../../services/ai-assistant/ai-assistant.service";
 import { MatTooltip } from "@angular/material/tooltip";
-import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { ComparisonDialogComponent } from "./comparison-dialog/comparison-dialog.component";
 import { MatBadge } from "@angular/material/badge";
 import { MatDivider } from "@angular/material/list";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
 import { HintLoadingViewComponent } from "../../shared/hint-loading-view/hint-loading-view.component";
+import {
+  AiAssistantService,
+  EvaluationResult,
+} from "../../services/ai-assistant/ai-assistant.service";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-tab-quality-analysis",
