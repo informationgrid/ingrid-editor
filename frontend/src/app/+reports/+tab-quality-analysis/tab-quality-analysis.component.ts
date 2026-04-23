@@ -46,7 +46,6 @@ import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { ComparisonDialogComponent } from "./comparison-dialog/comparison-dialog.component";
-import { MatBadge } from "@angular/material/badge";
 import { MatDivider } from "@angular/material/list";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
@@ -57,7 +56,6 @@ import {
 } from "../../services/ai-assistant/ai-assistant.service";
 import { ConfigService } from "../../services/config/config.service";
 import { finalize } from "rxjs/operators";
-import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
 import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
@@ -87,10 +85,8 @@ import { TranslocoDirective } from "@jsverse/transloco";
     MatMenu,
     MatMenuItem,
     MatMenuTrigger,
-    MatBadge,
     MatDivider,
     HintLoadingViewComponent,
-    PageTemplateNoHeaderComponent,
     TranslocoDirective,
   ],
 })
