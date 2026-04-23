@@ -48,6 +48,12 @@ interface AiApi {
         principal: Principal,
     ): ResponseEntity<String?>
 
+    @GetMapping(value = ["/ai/dataset/latestReport"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(summary = "Get the latest AI evaluation report")
+    fun getEvaluateAllReport(
+        principal: Principal,
+    ): ResponseEntity<String?>
+
     @GetMapping(value = ["/ai/settings"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get AI settings")
     fun getSettings(

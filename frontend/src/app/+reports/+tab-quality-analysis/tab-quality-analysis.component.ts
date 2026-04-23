@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, signal, viewChild } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
   MatCell,
@@ -50,6 +56,9 @@ import {
   EvaluationResult,
 } from "../../services/ai-assistant/ai-assistant.service";
 import { ConfigService } from "../../services/config/config.service";
+import { finalize } from "rxjs/operators";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
   selector: "ige-tab-quality-analysis",
@@ -81,9 +90,11 @@ import { ConfigService } from "../../services/config/config.service";
     MatBadge,
     MatDivider,
     HintLoadingViewComponent,
+    PageTemplateNoHeaderComponent,
+    TranslocoDirective,
   ],
 })
-export class TabQualityAnalysisComponent implements AfterViewInit {
+export class TabQualityAnalysisComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "totalSuggestionCount",
     "title",
@@ -107,24 +118,45 @@ export class TabQualityAnalysisComponent implements AfterViewInit {
     private dialog: MatDialog,
   ) {}
 
+  ngOnInit() {
+    this.getPrevAnalysis();
+  }
+
   ngAfterViewInit() {
     this.dataSource.sort = this.sort();
     this.dataSource.paginator = this.paginator();
   }
 
+  getPrevAnalysis() {
+    this.isLoading.set(true);
+    return this.aiService
+      .getLatestReport()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (!response?.data) return;
+          this.dataSource.data = response.data;
+        },
+        error: (error) => {
+          alert("Etwas ist leider schief gelaufen.");
+        },
+      });
+  }
+
   startAnalysis() {
     this.isLoading.set(true);
-    this.aiService.evaluateAll().subscribe({
-      next: (response) => {
-        if (!response.data) return;
-        this.dataSource.data = response.data;
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        alert("Etwas ist leider schief gelaufen.");
-      },
-    });
+    this.aiService
+      .evaluateAll()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (!response.data) return;
+          this.dataSource.data = response.data;
+        },
+        error: (error) => {
+          alert("Etwas ist leider schief gelaufen.");
+        },
+      });
   }
   openDataset(result: EvaluationResult) {
     const target = ConfigService.catalogId + "/form";
