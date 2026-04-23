@@ -48,7 +48,7 @@ class AiJsonSchemaProvider {
                 putJsonObject("totalScore") {
                     put("type", "number")
                     put("minimum", 1)
-                    put("maximum", 10)
+                    put("maximum", 5)
                 }
                 putJsonObject("totalSuggestionCount") {
                     put("type", "number")
@@ -63,7 +63,7 @@ class AiJsonSchemaProvider {
                             putJsonObject("score") {
                                 put("type", "number")
                                 put("minimum", 1)
-                                put("maximum", 10)
+                                put("maximum", 5)
                             }
                             putJsonObject("originalValue") {
                                 putJsonArray("anyOf") {

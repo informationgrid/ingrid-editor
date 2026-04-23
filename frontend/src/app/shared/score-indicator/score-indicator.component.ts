@@ -27,7 +27,7 @@ import { Component, computed, input } from "@angular/core";
 })
 export class ScoreIndicatorComponent {
   score = input<number>(0);
-  max = input<number>(10);
+  max = input<number>(5);
 
   roundedScore = computed(() => Math.round(this.score()));
 
