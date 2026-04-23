@@ -89,4 +89,10 @@ export class AiAssistantService {
       null,
     );
   }
+
+  getLatestReport() {
+    return this.http.get<{ data: EvaluationResult[] }>(
+      this.configuration.backendUrl + "ai/dataset/latestReport",
+    );
+  }
 }

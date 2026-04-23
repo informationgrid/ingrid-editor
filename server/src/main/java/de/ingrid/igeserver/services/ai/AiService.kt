@@ -51,6 +51,9 @@ class AiService(
     private val promptProvider: AiPromptProvider,
     private val schemaProvider: AiJsonSchemaProvider,
 ) {
+    // TODO: this is just a temporary way to store the last evaluation result.
+    var lastEvaluateAllResult: String? = null
+
     fun updateSettings(settings: AiSettings): AiSettings {
         val aiSettings = getSettings() ?: settings
         aiSettings.apply {
@@ -95,9 +98,9 @@ class AiService(
         return completion.choices.firstOrNull()?.message?.content
     }
 
-    suspend fun evaluateAll(catalogId: String, limit: Int = 5): String? {
+    suspend fun evaluateAll(catalogId: String, limit: Int = 10): String? {
         // Get published documents and convert into JSON string.
-        val documents = documentService.getPublishedInGridGeoDatasets(catalogId).take(limit)
+        val documents = documentService.getPublishedInGridGeoDatasets(catalogId).shuffled().take(limit)
         val documentsInJson = documents.map { document ->
             val data = document.data.deepCopy()
             data.put("uuid", document.uuid)
@@ -117,7 +120,8 @@ class AiService(
             jsonSchema = schemaProvider.getEvaluateAllResponseSchema(),
         )
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-        return completion.choices.firstOrNull()?.message?.content
+        lastEvaluateAllResult = completion.choices.firstOrNull()?.message?.content
+        return lastEvaluateAllResult
     }
 
     private fun getOpenAIClient(): Triple<OpenAI, String, String?> {

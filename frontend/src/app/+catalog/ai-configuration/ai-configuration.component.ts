@@ -25,12 +25,13 @@ import { MatButton } from "@angular/material/button";
 import { FormlyForm } from "@ngx-formly/core";
 import { AiAssistantService } from "../../services/ai-assistant/ai-assistant.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
   selector: "ige-ai-configuration",
   templateUrl: "./ai-configuration.component.html",
   styleUrls: ["./ai-configuration.component.scss"],
-  imports: [PageTemplateComponent, MatButton, FormlyForm],
+  imports: [PageTemplateComponent, MatButton, FormlyForm, TranslocoDirective],
 })
 export class AiConfigurationComponent implements OnInit {
   form = new UntypedFormGroup({});

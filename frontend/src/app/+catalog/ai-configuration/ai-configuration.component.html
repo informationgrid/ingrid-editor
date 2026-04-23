@@ -1,4 +1,8 @@
-<page-template label="KI-Kofiguration" class="white">
+<page-template
+    *transloco="let t"
+    class="white"
+    [label]="t('pageTitle.catalogs.ai-configuration')"
+>
     <ng-container left-side>
         <p>
             In diesem Bereich konfigurieren Sie das Verhalten des KI-Agenten

@@ -60,6 +60,8 @@ class AiApiController(
         return ResponseEntity.ok(response)
     }
 
+    override fun getEvaluateAllReport(principal: Principal): ResponseEntity<String?> = ResponseEntity.ok(aiService.lastEvaluateAllResult)
+
     override fun getSettings(principal: Principal): ResponseEntity<AiSettings?> {
         val settings = aiService.getSettingsWithoutToken()
         return ResponseEntity.ok(settings)

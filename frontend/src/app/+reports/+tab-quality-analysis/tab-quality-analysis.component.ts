@@ -17,8 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, signal, viewChild } from "@angular/core";
-import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
   MatCell,
@@ -36,20 +41,24 @@ import {
 import { MatIcon } from "@angular/material/icon";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
-import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
-import {
-  AiAssistantService,
-  EvaluationResult,
-} from "../../services/ai-assistant/ai-assistant.service";
 import { MatTooltip } from "@angular/material/tooltip";
-import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { ComparisonDialogComponent } from "./comparison-dialog/comparison-dialog.component";
 import { MatBadge } from "@angular/material/badge";
 import { MatDivider } from "@angular/material/list";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
 import { HintLoadingViewComponent } from "../../shared/hint-loading-view/hint-loading-view.component";
+import {
+  AiAssistantService,
+  EvaluationResult,
+} from "../../services/ai-assistant/ai-assistant.service";
+import { ConfigService } from "../../services/config/config.service";
+import { finalize } from "rxjs/operators";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
   selector: "ige-tab-quality-analysis",
@@ -81,9 +90,11 @@ import { HintLoadingViewComponent } from "../../shared/hint-loading-view/hint-lo
     MatBadge,
     MatDivider,
     HintLoadingViewComponent,
+    PageTemplateNoHeaderComponent,
+    TranslocoDirective,
   ],
 })
-export class TabQualityAnalysisComponent implements AfterViewInit {
+export class TabQualityAnalysisComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "totalSuggestionCount",
     "title",
@@ -107,24 +118,45 @@ export class TabQualityAnalysisComponent implements AfterViewInit {
     private dialog: MatDialog,
   ) {}
 
+  ngOnInit() {
+    this.getPrevAnalysis();
+  }
+
   ngAfterViewInit() {
     this.dataSource.sort = this.sort();
     this.dataSource.paginator = this.paginator();
   }
 
+  getPrevAnalysis() {
+    this.isLoading.set(true);
+    return this.aiService
+      .getLatestReport()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (!response?.data) return;
+          this.dataSource.data = response.data;
+        },
+        error: (error) => {
+          alert("Etwas ist leider schief gelaufen.");
+        },
+      });
+  }
+
   startAnalysis() {
     this.isLoading.set(true);
-    this.aiService.evaluateAll().subscribe({
-      next: (response) => {
-        if (!response.data) return;
-        this.dataSource.data = response.data;
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        alert("Etwas ist leider schief gelaufen.");
-      },
-    });
+    this.aiService
+      .evaluateAll()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (!response.data) return;
+          this.dataSource.data = response.data;
+        },
+        error: (error) => {
+          alert("Etwas ist leider schief gelaufen.");
+        },
+      });
   }
   openDataset(result: EvaluationResult) {
     const target = ConfigService.catalogId + "/form";
