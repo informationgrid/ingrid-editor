@@ -51,8 +51,9 @@ class AiService(
     private val promptProvider: AiPromptProvider,
     private val schemaProvider: AiJsonSchemaProvider,
 ) {
-    // TODO: this is just a temporary way to store the last evaluation result.
+    // TODO: this is just a temporary way to store the evaluation results.
     var lastEvaluateAllResult: String? = null
+    var evaluateResults: String? = null
 
     fun updateSettings(settings: AiSettings): AiSettings {
         val aiSettings = getSettings() ?: settings
@@ -78,6 +79,20 @@ class AiService(
 
     fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiToken = null)
 
+    // TODO: temporarily get and combine all results from the memory.
+    fun getLatestReport(): String? {
+        val mapper = jacksonObjectMapper()
+        val seenUuids = mutableSetOf<String>()
+
+        val combinedData = listOfNotNull(lastEvaluateAllResult, evaluateResults)
+            .flatMap { mapper.readTree(it)?.get("data")?.toList().orEmpty() }
+            .filter { node -> node.get("uuid")?.asText()?.let { seenUuids.add(it) } != false }
+            .fold(mapper.createArrayNode()) { arr, node -> arr.add(node) }
+
+        return combinedData.takeUnless { it.isEmpty }
+            ?.let { mapper.writeValueAsString(mapper.createObjectNode().set("data", it)) }
+    }
+
     private fun getSettings(): AiSettings? {
         val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
         return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
@@ -95,7 +110,19 @@ class AiService(
         )
 
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-        return completion.choices.firstOrNull()?.message?.content
+        val result = completion.choices.firstOrNull()?.message?.content
+
+        // TODO: temporarily append result to evaluateResults.
+        if (result != null) {
+            val mapper = jacksonObjectMapper()
+            val dataArray = evaluateResults
+                ?.let { mapper.readTree(it)?.withArray("data") }
+                ?: mapper.createArrayNode()
+            dataArray.add(mapper.readTree(result))
+            evaluateResults = mapper.writeValueAsString(mapper.createObjectNode().set("data", dataArray))
+        }
+
+        return result
     }
 
     suspend fun evaluateAll(catalogId: String, limit: Int = 10): String? {

@@ -22,7 +22,6 @@ import {
   computed,
   effect,
   input,
-  OnInit,
   signal,
   untracked,
 } from "@angular/core";
@@ -55,7 +54,7 @@ import { MatIcon } from "@angular/material/icon";
     MatIcon,
   ],
 })
-export class EvaluationPanelComponent implements OnInit {
+export class EvaluationPanelComponent {
   metadata = input.required<any>();
   form = input.required<FormGroup>();
   initialValues: Record<string, any> = {};
@@ -94,16 +93,14 @@ export class EvaluationPanelComponent implements OnInit {
       untracked(() => this.reset());
     });
   }
-  ngOnInit() {
-    this.initialValues = { ...this.form().value };
-  }
 
   // TODO: temporarily load report to show the evaluation result.
   loadResultFromReport(uuid: string) {
     if (!uuid) return;
+    this.initialValues = { ...this.form().value };
     this.aiService.getLatestReport().subscribe({
       next: (report) => {
-        const result = report.data.find((r) => r.uuid === uuid);
+        const result = report?.data?.find((r) => r.uuid === uuid);
         if (result) this.evaluationResult.set(result);
       },
       error: (error) => {},
@@ -118,8 +115,15 @@ export class EvaluationPanelComponent implements OnInit {
 
   evaluate() {
     this.reset();
+
+    // Prepare data.
+    const data = {
+      ...this.form().value,
+      uuid: this.metadata()?.uuid,
+    };
+
     this.loadingUuid.set(this.metadata()?.uuid);
-    this.aiService.evaluateDataset(this.form().value).subscribe({
+    this.aiService.evaluateDataset(data).subscribe({
       next: (result) => {
         if (this.loadingUuid() !== this.metadata()?.uuid) return;
         this.loadingUuid.set(null);
