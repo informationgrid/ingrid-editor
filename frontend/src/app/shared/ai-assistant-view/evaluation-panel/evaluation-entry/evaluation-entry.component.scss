@@ -1,0 +1,28 @@
+:host {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+
+  --mat-list-list-item-label-text-size: 14px;
+
+  ::ng-deep .mdc-list-item__end {
+    margin-left: 8px;
+  }
+}
+
+.mat-divider {
+  margin: 8px -16px 0px;
+}
+
+.mdc-list {
+  padding: 0;
+}
+
+.mdc-list-item {
+  padding-left: 8px;
+}
+
+button {
+  height: 32px;
+  font-size: 12px;
+}

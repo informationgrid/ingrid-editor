@@ -22,6 +22,7 @@ import {
   computed,
   effect,
   input,
+  OnInit,
   signal,
   untracked,
 } from "@angular/core";
@@ -54,9 +55,10 @@ import { MatIcon } from "@angular/material/icon";
     MatIcon,
   ],
 })
-export class EvaluationPanelComponent {
+export class EvaluationPanelComponent implements OnInit {
   metadata = input.required<any>();
   form = input.required<FormGroup>();
+  initialValues: Record<string, any> = {};
 
   // Load control.
   loadingUuid = signal<string>(null);
@@ -88,8 +90,23 @@ export class EvaluationPanelComponent {
   constructor(private aiService: AiAssistantService) {
     // Track uuid changes.
     effect(() => {
-      this.metadata()?.uuid;
+      this.loadResultFromReport(this.metadata()?.uuid);
       untracked(() => this.reset());
+    });
+  }
+  ngOnInit() {
+    this.initialValues = { ...this.form().value };
+  }
+
+  // TODO: temporarily load report to show the evaluation result.
+  loadResultFromReport(uuid: string) {
+    if (!uuid) return;
+    this.aiService.getLatestReport().subscribe({
+      next: (report) => {
+        const result = report.data.find((r) => r.uuid === uuid);
+        if (result) this.evaluationResult.set(result);
+      },
+      error: (error) => {},
     });
   }
 
@@ -113,6 +130,12 @@ export class EvaluationPanelComponent {
         this.loadingUuid.set(null);
         this.hasError.set(true);
       },
+    });
+  }
+
+  protected onSuggestionReset(key: string) {
+    this.form().patchValue({
+      [key]: this.initialValues[key],
     });
   }
 

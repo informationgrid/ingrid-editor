@@ -23,7 +23,6 @@ import { Component, computed, input } from "@angular/core";
   selector: "ige-score-indicator",
   templateUrl: "./score-indicator.component.html",
   styleUrls: ["./score-indicator.component.scss"],
-  imports: [],
 })
 export class ScoreIndicatorComponent {
   score = input<number>(0);

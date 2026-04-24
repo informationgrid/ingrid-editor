@@ -9,21 +9,39 @@
     }
 
     @if (evaluation().suggestions && evaluation().suggestions.length) {
-        <mat-selection-list [multiple]="false" #suggestionList>
+        <mat-divider></mat-divider>
+
+        <mat-selection-list
+            #list
+            [multiple]="false"
+            [formControl]="formControl"
+        >
             @for (suggestion of evaluation().suggestions; track suggestion) {
-                <mat-list-option class="no-wrap" [value]="suggestion">
-                    {{ suggestion }}
-                </mat-list-option>
+                @if (isExpanded() || suggestion === list._value?.at(0)) {
+                    <mat-list-option class="no-wrap" [value]="suggestion">
+                        {{ suggestion }}
+                    </mat-list-option>
+                }
             }
         </mat-selection-list>
 
-        <button
-            matButton="outlined"
-            class="align-self-end"
-            [disabled]="!suggestionList.selectedOptions.selected.length"
-            (click)="apply(suggestionList.selectedOptions.selected[0].value)"
-        >
-            Übernehmen
+        <button matButton="outlined" (click)="toggleIsExpanded()">
+            {{ isExpanded() ? "Weniger" : "Mehr" }}
         </button>
+
+        <div class="flex-row gap-8">
+            <button class="flex-1" matButton="outlined" (click)="reset()">
+                Zurücksetzen
+            </button>
+
+            <button
+                class="flex-1"
+                matButton="outlined"
+                [disabled]="!list._value"
+                (click)="apply(list._value.at(0))"
+            >
+                Übernehmen
+            </button>
+        </div>
     }
 </div>

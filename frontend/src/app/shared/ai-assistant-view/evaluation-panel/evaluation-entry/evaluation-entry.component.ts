@@ -18,11 +18,16 @@
  * limitations under the Licence.
  */
 
-import { Component, input, output } from "@angular/core";
+import { Component, input, OnInit, output, signal } from "@angular/core";
 import { Evaluation } from "../../../../services/ai-assistant/ai-assistant.service";
 import { MatButton } from "@angular/material/button";
-import { MatListOption, MatSelectionList } from "@angular/material/list";
+import {
+  MatDivider,
+  MatListOption,
+  MatSelectionList,
+} from "@angular/material/list";
 import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 
 @Component({
   selector: "ige-evaluation-entry",
@@ -33,16 +38,36 @@ import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicato
     MatListOption,
     MatSelectionList,
     ScoreIndicatorComponent,
+    ReactiveFormsModule,
+    MatDivider,
   ],
 })
-export class EvaluationEntryComponent {
+export class EvaluationEntryComponent implements OnInit {
   evaluation = input.required<Evaluation>();
 
   onSuggestionApply = output<any>();
+  onSuggestionReset = output<any>();
+
+  formControl: FormControl;
+  isExpanded = signal<boolean>(false);
 
   constructor() {}
 
-  protected apply(value: any) {
+  ngOnInit(): void {
+    if (this.evaluation().suggestions?.length > 0) {
+      this.formControl = new FormControl([this.evaluation().suggestions.at(0)]);
+    }
+  }
+
+  toggleIsExpanded() {
+    this.isExpanded.set(!this.isExpanded());
+  }
+
+  reset() {
+    this.onSuggestionReset.emit(this.evaluation().key);
+  }
+
+  apply(value: any) {
     this.onSuggestionApply.emit({
       key: this.evaluation().key,
       value: value,

@@ -29,6 +29,7 @@
                 @for (evaluation of evaluations(); track evaluation) {
                     <ige-evaluation-entry
                         [evaluation]="evaluation"
+                        (onSuggestionReset)="onSuggestionReset(evaluation.key)"
                         (onSuggestionApply)="onSuggestionApply($event)"
                     />
                 }
