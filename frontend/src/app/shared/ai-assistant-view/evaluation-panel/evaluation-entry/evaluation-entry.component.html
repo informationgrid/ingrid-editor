@@ -25,9 +25,11 @@
             }
         </mat-selection-list>
 
-        <button matButton="outlined" (click)="toggleIsExpanded()">
-            {{ isExpanded() ? "Weniger" : "Mehr" }}
-        </button>
+        @if (evaluation().suggestions.length > 1) {
+            <button matButton="outlined" (click)="toggleIsExpanded()">
+                {{ isExpanded() ? "Weniger" : "Mehr" }}
+            </button>
+        }
 
         <div class="flex-row gap-8">
             <button class="flex-1" matButton="outlined" (click)="reset()">
