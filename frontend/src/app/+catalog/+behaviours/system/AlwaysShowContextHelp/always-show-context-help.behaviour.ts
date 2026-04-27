@@ -25,7 +25,7 @@ import { UiStore } from "../../../../store/ui.store";
 @Injectable({ providedIn: "root" })
 export class AlwaysShowContextHelpBehaviour extends Plugin {
   id = "plugin.always.show.context.help";
-  name = "Kontexthilfe immer anzeigen";
+  name = "Kontexthilfe Buttons immer anzeigen";
   group = "Andere";
   description =
     "Zeigt die Kontexthilfe-Buttons immer an. Wenn ausgeschaltet, dann werden die Buttons nur beim Hovern über den Feldlabel angezeigt.";
