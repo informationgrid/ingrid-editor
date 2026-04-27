@@ -19,8 +19,26 @@
  */
 package de.ingrid.igeserver.utils
 
+/**
+ * Adds the specified prefix to the string if it does not already start with the prefix.
+ *
+ * @param prefix The prefix to add to the string if it is not already present.
+ * @return The original string if it starts with the prefix, otherwise the string with the prefix added.
+ */
 fun String.prefixIfNot(prefix: String) = if (this.startsWith(prefix)) this else "$prefix$this"
 
+/**
+ * Appends the specified suffix to the string if it does not already end with it.
+ *
+ * @param suffix The suffix to be appended if not already present.
+ * @return The original string if it ends with the specified suffix, otherwise the string with the suffix appended.
+ */
 fun String.suffixIfNot(suffix: String) = if (this.endsWith(suffix)) this else "$this$suffix"
 
+/**
+ * Executes the given lambda function if the boolean value is `false`.
+ *
+ * @param body The lambda function to execute if the boolean evaluates to `false`.
+ * @return The result of the lambda function if the boolean is `false`, otherwise `null`.
+ */
 inline fun <T> Boolean.ifFalse(body: () -> T?): T? = if (!this) body() else null
