@@ -93,6 +93,7 @@ import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
 import { AuthenticationFactory } from "../../../security/auth.factory";
 import { JsonViewComponent } from "../../../shared/json-view/json-view.component";
+import { AiAssistantViewComponent } from "../../../shared/ai-assistant-view/ai-assistant-view.component";
 
 @Component({
   selector: "ige-form-wrapper",
@@ -111,6 +112,7 @@ import { JsonViewComponent } from "../../../shared/json-view/json-view.component
     FolderDashboardComponent,
     FormlyForm,
     JsonViewComponent,
+    AiAssistantViewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -169,6 +171,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
     return plugin.isActive() && this.uiStore.showJSONView();
+  });
+
+  showAiAssistant: Signal<boolean> = computed(() => {
+    const plugin = this.behaviourService.getBehaviour(
+      "plugin.show.ai-assistant",
+    );
+    return plugin.isActive() && this.uiStore.showAiAssistant();
   });
 
   private readonly: boolean;
@@ -230,6 +239,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           ConfigService.catalogId + (address ? "/address" : "/form"),
         ]);
       }
+    });
+
+    effect(() => {
+      // needed to register change but actual value irrelevant
+      this.showAllFields();
+      this.formularService.updateSectionsForDoctype(this.fields);
     });
   }
 
@@ -503,7 +518,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsForDoctype(this.fields);
+    this.formularService.updateSectionsForDoctype(this.fields);
     this.hasOptionalFields.set(
       this.profileService.getDoctype(doctypeId).hasOptionalFields,
     );

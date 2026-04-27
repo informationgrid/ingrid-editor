@@ -1,0 +1,118 @@
+<page-template
+    *transloco="let t"
+    [label]="t('pageTitle.reports.quality-analysis')"
+>
+    <div left-side>
+        <p>
+            Hier kann die KI die Qualität aller veröffentlichten Metadaten
+            analysieren und für jeden Datensatz eine Bewertung vergeben. Sie
+            können die Ergebnisse vor und nach der Optimierung vergleichen und
+            entscheiden, ob Sie die Vorschläge übernehmen möchten.
+        </p>
+    </div>
+
+    <div main-header>
+        <button
+            matButton="filled"
+            color="primary"
+            [disabled]="isLoading()"
+            (click)="startAnalysis()"
+        >
+            Analyse starten
+        </button>
+    </div>
+
+    <div main-content class="main-content">
+        <div class="leading flex-col gap-12 align-items-center">
+            @if (isLoading()) {
+                <ige-hint-loading-view [hints]="loadingHints" />
+            } @else if (dataSource.data.length > 0) {
+                <h2>{{ dataSource.data.length }} Datensätze analysiert</h2>
+            } @else {
+                <p>Noch kein Bericht der Analyse vorhanden.</p>
+            }
+        </div>
+
+        <div [class.hide]="isLoading() || dataSource.data.length === 0">
+            <mat-divider></mat-divider>
+
+            <table mat-table matSort [dataSource]="dataSource">
+                <ng-container matColumnDef="totalSuggestionCount">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let element">
+                        @if (element.totalSuggestionCount > 0) {
+                            <mat-icon
+                                matTooltip="Verbesserungsfähig"
+                                [matTooltipShowDelay]="0"
+                            >
+                                auto_awesome
+                            </mat-icon>
+                        } @else {
+                            <mat-icon
+                                matTooltip="Alles in Ordnung"
+                                [matTooltipShowDelay]="0"
+                            >
+                                check_circle
+                            </mat-icon>
+                        }
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="title">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                        Titel
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.title }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="totalScore">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                        Bewertung
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <ige-score-indicator [score]="element.totalScore" />
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="settings">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let element">
+                        <button
+                            matIconButton
+                            [matMenuTriggerFor]="menu"
+                            (click)="$event.stopPropagation()"
+                        >
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button
+                                mat-menu-item
+                                (click)="openDataset(element)"
+                            >
+                                Datensatz öffnen
+                            </button>
+                            <button
+                                mat-menu-item
+                                (click)="openComparisonDialog(element)"
+                            >
+                                Details anzeigen
+                            </button>
+                        </mat-menu>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    (click)="openComparisonDialog(row)"
+                ></tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+            </mat-paginator>
+        </div>
+    </div>
+</page-template>

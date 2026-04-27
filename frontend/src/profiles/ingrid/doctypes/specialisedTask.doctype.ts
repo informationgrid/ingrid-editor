@@ -44,7 +44,10 @@ export class SpecialisedTaskDoctype extends IngridShared {
       this.addKeywordsSection(),
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ extraInfoLangData: true }),
+      this.addAdditionalInformationSection({
+        extraInfoLangData: true,
+        optionalSection: this.options.optional.additionalInformationSection,
+      }),
       this.addLinksSection(IngridClass.InGridSpecialisedTask),
     ];
 

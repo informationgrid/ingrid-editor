@@ -1,0 +1,21 @@
+@use "src/variables" as vars;
+
+.score {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 8px;
+  background-color: vars.$ige-mark-color;
+  border: 1px solid vars.$ige-primary;
+  border-radius: 4px;
+}
+
+.good {
+  background-color: vars.$ige-check-background-color;
+  border: 1px solid vars.$ige-check-color;
+}
+
+.poor {
+  background-color: vars.$error-background;
+  border: 1px solid vars.$error-color;
+}

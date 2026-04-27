@@ -14,7 +14,8 @@
     "reports": {
       "general": "Statistik",
       "url-check": "URL-Pflege",
-      "expiration": "Abgelaufene Metadaten"
+      "expiration": "Abgelaufene Metadaten",
+      "quality-analysis": "KI-Qualitätsanalyse (Beta)"
     },
     "manage": {
       "user": "Benutzer",
@@ -28,7 +29,8 @@
       "codelists": "Katalog - Codelisten",
       "form-behaviours": "Katalog - Verhalten",
       "indexing": "Katalog - Indizierung",
-      "config": "Katalog - Konfiguration"
+      "config": "Katalog - Konfiguration",
+      "ai-configuration": "KI-Konfiguration (Beta)"
     },
     "settings": {
       "general": "Verwaltung",

@@ -1,0 +1,65 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header expandedHeight="48px" collapsedHeight="48px">
+        KI-Analyse
+    </mat-expansion-panel-header>
+
+    @if (isSupported()) {
+        @if (isIdle()) {
+            <div class="flex-col gap-12">
+                <div>
+                    Den Datensatz durch KI analysieren und bewerten, um mögliche
+                    Fehler und Verbesserungspotenziale zu identifizieren.
+                </div>
+                <button matButton="filled" color="primary" (click)="evaluate()">
+                    Analyse starten
+                </button>
+            </div>
+        }
+
+        @if (isLoading()) {
+            <ige-hint-loading-view [hints]="loadingHints" />
+        }
+
+        @if (isLoaded()) {
+            <div class="flex-col gap-24">
+                <div>
+                    {{ evaluationResult().summary }}
+                </div>
+
+                @for (evaluation of evaluations(); track evaluation) {
+                    <ige-evaluation-entry
+                        [evaluation]="evaluation"
+                        (onSuggestionReset)="onSuggestionReset(evaluation.key)"
+                        (onSuggestionApply)="onSuggestionApply($event)"
+                    />
+                }
+
+                <mat-divider></mat-divider>
+
+                <button matButton="filled" color="primary" (click)="evaluate()">
+                    Erneut analysieren
+                </button>
+            </div>
+        }
+
+        @if (hasError()) {
+            <div class="flex-col align-items-center gap-12">
+                <mat-icon>bug_report</mat-icon>
+                <span>Oops! Da ging was schief.</span>
+                <button
+                    class="align-self-stretch"
+                    matButton="filled"
+                    color="primary"
+                    (click)="evaluate()"
+                >
+                    Erneut analysieren
+                </button>
+            </div>
+        }
+    } @else {
+        <div class="flex-col align-items-center gap-12">
+            <mat-icon>handyman</mat-icon>
+            <span>Dieser Datentyp befindet sich noch auf der Baustelle.</span>
+        </div>
+    }
+</mat-expansion-panel>

@@ -17,7 +17,12 @@
         <!-- The form -->
         <as-split-area
             #scrollForm
-            [size]="100 - sidebarWidth() - (showJson() ? 20 : 0)"
+            [size]="
+                100 -
+                sidebarWidth() -
+                (showJson() ? 20 : 0) -
+                (showAiAssistant() ? 25 : 0)
+            "
             id="form"
             class="form-content"
             cdkScrollable
@@ -101,6 +106,12 @@
                 <ige-json-view [data]="metadata()"></ige-json-view>
                 Document:
                 <ige-json-view [data]="form.value"></ige-json-view>
+            </as-split-area>
+        }
+
+        @if (showAiAssistant()) {
+            <as-split-area [size]="25">
+                <ige-ai-assistant-view [metadata]="metadata()" [form]="form" />
             </as-split-area>
         }
     </as-split>

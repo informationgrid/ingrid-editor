@@ -3,6 +3,10 @@
 :host {
   display: flex;
   position: relative;
+
+  &.always-show-context-help mat-icon {
+    opacity: 1 !important;
+  }
 }
 
 .label-wrapper {
@@ -37,6 +41,10 @@
 
 :host-context(.required) .label-wrapper label {
   font-weight: 500;
+}
+
+:host-context(.force-optional) .label-wrapper label {
+  font-weight: unset !important;
 }
 
 :host-context(.hasContextHelp) {

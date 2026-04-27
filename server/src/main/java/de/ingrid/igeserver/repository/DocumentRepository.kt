@@ -42,6 +42,12 @@ interface DocumentRepository : JpaRepository<Document, Int> {
 
     fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DocumentState): Long
 
+    fun findAllByCatalog_IdentifierAndStateAndType(
+        catalog_identifier: String,
+        state: DocumentState,
+        type: String,
+    ): List<Document>
+
     /**
      * @deprecated
      * There is no check if the document is already deleted!

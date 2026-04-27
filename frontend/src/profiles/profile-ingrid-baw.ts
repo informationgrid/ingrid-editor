@@ -86,6 +86,8 @@ class InGridBawComponent extends InGridComponent {
     ].forEach((docType) => {
       // add BWaStr-Strecken to spatial types
       docType.options.spatialTypes.push("bwastr");
+      docType.options.optional.doi = true;
+      docType.options.optional.additionalInformationSection = true;
     });
   }
 }

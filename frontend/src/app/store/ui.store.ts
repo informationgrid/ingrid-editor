@@ -27,8 +27,10 @@ export type UiState = {
   sidebarExpanded?: boolean;
   sidebarWidth?: number;
   showJSONView?: boolean;
+  showAiAssistant?: boolean;
   userTableWidth?: number;
   toggleFieldsButtonShowAll?: boolean;
+  alwaysShowContextHelp?: boolean;
   currentSubpage: {
     research: string;
     manage: string;
@@ -47,8 +49,10 @@ const initialState: UiState = {
   sidebarExpanded: true,
   sidebarWidth: 30,
   showJSONView: false,
+  showAiAssistant: false,
   userTableWidth: 35,
   toggleFieldsButtonShowAll: false,
+  alwaysShowContextHelp: false,
   currentSubpage: {
     research: null,
     manage: null,
@@ -75,9 +79,17 @@ export const UiStore = signalStore(
     setToggleFieldsButtonShowAll(value: boolean): void {
       patchState(store, { toggleFieldsButtonShowAll: value });
     },
+    setAlwaysShowContextHelp(value: boolean): void {
+      patchState(store, { alwaysShowContextHelp: value });
+    },
     toggleJsonView(forceValue?: boolean) {
       patchState(store, (state) => ({
         showJSONView: forceValue ?? !state.showJSONView,
+      }));
+    },
+    toggleAiAssistantView(forceValue?: boolean) {
+      patchState(store, (state) => ({
+        showAiAssistant: forceValue ?? !state.showAiAssistant,
       }));
     },
     setTextAreaHeights(value: any) {

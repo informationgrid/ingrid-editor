@@ -74,6 +74,14 @@ export class McloudDoctype extends BaseDoctype {
           options: this.getCodelistForSelect("20001", "DCATThemes"),
           codelistId: "20001",
         }),
+        this.addAutocomplete(
+          "DCATThemesAuto",
+          "OpenData Kategorie (autocomplete)",
+          {
+            options: this.getCodelistForSelect("20001", "DCATThemesAuto"),
+            codelistId: "20001",
+          },
+        ),
         this.addTable("distributions", "Downloads", {
           required: true,
           columns: [

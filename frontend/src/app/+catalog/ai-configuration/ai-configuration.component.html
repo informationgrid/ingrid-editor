@@ -1,0 +1,34 @@
+<page-template
+    *transloco="let t"
+    class="white"
+    [label]="t('pageTitle.catalogs.ai-configuration')"
+>
+    <ng-container left-side>
+        <p>
+            In diesem Bereich konfigurieren Sie das Verhalten des KI-Agenten
+            sowie die Verbindung zum Server.
+        </p>
+        <p>
+            Den KI-Assistenten aktivieren Sie im Bereich „Verwalten“ →
+            „Toolbar“.
+        </p>
+    </ng-container>
+
+    @if (fields) {
+        <div main-header>
+            <button mat-flat-button color="primary" (click)="save()">
+                Speichern
+            </button>
+        </div>
+    }
+
+    <div main-content class="main">
+        <div class="scrollable">
+            <formly-form
+                [form]="form"
+                [model]="model()"
+                [fields]="fields"
+            ></formly-form>
+        </div>
+    </div>
+</page-template>

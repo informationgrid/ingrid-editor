@@ -1100,7 +1100,7 @@
             </gmd:dataQualityInfo>
             <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
             <idf:abstract>
-                <gco:CharacterString>Hier ist die Beschreibung.</gco:CharacterString>
+                <gco:CharacterString>Hier ist die Beschreibung. Maßstab: 1:1, 1:2; Bodenauflösung: 1m, 2m; Scanauflösung (DPI): 1, 2; Systemumgebung: Fachbezug Systemumgebung; Erläuterung zum Fachbezug: Fachbezug Erläuterungen</gco:CharacterString>
             </idf:abstract>
         </idf:idfMdMetadata>
     </idf:body>

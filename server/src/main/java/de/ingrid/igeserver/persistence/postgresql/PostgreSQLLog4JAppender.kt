@@ -233,7 +233,8 @@ class PostgreSQLLog4JAppender(
         if (queue.size == 0) return
 
         try {
-            val parameters = queue.toTypedArray()
+            // somehow it happens in rare cases that the queue contains null values
+            val parameters = queue.filterNotNull().toTypedArray()
             val count = table?.let {
                 jdbcTemplate.batchUpdate(INSERT_RECORD_STMT.replace(TABLE_NAME_VAR, it), parameters)
             }

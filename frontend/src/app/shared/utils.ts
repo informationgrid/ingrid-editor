@@ -141,6 +141,48 @@ export function isNotEmptyObject(objValue: any, ignoreFields = []) {
   });
 }
 
+// Remove all empty values from a nested object.
+// Return a new object.
+export function removeEmptyValuesFromAnObject(obj: any) {
+  if (Array.isArray(obj)) {
+    return obj
+      .map((item) =>
+        typeof item === "object" && item !== null
+          ? removeEmptyValuesFromAnObject(item)
+          : item,
+      )
+      .filter((item) => !isEmptyValue(item));
+  }
+
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    // Skip if the value is already empty or null.
+    if (isEmptyValue(value)) return acc;
+
+    const cleaned =
+      typeof value === "object" && value !== null
+        ? removeEmptyValuesFromAnObject(value)
+        : value;
+
+    // Skip if the cleaned object itself becomes empty
+    if (isEmptyValue(cleaned)) return acc;
+
+    return { ...acc, [key]: cleaned };
+  }, {});
+}
+
+// Check if the value is empty (null, undefined, empty string, empty array, empty object).
+export function isEmptyValue(value: any) {
+  if (value === null || value === undefined) return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "string") {
+    return value.trim() === "";
+  }
+  if (typeof value === "object") {
+    return Object.keys(value as object).length === 0;
+  }
+  return false;
+}
+
 /**
  * Replace null or empty fields with undefined in order to remove them from the resulting form value.
  * @param obj

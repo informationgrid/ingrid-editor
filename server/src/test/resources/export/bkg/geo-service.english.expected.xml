@@ -851,7 +851,7 @@
             <idf:hasAccessConstraint>false</idf:hasAccessConstraint>
             <idf:abstract>
                 <gco:CharacterString>INSPIRE Download Service for Digital Terrain Model Grid Width 200 m (DGM200). The Digital Terrain Model DGM200 describes the terrain forms of the earth’s surface by means of a point quantity arranged in a regular grid, which is georeferenced to planimetry and altimetry. The grid width is 200 m. The data provided through this service covers the area of Germany. Scale: 1:200000
-                    ;</gco:CharacterString>
+                    ; Erläuterung zum Fachbezug: WCS Service</gco:CharacterString>
             </idf:abstract>
         </idf:idfMdMetadata>
     </idf:body>

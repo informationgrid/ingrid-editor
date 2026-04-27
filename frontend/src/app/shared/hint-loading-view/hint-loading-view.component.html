@@ -1,0 +1,8 @@
+<mat-spinner diameter="28"></mat-spinner>
+@for (hint of hints(); track hint; let i = $index) {
+    @if (currentIndex() === i) {
+        <div class="loading-text">
+            {{ hint }}
+        </div>
+    }
+}

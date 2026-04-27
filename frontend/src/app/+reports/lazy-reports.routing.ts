@@ -23,6 +23,7 @@ import { ReportsComponent } from "./reports/reports.component";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { ReportsService } from "./reports.service";
 import { UrlCheckComponent } from "./url-check/url-check.component";
+import { TabQualityAnalysisComponent } from "./+tab-quality-analysis/tab-quality-analysis.component";
 
 const routes: Routes = [
   {
@@ -46,6 +47,13 @@ const routes: Routes = [
         component: UrlCheckComponent,
         data: {
           title: "URL-Pflege",
+        },
+      },
+      {
+        path: "quality-analysis",
+        component: TabQualityAnalysisComponent,
+        data: {
+          title: "KI Qualitätsanalyse",
         },
       },
     ],

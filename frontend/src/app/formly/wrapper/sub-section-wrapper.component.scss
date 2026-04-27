@@ -9,3 +9,17 @@ ige-form-error {
   display: block;
   padding-bottom: 12px;
 }
+
+:host(.indent) {
+  display: block;
+  padding-left: 24px;
+}
+
+.no-margin {
+  margin-bottom: 0;
+}
+
+.comment {
+  font-size: 12px;
+  padding-bottom: 12px;
+}

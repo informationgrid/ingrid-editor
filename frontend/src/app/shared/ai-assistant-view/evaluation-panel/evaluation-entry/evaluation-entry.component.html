@@ -1,0 +1,49 @@
+<div class="flex-col gap-8">
+    <div class="flex-row gap-8 justify-content-space-between font-medium">
+        <div>{{ evaluation().label }}</div>
+        <ige-score-indicator [score]="evaluation().score" />
+    </div>
+
+    @if (evaluation().reasoning) {
+        <div class="text-sm">{{ evaluation().reasoning }}</div>
+    }
+
+    @if (evaluation().suggestions && evaluation().suggestions.length) {
+        <mat-divider></mat-divider>
+
+        <mat-selection-list
+            #list
+            [multiple]="false"
+            [formControl]="formControl"
+        >
+            @for (suggestion of evaluation().suggestions; track suggestion) {
+                @if (isExpanded() || suggestion === list._value?.at(0)) {
+                    <mat-list-option class="no-wrap" [value]="suggestion">
+                        {{ suggestion }}
+                    </mat-list-option>
+                }
+            }
+        </mat-selection-list>
+
+        @if (evaluation().suggestions.length > 1) {
+            <button matButton="outlined" (click)="toggleIsExpanded()">
+                {{ isExpanded() ? "Weniger" : "Mehr" }}
+            </button>
+        }
+
+        <div class="flex-row gap-8">
+            <button class="flex-1" matButton="outlined" (click)="reset()">
+                Zurücksetzen
+            </button>
+
+            <button
+                class="flex-1"
+                matButton="outlined"
+                [disabled]="!list._value"
+                (click)="apply(list._value.at(0))"
+            >
+                Übernehmen
+            </button>
+        </div>
+    }
+</div>

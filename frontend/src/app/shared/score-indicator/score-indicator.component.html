@@ -1,0 +1,7 @@
+<div
+    class="score"
+    [class.good]="roundedScore() >= max() * 0.7"
+    [class.poor]="roundedScore() <= max() * 0.4"
+>
+    {{ roundedScore() }} / {{ max() }}
+</div>
