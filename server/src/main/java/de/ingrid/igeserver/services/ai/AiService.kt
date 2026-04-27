@@ -52,7 +52,6 @@ class AiService(
     private val schemaProvider: AiJsonSchemaProvider,
 ) {
     // TODO: this is just a temporary way to store the evaluation results.
-    var lastEvaluateAllResult: String? = null
     var evaluateResults: String? = null
 
     fun updateSettings(settings: AiSettings): AiSettings {
@@ -79,20 +78,6 @@ class AiService(
 
     fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiToken = null)
 
-    // TODO: temporarily get and combine all results from the memory.
-    fun getLatestReport(): String? {
-        val mapper = jacksonObjectMapper()
-        val seenUuids = mutableSetOf<String>()
-
-        val combinedData = listOfNotNull(lastEvaluateAllResult, evaluateResults)
-            .flatMap { mapper.readTree(it)?.get("data")?.toList().orEmpty() }
-            .filter { node -> node.get("uuid")?.asText()?.let { seenUuids.add(it) } != false }
-            .fold(mapper.createArrayNode()) { arr, node -> arr.add(node) }
-
-        return combinedData.takeUnless { it.isEmpty }
-            ?.let { mapper.writeValueAsString(mapper.createObjectNode().set("data", it)) }
-    }
-
     private fun getSettings(): AiSettings? {
         val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
         return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
@@ -114,12 +99,10 @@ class AiService(
 
         // TODO: temporarily append result to evaluateResults.
         if (result != null) {
-            val mapper = jacksonObjectMapper()
-            val dataArray = evaluateResults
-                ?.let { mapper.readTree(it)?.withArray("data") }
-                ?: mapper.createArrayNode()
-            dataArray.add(mapper.readTree(result))
-            evaluateResults = mapper.writeValueAsString(mapper.createObjectNode().set("data", dataArray))
+            val results = jacksonObjectMapper().run {
+                writeValueAsString(createObjectNode().set("data", createArrayNode().add(readTree(result))))
+            }
+            appendResults(results)
         }
 
         return result
@@ -147,8 +130,26 @@ class AiService(
             jsonSchema = schemaProvider.getEvaluateAllResponseSchema(),
         )
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-        lastEvaluateAllResult = completion.choices.firstOrNull()?.message?.content
-        return lastEvaluateAllResult
+
+        // Append results to evaluateResults.
+        val results = completion.choices.firstOrNull()?.message?.content
+        appendResults(results)
+
+        return evaluateResults
+    }
+
+    private fun appendResults(results: String?) {
+        if (results == null) return
+        val mapper = jacksonObjectMapper()
+        val seenUuids = mutableSetOf<String>()
+
+        val combinedData = listOfNotNull(results, evaluateResults)
+            .flatMap { mapper.readTree(it)?.get("data")?.toList().orEmpty() }
+            .filter { node -> node.get("uuid")?.asText()?.let { seenUuids.add(it) } != false }
+            .fold(mapper.createArrayNode()) { arr, node -> arr.add(node) }
+
+        evaluateResults = combinedData.takeUnless { it.isEmpty }
+            ?.let { mapper.writeValueAsString(mapper.createObjectNode().set("data", it)) }
     }
 
     private fun getOpenAIClient(): Triple<OpenAI, String, String?> {

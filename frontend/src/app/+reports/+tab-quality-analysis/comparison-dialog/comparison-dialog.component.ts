@@ -36,7 +36,7 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { ScoreIndicatorComponent } from "../../../shared/score-indicator/score-indicator.component";
-import { EvaluationResult } from "../../../services/ai-assistant/ai-assistant.service";
+import { EvaluationResult } from "../../../services/ai/ai.service";
 
 @Component({
   selector: "ige-comparison-dialog",

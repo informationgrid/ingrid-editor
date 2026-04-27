@@ -50,10 +50,7 @@ import { MatDivider } from "@angular/material/list";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { ScoreIndicatorComponent } from "../../shared/score-indicator/score-indicator.component";
 import { HintLoadingViewComponent } from "../../shared/hint-loading-view/hint-loading-view.component";
-import {
-  AiAssistantService,
-  EvaluationResult,
-} from "../../services/ai-assistant/ai-assistant.service";
+import { AiService, EvaluationResult } from "../../services/ai/ai.service";
 import { ConfigService } from "../../services/config/config.service";
 import { finalize } from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -110,7 +107,7 @@ export class TabQualityAnalysisComponent implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
-    private aiService: AiAssistantService,
+    private aiService: AiService,
     private dialog: MatDialog,
   ) {}
 

@@ -38,7 +38,6 @@ import {
   TimeReference,
   Url,
 } from "./get-capabilities.model";
-import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
 import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";

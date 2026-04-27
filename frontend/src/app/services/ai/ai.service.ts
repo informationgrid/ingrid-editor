@@ -21,6 +21,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { Observable } from "rxjs";
+import { removeEmptyValuesFromAnObject } from "../../shared/utils";
 
 export interface EvaluationResult {
   uuid: string;
@@ -51,7 +52,7 @@ export interface AiSettings {
 @Injectable({
   providedIn: "root",
 })
-export class AiAssistantService {
+export class AiService {
   private configuration: Configuration;
 
   constructor(
@@ -77,9 +78,10 @@ export class AiAssistantService {
   }
 
   evaluateDataset(data: any): Observable<EvaluationResult> {
+    const cleanedData = removeEmptyValuesFromAnObject(data);
     return this.http.post<EvaluationResult>(
       this.configuration.backendUrl + "ai/dataset/evaluate",
-      data,
+      cleanedData,
     );
   }
 

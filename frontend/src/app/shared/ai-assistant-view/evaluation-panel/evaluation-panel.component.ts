@@ -25,10 +25,7 @@ import {
   signal,
   untracked,
 } from "@angular/core";
-import {
-  AiAssistantService,
-  EvaluationResult,
-} from "../../../services/ai-assistant/ai-assistant.service";
+import { AiService, EvaluationResult } from "../../../services/ai/ai.service";
 import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
@@ -86,7 +83,7 @@ export class EvaluationPanelComponent {
     return this.metadata()?.docType === "InGridGeoDataset";
   });
 
-  constructor(private aiService: AiAssistantService) {
+  constructor(private aiService: AiService) {
     // Track uuid changes.
     effect(() => {
       this.loadResultFromReport(this.metadata()?.uuid);

@@ -23,7 +23,7 @@ import { fields } from "./formly-fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { MatButton } from "@angular/material/button";
 import { FormlyForm } from "@ngx-formly/core";
-import { AiAssistantService } from "../../services/ai-assistant/ai-assistant.service";
+import { AiService } from "../../services/ai/ai.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { TranslocoDirective } from "@jsverse/transloco";
 
@@ -39,7 +39,7 @@ export class AiConfigurationComponent implements OnInit {
   model = signal<any>({});
 
   constructor(
-    private aiService: AiAssistantService,
+    private aiService: AiService,
     private snackbar: MatSnackBar,
   ) {}
 

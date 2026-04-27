@@ -19,7 +19,7 @@
  */
 
 import { Component, input, OnInit, output, signal } from "@angular/core";
-import { Evaluation } from "../../../../services/ai-assistant/ai-assistant.service";
+import { Evaluation } from "../../../../services/ai/ai.service";
 import { MatButton } from "@angular/material/button";
 import {
   MatDivider,
