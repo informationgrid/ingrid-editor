@@ -122,7 +122,7 @@ const val LFS_REFERENCE = """
                             <gmd:onLine>
                                 <idf:idfOnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>https://dl.datenfinder.baw.de/LFS/test-file.pdf</gmd:URL>
+                                        <gmd:URL>https://dl.datenfinder.baw.de/LFS/KA/test-file.pdf</gmd:URL>
                                     </gmd:linkage>
                                     <gmd:name>
                                         <gco:CharacterString>LFS Download</gco:CharacterString>

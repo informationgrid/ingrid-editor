@@ -142,7 +142,34 @@ class BawFields : GeodatasetBase() {
                 result shouldContain "0815-10.5-20"
             }
 
-            should("export lfsReferences for: $docType") {
+            should("export lfsReferences with KA prefix for: $docType") {
+                val context =
+                    jacksonObjectMapper()
+                        .readTree(
+                            """{
+                        "lfsReferences": [
+                            {
+                                "title": "LFS Download",
+                                "explanation": "LFS Explanation",
+                                "file": {
+                                    "uuid": "KA/test-file.pdf"
+                                }
+                            }
+                        ]
+                    }"""
+                                .trimIndent(),
+                        ) as ObjectNode
+
+                val result =
+                    exportJsonToXML(exporter, docSample, context)
+
+                result shouldContain "https://dl.datenfinder.baw.de/LFS/KA/test-file.pdf"
+                result shouldContain "LFS Download"
+                result shouldContain "LFS Explanation"
+                result shouldContain LFS_REFERENCE
+            }
+
+            should("export lfsReferences without prefix for: $docType") {
                 val context =
                     jacksonObjectMapper()
                         .readTree(
@@ -163,10 +190,31 @@ class BawFields : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain "https://dl.datenfinder.baw.de/LFS/test-file.pdf"
-                result shouldContain "LFS Download"
-                result shouldContain "LFS Explanation"
-                result shouldContain LFS_REFERENCE
+                result shouldContain "https://dl.datenfinder.baw.de/test-file.pdf"
+            }
+
+            should("export lfsReferences without prefix for KA- without slash: $docType") {
+                val context =
+                    jacksonObjectMapper()
+                        .readTree(
+                            """{
+                        "lfsReferences": [
+                            {
+                                "title": "LFS Download",
+                                "explanation": "LFS Explanation",
+                                "file": {
+                                    "uuid": "KA-test-file.pdf"
+                                }
+                            }
+                        ]
+                    }"""
+                                .trimIndent(),
+                        ) as ObjectNode
+
+                val result =
+                    exportJsonToXML(exporter, docSample, context)
+
+                result shouldContain "https://dl.datenfinder.baw.de/KA-test-file.pdf"
             }
         }
 

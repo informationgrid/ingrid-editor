@@ -145,7 +145,13 @@ fun getOrderTitle(transformer: IngridModelTransformer): String? {
 fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
-        url = modelTransformer.transformUrl(it.getString("file.uuid")?.let { path -> "https://dl.datenfinder.baw.de/${path.prefixIfNot("LFS/")}" })
+        url = modelTransformer.transformUrl(
+            it.getString("file.uuid")?.let { path ->
+                // add LFS prefix for legacy data where necessary (LFS/KA/ or LFS/HH/ paths)
+                val finalPath = if (path.startsWith("KA/") || path.startsWith("HH/")) path.prefixIfNot("LFS/") else path
+                "https://dl.datenfinder.baw.de/$finalPath"
+            },
+        )
             ?: return@mapNotNull null,
         description = it.getString("explanation"),
         functionValue = "download",
