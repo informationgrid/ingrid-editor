@@ -528,6 +528,10 @@
       "type": "keyword",
       "store": true,
       "copy_to": "content"
+    },
+    "rdf": {
+      "type": "text",
+      "store": true
     }
   }
 }
