@@ -1152,7 +1152,7 @@ export abstract class IngridShared extends BaseDoctype {
                   {
                     props: {
                       hasValidation: true,
-                      indent: true,
+                      bordered: true,
                       comment: "(Es muss ein Datum angegeben werden)",
                     },
                     className: "eventGroup required",

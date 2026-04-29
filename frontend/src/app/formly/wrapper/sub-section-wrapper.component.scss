@@ -15,6 +15,18 @@ ige-form-error {
   padding-left: 24px;
 }
 
+:host(.bordered) {
+  display: block;
+  padding: 4px 16px;
+  margin-bottom: 24px;
+  border: 1px solid vars.$ige-background-bar;
+  border-radius: 4px;
+
+  .mat-divider {
+    margin: 0px -16px 20px;
+  }
+}
+
 .no-margin {
   margin-bottom: 0;
 }

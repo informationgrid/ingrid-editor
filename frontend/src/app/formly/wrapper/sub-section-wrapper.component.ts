@@ -29,6 +29,7 @@ import { FormErrorComponent } from "../../+form/form-shared/ige-form-error/form-
 
 export interface SubSectionWrapperProps extends FormlyFieldProps {
   indent?: boolean;
+  bordered?: boolean;
   hideDivider?: boolean;
   hasValidation?: boolean;
   comment?: string;
@@ -37,7 +38,9 @@ export interface SubSectionWrapperProps extends FormlyFieldProps {
 @Component({
   selector: "ige-sub-section-wrapper",
   template: `
-    <mat-divider aria-hidden="true"></mat-divider>
+    @if (!props.bordered) {
+      <mat-divider aria-hidden="true"></mat-divider>
+    }
     @if (props.label) {
       <h4 role="heading" [class.no-margin]="props.comment">
         {{ props.label }}
@@ -46,18 +49,22 @@ export interface SubSectionWrapperProps extends FormlyFieldProps {
     @if (props.comment) {
       <div class="comment" role="contentinfo">{{ props.comment }}</div>
     }
+    @if (props.bordered) {
+      <mat-divider aria-hidden="true"></mat-divider>
+    }
     @if (showError && props.hasValidation && field.form.invalid) {
       <ige-form-error>
         <formly-validation-message [field]="field"></formly-validation-message>
       </ige-form-error>
     }
     <ng-container #fieldComponent></ng-container>
-    @if (!props.hideDivider) {
+    @if (!props.hideDivider && !props.bordered) {
       <mat-divider aria-hidden="true" class="space-bottom-field"></mat-divider>
     }
   `,
   host: {
     "[class.indent]": "props.indent",
+    "[class.bordered]": "props.bordered",
   },
   styleUrls: ["./sub-section-wrapper.component.scss"],
   imports: [MatDivider, FormErrorComponent, FormlyValidationMessage],
