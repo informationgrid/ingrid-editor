@@ -4,7 +4,7 @@
     mat-stretch-tabs="false"
     [tabPanel]="tabPanel"
 >
-    @for (tab of tabs; track tab; let i = $index) {
+    @for (tab of visibleTabs(); track tab; let i = $index) {
         <a
             [attr.data-cy]="tab.path"
             mat-tab-link

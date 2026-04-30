@@ -19,7 +19,7 @@
  */
 import { SessionService, Tab, TabPage } from "../services/session.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 
 @Component({
   template: "",
@@ -29,11 +29,13 @@ export abstract class TabContainerComponent implements OnInit {
   private sessionService = inject(SessionService);
   private activeRoute = inject(ActivatedRoute);
 
-  tabs: Tab[];
+  tabs = signal<Tab[]>(undefined);
   abstract tabPage: TabPage;
 
   ngOnInit(): void {
-    this.tabs = this.sessionService.getTabsFromRoute(this.activeRoute.snapshot);
+    this.tabs.set(
+      this.sessionService.getTabsFromRoute(this.activeRoute.snapshot),
+    );
 
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used

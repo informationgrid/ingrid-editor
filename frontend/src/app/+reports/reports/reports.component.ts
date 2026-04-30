@@ -17,11 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { TabPage } from "../../services/session.service";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { TabContainerComponent } from "../../+research/tab-container.component";
+import { BehaviourService } from "../../services/behavior/behaviour.service";
 
 @Component({
   selector: "ige-reports",
@@ -38,4 +39,15 @@ import { TabContainerComponent } from "../../+research/tab-container.component";
 })
 export class ReportsComponent extends TabContainerComponent {
   tabPage: TabPage = "reports";
+
+  private behaviourService = inject(BehaviourService);
+  isAiPluginActive = computed(() =>
+    this.behaviourService.getBehaviour("plugin.show.ai-assistant").isActive(),
+  );
+
+  visibleTabs = computed(() =>
+    this.tabs().filter(
+      (tab) => this.isAiPluginActive() || !tab.path.startsWith("ai"),
+    ),
+  );
 }

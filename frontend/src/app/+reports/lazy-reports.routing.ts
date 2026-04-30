@@ -24,6 +24,7 @@ import { GeneralReportComponent } from "./general-report/general-report.componen
 import { ReportsService } from "./reports.service";
 import { UrlCheckComponent } from "./url-check/url-check.component";
 import { TabQualityAnalysisComponent } from "./+tab-quality-analysis/tab-quality-analysis.component";
+import { AiAssistantGuard } from "../services/ai/ai-assistant.guard";
 
 const routes: Routes = [
   {
@@ -50,8 +51,9 @@ const routes: Routes = [
         },
       },
       {
-        path: "quality-analysis",
+        path: "ai-quality-analysis",
         component: TabQualityAnalysisComponent,
+        canActivate: [AiAssistantGuard],
         data: {
           title: "KI Qualitätsanalyse",
         },

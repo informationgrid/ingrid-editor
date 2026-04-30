@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import { AuthGuard } from "../security/auth.guard";
+import { AiAssistantGuard } from "../services/ai/ai-assistant.guard";
 import { CatalogSettingsComponent } from "./catalog-settings.component";
 import { CatalogCodelistsComponent } from "./codelists/catalog-codelists.component";
 import { IndexingComponent } from "./indexing/indexing.component";
@@ -70,8 +71,9 @@ export default [
       {
         path: "ai-configuration",
         component: AiConfigurationComponent,
+        canActivate: [AiAssistantGuard],
         data: {
-          title: "KI-Kofiguration",
+          title: "KI-Konfiguration",
         },
       },
     ],

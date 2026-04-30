@@ -27,14 +27,21 @@ import { UiStore } from "../../../../store/ui.store";
 @Injectable()
 export class ShowAiAssistantBehaviour extends Plugin {
   id = "plugin.show.ai-assistant";
-  name = "Anzeige KI-Assistent";
-  group = "Toolbar";
-  description =
-    "Fügt einen Button hinzu, mit dem der KI-Assistent neben dem Formular angezeigt werden kann.";
+  group = "Künstliche Intelligenz (Beta)";
   defaultActive = false;
 
+  name = "KI-Assistent aktivieren";
+  description = `
+    Die Aktivierung ermöglicht die folgenden Funktionen in einzelnen Bereichen:
+    <ul>
+      <li>KI-Analyse: bewerte die Qualität einzelner Datensätze und erhalte konkrete Verbesserungsvorschläge.</li>
+      <li>KI-Konfiguration: verwalte zentrale Einstellungen wie KI-Server, Modelle und Prompts.</li>
+      <li>KI-Qualitätsanalyse: analysiere alle veröffentlichten Datensätze und erhalte eine Gesamtbewertung des Katalogs.</li>
+    </ul>
+  `;
+
   private uiStore = inject(UiStore);
-  private eventShowAiAssistantId = "SHOW_AI_ASSISTANT";
+  private showAiAssistantEventId = "SHOW_AI_ASSISTANT";
 
   constructor(
     private formToolbarService: FormToolbarService,
@@ -47,6 +54,7 @@ export class ShowAiAssistantBehaviour extends Plugin {
   registerForm() {
     super.registerForm();
 
+    // Add the access to AI functionality to the toolbar.
     this.formToolbarService.addButton({
       id: "toolBtnShowAiAssistantSeparator",
       pos: 1001,
@@ -57,14 +65,14 @@ export class ShowAiAssistantBehaviour extends Plugin {
       id: "toolBtnShowAiAssistant",
       tooltip: "KI-Assistent anzeigen",
       matIconVariable: "auto_awesome",
-      eventId: this.eventShowAiAssistantId,
+      eventId: this.showAiAssistantEventId,
       pos: 1002,
       active: true,
     });
 
-    // add event handler for revert
+    // Add a click handler for the button in the toolbar.
     const toolbarEventSubscription = this.docEvents
-      .onEvent(this.eventShowAiAssistantId)
+      .onEvent(this.showAiAssistantEventId)
       .subscribe(() => this.toggleAiView());
 
     this.formSubscriptions.push(toolbarEventSubscription);

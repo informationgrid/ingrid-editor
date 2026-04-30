@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, viewChild } from "@angular/core";
+import { Component, computed, inject, viewChild } from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { TabContainerComponent } from "../+research/tab-container.component";
 import { TabPage } from "../services/session.service";
+import { BehaviourService } from "../services/behavior/behaviour.service";
 
 @Component({
   selector: "ige-catalog-settings",
@@ -39,6 +40,17 @@ import { TabPage } from "../services/session.service";
 })
 export class CatalogSettingsComponent extends TabContainerComponent {
   tabPage: TabPage = "catalogs";
+
+  private behaviourService = inject(BehaviourService);
+  isAiPluginActive = computed(() =>
+    this.behaviourService.getBehaviour("plugin.show.ai-assistant").isActive(),
+  );
+
+  visibleTabs = computed(() =>
+    this.tabs().filter(
+      (tab) => this.isAiPluginActive() || !tab.path.startsWith("ai"),
+    ),
+  );
 
   readonly tabNav = viewChild<MatTabNav>("navigation");
   readonly behaviourComponent = viewChild<BehavioursComponent>("behaviours");
