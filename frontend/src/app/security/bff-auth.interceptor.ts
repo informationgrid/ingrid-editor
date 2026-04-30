@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   HttpEvent,
   HttpHandler,
@@ -26,9 +26,11 @@ import {
 } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
+import { ConfigService } from "../services/config/config.service";
 
 @Injectable({ providedIn: "root" })
 export class BffAuthInterceptor implements HttpInterceptor {
+  private configService = inject(ConfigService);
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
@@ -55,7 +57,8 @@ export class BffAuthInterceptor implements HttpInterceptor {
             return throwError(() => error);
           }*/
           // Directly initiate login via the backend (full-page redirect)
-          window.location.href = "/auth/login";
+          window.location.href =
+            this.configService.getConfiguration().contextPath + "auth/login";
         } else if (error?.status === 403) {
           // If the user lacks the required role, redirect to the access-denied page served by the backend
           // window.location.href = "/access-denied";

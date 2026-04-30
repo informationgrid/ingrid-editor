@@ -17,14 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
+import { ConfigService } from "../services/config/config.service";
 
 @Component({
   template: "",
 })
 export class LogoutComponent implements OnInit {
+  private configService = inject(ConfigService);
+
   ngOnInit(): void {
     // Trigger backend-initiated logout (also logs out from Keycloak)
-    window.location.href = "/auth/logout";
+    window.location.href =
+      this.configService.getConfiguration().contextPath + "auth/logout";
   }
 }

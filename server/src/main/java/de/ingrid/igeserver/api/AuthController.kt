@@ -59,7 +59,7 @@ class AuthController(
      * Redirect to Spring Security's OAuth2 login entry point (Keycloak).
      */
     @GetMapping("/auth/login")
-    fun login(): ResponseEntity<Void> {
+    fun login(request: HttpServletRequest): ResponseEntity<Void> {
         // Resolve the configured OAuth2 client registration dynamically instead of hardcoding "keycloak"
         val registrations = mutableListOf<ClientRegistration>()
         if (clientRegistrationRepository is Iterable<*>) {
@@ -69,7 +69,8 @@ class AuthController(
         }
         val registrationId = registrations.firstOrNull()?.registrationId ?: "keycloak"
         val headers = HttpHeaders()
-        headers.location = java.net.URI.create("/oauth2/authorization/$registrationId")
+        val contextPath = request.contextPath ?: ""
+        headers.location = java.net.URI.create("$contextPath/oauth2/authorization/$registrationId")
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
 

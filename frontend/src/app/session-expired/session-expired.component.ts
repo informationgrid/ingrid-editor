@@ -22,6 +22,7 @@ import { CommonModule } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { ActivatedRoute } from "@angular/router";
+import { ConfigService } from "../services/config/config.service";
 
 @Component({
   selector: "ige-session-expired",
@@ -62,11 +63,11 @@ import { ActivatedRoute } from "@angular/router";
   ],
 })
 export class SessionExpiredComponent {
-  private route = inject(ActivatedRoute);
+  private configService = inject(ConfigService);
 
   login() {
-    const from = this.route.snapshot.queryParamMap.get("from") || "/";
     // Simply go to server-side login; after successful login, the app will init and route appropriately
-    window.location.href = "/auth/login";
+    window.location.href =
+      this.configService.getConfiguration().contextPath + "auth/login";
   }
 }
