@@ -40,7 +40,7 @@ export class PluginService {
   initWithAddress: boolean = null;
 
   constructor(private configService: ConfigService) {
-    this.backendBehaviourStates = configService.$userInfo.value.plugins;
+    this.backendBehaviourStates = configService.$userInfo.value?.plugins;
 
     this.pluginState$.subscribe((value) =>
       value.register

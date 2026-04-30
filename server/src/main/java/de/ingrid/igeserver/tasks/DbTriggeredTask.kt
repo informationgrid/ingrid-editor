@@ -21,7 +21,7 @@ package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -45,14 +45,14 @@ abstract class DbTriggeredTask(
         val catalogIdentifiers = getCatalogsForForTask()
         if (catalogIdentifiers.isEmpty()) return
 
-        setAdminAuthentication(taskKey, "Task")
-
-        catalogIdentifiers.forEach { catalogIdentifier ->
-            log.info("Execute $taskKey Task for catalog: $catalogIdentifier")
-            ClosableTransaction(transactionManager).use {
-                executeTaskOnCatalog(catalogIdentifier)
-                removeTaskFlag(catalogIdentifier)
-                log.info("Finished $taskKey for catalog: $catalogIdentifier")
+        runAsAdmin(taskKey, "Task") { _ ->
+            catalogIdentifiers.forEach { catalogIdentifier ->
+                log.info("Execute $taskKey Task for catalog: $catalogIdentifier")
+                ClosableTransaction(transactionManager).use {
+                    executeTaskOnCatalog(catalogIdentifier)
+                    removeTaskFlag(catalogIdentifier)
+                    log.info("Finished $taskKey for catalog: $catalogIdentifier")
+                }
             }
         }
     }

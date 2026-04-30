@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.utils
 
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -38,4 +39,29 @@ fun setAdminAuthentication(principal: String, credentials: String): Authenticati
         )
     SecurityContextHolder.getContext().authentication = auth
     return auth
+}
+
+private val log = logger("de.ingrid.igeserver.utils.SecurityUtils")
+
+/**
+ * Executes the given [block] with admin authentication and restores the previous authentication afterwards.
+ */
+fun <T> runAsAdmin(
+    principal: String = "Scheduler",
+    credentials: String = "Task",
+    block: (Authentication) -> T,
+): T {
+    val originalAuth = SecurityContextHolder.getContext().authentication
+    if (originalAuth != null) {
+        log.debug("Temporarily replacing authentication '${originalAuth.name}' with admin '$principal'")
+    }
+    try {
+        val auth = setAdminAuthentication(principal, credentials)
+        return block(auth)
+    } finally {
+        SecurityContextHolder.getContext().authentication = originalAuth
+        if (originalAuth != null) {
+            log.debug("Restored original authentication '${originalAuth.name}'")
+        }
+    }
 }

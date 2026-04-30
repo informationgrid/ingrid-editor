@@ -25,7 +25,7 @@ import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveMessage
 import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveNotifier
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -61,14 +61,14 @@ class UvpArchiveTask(
         // get all docs whose decision date is before a given date
         val datasets = uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
 
-        val principal = setAdminAuthentication("UVPArchive", "Task")
-
-        ClosableTransaction(transactionManager).use {
-            datasets.forEach {
-                documentService.archiveDocument(principal, catalogId, it.wrapperId)
-                notify.sendMessage(
-                    message.apply { this.progress++ },
-                )
+        runAsAdmin("UVPArchive", "Task") { principal ->
+            ClosableTransaction(transactionManager).use {
+                datasets.forEach {
+                    documentService.archiveDocument(principal, catalogId, it.wrapperId)
+                    notify.sendMessage(
+                        message.apply { this.progress++ },
+                    )
+                }
             }
         }
 

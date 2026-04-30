@@ -17,9 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 
 @Component({
   template: "",
 })
-export class LogoutComponent {}
+export class LogoutComponent implements OnInit {
+  ngOnInit(): void {
+    // Trigger backend-initiated logout (also logs out from Keycloak)
+    window.location.href = "/auth/logout";
+  }
+}

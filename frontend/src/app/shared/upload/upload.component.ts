@@ -147,13 +147,8 @@ export class UploadComponent implements AfterViewInit {
         try {
           if (this.autoupload() && event.type === "filesSubmitted") {
             const flowFiles = <flowjs.FlowFile[]>event.event[0];
-            await this.uploadService.updateAuthenticationToken(flowFiles);
             this.resetParametersForSubmittedFiles(flowFiles);
             this.flow().upload();
-          } else if (event.type === "fileProgress") {
-            await this.uploadService.updateAuthenticationToken([
-              (<flowjs.FlowChunk>event.event[1]).fileObj,
-            ]);
           } else if (event.type === "fileError") {
             this.handleUploadError(event.event);
           } else if (event.type === "fileSuccess") {
@@ -290,7 +285,6 @@ export class UploadComponent implements AfterViewInit {
   async retryUpload(file: TransfersWithErrorInfo, parameter: any = {}) {
     this._errors[file.transfer.id] = null;
     const flowFile = file.transfer.flowFile;
-    await this.uploadService.updateAuthenticationToken([flowFile]);
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {

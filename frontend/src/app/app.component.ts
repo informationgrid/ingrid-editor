@@ -32,7 +32,6 @@ import { DomSanitizer, Title } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
 import { map, throttleTime } from "rxjs/operators";
-import { AuthenticationFactory } from "./security/auth.factory";
 import { combineLatest, Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
@@ -85,7 +84,6 @@ export class AppComponent implements OnInit {
     codelistService: CodelistService,
     private registry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
-    private authFactory: AuthenticationFactory,
     private titleService: Title,
     private profileService: ProfileService,
     private viewContainerRef: ViewContainerRef,
@@ -172,12 +170,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    // TODO: ADAPT
     this.sessionRefresher$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         throttleTime(10000), // allow token refresh only every 10s once
       )
-      .subscribe(() => this.authFactory.get().refreshToken());
+      .subscribe(/*() => this.authFactory.refreshToken()*/);
 
     combineLatest([
       this.transloco.selectTranslation(),

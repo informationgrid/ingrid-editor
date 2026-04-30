@@ -30,6 +30,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter
 import org.springframework.stereotype.Component
@@ -43,7 +45,11 @@ internal class KeycloakMockConfig(val developmentAuthenticationFilter: Developme
      * Secure appropriate endpoints
      */
     @Bean
-    override fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    override fun filterChain(
+        http: HttpSecurity,
+        authorizedClientManager: OAuth2AuthorizedClientManager,
+        authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    ): SecurityFilterChain {
         log.info("======================================================")
         log.info("================== DEVELOPMENT MODE ==================")
         log.info("======================================================")

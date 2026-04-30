@@ -91,7 +91,6 @@ import {
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
-import { AuthenticationFactory } from "../../../security/auth.factory";
 import { JsonViewComponent } from "../../../shared/json-view/json-view.component";
 import { AiAssistantViewComponent } from "../../../shared/ai-assistant-view/ai-assistant-view.component";
 
@@ -123,7 +122,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private profileService = inject(ProfileService);
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
-  private authService = inject(AuthenticationFactory);
   private destroyRef = inject(DestroyRef);
 
   readonly scrollForm = viewChild("scrollForm", { read: ElementRef });
@@ -326,7 +324,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener("window:beforeunload", ["$event"])
   beforeUnloadHandler(event: Event) {
-    if (this.form?.dirty && this.authService.get().isLoggedIn()) {
+    if (this.form?.dirty /* TODO: && this.authService.isLoggedIn()*/) {
       event.preventDefault();
     }
   }

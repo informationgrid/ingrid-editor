@@ -32,8 +32,6 @@ import {
   Version,
 } from "../services/config/config.service";
 import { NavigationEnd, Router, RouterLink, Routes } from "@angular/router";
-import { StorageService } from "../../storage.service";
-import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { default as settingsRoutes } from "../+settings/routes";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
@@ -80,8 +78,6 @@ export class MainHeaderComponent implements OnInit {
   private configService = inject(ConfigService);
   private catalogService = inject(CatalogService);
   private router = inject(Router);
-  private authFactory = inject(AuthenticationFactory);
-  private storageService = inject(StorageService);
   private formMenuService = inject(FormMenuService);
   private translocoService = inject(TranslocoService);
   readonly onLogout = output<void>();
@@ -89,7 +85,7 @@ export class MainHeaderComponent implements OnInit {
   showShadow = signal<boolean>(false);
   pageTitle = signal<string>("");
   userInfo = toSignal(this.configService.$userInfo);
-  currentCatalog$ = computed(() => this.userInfo().currentCatalog?.label);
+  currentCatalog$ = computed(() => this.userInfo()?.currentCatalog?.label);
 
   version = signal<Version>(null);
   timeout = this.generalStore.sessionTimeoutIn;
@@ -143,8 +139,8 @@ export class MainHeaderComponent implements OnInit {
     this.onLogout.emit();
 
     setTimeout(() => {
-      this.storageService.clear("ige-refresh-token");
-      this.authFactory.get().logout();
+      // TODO: ADAPT
+      // this.authFactory.logout();
     }, 1000);
   }
 

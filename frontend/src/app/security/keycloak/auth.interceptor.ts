@@ -28,16 +28,12 @@ import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ModalService } from "../../services/modal/modal.service";
 import { IgeError } from "../../models/ige-error";
-import { AuthenticationFactory } from "../auth.factory";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private authFactory: AuthenticationFactory,
-    private modalService: ModalService,
-  ) {}
+  constructor(private modalService: ModalService) {}
 
   // TODO: https://stackoverflow.com/questions/54925361/how-to-give-session-idle-timeout-in-angular-6
 
@@ -50,7 +46,8 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error) => {
         // if we have been logged out during a request then redirect to the start page
         // so that the keycloak login screen is shown
-        const authenticationService = this.authFactory.get();
+        // TODO: ADAPT
+        const authenticationService = null; //this.authFactory.get();
         if (!authenticationService) {
           throw new IgeError("Backend ist wohl nicht gestartet");
         }

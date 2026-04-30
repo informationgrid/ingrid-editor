@@ -17,8 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit, input } from "@angular/core";
-import { AuthenticationFactory } from "../../security/auth.factory";
+import { Component, Input, input, OnInit } from "@angular/core";
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -42,11 +41,10 @@ export class SessionTimeoutInfoComponent implements OnInit {
   @Input() timeout: number;
   readonly autoHide = input<boolean>(true);
 
-  constructor(private authFactory: AuthenticationFactory) {}
-
   ngOnInit(): void {}
 
   refreshSession() {
-    this.authFactory.get().refreshToken();
+    // TODO: ADAPT
+    // this.authFactory.refreshToken();
   }
 }

@@ -158,6 +158,13 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: "session-expired",
+    loadComponent: () =>
+      import("./session-expired/session-expired.component").then(
+        (m) => m.SessionExpiredComponent,
+      ),
+  },
 ];
 
 // export const appRoutingProviders: any[] = [];

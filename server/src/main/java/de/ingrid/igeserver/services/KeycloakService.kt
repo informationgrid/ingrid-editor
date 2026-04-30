@@ -43,6 +43,7 @@ import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -57,7 +58,7 @@ import java.util.*
 
 @Service
 @Profile("!dev")
-class KeycloakService : UserManagementService {
+class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : UserManagementService {
 
     companion object {
         // 48h * 60min * 60s => 2 days in seconds
@@ -71,21 +72,6 @@ class KeycloakService : UserManagementService {
     }
 
     private val log = logger()
-
-    @Value("\${keycloak.backend-user}")
-    private val backendUser: String? = null
-
-    @Value("\${keycloak.backend-user-password}")
-    private val backendUserPassword: String? = null
-
-    @Value("\${keycloak.auth-server-url}")
-    private val keycloakUrl: String? = null
-
-    @Value("\${keycloak.realm:InGrid}")
-    private lateinit var keycloakRealm: String
-
-    @Value("\${frontend.keycloak.resource}")
-    lateinit var keycloakClientId: String
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
@@ -178,18 +164,47 @@ class KeycloakService : UserManagementService {
     }
 
     fun initAdminClient(): KeycloakWithRealm {
+        val registration = oauth2Properties.registration["keycloak"]
+            ?: throw IllegalStateException("OAuth2 registration 'keycloak' not found in configuration")
+
+        val provider = oauth2Properties.provider["keycloak"]
+            ?: throw IllegalStateException("OAuth2 provider 'keycloak' not found")
+
+        // Parse authorization-uri
+        // Format: <server-url>/realms/<realm>/protocol/openid-connect/auth
+        val authUri = provider.authorizationUri
+            ?: throw IllegalStateException("Authorization URI not configured for keycloak provider")
+
+        if (!authUri.contains("/realms/")) {
+            throw IllegalStateException("Authorization URI does not match expected Keycloak pattern (.../realms/...): $authUri")
+        }
+
+        val serverUrl = authUri.substringBefore("/realms/")
+        // Extract realm: everything between "/realms/" and the next "/"
+        val realmName = authUri.substringAfter("/realms/").substringBefore("/")
+
         val client: Keycloak = KeycloakBuilder.builder()
-            .serverUrl(keycloakUrl)
-            .realm(keycloakRealm)
-            .clientId(keycloakClientId)
-            .grantType(OAuth2Constants.PASSWORD)
-            .username(backendUser)
-            .password(backendUserPassword)
+            .serverUrl(serverUrl)
+            .realm(realmName)
+            .clientId(registration.clientId)
+            .clientSecret(registration.clientSecret)
+            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+//            .grantType(OAuth2Constants.PASSWORD)
+//            .username(backendUser)
+//            .password(backendUserPassword)
             .resteasyClient(buildResteasyClient())
             .build()
 
-        keycloakClient = KeycloakWithRealm(client, keycloakRealm)
-        return keycloakClient
+        keycloakClient = KeycloakWithRealm(client, realmName)
+
+        try {
+            keycloakClient.realm().clients().findAll()
+            return keycloakClient
+        } catch (_: Exception) {
+            throw ServerException.withReason(
+                "Failed to access Keycloak Client-ID '${registration.clientId}'. Please check if client exists with correct secret.",
+            )
+        }
     }
 
     private fun buildResteasyClient(): ResteasyClient? {

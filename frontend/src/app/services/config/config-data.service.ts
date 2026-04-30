@@ -50,7 +50,7 @@ export class ConfigDataService {
     );
   }
 
-  getCurrentUserInfo(): Promise<UserInfo> {
+  async getCurrentUserInfo(): Promise<UserInfo> {
     return (
       firstValueFrom(
         this.httpClient.get<any>(this.config.backendUrl + "info/currentUser"),
@@ -67,9 +67,8 @@ export class ConfigDataService {
               console.error("Could not get current user info", e);
             }
           } else if ((<XMLHttpRequest>e).status === 401) {
-            throw new Error(
-              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein",
-            );
+            // Allow caller to handle 401 (e.g., navigate to session-expired)
+            throw e;
           } else if ((<XMLHttpRequest>e).status === 403) {
             throw new Error(
               "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator.",

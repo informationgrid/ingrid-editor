@@ -38,7 +38,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
 import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
@@ -46,6 +53,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
@@ -78,17 +86,55 @@ internal class KeycloakConfig {
     private val jwkSetUri: String? = null
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun authorizedClientManager(
+        clientRegistrationRepository: ClientRegistrationRepository,
+        authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    ): OAuth2AuthorizedClientManager {
+        val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+            .authorizationCode()
+            .refreshToken()
+            .build()
+        val authorizedClientManager = DefaultOAuth2AuthorizedClientManager(
+            clientRegistrationRepository,
+            authorizedClientRepository,
+        )
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
+        return authorizedClientManager
+    }
+
+    @Bean
+    fun filterChain(
+        http: HttpSecurity,
+        authorizedClientManager: OAuth2AuthorizedClientManager,
+        authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    ): SecurityFilterChain {
         http {
+            addFilterAfter<BasicAuthenticationFilter>(
+                OAuth2TokenRefreshFilter(
+                    authorizedClientManager,
+                    authorizedClientRepository,
+                ),
+            )
             headers {
                 frameOptions {
                     sameOrigin = true
                 }
             }
+            // For API/BFF style flows we want 401 on unauthenticated requests instead of 302 redirects during XHR
+            exceptionHandling {
+                authenticationEntryPoint =
+                    org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED)
+            }
             authorizeHttpRequests {
                 // secure api-routes except a few necessary ones
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
+                // BFF auth endpoints
+                authorize("/auth/login", permitAll)
+                authorize("/auth/logout", permitAll)
+                authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/login-error", permitAll)
+                authorize("/access-denied", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize("/actuator/health", permitAll)
                 if (generalProperties.actuatorPermitAll) {
@@ -98,7 +144,22 @@ internal class KeycloakConfig {
                 }
                 authorize(anyRequest, permitAll)
             }
-            oauth2Login {}
+            oauth2Login {
+                // After successful OAuth2 login, send the browser to the SPA root
+                authenticationSuccessHandler =
+                    org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler(
+                        generalProperties.appUrl,
+                    )
+                authenticationFailureHandler =
+                    org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler("/login-error")
+                userInfoEndpoint {
+                    userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
+                }
+            }
+            sessionManagement {
+                // Allow sessions for oauth2Login
+                sessionCreationPolicy = org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED
+            }
             oauth2ResourceServer {
                 jwt {
                     jwtAuthenticationConverter = jwtAuthenticationConverter()
@@ -112,7 +173,8 @@ internal class KeycloakConfig {
             if (!generalProperties.enableCors) {
                 cors { disable() }
             }
-            if (!generalProperties.enableHttps) {
+            // Redirect to HTTPS only when HTTPS is explicitly enabled in configuration
+            if (generalProperties.enableHttps) {
                 redirectToHttps {}
             }
         }
@@ -189,19 +251,46 @@ class KeycloakRealmRoleConverter(
 
         val isSuperAdmin = roles.contains("ige-super-admin")
 
-        // TODO: cache this function since expensive!
-        val dbUserRoles = getDbUserRoles(jwt, isSuperAdmin)
-
-        return grantedAuthorities + dbUserRoles
-    }
-
-    private fun getDbUserRoles(jwt: Jwt, isSuperAdmin: Boolean): Collection<GrantedAuthority> {
-        val grantedAuthorities = mutableListOf<GrantedAuthority>()
-        // TODO: make function static
-        //        val username = authUtils.getUsernameFromPrincipal(jwt)
         val username = jwt.getClaimAsString("preferred_username")
+        val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
+            username,
+            isSuperAdmin,
+            userRepository,
+            roleRepository,
+        )
+
+        return (grantedAuthorities + dbUserRoles).distinct()
+    }
+}
+
+/**
+ * Common logic to enrich Spring Security authorities with data from the database.
+ * Used by both session-based OIDC login and Bearer-token-based JWT authentication.
+ */
+object KeycloakAuthorityEnricher {
+    fun getDbUserAuthorities(
+        username: String?,
+        isSuperAdmin: Boolean,
+        userRepository: UserRepository,
+        roleRepository: RoleRepository,
+    ): Collection<GrantedAuthority> {
+        if (username.isNullOrBlank()) return emptyList()
+
+        val grantedAuthorities = mutableListOf<GrantedAuthority>()
         var userDb = userRepository.findByUserId(username)
-        userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
+
+        // check and create super user if necessary
+        if (userDb == null && isSuperAdmin) {
+            val userDbUpdate = UserInfo().apply {
+                userId = username
+                role = roleRepository.findByName("ige-super-admin")
+                data = UserInfoData().apply {
+                    this.creationDate = Date()
+                    this.modificationDate = Date()
+                }
+            }
+            userDb = userRepository.save(userDbUpdate)
+        }
 
         userDb?.curCatalog?.id?.let { catalogId ->
             val groups = userDb.groups.filter { it.catalog?.id == catalogId }
@@ -230,24 +319,65 @@ class KeycloakRealmRoleConverter(
 
         return grantedAuthorities
     }
+}
 
-    private fun checkAndCreateSuperUser(
-        userDb: UserInfo?,
-        isSuperAdmin: Boolean,
-        username: String,
-    ): UserInfo? {
-        if (userDb == null && isSuperAdmin) {
-            // create user for super admin in db
-            val userDbUpdate = UserInfo().apply {
-                userId = username
-                role = roleRepository.findByName("ige-super-admin")
-                data = UserInfoData().apply {
-                    this.creationDate = Date()
-                    this.modificationDate = Date()
+/**
+ * Map Keycloak realm roles from OIDC login (session-based oauth2Login) into Spring authorities,
+ * and enrich them with DB-derived roles/groups similar to the JWT converter above. This ensures
+ * that users authenticated via oauth2Login have the same effective authorities as JWT users.
+ */
+class OidcRealmRoleMapper(
+    private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository,
+) : GrantedAuthoritiesMapper {
+    override fun mapAuthorities(authorities: MutableCollection<out GrantedAuthority>?): MutableCollection<out GrantedAuthority> {
+        val result = mutableSetOf<GrantedAuthority>()
+
+        // Keep any already-present authorities
+        if (authorities != null) result.addAll(authorities)
+
+        // Extract realm roles from OIDC id token and userInfo
+        val oidcAuth = authorities?.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority
+        val idTokenClaims = oidcAuth?.idToken?.claims ?: emptyMap<String, Any>()
+
+        // Try both ID token and UserInfo claims (Keycloak might put them in either or both)
+        fun extractRoles(claims: Map<String, Any>): List<String> {
+            val realmAccess = claims["realm_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+            val realmRoles = (realmAccess["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+
+            val authoritiesList = mutableListOf<String>()
+            val resourceAccess = claims["resource_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+            resourceAccess.forEach { (clientName, access) ->
+                if (access is Map<*, *>) {
+                    val clientRoles = (access["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+                    clientRoles.forEach { role ->
+                        authoritiesList.add("${clientName}_$role")
+                    }
                 }
             }
-            return userRepository.save(userDbUpdate)
+
+            return realmRoles + authoritiesList
         }
-        return userDb
+
+        val roles = extractRoles(idTokenClaims).distinct()
+
+        // Add ROLE_ prefix for Spring realm roles
+        result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
+
+        // Add DB-derived roles/groups similar to JWT converter
+        val username = (idTokenClaims["preferred_username"] as? String)
+            ?: (idTokenClaims["email"] as? String)
+
+        val isSuperAdmin = roles.contains("ige-super-admin")
+        val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
+            username,
+            isSuperAdmin,
+            userRepository,
+            roleRepository,
+        )
+
+        result.addAll(dbUserRoles)
+
+        return result
     }
 }

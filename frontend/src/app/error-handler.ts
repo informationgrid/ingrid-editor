@@ -44,6 +44,13 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
+      if (error.status === 401) {
+        console.log(
+          "Not logged in, redirecting to login page should be already initiated by bff-interceptor",
+        );
+        return;
+        // window.location.href = "/auth/logout";
+      }
       if (error.error?.errorCode) {
         const e = new IgeError();
         const message = this.translateMessage(error.error);

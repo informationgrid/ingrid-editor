@@ -45,16 +45,15 @@ import de.ingrid.igeserver.services.ConnectionService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import io.micrometer.observation.Observation
 import io.micrometer.observation.ObservationRegistry
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ScheduledFuture
-import kotlin.collections.map
 
 data class ExtendedExporterConfig(
     val target: IIndexManager,
@@ -88,8 +87,9 @@ class IndexingTask(
     override fun run(context: JobExecutionContext) {
         val catalogId = context.mergedJobDataMap.getString("catalogId")
 
-        setAdminAuthentication("Indexing", "Task")
-        startIndexing(context, catalogId)
+        runAsAdmin("Indexing", "Task") { _ ->
+            startIndexing(context, catalogId)
+        }
     }
 
     /** Indexing of all published documents into an Elasticsearch index. */
@@ -208,7 +208,10 @@ class IndexingTask(
         )
     }
 
-    private fun handleInformationIndex(configs: List<ExtendedExporterConfig>, message: IndexMessage): List<ExtendedExporterConfig> {
+    private fun handleInformationIndex(
+        configs: List<ExtendedExporterConfig>,
+        message: IndexMessage,
+    ): List<ExtendedExporterConfig> {
         val targets = configs.map { it.target }.toSet()
         val failedTargets = mutableSetOf<IIndexManager>()
         for (target in targets) {
@@ -242,7 +245,8 @@ class IndexingTask(
         var exportConfigs = catalog.settings.exports
         if (exportConfigs.isEmpty()) {
             val defaultExportFormatId = catalogProfile.indexExportFormatID
-            exportConfigs = getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig, cswtConfig)
+            exportConfigs =
+                getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig, cswtConfig)
         }
 
         return exportConfigs.flatMap { config ->
@@ -317,46 +321,46 @@ class IndexingTask(
         category: DocumentCategory,
         docUuid: String,
     ) {
-        setAdminAuthentication("Indexing", "Task")
+        runAsAdmin("Indexing", "Task") { _ ->
+            val catalog = catalogRepo.findByIdentifier(catalogId)
+            val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+            val configs = getExporterConfigForCatalog(catalog, catalogProfile)
 
-        val catalog = catalogRepo.findByIdentifier(catalogId)
-        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
-        val configs = getExporterConfigForCatalog(catalog, catalogProfile)
+            if (!configs.isEmpty()) log.info("Export dataset from catalog '$catalogId': $docUuid")
 
-        if (!configs.isEmpty()) log.info("Export dataset from catalog '$catalogId': $docUuid")
+            try {
+                configs
+                    .filter { it.category == category }
+                    .forEach {
+                        // TODO: add alias to exporter config
+                        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category, it.target.name)
+                        val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter.exportSql(catalogId))
+                        val doc = indexService.getSinglePublishedDocument(queryInfo, docUuid)
+                        val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
+                        val plugInfo = createIPlugInfo(catalog, it)
+                        IndexTargetWorker(
+                            it,
+                            IndexMessage(catalogId, 1),
+                            catalogProfile,
+                            notify,
+                            indexService,
+                            catalogId,
+                            generalProperties,
+                            plugInfo,
+                            postIndexPipe,
+                            settingsService,
+                            cancellations,
+                            (currentThread ?: Thread.currentThread()).threadId(),
+                        )
+                            .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, doc.tags))
 
-        try {
-            configs
-                .filter { it.category == category }
-                .forEach {
-                    // TODO: add alias to exporter config
-                    val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category, it.target.name)
-                    val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter.exportSql(catalogId))
-                    val doc = indexService.getSinglePublishedDocument(queryInfo, docUuid)
-                    val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
-                    val plugInfo = createIPlugInfo(catalog, it)
-                    IndexTargetWorker(
-                        it,
-                        IndexMessage(catalogId, 1),
-                        catalogProfile,
-                        notify,
-                        indexService,
-                        catalogId,
-                        generalProperties,
-                        plugInfo,
-                        postIndexPipe,
-                        settingsService,
-                        cancellations,
-                        (currentThread ?: Thread.currentThread()).threadId(),
-                    )
-                        .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, doc.tags))
-
-                    it.target.flush()
-                }
-        } catch (_: NoSuchElementException) {
-            log.info(
-                "Document not indexed, probably because of profile specific condition: $catalogId -> $docUuid",
-            )
+                        it.target.flush()
+                    }
+            } catch (_: NoSuchElementException) {
+                log.info(
+                    "Document not indexed, probably because of profile specific condition: $catalogId -> $docUuid",
+                )
+            }
         }
     }
 

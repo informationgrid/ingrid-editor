@@ -27,7 +27,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
@@ -50,20 +50,21 @@ class ExpiredZabbixTask(
 
     @Scheduled(cron = "\${zabbix.cleanup.schedule}")
     fun cleanup() {
-        setAdminAuthentication("ExpiredZabbix", "Task")
-        zabbixService.activatedCatalogs
-            .forEach { catalogId ->
-                try {
-                    log.info("Run ExpiredZabbixTask for catalog $catalogId")
-                    val catalog = catalogRepo.findByIdentifier(catalogId)
-                    val catalogProfile = catalogService.getCatalogProfile(catalog.type)
-                    val configs = indexingTask.getExporterConfigForCatalog(catalog, catalogProfile)
-                    findDocuments(catalogId, configs)
-                } catch (e: Exception) {
-                    log.warn("Documents not found in catalog $catalogId", e)
+        runAsAdmin("ExpiredZabbix", "Task") { _ ->
+            zabbixService.activatedCatalogs
+                .forEach { catalogId ->
+                    try {
+                        log.info("Run ExpiredZabbixTask for catalog $catalogId")
+                        val catalog = catalogRepo.findByIdentifier(catalogId)
+                        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+                        val configs = indexingTask.getExporterConfigForCatalog(catalog, catalogProfile)
+                        findDocuments(catalogId, configs)
+                    } catch (e: Exception) {
+                        log.warn("Documents not found in catalog $catalogId", e)
+                    }
                 }
-            }
-        zabbixService.cleanupExpiredWebscenarios()
+            zabbixService.cleanupExpiredWebscenarios()
+        }
     }
 
     // TODO: this function needs more comments, also the name is misleading, since deleteDocuments is called inside

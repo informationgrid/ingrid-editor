@@ -39,7 +39,6 @@ import {
   withXsrfConfiguration,
 } from "@angular/common/http";
 import { ConfigService } from "./app/services/config/config.service";
-import { AuthenticationFactory } from "./app/security/auth.factory";
 import { Router, RouteReuseStrategy } from "@angular/router";
 import {
   MAT_DIALOG_DEFAULT_OPTIONS,
@@ -53,7 +52,7 @@ import {
   MatNativeDateModule,
 } from "@angular/material/core";
 import { GermanDateAdapter } from "./app/services/german-date.adapter";
-import { AuthInterceptor } from "./app/security/keycloak/auth.interceptor";
+import { BffAuthInterceptor } from "./app/security/bff-auth.interceptor";
 import { SessionTimeoutInterceptor } from "./app/services/session-timeout.interceptor";
 import { GlobalErrorHandler } from "./app/error-handler";
 import { CustomReuseStrategy, routing } from "./app/app.router";
@@ -71,7 +70,6 @@ import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, provideFormlyCore } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
 import { pluginProvider } from "./app/plugin.provider";
-import { KeycloakAngularModule } from "keycloak-angular";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { bootstrapApplication, BrowserModule } from "@angular/platform-browser";
@@ -169,7 +167,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
     importProvidersFrom(
-      KeycloakAngularModule,
       AngularSplitModule,
       DragDropModule,
       MatTooltipModule,
@@ -405,7 +402,6 @@ bootstrapApplication(AppComponent, {
     provideAppInitializer(() => {
       const initializerFn = ConfigLoader(
         inject(ConfigService),
-        inject(AuthenticationFactory),
         inject(Router),
         inject(HttpClient),
         inject(MatDialog),
@@ -433,10 +429,10 @@ bootstrapApplication(AppComponent, {
       provide: MatDatepickerIntl,
       useClass: GermanDateIntl,
     },
-    // add authorization header to all requests
+    // BFF: send cookies and handle 401 → session-expired
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
+      useClass: BffAuthInterceptor,
       multi: true,
     },
     // handle session timeouts

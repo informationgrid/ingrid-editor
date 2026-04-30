@@ -28,7 +28,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.services.CapabilitiesService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.setAdminAuthentication
+import de.ingrid.igeserver.utils.runAsAdmin
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.scheduling.annotation.Scheduled
@@ -48,8 +48,7 @@ class UpdateExternalCoupledResourcesTask(
     val mapper = jacksonObjectMapper()
 
     @Scheduled(cron = "\${cron.externalCoupledResources.expression}")
-    fun updateExternalCoupledResources(): String {
-        setAdminAuthentication("UpdateExternalCoupledResources", "Task")
+    fun updateExternalCoupledResources(): String = runAsAdmin("UpdateExternalCoupledResources", "Task") { _ ->
         val summary = mutableMapOf<Int, Summary>()
         val urlCache = mutableMapOf<String, GetRecordUrlAnalysis>()
         getAllExternalCoupledResources().forEach {
@@ -57,7 +56,7 @@ class UpdateExternalCoupledResourcesTask(
         }
 
         printSummary(summary)
-        return summary.toString()
+        summary.toString()
     }
 
     private fun printSummary(summaries: MutableMap<Int, Summary>) {
