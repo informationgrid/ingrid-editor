@@ -123,6 +123,35 @@ class AuthController(
     fun me(principal: Principal): ResponseEntity<UserInfo> = usersApiController.currentUserInfo(principal)
 
     /**
+     * Redirect the current user to Keycloak's UPDATE_PASSWORD action.
+     * After the password is changed, Keycloak redirects back through the normal OAuth2 login flow.
+     */
+    @GetMapping("/auth/update-password")
+    fun updatePassword(request: HttpServletRequest): ResponseEntity<Void> {
+        val registrations = mutableListOf<ClientRegistration>()
+        if (clientRegistrationRepository is Iterable<*>) {
+            for (reg in clientRegistrationRepository) {
+                if (reg is ClientRegistration) registrations.add(reg)
+            }
+        }
+        val clientId = registrations.firstOrNull()?.clientId ?: ""
+
+        val provider = oauth2Properties.provider["keycloak"]
+        val authUri = provider?.authorizationUri ?: ""
+        val contextPath = request.contextPath ?: ""
+        val redirectUri = URLEncoder.encode(
+            "${generalProperties.appUrl}$contextPath/login/oauth2/code/keycloak",
+            StandardCharsets.UTF_8,
+        )
+
+        val headers = HttpHeaders()
+        headers.location = java.net.URI.create(
+            "$authUri?response_type=code&client_id=$clientId&redirect_uri=$redirectUri&scope=openid&kc_action=UPDATE_PASSWORD",
+        )
+        return ResponseEntity(headers, HttpStatus.FOUND)
+    }
+
+    /**
      * Show a generic access denied error page served by the backend.
      */
     @GetMapping("/access-denied")

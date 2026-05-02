@@ -114,6 +114,13 @@ export class UserDataService {
     );
   }
 
+  updateCurrentUserProfile(user: Partial<User>): Observable<void> {
+    return this.http.put<void>(
+      this.configuration.backendUrl + "users/me",
+      user,
+    );
+  }
+
   resetPassword(login: string) {
     return this.http.post<void>(
       this.configuration.backendUrl + "externalUsers/resetPassword/" + login,

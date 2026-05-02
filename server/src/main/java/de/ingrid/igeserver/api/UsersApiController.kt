@@ -310,6 +310,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(filteredUsers)
     }
 
+    override fun updateCurrentUser(principal: Principal, user: UpdateUser): ResponseEntity<Void> {
+        val login = authUtils.getUsernameFromPrincipal(principal)
+        val currentUser = keycloakService.getUser(login)
+        user.firstName?.let { currentUser.firstName = user.firstName }
+        user.lastName?.let { currentUser.lastName = user.lastName }
+        user.email?.let { currentUser.email = user.email }
+        keycloakService.updateUser(currentUser)
+        return ResponseEntity.ok().build()
+    }
+
     @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {

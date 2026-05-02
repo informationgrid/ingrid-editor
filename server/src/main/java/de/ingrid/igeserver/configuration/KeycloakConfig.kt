@@ -133,6 +133,7 @@ internal class KeycloakConfig {
                 authorize("/auth/login", permitAll)
                 authorize("/auth/logout", permitAll)
                 authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/auth/update-password", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize("/login-error", permitAll)
                 authorize("/access-denied", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))

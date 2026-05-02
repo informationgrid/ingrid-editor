@@ -43,6 +43,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 
+data class UpdateUser(
+    val firstName: String?,
+    val lastName: String?,
+    val email: String?,
+)
+
 @Hidden
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
@@ -190,6 +196,24 @@ interface UsersApi {
             required = true,
         ) @RequestBody user: @Valid User,
     ): ResponseEntity<User>
+
+    @PutMapping(
+        value = ["/users/me"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    @Operation(description = "Updates the current user's own profile (firstName, lastName, email) in Keycloak.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Profile was successfully updated"),
+        ],
+    )
+    fun updateCurrentUser(
+        principal: Principal,
+        @Parameter(
+            description = "The profile fields to update.",
+            required = true,
+        ) @RequestBody user: @Valid UpdateUser,
+    ): ResponseEntity<Void>
 
     @GetMapping(
         value = ["/info/currentUser"],

@@ -32,7 +32,6 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -63,7 +62,6 @@ export class ChangeNameDialogComponent implements OnInit {
   });
 
   constructor(
-    private modalService: ModalService,
     public dialogRef: MatDialogRef<ChangeNameDialogComponent>,
     private userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data,

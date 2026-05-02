@@ -19,7 +19,7 @@
  */
 import { inject, Injectable, signal } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { catchError, map, tap } from "rxjs/operators";
 import { SelectOption, SelectOptionUi } from "../codelist/codelist.service";
@@ -136,11 +136,10 @@ export class UserService {
   }
 
   updateCurrentUser(user: Partial<User>): Observable<boolean> {
-    return of(false);
-    // TODO: ADAPT
-    // return this.keycloakService
-    //   .updateUserProfile(user)
-    //   .pipe(catchError((error) => UserService.handleChangeEmailError(error)));
+    return this.dataService.updateCurrentUserProfile(user).pipe(
+      map(() => true),
+      catchError((error) => UserService.handleChangeEmailError(error)),
+    );
   }
 
   private static handleChangeEmailError(
@@ -223,10 +222,8 @@ export class UserService {
     );
   }
 
-  updatePassword(): Promise<void> {
-    return Promise.resolve();
-    // TODO: ADAPT
-    // return this.keycloakService.updatePassword();
+  updatePassword(): void {
+    window.location.href = "/auth/update-password";
   }
 
   resetPassword(login: string) {
