@@ -280,7 +280,7 @@ object KeycloakAuthorityEnricher {
         val grantedAuthorities = mutableListOf<GrantedAuthority>()
         var userDb = userRepository.findByUserId(username)
 
-        // check and create super user if necessary
+        // check and create superuser if necessary
         if (userDb == null && isSuperAdmin) {
             val userDbUpdate = UserInfo().apply {
                 userId = username
@@ -293,8 +293,10 @@ object KeycloakAuthorityEnricher {
             userDb = userRepository.save(userDbUpdate)
         }
 
-        userDb?.curCatalog?.id?.let { catalogId ->
-            val groups = userDb.groups.filter { it.catalog?.id == catalogId }
+        // get catalog id of user and fallback to first catalog if none is set
+        val userCatalogId = userDb?.curCatalog?.id ?: userDb?.catalogs?.first()?.id
+        userCatalogId?.let { catalogId ->
+            val groups = userDb!!.groups.filter { it.catalog?.id == catalogId }
 
             // add groups
             groups.forEach {
