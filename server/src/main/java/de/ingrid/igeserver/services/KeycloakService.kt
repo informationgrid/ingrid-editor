@@ -25,6 +25,7 @@ import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.utils.KeycloakAuthUtils
 import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
@@ -58,7 +59,7 @@ import java.util.*
 
 @Service
 @Profile("!dev")
-class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : UserManagementService {
+class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, private val authUtils: KeycloakAuthUtils) : UserManagementService {
 
     companion object {
         // 48h * 60min * 60s => 2 days in seconds
@@ -278,11 +279,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties) : Us
         return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: Principal): String? = when (principal) {
-        is UsernamePasswordAuthenticationToken -> principal.name
-        is JwtAuthenticationToken -> principal.token.claims["preferred_username"]?.toString() ?: principal.name
-        else -> null
-    }
+    override fun getName(principal: Principal): String? = authUtils.getUsernameFromPrincipal(principal)
 
     override fun getCurrentPrincipal(): Principal? {
         val securityContext: SecurityContext? = SecurityContextHolder.getContext()
