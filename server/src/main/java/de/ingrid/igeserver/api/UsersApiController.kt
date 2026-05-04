@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.configuration.StaleAuthoritiesRegistry
 import de.ingrid.igeserver.exceptions.MailException
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
@@ -48,9 +49,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.AuthenticatedPrincipal
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.session.SessionRegistry
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -100,16 +99,8 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
-    @Autowired(required = false)
-    private var sessionRegistry: SessionRegistry? = null
-
-    private fun expireUserSessions(login: String) {
-        sessionRegistry?.allPrincipals
-            ?.filterIsInstance<AuthenticatedPrincipal>()
-            ?.filter { it.name == login }
-            ?.flatMap { sessionRegistry!!.getAllSessions(it, false) }
-            ?.forEach { it.expireNow() }
-    }
+    @Autowired
+    private lateinit var staleAuthoritiesRegistry: StaleAuthoritiesRegistry
 
     @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
@@ -353,7 +344,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
-        expireUserSessions(user.login)
+        staleAuthoritiesRegistry.markStale(user.login)
         return ResponseEntity.ok(getSingleUser(principal, user.login))
     }
 

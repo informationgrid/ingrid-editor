@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.configuration.KeycloakConfig
+import de.ingrid.igeserver.configuration.StaleAuthoritiesRegistry
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -50,7 +51,7 @@ internal class KeycloakMockConfig(val developmentAuthenticationFilter: Developme
         http: HttpSecurity,
         authorizedClientManager: OAuth2AuthorizedClientManager,
         authorizedClientRepository: OAuth2AuthorizedClientRepository,
-        sessionRegistry: SessionRegistry,
+        staleAuthoritiesRegistry: StaleAuthoritiesRegistry,
     ): SecurityFilterChain {
         log.info("======================================================")
         log.info("================== DEVELOPMENT MODE ==================")
