@@ -24,6 +24,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
+import jakarta.servlet.http.HttpServletResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -39,6 +40,7 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
+import org.springframework.security.core.session.SessionRegistry
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
@@ -57,6 +59,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
+import org.springframework.security.web.session.ConcurrentSessionFilter
+import org.springframework.security.web.session.SessionInformationExpiredStrategy
 import org.springframework.web.client.RestTemplate
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -107,8 +111,16 @@ internal class KeycloakConfig {
         http: HttpSecurity,
         authorizedClientManager: OAuth2AuthorizedClientManager,
         authorizedClientRepository: OAuth2AuthorizedClientRepository,
+        sessionRegistry: SessionRegistry,
     ): SecurityFilterChain {
+        val expiredSessionStrategy = SessionInformationExpiredStrategy { event ->
+            event.response.sendError(
+                HttpServletResponse.SC_UNAUTHORIZED,
+                "Session has been invalidated. Please re-authenticate.",
+            )
+        }
         http {
+            addFilterBefore<BasicAuthenticationFilter>(ConcurrentSessionFilter(sessionRegistry, expiredSessionStrategy))
             addFilterAfter<BasicAuthenticationFilter>(
                 OAuth2TokenRefreshFilter(
                     authorizedClientManager,
@@ -214,7 +226,10 @@ internal class KeycloakConfig {
      */
 
     @Bean
-    fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy = RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
+    fun sessionRegistry(): SessionRegistry = SessionRegistryImpl()
+
+    @Bean
+    fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy = RegisterSessionAuthenticationStrategy(sessionRegistry())
 
     /**
      * Do allow semicolons in URL, which are matrix-parameters used by Angular
