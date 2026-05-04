@@ -501,6 +501,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return if (user.catalogs.contains(toCatalog) || authUtils.isSuperAdmin(principal)) {
             user.curCatalog = toCatalog
             userRepo.save(user)
+            staleAuthoritiesRegistry.markStale(userId)
             ResponseEntity.ok(user.curCatalog)
         } else {
             ResponseEntity.status(HttpStatus.FORBIDDEN).build()
