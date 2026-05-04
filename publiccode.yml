@@ -84,4 +84,4 @@ releaseDate: '2026-04-01'
 softwareType: standalone/web
 softwareVersion: 8.3.0
 url: 'https://gitlab.opencode.de/informationgrid/ingrid-editor'
-logo: 'https://ingrid-oss.eu/8.2.0/assets/components/ingrid-plattform.png'
+logo: 'frontend/src/assets/icons/logo.svg'
