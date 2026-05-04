@@ -147,7 +147,8 @@ export class UserService {
   ): Observable<any> {
     if (
       response.status === 409 &&
-      response.error.errorMessage === "emailExistsMessage"
+      (response.error.errorMessage === "emailExistsMessage" ||
+        response.error.errorText?.indexOf("same email address") !== -1)
     ) {
       throw new IgeError(
         "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet.",
