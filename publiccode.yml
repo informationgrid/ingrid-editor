@@ -1,0 +1,87 @@
+# This repository adheres to the publiccode.yml standard by including this
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.3'
+categories:
+  - geographic-information-systems
+  - data-collection
+  - document-management
+
+description:
+  de:
+    screenshots: []
+    features:
+      - Erfassung, Validierung und Veröffentlichung von ISO 19115/19119, OGC und INSPIRE konformen Metadaten.
+      - Einfache Import- und Exportfunktionalität für verschiedene Metadatenformate.
+      - Unterstützung verschiedener Profile wie opendata, UVP und InGrid.
+      - Integration mit Keycloak für eine zentrale Authentifizierung.
+      - Rollenbasierte Nutzerverwaltung und granulare Berechtigungen für Kataloge und Dokumente.
+      - Modernes, responsives Web-Interface auf Basis von Angular.
+      - Unterstützung für aktuelle Standards wie die OGC API for Records.
+    longDescription: >
+      Der InGrid Editor ist eine zentrale Komponente der InGrid-Softwarefamilie,
+      einer Open-Source-Lösung für den Aufbau, die Verwaltung und die
+      Bereitstellung von metadatengesteuerten Informationssystemen.
+
+
+      Die Anwendung ermöglicht die effiziente Pflege von Metadaten durch die
+      Erstellung, Validierung und Veröffentlichung von ISO 19115/19119, OGC- und
+      INSPIRE-konformen Metadaten. Durch eine modulare Architektur können
+      verschiedene Profile (wie z.B. mCLOUD oder UVP) integriert werden, um
+      spezifische Anforderungen an die Datenerfassung zu erfüllen.
+
+
+      Wichtige Funktionen sind:
+
+      - Webbasiertes Interface für die Metadatenerfassung
+
+      - Unterstützung von ISO und INSPIRE Standards
+
+      - Flexible Import- und Export-Schnittstellen
+
+      - Integration in bestehende Infrastrukturen via Keycloak
+    shortDescription: >
+      Zentrale Komponente zur Pflege von ISO 19115/19119, OGC- und
+      INSPIRE-konformen Metadaten innerhalb der InGrid-Plattform.
+    genericName: Metadaten-Editor
+
+developmentStatus: stable
+usedBy:
+  - Niedersächsisches Ministerium für Umwelt, Energie und Klimaschutz
+  - Ministerium für Energiewende, Klimaschutz, Umwelt und Natur des Landes Schleswig-Holstein
+  - Ministerium für Klimaschutz, Umwelt, Energie und Mobilität Rheinland-Pfalz
+intendedAudience:
+  countries:
+    - DE
+  scope:
+    - environment
+    - government
+landingURL: 'https://ingrid-oss.eu'
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: wemove digital solutions GmbH
+  repoOwner: wemove digital solutions GmbH
+localisation:
+  availableLanguages:
+    - de
+    - en
+  localisationReady: true
+maintenance:
+  contacts:
+    - name: wemove digital solutions GmbH
+      email: contact@wemove.com
+  contractors:
+    - name: wemove digital solutions GmbH
+      email: contact@wemove.com
+      until: '2027-01-01'
+      website: 'https://www.wemove.com'
+  type: contract
+name: InGrid Editor
+platforms:
+  - web
+releaseDate: '2026-04-01'
+softwareType: standalone/web
+softwareVersion: 8.3.0
+url: 'https://gitlab.opencode.de/informationgrid/ingrid-editor'
+logo: 'https://ingrid-oss.eu/8.2.0/assets/components/ingrid-plattform.png'
