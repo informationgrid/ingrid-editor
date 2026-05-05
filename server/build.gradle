@@ -271,6 +271,10 @@ tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
     into gitProperties.dotGitDirectory.dir('./hooks')
+    filePermissions {
+        user.execute = true
+        other.execute = true
+    }
 }
 
 kotlin {
