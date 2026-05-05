@@ -28,7 +28,7 @@ description:
       Die Anwendung ermöglicht die effiziente Pflege von Metadaten durch die
       Erstellung, Validierung und Veröffentlichung von ISO 19115/19119, OGC- und
       INSPIRE-konformen Metadaten. Durch eine modulare Architektur können
-      verschiedene Profile (wie z.B. mCLOUD oder UVP) integriert werden, um
+      verschiedene Profile (wie z.B. Opendata oder UVP) integriert werden, um
       spezifische Anforderungen an die Datenerfassung zu erfüllen.
 
 
@@ -84,4 +84,4 @@ releaseDate: '2026-04-01'
 softwareType: standalone/web
 softwareVersion: 8.3.0
 url: 'https://gitlab.opencode.de/informationgrid/ingrid-editor'
-logo: 'frontend/src/assets/icons/logo.svg'
+logo: 'publiccode_ingrid_logo.svg'
