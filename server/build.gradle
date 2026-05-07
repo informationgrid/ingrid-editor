@@ -196,9 +196,9 @@ dependencies {
         exclude group: "org.testcontainers"
     }
 //    testImplementation 'org.testcontainers:postgresql'
-    // Use testcontainers 2.0.2 to support Docker version 29.x
-    testImplementation 'org.testcontainers:testcontainers:2.0.2'
-    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.2'
+    // Use testcontainers 2.0.5 to support Docker version 29.x
+    testImplementation 'org.testcontainers:testcontainers:2.0.5'
+    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
 
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.8.4")
