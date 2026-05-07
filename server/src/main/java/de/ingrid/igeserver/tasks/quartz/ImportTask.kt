@@ -82,7 +82,9 @@ class ImportTask(
             notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
 
             val principal = info.principal as Authentication
-            SecurityContextHolder.getContext().authentication = info.principal
+            val contextForThread = SecurityContextHolder.createEmptyContext()
+            contextForThread.authentication = principal
+            SecurityContextHolder.setContext(contextForThread)
 
             val report = when (stage) {
                 Stage.ANALYZE -> {
@@ -136,6 +138,8 @@ class ImportTask(
                 notifier.sendMessage(notificationType, it)
             }
             throw ex
+        } finally {
+            SecurityContextHolder.clearContext()
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")

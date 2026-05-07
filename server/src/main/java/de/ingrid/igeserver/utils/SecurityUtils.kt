@@ -37,7 +37,9 @@ fun setAdminAuthentication(principal: String, credentials: String): Authenticati
                 SimpleGrantedAuthority("ROLE_ACL_ACCESS"),
             ),
         )
-    SecurityContextHolder.getContext().authentication = auth
+    val context = SecurityContextHolder.createEmptyContext()
+    context.authentication = auth
+    SecurityContextHolder.setContext(context)
     return auth
 }
 
@@ -51,17 +53,17 @@ fun <T> runAsAdmin(
     credentials: String = "Task",
     block: (Authentication) -> T,
 ): T {
-    val originalAuth = SecurityContextHolder.getContext().authentication
-    if (originalAuth != null) {
-        log.debug("Temporarily replacing authentication '${originalAuth.name}' with admin '$principal'")
+    val originalContext = SecurityContextHolder.getContext()
+    if (originalContext.authentication != null) {
+        log.debug("Temporarily replacing authentication '${originalContext.authentication.name}' with admin '$principal'")
     }
     try {
         val auth = setAdminAuthentication(principal, credentials)
         return block(auth)
     } finally {
-        SecurityContextHolder.getContext().authentication = originalAuth
-        if (originalAuth != null) {
-            log.debug("Restored original authentication '${originalAuth.name}'")
+        SecurityContextHolder.setContext(originalContext)
+        if (originalContext.authentication != null) {
+            log.debug("Restored original authentication '${originalContext.authentication.name}'")
         }
     }
 }

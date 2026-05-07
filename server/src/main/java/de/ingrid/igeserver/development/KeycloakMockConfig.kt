@@ -79,7 +79,9 @@ class DevelopmentAuthenticationFilter(val authenticationProviderMock: Authentica
             // Verwende den AuthenticationProvider
             val dummyAuth = UsernamePasswordAuthenticationToken("dev", "dev")
             val authentication = authenticationProviderMock.authenticate(dummyAuth)
-            SecurityContextHolder.getContext().authentication = authentication
+            val context = SecurityContextHolder.createEmptyContext()
+            context.authentication = authentication
+            SecurityContextHolder.setContext(context)
         }
 
         filterChain.doFilter(request, response)

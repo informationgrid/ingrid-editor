@@ -475,17 +475,23 @@ class ImportService(
                 // run in parallel to greatly improve speed
                 val job = GlobalScope.async {
                     // set same principal in new context
-                    SecurityContextHolder.getContext().authentication = principal
-                    if (publish) {
-                        documentService.publishDocument(
-                            principal,
-                            catalogId,
-                            wrapperId,
-                            ref.document,
-                            skipValidation = options.skipValidation,
-                        )
-                    } else {
-                        documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                    val contextForThread = SecurityContextHolder.createEmptyContext()
+                    contextForThread.authentication = principal
+                    SecurityContextHolder.setContext(contextForThread)
+                    try {
+                        if (publish) {
+                            documentService.publishDocument(
+                                principal,
+                                catalogId,
+                                wrapperId,
+                                ref.document,
+                                skipValidation = options.skipValidation,
+                            )
+                        } else {
+                            documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                        }
+                    } finally {
+                        SecurityContextHolder.clearContext()
                     }
                 }
 
