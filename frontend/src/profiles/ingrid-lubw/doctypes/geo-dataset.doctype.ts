@@ -36,6 +36,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     this.showAdVCompatible = false;
     this.showAdVProductGroup = false;
     this.allowOptionFieldsToggle = false;
+    this.showIdentifierCreateButton = false;
   }
 
   protected metadataOptions(): MetadataOption[] {

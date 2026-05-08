@@ -47,7 +47,6 @@ interface Extension {
             // no profiles specified for extension -> match all given profiles
             profiles!!.isEmpty() ||
                 // profiles specified for extension -> match only specific profile
-                profiles!!.isNotEmpty() &&
-                profileId in profiles!!
+                (profiles!!.isNotEmpty() && profileId in profiles!!)
             )
 }
