@@ -209,7 +209,8 @@ describe("CatalogCodelistsComponent", () => {
   }
 
   function addFavorite() {
-    spectator.component.favorites.push(initCodelists[0].entries[0]);
-    spectator.component.favoriteIds.push(initCodelists[0].entries[0].id);
+    spectator.component.favorites.update((favorites) => {
+      return [...favorites, initCodelists[0].entries[0]];
+    });
   }
 });

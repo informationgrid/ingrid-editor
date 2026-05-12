@@ -183,8 +183,7 @@ export class CodelistService {
         filter((ids) => ids.length > 0),
         distinct(),
         concatMap((ids) =>
-          this.requestCodelists(ids).pipe(
-            map((codelists) => this.prepareCodelists(codelists)),
+          this.getCodelistsByIds(ids).pipe(
             tap((codelists) => this.store.addCodelists(codelists)),
             tap(() => this.generalStore.setCodelistsLoaded()),
           ),
@@ -221,10 +220,6 @@ export class CodelistService {
       );
     }
     return throwError(() => e);
-  }
-
-  private requestCodelists(ids: string[]): Observable<CodelistBackend[]> {
-    return this.dataService.byIds(ids);
   }
 
   private prepareCodelists(
@@ -281,6 +276,19 @@ export class CodelistService {
     return this.dataService
       .updateCodelist(backendCodelist)
       .pipe(tap(() => this.store.updateCodelist(codelist)));
+  }
+
+  // Sync a single codelist from the server to the store by the given ID.
+  syncCodelistById(id: string, isCatalog: boolean = false) {
+    return this.getCodelistsByIds([id], isCatalog).pipe(
+      tap((codelists) => this.store.updateCodelist(codelists[0])),
+    );
+  }
+
+  private getCodelistsByIds(ids: string[], isCatalog: boolean = false) {
+    return this.dataService
+      .byIds(ids)
+      .pipe(map((codelists) => this.prepareCodelists(codelists, isCatalog)));
   }
 
   private prepareForBackend(codelist: Codelist): CodelistBackend {
