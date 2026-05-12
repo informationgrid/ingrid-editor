@@ -32,7 +32,7 @@ import {
   CodelistEntry,
   FreeEntry,
 } from "../../store/codelist/codelist.model";
-import { filter, take, tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -92,69 +92,75 @@ import { FreeEntryListComponent } from "./free-entry-list/free-entry-list.compon
 export class CatalogCodelistsComponent implements OnInit {
   private codelistStore = inject(CodelistStore);
 
-  selectedCodelist: Codelist;
-  codelistSelect = new FormControl();
-  descriptionCtrl = new FormControl();
-  favorites: CodelistEntry[];
-  favoriteIds: string[];
-  filterCtrl = new FormControl();
+  codelists = computed<Codelist[]>(() =>
+    this.codelistStore.entities().sort((a, b) => a.name.localeCompare(b.name)),
+  );
 
-  filterCtrlValue = signal<string>("");
-  filteredOptions = computed<Codelist[]>(() => {
-    this.codelistsValue = this.codelistStore
-      .entities()
-      .sort((a, b) => a.name.localeCompare(b.name));
-    if (!this.init) {
-      this.init = true;
-      this.setInitialValue();
-    }
-    const list = this.getFilteredCodelists(this.filterCtrlValue());
-    if (this.selectedCodelist) {
-      this.selectedCodelist = {
-        ...list.find((item) => item.id === this.selectedCodelist.id),
-      };
-    }
-    return list;
+  // Selected codelist.
+  selectedCodelistId = signal<string>(undefined);
+  selectedCodelist = computed<Codelist>(() => {
+    const selected = this.codelists().find(
+      (item) => item.id === this.selectedCodelistId(),
+    );
+    if (selected) return this.copyCodelist(selected);
   });
 
-  private init = false;
+  // Selected codelist dependent entries.
+  favorites = signal<CodelistEntry[]>(undefined);
+  favoriteIds = computed<string[]>(() => this.favorites().map((f) => f.id));
+  freeEntries = signal<FreeEntry[]>(undefined);
 
-  private codelistsValue: Codelist[];
+  // Filter selection.
+  filterCodelistCtrl = new FormControl();
+  filterSearchQueryCtrl = new FormControl();
+  filterSearchQueryCtrlValue = signal<string>("");
+  filteredCodeLists = computed<Codelist[]>(() =>
+    this.getFilteredCodelists(this.filterSearchQueryCtrlValue()),
+  );
+
   showAllCodelists = signal<boolean>(true);
   showSyncButton = signal<boolean>(false);
   private ctrlKeyPressCount = 0;
   codelistIdInput: string;
-
-  // Free entries by selected codelist.
-  freeEntries: FreeEntry[];
 
   constructor(
     private codelistService: CodelistService,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
+    // Update the codelist select field by filtered codelists.
     effect(() => {
-      if (this.codelistSelect?.value) {
-        const option = this.filteredOptions().find(
-          (item) => item.id === this.codelistSelect.value.id,
+      if (this.filterCodelistCtrl?.value) {
+        const option = this.filteredCodeLists().find(
+          (item) => item.id === this.filterCodelistCtrl.value.id,
         );
         if (!option) {
-          this.codelistSelect.setValue(this.filteredOptions()[0]);
-          this.selectCodelist(this.filteredOptions()[0]);
+          this.filterCodelistCtrl.setValue(this.filteredCodeLists()[0]);
         }
-      } else if (this.filteredOptions().length > 0) {
-        this.codelistSelect.setValue(this.filteredOptions()[0]);
-        this.selectCodelist(this.filteredOptions()[0]);
+      } else if (this.filteredCodeLists().length > 0) {
+        this.filterCodelistCtrl.setValue(this.filteredCodeLists()[0]);
       }
+    });
+
+    // Update values by selected codelist id.
+    effect(() => {
+      if (!this.selectedCodelistId()) return;
+      this.favorites.set(
+        this.codelistService.getFavorite(this.selectedCodelistId()),
+      );
+      this.syncFreeEntries();
     });
   }
 
   ngOnInit(): void {
     this.codelistService.getAll();
 
-    this.filterCtrl.valueChanges.subscribe((value) =>
-      this.filterCtrlValue.set(value),
-    );
+    this.filterCodelistCtrl.valueChanges.subscribe((codelist) => {
+      this.selectedCodelistId.set(codelist?.id);
+    });
+    this.filterSearchQueryCtrl.valueChanges.subscribe((value) => {
+      this.filterSearchQueryCtrlValue.set(value);
+    });
   }
 
   @HostListener("document:keydown", ["$event"])
@@ -185,19 +191,21 @@ export class CatalogCodelistsComponent implements OnInit {
         hasBackdrop: true,
         disableClose: true,
         data: {
-          ids: this.selectedCodelist.entries
-            .map((e) => e.id)
+          ids: this.selectedCodelist()
+            .entries.map((e) => e.id)
             .filter((id) => id !== oldId),
           entry: editEntry,
         },
       })
       .afterClosed()
-      .pipe(
-        filter((result) => result),
-        tap((result) => this.modifyCodelistEntry(oldId, result)),
-        tap(() => this.save()),
-      )
-      .subscribe();
+      .pipe(filter((result) => result))
+      .subscribe({
+        next: (result) => {
+          const codelist = this.copyCodelist(this.selectedCodelist());
+          this.modifyCodelistEntry(codelist, result);
+          this.saveCodelist(codelist);
+        },
+      });
   }
 
   removeCodelist(entry: CodelistEntry) {
@@ -218,44 +226,36 @@ export class CatalogCodelistsComponent implements OnInit {
         },
       })
       .afterClosed()
-      .pipe(
-        filter((result) => result),
-        tap(() => this.removeEntryFromCodelist(entry)),
-        tap(() => this.save()),
-      )
-      .subscribe();
-  }
-
-  selectCodelist(option: Codelist) {
-    if (!option) return;
-    const other = JSON.parse(JSON.stringify(option));
-    this.sortCodelist(other);
-    this.selectedCodelist = other;
-    this.descriptionCtrl.setValue(this.selectedCodelist.description, {
-      emitEvent: false,
-    });
-    this.favorites = this.codelistService.getFavorite(option.id);
-    this.favoriteIds = this.favorites.map((f) => f.id);
-    this.updateFreeEntries();
+      .pipe(filter((result) => result))
+      .subscribe({
+        next: () => {
+          const codelist = this.copyCodelist(this.selectedCodelist());
+          this.removeCodelistEntry(codelist, entry);
+          this.saveCodelist(codelist);
+        },
+      });
   }
 
   setAsDefault(entry: CodelistEntry) {
-    this.selectedCodelist.default = entry?.id ?? null;
-    this.save();
+    const codelist = this.copyCodelist(this.selectedCodelist());
+    codelist.default = entry?.id ?? null;
+    this.saveCodelist(codelist);
   }
 
-  private updateFreeEntries() {
+  // Save codelist in the server.
+  saveCodelist(codelist: Codelist) {
     this.codelistService
-      .getFreeEntries(this.selectedCodelist.id)
-      .subscribe((entries) => (this.freeEntries = entries));
+      .updateCodelist(codelist)
+      .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
+      .subscribe();
   }
 
   openFreeEntryReplaceDialog(entry: FreeEntry) {
     this.dialog
       .open(FreeEntryReplaceDialogComponent, {
         data: {
-          codelistId: this.selectedCodelist.id,
-          entries: this.freeEntries,
+          codelistId: this.selectedCodelist().id,
+          entries: this.freeEntries(),
           selectedEntry: entry,
         },
       })
@@ -265,9 +265,9 @@ export class CatalogCodelistsComponent implements OnInit {
         const toKey = result?.trim();
         if (!toKey) return;
         this.codelistService
-          .replaceFreeEntry(this.selectedCodelist.id, fromValue, toKey)
+          .replaceFreeEntry(this.selectedCodelist().id, fromValue, toKey)
           .subscribe((result) => {
-            if (result !== undefined) this.updateFreeEntries();
+            if (result !== undefined) this.syncFreeEntries();
           });
       });
   }
@@ -288,11 +288,29 @@ export class CatalogCodelistsComponent implements OnInit {
         if (!result) return;
         const fromValue = entry.value;
         this.codelistService
-          .addFreeEntryToCodelist(this.selectedCodelist.id, fromValue)
+          .addFreeEntryToCodelist(this.selectedCodelist().id, fromValue)
           .subscribe((result) => {
-            if (result !== undefined) this.updateFreeEntries();
+            if (result !== undefined) {
+              this.syncFreeEntries();
+              this.syncSelectedCodelist();
+            }
           });
       });
+  }
+
+  private syncFreeEntries() {
+    this.codelistService
+      .getFreeEntries(this.selectedCodelist().id)
+      .subscribe((entries) => this.freeEntries.set(entries));
+  }
+
+  private syncSelectedCodelist() {
+    this.codelistService
+      .syncCodelistById(
+        this.selectedCodelist().id,
+        this.selectedCodelist().isCatalog,
+      )
+      .subscribe();
   }
 
   resetCodelist() {
@@ -315,64 +333,29 @@ export class CatalogCodelistsComponent implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          const id = this.selectedCodelist.id;
+          const id = this.selectedCodelist().id;
           this.codelistService.resetCodelist(id).subscribe();
         }
       });
   }
 
-  save() {
-    this.codelistService
-      .updateCodelist(this.selectedCodelist)
-      .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
-      .subscribe();
-  }
-
-  private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
-    if (oldId === null) {
-      this.selectedCodelist.entries = [
-        ...this.selectedCodelist.entries,
-        result,
-      ];
+  private modifyCodelistEntry(codelist: Codelist, entry: CodelistEntry) {
+    const index = codelist.entries.findIndex((e) => e.id === entry.id);
+    if (index >= 0) {
+      codelist.entries.splice(index, 1, entry);
     } else {
-      const index = this.selectedCodelist.entries.findIndex(
-        (e) => e.id === oldId,
-      );
-      this.selectedCodelist.entries.splice(index, 1, result);
+      codelist.entries.push(entry);
     }
-
-    this.sortCodelist(this.selectedCodelist);
+    this.sortCodelist(codelist);
   }
 
-  private removeEntryFromCodelist(entry: CodelistEntry) {
-    const oldId = entry.id;
-    const index = this.selectedCodelist.entries.findIndex(
-      (e) => e.id === oldId,
-    );
-    this.selectedCodelist.entries.splice(index, 1);
+  private removeCodelistEntry(codelist: Codelist, entry: CodelistEntry) {
+    const index = codelist.entries.findIndex((e) => e.id === entry.id);
+    codelist.entries.splice(index, 1);
   }
 
   private sortCodelist(codelist: Codelist) {
     codelist.entries.sort((a, b) => a.id.localeCompare(b.id));
-  }
-
-  private setInitialValue() {
-    if (this.codelistsValue?.length === 0) return;
-
-    // after a reset we want to stay on an already selected codelist
-    let initialValue: Codelist;
-    if (this.selectedCodelist) {
-      initialValue = this.codelistsValue.find(
-        (option) => option.id === this.selectedCodelist.id,
-      );
-    } else {
-      initialValue = this.getFilteredCodelists("")?.[0];
-    }
-
-    if (initialValue) {
-      this.codelistSelect.setValue(initialValue);
-      this.selectCodelist(initialValue);
-    }
   }
 
   resetAllCodelists(value?: string) {
@@ -403,41 +386,52 @@ export class CatalogCodelistsComponent implements OnInit {
       });
   }
 
-  setAsFavorite(entry: CodelistEntry) {
-    let entryIndex = this.favorites.findIndex((fav) => fav.id === entry.id);
-    if (entryIndex >= 0) {
-      this.favorites.splice(entryIndex, 1);
-    } else {
-      this.favorites.push(entry);
-    }
-    this.updateFavorites();
+  addFavorite(entry: CodelistEntry) {
+    this.favorites.update((favorites) => {
+      const index = favorites.findIndex((fav) => fav.id === entry.id);
+      if (index >= 0) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(entry);
+      }
+      return favorites;
+    });
+    this.saveFavorites();
   }
 
-  dropFavorite(event: CdkDragDrop<CodelistEntry[]>) {
+  moveFavorite(event: CdkDragDrop<CodelistEntry[]>) {
     if (event.previousIndex === event.currentIndex) return;
-
-    moveItemInArray(this.favorites, event.previousIndex, event.currentIndex);
-    this.updateFavorites();
+    this.favorites.update((favorites) => {
+      moveItemInArray(favorites, event.previousIndex, event.currentIndex);
+      return favorites;
+    });
+    this.saveFavorites();
   }
 
-  private updateFavorites() {
-    this.favoriteIds = this.favorites.map((f) => f.id);
+  removeFavorite(entry: CodelistEntry) {
+    this.favorites.update((favorites) => {
+      return favorites.filter((fav) => fav.id !== entry.id);
+    });
+    this.saveFavorites();
+  }
+
+  // Save favorites by the selected codelist in the server.
+  private saveFavorites() {
     this.codelistService
       .updateFavorites(
-        this.selectedCodelist.id,
-        this.favorites.map((item) => item.id),
+        this.selectedCodelist().id,
+        this.favorites().map((f) => f.id),
       )
       .subscribe(() => this._snackBar.open("Favoriten aktualisiert"));
   }
 
-  private getFilteredCodelists(value: string): Codelist[] {
-    let visibleCodelists = this.showAllCodelists()
-      ? this.codelistsValue
-      : this.codelistsValue.filter((item) => item.isCatalog);
+  private getFilteredCodelists(query?: string): Codelist[] {
+    const visibleCodelists = this.showAllCodelists()
+      ? this.codelists()
+      : this.codelists().filter((item) => item.isCatalog);
+    if (!query) return visibleCodelists;
 
-    if (value === "") return visibleCodelists;
-
-    let filter = value.toLowerCase();
+    const filter = query.toLowerCase();
     return visibleCodelists.filter(
       (option) =>
         option.id.toLowerCase().indexOf(filter) !== -1 ||
@@ -447,12 +441,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   handleCodelistToggle(event: MatSlideToggleChange) {
     this.showAllCodelists.set(event.checked);
-    this.filterCtrl.setValue("");
-  }
-
-  removeFavorite(item: CodelistEntry) {
-    this.favorites = this.favorites.filter((f) => f !== item);
-    this.updateFavorites();
+    this.filterSearchQueryCtrl.setValue("");
   }
 
   syncCodelistValues($event: MouseEvent) {
@@ -485,5 +474,10 @@ export class CatalogCodelistsComponent implements OnInit {
             });
         }
       });
+  }
+
+  // Return a copy of the codelist.
+  private copyCodelist(codelist: Codelist): Codelist {
+    return JSON.parse(JSON.stringify(codelist));
   }
 }

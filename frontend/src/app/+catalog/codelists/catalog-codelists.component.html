@@ -51,16 +51,13 @@
     >
         <div class="flex-row gap-12 align-items-baseline width-100">
             <mat-form-field appearance="outline" class="white-bg main-center">
-                <mat-select
-                    [formControl]="codelistSelect"
-                    (selectionChange)="selectCodelist($event.value)"
-                >
+                <mat-select [formControl]="filterCodelistCtrl">
                     <mat-option>
                         <ngx-mat-select-search
-                            [formControl]="filterCtrl"
+                            [formControl]="filterSearchQueryCtrl"
                         ></ngx-mat-select-search>
                     </mat-option>
-                    @for (codelist of filteredOptions(); track codelist.id) {
+                    @for (codelist of filteredCodeLists(); track codelist.id) {
                         <mat-option [value]="codelist">
                             {{ codelist.name }} ({{ codelist.id }})
                         </mat-option>
@@ -75,15 +72,15 @@
         </div>
     </div>
 
-    @if (filteredOptions().length > 0) {
+    @if (filteredCodeLists().length > 0) {
         <div main-content class="flex-1">
-            @if (selectedCodelist?.description) {
+            @if (selectedCodelist()?.description) {
                 <div class="description">
                     <div class="section-title">Beschreibung</div>
-                    <div>{{ selectedCodelist?.description }}</div>
+                    <div>{{ selectedCodelist()?.description }}</div>
                 </div>
             }
-            @if (selectedCodelist?.isCatalog) {
+            @if (selectedCodelist()?.isCatalog) {
                 <div
                     class="flex-row justify-content-end align-items-end gap-12"
                 >
@@ -103,14 +100,14 @@
                     </button>
                 </div>
             }
-            @if (favorites?.length > 0) {
+            @if (favorites()?.length > 0) {
                 <div class="section-title">Favoriten</div>
                 <div
                     class="flex-1 list-wrapper space-bottom"
                     cdkDropList
-                    (cdkDropListDropped)="dropFavorite($event)"
+                    (cdkDropListDropped)="moveFavorite($event)"
                 >
-                    @for (item of favorites; track item.id) {
+                    @for (item of favorites(); track item.id) {
                         <div
                             cdkDrag
                             class="list-item flex-row align-items-center"
@@ -134,10 +131,10 @@
 
                 <mat-divider></mat-divider>
             }
-            @if (freeEntries?.length > 0) {
+            @if (freeEntries()?.length > 0) {
                 <ige-free-entry-list
-                    [freeEntries]="freeEntries"
-                    [isCatalog]="selectedCodelist?.isCatalog"
+                    [freeEntries]="freeEntries()"
+                    [isCatalog]="selectedCodelist()?.isCatalog"
                     (onReplaceClicked)="openFreeEntryReplaceDialog($event)"
                     (onAddClicked)="openFreeEntryAddDialog($event)"
                 ></ige-free-entry-list>
@@ -145,12 +142,12 @@
             }
             <ige-codelist-presenter
                 class="flex-1"
-                [codelist]="selectedCodelist"
-                [favoriteEntryIds]="favoriteIds"
+                [codelist]="selectedCodelist()"
+                [favoriteEntryIds]="favoriteIds()"
                 (edit)="editCodelist($event)"
                 (remove)="removeCodelist($event)"
                 (setDefault)="setAsDefault($event)"
-                (asFavorite)="setAsFavorite($event)"
+                (asFavorite)="addFavorite($event)"
             ></ige-codelist-presenter>
         </div>
     } @else {
