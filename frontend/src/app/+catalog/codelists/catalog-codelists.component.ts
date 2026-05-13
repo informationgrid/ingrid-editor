@@ -20,6 +20,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   HostListener,
   inject,
@@ -63,6 +64,7 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 import { CodelistStore } from "../../store/codelist/codelist.store";
 import { MatInput } from "@angular/material/input";
 import { FreeEntryListComponent } from "./free-entry-list/free-entry-list.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-catalog-codelists",
@@ -91,9 +93,12 @@ import { FreeEntryListComponent } from "./free-entry-list/free-entry-list.compon
 })
 export class CatalogCodelistsComponent implements OnInit {
   private codelistStore = inject(CodelistStore);
+  private destroyRef = inject(DestroyRef);
 
   codelists = computed<Codelist[]>(() =>
-    this.codelistStore.entities().sort((a, b) => a.name.localeCompare(b.name)),
+    [...this.codelistStore.entities()].sort((a, b) =>
+      a.name.localeCompare(b.name),
+    ),
   );
 
   // Selected codelist.
@@ -106,7 +111,7 @@ export class CatalogCodelistsComponent implements OnInit {
   });
 
   // Selected codelist dependent entries.
-  favorites = signal<CodelistEntry[]>(undefined);
+  favorites = signal<CodelistEntry[]>([]);
   favoriteIds = computed<string[]>(() => this.favorites().map((f) => f.id));
   freeEntries = signal<FreeEntry[]>(undefined);
 
@@ -155,12 +160,16 @@ export class CatalogCodelistsComponent implements OnInit {
   ngOnInit(): void {
     this.codelistService.getAll();
 
-    this.filterCodelistCtrl.valueChanges.subscribe((codelist) => {
-      this.selectedCodelistId.set(codelist?.id);
-    });
-    this.filterSearchQueryCtrl.valueChanges.subscribe((value) => {
-      this.filterSearchQueryCtrlValue.set(value);
-    });
+    this.filterCodelistCtrl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((codelist) => {
+        this.selectedCodelistId.set(codelist?.id);
+      });
+    this.filterSearchQueryCtrl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.filterSearchQueryCtrlValue.set(value);
+      });
   }
 
   @HostListener("document:keydown", ["$event"])
@@ -394,7 +403,7 @@ export class CatalogCodelistsComponent implements OnInit {
       } else {
         favorites.push(entry);
       }
-      return favorites;
+      return [...favorites];
     });
     this.saveFavorites();
   }
