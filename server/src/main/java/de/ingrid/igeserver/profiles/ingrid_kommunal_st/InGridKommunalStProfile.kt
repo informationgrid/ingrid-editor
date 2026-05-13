@@ -19,13 +19,16 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_kommunal_st
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
@@ -37,6 +40,7 @@ class InGridKommunalStProfile(
     query: QueryRepository,
     dateService: DateService,
     openDataCategory: OpenDataCategory,
+    @JsonIgnore @Qualifier("openDataProfile") val opendataProfile: OpenDataProfile,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
     companion object {
         const val ID = "ingrid-kommunal-st"
@@ -44,5 +48,10 @@ class InGridKommunalStProfile(
 
     override val identifier = ID
     override val title = "InGrid Katalog (Kommunal ST)"
-    override val linkedProfiles = listOf("ingrid")
+    override val linkedProfiles = listOf("ingrid", "opendata")
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        opendataProfile.initCatalogCodelists(catalogId, codelistId)
+        super.initCatalogCodelists(catalogId, codelistId)
+    }
 }
