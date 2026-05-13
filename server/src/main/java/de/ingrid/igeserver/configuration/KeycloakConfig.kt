@@ -285,7 +285,7 @@ object KeycloakAuthorityEnricher {
         }
 
         // get catalog id of user and fallback to first catalog if none is set
-        val userCatalogId = userDb?.curCatalog?.id ?: userDb?.catalogs?.first()?.id
+        val userCatalogId = userDb?.curCatalog?.id ?: userDb?.catalogs?.firstOrNull()?.id
         userCatalogId?.let { catalogId ->
             val groups = userDb!!.groups.filter { it.catalog?.id == catalogId }
 
