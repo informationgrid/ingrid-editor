@@ -310,35 +310,13 @@
     @endfor
     ],
 
-    @if("at".equals(page.getResourceDateType()) && (page.getTemporalData().getResourceDate() != null))
-    "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-    "t01_object.time_type": "am",
-    @endif
-    @if("since".equals(page.getResourceDateType()))
-        @if(page.isResourceRangeDefined())
-            @if(page.getTemporalData().getResourceRange() != null)
-                "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getStart())}",
-                "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getEnd())}",
-                "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getStart())}",
-                "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceRange().getEnd())}",
-            @endif
-            "t01_object.time_type": "von",
-        @elseif (page.getTemporalData().getResourceDate() != null)
-            "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-            "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-            @if("continuously".equals(page.getTemporalData().getIntervalTo()))
-                "t01_object.time_type": "seitX",
-            @else
-                "t01_object.time_type": "seit",
-            @endif
-        @endif
-    @endif
-    @if("till".equals(page.getResourceDateType()) && (page.getTemporalData().getResourceDate() != null))
-    "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getTemporalData().getResourceDate())}",
-    "t01_object.time_type": "bis",
-    @endif
+    "t01_object.time_type": "${page.getLuceneResourceTimeType()}",
+    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getLuceneResourceTypeFrom())}",
+    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getResourceEndDate())}",
+    "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getLuceneResourceAtDate())}",
+    "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getResourceBeginDate())}",
+    "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getResourceEndDate())}",
+
     "object_use_constraint.license_key": [
     @for(var entry : ForSupport.of(page.getUseConstraints()))
         "${entry.get().getTitleKey()}"@if (!entry.isLast()),@endif

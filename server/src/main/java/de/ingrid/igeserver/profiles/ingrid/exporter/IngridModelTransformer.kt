@@ -156,6 +156,24 @@ open class IngridModelTransformer(
             "continuously" -> "indeterminatePosition=\"now\""
             else -> ""
         }
+
+    val luceneResourceTimeType = when (resourceDateType) {
+        "range" -> when {
+            isResourceRangeDefined -> "von"
+            resourceBeginDate != null -> if (temporalData?.intervalTo == "continuously") "seitX" else "seit"
+            resourceEndDate != null -> "bis"
+            else -> ""
+        }
+
+        "at" -> "am"
+
+        else -> ""
+    }
+
+    val luceneResourceAtDate = if (resourceDateType == "at") temporalData?.resourceDate else null
+
+    val luceneResourceTypeFrom = if (resourceDateType == "at") luceneResourceAtDate else resourceBeginDate
+
     val maintenanceAndUpdateFrequency =
         codelists.getValue("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency, "iso", true)
 
