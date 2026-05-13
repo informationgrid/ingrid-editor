@@ -18,15 +18,23 @@
  * limitations under the Licence.
  */
 import { Component } from "@angular/core";
-import { InGridComponent } from "./profile-ingrid";
+import { InGridWithOpendataComponent } from "./profile-ingrid-with-opendata";
 
 @Component({
   template: "",
   standalone: true,
 })
-class InGridKommunalStComponent extends InGridComponent {
+class InGridKommunalStComponent extends InGridWithOpendataComponent {
   constructor() {
     super();
+
+    this.isoView.defaultExportFormat = (docType: string) =>
+      docType === "OpenDataDoc" ? "indexOpenData" : "ingridISO";
+
+    this.isoView.availableExportFormats = (docType: string) =>
+      docType === "OpenDataDoc"
+        ? ["indexOpenData", "indexOpenDataRDF"]
+        : ["ingridISO"];
 
     this.modifyFormFieldConfiguration();
   }
