@@ -15,6 +15,7 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
+/.junie
 
 # IDE - VSCode
 .vscode/*
@@ -53,7 +54,6 @@ databases/
 server/logs
 /keycloak-db/
 /server/out/
-/api/build/
 frontend/cypress/mochawesome-reports/
 /frontend/e2e/cypress/mochawesome-reports/
 /frontend/e2e/cypress/downloads
