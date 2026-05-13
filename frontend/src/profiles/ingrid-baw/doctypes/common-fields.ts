@@ -103,6 +103,49 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
   }
 
+  isBawAdminLocked(field: FormlyFieldConfig): boolean {
+    const publishState = field.options.formState.metadata.state;
+    const isPublished = publishState === "P" || publishState === "PW";
+
+    return !this.config.hasCatAdminRights() && isPublished;
+  }
+
+  applyAdminLock(field: FormlyFieldConfig) {
+    if (!field) return;
+    if (!field.expressions) {
+      field.expressions = {};
+    }
+    field.expressions["props.disabled"] = (f: FormlyFieldConfig) =>
+      field?.options?.formState?.disabled || this.isBawAdminLocked(f);
+  }
+
+  applyBawAdminLocks(fieldConfig: FormlyFieldConfig[]) {
+    // DOI-Felder
+    ["doi", "generalResourceType", "resourceType"].forEach((id) => {
+      this.applyAdminLock(
+        IngridShared.findFieldElementWithId(fieldConfig, id)?.field,
+      );
+    });
+
+    // Zugriffsbeschränkungen, Nutzungsbedingungen, Anwendungseinschränkungen
+    ["accessConstraints", "useConstraints", "otherConstraints"].forEach(
+      (id) => {
+        this.applyAdminLock(
+          IngridShared.findFieldElementWithId(fieldConfig, id)?.field,
+        );
+      },
+    );
+
+    // "Erstmalige Veröffentlichung" (beim Zeitbezug)
+    this.applyAdminLock(
+      IngridShared.findFieldElementWithId(
+        fieldConfig,
+        "firstPublished",
+        "event",
+      )?.field,
+    );
+  }
+
   addSharedFields(
     doc: IngridShared,
     fieldConfig: FormlyFieldConfig[],
@@ -213,6 +256,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
       parentIdentifierPosition.index,
       1,
     );
+
+    this.applyBawAdminLocks(fieldConfig);
   }
 
   getBAWPointOfContactFieldConfig(
