@@ -84,7 +84,7 @@ open class AddressModelTransformer(
 
     fun getIndividualName(): String? = getIndividualName(displayAddress)
 
-    fun getDisplayOrganization(): String? = determineEldestAncestor()?.document?.data?.getString("organization")
+    fun getRootOrganization(): String? = determineEldestAncestor()?.document?.data?.getString("organization")
 
     fun getOrganization(): String? = displayAddress.data.getString("organization")
 

@@ -160,7 +160,7 @@
         ],
         "t02_address.institution": [
         @for(var entry : ForSupport.of(page.getAllAddresses()))
-            "${entry.get().getDisplayOrganization()}"@if (!entry.isLast()),@endif
+            "${entry.get().getOrganization()}"@if (!entry.isLast()),@endif
         @endfor
         ],
         "t02_address.job": [],
