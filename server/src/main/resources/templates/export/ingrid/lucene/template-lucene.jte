@@ -117,31 +117,82 @@
         ],
         "t021_communication.descr": "",
         "t02_address.adr_id": [
-        "${page.getContact().getUuid()}"
-            @for(var entry : ForSupport.of(page.getPointOfContact()))
-                ,"${entry.get().getUuid()}"
-            @endfor
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
+        @endfor
         ],
-        "t02_address.address_key": "",
-        "t02_address.address_value": "${page.getContact().getDisplayAddress().getTitle()}",
-        "t02_address.city": "${page.getContact().getCity()}",
-        "t02_address.country_code": "${page.getCodelists().getValue("6200", page.getContact().getCountry())}",
-        "t02_address.country_key": "${page.getContact().getCountryKey()}",
-        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getCreated())}",
-        "t02_address.descr": "",
-        "t02_address.firstname": "${page.getContact().getFirstName()}",
-        "t02_address.lastname": "${page.getContact().getLastName()}",
-        "t02_address.institution": "${page.getContact().getDisplayOrganization()}",
-        "t02_address.job": "",
-        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getModified())}",
-        "t02_address.mod_uuid": "",
-        "t02_address.org_adr_id": "",
-        "t02_address.postbox": "${page.getContact().getPoBox()}",
-        "t02_address.postbox_pc": "${page.getContact().getZipPoBox()}",
-        "t02_address.postcode": "${page.getContact().getZipCode()}",
-        "t02_address.responsible_uuid": "",
-        "t02_address.street": "${page.getContact().getStreet()}",
-        "t02_address.title_key": "",
+        "t02_address.address_key": [],
+        "t02_address.address_value": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getDisplayAddress().getTitle()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.city": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getCity()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.country_code": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${page.getCodelists().getValue("6200", entry.get().getCountry())}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.country_key": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getCountryKey()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.create_time": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${page.formatDate(page.getFormatterNoSeparator(), entry.get().getDisplayAddress().getCreated())}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.descr": [],
+        "t02_address.firstname": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getFirstName()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.lastname": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getLastName()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.institution": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getDisplayOrganization()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.job": [],
+        "t02_address.mod_time": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${page.formatDate(page.getFormatterNoSeparator(), entry.get().getDisplayAddress().getModified())}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.mod_uuid": [],
+        "t02_address.org_adr_id": [],
+        "t02_address.postbox": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getPoBox()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.postbox_pc": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getZipPoBox()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.postcode": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getZipCode()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.responsible_uuid": [],
+        "t02_address.street": [
+        @for(var entry : ForSupport.of(page.getAllAddresses()))
+            "${entry.get().getStreet()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t02_address.title_key": [],
     @endif
     "collection.name": "${catalog.getName()}",
     "collection.id": "${catalog.getIdentifier()}",
@@ -169,17 +220,17 @@
         ],
     @endif
     "t02_address.typ": [
-    @for(var entry : ForSupport.of(page.getPointOfContact()))
+    @for(var entry : ForSupport.of(page.getAllAddresses()))
         "${entry.get().getAddressDocType()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t02_address.title": [
-    @for(var entry : ForSupport.of(page.getPointOfContact()))
+    @for(var entry : ForSupport.of(page.getAllAddresses()))
         "${page.getCodelists().getValue("4300", entry.get().getSalutation())}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t022_adr_adr.adr_from_id": [
-    @for(var entry : ForSupport.of(page.getPointOfContact()))
+    @for(var entry : ForSupport.of(page.getAllAddresses()))
         "${entry.get().getNextParent()}"@if (!entry.isLast()),@endif
     @endfor
     ],

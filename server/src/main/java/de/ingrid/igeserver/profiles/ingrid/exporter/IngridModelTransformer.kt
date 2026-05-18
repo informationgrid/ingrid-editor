@@ -927,9 +927,11 @@ open class IngridModelTransformer(
     var orderInfoContact: List<AddressModelTransformer>
     fun getPointOfContactWithEmail() = pointOfContact.filter { addressHasEmail(it) }
     fun getPointOfContactWithoutEmail() = pointOfContact.filter { addressHasEmail(it).not() }
-    fun getAddressesToUuids() = pointOfContact.flatMap { model ->
+    fun getAddressesToUuids() = getAllAddresses().flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }
     }
+
+    fun getAllAddresses(): List<AddressModelTransformer> = contacts + pointOfContact
 
     var contact: AddressModelTransformer?
     var contacts: List<AddressModelTransformer>
