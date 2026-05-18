@@ -45,6 +45,7 @@ class LuceneExport : GeodatasetBase() {
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
             DummyCatalog("ingrid-bkg")
+        every { documentService.getParentWrapper(any()) } returns null
     }
 
     init {
