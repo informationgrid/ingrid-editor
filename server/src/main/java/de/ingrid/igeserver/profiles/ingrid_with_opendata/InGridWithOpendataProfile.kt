@@ -57,8 +57,13 @@ class InGridWithOpendataProfile(
     override val indexExportFormatID = "indexInGridIDFOpenInGrid"
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-        opendataProfile.initCatalogCodelists(catalogId, codelistId)
-        super.initCatalogCodelists(catalogId, codelistId)
+        try {
+            // first try opendata-codelists
+            opendataProfile.initCatalogCodelists(catalogId, codelistId)
+        } catch (_: Exception) {
+            // otherwise try ingrid-codelists
+            super.initCatalogCodelists(catalogId, codelistId)
+        }
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/ingrid-with-opendata/default-mapping.json")?.readText() ?: ""
