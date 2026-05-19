@@ -668,7 +668,7 @@
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
                     @if(page.getLinkToVerticalCRS())
-                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="http://www.opengis.net/def/crs/EPSG/0/${verticalExtent.getDatum().getKey()}" />
+                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getSpatialSystem().getKey()}" xlink:href="http://www.opengis.net/def/crs/EPSG/0/${verticalExtent.getSpatialSystem().getKey()}" />
                     @else
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
@@ -691,7 +691,7 @@
                             <gml:verticalDatum>
                                 <gml:VerticalDatum gml:id="verticalDatum_ID_${TransformationTools.getRandomUUID()}">
                                     <gml:identifier codeSpace="" />
-                                    <gml:name>${page.getCodelists().getValue("101", verticalExtent.getDatum(), "en")}</gml:name>
+                                    <gml:name>${page.getCodelists().getValue("101", verticalExtent.getSpatialSystem(), "en")}</gml:name>
                                     <gml:scope />
                                 </gml:VerticalDatum>
                             </gml:verticalDatum>

@@ -49,7 +49,7 @@
         "unitOfMeasure": {
           "key": "9002"
         },
-        "Datum": {
+        "spatialSystem": {
           "key": "5105"
         }
       },

@@ -87,7 +87,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("service.classification")!!.get(0).getString("_codelistId") shouldBe "5200"
                 it.getPath("spatial.spatialSystems")!!.get(0).getString("_codelistId") shouldBe "100"
                 it.getString("service.type._codelistId") shouldBe "5100"
-                it.getString("spatial.verticalExtent.Datum._codelistId") shouldBe "101"
+                it.getString("spatial.verticalExtent.spatialSystem._codelistId") shouldBe "101"
                 it.getString("spatial.verticalExtent.unitOfMeasure._codelistId") shouldBe "102"
                 it.getString("metadata.language._codelistId") shouldBe "99999999"
                 // it.getString("dataset.languages") shouldBe "99999999" -> only stored in simple key-form!

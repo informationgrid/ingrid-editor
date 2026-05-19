@@ -536,7 +536,7 @@ data class TypedDateEvent(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class VerticalExtent(
-    val Datum: KeyValue?,
+    val spatialSystem: KeyValue?,
     val minimumValue: Float?,
     val maximumValue: Float?,
     val unitOfMeasure: KeyValue?,

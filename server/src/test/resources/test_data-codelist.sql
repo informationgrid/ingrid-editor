@@ -83,7 +83,7 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
       }
     ],
     "verticalExtent": {
-      "Datum": {
+      "spatialSystem": {
         "key": "900002"
       },
       "maximumValue": 11,

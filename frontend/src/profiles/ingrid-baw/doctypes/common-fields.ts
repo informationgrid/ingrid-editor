@@ -350,7 +350,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
                   isNotEmptyObject(field.form.value),
               },
             }),
-            this.addAutoCompleteInline("Datum", "Raumbezugssystem", {
+            this.addAutoCompleteInline("spatialSystem", "Raumbezugssystem", {
               options: doc.getCodelistForSelect(
                 "verticalSpatialSystems",
                 "null",

@@ -75,7 +75,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist(null, "spatialScope", "6360"),
         FieldToCodelist("topicCategories", null, "527"),
         FieldToCodelist(null, "spatial.verticalExtent.unitOfMeasure", "102"),
-        FieldToCodelist(null, "spatial.verticalExtent.Datum", "101"),
+        FieldToCodelist(null, "spatial.verticalExtent.spatialSystem", "101"),
         FieldToCodelist("temporal.events", "referenceDateType", "502"),
         FieldToCodelist("dataQualityInfo.lineage.source.descriptions", "dateType", "502"),
         FieldToCodelist(null, "temporal.status", "523"),

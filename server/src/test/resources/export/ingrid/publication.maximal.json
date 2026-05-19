@@ -19,7 +19,7 @@
     "description": "location-information",
     "spatialSystems": [{ "key": "9000002" }],
     "verticalExtent": {
-      "Datum": { "key": "900005" },
+      "spatialSystem": { "key": "900005" },
       "maximumValue": 8,
       "minimumValue": 7,
       "unitOfMeasure": { "key": "4" }

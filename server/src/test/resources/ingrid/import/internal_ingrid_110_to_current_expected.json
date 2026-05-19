@@ -31,7 +31,14 @@
           }
         ],
         "verticalExtent": {
-          "unitOfMeasure": null
+          "minimumValue": 1,
+          "maximumValue": 1,
+          "unitOfMeasure": {
+            "key": "9036"
+          },
+          "spatialSystem": {
+            "key": "900010"
+          }
         }
       },
       "keywords": {

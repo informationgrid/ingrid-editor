@@ -149,7 +149,7 @@
           "value": "Meter",
           "_codelistId": "102"
         },
-        "Datum": {
+        "spatialSystem": {
           "key": "900002",
           "value": "DE_AMST / NH",
           "_codelistId": "101"

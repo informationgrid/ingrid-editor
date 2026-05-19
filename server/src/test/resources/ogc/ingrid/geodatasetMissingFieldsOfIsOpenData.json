@@ -39,7 +39,7 @@
       }
     ],
     "verticalExtent": {
-      "Datum": {
+      "spatialSystem": {
         "key": "5105",
         "value": "Baltic Sea",
         "_codelistId": "101"

@@ -37,7 +37,14 @@
           }
         ],
         "verticalExtent": {
-          "unitOfMeasure": null
+          "minimumValue": 1,
+          "maximumValue": 1,
+          "unitOfMeasure": {
+            "key": "9036"
+          },
+          "Datum": {
+            "key": "900010"
+          }
         }
       },
       "subType": {

@@ -1223,7 +1223,7 @@ open class IngridModelTransformer(
 
     open val linkToVerticalCRS = false
     fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
-        it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
+        it.spatialSystem != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
     } ?: false
 
     private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"

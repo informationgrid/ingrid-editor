@@ -128,7 +128,7 @@
         "unitOfMeasure": {
           "key": "4"
         },
-        "Datum": {
+        "spatialSystem": {
           "key": "5129"
         }
       },

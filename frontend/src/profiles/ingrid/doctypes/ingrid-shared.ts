@@ -1054,10 +1054,10 @@ export abstract class IngridShared extends BaseDoctype {
                 null,
                 null,
                 [
-                  this.addAutoCompleteInline("Datum", "Vertikaldatum", {
+                  this.addAutoCompleteInline("spatialSystem", "Vertikaldatum", {
                     options: this.getCodelistForSelect(
                       "101",
-                      "spatial.verticalExtent.Datum",
+                      "spatial.verticalExtent.spatialSystem",
                     ),
                     codelistId: "101",
                     expressions: {

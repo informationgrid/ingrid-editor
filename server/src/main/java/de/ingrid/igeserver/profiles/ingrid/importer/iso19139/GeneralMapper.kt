@@ -592,16 +592,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val uomId = codeListService.getCodeListEntryId("102", uom, "iso")
                 val min = it.verticalElement?.minimumValue?.value
                 val max = it.verticalElement?.maximumValue?.value
-                val datum = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
-                val datumId = codeListService.getCodeListEntryId("101", datum, isoData.catalogLanguage)
-                return if (uomId == null || min == null || max == null || datumId == null) {
+                val spatialSystem = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
+                val spatialSystemId = codeListService.getCodeListEntryId("101", spatialSystem, isoData.catalogLanguage)
+                return if (uomId == null || min == null || max == null || spatialSystemId == null) {
                     null
                 } else {
                     VerticalExtentModel(
                         KeyValue(uomId, codeListService.getCodelistValue("102", uomId, catalogLanguage), "102"),
                         min,
                         max,
-                        KeyValue(datumId, codeListService.getCodelistValue("101", datumId, catalogLanguage), "101"),
+                        KeyValue(spatialSystemId, codeListService.getCodelistValue("101", spatialSystemId, catalogLanguage), "101"),
                     )
                 }
             }?.getOrNull<VerticalExtentModel>(0)
@@ -1141,7 +1141,7 @@ data class VerticalExtentModel(
     val uom: KeyValue,
     val min: Number,
     val max: Number,
-    val datum: KeyValue,
+    val spatialSystem: KeyValue,
 )
 
 data class SpatialReference(

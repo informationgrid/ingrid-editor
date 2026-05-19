@@ -94,7 +94,7 @@
     "minimumValue": ${model.getVerticalExtent().getMin()},
     "maximumValue": ${model.getVerticalExtent().getMax()},
     "unitOfMeasure": @template.imports.ingrid.partial.key-value(item = model.getVerticalExtent().getUom()),
-    "Datum": @template.imports.ingrid.partial.key-value(item = model.getVerticalExtent().getDatum())
+    "spatialSystem": @template.imports.ingrid.partial.key-value(item = model.getVerticalExtent().getSpatialSystem())
     },
 @endif
 "description": "${model.getSpatialDescription()}"

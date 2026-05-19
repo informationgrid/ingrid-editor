@@ -37,7 +37,7 @@
     "description": "erlaeuterung",
     "spatialSystems": [{ "key": "9000005" }],
     "verticalExtent": {
-      "Datum": { "key": "900005" },
+      "spatialSystem": { "key": "900005" },
       "maximumValue": 6,
       "minimumValue": 7,
       "unitOfMeasure": { "key": "4" }

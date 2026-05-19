@@ -19,7 +19,7 @@
     "description": "jhgf",
     "spatialSystems": [{ "key": "9000001" }],
     "verticalExtent": {
-      "Datum": { "key": "900005" },
+      "spatialSystem": { "key": "900005" },
       "maximumValue": 43,
       "minimumValue": 234,
       "unitOfMeasure": { "key": "9001" }

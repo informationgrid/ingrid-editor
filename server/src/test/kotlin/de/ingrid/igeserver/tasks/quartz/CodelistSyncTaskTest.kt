@@ -80,7 +80,7 @@ class CodelistSyncTaskTest : IntegrationTest() {
                 it.getPath("service.classification")!!.get(0).getString("value") shouldBe "Abonnementdienst"
                 it.getPath("spatial.spatialSystems")!!.get(0).getString("value") shouldBe "CRS 84: CRS 84 / mathematisch"
                 it.getString("service.type.value") shouldBe "Download-Dienste"
-                it.getString("spatial.verticalExtent.Datum.value") shouldBe "DE_AMST / NH"
+                it.getString("spatial.verticalExtent.spatialSystem.value") shouldBe "DE_AMST / NH"
                 it.getString("spatial.verticalExtent.unitOfMeasure.value") shouldBe "Kilometer"
                 it.getString("metadata.language.value") shouldBe "Deutsch"
                 it.getPath("resource.useConstraints")!!.get(0).getString("title.value") shouldBe "Amtliches Werk, lizenzfrei nach §5 Abs. 1 UrhG"

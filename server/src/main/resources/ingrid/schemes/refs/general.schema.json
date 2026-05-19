@@ -94,7 +94,7 @@
           "type": "object",
           "unevaluatedProperties": false,
           "properties": {
-            "Datum": {
+            "spatialSystem": {
               "anyOf": [
                 {
                   "$ref": "../../../general.schema.json#/definitions/KeyValue"
