@@ -128,13 +128,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
 
     // Zugriffsbeschränkungen, Nutzungsbedingungen, Anwendungseinschränkungen
-    ["accessConstraints", "useConstraints", "otherConstraints"].forEach(
-      (id) => {
-        this.applyAdminLock(
-          IngridShared.findFieldElementWithId(fieldConfig, id)?.field,
-        );
-      },
-    );
+    ["accessConstraints", "useConstraints", "ç"].forEach((id) => {
+      this.applyAdminLock(
+        IngridShared.findFieldElementWithId(fieldConfig, id)?.field,
+      );
+    });
 
     // "Erstmalige Veröffentlichung" (beim Zeitbezug)
     this.applyAdminLock(
