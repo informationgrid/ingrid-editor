@@ -92,10 +92,10 @@ export function ConfigLoader(
     return commands;
   }
 
-  async function redirectToCatalogSpecificRoute(
+  async function prepareCatalogRedirect(
     router: Router,
     dialog: MatDialog,
-  ) {
+  ): Promise<any[] | null> {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
     const contextPath = configService.getConfiguration().contextPath;
@@ -110,11 +110,7 @@ export function ConfigLoader(
         rootPath === "index.html" ||
         router.config[0].children.some((route) => route.path === rootPath);
       if (hasNoCatalogId) {
-        const commands = getRedirectNavigationCommand(catalogId, urlPath);
-        // redirect a bit delayed to complete this navigation first before doing another
-        // also make sure dynamically added routes have been already added
-        setTimeout(() => router.navigate(commands), 100);
-        return;
+        return getRedirectNavigationCommand(catalogId, urlPath);
       }
 
       const isAssignedToCatalog = userInfo.assignedCatalogs.some(
@@ -134,12 +130,11 @@ export function ConfigLoader(
             const language = info.currentCatalog.settings?.config.language;
             if (language) generalStore.setCatalogLanguage(language);
           });
-        return;
+        return null;
       }
 
       if (catalogId === undefined) {
-        await router.navigate([`${ConfigService.catalogId}/dashboard`]);
-        return;
+        return [`${ConfigService.catalogId}/dashboard`];
       }
 
       dialog
@@ -155,6 +150,7 @@ export function ConfigLoader(
           router.navigate([`${ConfigService.catalogId}/dashboard`]);
         });
     }
+    return null;
   }
 
   function initializeMatomo(config: Configuration) {
@@ -207,8 +203,13 @@ export function ConfigLoader(
         configService.$userInfo.value.currentCatalog.settings?.config.language;
       if (language) generalStore.setCatalogLanguage(language);
       await firstValueFrom(translocoService.load("de"));
-      await redirectToCatalogSpecificRoute(router, dialog);
+      const redirectCommands = await prepareCatalogRedirect(router, dialog);
       await loadProfile.call(ConfigLoader, configService);
+      if (redirectCommands) {
+        // redirect a bit delayed to complete this navigation first before doing another
+        // also make sure dynamically added routes have been already added
+        setTimeout(() => router.navigate(redirectCommands), 0);
+      }
       console.debug("FINISHED APP INIT");
     } catch (err: any) {
       if (err.message === "Profile could not be loaded") {
