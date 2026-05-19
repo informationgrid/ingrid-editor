@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.3.0.1 (19.05.2026)
+
+
+### Bugfixes
+
+* Fehler bei Zabbix-Service während der Indizierung (#9083)
+    
 ## 8.3.0 (01.04.2026)
 
 ### Features
