@@ -151,7 +151,6 @@ import {
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
-import { AppInjector } from "./app/app_injector";
 import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/timepicker-type.component";
 import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
 import { ExplanationTextComponent } from "./app/formly/types/explanation-text/explanation-text.component";
@@ -512,6 +511,4 @@ bootstrapApplication(AppComponent, {
       withRouter(),
     ),
   ],
-}).then((appRef) => {
-  AppInjector.setInjector(appRef.injector);
 });

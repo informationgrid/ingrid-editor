@@ -25,12 +25,12 @@ import {
   RouterModule,
   Routes,
 } from "@angular/router";
+import { inject } from "@angular/core";
 import { AuthGuard } from "./security/auth.guard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { ConfigService } from "./services/config/config.service";
 import { filter } from "rxjs/operators";
 import { CatalogRoutesService } from "./+catalog/catalog-routes.service";
-import { AppInjector } from "./app_injector";
 
 export const routes: Routes = [
   {
@@ -103,16 +103,15 @@ export const routes: Routes = [
       },
       {
         path: "catalogs",
-        loadChildren: () =>
-          import("./+catalog/routes").then((routes) => {
-            const catalogService =
-              AppInjector.getInjector().get(CatalogRoutesService);
-
+        loadChildren: () => {
+          const catalogService = inject(CatalogRoutesService);
+          return import("./+catalog/routes").then((routes) => {
             routes.default[0].children.push(
               ...catalogService.getAdditionalRoutes(),
             );
             return routes;
-          }),
+          });
+        },
         data: {
           onlyAdmin: true,
           permission: "manage_catalog",
