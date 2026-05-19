@@ -22,6 +22,7 @@ package de.ingrid.igeserver.persistence.filter.index
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.index.ElasticIndexer.Companion.convertToElasticDocument
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.services.SchedulerService
@@ -103,7 +104,7 @@ class PostDocumentIndexingZabbix(val uploadConfig: UploadConfig, val zabbixServi
     }
 
     private fun convertToDocument(payload: PostIndexPayload): Document {
-        val idf = (payload.indexDoc as ElasticDocument)["idf"].toString()
+        val idf = convertToElasticDocument(payload.indexDoc)["idf"].toString()
         val documentBuilderFactory = DocumentBuilderFactory.newInstance()
         val documentBuilder = documentBuilderFactory.newDocumentBuilder()
         val xml = InputSource(StringReader(idf))
