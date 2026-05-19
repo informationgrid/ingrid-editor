@@ -30,7 +30,6 @@ import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import de.ingrid.mdek.upload.UploadConfig
-import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
