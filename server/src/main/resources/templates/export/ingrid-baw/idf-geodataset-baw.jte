@@ -267,6 +267,36 @@ aggregateInformation = @`
             @endfor
         </bautechnikSimulationsdaten>
     @endif--%>
+    !{var cfdS = page.getCfdSimulation();}
+    @if(cfdS != null)
+        <cfdSimulationsdaten>
+            @for(String shipName : cfdS.getShipNames())
+                <bawSchiffsname>${shipName}</bawSchiffsname>
+            @endfor
+            @if(TransformationTools.hasValue(cfdS.getPhysics()))
+                <angabenZurPhysik>${cfdS.getPhysics()}</angabenZurPhysik>
+            @endif
+            @if(cfdS.getConstantCrossSection() != null)
+                <konstanteQuerschnitt>
+                    <gco:Boolean>${cfdS.getConstantCrossSection()}</gco:Boolean>
+                </konstanteQuerschnitt>
+            @endif
+            @if(cfdS.getPropulsion() != null)
+                <propulsion>
+                    <gco:Boolean>${cfdS.getPropulsion()}</gco:Boolean>
+                </propulsion>
+            @endif
+            @if(TransformationTools.hasValue(cfdS.getMovementType()))
+                <bewegungsarten>${cfdS.getMovementType()}</bewegungsarten>
+            @endif
+            @if(TransformationTools.hasValue(cfdS.getTrajectory()))
+                <trajektorie>${cfdS.getTrajectory()}</trajektorie>
+            @endif
+            @if(TransformationTools.hasValue(cfdS.getCellCount()))
+                <zellanzahl>${cfdS.getCellCount()}</zellanzahl>
+            @endif
+        </cfdSimulationsdaten>
+    @endif
 `,
 additionalIdentification = @`
     <measurementInfo>

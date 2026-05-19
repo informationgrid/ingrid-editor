@@ -28,6 +28,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBautechnikSimulation
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getCfdSimulation
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLaboratoryData
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
@@ -83,6 +84,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
     fun getLaboratoryData() = getLaboratoryData(this)
     fun getBautechnikSimulation() = getBautechnikSimulation(this)
+    fun getCfdSimulation() = getCfdSimulation(this)
 
     val orderTitle = if (forRepository()) null else getOrderTitle(this)
     val orderNumber = if (forRepository()) null else getOrderNumber(this)
@@ -96,6 +98,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                 unit = it.getString("unit") ?: "",
             )
         } ?: emptyList()
+
+    val simulationVersion = doc.data.getPath("version")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
+    val simulationExtension = doc.data.getPath("extension")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
 
     fun getSimulationKeywordThesauri(): List<Thesaurus> = listOf(
         dimensionalityThesaurus,

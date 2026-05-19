@@ -366,6 +366,25 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     )
 }
 
+fun getCfdSimulation(transformer: IngridModelTransformer): CfdSimulationBaw? {
+    if (transformer.doc.type != "BawSimulation") return null
+    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "cfdSimulation" } ?: return null
+
+    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
+        node.getString("value") ?: node.asText()
+    }?.filter { it.isNotBlank() } ?: emptyList()
+
+    return CfdSimulationBaw(
+        shipNames = getList("shipName"),
+        physics = data.getString("physics"),
+        constantCrossSection = data.getBoolean("constantCrossSection"),
+        propulsion = data.getBoolean("propulsion"),
+        movementType = data.getString("movementType"),
+        trajectory = data.getString("trajectory"),
+        cellCount = data.getString("cellCount"),
+    )
+}
+
 data class SoftwareBaw(
     val name: String?,
     val version: String?,
@@ -413,6 +432,16 @@ data class BautechnikSimulationBaw(
     val effects: List<String>,
     val physics: List<String>,
     val analysisTypes: List<String>,
+)
+
+data class CfdSimulationBaw(
+    val shipNames: List<String>,
+    val physics: String?,
+    val constantCrossSection: Boolean?,
+    val propulsion: Boolean?,
+    val movementType: String?,
+    val trajectory: String?,
+    val cellCount: String?,
 )
 
 data class BautechnikMeasurementBaw(

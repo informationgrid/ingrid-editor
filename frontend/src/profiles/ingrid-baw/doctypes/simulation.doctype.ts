@@ -38,6 +38,8 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
     fieldConfig.push(
       this.addSection("Simulationsdaten", [
         this.getSimulationFieldConfig(),
+        this.getVersionFieldConfig(),
+        this.getExtensionFieldConfig(),
         this.getDimensionalityFieldConfig(),
         this.common.getTimestepFieldConfig(),
         this.getSimulationModelTypeFieldConfig(),
@@ -47,7 +49,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "simulationPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.bautechnikSimulation()],
+          fieldGroup: [this.bautechnikSimulation(), this.cfdSimulation()],
         },
         props: {
           docType: "Simulationsdaten",
@@ -62,6 +64,14 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
     return this.addSelect("process", "Simulationsverfahren", {
       options: this.getCodelistForSelect("3950001", "null"),
     });
+  }
+
+  private getVersionFieldConfig(): FormlyFieldConfig {
+    return this.addRepeatList("version", "Version");
+  }
+
+  private getExtensionFieldConfig(): FormlyFieldConfig {
+    return this.addRepeatList("extension", "Erweiterung");
   }
 
   getDimensionalityFieldConfig(): FormlyFieldConfig {
@@ -274,6 +284,80 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               "BAW_simulationAnalysisType",
               "null",
             ),
+          }),
+        ]),
+      ],
+    };
+  }
+
+  cfdSimulation() {
+    return {
+      name: "cfdSimulation",
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "cfdSimulation",
+      },
+      props: {
+        label: "Simulationsdaten (CFD)",
+      },
+      fieldGroup: [
+        this.addSection("Simulationsdaten (CFD)", [
+          { key: "type" },
+          this.addRepeatList("shipName", "BAW-Schiffsname", {
+            options: [
+              { label: "PPM42", value: "PPM42" },
+              { label: "PPM46", value: "PPM46" },
+              { label: "sonstiges", value: "sonstiges" },
+            ],
+          }),
+          this.addAutocomplete("physics", "Angaben zur Physik", {
+            options: [
+              { label: "VolumeOfFluid (VOF)", value: "VolumeOfFluid (VOF)" },
+              { label: "LevelSet", value: "LevelSet" },
+            ],
+          }),
+          this.addButtonToggles("properties", "Eigenschaften", {
+            options: [
+              {
+                key: "constantCrossSection",
+                label: "Konstante Querschnitt",
+                options: [
+                  { label: "ja", value: true },
+                  { label: "nein", value: false },
+                ],
+              },
+              {
+                key: "propulsion",
+                label: "Propulsion",
+                options: [
+                  { label: "ja", value: true },
+                  { label: "nein", value: false },
+                ],
+              },
+            ],
+          }),
+          this.addAutocomplete("movementType", "Bewegungsarten", {
+            options: [
+              { label: "DFBIMorphing", value: "DFBIMorphing" },
+              {
+                label: "Moving Reference Frame",
+                value: "Moving Reference Frame",
+              },
+              { label: "keine", value: "keine" },
+            ],
+          }),
+          this.addAutocomplete("trajectory", "Trajektorie", {
+            options: [
+              { label: "geradeaus", value: "geradeaus" },
+              { label: "Kurs", value: "Kurs" },
+              { label: "ZigZag", value: "ZigZag" },
+              { label: "Drehkreis", value: "Drehkreis" },
+            ],
+          }),
+          this.addInput("cellCount", "Zellanzahl", {
+            className: "single-field width-25 right-align",
+            type: "number",
+            wrappers: ["panel", "form-field"],
           }),
         ]),
       ],
