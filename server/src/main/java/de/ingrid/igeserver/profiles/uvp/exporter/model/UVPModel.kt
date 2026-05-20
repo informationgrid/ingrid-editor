@@ -35,6 +35,8 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
+import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 import java.text.SimpleDateFormat
@@ -238,6 +240,15 @@ data class UVPModel(
         AddressShort(address.uuid, getPersonStringFromJson(address))
     } else {
         AddressShort(address.uuid, address.data.getString("organization")!!)
+    }
+
+    val spatialReferences = data.spatials ?: emptyList()
+    fun getGeometries(): List<String> = spatialReferences.mapNotNull { spatial ->
+        when {
+            spatial.value != null -> convertBoundingBoxToGeoJson(spatial.value)
+            spatial.wkt != null -> convertWktToGeoJson(spatial.wkt)
+            else -> null
+        }
     }
 
     private fun getPersonStringFromJson(address: Document): String = listOfNotNull(

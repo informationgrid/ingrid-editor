@@ -17,6 +17,13 @@
     "dataSourceName": "${catalog.getName()}",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
+"spatial": {
+"geometries": [
+@for(var entry : ForSupport.of(page.getGeometries()))
+    $unsafe{entry.get()}@if (!entry.isLast()),@endif
+@endfor
+]
+},
     "x1": [${page.getSpatial("lon1")}],
     "x2": [${page.getSpatial("lon2")}],
     "y1": [${page.getSpatial("lat1")}],
