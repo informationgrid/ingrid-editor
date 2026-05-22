@@ -235,22 +235,30 @@ class ZabbixService(
 
     private fun getTriggerId(response: JsonNode): String {
         val webscenarioName = getFromStepsAsString(response, "name")
-        val trigger = getTrigger("Dokument: $webscenarioName")
-        val triggerResult = trigger.get("result")
+        val docUrl = getFromStepsAsString(response, "url")
+        val docName = getTag(response, "document name")
+        val docNameShort = shortenString(docName, 64)
+        val triggerName = createDocumentName(docName, docUrl)
 
-        if (triggerResult?.isEmpty == true && !isUploadExpired(webscenarioName)) {
+        val triggerDoc = getTrigger("Dokument: $docNameShort")
+        val triggerHash = getTrigger("Dokument: $triggerName")
+
+        fun JsonNode.hasResult() = get("result")?.isEmpty == false
+
+        if (!triggerDoc.hasResult() && !triggerHash.hasResult() && !isUploadExpired(webscenarioName)) {
             createTrigger(
-                getTag(response, "id"),
-                getTag(response, "document name"),
-                getFromStepsAsString(response, "url"),
+                uuid = getTag(response, "id"),
+                docName = docName,
+                docUrl = docUrl,
+                hash = webscenarioName.takeLast(4) == triggerName.takeLast(4),
             )
             return getTriggerId(response)
         }
 
-        return if (triggerResult?.isEmpty == false) {
-            getFromResultArray(trigger, "triggerid").asText()
-        } else {
-            ""
+        return when {
+            triggerDoc.hasResult() -> getFromResultArray(triggerDoc, "triggerid").asText()
+            triggerHash.hasResult() -> getFromResultArray(triggerHash, "triggerid").asText()
+            else -> ""
         }
     }
 
@@ -475,8 +483,8 @@ class ZabbixService(
         requestApi(values)
     }
 
-    private fun createTrigger(uuid: String, docName: String, docUrl: String) {
-        val docNameShort = createDocumentName(docName, docUrl)
+    private fun createTrigger(uuid: String, docName: String, docUrl: String, hash: Boolean = true) {
+        val docNameShort = createDocumentName(docName, docUrl, hash)
         //  wrap docName in quotes if it contains a comma for zabbix compatibility
         val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
         val docNameTag = shortenString(docName, 255)
@@ -763,9 +771,14 @@ class ZabbixService(
         return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
 
-    private fun createDocumentName(docName: String, docUrl: String): String {
-        val hash = createHash(docUrl)
-        return shortenString(docName + " " + hash.take(4), 64)
+    private fun createDocumentName(docName: String, docUrl: String, hash: Boolean = true): String {
+        val name = if (hash) {
+            docName + " " + createHash(docUrl).take(4)
+        } else {
+            docName
+        }
+
+        return shortenString(name, 64)
     }
 
     fun getHostIds(catalogName: String): List<String> {
