@@ -1,6 +1,6 @@
 @if (selectedOptions().length > 0) {
     <mat-chip-listbox [disabled]="formControl.disabled">
-        @for (option of selectedOptions(); track option.value) {
+        @for (option of selectedOptions(); track option.key) {
             <mat-chip-option
                 [selectable]="false"
                 (removed)="onOptionRemoved(option)"

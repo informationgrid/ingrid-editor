@@ -197,13 +197,13 @@ export class CategorizedSelectComponent
     } else {
       this.onOptionAdded(option);
     }
-    this.updateFormControl();
   }
 
   onOptionAdded(option: SelectOption) {
     this.selectedOptions.update((prev) => {
       return [...prev, option];
     });
+    this.updateFormControl();
   }
 
   onOptionRemoved(option: SelectOption) {
