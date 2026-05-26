@@ -36,6 +36,7 @@ import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.com
 import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
 import { ButtonTogglesProps } from "../app/formly/types/button-toggles-type/button-toggles-type.component";
+import { CategorizedSelectProps } from "../app/formly/types/categorized-select/categorized-select.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -1073,6 +1074,29 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         queryOptions: options?.queryOptions,
+      },
+    };
+  }
+
+  addCategorizedSelect(
+    id: string,
+    label: string,
+    options: CategorizedSelectProps,
+  ) {
+    return {
+      key: id,
+      id: id,
+      type: "categorized-select",
+      wrappers: ["panel"],
+      defaultValue: options?.defaultValue ?? [],
+      props: {
+        externalLabel: label,
+        placeholder: this.determinePlaceholder({ asSelect: true }),
+        disabled: options?.disabled,
+        required: options?.required,
+        showHeader: options?.showHeader,
+        categories: options?.categories,
+        contextHelpId: options?.contextHelpId,
       },
     };
   }

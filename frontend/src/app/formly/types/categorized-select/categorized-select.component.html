@@ -1,0 +1,97 @@
+@if (selectedOptions().length > 0) {
+    <mat-chip-listbox [disabled]="formControl.disabled">
+        @for (option of selectedOptions(); track option.value) {
+            <mat-chip-option
+                [selectable]="false"
+                (removed)="onOptionRemoved(option)"
+            >
+                {{ option.value }}
+                <button
+                    matChipRemove
+                    [attr.aria-label]="option.value + ' entfernen'"
+                >
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip-option>
+        }
+    </mat-chip-listbox>
+}
+
+<mat-form-field appearance="outline" class="width-100">
+    <mat-select
+        [formControl]="formControl"
+        [placeholder]="props.placeholder"
+        [attr.aria-labelledby]="field | ariaLabel"
+    >
+        <mat-option>
+            <ngx-mat-select-search
+                [formControl]="filterCtrl"
+                noEntriesFoundLabel=""
+            >
+            </ngx-mat-select-search>
+        </mat-option>
+
+        <div class="list-wrapper">
+            @if (filteredCategories().length > 0) {
+                <mat-action-list class="list category-list">
+                    @for (
+                        category of filteredCategories();
+                        track category.title
+                    ) {
+                        <button
+                            mat-list-item
+                            (click)="onCategorySelected(category)"
+                            [class.active]="selectedCategory() === category"
+                        >
+                            <span
+                                class="flex-row align-items-center justify-content-space-between gap-12"
+                            >
+                                <span class="line-clamp-1">
+                                    {{ category.title }}
+                                </span>
+                                @if (selectedCounts()[category.title] > 0) {
+                                    <span class="selected-count">
+                                        {{ selectedCounts()[category.title] }}
+                                    </span>
+                                }
+                            </span>
+                        </button>
+                    }
+                </mat-action-list>
+
+                <div class="list option-list">
+                    @if (selectedCategory()) {
+                        @if (props.showHeader) {
+                            <div class="option-header">
+                                <div class="font-medium">
+                                    {{ selectedCategory().title }}
+                                </div>
+                                <div class="text-sm text-hint">
+                                    {{ selectedCategory().subtitle }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        }
+
+                        @for (
+                            option of selectedCategory()?.options;
+                            track option.key
+                        ) {
+                            <mat-checkbox
+                                [checked]="isSelected(option)"
+                                (change)="onOptionToggled(option)"
+                            >
+                                {{ option.value }}
+                            </mat-checkbox>
+                        }
+                    }
+                </div>
+            } @else {
+                <div class="list">Keine Kategorien gefunden</div>
+            }
+        </div>
+    </mat-select>
+    <mat-error *transloco="let t">
+        {{ t("form.validationMessages.createOneEntry") }}
+    </mat-error>
+</mat-form-field>
