@@ -50,6 +50,8 @@ class InGridKommunalStProfile(
     override val title = "InGrid Katalog (Kommunal ST)"
     override val linkedProfiles = listOf("ingrid", "opendata")
 
+    override val indexExportFormatID = "indexInGridIDFKommunalSt"
+
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         opendataProfile.initCatalogCodelists(catalogId, codelistId)
         super.initCatalogCodelists(catalogId, codelistId)
