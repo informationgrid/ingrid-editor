@@ -1,5 +1,19 @@
 # Changelog
 
+## 8.3.1 (27.05.2026)
+
+### Features
+
+* Kommunaler MDK ST, Anpassung ingrid-with-opendata Profil (#9025)
+* Defaulteinstellung für Beschreibungselement "Identifikator der Datenquelle*"  (#8633)
+
+### Bugfixes
+
+* Zabbix Jobs werden nicht abgebaut (#9097)
+* Raumbezugssuche im Portal funktioniert nicht mehr (#9086)
+* Fehler bei Zabbix-Service während der Indizierung (#9083)
+* Zurücksetzen einer einzelnen Codeliste im Profil InGrid mit OpenData schlägt fehl (#9071)
+    
 ## 8.3.0 (01.04.2026)
 
 ### Features
