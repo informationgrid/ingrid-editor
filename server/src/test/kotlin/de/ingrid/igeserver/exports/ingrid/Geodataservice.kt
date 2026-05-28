@@ -78,6 +78,9 @@ class Geodataservice : ShouldSpec() {
         every { SpringContext.getBean(BehaviourService::class.java) } answers {
             behaviourService
         }
+        every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
+            documentWrapperRepository
+        }
 
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
             val codelistId = secondArg<String>()
@@ -168,8 +171,9 @@ class Geodataservice : ShouldSpec() {
             result shouldBe expectedXml
         }
 
-        xshould("completeLuceneExport") {
+        should("completeLuceneExport") {
             every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns emptySet()
+            every { documentService.getParentWrapper(any()) } returns null
 
             var result = exportJsonToJson(indexExporter, "/export/ingrid/geo-service.maximal.sample.json")
             // replace generated UUIDs and windows line endings
