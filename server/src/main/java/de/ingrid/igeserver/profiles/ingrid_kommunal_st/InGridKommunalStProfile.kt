@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid_kommunal_st
 import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_with_opendata.InGridWithOpendataProfile
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
@@ -40,8 +41,8 @@ class InGridKommunalStProfile(
     query: QueryRepository,
     dateService: DateService,
     openDataCategory: OpenDataCategory,
-    @JsonIgnore @Qualifier("openDataProfile") val opendataProfile: OpenDataProfile,
-) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
+    @JsonIgnore @Qualifier("openDataProfile") override val opendataProfile: OpenDataProfile,
+) : InGridWithOpendataProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory, opendataProfile) {
     companion object {
         const val ID = "ingrid-kommunal-st"
     }
@@ -51,9 +52,4 @@ class InGridKommunalStProfile(
     override val linkedProfiles = listOf("ingrid", "opendata")
 
     override val indexExportFormatID = "indexInGridIDFKommunalSt"
-
-    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-        opendataProfile.initCatalogCodelists(catalogId, codelistId)
-        super.initCatalogCodelists(catalogId, codelistId)
-    }
 }
