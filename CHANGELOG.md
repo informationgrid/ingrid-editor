@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.3.1.1 (02.06.2026)
+
+### Bugfixes 
+
+* Unvollständiges Mapping für "Datensätze" führt zu fehlenden Ergebnissen im Portal (#9135)
+
+
 ## 8.3.1 (27.05.2026)
 
 ### Features
