@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_kommunal_st
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_with_opendata.InGridWithOpendataProfile
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
