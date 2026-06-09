@@ -31,6 +31,7 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -42,6 +43,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Keyword
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Operation
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
@@ -72,6 +74,8 @@ import org.apache.commons.text.StringEscapeUtils.escapeJson
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.collections.filter
+import kotlin.collections.firstOrNull
 
 class TransformerCache {
     val documents = mutableMapOf<String, Document>()
@@ -126,6 +130,36 @@ open class IngridModelTransformer(
             it.getString("mediumNote"),
         )
     } ?: emptyList()
+
+    fun getTemporal(): List<TemporalItem> {
+        val event = data.temporal.event
+        val result = mutableListOf<TemporalItem>()
+        if (event?.created != null) {
+            result.add(
+                TemporalItem(
+                    TemporalItemType.CREATED,
+                    event.created,
+                ),
+            )
+        }
+        if (event?.firstPublished != null) {
+            result.add(
+                TemporalItem(
+                    TemporalItemType.FIRST_PUBLISHED,
+                    event.firstPublished,
+                ),
+            )
+        }
+        if (event?.lastModified != null) {
+            result.add(
+                TemporalItem(
+                    TemporalItemType.LAST_UPDATED,
+                    event.lastModified,
+                ),
+            )
+        }
+        return result
+    }
 
     val temporalData = data.temporal.data
     val isResourceRangeDefined =
@@ -369,12 +403,21 @@ open class IngridModelTransformer(
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
-    fun getGeometries(): List<String> = spatialReferences.mapNotNull { spatial ->
-        when {
+    fun getSpatials(): List<Spatial> = spatialReferences.map { spatial ->
+        val geoJson = when {
             spatial.value != null -> convertBoundingBoxToGeoJson(spatial.value)
             spatial.wkt != null -> convertWktToGeoJson(spatial.wkt)
             else -> null
         }
+        val isToponym = spatial.value == null && spatial.wkt == null
+        Spatial(
+            title = if (isToponym) "" else spatial.title ?: "",
+            geoJson = geoJson,
+            bbox = spatial.value,
+            wkt = spatial.wkt,
+            toponym = if (isToponym) spatial.title else null,
+            administrativeArea = spatial.ars?.ifEmpty { null },
+        )
     }
 
     var catalog: Catalog
@@ -382,6 +425,7 @@ open class IngridModelTransformer(
 
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
+    val formatterUTC = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:SS'Z'").apply { timeZone = TimeZone.getTimeZone("UTC") }
     var documentTypeId = mapDocumentType(model.type)
 
     open val hierarchyLevel = "nonGeographicDataset"
@@ -428,7 +472,10 @@ open class IngridModelTransformer(
                 ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
         val epsgLink = when {
             // like EPSG:1234 Bla
-            referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
+            referenceSystem.startsWith("EPSG:") ->
+                "http://www.opengis.net/def/crs/EPSG/0/${
+                    referenceSystem.substring(5).substringBefore(" ")
+                }"
 
             // like EPSG 12345: Bla
             referenceSystem.startsWith("EPSG") -> {
@@ -516,6 +563,29 @@ open class IngridModelTransformer(
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1",
     )
+
+    fun getAllKeywords() = listOfNotNull(
+        convertKeyValueToKeyword("invekos", data.invekosKeywords),
+        convertKeyValueToKeyword("adv", data.advProductGroups),
+        convertKeyValueToKeyword("inspire_themes", data.themes),
+        convertKeyValueToKeyword("inspire_priority_data_set", data.priorityDatasets),
+        convertKeyValueToKeyword("inspire_spatial_scope", data.spatialScope?.let { listOf(data.spatialScope) }),
+        convertKeyValueToKeyword("iso_topics", data.topicCategories),
+        data.keywords?.gemet?.takeIf { it.isNotEmpty() }?.let { TypedKeywordWrapper("gemet", data.keywords.gemet) },
+        data.keywords?.umthes?.takeIf { it.isNotEmpty() }?.let { TypedKeywordWrapper("umthes", data.keywords.umthes) },
+        data.keywords?.free?.takeIf { it.isNotEmpty() }?.let { TypedKeywordWrapper("free", data.keywords.free) },
+    )
+
+    private fun convertKeyValueToKeyword(type: String, values: List<KeyValue>?): TypedKeywordWrapper? {
+        if ((values?.size ?: 0) == 0) return null
+
+        return TypedKeywordWrapper(
+            type,
+            values!!.map {
+                Keyword(it.key, it.value!!, null)
+            },
+        )
+    }
 
     private fun adaptGemetLinks(url: String?): String? = url?.replace("http:", "https:")?.replace("gemet/concept", "gemet/en/concept")
 
@@ -749,7 +819,11 @@ open class IngridModelTransformer(
 
     fun getCapabilitiesUrlsFromService(serviceTypeKey: String): List<String> = if (model.type == "InGridGeoDataset") {
         val doc = addressExporter.getLastPublishedDocument(model.uuid)
-        documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED))
+        documentService.getIncomingReferenceUUIDs(
+            doc,
+            catalogIdentifier,
+            IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
+        )
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
                 it.type == "InGridGeoService" &&
@@ -838,7 +912,8 @@ open class IngridModelTransformer(
 
     val ogcLandingPage: String by lazy {
         val operationWithLandingPage = data.service.operations?.firstOrNull({ it.name?.value == "LandingPage" })
-        operationWithLandingPage?.methodCall ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
+        operationWithLandingPage?.methodCall
+            ?: throw ServerException.withReason("Operations do not contain OGC API-Feature LandingPage URL.")
     }
 
     fun hasOgcServiceVersion(): Boolean {
@@ -944,7 +1019,8 @@ open class IngridModelTransformer(
             if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
         this.citationURL = addNamespaceIfNeeded((model.data.identifier ?: "").ifEmpty { model.uuid })
         // only put/generate a resource identifier for class Geoinformation/Karte (Class 1) (INGRID32-184)
-        this.resourceIdentifier = if (this.documentTypeId == InGridDocType.InGridGeoDataset.typeId) this.citationURL else null
+        this.resourceIdentifier =
+            if (this.documentTypeId == InGridDocType.InGridGeoDataset.typeId) this.citationURL else null
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
@@ -1182,7 +1258,11 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = addressExporter.getLastPublishedDocument(model.uuid)
-        return documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED)).mapNotNull {
+        return documentService.getIncomingReferenceUUIDs(
+            doc,
+            catalogIdentifier,
+            IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
+        ).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }
@@ -1296,6 +1376,16 @@ open class IngridModelTransformer(
             JsonNode::class.java,
         ).getString(field)
     }
+
+    fun renderKeyValue(keyValue: KeyValue?): String {
+        if (keyValue == null) return "null"
+
+        return """{
+            "key": "${keyValue.key}",
+            "value": "${keyValue.value}"
+        }
+        """.trimMargin()
+    }
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)
@@ -1358,4 +1448,33 @@ data class GeometryContext(
 data class GeometryContextAttribute(
     val key: String,
     val value: String,
+)
+
+data class Spatial(
+    val title: String?,
+    val geoJson: String?,
+    val bbox: SpatialModel.BoundingBoxModel?,
+    val wkt: String?,
+    val toponym: String?,
+    val administrativeArea: String?,
+)
+
+data class TemporalItem(
+    val type: TemporalItemType,
+    val date: OffsetDateTime?,
+    val dateRange: DateRange? = null,
+    val dateText: String? = null,
+)
+
+data class DateRange(val start: OffsetDateTime?, val end: OffsetDateTime?)
+
+enum class TemporalItemType(val type: String) {
+    CREATED("created"),
+    LAST_UPDATED("last_updated"),
+    FIRST_PUBLISHED("first_published"),
+}
+
+data class TypedKeywordWrapper(
+    val type: String,
+    val keywords: List<Keyword>,
 )

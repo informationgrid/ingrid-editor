@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.networknt.schema.InputFormat
@@ -33,6 +34,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
@@ -74,7 +76,14 @@ class IngridIndexExporter(
             } else {
                 previousFingerprintInfo.date
             }
-            luceneJson.put("idf", idfExporter.updateDateStamp(idf, dateStampDate))
+            val docWithUpdatedTimestamp = idfExporter.updateDateStamp(idf, dateStampDate)
+            val idfDoc = convertStringToDocument(docWithUpdatedTimestamp)
+            luceneJson.set<JsonNode>(
+                "exports",
+                jacksonObjectMapper().createObjectNode().apply {
+                    put("iso", XMLUtils.toString(transformIDFtoIso(idfDoc!!)))
+                },
+            )
         }
 
         val result = luceneJson.toPrettyString()
