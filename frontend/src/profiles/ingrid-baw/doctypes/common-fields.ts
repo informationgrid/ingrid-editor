@@ -52,12 +52,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getBAWKeywordCatalogueFieldConfig(doc: IngridShared): FormlyFieldConfig {
-    return doc.addRepeatList("bawKeywords", "BAW - Schlagwortkatalog", {
-      showSearch: true,
-      view: "chip",
+    return doc.addCategorizedSelect("bawKeywords", "BAW - Schlagwortkatalog", {
       className: "optional",
-      asSelect: true,
-      options: doc.getCodelistForSelect("3950005", "null"),
+      categories: doc.getCodelistForCategorizedSelect("3950005"),
+      codelistId: "3950005",
     });
   }
 
