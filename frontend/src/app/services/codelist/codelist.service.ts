@@ -71,6 +71,12 @@ export interface SelectOptionUi extends SelectOption {
   sortkey?: CodelistSort;
 }
 
+export interface SelectCategory {
+  title: string;
+  subtitle?: string;
+  options: SelectOption[];
+}
+
 export type CodelistSort =
   | "NO_SORT"
   | "value"

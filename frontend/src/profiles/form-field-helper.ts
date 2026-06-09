@@ -1089,7 +1089,9 @@ export class FormFieldHelper {
       type: "categorized-select",
       wrappers: ["panel"],
       defaultValue: options?.defaultValue ?? [],
+      className: options?.className,
       props: {
+        codelistId: options?.codelistId,
         externalLabel: label,
         placeholder: this.determinePlaceholder({ asSelect: true }),
         disabled: options?.disabled,

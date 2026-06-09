@@ -1,14 +1,14 @@
 @if (selectedOptions().length > 0) {
     <mat-chip-listbox [disabled]="formControl.disabled">
-        @for (option of selectedOptions(); track option.key) {
+        @for (option of selectedOptions(); track option.value) {
             <mat-chip-option
                 [selectable]="false"
                 (removed)="onOptionRemoved(option)"
             >
-                {{ option.value }}
+                {{ option.label }}
                 <button
                     matChipRemove
-                    [attr.aria-label]="option.value + ' entfernen'"
+                    [attr.aria-label]="option.label + ' entfernen'"
                 >
                     <mat-icon>cancel</mat-icon>
                 </button>
@@ -22,6 +22,7 @@
         [formControl]="formControl"
         [placeholder]="props.placeholder"
         [attr.aria-labelledby]="field | ariaLabel"
+        [errorStateMatcher]="matcher"
     >
         <mat-option>
             <ngx-mat-select-search
@@ -75,13 +76,13 @@
 
                         @for (
                             option of selectedCategory()?.options;
-                            track option.key
+                            track option.value
                         ) {
                             <mat-checkbox
                                 [checked]="isSelected(option)"
                                 (change)="onOptionToggled(option)"
                             >
-                                {{ option.value }}
+                                {{ option.label }}
                             </mat-checkbox>
                         }
                     }

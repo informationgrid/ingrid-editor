@@ -29,14 +29,7 @@ import {
   untracked,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
-import {
-  AbstractControl,
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-} from "@angular/forms";
+import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CommonModule } from "@angular/common";
@@ -56,21 +49,26 @@ import { debounceTime, startWith } from "rxjs/operators";
 import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { InputOptions } from "../../../../profiles/form-field-helper";
 import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  SelectCategory,
+  SelectOption,
+} from "../../../services/codelist/codelist.service";
+import { BackendOption } from "../../../store/codelist/codelist.model";
+import { ErrorStateMatcher } from "@angular/material/core";
 
-interface SelectOption {
-  key: string;
-  value: string;
-}
+class MyErrorStateMatcher implements ErrorStateMatcher {
+  constructor(private component: CategorizedSelectComponent) {}
 
-interface SelectCategory {
-  title: string;
-  subtitle?: string;
-  options: SelectOption[];
+  isErrorState(control: FormControl | null): boolean {
+    if (this.component.showError && control?.invalid) return control.invalid;
+    else return false;
+  }
 }
 
 export interface CategorizedSelectProps extends InputOptions {
   showHeader?: boolean;
   categories: SelectCategory[] | Observable<SelectCategory[]>;
+  codelistId: string;
 }
 
 @Component({
@@ -130,11 +128,13 @@ export class CategorizedSelectComponent
       .map((cat) => ({
         ...cat,
         options: cat.options.filter((opt) =>
-          opt.value.toLowerCase().includes(query),
+          opt.label.toLowerCase().includes(query),
         ),
       }))
       .filter((cat) => cat.options.length > 0);
   });
+
+  matcher = new MyErrorStateMatcher(this);
 
   constructor() {
     super();
@@ -171,13 +171,10 @@ export class CategorizedSelectComponent
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((data) => {
-        this.selectedOptions.set(data ?? []);
+        this.selectedOptions.set(
+          data?.map((o: BackendOption) => SelectOption.fromBackend(o)) ?? [],
+        );
       });
-
-    // Add a custom required validator.
-    if (this.props.required) {
-      this.formControl.addValidators(moreThanOneSelected());
-    }
 
     // Add filter query listener.
     this.filterCtrl.valueChanges
@@ -224,20 +221,10 @@ export class CategorizedSelectComponent
   }
 
   private updateFormControl() {
-    this.formControl.setValue(this.selectedOptions());
+    this.formControl.setValue(
+      this.selectedOptions().map((o) => o.forBackend(this.props.codelistId)),
+    );
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
   }
-}
-
-function moreThanOneSelected(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (control.value?.length > 0) {
-      return null;
-    } else {
-      return {
-        moreThanOne: true,
-      };
-    }
-  };
 }
