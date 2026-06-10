@@ -30,6 +30,7 @@ import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
 import jakarta.ws.rs.core.Response
+import org.apache.http.ssl.SSLContexts
 import org.apache.logging.log4j.kotlin.logger
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
@@ -56,6 +57,7 @@ import java.io.InputStream
 import java.net.URI
 import java.security.Principal
 import java.util.*
+import javax.net.ssl.SSLContext
 
 @Service
 @Profile("!dev")
@@ -76,6 +78,9 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
+
+    @Value("\${keycloak.ignore-certificates:false}")
+    private val ignoreKeycloakSSL: Boolean = false
 
     private var proxyHost = "localhost"
 
@@ -213,6 +218,12 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         val client = ResteasyClientBuilderImpl()
         if (this.keycloakProxyUrl != null) {
             client.defaultProxy(proxyHost, proxyPort)
+        }
+        if (ignoreKeycloakSSL) {
+            val sslContext: SSLContext? = SSLContexts.custom()
+                .loadTrustMaterial(null, { chain, authType -> true })
+                .build()
+            client.sslContext(sslContext)
         }
         return client
             .register(JacksonProvider::class.java, 100)
