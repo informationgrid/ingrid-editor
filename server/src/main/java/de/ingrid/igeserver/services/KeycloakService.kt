@@ -201,9 +201,10 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         try {
             keycloakClient.realm().clients().findAll()
             return keycloakClient
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
             throw ServerException.withReason(
-                "Failed to access Keycloak Client-ID '${registration.clientId}'. Please check if client exists with correct secret.",
+                "Failed to access Keycloak Client-ID '${registration.clientId}' at '$serverUrl' with realm '$realmName'. Please check if client exists with correct secret.",
+                ex,
             )
         }
     }
