@@ -16,17 +16,17 @@
     "id": "${page.getModel().getUuid()}",
     "schema_version": "0.0.1",
     "metadata": {
-    "data_type": "INGRID",
-    "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
-    "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
-    "issued": null,
-    "partner": "${partner}",
-    "provider": "${provider}",
-    "language": "${page.getMetadataLanguage()}",
-    "datasource": {
-        "id": "${catalog.getIdentifier()}",
-        "name": "${catalog.getName()}"
-    }
+"data_type": "INGRID",
+"created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
+"modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
+"issued": null,
+"partner": "${partner}",
+"provider": "${provider}",
+"language": "${page.getMetadataLanguage()}",
+"datasource": {
+"id": "${catalog.getIdentifier()}",
+"name": "${catalog.getName()}"
+}
     },
     "title": "${page.getModel().getTitle()}",
     "description": "${page.getData().getDescription()}",

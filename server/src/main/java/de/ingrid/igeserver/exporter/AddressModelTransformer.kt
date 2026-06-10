@@ -188,10 +188,20 @@ open class AddressModelTransformer(
 
     val allCommunications = displayAddress.data.get("contact")?.map {
         KeyValue(
-            it.get("type")?.getString("key"),
+            mapCommunicationType(it.get("type")?.getString("key")),
             it.getString("connection"),
         )
     } ?: emptyList()
+
+    private fun mapCommunicationType(type: String?): String = when (type) {
+        "1" -> "phone"
+        "2" -> "fax"
+        "3" -> "email"
+        "4" -> "website"
+        else -> "other"
+        //            "5" -> "social"
+    }
+
     val contactsComTypeKeys = allCommunications.map { it.key }
     val contactsComTypeValues = allCommunications.map { KeyValue(it.key) }
     val contactsComConnections = allCommunications.map { it.value }

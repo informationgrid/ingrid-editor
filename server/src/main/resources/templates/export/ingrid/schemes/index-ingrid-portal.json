@@ -550,6 +550,104 @@
               ]
             }
           ]
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "data_type": {
+              "type": "string",
+              "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+              "examples": [
+                "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                "InGrid Datensatz ['INGRID']",
+                "UVP Datensatz ['UVP']"
+              ]
+            },
+            "created": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "modified": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "issued": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+            },
+            "partner": {
+              "type": "string",
+              "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110.\n",
+              "examples": [
+                "bb",
+                "st"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "description": "Der Anbieter der Datenquelle als Kürzel. Siehe auch Codeliste 111.\n",
+              "examples": [
+                "ni_gll",
+                "bw_mj"
+              ]
+            },
+            "language": {
+              "title": "language",
+              "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet.",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "datasource": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Die ID der Datenquelle."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Der Name der Datenquelle."
+                }
+              }
+            }
+          },
+          "required": [
+            "data_type",
+            "created",
+            "modified"
+          ]
         }
       }
     },
@@ -559,14 +657,120 @@
       "properties": {
         "metadata": {
           "type": "object",
-          "properties": {
-            "data_type": {
-              "type": "string",
-              "const": "INGRID"
+          "description": "Enthält zusätzliche Metadaten zum Datensatz.",
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+                  "examples": [
+                    "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                    "InGrid Datensatz ['INGRID']",
+                    "UVP Datensatz ['UVP']"
+                  ]
+                },
+                "created": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "modified": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "issued": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110.\n",
+                  "examples": [
+                    "bb",
+                    "st"
+                  ]
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle als Kürzel. Siehe auch Codeliste 111.\n",
+                  "examples": [
+                    "ni_gll",
+                    "bw_mj"
+                  ]
+                },
+                "language": {
+                  "title": "language",
+                  "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "datasource": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Die ID der Datenquelle."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Der Name der Datenquelle."
+                    }
+                  }
+                }
+              },
+              "required": [
+                "data_type",
+                "created",
+                "modified"
+              ]
+            },
+            {
+              "type": "object",
+              "title": "InGrid Metadata",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "const": "INGRID"
+                }
+              },
+              "required": [
+                "data_type"
+              ]
             }
-          },
-          "required": [
-            "data_type"
           ]
         },
         "temporal": {
@@ -647,6 +851,7 @@
             },
             {
               "type": "object",
+              "title": "InGrid Temporal",
               "properties": {
                 "status": {
                   "description": "In welchem Zustand ist der Datensatz? Hier wird die Codeliste 523 verwendet.",
@@ -758,7 +963,7 @@
             },
             "references": {
               "type": "array",
-              "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind.",
+              "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind. Hier können auch URLs zu getCapabilities-Anfragen angegeben werden.",
               "items": {
                 "type": "object",
                 "title": "item",
@@ -819,12 +1024,12 @@
                 },
                 "then": {
                   "required": [
-                    "url"
+                    "uuidRef"
                   ]
                 },
                 "else": {
                   "required": [
-                    "uuidRef"
+                    "url"
                   ]
                 }
               }
