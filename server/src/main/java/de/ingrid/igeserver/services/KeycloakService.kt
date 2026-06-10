@@ -30,7 +30,6 @@ import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
 import jakarta.ws.rs.core.Response
-import org.apache.http.ssl.SSLContexts
 import org.apache.logging.log4j.kotlin.logger
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
@@ -56,8 +55,12 @@ import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.net.URI
 import java.security.Principal
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.util.*
 import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 @Service
 @Profile("!dev")
@@ -220,10 +223,18 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             client.defaultProxy(proxyHost, proxyPort)
         }
         if (ignoreKeycloakSSL) {
-            val sslContext: SSLContext? = SSLContexts.custom()
-                .loadTrustMaterial(null, { chain, authType -> true })
-                .build()
+            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+                override fun getAcceptedIssuers(): Array<X509Certificate>? = null
+                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+            })
+
+            val sslContext = SSLContext.getInstance("TLS").apply {
+                init(null, trustAllCerts, SecureRandom())
+            }
+
             client.sslContext(sslContext)
+            client.hostnameVerifier { _, _ -> true }
         }
         return client
             .register(JacksonProvider::class.java, 100)
