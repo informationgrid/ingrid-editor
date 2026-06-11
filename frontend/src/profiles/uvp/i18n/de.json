@@ -77,5 +77,10 @@
       "hideAll": "<span class='section-title'>Alle Dokumente im Portal ausblenden</span>: Alle Dokumente deren Gültig-Bis Datum nicht bereits in der Vergangenheit liegt, werden auf das gestrige Datum gesetzt und sind nach der Archivierung im Portal nicht mehr sichtbar.",
       "showOnlyDecision": "<span class='section-title'>Nur Dokumente der Entscheidung sichtbar belassen</span>: Nur Dokumente aus der Entscheidung, werden weiterhin im Portal angezeigt. Alle anderen Dokumente werden ausgeblendet, indem die Gültigkeit auf das gestrige Datum gesetzt wird, insofern sich das Datum nicht bereits in der Vergangenheit befindet."
     }
+  },
+  "form": {
+    "confirmation": {
+      "scopeOfInvestigation": "Die Veröffentlichung von Informationen innerhalb des Verfahrensschrittes „Unterrichtung über den Untersuchungsrahmen“ sind nicht verpflichtend"
+    }
   }
 }

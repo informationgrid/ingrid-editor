@@ -24,12 +24,22 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { inject } from "@angular/core";
 import { REGEX_URL } from "../../../app/formly/input.validators";
+import { Observable, of } from "rxjs";
+import { map } from "rxjs/operators";
+import { CookieService } from "../../../app/services/cookie.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: string;
 
   private uploadService = inject(UploadService);
   private behaviourService = inject(BehaviourService);
+  private cookieService = inject(CookieService);
+  private dialog = inject(MatDialog);
 
   protected disabledWhenNotArchived = (field: FormlyFieldConfig) =>
     (field.options?.formState?.disabled &&
@@ -227,6 +237,63 @@ export class UvpShared extends BaseDoctype {
       ],
     };
   }
+
+  addScopeOfInvestigation() {
+    return {
+      name: "scopeOfInvestigation",
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "scopeOfInvestigation",
+      },
+      props: {
+        confirmAddition: () => this.confirmAddScopeOfInvestigation(),
+        label: "Unterrichtung über den Untersuchungsrahmen",
+      },
+      fieldGroup: [
+        this.addSection("Unterrichtung über den Untersuchungsrahmen", [
+          { key: "type" },
+          this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
+            required: true,
+            wrappers: ["panel"],
+          }),
+          this.addTable(
+            "considerationDocs",
+            "Informationen zum Erörterungstermin",
+            {
+              required: true,
+              columns: this.columnsForDocumentTable,
+              batchValidUntil: "validUntil",
+              expressions: {
+                "props.disabled": this.disabledWhenNotArchived,
+              },
+            },
+          ),
+        ]),
+      ],
+    };
+  }
+
+  confirmAddScopeOfInvestigation = (): Observable<boolean> => {
+    const cookieId = "HIDE_SCOPE_OF_INVESTIGATION_INFO";
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      return of(true);
+    }
+
+    const message = this.transloco.translate(
+      "form.confirmation.scopeOfInvestigation",
+    );
+    return this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .pipe(map((decision) => decision === "ok"));
+  };
 
   addDecisionOfAdmission() {
     return {
