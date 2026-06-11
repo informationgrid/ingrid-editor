@@ -143,7 +143,13 @@
         "source": {
           "descriptions": [
             {
-              "key": null,
+              "_type": "internalDataOrigin",
+              "date": "",
+              "dateType": {
+                "_codelistId": "502",
+                "key": "1"
+              },
+              "uuidRef": "",
               "value": "Datengrundlage text"
             }
           ],
@@ -348,7 +354,10 @@
       }
     },
     "dataset": {
-      "languages": ["150", "103"]
+      "languages": [
+        "150",
+        "103"
+      ]
     },
     "conformanceResult": [
       {
@@ -424,14 +433,24 @@
         "name": {
           "key": "4"
         },
-        "transferSize": { "value": 3, "unit": { "key": "MB" } },
+        "transferSize": {
+          "value": 3,
+          "unit": {
+            "key": "MB"
+          }
+        },
         "mediumNote": "4"
       },
       {
         "name": {
           "key": "14"
         },
-        "transferSize": { "value": 1, "unit": { "key": "MB" } },
+        "transferSize": {
+          "value": 1,
+          "unit": {
+            "key": "MB"
+          }
+        },
         "mediumNote": "2"
       }
     ],

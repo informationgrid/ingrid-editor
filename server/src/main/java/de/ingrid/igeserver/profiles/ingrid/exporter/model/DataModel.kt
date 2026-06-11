@@ -184,6 +184,7 @@ data class Reference(
     var uuidRefClass: String? = null,
     var uuidRefVersion: String? = null,
     var uuidRefServiceType: KeyValue? = null,
+    val referenceType: String? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

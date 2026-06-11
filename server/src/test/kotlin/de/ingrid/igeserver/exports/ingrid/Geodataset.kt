@@ -20,10 +20,14 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
+import de.ingrid.igeserver.utils.SpringContext
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotContain
+import io.mockk.every
 
 open class Geodataset : GeodatasetBase() {
 
@@ -38,7 +42,8 @@ open class Geodataset : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml"))
             result shouldBe expectedXml
             result shouldNotContain "<gmd:distributionInfo>"
         }
@@ -55,7 +60,8 @@ open class Geodataset : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -66,7 +72,8 @@ open class Geodataset : GeodatasetBase() {
         this.should("openDataMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.openData.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -77,7 +84,8 @@ open class Geodataset : GeodatasetBase() {
         this.should("inspireMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -88,7 +96,8 @@ open class Geodataset : GeodatasetBase() {
         this.should("advMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.AdV.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -99,7 +108,8 @@ open class Geodataset : GeodatasetBase() {
         this.should("vectorMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.vector.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -110,7 +120,8 @@ open class Geodataset : GeodatasetBase() {
         this.should("raster1MinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -122,7 +133,8 @@ open class Geodataset : GeodatasetBase() {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -134,7 +146,8 @@ open class Geodataset : GeodatasetBase() {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
             result shouldNotBe null
-            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml"))
+            val expectedXml =
+                updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml"))
             result shouldBe expectedXml
         }
 
@@ -149,15 +162,18 @@ open class Geodataset : GeodatasetBase() {
             // TODO: pending testdata adjustment or remove?
         }*/
 
-        this.xshould("completeLuceneExport") {
+        this.should("completeLuceneExport") {
+            every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
+                documentWrapperRepository
+            }
+
             var result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")
             // replace generated UUIDs
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            // TODO: pending
-            // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.json")
+            result shouldEqualJson SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.json")
         }
     }
 }

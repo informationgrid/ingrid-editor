@@ -28,6 +28,7 @@
           ]
         },
         "metadata": {
+          "description": "Enthält Metadaten über den Datensatz. Dies kann das Erstellungs- oder Änderungsdatum sein, oder aus welcher Quelle der Datensatz stammt.",
           "type": "object",
           "properties": {
             "data_type": {
@@ -308,6 +309,11 @@
                 "required": [
                   "toponym"
                 ]
+              },
+              {
+                "required": [
+                  "administrative"
+                ]
               }
             ]
           },
@@ -547,6 +553,11 @@
             {
               "required": [
                 "toponym"
+              ]
+            },
+            {
+              "required": [
+                "administrative"
               ]
             }
           ]
@@ -977,7 +988,7 @@
                     "type": "string",
                     "description": "Die URL zur externen Ressource oder Download."
                   },
-                  "uuidRef": {
+                  "uuid_ref": {
                     "type": "string",
                     "description": "Die UUID des internen Datensatzes."
                   },
@@ -1024,7 +1035,7 @@
                 },
                 "then": {
                   "required": [
-                    "uuidRef"
+                    "uuid_ref"
                   ]
                 },
                 "else": {
