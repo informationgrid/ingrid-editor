@@ -286,9 +286,10 @@
                         [hasContextHelp]="props?.hasContextHelp"
                         (contextHelp)="showContextHelp($event)"
                     >
-                        {{ props?.externalLabel }}
                         @if (props?.required) {
-                            <span>*</span>
+                            {{ props?.externalLabel }}<span>*</span>
+                        } @else {
+                            {{ props?.externalLabel }}
                         }
                     </ige-form-label>
                 </div>

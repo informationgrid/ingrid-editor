@@ -252,22 +252,26 @@ export class UvpShared extends BaseDoctype {
       fieldGroup: [
         this.addSection("Unterrichtung über den Untersuchungsrahmen", [
           { key: "type" },
-          this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
+          this.addDateRange("scopingDate", "Scoping-Termin", {
             required: true,
             wrappers: ["panel"],
           }),
-          this.addTable(
-            "considerationDocs",
-            "Informationen zum Erörterungstermin",
-            {
-              required: true,
-              columns: this.columnsForDocumentTable,
-              batchValidUntil: "validUntil",
-              expressions: {
-                "props.disabled": this.disabledWhenNotArchived,
-              },
+          this.addTable("scopingDateDocs", "Informationen zum Scoping-Termin", {
+            required: true,
+            columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
             },
-          ),
+          }),
+          this.addTable("scopingGeneralDocs", "Scoping-Unterlagen", {
+            required: true,
+            columns: this.columnsForDocumentTable,
+            batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
+          }),
         ]),
       ],
     };
