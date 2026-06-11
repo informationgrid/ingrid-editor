@@ -147,19 +147,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
     // this.getFieldMap(this.fields);
 
-    this.cleanFields = JSON.parse(
-      JSON.stringify(this.fields, this.removeObservables),
-    );
+    this.cleanFields = clone(this.fields);
     console.debug(`Document type ${this.id} initialized`);
   }
 
   isInitialized() {
     return Promise.resolve();
-  }
-
-  private removeObservables(_: string, value: any) {
-    if (value?.subscribe !== undefined) return undefined;
-    else return value;
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
