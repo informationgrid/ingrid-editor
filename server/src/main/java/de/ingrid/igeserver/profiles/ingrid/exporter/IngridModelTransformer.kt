@@ -1415,6 +1415,15 @@ open class IngridModelTransformer(
         }
         """.trimMargin()
     }
+
+    fun getConformancePass(conf: ConformanceResult): String {
+        return when (conf.pass.key) {
+            "1" -> "conformant"
+            "2" -> "not-conformant"
+            "3" -> "not-evaluated"
+            else -> "unknown"
+        }
+    }
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)

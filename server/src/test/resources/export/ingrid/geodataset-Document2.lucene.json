@@ -232,7 +232,17 @@
     "spatial_representation": [],
     "specific_usage": "Eignung/Nutzung test",
     "purpose": "Herstellungszweck test",
-    "conformance_result": [],
+    "conformance_result": [
+      {
+        "pass": "conformant",
+        "specification": {
+          "key": "12",
+          "value": "null"
+        },
+        "publicationDate": "2010-12-08",
+        "explanation": "see the referenced specification"
+      }
+    ],
     "order_info": "Bestellinformation test",
     "data_quality": {}
   }

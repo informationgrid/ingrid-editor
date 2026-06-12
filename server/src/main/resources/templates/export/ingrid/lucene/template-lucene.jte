@@ -142,7 +142,7 @@
 "conformance_result": [
 @for(var entry : ForSupport.of(page.getData().getConformanceResult()))
     {
-    "pass": "${entry.get().getPass().getValue()}",
+    "pass": "${page.getConformancePass(entry.get())}",
     "specification": $unsafe{page.renderKeyValue(entry.get().getSpecification())},
     "publicationDate": "${entry.get().getPublicationDate()}",
     "explanation": "${entry.get().getExplanation()}"
