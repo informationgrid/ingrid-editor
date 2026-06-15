@@ -55,6 +55,7 @@ import {
 } from "../../../services/codelist/codelist.service";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { ErrorStateMatcher } from "@angular/material/core";
+import { MatTooltip } from "@angular/material/tooltip";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: CategorizedSelectComponent) {}
@@ -94,6 +95,7 @@ export interface CategorizedSelectProps extends InputOptions {
     FormsModule,
     AriaLabelPipe,
     TranslocoDirective,
+    MatTooltip,
   ],
 })
 export class CategorizedSelectComponent

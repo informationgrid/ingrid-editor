@@ -41,6 +41,7 @@
                     ) {
                         <button
                             mat-list-item
+                            matTooltip="{{ category.title }}"
                             (click)="onCategorySelected(category)"
                             [class.active]="selectedCategory() === category"
                         >
@@ -88,7 +89,8 @@
                     }
                 </div>
             } @else {
-                <div class="list">Keine Kategorien gefunden</div>
+                <!-- No categories found -->
+                <div class="list width-100">Keine Optionen gefunden</div>
             }
         </div>
     </mat-select>
