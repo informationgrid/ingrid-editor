@@ -133,10 +133,6 @@ export class UvpShared extends BaseDoctype {
       fieldGroup: [
         this.addSection("Öffentliche Auslegung", [
           { key: "type" },
-          this.addDateRange("disclosureDate", "Zeitraum der Auslegung", {
-            required: true,
-            wrappers: ["panel"],
-          }),
           this.addTable("announcementDocs", "Auslegungsinformationen", {
             required: true,
             columns: this.columnsForDocumentTable,
@@ -145,16 +141,23 @@ export class UvpShared extends BaseDoctype {
               "props.disabled": this.disabledWhenNotArchived,
             },
           }),
-          this.addPublishConditionCheckbox("announcementDocs"),
-          this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
+          this.addDateRange("disclosureDate", "Zeitraum der Auslegung", {
             required: true,
+            wrappers: ["panel"],
+          }),
+          this.addToggle("publishDuringDisclosure", null, {
+            fieldLabel:
+              "Untenstehende, weitere Unterlagen zur Auslegung erst mit Beginn des Auslegungszeitraumes veröffentlichen",
+            className: "space-bottom-field negative-space-top-field",
+          }),
+          this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
+            required: false,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
             expressions: {
               "props.disabled": this.disabledWhenNotArchived,
             },
           }),
-          this.addPublishConditionCheckbox("applicationDocs"),
           this.addTable(
             "reportsRecommendationDocs",
             "Berichte und Empfehlungen",
@@ -167,7 +170,6 @@ export class UvpShared extends BaseDoctype {
               },
             },
           ),
-          this.addPublishConditionCheckbox("reportsRecommendationDocs"),
           this.addTable("furtherDocs", "Weitere Unterlagen", {
             required: false,
             columns: this.columnsForDocumentTable,
@@ -176,22 +178,9 @@ export class UvpShared extends BaseDoctype {
               "props.disabled": this.disabledWhenNotArchived,
             },
           }),
-          this.addPublishConditionCheckbox("furtherDocs"),
         ]),
       ],
     };
-  }
-
-  addPublishConditionCheckbox(id: string) {
-    return this.addCheckbox(id + "PublishDuringDisclosure", null, {
-      fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
-      className: "space-bottom-field negative-space-top-field",
-      expressions: {
-        hide: (field: FormlyFieldConfig) =>
-          // hide the checkbox if field does not exist or is empty
-          !field.model?.[id]?.length,
-      },
-    });
   }
 
   addPublicHearing() {
