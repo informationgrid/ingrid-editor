@@ -4,6 +4,7 @@
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicDisclosure
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicHearing
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepDecisionOfAdmission
+@import de.ingrid.igeserver.profiles.uvp.exporter.model.StepScopeOfInvestigation
 
 @param UVPModel page
 @param DocInfo docInfo
@@ -44,6 +45,15 @@
                 </date>
                 @template.export.uvp.idf.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs(), docInfo = docInfo)
                 @template.export.uvp.idf.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs(), docInfo = docInfo)
+            </step>
+        @elseif (step instanceof StepScopeOfInvestigation)
+            <step type="scopeOfInvestigation">
+                <datePeriod>
+                    <from>${((StepScopeOfInvestigation) step).getScopingDate().getStart()}</from>
+                    <to>${((StepScopeOfInvestigation) step).getScopingDate().getEnd()}</to>
+                </datePeriod>
+                @template.export.uvp.idf.shared-docs(type = "scopingDateDocs", docs = ((StepScopeOfInvestigation) step).getScopingDateDocs(), docInfo = docInfo)
+                @template.export.uvp.idf.shared-docs(type = "scopingGeneralDocs", docs = ((StepScopeOfInvestigation) step).getScopingGeneralDocs(), docInfo = docInfo)
             </step>
         @endif
     @endfor

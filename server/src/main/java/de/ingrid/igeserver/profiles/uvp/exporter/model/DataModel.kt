@@ -78,12 +78,20 @@ data class DataModel(
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepPublicDisclosure::class.java,
-                ) // Step1
-                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java) // Step1
+                )
+
+                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java)
+
                 "decisionOfAdmission" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepDecisionOfAdmission::class.java,
-                ) // Step1
+                )
+
+                "scopeOfInvestigation" -> jacksonObjectMapper().treeToValue(
+                    step,
+                    StepScopeOfInvestigation::class.java,
+                )
+
                 else -> {
                     null
                 }
@@ -149,6 +157,14 @@ data class StepDecisionOfAdmission(
     val decisionDate: String,
     val approvalDocs: List<Document>?,
     val decisionDocs: List<Document>?,
+) : Step
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class StepScopeOfInvestigation(
+    val type: String,
+    val scopingDate: RangeModel,
+    val scopingDateDocs: List<Document>?,
+    val scopingGeneralDocs: List<Document>?,
 ) : Step
 
 @JsonIgnoreProperties(ignoreUnknown = true)
