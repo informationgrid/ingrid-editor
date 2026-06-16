@@ -143,7 +143,9 @@ export class CategorizedSelectComponent
     }, []);
     const query = this.filterQuery().toLowerCase();
     if (!query) return options;
-    return options.filter((opt) => opt.label.toLowerCase().includes(query));
+    return options
+      .filter((opt) => opt.label.toLowerCase().includes(query))
+      .sort((a, b) => a.label.localeCompare(b.label));
   });
 
   matcher = new MyErrorStateMatcher(this);
