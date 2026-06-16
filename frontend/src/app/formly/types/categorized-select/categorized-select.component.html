@@ -42,7 +42,7 @@
                         <button
                             mat-list-item
                             matTooltip="{{ category.title }}"
-                            (click)="onCategorySelected(category)"
+                            (click)="onSelectedCategoryToggled(category)"
                             [class.active]="selectedCategory() === category"
                         >
                             <span
@@ -79,6 +79,20 @@
                             option of selectedCategory()?.options;
                             track option.value
                         ) {
+                            <mat-checkbox
+                                [checked]="isSelected(option)"
+                                (change)="onOptionToggled(option)"
+                            >
+                                {{ option.label }}
+                            </mat-checkbox>
+                        }
+                    } @else if (filteredOptions().length > 0) {
+                        <div class="option-header">
+                            <div class="text-sm text-hint">Alle Optionen</div>
+                        </div>
+                        <mat-divider></mat-divider>
+
+                        @for (option of filteredOptions(); track option.value) {
                             <mat-checkbox
                                 [checked]="isSelected(option)"
                                 (change)="onOptionToggled(option)"

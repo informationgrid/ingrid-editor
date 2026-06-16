@@ -125,7 +125,7 @@ export class CategorizedSelectComponent
     const query = this.filterQuery().toLowerCase();
     if (!query) return this.categories();
 
-    // Filter only by the value of options.
+    // Filter by the given query.
     return this.categories()
       .map((cat) => ({
         ...cat,
@@ -136,6 +136,16 @@ export class CategorizedSelectComponent
       .filter((cat) => cat.options.length > 0);
   });
 
+  // Uncategorized options with the query filter.
+  filteredOptions = computed(() => {
+    const options = this.categories().reduce((acc, cat) => {
+      return [...acc, ...cat.options];
+    }, []);
+    const query = this.filterQuery().toLowerCase();
+    if (!query) return options;
+    return options.filter((opt) => opt.label.toLowerCase().includes(query));
+  });
+
   matcher = new MyErrorStateMatcher(this);
 
   constructor() {
@@ -143,9 +153,12 @@ export class CategorizedSelectComponent
     // Change the selected category when filtered categories change
     effect(() => {
       if (this.filteredCategories().length > 0) {
-        untracked(() =>
-          this.selectedCategory.set(this.filteredCategories()[0]),
-        );
+        untracked(() => {
+          const selectedCategory = this.filteredCategories().find(
+            (cat) => cat.title == this.selectedCategory()?.title,
+          );
+          this.selectedCategory.set(selectedCategory);
+        });
       } else {
         untracked(() => this.selectedCategory.set(null));
       }
@@ -158,11 +171,9 @@ export class CategorizedSelectComponent
     if (isObservable(categories)) {
       categories.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => {
         this.categories.set(data);
-        if (data.length > 0) this.selectedCategory.set(data[0]);
       });
     } else if (categories) {
       this.categories.set(categories);
-      if (categories.length > 0) this.selectedCategory.set(categories[0]);
     }
 
     // Initialize selected options from form control value.
@@ -186,8 +197,9 @@ export class CategorizedSelectComponent
       });
   }
 
-  onCategorySelected(cat: SelectCategory) {
-    this.selectedCategory.set(cat);
+  onSelectedCategoryToggled(cat: SelectCategory) {
+    const isSame = this.selectedCategory()?.title === cat.title;
+    this.selectedCategory.set(isSame ? null : cat);
   }
 
   onOptionToggled(option: SelectOption) {
