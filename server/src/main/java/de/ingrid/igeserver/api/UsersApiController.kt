@@ -190,6 +190,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         if (deleted) {
             if (!developmentMode) {
                 val user = keycloakService.getUser(login)
+                keycloakService.deleteUser(login)
                 logger.info("Send deletion email to '${user.login}' (${user.email})")
                 try {
                     email.sendDeletionEmail(
@@ -202,7 +203,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                     throw MailException.withException(ex)
                 }
             }
-            keycloakService.deleteUser(login)
         }
 
         return ResponseEntity.ok().build()
@@ -363,11 +363,22 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             emptyList()
         }
 
-        val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
+        var currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
         val groups = currentCatalog?.let { cat ->
             dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
         } ?: emptySet()
         val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
+        if (authUtils.isSuperAdmin(principal)) {
+            if (dbUser == null) {
+                currentCatalog = assignedCatalogs.firstOrNull()
+                user.role = "ige-super-admin"
+                catalogService.createUser(currentCatalog?.identifier ?: "_new", user)
+            } else if (dbUser.catalogs.isEmpty()) {
+                currentCatalog = assignedCatalogs.firstOrNull()
+                dbUser.catalogs.addAll(assignedCatalogs)
+                userRepo.save(dbUser)
+            }
+        }
 
         val userInfo = ServerUserInfo(
             id = dbUser?.id,

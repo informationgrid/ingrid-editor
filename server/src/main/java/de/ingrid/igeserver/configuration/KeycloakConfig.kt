@@ -133,16 +133,19 @@ internal class KeycloakConfig {
                 // BFF auth endpoints
                 authorize("/auth/login", permitAll)
                 authorize("/auth/logout", permitAll)
-                authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin"))
-                authorize("/auth/update-password", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"))
+                authorize(
+                    "/auth/update-password",
+                    hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"),
+                )
                 authorize("/login-error", permitAll)
                 authorize("/access-denied", permitAll)
-                authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"))
                 authorize("/actuator/health", permitAll)
                 if (generalProperties.actuatorPermitAll) {
                     authorize("/actuator/**", permitAll)
                 } else {
-                    authorize("/actuator/**", hasAnyRole("ige-super-admin"))
+                    authorize("/actuator/**", hasAnyRole("ige-super-admin", "editor_admin"))
                 }
                 authorize(anyRequest, permitAll)
             }
@@ -355,6 +358,10 @@ class OidcRealmRoleMapper(
 
         val roles = extractRoles(idTokenClaims).distinct()
 
+        if (!roles.contains("editor_user") && !roles.contains("editor_admin") && !roles.contains("ige-user")) {
+            return mutableListOf()
+        }
+
         // Add ROLE_ prefix for Spring realm roles
         result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
 
@@ -362,7 +369,7 @@ class OidcRealmRoleMapper(
         val username = (idTokenClaims["preferred_username"] as? String)
             ?: (idTokenClaims["email"] as? String)
 
-        val isSuperAdmin = roles.contains("ige-super-admin")
+        val isSuperAdmin = roles.contains("ige-super-admin") || roles.contains("editor_admin")
         val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
             username,
             isSuperAdmin,
