@@ -23,12 +23,13 @@ import { Observable } from "rxjs";
 import {
   CodelistService,
   CodelistSort,
+  SelectCategory,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { FormFieldHelper } from "./form-field-helper";
-import { clone } from "../app/shared/utils";
+import { clone, groupBy } from "../app/shared/utils";
 import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
@@ -126,6 +127,30 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     if (path) this.fieldWithCodelistMap.set(path, codelistId);
 
     return this.codelistService.observe(codelistId, sortBy);
+  }
+
+  getCodelistForCategorizedSelect(
+    codelistId: string,
+    categoryKey: string = "category",
+  ): Observable<SelectCategory[]> {
+    return this.codelistService.observeRaw(codelistId).pipe(
+      map((codelist) => {
+        const grouped = groupBy(
+          codelist.entries,
+          (entry) => entry.fields[categoryKey],
+        );
+
+        return Object.keys(grouped).map((category) => ({
+          title: category,
+          options: grouped[category].map((entry) =>
+            this.codelistService.getCodelistEntryAsSelectOption(
+              codelistId,
+              entry.id,
+            ),
+          ),
+        }));
+      }),
+    );
   }
 
   getExternalCodelistForSelect(

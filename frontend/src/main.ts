@@ -157,6 +157,7 @@ import { ExplanationTextComponent } from "./app/formly/types/explanation-text/ex
 import { SubSectionWrapper } from "./app/formly/wrapper/sub-section-wrapper.component";
 import { TimeReferenceComponent } from "./app/formly/types/time-reference/time-reference.component";
 import { ButtonTogglesTypeComponent } from "./app/formly/types/button-toggles-type/button-toggles-type.component";
+import { CategorizedSelectComponent } from "./app/formly/types/categorized-select/categorized-select.component";
 
 if (environment.production) {
   enableProdMode();
@@ -299,6 +300,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "button-toggles",
             component: ButtonTogglesTypeComponent,
+          },
+          {
+            name: "categorized-select",
+            component: CategorizedSelectComponent,
           },
           /* FOR PREVIEW */
           {

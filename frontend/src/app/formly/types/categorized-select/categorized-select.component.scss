@@ -1,0 +1,79 @@
+@use "src/variables" as vars;
+
+:host {
+  --panel-height: 400px;
+  --list-height: calc(var(--panel-height) - 48px);
+
+  ::ng-deep {
+    [role="listbox"] {
+      overflow: hidden;
+      max-height: var(--panel-height);
+      padding-bottom: 0;
+    }
+  }
+}
+
+.mat-mdc-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.mat-mdc-chip {
+  background-color: vars.$ige-background;
+  --mat-chip-container-shape-radius: 4px;
+}
+
+.list-wrapper {
+  cursor: auto;
+  display: flex;
+  flex-direction: row;
+  max-height: var(--list-height);
+}
+
+.list {
+  overflow-y: scroll;
+  max-height: var(--list-height);
+  padding: 12px;
+}
+
+.category-list {
+  min-width: 150px;
+  max-width: 200px;
+  background-color: vars.$ige-background;
+  border-right: 1px solid var(--mat-divider-color);
+
+  button {
+    min-height: 40px;
+    border-radius: 4px;
+  }
+
+  button.active {
+    outline: 1px solid vars.$ige-primary;
+    background-color: vars.$ige-mark-color;
+  }
+
+  .selected-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    background-color: vars.$ige-secondary;
+    padding: 0 6px;
+    border-radius: 4px;
+  }
+}
+
+.option-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .option-header {
+    padding: 0 8px 8px;
+  }
+
+  mat-divider {
+    margin-bottom: 8px;
+  }
+}
