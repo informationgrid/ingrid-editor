@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 class ConfigApiController(
     val settingsService: SettingsService,
     val connectionService: ConnectionService,
+    val generalProperties: GeneralProperties,
 ) : ConfigApi {
 
     @Value("\${frontend.support-email}")
@@ -46,6 +48,7 @@ class ConfigApiController(
         FrontendConfiguration(
             keycloakEnabled = keycloakEnabled,
             supportEmail = supportEmail,
+            sessionTimeout = generalProperties.sessionTimeout,
         ),
     )
 

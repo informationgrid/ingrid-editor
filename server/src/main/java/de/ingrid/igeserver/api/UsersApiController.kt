@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.api
 
+import com.nimbusds.jwt.SignedJWT
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
@@ -39,6 +40,7 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.KeycloakAuthUtils.Companion.isAdminRole
+import jakarta.servlet.http.HttpServletRequest
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -50,10 +52,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.Instant
 import java.util.*
 import de.ingrid.igeserver.model.UserInfo as ServerUserInfo
 
@@ -101,6 +108,12 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     @Autowired
     private lateinit var staleAuthoritiesRegistry: StaleAuthoritiesRegistry
+
+    @Autowired
+    private lateinit var authorizedClientRepository: OAuth2AuthorizedClientRepository
+
+    @Autowired
+    private lateinit var httpServletRequest: HttpServletRequest
 
     @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
@@ -519,10 +532,39 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
     }
 
-    override fun refreshSession(): ResponseEntity<Void> {
+    override fun refreshSession(principal: Principal): ResponseEntity<Map<String, Long>> {
         // nothing to do here since session already is refreshed by http request
+        val auth = principal as? OAuth2AuthenticationToken
+        val authorizedClient = if (auth != null) {
+            authorizedClientRepository.loadAuthorizedClient<OAuth2AuthorizedClient>(
+                auth.authorizedClientRegistrationId,
+                auth,
+                httpServletRequest,
+            )
+        } else {
+            null
+        }
 
-        return ResponseEntity.ok().build()
+        var expiration = authorizedClient?.refreshToken?.expiresAt?.epochSecond
+
+        // Fallback: Try to decode the refresh token as JWT to get 'exp' claim if not already provided
+        if (expiration == null && authorizedClient?.refreshToken != null) {
+            try {
+                val signedJWT = SignedJWT.parse(authorizedClient.refreshToken!!.tokenValue)
+                expiration = signedJWT.jwtClaimsSet.expirationTime?.toInstant()?.epochSecond
+            } catch (e: Exception) {
+                logger.debug("Could not parse refresh token as JWT: ${e.message}")
+            }
+        }
+
+        if (expiration == null) {
+            expiration = (auth?.principal as? OidcUser)?.expiresAt?.epochSecond
+        }
+
+        val now = Instant.now().epochSecond
+        val remaining = if (expiration != null) expiration - now else -1L
+
+        return ResponseEntity.ok(mapOf("remaining" to remaining))
     }
 
     @PreAuthorize("hasPermission(null,'manage_users')")
