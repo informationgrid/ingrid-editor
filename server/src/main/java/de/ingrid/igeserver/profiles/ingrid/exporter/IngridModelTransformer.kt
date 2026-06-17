@@ -665,8 +665,6 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
-    val contentField: MutableList<String> = mutableListOf()
-
     protected open fun mapDocumentType(type: String): String = when (type) {
         "InGridSpecialisedTask" -> InGridDocType.InGridSpecialisedTask.typeId
         "InGridGeoDataset" -> InGridDocType.InGridGeoDataset.typeId
@@ -675,6 +673,7 @@ open class IngridModelTransformer(
         "InGridProject" -> InGridDocType.InGridProject.typeId
         "InGridDataCollection" -> InGridDocType.InGridDataCollection.typeId
         "InGridInformationSystem" -> InGridDocType.InGridInformationSystem.typeId
+        "OpenDataDoc" -> "OpenDataDoc"
         else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
