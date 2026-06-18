@@ -242,7 +242,7 @@ springBoot {
 
 if (hasProperty('filename')) {
     bootJar {
-        archiveFileName=getProperty('filename')
+        archiveFileName = getProperty('filename')
     }
 }
 
@@ -287,7 +287,7 @@ kotlin {
 }
 
 kapt {
-    includeCompileClasspath=false
+    includeCompileClasspath = false
 }
 
 jte {
@@ -306,7 +306,7 @@ gitProperties {
         def gitDirLine = dotGitFileContent.readLines().find { it.startsWith("gitdir: ") }
         if (gitDirLine != null) {
             def gitDirPath = gitDirLine.substring('gitdir: '.length(), gitDirLine.lastIndexOf('/.git/'))
-            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath+ "/.git")
+            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath + "/.git")
         } else {
             throw new GradleException("No .git directory found in project .git file.")
         }
@@ -380,11 +380,11 @@ jib {
             }
         }
         permissions = [
-                '/*.sh': '755',
-                '/logs': '777',
-                '/codelists': '777',
+                '/*.sh'                           : '755',
+                '/logs'                           : '777',
+                '/codelists'                      : '777',
                 '/app/resources/static/index.html': '777',
-                '/app/resources/static/assets': '777'
+                '/app/resources/static/assets'    : '777'
         ]
     }
 }
