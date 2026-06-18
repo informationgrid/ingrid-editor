@@ -166,14 +166,11 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             // permission being a child of a node with WRITE_ONLY_SUBTREE permission
             try {
                 // check if WRITE_ONLY_SUBTREE Permission was used
-                if (acl != null &&
-                    requiredPermission.contains(BasePermission.WRITE) &&
-                    acl.parentAcl != null &&
-                    acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+                if (requiredPermission.contains(BasePermission.WRITE) &&
+                    acl?.parentAcl?.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false) == true
                 ) {
                     logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
                     return true
-                } else if (acl == null && requiredPermission.contains(BasePermission.WRITE)) { // actually more "CREATE"
                 }
             } catch (nfe: NotFoundException) {
                 logger.debug("WRITE_ONLY_SUBTREE permission also not found")
