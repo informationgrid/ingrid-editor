@@ -6,9 +6,9 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.3.0'
-    ext.spring_boot_version = '3.5.14'
+    ext.spring_boot_version = '3.5.15'
     ext.kotest_version = '6.1.9'
-    ext.jte_version = '3.2.3'
+    ext.jte_version = '3.2.4'
     ext.geotools_version = '34.2'
     ext.ktor_client = '3.4.1'
 }
@@ -145,7 +145,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.10.3'
 
-    implementation "de.ingrid:ingrid-codelist-service:8.2.0"
+    implementation "de.ingrid:ingrid-codelist-service:8.3.1"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.15.0'
