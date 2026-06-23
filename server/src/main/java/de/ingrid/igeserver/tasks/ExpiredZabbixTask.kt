@@ -48,6 +48,8 @@ class ExpiredZabbixTask(
 ) {
     val log = logger()
 
+    val defaultUuidPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" // (lowercase UUID)
+
     @Scheduled(cron = "\${zabbix.cleanup.schedule}")
     fun cleanup() {
         runAsAdmin("ExpiredZabbix", "Task") { _ ->
@@ -97,11 +99,7 @@ class ExpiredZabbixTask(
 
                 val docsZabbix = zabbixService.getHostIds(catalogId)
                 val docsToDelete = docsZabbix.toMutableList()
-                // uuid pattern
-                // TODO: pattern should be defined in class-field and default-pattern should be defined in application.properties
-                val pattern = zabbixProperties.cleanup.pattern.ifEmpty {
-                    "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                }
+                val pattern = zabbixProperties.cleanup.pattern.ifEmpty { defaultUuidPattern }
                 val uuidRegex = Regex(pattern, RegexOption.IGNORE_CASE)
                 docsZabbix.forEach { doc ->
                     docsPublished

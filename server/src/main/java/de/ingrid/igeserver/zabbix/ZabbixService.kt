@@ -53,7 +53,7 @@ class ZabbixService(
     zabbixProperties: ZabbixProperties,
     private val httpClient: HttpClient = buildHttpClient(),
 ) {
-    private var log = logger()
+    private val log = logger()
     private val apiKey = zabbixProperties.apiKey
     private val apiURL = zabbixProperties.apiURL
     private val checkDelay = zabbixProperties.checkDelay
@@ -62,6 +62,8 @@ class ZabbixService(
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
     private val cleanupDays = zabbixProperties.cleanup.days
+
+    private val objectMapper = jacksonObjectMapper()
 
     private val jsonRpc: ContentType
         get() = ContentType("application", "json-rpc")
@@ -120,7 +122,7 @@ class ZabbixService(
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
         val params = ZabbixModel.UserParams(addressMail, passwd, "4", paramsUsergroup, paramsMedias)
         val user = ZabbixModel.User(method = "user.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(user)
+        val values = objectMapper.writeValueAsString(user)
         val response = requestApi(values)
 
         // check for invalid email address
@@ -204,13 +206,13 @@ class ZabbixService(
 
     private fun deleteUser(userid: List<String>) {
         val user = ZabbixModel.Delete(method = "user.delete", params = userid)
-        val values = jacksonObjectMapper().writeValueAsString(user)
+        val values = objectMapper.writeValueAsString(user)
         requestApi(values)
     }
 
     private fun deleteAction(actionid: List<String>) {
         val action = ZabbixModel.Delete(method = "action.delete", params = actionid)
-        val values = jacksonObjectMapper().writeValueAsString(action)
+        val values = objectMapper.writeValueAsString(action)
         requestApi(values)
     }
 
@@ -308,7 +310,7 @@ class ZabbixService(
     private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)
         val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(hostgroup)
+        val values = objectMapper.writeValueAsString(hostgroup)
         val response = requestApi(values)
         return getFromResultAsList(response, "groupids")[0].asText()
     }
@@ -350,7 +352,7 @@ class ZabbixService(
         val params = ZabbixModel.HostParams(uuid, visiblename, groups, tags)
         val host = ZabbixModel.Host(method = "host.create", params = params)
         val response = requestApi(
-            jacksonObjectMapper().writeValueAsString(host),
+            objectMapper.writeValueAsString(host),
         )
         return getFromResultAsList(response, "hostids")[0].asText()
     }
@@ -456,7 +458,7 @@ class ZabbixService(
 
         val params = ZabbixModel.UpdateWebscenarioParams(httptestId, updatedTags)
         val update = ZabbixModel.UpdateWebscenario(method = "httptest.update", params = params)
-        requestApi(jacksonObjectMapper().writeValueAsString(update))
+        requestApi(objectMapper.writeValueAsString(update))
     }
 
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
@@ -479,7 +481,7 @@ class ZabbixService(
             listOf(ZabbixModel.Step(name = docNameStep, retrieve_mode = retrieveMode, url = docUrl, required = required))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
@@ -503,7 +505,7 @@ class ZabbixService(
             tags = tags,
         )
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(trigger)
+        val values = objectMapper.writeValueAsString(trigger)
         requestApi(values)
     }
 
@@ -511,21 +513,21 @@ class ZabbixService(
 
     private fun deleteHosts(ids: List<String>) {
         val host = ZabbixModel.Delete(method = "host.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(host)
+        val values = objectMapper.writeValueAsString(host)
         requestApi(values)
     }
 
     private fun deleteWebscenario(ids: List<String>) {
         if (ids.isEmpty()) return
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
     private fun deleteTrigger(ids: List<String>) {
         if (ids.isEmpty() || ids.any { it.isBlank() }) return
         val trigger = ZabbixModel.Delete(method = "trigger.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(trigger)
+        val values = objectMapper.writeValueAsString(trigger)
         requestApi(values)
     }
 
@@ -541,10 +543,11 @@ class ZabbixService(
 
         val params = ZabbixModel.UpdateWebscenarioParams(id, tags)
         val webscenario = ZabbixModel.UpdateWebscenario(method = "httptest.update", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
+    // delete document if expired else update expired tags
     fun updateDocument(uuid: String) {
         val id = getHostId(uuid) ?: return
         val existingHost = getHostById(id) ?: return
@@ -570,7 +573,7 @@ class ZabbixService(
         }
         val params = ZabbixModel.UpdateHostParams(id, tags, status = 0)
         val host = ZabbixModel.UpdateHost(method = "host.update", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(host)
+        val values = objectMapper.writeValueAsString(host)
         requestApi(values)
 
         // update verfahren
@@ -637,7 +640,7 @@ class ZabbixService(
         deleteHosts(listOf(hostId.asText()))
 
         val action = getAction(uuid)
-        val user = getAction(uuid)?.let { getUserFromAction(it.userid) }
+        val user = action?.let { getUserFromAction(it.userid) }
         action?.let {
             log.debug("Delete action ${action.id}")
             deleteAction(listOf(action.id))
@@ -705,7 +708,7 @@ class ZabbixService(
             }
         }
         runBlocking {
-            response.bodyAsText().let { jacksonObjectMapper().readTree(it) }
+            response.bodyAsText().let { objectMapper.readTree(it) }
         }
     } catch (e: ClientRequestException) {
         // handles 400 errors
