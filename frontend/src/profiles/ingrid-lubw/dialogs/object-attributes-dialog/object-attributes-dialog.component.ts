@@ -26,6 +26,7 @@ import { CodelistService } from "../../../../app/services/codelist/codelist.serv
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { FormDialogData } from "../../../../app/formly/types/table/form-dialog/form-dialog.component";
 
 @Component({
   selector: "ige-object-attributes-dialog",
@@ -53,7 +54,7 @@ export class ObjectAttributesDialogComponent {
 
   constructor(
     private dlgRef: MatDialogRef<any>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
   ) {
     this.form.statusChanges.subscribe((status) => {
       this.disabled.set(status !== "VALID");

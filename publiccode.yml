@@ -48,9 +48,15 @@ description:
 
 developmentStatus: stable
 usedBy:
-  - Niedersächsisches Ministerium für Umwelt, Energie und Klimaschutz
-  - Ministerium für Energiewende, Klimaschutz, Umwelt und Natur des Landes Schleswig-Holstein
-  - Ministerium für Klimaschutz, Umwelt, Energie und Mobilität Rheinland-Pfalz
+  - MetaVer Metadatenverbund zahlreicher Länder
+  - UVP Verbund aller Länder
+  - Open Data Erfassungstool für Bundesbehörden
+  - Bundesamt für Kartographie und Geodäsie
+  - Landesanstalt für Umwelt Baden-Württemberg
+  - Umweltportal Niedersachen
+  - Umweltportal Schleswig-Holstein
+  - UmweltNAVI Niedersachen, Rheinland-Pfalz und Schleswig-Holstein
+  - Wasserstraßen- und Schifffahrtsverwaltung des Bundes
 intendedAudience:
   countries:
     - DE
@@ -69,8 +75,8 @@ localisation:
   localisationReady: true
 maintenance:
   contacts:
-    - name: wemove digital solutions GmbH
-      email: contact@wemove.com
+    - name: Niedersächsisches Ministerium für Umwelt, Energie und Klimaschutz
+      email: vkooopuis@informationgrid.eu
   contractors:
     - name: wemove digital solutions GmbH
       email: contact@wemove.com
