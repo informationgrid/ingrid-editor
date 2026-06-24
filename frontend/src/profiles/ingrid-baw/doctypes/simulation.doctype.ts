@@ -298,10 +298,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "cfdSimulation",
       },
       props: {
-        label: "Simulationsdaten (CFD)",
+        label: "CFD-Simulationen (Schiff)",
       },
       fieldGroup: [
-        this.addSection("Simulationsdaten (CFD)", [
+        this.addSection("CFD-Simulationen (Schiff)", [
           { key: "type" },
           this.addRepeatList("shipName", "BAW-Schiffsname", {
             options: [
