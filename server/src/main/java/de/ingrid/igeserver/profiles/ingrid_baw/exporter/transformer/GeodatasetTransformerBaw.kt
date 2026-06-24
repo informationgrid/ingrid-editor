@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
+import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeographicElement
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
@@ -29,7 +30,6 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getCfdSimulation
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLaboratoryData
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderNumber
@@ -82,7 +82,6 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     }
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
-    fun getLaboratoryData() = getLaboratoryData(this)
     fun getBautechnikSimulation() = getBautechnikSimulation(this)
     fun getCfdSimulation() = getCfdSimulation(this)
 
@@ -170,7 +169,13 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val measuringDepth = waterMeasurements?.getPath("measuringDepth")?.let { depth ->
         MeasurementDepth(
             value = depth.getDouble("value"),
-            crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
+            crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let {
+                mapToCharacterStringModel(
+                    "verticalSpatialSystems",
+                    it,
+                )
+            },
+
         )
     }
     val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.map { level ->
@@ -211,6 +216,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     } ?: emptyList()
 
     val dataQualityDescription = waterMeasurements?.getString("dataQualityDescription")
+
+    // TODO: this field does not exist, figure out what should be mapped here
+    val spatialAccuracy = waterMeasurements?.getDouble("spatialAccuracy")
+
+    val isBawSimulation = doc.type == "BawSimulation"
+    val isBawMeasurement = doc.type == "BawMeasurement"
 }
 
 data class TargetParameter(
@@ -240,7 +251,7 @@ data class ZeroLevel(
 
 data class MeasurementDepth(
     val value: Double?,
-    val crs: String?,
+    val crs: CharacterStringModel?,
 )
 
 data class SimParameter(
