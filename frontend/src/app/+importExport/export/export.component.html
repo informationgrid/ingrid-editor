@@ -79,6 +79,10 @@
                                     </mat-option>
                                 }
                             </mat-select>
+                            <mat-hint>{{
+                                $any(optionsFormGroup.get("format").value)
+                                    ?.description
+                            }}</mat-hint>
                         </mat-form-field>
                     </div>
                     @if (showDraftsCheckbox()) {

@@ -64,8 +64,8 @@ class OpenDataExporterClassic(
             return ExportTypeInfo(
                 DocumentCategory.DATA,
                 "indexOpenDataIDFClassic",
-                "Open-Data Index",
-                "Export der Datensätze für die weitere Verwendung im Exporter.",
+                "Open-Data Index (Classic)",
+                "Export der Datensätze für die weitere Verwendung im InGrid-System < v8.3.0",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
                 listOf("opendata"),
@@ -110,7 +110,7 @@ class OpenDataExporterClassic(
 
     private fun getAdditionalLuceneJsonForDCATExporter(doc: Document, catalogId: String): JsonNode {
         val output: TemplateOutput = JsonStringOutput()
-        templateEngine.render("export/opendata/lucene-export.jte", getMapFromObject(doc, catalogId), output)
+        templateEngine.render("export/opendata/lucene-export-classic.jte", getMapFromObject(doc, catalogId), output)
 
         return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
     }

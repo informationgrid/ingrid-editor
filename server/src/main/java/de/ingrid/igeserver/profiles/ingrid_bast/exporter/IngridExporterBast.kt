@@ -73,7 +73,7 @@ class IngridIdfExporterBast(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "ingridIDFBast",
-        "Ingrid IDF Bast",
+        "InGrid IDF Bast",
         "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
         "text/xml",
         "xml",
