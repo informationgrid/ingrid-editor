@@ -358,7 +358,9 @@ class OidcRealmRoleMapper(
 
         val roles = extractRoles(idTokenClaims).distinct()
 
-        if (!roles.contains("editor_user") && !roles.contains("editor_admin") && !roles.contains("ige-user")) {
+        val allowedRoles = setOf("editor_user", "editor_admin", "ige-user", "ige-super-admin")
+
+        if (roles.none { it in allowedRoles }) {
             return mutableListOf()
         }
 
