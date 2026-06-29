@@ -145,7 +145,9 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         val endonyms = featureMember.get("hatEndonym")
         return when (endonyms?.size()) {
             null -> null
+
             1 -> endonyms.get("Endonym").get("name").asText()
+
             else -> {
                 getGermanName(featureMember)?.let { return it }
 
