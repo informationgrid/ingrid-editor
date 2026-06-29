@@ -239,9 +239,9 @@ additionalIdentification = @`
                                                 </baw:materialConcept>
                                             @endif
                                             @if(bautechnikS.getCalculationConcept().getGeometricLinear() != null)
-                                                <baw:geometricConcept>
+                                                <baw:geometryConcept>
                                                     <gco:CharacterString>${bautechnikS.getCalculationConcept().getGeometricLinear() ? "linear" : "nonlinear"}</gco:CharacterString>
-                                                </baw:geometricConcept>
+                                                </baw:geometryConcept>
                                             @endif
                                             @if(bautechnikS.getCalculationConcept().getImperfections() != null)
                                                 <baw:imperfections>
@@ -373,11 +373,6 @@ additionalIdentification = @`
                                         <baw:measurementSpatiality>
                                             <gco:CharacterString>${page.getSpatiality()}</gco:CharacterString>
                                         </baw:measurementSpatiality>
-                                    @endif
-                                    @if(page.getSpatialAccuracy() != null)
-                                        <baw:spatialAccuracy>
-                                            <gco:Decimal>${page.getSpatialAccuracy()}</gco:Decimal>
-                                        </baw:spatialAccuracy>
                                     @endif
                                     @if(page.getTimestep() != null)
                                         <baw:temporalAccuracy>

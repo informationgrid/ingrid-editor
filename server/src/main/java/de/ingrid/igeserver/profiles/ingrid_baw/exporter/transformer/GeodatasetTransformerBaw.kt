@@ -217,9 +217,6 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     val dataQualityDescription = waterMeasurements?.getString("dataQualityDescription")
 
-    // TODO: this field does not exist, figure out what should be mapped here
-    val spatialAccuracy = waterMeasurements?.getDouble("spatialAccuracy")
-
     val isBawSimulation = doc.type == "BawSimulation"
     val isBawMeasurement = doc.type == "BawMeasurement"
 }
