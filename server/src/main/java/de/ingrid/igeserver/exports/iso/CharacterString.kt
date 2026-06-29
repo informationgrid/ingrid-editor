@@ -26,6 +26,8 @@ data class CharacterString(
     private var text: String? = null,
     @JacksonXmlProperty(localName = "Anchor", namespace = "http://www.isotc211.org/2005/gmx")
     private var anchor: Anchor? = null,
+    @JacksonXmlProperty(localName = "BAW_Metadata", namespace = "https://dl.datenrepository.baw.de/schemas/bawmd")
+    val bawMetadata: BawMetadata? = null,
 ) {
     val value = text ?: anchor?.value
     val anchorHref = anchor?.href
