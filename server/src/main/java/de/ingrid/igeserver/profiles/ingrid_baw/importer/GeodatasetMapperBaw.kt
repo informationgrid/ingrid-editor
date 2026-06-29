@@ -19,13 +19,41 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement
+import de.ingrid.igeserver.exports.iso.BawMetadata
 import de.ingrid.igeserver.exports.iso.BawStructuralEngineeringSimulation
-import de.ingrid.igeserver.exports.iso.MDDataIdentification
+import de.ingrid.igeserver.exports.iso.CharacterString
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.igeserver.utils.getPath
 
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+
+    val bawMetadata: BawMetadata?
+
+    init {
+        val xmlDeserializer: ObjectMapper = XmlMapper(
+            JacksonXmlModule().apply {
+                setDefaultUseWrapper(false)
+                setXMLTextElementName("innerText")
+            },
+        ).registerKotlinModule()
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
+        val wholeDoc = xmlDeserializer.readTree(isoData.rawData as String)
+        wholeDoc.getPath("identificationInfo.MD_DataIdentification.supplementalInformation.BAW_Metadata")?.let {
+            bawMetadata = xmlDeserializer.treeToValue(it, BawMetadata::class.java)
+        } ?: throw Exception("Could not find BAW metadata in XML document")
+    }
+
     override val splitSpatialSystems = true
     override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
 
@@ -110,21 +138,21 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         } ?: emptyList()
 
     fun getBautechnikSimulation(): BautechnikSimulationImport? {
-        val raw = getSupplementalInformation()?.bawMetadata
+        val raw = bawMetadata
             ?.simulation?.simulation?.structuralEngineeringSimulation?.structuralEngineeringSimulation
             ?: return null
         return mapBautechnikSimulation(raw)
     }
 
     fun getWaterMeasurement(): WaterMeasurementImport? {
-        val raw = getSupplementalInformation()?.bawMetadata
+        val raw = bawMetadata
             ?.measurement?.measurement?.hydraulicEngineeringMeasurement?.hydraulicEngineeringMeasurement
             ?: return null
         return mapWaterMeasurement(raw)
     }
 
     fun getGauge(): List<GaugeImport> {
-        val raw = getSupplementalInformation()?.bawMetadata
+        val raw = bawMetadata
             ?.measurement?.measurement?.measurementDevice
             ?: return emptyList()
         return raw.mapNotNull { it.measurementDevice }.map { device ->
@@ -138,7 +166,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     }
 
     fun getTargetParameters(): List<TargetParameterImport> {
-        val raw = getSupplementalInformation()?.bawMetadata
+        val raw = bawMetadata
             ?.measurement?.measurement?.measurementParameter
             ?: return emptyList()
         return raw.mapNotNull { it.measurementParameter }.map { param ->
@@ -151,12 +179,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         }
     }
 
-    private fun getSupplementalInformation(): de.ingrid.igeserver.exports.iso.CharacterString? {
-        val identification = metadata.identificationInfo.firstOrNull()?.identificationInfo
-        return (identification as? MDDataIdentification)?.supplementalInformation
-    }
-
-    private fun mapWaterMeasurement(raw: de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement): WaterMeasurementImport = WaterMeasurementImport(
+    private fun mapWaterMeasurement(raw: BawHydraulicEngineeringMeasurement): WaterMeasurementImport = WaterMeasurementImport(
         spatiality = raw.measurementSpatiality?.value?.let { codelistKeyValue("BAW_measurementSpatiality", it) },
         measuringDepth = raw.measurementDepth?.mapNotNull { it.measurementDepth }?.map {
             ValueUnitImport(
@@ -189,7 +212,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
     )
 
     private fun mapBautechnikSimulation(raw: BawStructuralEngineeringSimulation): BautechnikSimulationImport {
-        fun strings(list: List<de.ingrid.igeserver.exports.iso.CharacterString>?): List<String> = list?.mapNotNull { it.value }?.filter { it.isNotBlank() } ?: emptyList()
+        fun strings(list: List<CharacterString>?): List<String> = list?.mapNotNull { it.value }?.filter { it.isNotBlank() } ?: emptyList()
 
         val materialLinear = raw.materialConcept?.value?.let { it == "linear" }
         val geometricLinear = raw.geometryConcept?.value?.let { it == "linear" }
