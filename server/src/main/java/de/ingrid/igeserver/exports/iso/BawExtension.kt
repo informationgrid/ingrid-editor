@@ -26,6 +26,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
  * BAW-specific XML extension that lives inside `gmd:supplementalInformation`.
  * Namespace: https://dl.datenrepository.baw.de/schemas/bawmd
  */
+data class BawExtension(
+    @JacksonXmlProperty(localName = "BAW_Metadata") val bawMetadata: BawMetadata?,
+)
+
 data class BawMetadata(
     val simulation: BawSimulationWrapper? = null,
     val measurement: BawMeasurementWrapper? = null,

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.exports.iso.BawExtension
 import de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement
 import de.ingrid.igeserver.exports.iso.BawMetadata
 import de.ingrid.igeserver.exports.iso.BawStructuralEngineeringSimulation
@@ -47,11 +48,10 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         ).registerKotlinModule()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 
-        val wholeDoc = xmlDeserializer.readTree(isoData.rawData as String)
-        wholeDoc.getPath("identificationInfo.MD_DataIdentification.supplementalInformation.BAW_Metadata")?.let {
-            bawMetadata = xmlDeserializer.treeToValue(it, BawMetadata::class.java)
-        } ?: throw Exception("Could not find BAW metadata in XML document")
+        val supplementalInformation = xmlDeserializer.readTree(isoData.rawData as String).getPath("identificationInfo.MD_DataIdentification.supplementalInformation")
+        bawMetadata = xmlDeserializer.treeToValue(supplementalInformation, BawExtension::class.java)?.bawMetadata
     }
 
     override val splitSpatialSystems = true
