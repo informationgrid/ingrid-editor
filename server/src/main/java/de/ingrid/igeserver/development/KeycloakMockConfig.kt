@@ -19,8 +19,11 @@
  */
 package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.KeycloakConfig
 import de.ingrid.igeserver.configuration.StaleAuthoritiesRegistry
+import de.ingrid.igeserver.repository.RoleRepository
+import de.ingrid.igeserver.repository.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -42,7 +45,12 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Profile("dev")
 @Configuration
-internal class KeycloakMockConfig(val developmentAuthenticationFilter: DevelopmentAuthenticationFilter) : KeycloakConfig() {
+internal class KeycloakMockConfig(
+    val developmentAuthenticationFilter: DevelopmentAuthenticationFilter,
+    generalProperties: GeneralProperties,
+    userRepository: UserRepository,
+    roleRepository: RoleRepository,
+) : KeycloakConfig(generalProperties, userRepository, roleRepository) {
 
     @Bean
     fun clientRegistrationRepository(): ClientRegistrationRepository = object : ClientRegistrationRepository, Iterable<org.springframework.security.oauth2.client.registration.ClientRegistration> {
