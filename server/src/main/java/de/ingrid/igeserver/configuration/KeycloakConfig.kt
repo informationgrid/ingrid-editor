@@ -25,7 +25,6 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -63,18 +62,12 @@ import java.util.*
 @Profile("!dev")
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
-internal class KeycloakConfig {
+internal class KeycloakConfig(
+    val generalProperties: GeneralProperties,
+    val userRepository: UserRepository,
+    val roleRepository: RoleRepository,
+) {
     val log = logger()
-
-    @Autowired
-    lateinit var generalProperties: GeneralProperties
-
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var roleRepository: RoleRepository
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null

@@ -215,18 +215,18 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         val provider = oauth2Properties.provider["keycloak"]
             ?: throw IllegalStateException("OAuth2 provider 'keycloak' not found")
 
-        // Parse authorization-uri
-        // Format: <server-url>/realms/<realm>/protocol/openid-connect/auth
-        val authUri = provider.authorizationUri
-            ?: throw IllegalStateException("Authorization URI not configured for keycloak provider")
+        // Parse URIs
+        // Format: <server-url>/realms/<realm>/protocol/openid-connect/...
+        val internalUri = provider.tokenUri ?: provider.authorizationUri
+            ?: throw IllegalStateException("Neither Token URI nor Authorization URI configured for keycloak provider")
 
-        if (!authUri.contains("/realms/")) {
-            throw IllegalStateException("Authorization URI does not match expected Keycloak pattern (.../realms/...): $authUri")
+        if (!internalUri.contains("/realms/")) {
+            throw IllegalStateException("Keycloak URI does not match expected pattern (.../realms/...): $internalUri")
         }
 
-        val serverUrl = authUri.substringBefore("/realms/")
+        val serverUrl = internalUri.substringBefore("/realms/")
         // Extract realm: everything between "/realms/" and the next "/"
-        val realmName = authUri.substringAfter("/realms/").substringBefore("/")
+        val realmName = internalUri.substringAfter("/realms/").substringBefore("/")
 
         val client: Keycloak = KeycloakBuilder.builder()
             .serverUrl(serverUrl)
@@ -238,9 +238,14 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .build()
 
         val clientId = registration.clientId
-        val clientUuid = client.realm(realmName).clients().findByClientId(clientId).firstOrNull()?.id
-            ?: throw IllegalStateException("Client '$clientId' not found in realm '$realmName'")
-
+        val clientUuid = try {
+            client.realm(realmName).clients().findByClientId(clientId).firstOrNull()?.id
+                ?: throw IllegalStateException("Client '$clientId' not found in realm '$realmName'")
+        } catch (ex: Exception) {
+            throw ServerException.withReason(
+                ">$serverUrl< is not reachable. Please check if Keycloak is running and the URL is correct. Error: ${ex.message}",
+            )
+        }
         keycloakClient = KeycloakWithRealm(client, realmName, clientId, clientUuid)
 
         try {
