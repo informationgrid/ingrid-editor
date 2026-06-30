@@ -1,0 +1,198 @@
+[ {
+  "title" : "Example BAW measurement",
+  "_uuid" : "baw-example-uuid",
+  "_parent" : null,
+  "_type" : "BawMeasurement",
+  "properties" : {
+    "isAdVCompatible" : false,
+    "isOpenData" : false,
+    "subType" : {
+      "key" : "5",
+      "value" : "Datensatz",
+      "_codelistId" : "525"
+    }
+  },
+  "description" : "Example Abstract for BAW measurement",
+  "alternateTitle" : "",
+  "parentIdentifier" : "",
+  "pointOfContact" : [ {
+    "ref" : "fc708688-e86a-4329-884c-8618e29037a1",
+    "type" : {
+      "key" : "12",
+      "value" : "Ansprechpartner MD",
+      "_codelistId" : "505"
+    }
+  } ],
+  "graphicOverviews" : [ ],
+  "advProductGroups" : [ ],
+  "themes" : [ ],
+  "openDataCategories" : [ ],
+  "keywords" : {
+    "free" : [ ],
+    "bawKeywords" : [ ],
+    "subsoilKeywords" : [ ]
+  },
+  "spatial" : {
+    "references" : [ ],
+    "spatialSystems" : [ ],
+    "verticalSpatialSystems" : [ ],
+    "description" : ""
+  },
+  "temporal" : {
+    "event" : {
+      "firstPublished" : "2024-04-18T22:00:00.000Z"
+    },
+    "status" : null
+  },
+  "maintenanceInformation" : {
+    "maintenanceAndUpdateFrequency" : null,
+    "userDefinedMaintenanceFrequency" : {
+      "unit" : null
+    },
+    "description" : ""
+  },
+  "extraInfo" : {
+    "legalBasicsDescriptions" : [ ]
+  },
+  "resource" : {
+    "purpose" : "",
+    "specificUsage" : "",
+    "accessConstraints" : [ ],
+    "useConstraints" : [ ],
+    "useLimitation" : ""
+  },
+  "distribution" : {
+    "format" : [ ]
+  },
+  "digitalTransferOptions" : [ ],
+  "orderInfo" : "",
+  "references" : [ ],
+  "fileReferences" : [ ],
+  "invekosKeywords" : [ ],
+  "hvdCategories" : [ ],
+  "metadata" : {
+    "language" : {
+      "key" : "150",
+      "value" : "Deutsch",
+      "_codelistId" : "99999999"
+    },
+    "characterSet" : null
+  },
+  "resolution" : [ ],
+  "topicCategories" : [ ],
+  "spatialRepresentationType" : [ ],
+  "lineage" : {
+    "statement" : ""
+  },
+  "identifier" : "",
+  "portrayalCatalogueInfo" : {
+    "citation" : [ ]
+  },
+  "featureCatalogueDescription" : {
+    "citation" : [ ],
+    "featureTypes" : [ ]
+  },
+  "dataQualityInfo" : {
+    "lineage" : {
+      "source" : {
+        "descriptions" : [ ],
+        "processStep" : {
+          "description" : [ ]
+        }
+      }
+    }
+  },
+  "dataQuality" : {
+    "completenessOmission" : { }
+  },
+  "absoluteExternalPositionalAccuracy" : {
+    "vertical" : null,
+    "horizontal" : null,
+    "griddedDataPositionalAccuracy" : null
+  },
+  "qualities" : [ ],
+  "dataset" : {
+    "languages" : [ "150" ]
+  },
+  "vectorSpatialRepresentation" : [ ],
+  "bawOrderInfo" : null,
+  "literatureReferences" : [ ],
+  "measuringMethod" : [ ],
+  "gauge" : [ {
+    "deviceName" : "Spectra Geospatial SP80",
+    "deviceId" : "-9999",
+    "deviceModel" : "xxxxxxxx",
+    "description" : "xxxxxxxx"
+  }, {
+    "deviceName" : "Teledyne RDI RiverPro ADCP 1200 kHz",
+    "deviceId" : "-9999",
+    "deviceModel" : "xxxxxxxx",
+    "description" : "xxxxxxxx"
+  } ],
+  "targetParameters" : [ {
+    "parameterName" : "v_Str",
+    "parameterType" : {
+      "key" : null,
+      "value" : "Gemessen",
+      "_codelistId" : "BAW_measurementParameterType"
+    },
+    "uom" : "m s-1",
+    "parameterFunction" : "xxxxxxxx"
+  }, {
+    "parameterName" : "Durchfluss",
+    "parameterType" : {
+      "key" : null,
+      "value" : "Berechnet",
+      "_codelistId" : "BAW_measurementParameterType"
+    },
+    "uom" : "m3 s-1",
+    "parameterFunction" : "xxxxxxxx"
+  } ],
+  "measurementPhases" : [ {
+    "type" : "waterMeasurement",
+    "spatiality" : {
+      "key" : null,
+      "value" : "Längs- und Querprofil",
+      "_codelistId" : "BAW_measurementSpatiality"
+    },
+    "measuringDepth" : [ {
+      "value" : 1.0,
+      "unit" : null,
+      "verticalCRS" : {
+        "key" : null,
+        "value" : "EPSG 7837: DHHN2016 Höhe",
+        "_codelistId" : "BAW_verticalCRS"
+      },
+      "description" : null
+    } ],
+    "timestep" : 0.1,
+    "frequency" : 2.0,
+    "averageWaterLevel" : [ {
+      "value" : 213.0,
+      "unit" : "cm"
+    } ],
+    "zeroLevel" : [ {
+      "value" : 214.0,
+      "unit" : "cm",
+      "verticalCRS" : {
+        "key" : null,
+        "value" : "EPSG 7837: DHHN2016 Höhe",
+        "_codelistId" : "BAW_verticalCRS"
+      },
+      "description" : "Wittenberg max. Wasserstand"
+    } ],
+    "drain" : {
+      "min" : 267.0,
+      "max" : 409.0
+    },
+    "dataQualityDescription" : "xxxxxxxx"
+  } ]
+}, {
+  "_uuid" : "fc708688-e86a-4329-884c-8618e29037a1",
+  "_type" : "InGridOrganisationDoc",
+  "title" : "BAW",
+  "organization" : "BAW",
+  "contact" : [ ],
+  "positionName" : "",
+  "hoursOfService" : ""
+} ]

@@ -1,0 +1,248 @@
+[ {
+  "title" : "Example BAW Simulation",
+  "_uuid" : "baw-example-uuid",
+  "_parent" : null,
+  "_type" : "BawSimulation",
+  "properties" : {
+    "isAdVCompatible" : false,
+    "isOpenData" : false,
+    "subType" : {
+      "key" : "5",
+      "value" : "Datensatz",
+      "_codelistId" : "525"
+    }
+  },
+  "description" : "Example Abstract for BAW Simulation",
+  "alternateTitle" : "",
+  "parentIdentifier" : "",
+  "pointOfContact" : [ {
+    "ref" : "fc708688-e86a-4329-884c-8618e29037a1",
+    "type" : {
+      "key" : "12",
+      "value" : "Ansprechpartner MD",
+      "_codelistId" : "505"
+    }
+  } ],
+  "graphicOverviews" : [ ],
+  "advProductGroups" : [ ],
+  "themes" : [ ],
+  "openDataCategories" : [ ],
+  "keywords" : {
+    "free" : [ ],
+    "bawKeywords" : [ ],
+    "subsoilKeywords" : [ ]
+  },
+  "spatial" : {
+    "references" : [ ],
+    "spatialSystems" : [ ],
+    "verticalSpatialSystems" : [ ],
+    "description" : ""
+  },
+  "temporal" : {
+    "event" : {
+      "firstPublished" : "2024-04-18T22:00:00.000Z"
+    },
+    "status" : null
+  },
+  "maintenanceInformation" : {
+    "maintenanceAndUpdateFrequency" : null,
+    "userDefinedMaintenanceFrequency" : {
+      "unit" : null
+    },
+    "description" : ""
+  },
+  "extraInfo" : {
+    "legalBasicsDescriptions" : [ ]
+  },
+  "resource" : {
+    "purpose" : "",
+    "specificUsage" : "",
+    "accessConstraints" : [ ],
+    "useConstraints" : [ ],
+    "useLimitation" : ""
+  },
+  "distribution" : {
+    "format" : [ ]
+  },
+  "digitalTransferOptions" : [ ],
+  "orderInfo" : "",
+  "references" : [ ],
+  "fileReferences" : [ ],
+  "invekosKeywords" : [ ],
+  "hvdCategories" : [ ],
+  "metadata" : {
+    "language" : {
+      "key" : "150",
+      "value" : "Deutsch",
+      "_codelistId" : "99999999"
+    },
+    "characterSet" : null
+  },
+  "resolution" : [ ],
+  "topicCategories" : [ ],
+  "spatialRepresentationType" : [ ],
+  "lineage" : {
+    "statement" : ""
+  },
+  "identifier" : "",
+  "portrayalCatalogueInfo" : {
+    "citation" : [ ]
+  },
+  "featureCatalogueDescription" : {
+    "citation" : [ ],
+    "featureTypes" : [ ]
+  },
+  "dataQualityInfo" : {
+    "lineage" : {
+      "source" : {
+        "descriptions" : [ ],
+        "processStep" : {
+          "description" : [ ]
+        }
+      }
+    }
+  },
+  "dataQuality" : {
+    "completenessOmission" : { }
+  },
+  "absoluteExternalPositionalAccuracy" : {
+    "vertical" : null,
+    "horizontal" : null,
+    "griddedDataPositionalAccuracy" : null
+  },
+  "qualities" : [ ],
+  "dataset" : {
+    "languages" : [ "150" ]
+  },
+  "vectorSpatialRepresentation" : [ ],
+  "bawOrderInfo" : null,
+  "literatureReferences" : [ ],
+  "timestep" : null,
+  "simulationParameter" : [ ],
+  "simulationModelType" : [ ],
+  "dimensionality" : null,
+  "process" : null,
+  "simulationPhases" : [ {
+    "type" : "bautechnikSimulation",
+    "objects" : [ {
+      "key" : null,
+      "value" : "Objekt",
+      "_codelistId" : "BAW_simulationObject"
+    }, {
+      "key" : null,
+      "value" : "Objekt2",
+      "_codelistId" : "BAW_simulationObject"
+    } ],
+    "objectPart" : [ {
+      "key" : null,
+      "value" : "Objektteil",
+      "_codelistId" : "BAW_simulationObjectPart"
+    }, {
+      "key" : null,
+      "value" : "Objektteil2",
+      "_codelistId" : "BAW_simulationObjectPart"
+    } ],
+    "researchGoal" : [ {
+      "key" : null,
+      "value" : "Untersuchungsziel",
+      "_codelistId" : "BAW_simulationResearchGoal"
+    } ],
+    "dimension" : {
+      "spatialDimension" : {
+        "key" : "1",
+        "value" : "1D",
+        "_codelistId" : "BAW_simulationSpatialDimension"
+      },
+      "timeDimension" : null
+    },
+    "level" : [ {
+      "key" : null,
+      "value" : "Level der Untersuchung",
+      "_codelistId" : "BAW_simulationLevel"
+    } ],
+    "phase" : [ {
+      "key" : "4",
+      "value" : "TbVS I",
+      "_codelistId" : "BAW_simulationPhase"
+    }, {
+      "key" : "1",
+      "value" : "TbW A",
+      "_codelistId" : "BAW_simulationPhase"
+    } ],
+    "calculationConcept" : {
+      "isMaterialLinear" : true,
+      "isGeometricLinear" : false,
+      "hasImperfections" : false
+    },
+    "materials" : [ {
+      "key" : "1",
+      "value" : "Beton",
+      "_codelistId" : "BAW_simulationMaterial"
+    }, {
+      "key" : "2",
+      "value" : "Bewehrung",
+      "_codelistId" : "BAW_simulationMaterial"
+    } ],
+    "materialParameters" : {
+      "reinforcement" : [ {
+        "yieldLimit" : 123.45
+      } ],
+      "steel" : [ {
+        "yieldLimit" : 234.56
+      } ],
+      "concrete" : [ {
+        "compressiveStrength" : 123.45,
+        "unitOfMeasure" : {
+          "key" : "2",
+          "value" : "f_ck",
+          "_codelistId" : "BAW_simulationConcreteUnit"
+        }
+      } ]
+    },
+    "materialModel" : [ {
+      "key" : "4",
+      "value" : "Bruchmechanik",
+      "_codelistId" : "BAW_simulationMaterialModel"
+    }, {
+      "key" : "5",
+      "value" : "Hyperelastizität",
+      "_codelistId" : "BAW_simulationMaterialModel"
+    } ],
+    "elementTypes" : [ {
+      "key" : "6",
+      "value" : "Federn",
+      "_codelistId" : "BAW_simulationElementType"
+    }, {
+      "key" : "3",
+      "value" : "Platten",
+      "_codelistId" : "BAW_simulationElementType"
+    } ],
+    "effects" : [ ],
+    "physics" : [ {
+      "key" : "2",
+      "value" : "Strukturdynamik",
+      "_codelistId" : "BAW_simulationPhysics"
+    }, {
+      "key" : "1",
+      "value" : "Strukturmechanik",
+      "_codelistId" : "BAW_simulationPhysics"
+    } ],
+    "analysisType" : [ {
+      "key" : "4",
+      "value" : "Eigenwertanalyse",
+      "_codelistId" : "BAW_simulationAnalysisType"
+    }, {
+      "key" : "2",
+      "value" : "Modalanalyse",
+      "_codelistId" : "BAW_simulationAnalysisType"
+    } ]
+  } ]
+}, {
+  "_uuid" : "fc708688-e86a-4329-884c-8618e29037a1",
+  "_type" : "InGridOrganisationDoc",
+  "title" : "BAW",
+  "organization" : "BAW",
+  "contact" : [ ],
+  "positionName" : "",
+  "hoursOfService" : ""
+} ]

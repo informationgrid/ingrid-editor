@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.imports.ingrid_baw
 
 import de.ingrid.igeserver.DummyCatalog
+import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
@@ -89,10 +90,33 @@ class IsoImporterBawTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
         isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_baw.xml"), mutableMapOf())
-        println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geodataset_baw-expected.json"),
+        )
+    }
+
+    @Test
+    fun importBawSimulation() {
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
+        isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_simulation_baw.xml"), mutableMapOf())
+        changeUuidOfOrganisationTo(result, "BAW", "fc708688-e86a-4329-884c-8618e29037a1")
+
+        result.toPrettyString().shouldEqualJson(
+            getFile("ingrid/import/iso_simulation_baw-expected.json"),
+        )
+    }
+
+    @Test
+    fun importBawMeasurement() {
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
+        isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_measurement_baw.xml"), mutableMapOf())
+        changeUuidOfOrganisationTo(result, "BAW", "fc708688-e86a-4329-884c-8618e29037a1")
+
+        result.toPrettyString().shouldEqualJson(
+            getFile("ingrid/import/iso_measurement_baw-expected.json"),
         )
     }
 }
