@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.imports.internal.InternalImporter
 import de.ingrid.igeserver.imports.internal.migrations.Migrate160
+import de.ingrid.igeserver.imports.internal.migrations.Migrate170
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
@@ -69,5 +70,40 @@ class InternalImportMigrations : AnnotationSpec() {
         verticalExtent.has("Datum") shouldBe false
         verticalExtent.has("spatialSystem") shouldBe true
         verticalExtent.get("spatialSystem").get("key").asText() shouldBe "EPSG:5714"
+    }
+
+    @Test
+    fun testMigrate170() {
+        val mapper = jacksonObjectMapper()
+        val data = mapper.createObjectNode().apply {
+            putArray("processingSteps").apply {
+                addObject().apply {
+                    put("announcementDocsPublishDuringDisclosure", true)
+                    put("applicationDocsPublishDuringDisclosure", false)
+                }
+                addObject().apply {
+                    put("announcementDocsPublishDuringDisclosure", false)
+                    put("applicationDocsPublishDuringDisclosure", false)
+                    put("furtherDocsPublishDuringDisclosure", false)
+                    put("reportsRecommendationDocsPublishDuringDisclosure", false)
+                }
+            }
+        }
+
+        val processingSteps = Migrate170.getProcessingStepsOfDocument(data)!!
+
+        // Check if one of the target migration attributes is true.
+        val step0 = processingSteps.get(0)
+        step0.has("announcementDocsPublishDuringDisclosure") shouldBe false
+        step0.has("applicationDocsPublishDuringDisclosure") shouldBe false
+        step0.get("publishDuringDisclosure").asBoolean() shouldBe true
+
+        // Check if all target migration attributes are false.
+        val step1 = processingSteps.get(1)
+        step1.has("announcementDocsPublishDuringDisclosure") shouldBe false
+        step1.has("applicationDocsPublishDuringDisclosure") shouldBe false
+        step1.has("furtherDocsPublishDuringDisclosure") shouldBe false
+        step1.has("reportsRecommendationDocsPublishDuringDisclosure") shouldBe false
+        step1.get("publishDuringDisclosure").asBoolean() shouldBe false
     }
 }
