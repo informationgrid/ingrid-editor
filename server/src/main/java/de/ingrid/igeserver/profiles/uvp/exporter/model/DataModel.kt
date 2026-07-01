@@ -118,24 +118,15 @@ data class StepPublicDisclosure(
     val type: String,
     val disclosureDate: RangeModel,
     val announcementDocs: List<Document>?,
-    val announcementDocsPublishDuringDisclosure: Boolean = false,
+    val publishDuringDisclosure: Boolean = false,
     val applicationDocs: List<Document>?,
-    val applicationDocsPublishDuringDisclosure: Boolean = false,
     val reportsRecommendationDocs: List<Document>?,
-    val reportsRecommendationDocsPublishDuringDisclosure: Boolean = false,
     val furtherDocs: List<Document>?,
-    val furtherDocsPublishDuringDisclosure: Boolean = false,
 ) : Step {
-    fun isPublishable(tableName: String): Boolean {
+    fun isPublishable(): Boolean {
         val today = Date().toInstant().toString()
         val startDate = disclosureDate.start ?: today
-        return when (tableName) {
-            "announcementDocs" -> !announcementDocsPublishDuringDisclosure || startDate <= today
-            "applicationDocs" -> !applicationDocsPublishDuringDisclosure || startDate <= today
-            "reportsRecommendationDocs" -> !reportsRecommendationDocsPublishDuringDisclosure || startDate <= today
-            "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
-            else -> true
-        }
+        return !publishDuringDisclosure || startDate <= today
     }
 }
 

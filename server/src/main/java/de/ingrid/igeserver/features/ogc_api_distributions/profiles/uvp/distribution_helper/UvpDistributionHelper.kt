@@ -53,28 +53,24 @@ data class PublicDisclosureFurtherDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val furtherDocs: List<JsonNode>,
-    val furtherDocsPublishDuringDisclosure: Boolean,
 )
 
 data class PublicDisclosureApplicationDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val applicationDocs: List<JsonNode>,
-    val applicationDocsPublishDuringDisclosure: Boolean,
 )
 
 data class PublicDisclosureAnnouncementDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val announcementDocs: List<JsonNode>,
-    val announcementDocsPublishDuringDisclosure: Boolean,
 )
 
 data class PublicDisclosureReportsRecommendationDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val reportsRecommendationDocs: List<JsonNode>,
-    val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
 )
 
 @Profile("uvp")
@@ -174,7 +170,6 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     furtherDocs = furtherDocs,
-                                    furtherDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("furtherDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -184,7 +179,6 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     applicationDocs = applicationDocs,
-                                    applicationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("applicationDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -194,7 +188,6 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     announcementDocs = announcementDocs,
-                                    announcementDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("announcementDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -204,7 +197,6 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     reportsRecommendationDocs = applicationDocs,
-                                    reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("reportsRecommendationDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
