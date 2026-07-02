@@ -242,27 +242,33 @@ class ZabbixService(
         val docNameShort = shortenString(docName, 64)
         val triggerName = createDocumentName(docName, docUrl)
 
-        val triggerDoc = getTrigger("Dokument: $docNameShort")
-        val triggerHash = getTrigger("Dokument: $triggerName")
+        fun getExistingTriggerId(): String = getTriggerIdByName(triggerName)
+            ?: getTriggerIdByName(docNameShort)
+            ?: ""
 
-        fun JsonNode.hasResult() = get("result")?.isEmpty == false
+        val existingTriggerId = getExistingTriggerId()
+        if (existingTriggerId.isNotEmpty()) return existingTriggerId
+        if (isUploadExpired(webscenarioName)) return ""
 
-        if (!triggerDoc.hasResult() && !triggerHash.hasResult() && !isUploadExpired(webscenarioName)) {
-            createTrigger(
-                uuid = getTag(response, "id"),
-                docName = docName,
-                docUrl = docUrl,
-                hash = webscenarioName.takeLast(4) == triggerName.takeLast(4),
-            )
-            return getTriggerId(response)
-        }
+        createTrigger(
+            uuid = getTag(response, "id"),
+            docName = docName,
+            docUrl = docUrl,
+            hash = webscenarioName.takeLast(4) == triggerName.takeLast(4),
+        )
+        return getExistingTriggerId()
+    }
 
-        return when {
-            triggerDoc.hasResult() -> getFromResultArray(triggerDoc, "triggerid").asText()
-            triggerHash.hasResult() -> getFromResultArray(triggerHash, "triggerid").asText()
-            else -> ""
+    private fun getTriggerIdByName(name: String): String? {
+        val trigger = getTrigger("Dokument: $name")
+        return if (trigger.hasResult()) {
+            getFromResultArray(trigger, "triggerid").asText()
+        } else {
+            null
         }
     }
+
+    private fun JsonNode.hasResult() = get("result")?.isEmpty == false
 
     private fun isUploadExpired(name: String): Boolean {
         val response = requestApi(
@@ -486,8 +492,8 @@ class ZabbixService(
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String, hash: Boolean = true) {
         val docNameShort = createDocumentName(docName, docUrl, hash)
-        //  wrap docName in quotes if it contains a comma for zabbix compatibility
-        val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
+        //  wrap docName in quotes for zabbix compatibility
+        val docNameTriggerExpression = formatParameter(docNameShort)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
 
@@ -506,6 +512,16 @@ class ZabbixService(
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params)
         val values = objectMapper.writeValueAsString(trigger)
         requestApi(values)
+    }
+
+    private fun formatParameter(value: String): String {
+        val needsQuotes = value.any { it == ',' || it == '[' || it == ']' || it == '"' || it == '\\' }
+        if (!needsQuotes) return value
+
+        return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .let { "\"$it\"" }
     }
 
     private fun isExpiredWebscenario(webscenario: JsonNode?): Boolean = webscenario?.let { getTag(it, "expired").isNotEmpty() } == true
