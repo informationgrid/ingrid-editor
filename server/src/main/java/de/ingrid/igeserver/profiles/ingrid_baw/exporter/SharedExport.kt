@@ -41,6 +41,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationM
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SoftwareModelTransformerBaw
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
+import de.ingrid.igeserver.utils.getInteger
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -361,7 +362,7 @@ fun getCfdSimulation(transformer: IngridModelTransformer): CfdSimulationBaw? {
         propulsion = data.getBoolean("properties.propulsion"),
         movementType = data.getPath("movementType")?.mapToKeyValue()?.value,
         trajectory = data.getPath("trajectory")?.mapToKeyValue()?.value,
-        cellCount = data.getDouble("cellCount"),
+        cellCount = data.getInteger("cellCount"),
     )
 }
 
@@ -421,7 +422,7 @@ data class CfdSimulationBaw(
     val propulsion: Boolean?,
     val movementType: String?,
     val trajectory: String?,
-    val cellCount: Double?,
+    val cellCount: Int?,
 )
 
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(

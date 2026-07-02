@@ -51,6 +51,7 @@ data class BawSimulation(
     @JacksonXmlElementWrapper(useWrapping = false)
     val simulationMethodDependency: List<CharacterString>? = null,
     val structuralEngineeringSimulation: BawStructuralEngineeringSimulationWrapper? = null,
+    val shipCFD: BawShipCFDWrapper? = null,
 )
 
 data class BawMeasurement(
@@ -186,8 +187,27 @@ data class BawConcreteCompressiveStrength(
     val parameter: CharacterString? = null,
 )
 
+data class BawShipCFDWrapper(
+    @JacksonXmlProperty(localName = "ShipCFD") val shipCFD: BawShipCFD?,
+)
+
+data class BawShipCFD(
+    @JacksonXmlElementWrapper(useWrapping = false)
+    val shipName: List<CharacterString>? = null,
+    val statementAboutPhysics: CharacterString? = null,
+    val constantCrossSection: BawBoolean? = null,
+    val propulsion: BawBoolean? = null,
+    val movementTypes: CharacterString? = null,
+    val trajectory: CharacterString? = null,
+    val cellCount: BawInteger? = null,
+)
+
 data class BawDecimal(
     @JacksonXmlProperty(localName = "Decimal") val value: Double?,
+)
+
+data class BawInteger(
+    @JacksonXmlProperty(localName = "Integer") val value: Int?,
 )
 
 data class BawBoolean(

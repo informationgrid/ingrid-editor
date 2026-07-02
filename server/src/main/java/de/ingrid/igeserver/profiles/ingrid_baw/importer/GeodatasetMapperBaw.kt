@@ -28,6 +28,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.exports.iso.BawExtension
 import de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement
 import de.ingrid.igeserver.exports.iso.BawMetadata
+import de.ingrid.igeserver.exports.iso.BawShipCFD
 import de.ingrid.igeserver.exports.iso.BawStructuralEngineeringSimulation
 import de.ingrid.igeserver.exports.iso.CharacterString
 import de.ingrid.igeserver.model.KeyValue
@@ -142,6 +143,13 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
             ?.simulation?.simulation?.structuralEngineeringSimulation?.structuralEngineeringSimulation
             ?: return null
         return mapBautechnikSimulation(raw)
+    }
+
+    fun getCFDSimulation(): CFDSimulationImport? {
+        val raw = bawMetadata
+            ?.simulation?.simulation?.shipCFD?.shipCFD
+            ?: return null
+        return mapCFDSimulation(raw)
     }
 
     fun getWaterMeasurement(): WaterMeasurementImport? {
@@ -278,6 +286,16 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         )
     }
 
+    private fun mapCFDSimulation(raw: BawShipCFD): CFDSimulationImport = CFDSimulationImport(
+        shipName = strings(raw.shipName).map { codelistKeyValue("BAW_shipName", it) },
+        statementAboutPhysics = raw.statementAboutPhysics?.value?.let { codelistKeyValue("BAW_physics", it) },
+        constantCrossSection = raw.constantCrossSection?.value,
+        propulsion = raw.propulsion?.value,
+        movementTypes = raw.movementTypes?.value?.let { codelistKeyValue("BAW_movementType", it) },
+        trajectory = raw.trajectory?.value?.let { codelistKeyValue("BAW_trajectory", it) },
+        cellCount = raw.cellCount?.value,
+    )
+
     private fun codelistKeyValue(codelistId: String, value: String): KeyValue = KeyValue(codeListService.getCodeListEntryId(codelistId, value, "de"), value, codelistId)
 }
 
@@ -296,6 +314,16 @@ data class BautechnikSimulationImport(
     val effects: List<KeyValue>,
     val physics: List<KeyValue>,
     val analysisType: List<KeyValue>,
+)
+
+data class CFDSimulationImport(
+    val shipName: List<KeyValue>,
+    val statementAboutPhysics: KeyValue?,
+    val constantCrossSection: Boolean?,
+    val propulsion: Boolean?,
+    val movementTypes: KeyValue?,
+    val trajectory: KeyValue?,
+    val cellCount: Number?,
 )
 
 data class DimensionImport(

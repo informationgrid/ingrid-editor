@@ -4,6 +4,7 @@
 
 
 !{var bSim = model.getBautechnikSimulation();}
+!{var cfdsim = model.getCFDSimulation();}
 
 @template.imports.ingrid-baw.geodatasetBase(model = model, typeSpecificFields = @`
     ,
@@ -136,6 +137,20 @@
                         @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
                     @endfor
                 ]
+            }
+        @endif
+        @if(cfdsim != null)
+            {
+                "type": "cfdSimulation",
+                "shipName": [
+                @for(var entry : ForSupport.of(cfdsim.getShipName()))
+                    @template.imports.ingrid.partial.key-value(item = entry.get())@if (!entry.isLast()),@endif
+                @endfor
+                ],
+                "physics": @template.imports.ingrid.partial.key-value(item = cfdsim.getStatementAboutPhysics()),
+                "movementType": @template.imports.ingrid.partial.key-value(item = cfdsim.getMovementTypes()),
+                "trajectory": @template.imports.ingrid.partial.key-value(item = cfdsim.getTrajectory()),
+                "cellCount": @if(cfdsim.getCellCount() != null) ${cfdsim.getCellCount()} @else null @endif
             }
         @endif
     ]

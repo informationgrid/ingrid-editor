@@ -36,6 +36,9 @@ class TransformationTools {
         fun hasValue(d: Double?) = d != null && !d.isNaN() && !d.isInfinite()
 
         @kotlin.jvm.JvmStatic
+        fun hasValue(i: Int?) = i != null
+
+        @kotlin.jvm.JvmStatic
         fun hasValue(s: String?) = !s.isNullOrEmpty()
 
         @kotlin.jvm.JvmStatic
