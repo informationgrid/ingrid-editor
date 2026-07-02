@@ -71,6 +71,8 @@ data class DataModel(
     }
 
     var steps: List<Step> = emptyList()
+
+    // TODO: check if this can be removed safely
     private fun setProcessingSteps(nodeSteps: List<JsonNode>) {
         steps = nodeSteps.mapNotNull { step ->
             val type = step.get("type").textValue()
@@ -78,12 +80,18 @@ data class DataModel(
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepPublicDisclosure::class.java,
-                ) // Step1
-                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java) // Step1
+                )
+
+                // Step1
+                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java)
+
+                // Step1
                 "decisionOfAdmission" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepDecisionOfAdmission::class.java,
-                ) // Step1
+                )
+
+                // Step1
                 else -> {
                     null
                 }
