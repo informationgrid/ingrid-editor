@@ -44,6 +44,7 @@ class InGridNLPVComponent extends InGridComponent {
     this.geoDataset,
     this.geoService,
     this.publication,
+    this.project,
     this.person,
     this.organisation,
   ];

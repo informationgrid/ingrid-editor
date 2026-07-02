@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_nlpv.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid_nlpv.NLPVProfile
 import org.springframework.jdbc.core.JdbcTemplate
@@ -44,4 +45,10 @@ class InGridGeoServiceTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridGeoServiceTyp
 class InGridPublicationTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(PROFILE_ID)
     override val jsonSchema = "/ingrid/schemes/publication.schema.json"
+}
+
+@Component
+class InGridProjectTypeNLPV(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
+    override val profiles = arrayOf(PROFILE_ID)
+    override val jsonSchema = "/ingrid/schemes/project.schema.json"
 }
