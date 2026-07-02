@@ -212,9 +212,12 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
         dataQualityDescription = raw.dataQualityDescription?.value,
     )
 
-    private fun mapBautechnikSimulation(raw: BawStructuralEngineeringSimulation): BautechnikSimulationImport {
-        fun strings(list: List<CharacterString>?): List<String> = list?.mapNotNull { it.value }?.filter { it.isNotBlank() } ?: emptyList()
+    private fun strings(list: List<CharacterString>?): List<String> = list?.mapNotNull { it.value }?.filter { it.isNotBlank() } ?: emptyList()
 
+    val version = strings(bawMetadata?.simulation?.simulation?.simulationMethodVersion)
+    val dependency = strings(bawMetadata?.simulation?.simulation?.simulationMethodDependency)
+
+    private fun mapBautechnikSimulation(raw: BawStructuralEngineeringSimulation): BautechnikSimulationImport {
         val materialLinear = raw.materialConcept?.value?.let { it == "linear" }
         val geometricLinear = raw.geometryConcept?.value?.let { it == "linear" }
         val imperfections = raw.imperfections?.value?.let { it == "with" }

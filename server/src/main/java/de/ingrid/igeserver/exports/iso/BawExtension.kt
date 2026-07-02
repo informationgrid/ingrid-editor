@@ -44,6 +44,12 @@ data class BawMeasurementWrapper(
 )
 
 data class BawSimulation(
+    @JacksonXmlElementWrapper(useWrapping = false)
+    val simulationMethod: List<CharacterString>? = null,
+    @JacksonXmlElementWrapper(useWrapping = false)
+    val simulationMethodVersion: List<CharacterString>? = null,
+    @JacksonXmlElementWrapper(useWrapping = false)
+    val simulationMethodDependency: List<CharacterString>? = null,
     val structuralEngineeringSimulation: BawStructuralEngineeringSimulationWrapper? = null,
 )
 

@@ -26,6 +26,20 @@
     ],
     "dimensionality": @template.imports.ingrid.partial.key-value(item = model.getDimensionality()),
     "process": @template.imports.ingrid.partial.key-value(item = model.getSimProcess()),
+    "version": [
+        @if(!model.getVersion().isEmpty())
+            @for(var entry : ForSupport.of(model.getVersion()))
+                "${entry.get()}"@if (!entry.isLast()),@endif
+            @endfor
+        @endif
+    ],
+    "extension": [
+        @if(!model.getDependency().isEmpty())
+            @for(var entry : ForSupport.of(model.getDependency()))
+                "${entry.get()}"@if (!entry.isLast()),@endif
+            @endfor
+        @endif
+    ],
     "simulationPhases": [
         @if(bSim != null)
             {
