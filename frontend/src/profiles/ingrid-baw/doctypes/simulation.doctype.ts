@@ -114,23 +114,6 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
       fieldGroup: [
         this.addSection("Simulationsdaten (Bautechnik)", [
           { key: "type" },
-          this.addGroup("software", "Software", [
-            this.addAutocomplete("name", null, {
-              fieldLabel: "Name",
-              wrappers: ["form-field"],
-              required: true,
-              options: this.getCodelistForSelect(
-                "BAW_simulationSoftware",
-                "null",
-              ),
-              codelistId: "BAW_simulationSoftware",
-            }),
-            this.addInput("version", null, {
-              required: true,
-              fieldLabel: "Version",
-              wrappers: ["form-field"],
-            }),
-          ]),
           this.addRepeatList("object", "Objekt", {
             required: true,
             options: this.getCodelistForSelect("BAW_simulationObject", "null"),
