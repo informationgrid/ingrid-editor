@@ -44,6 +44,7 @@ import { AddressTreeStore } from "../../../../../store/address-tree/address-tree
 
 export interface ReplaceAddressDialogData {
   source: string;
+  type: string;
   showInfo: boolean;
 }
 
@@ -74,12 +75,17 @@ export class ReplaceAddressDialogComponent {
   page = signal<number>(0);
   selectedAddress = signal<string[]>(null);
   private readonly source: string;
+  private readonly type: string;
   showInfo = signal<boolean>(true);
   disableTreeNode = (node: TreeNode) =>
-    node._uuid === this.source || node.state === "W";
+    node._uuid === this.source ||
+    node.state === "W" ||
+    (this.type !== "PublicationAddressDoc" &&
+      node.type === "PublicationAddressDoc");
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData) {
     this.source = data.source;
+    this.type = data.type;
     this.showInfo.set(data.showInfo);
   }
 
