@@ -424,13 +424,6 @@ data class CfdSimulationBaw(
     val cellCount: Double?,
 )
 
-data class TestProcedure(
-    val testMethod: String?,
-    val instrument: String?,
-    val standard: String?,
-    val standardIssueDate: String?,
-)
-
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
     uuid = litDoc.uuid,
     title = litDoc.title!!,
