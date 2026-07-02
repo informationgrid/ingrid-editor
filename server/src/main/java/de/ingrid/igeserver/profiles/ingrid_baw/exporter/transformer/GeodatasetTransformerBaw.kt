@@ -98,8 +98,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
             )
         } ?: emptyList()
 
-    val simulationVersion = doc.data.getPath("version")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
-    val simulationExtension = doc.data.getPath("extension")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
+    val simulationVersion = doc.data.getPath("version")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
+    val simulationExtension = doc.data.getPath("extension")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
 
     fun getSimulationKeywordThesauri(): List<Thesaurus> = listOf(
         dimensionalityThesaurus,

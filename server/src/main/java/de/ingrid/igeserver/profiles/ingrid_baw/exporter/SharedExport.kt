@@ -334,7 +334,7 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
         objects = getList("object"),
         objectParts = getList("objectPart"),
         researchGoals = getList("researchGoal"),
-        spatialDimension = data.getString("dimension.spatialDimension"),
+        spatialDimension = data.getPath("dimension.spatialDimension")?.mapToKeyValue()?.let { transformer.codelists.getValue("BAW_simulationSpatialDimension", it) },
         timeDimension = data.getBoolean("dimension.timeDimension"),
         levels = getList("level"),
         phases = getList("phase"),
