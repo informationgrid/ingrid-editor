@@ -161,7 +161,7 @@
       "verticalCRS" : {
         "key" : null,
         "value" : "EPSG 7837: DHHN2016 Höhe",
-        "_codelistId" : "BAW_verticalCRS"
+        "_codelistId" : "verticalSpatialSystems"
       },
       "description" : null
     } ],
@@ -177,7 +177,7 @@
       "verticalCRS" : {
         "key" : null,
         "value" : "EPSG 7837: DHHN2016 Höhe",
-        "_codelistId" : "BAW_verticalCRS"
+        "_codelistId" : "verticalSpatialSystems"
       },
       "description" : "Wittenberg max. Wasserstand"
     } ],

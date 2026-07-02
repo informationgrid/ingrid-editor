@@ -157,8 +157,7 @@ data class BawStructuralEngineeringSimulation(
     val reinforcementYieldStrength: List<BawDecimal>? = null,
     @JacksonXmlElementWrapper(useWrapping = false)
     val steelYieldStrength: List<BawDecimal>? = null,
-    @JacksonXmlElementWrapper(useWrapping = false)
-    val concreteCompressiveStrength: List<BawConcreteCompressiveStrengthWrapper>? = null,
+    val concreteCompressiveStrength: BawConcreteCompressiveStrengthWrapper? = null,
     @JacksonXmlElementWrapper(useWrapping = false)
     val materialModel: List<CharacterString>? = null,
     @JacksonXmlElementWrapper(useWrapping = false)
@@ -173,7 +172,7 @@ data class BawStructuralEngineeringSimulation(
 
 data class BawConcreteCompressiveStrengthWrapper(
     @JacksonXmlProperty(localName = "ConcreteCompressiveStrength")
-    val concreteCompressiveStrength: BawConcreteCompressiveStrength?,
+    val concreteCompressiveStrength: List<BawConcreteCompressiveStrength>?,
 )
 
 data class BawConcreteCompressiveStrength(

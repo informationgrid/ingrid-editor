@@ -233,7 +233,7 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
             ?.map { YieldLimitImport(it) } ?: emptyList()
         val steel = raw.steelYieldStrength?.mapNotNull { it.value }
             ?.map { YieldLimitImport(it) } ?: emptyList()
-        val concrete = raw.concreteCompressiveStrength?.mapNotNull { it.concreteCompressiveStrength }
+        val concrete = raw.concreteCompressiveStrength?.concreteCompressiveStrength
             ?.map { ccs ->
                 val unitValue = ccs.parameter?.value
                 ConcreteImport(
