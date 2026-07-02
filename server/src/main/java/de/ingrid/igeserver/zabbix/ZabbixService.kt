@@ -75,7 +75,7 @@ class ZabbixService(
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
         val documentsToDelete = getUploadedDocuments(remoteUploads)
 
-        // TODO: explain what is happening here or use more functions
+        // sync uploaded documents with remote uploads
         data.uploads.forEach { upload ->
             val remoteUpload = remoteUploads.find { upload.url == it.url }
             if (remoteUpload == null) {
@@ -302,8 +302,7 @@ class ZabbixService(
     }
 
     private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document ->
-        // TODO: explain why webscenario is updated and not deleted as the function name suggests
-        updateWebscenario(document.webscenarioId)
+        expireWebscenario(document.webscenarioId)
         deleteTrigger(listOf(document.triggerId))
     }
 
@@ -531,7 +530,7 @@ class ZabbixService(
         requestApi(values)
     }
 
-    private fun updateWebscenario(id: String) {
+    private fun expireWebscenario(id: String) {
         val existingWebscenario = getWebscenarioById(id) ?: return
         val existingTags = readTags(existingWebscenario).orEmpty()
 
@@ -580,7 +579,7 @@ class ZabbixService(
         val url = getTag(existingHost, "url")
         val docName = createDocumentName("Verfahren", url)
         getWebscenarioByNameAndHost(docName, id)?.let { webscenario ->
-            updateWebscenario(webscenario.get("httptestid").asText())
+            expireWebscenario(webscenario.get("httptestid").asText())
         }
     }
 
