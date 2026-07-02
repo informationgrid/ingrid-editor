@@ -50,7 +50,6 @@ data class BawSimulation(
 data class BawMeasurement(
     @JacksonXmlElementWrapper(useWrapping = false)
     val measurementMethod: List<CharacterString>? = null,
-    @JacksonXmlElementWrapper(useWrapping = false)
     val measurementDevice: List<BawMeasurementDeviceWrapper>? = null,
     @JacksonXmlElementWrapper(useWrapping = false)
     val measurementParameter: List<BawMeasurementParameterWrapper>? = null,
@@ -58,7 +57,6 @@ data class BawMeasurement(
 )
 
 data class BawMeasurementDeviceWrapper(
-    @JacksonXmlProperty(localName = "MeasurementDevice")
     val measurementDevice: BawMeasurementDevice?,
 )
 
@@ -90,7 +88,6 @@ data class BawHydraulicEngineeringMeasurement(
     val measurementSpatiality: CharacterString? = null,
     val temporalAccuracy: BawDecimal? = null,
     val measurementFrequency: BawDecimal? = null,
-    @JacksonXmlElementWrapper(useWrapping = false)
     val measurementDepth: List<BawMeasurementDepthWrapper>? = null,
     @JacksonXmlElementWrapper(useWrapping = false)
     val gaugeZeroPoint: List<BawGaugeZeroPointWrapper>? = null,

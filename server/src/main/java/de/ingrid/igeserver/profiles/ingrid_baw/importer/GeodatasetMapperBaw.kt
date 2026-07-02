@@ -171,36 +171,37 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
             ?: return emptyList()
         return raw.mapNotNull { it.measurementParameter }.map { param ->
             TargetParameterImport(
-                parameterName = param.parameterName?.value,
-                parameterType = param.parameterType?.value?.let { type -> codelistKeyValue("BAW_measurementParameterType", type) },
-                uom = param.uom?.value,
+                parameterName = param.parameterName?.value?.let { name -> codelistKeyValue("3950021", name) },
+                parameterType = param.parameterType?.value?.let { type -> codelistKeyValue("3950014", type) },
+                uom = param.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
                 parameterFunction = param.parameterFunction?.value,
             )
         }
     }
 
     private fun mapWaterMeasurement(raw: BawHydraulicEngineeringMeasurement): WaterMeasurementImport = WaterMeasurementImport(
-        spatiality = raw.measurementSpatiality?.value?.let { codelistKeyValue("BAW_measurementSpatiality", it) },
-        measuringDepth = raw.measurementDepth?.mapNotNull { it.measurementDepth }?.map {
-            ValueUnitImport(
-                value = it.measurementDepth?.value,
-                unit = null,
-                verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("BAW_verticalCRS", crs) },
-            )
-        } ?: emptyList(),
+        spatiality = raw.measurementSpatiality?.value?.let { codelistKeyValue("3950012", it) },
+        measuringDepth = raw.measurementDepth?.firstOrNull()?.measurementDepth.let {
+            it?.let {
+                ValueUnitImport(
+                    value = it.measurementDepth?.value,
+                    verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("verticalSpatialSystems", crs) },
+                )
+            }
+        } ?: ValueUnitImport(),
         timestep = raw.temporalAccuracy?.value ?: getTimestep(),
         frequency = raw.measurementFrequency?.value,
         averageWaterLevel = raw.meanWaterLevel?.mapNotNull { it.meanWaterLevel }?.map {
             ValueUnitImport(
                 value = it.waterLevel?.value,
-                unit = it.uom?.value,
+                unit = it.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
             )
         } ?: emptyList(),
         zeroLevel = raw.gaugeZeroPoint?.mapNotNull { it.gaugeZeroPoint }?.map {
             ValueUnitImport(
                 value = it.gaugeZeroPoint?.value,
-                unit = it.uom?.value,
-                verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("BAW_verticalCRS", crs) },
+                unit = it.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
+                verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("verticalSpatialSystems", crs) },
                 description = it.description?.value,
             )
         } ?: emptyList(),
@@ -322,7 +323,7 @@ data class ConcreteImport(
 
 data class WaterMeasurementImport(
     val spatiality: KeyValue?,
-    val measuringDepth: List<ValueUnitImport>,
+    val measuringDepth: ValueUnitImport,
     val timestep: Double?,
     val frequency: Double?,
     val averageWaterLevel: List<ValueUnitImport>,
@@ -332,8 +333,8 @@ data class WaterMeasurementImport(
 )
 
 data class ValueUnitImport(
-    val value: Double?,
-    val unit: String?,
+    val value: Double? = null,
+    val unit: KeyValue? = null,
     val verticalCRS: KeyValue? = null,
     val description: String? = null,
 )
@@ -351,9 +352,9 @@ data class GaugeImport(
 )
 
 data class TargetParameterImport(
-    val parameterName: String?,
+    val parameterName: KeyValue?,
     val parameterType: KeyValue?,
-    val uom: String?,
+    val uom: KeyValue?,
     val parameterFunction: String?,
 )
 
