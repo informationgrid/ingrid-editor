@@ -87,7 +87,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
         error.response.handled = true;
         const doc = this.addressTreeStore.entityMap()[selectedNodes[0]];
 
-        this.showDialog(doc._uuid)
+        this.showDialog(doc._uuid, doc._type)
           .pipe(filter((response) => response))
           .subscribe(() => this.docEvents.sendEvent({ type: "DELETE" }));
       });
@@ -96,7 +96,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       .onEvent("REPLACE_ADDRESS")
       .subscribe((event) => {
         console.debug("REPLACE_ADDRESS", event);
-        this.showDialog(event.data.uuid, false).subscribe();
+        this.showDialog(event.data.uuid, event.data.type, false).subscribe();
       });
 
     this.subscriptions.push(subscription, onEvent);
@@ -118,17 +118,22 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
         action: () =>
           this.docEventsService.sendEvent({
             type: "REPLACE_ADDRESS",
-            data: { uuid: doc._uuid },
+            data: { uuid: doc._uuid, type: doc._type },
           }),
       });
     }
   }
 
-  private showDialog(source: string, showInfo = true): Observable<any> {
+  private showDialog(
+    source: string,
+    type: string,
+    showInfo = true,
+  ): Observable<any> {
     return this.dialog
       .open(ReplaceAddressDialogComponent, {
         data: <ReplaceAddressDialogData>{
           source: source,
+          type: type,
           showInfo: showInfo,
         },
       })
