@@ -1,8 +1,8 @@
 import gg.jte.ContentType
+import org.cyclonedx.Version
+import static org.cyclonedx.model.Component.Type
 
 import java.nio.file.Paths
-
-//import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 buildscript {
     ext.kotlin_version = '2.3.0'
@@ -32,6 +32,7 @@ plugins {
     id "org.hibernate.orm" version "6.6.38.Final"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
+    id "org.cyclonedx.bom"
 }
 
 repositories {
@@ -279,7 +280,7 @@ tasks.register('updateGitHooks', Copy) {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
     compilerOptions {
         freeCompilerArgs.add("-Xannotation-default-target=param-property")
@@ -352,7 +353,7 @@ jib {
     def tag = name == "develop" ? "latest" : name
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'bellsoft/liberica-openjre-alpine:21'
+        image = 'bellsoft/liberica-openjre-alpine:25'
     }
     to {
         // in case we build a release we also add release tag from version
@@ -472,9 +473,9 @@ cyclonedxDirectBom {
     // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
     skipConfigs = ["compileClasspath", "testCompileClasspath"]
     // Specified the type of project being built. Defaults to 'library'
-    projectType = "application"
+    projectType = Type.APPLICATION
     // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
-    schemaVersion = "VERSION_15"
+    schemaVersion = Version.VERSION_15
 
     componentVersion = rootProject.version
 }
