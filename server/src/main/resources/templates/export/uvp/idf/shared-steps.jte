@@ -18,14 +18,8 @@
                 </datePeriod>
                 @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
                 @endif
             </step>
