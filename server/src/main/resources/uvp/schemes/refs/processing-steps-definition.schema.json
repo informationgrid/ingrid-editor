@@ -94,6 +94,31 @@
         }
       },
       "required": ["publicHearingDate", "considerationDocs"]
+    },
+    "ScopeOfInvestigation": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "scopeOfInvestigation"
+        },
+        "scopingDate": {
+          "$ref": "general.schema.json#/definitions/Date"
+        },
+        "scopingDateDocs": {
+          "type": "array",
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          },
+          "minItems": 1
+        },
+        "scopingGeneralDocs": {
+          "type": "array",
+          "items": {
+            "$ref": "general.schema.json#/definitions/Doc"
+          },
+          "minItems": 1
+        }
+      }
     }
   }
 }

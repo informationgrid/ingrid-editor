@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "type": {
-      "enum": ["publicDisclosure", "publicHearing", "decisionOfAdmission"]
+      "enum": ["publicDisclosure", "publicHearing", "decisionOfAdmission", "scopeOfInvestigation"]
     }
   },
   "allOf": [
@@ -41,6 +41,18 @@
       },
       "then": {
         "$ref": "processing-steps-definition.schema.json#/definitions/DecisionOfAdmission"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "scopeOfInvestigation"
+          }
+        }
+      },
+      "then": {
+        "$ref": "processing-steps-definition.schema.json#/definitions/ScopeOfInvestigation"
       }
     }
   ],
