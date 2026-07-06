@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.imports.ingrid_baw
 
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
@@ -64,6 +63,7 @@ class IsoImporterBawTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("MD_CharacterSetCode", "utf8", "iso") } returns "utf8"
         every { codelistService.getCodelistValue("MD_CharacterSetCode", "utf8", any()) } returns "utf8"
         every { codelistService.getCatalogCodelistKey("test", "525", "dataset", "iso") } returns "5"
+        every { codelistService.getCatalogCodelistKey("test", "verticalSpatialSystems", "DE_DHDN / GK_3", "de") } returns null
         every { codelistService.getCodelistValue("525", "5", "de") } returns "Datensatz"
         every { codelistService.getCodelistValue("505", "12", "de") } returns "Ansprechpartner MD"
 
@@ -97,14 +97,24 @@ class IsoImporterBawTest : AnnotationSpec() {
     }
 
     @Test
-    fun importBawSimulation() {
+    fun importBawBautechnikSimulation() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
         isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
-        val result = isoImporter.run("test", getFile("ingrid/import/iso_simulation_baw.xml"), mutableMapOf())
-        changeUuidOfOrganisationTo(result, "BAW", "fc708688-e86a-4329-884c-8618e29037a1")
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_simulation_bautechnik_baw.xml"), mutableMapOf())
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_simulation_baw-expected.json"),
+            getFile("ingrid/import/iso_simulation_bautechnik_baw-expected.json"),
+        )
+    }
+
+    @Test
+    fun importBawCFDSimulation() {
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
+        isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_simulation_cfd_baw.xml"), mutableMapOf())
+
+        result.toPrettyString().shouldEqualJson(
+            getFile("ingrid/import/iso_simulation_cfd_baw-expected.json"),
         )
     }
 
@@ -113,7 +123,6 @@ class IsoImporterBawTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, bwastrLocatorService, uploadConfig)
         isoImporter.profileMapper["ingrid-baw"] = ISOImportBaw()
         val result = isoImporter.run("test", getFile("ingrid/import/iso_measurement_baw.xml"), mutableMapOf())
-        changeUuidOfOrganisationTo(result, "BAW", "fc708688-e86a-4329-884c-8618e29037a1")
 
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_measurement_baw-expected.json"),

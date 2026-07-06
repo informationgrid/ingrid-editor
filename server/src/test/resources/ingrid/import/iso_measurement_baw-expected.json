@@ -1,7 +1,7 @@
 [
   {
-    "title": "Example BAW measurement",
-    "_uuid": "baw-example-uuid",
+    "title": "Messdaten Wasserbau",
+    "_uuid": "2b2f1771-1f53-4a19-83c7-638e163b517a",
     "_parent": null,
     "_type": "BawMeasurement",
     "properties": {
@@ -13,15 +13,23 @@
         "_codelistId": "525"
       }
     },
-    "description": "Example Abstract for BAW measurement",
+    "description": "kfjdshfd",
     "alternateTitle": "",
     "parentIdentifier": "",
     "pointOfContact": [
       {
-        "ref": "fc708688-e86a-4329-884c-8618e29037a1",
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
         "type": {
           "key": "12",
           "value": "Ansprechpartner MD",
+          "_codelistId": "505"
+        }
+      },
+      {
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+        "type": {
+          "key": "7",
+          "value": "Ansprechpartner",
           "_codelistId": "505"
         }
       }
@@ -36,16 +44,41 @@
       "subsoilKeywords": []
     },
     "spatial": {
-      "references": [],
-      "spatialSystems": [],
+      "references": [
+        {
+          "type": "free",
+          "title": "Neuer Raumbezug",
+          "value": {
+            "lat1": 49.36806633482156,
+            "lon1": 6.372070312500001,
+            "lat2": 54.20101023973888,
+            "lon2": 13.842773437500002
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "9000002",
+          "value": "DE_DHDN / GK_3",
+          "_codelistId": "100"
+        }
+      ],
       "verticalSpatialSystems": [],
       "description": ""
     },
     "temporal": {
       "event": {
-        "firstPublished": "2024-04-18T22:00:00.000Z"
+        "created": "2026-07-01T22:00:00.000Z"
       },
-      "status": null
+      "status": {
+        "key": null,
+        "value": "",
+        "_codelistId": "523"
+      },
+      "data": {
+        "type": "at",
+        "resourceDate": "2026-07-01T22:00:00.000Z"
+      }
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": null,
@@ -60,8 +93,23 @@
     "resource": {
       "purpose": "",
       "specificUsage": "",
-      "accessConstraints": [],
-      "useConstraints": [],
+      "accessConstraints": [
+        {
+          "key": "1",
+          "value": "Es gelten keine Zugriffsbeschränkungen",
+          "_codelistId": "6010"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "2",
+            "value": "Amtliches Werk, lizenzfrei nach §5 Abs. 1 UrhG",
+            "_codelistId": "6500"
+          },
+          "source": ""
+        }
+      ],
       "useLimitation": ""
     },
     "distribution": {
@@ -82,12 +130,18 @@
       "characterSet": null
     },
     "resolution": [],
-    "topicCategories": [],
+    "topicCategories": [
+      {
+        "key": "4",
+        "value": "Atmosphäre",
+        "_codelistId": "527"
+      }
+    ],
     "spatialRepresentationType": [],
     "lineage": {
       "statement": ""
     },
-    "identifier": "",
+    "identifier": "https://registry.gdi-de.org/id/test1/d826740d-fbbe-4ed6-a541-5bbb2f9304cc",
     "portrayalCatalogueInfo": {
       "citation": []
     },
@@ -120,46 +174,43 @@
       ]
     },
     "vectorSpatialRepresentation": [],
-    "bawOrderInfo": null,
+    "bawOrderInfo": {
+      "key": null,
+      "value": "0.02.10001.00 - Durchführung der Messung und Stellungnahme",
+      "_codelistId": "bawOrderInfo"
+    },
     "literatureReferences": [],
-    "measuringMethod": [],
-    "gauge": [
+    "measuringMethod": [
       {
-        "name": "Spectra Geospatial SP80",
-        "id": "-9999",
-        "model": "xxxxxxxx",
-        "description": "xxxxxxxx"
+        "key": null,
+        "value": "ADCP (Acoustic Doppler Current Profiler)",
+        "_codelistId": "3950011"
       },
       {
-        "name": "Teledyne RDI RiverPro ADCP 1200 kHz",
-        "id": "-9999",
-        "model": "xxxxxxxx",
-        "description": "xxxxxxxx"
+        "key": null,
+        "value": "customMessverfahren",
+        "_codelistId": "3950011"
+      }
+    ],
+    "gauge": [
+      {
+        "name": "geräte1",
+        "id": "id1",
+        "model": "modell1",
+        "description": "beschr1"
+      },
+      {
+        "name": "geräte2",
+        "id": "id2",
+        "model": "modell2",
+        "description": "beschr2"
       }
     ],
     "targetParameters": [
       {
         "name": {
           "key": null,
-          "value": "v_Str",
-          "_codelistId": "3950021"
-        },
-        "type": {
-          "key": null,
-          "value": "Gemessen",
-          "_codelistId": "3950014"
-        },
-        "unitOfMeasurement": {
-          "key": null,
-          "value": "m s-1",
-          "_codelistId": "3950020"
-        },
-        "formula": "xxxxxxxx"
-      },
-      {
-        "name": {
-          "key": null,
-          "value": "Durchfluss",
+          "value": "Dichte",
           "_codelistId": "3950021"
         },
         "type": {
@@ -169,10 +220,28 @@
         },
         "unitOfMeasurement": {
           "key": null,
-          "value": "m3 s-1",
+          "value": "%",
           "_codelistId": "3950020"
         },
-        "formula": "xxxxxxxx"
+        "formula": "formel1"
+      },
+      {
+        "name": {
+          "key": null,
+          "value": "CustomZielparameterName",
+          "_codelistId": "3950021"
+        },
+        "type": {
+          "key": null,
+          "value": "customZielparameterArt",
+          "_codelistId": "3950014"
+        },
+        "unitOfMeasurement": {
+          "key": null,
+          "value": "℃",
+          "_codelistId": "3950020"
+        },
+        "formula": "formel2"
       }
     ],
     "measurementPhases": [
@@ -180,59 +249,98 @@
         "type": "waterMeasurement",
         "spatiality": {
           "key": null,
-          "value": "Längs- und Querprofil",
+          "value": "Fläche",
           "_codelistId": "3950012"
         },
         "measuringDepth": {
-          "value": 1.0,
+          "value": 1.11111111E8,
           "verticalSpatialSystems": {
             "key": null,
-            "value": "EPSG 7837: DHHN2016 Höhe",
+            "value": "EPSG:5783 DHHN92 Höhe",
             "_codelistId": "verticalSpatialSystems"
           }
         },
-        "timestep": 0.1,
-        "frequency": 2.0,
+        "timestep": 2.222222222E9,
+        "frequency": 3.333333333E9,
         "averageWaterLevel": [
           {
-            "value": 213.0,
+            "value": 4.444444444E9,
             "unitOfMeasurement": {
               "key": null,
-              "value": "cm",
+              "value": "A",
+              "_codelistId": "3950020"
+            }
+          },
+          {
+            "value": 5.555555555E9,
+            "unitOfMeasurement": {
+              "key": null,
+              "value": "customWasserEinheit",
               "_codelistId": "3950020"
             }
           }
         ],
         "zeroLevel": [
           {
-            "value": 214.0,
+            "value": 6.666666666E9,
             "unitOfMeasurement": {
               "key": null,
-              "value": "cm",
+              "value": "cd",
               "_codelistId": "3950020"
             },
             "verticalSpatialSystems": {
               "key": null,
-              "value": "EPSG 7837: DHHN2016 Höhe",
+              "value": "EPSG:7699 DHHN12 Höhe",
               "_codelistId": "verticalSpatialSystems"
             },
-            "description": "Wittenberg max. Wasserstand"
+            "description": "beschrPegel1"
+          },
+          {
+            "value": 7.77777777E8,
+            "unitOfMeasurement": {
+              "key": null,
+              "value": "customPegelEinheit",
+              "_codelistId": "3950020"
+            },
+            "verticalSpatialSystems": {
+              "key": null,
+              "value": "EPSG:7837 DHHN2016 Höhe",
+              "_codelistId": "verticalSpatialSystems"
+            },
+            "description": "beschrPegel2"
           }
         ],
         "drain": {
-          "min": 267.0,
-          "max": 409.0
+          "min": 8.8888888888E10,
+          "max": 9.9999999E7
         },
-        "dataQualityDescription": "xxxxxxxx"
+        "dataQualityDescription": "Beschr Datenqualität"
       }
     ]
   },
   {
-    "_uuid": "fc708688-e86a-4329-884c-8618e29037a1",
+    "_uuid": "a6c157df-3603-43e8-82f3-4128ffae0d29",
     "_type": "InGridOrganisationDoc",
-    "title": "BAW",
-    "organization": "BAW",
-    "contact": [],
+    "title": "orga",
+    "organization": "orga",
+    "address": {
+      "country": {
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
+      },
+      "administrativeArea": null
+    },
+    "contact": [
+      {
+        "type": {
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
+        },
+        "connection": "sef@sfe.de"
+      }
+    ],
     "positionName": "",
     "hoursOfService": ""
   }

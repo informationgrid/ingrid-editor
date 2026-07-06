@@ -1,0 +1,267 @@
+[
+  {
+    "title": "simulationsdaten cfd schiff",
+    "_uuid": "06ef4405-9ab2-4524-8a84-98c8b2d9a2b3",
+    "_parent": null,
+    "_type": "BawSimulation",
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": false,
+      "subType": {
+        "key": "5",
+        "value": "Datensatz",
+        "_codelistId": "525"
+      }
+    },
+    "description": "grhtr",
+    "alternateTitle": "",
+    "parentIdentifier": "",
+    "pointOfContact": [
+      {
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+        "type": {
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
+        }
+      },
+      {
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+        "type": {
+          "key": "7",
+          "value": "Ansprechpartner",
+          "_codelistId": "505"
+        }
+      }
+    ],
+    "graphicOverviews": [],
+    "advProductGroups": [],
+    "themes": [],
+    "openDataCategories": [],
+    "keywords": {
+      "free": [],
+      "bawKeywords": [],
+      "subsoilKeywords": []
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Neuer Raumbezug",
+          "value": {
+            "lat1": 48.876231845692516,
+            "lon1": 6.899414062500001,
+            "lat2": 54.12120602665425,
+            "lon2": 14.018554687500002
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "9000002",
+          "value": "DE_DHDN / GK_3",
+          "_codelistId": "100"
+        }
+      ],
+      "verticalSpatialSystems": [],
+      "description": ""
+    },
+    "temporal": {
+      "event": {
+        "created": "2026-06-30T22:00:00.000Z"
+      },
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      },
+      "description": ""
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraints": [
+        {
+          "key": "1",
+          "value": "Es gelten keine Zugriffsbeschränkungen",
+          "_codelistId": "6010"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "24",
+            "value": "Andere geschlossene Lizenz",
+            "_codelistId": "6500"
+          },
+          "source": ""
+        }
+      ],
+      "useLimitation": ""
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [],
+    "fileReferences": [],
+    "invekosKeywords": [],
+    "hvdCategories": [],
+    "metadata": {
+      "language": {
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
+      },
+      "characterSet": null
+    },
+    "resolution": [],
+    "topicCategories": [
+      {
+        "key": "17",
+        "value": "Bauwerke",
+        "_codelistId": "527"
+      }
+    ],
+    "spatialRepresentationType": [],
+    "lineage": {
+      "statement": ""
+    },
+    "identifier": "https://registry.gdi-de.org/id/test1/43e7ad0f-c365-47ec-b5e9-5727e362290e",
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": null,
+      "horizontal": null,
+      "griddedDataPositionalAccuracy": null
+    },
+    "qualities": [],
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "vectorSpatialRepresentation": [],
+    "bawOrderInfo": {
+      "key": null,
+      "value": "0.02.10003.00 - Auswahl, Installation und Betreuung der Mess- und Warnanlage",
+      "_codelistId": "bawOrderInfo"
+    },
+    "literatureReferences": [],
+    "timestep": null,
+    "simulationParameter": [],
+    "simulationModelType": [
+      {
+        "key": null,
+        "value": "Advektion",
+        "_codelistId": "3950003"
+      },
+      {
+        "key": null,
+        "value": "gegenständlich",
+        "_codelistId": "3950003"
+      }
+    ],
+    "dimensionality": {
+      "key": null,
+      "value": "2D-hor",
+      "_codelistId": "3950000"
+    },
+    "process": {
+      "key": null,
+      "value": "NCANALYSE",
+      "_codelistId": "3950001"
+    },
+    "version": [
+      "v1",
+      "v2"
+    ],
+    "extension": [
+      "e1",
+      "e2"
+    ],
+    "simulationPhases": [
+      {
+        "type": "cfdSimulation",
+        "shipName": [
+          {
+            "key": null,
+            "value": "PPM42",
+            "_codelistId": "BAW_shipName"
+          },
+          {
+            "key": null,
+            "value": "customSchiff",
+            "_codelistId": "BAW_shipName"
+          }
+        ],
+        "physics": {
+          "key": null,
+          "value": "LevelSet",
+          "_codelistId": "BAW_physics"
+        },
+        "movementType": {
+          "key": null,
+          "value": "DFBIMorphing",
+          "_codelistId": "BAW_movementType"
+        },
+        "trajectory": {
+          "key": null,
+          "value": "ZigZag",
+          "_codelistId": "BAW_trajectory"
+        },
+        "cellCount": 142
+      }
+    ]
+  },
+  {
+    "_uuid": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+    "_type": "InGridOrganisationDoc",
+    "title": "orga",
+    "organization": "orga",
+    "address": {
+      "country": {
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
+      },
+      "administrativeArea": null
+    },
+    "contact": [
+      {
+        "type": {
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
+        },
+        "connection": "sef@sfe.de"
+      }
+    ],
+    "positionName": "",
+    "hoursOfService": ""
+  }
+]

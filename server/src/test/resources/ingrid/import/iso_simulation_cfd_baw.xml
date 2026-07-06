@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><gmd:MD_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:igctx="https://www.ingrid-oss.eu/schemas/igctx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd https://www.ingrid-oss.eu/schemas/igctx https://www.ingrid-oss.eu/schemas/igctx/igctx.xsd">
     <gmd:fileIdentifier>
-        <gco:CharacterString>2b2f1771-1f53-4a19-83c7-638e163b517a</gco:CharacterString>
+        <gco:CharacterString>06ef4405-9ab2-4524-8a84-98c8b2d9a2b3</gco:CharacterString>
     </gmd:fileIdentifier>
     <gmd:language>
         <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
@@ -12,7 +12,7 @@
         <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
     <gmd:hierarchyLevelName>
-        <gco:CharacterString>Messdaten</gco:CharacterString>
+        <gco:CharacterString>Simulationsdaten</gco:CharacterString>
     </gmd:hierarchyLevelName>
     <gmd:contact>
         <gmd:CI_ResponsibleParty uuid="a6c157df-3603-43e8-82f3-4128ffae0d29">
@@ -62,16 +62,16 @@
         </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
     <gmd:identificationInfo>
-        <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test1/d826740d-fbbe-4ed6-a541-5bbb2f9304cc">
+        <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test1/43e7ad0f-c365-47ec-b5e9-5727e362290e">
             <gmd:citation>
                 <gmd:CI_Citation>
                     <gmd:title>
-                        <gco:CharacterString>Messdaten Wasserbau</gco:CharacterString>
+                        <gco:CharacterString>simulationsdaten cfd schiff</gco:CharacterString>
                     </gmd:title>
                     <gmd:date>
                         <gmd:CI_Date>
                             <gmd:date>
-                                <gco:DateTime>2026-07-02T00:00:00.000+02:00</gco:DateTime>
+                                <gco:DateTime>2026-07-01T00:00:00.000+02:00</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
@@ -81,14 +81,14 @@
                     <gmd:identifier>
                         <gmd:MD_Identifier>
                             <gmd:code>
-                                <gco:CharacterString>https://registry.gdi-de.org/id/test1/d826740d-fbbe-4ed6-a541-5bbb2f9304cc</gco:CharacterString>
+                                <gco:CharacterString>https://registry.gdi-de.org/id/test1/43e7ad0f-c365-47ec-b5e9-5727e362290e</gco:CharacterString>
                             </gmd:code>
                         </gmd:MD_Identifier>
                     </gmd:identifier>
                 </gmd:CI_Citation>
             </gmd:citation>
             <gmd:abstract>
-                <gco:CharacterString>kfjdshfd</gco:CharacterString>
+                <gco:CharacterString>grhtr</gco:CharacterString>
             </gmd:abstract>
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty uuid="a6c157df-3603-43e8-82f3-4128ffae0d29">
@@ -120,10 +120,64 @@
             <gmd:descriptiveKeywords>
                 <gmd:MD_Keywords>
                     <gmd:keyword>
-                        <gco:CharacterString>ADCP (Acoustic Doppler Current Profiler)</gco:CharacterString>
+                        <gco:CharacterString>2D-hor</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+                    </gmd:type>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>de.baw.codelist.model.dimensionality</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2017-01-17</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Advektion</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:keyword>
-                        <gco:CharacterString>customMessverfahren</gco:CharacterString>
+                        <gco:CharacterString>gegenständlich</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+                    </gmd:type>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>de.baw.codelist.model.type</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2017-01-17</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>NCANALYSE</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:type>
                         <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
@@ -153,10 +207,10 @@
                         <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
                     </gmd:useConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>Amtliches Werk, lizenzfrei nach §5 Abs. 1 UrhG</gco:CharacterString>
+                        <gco:CharacterString>Andere geschlossene Lizenz</gco:CharacterString>
                     </gmd:otherConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>{"id":"officialWork","name":"Amtliches Werk, lizenzfrei nach §5 Abs. 1 UrhG","url":"https://www.gesetze-im-internet.de/urhg/__5.html","quelle":""}</gco:CharacterString>
+                        <gco:CharacterString>{"id":"other-closed","name":"Andere geschlossene Lizenz","url":"","quelle":""}</gco:CharacterString>
                     </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
@@ -175,13 +229,13 @@
                     <gmd:aggregateDataSetName>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                <gco:CharacterString>Durchführung der Messung und Stellungnahme</gco:CharacterString>
+                                <gco:CharacterString>Auswahl, Installation und Betreuung der Mess- und Warnanlage</gco:CharacterString>
                             </gmd:title>
                             <gmd:date gco:nilReason="unknown"/>
                             <gmd:identifier>
                                 <gmd:MD_Identifier>
                                     <gmd:code>
-                                        <gco:CharacterString>0.02.10001.00</gco:CharacterString>
+                                        <gco:CharacterString>0.02.10003.00</gco:CharacterString>
                                     </gmd:code>
                                 </gmd:MD_Identifier>
                             </gmd:identifier>
@@ -196,7 +250,7 @@
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
             <gmd:topicCategory>
-                <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
+                <gmd:MD_TopicCategoryCode>structure</gmd:MD_TopicCategoryCode>
             </gmd:topicCategory>
             <gmd:extent>
                 <gmd:EX_Extent>
@@ -220,190 +274,114 @@
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
                             <gmd:westBoundLongitude>
-                                <gco:Decimal>6.372070312500001</gco:Decimal>
+                                <gco:Decimal>6.899414062500001</gco:Decimal>
                             </gmd:westBoundLongitude>
                             <gmd:eastBoundLongitude>
-                                <gco:Decimal>13.842773437500002</gco:Decimal>
+                                <gco:Decimal>14.018554687500002</gco:Decimal>
                             </gmd:eastBoundLongitude>
                             <gmd:southBoundLatitude>
-                                <gco:Decimal>49.36806633482156</gco:Decimal>
+                                <gco:Decimal>48.876231845692516</gco:Decimal>
                             </gmd:southBoundLatitude>
                             <gmd:northBoundLatitude>
-                                <gco:Decimal>54.20101023973888</gco:Decimal>
+                                <gco:Decimal>54.12120602665425</gco:Decimal>
                             </gmd:northBoundLatitude>
                         </gmd:EX_GeographicBoundingBox>
                     </gmd:geographicElement>
-                    <gmd:temporalElement>
-                        <gmd:EX_TemporalExtent>
-                            <gmd:extent>
-                                <gml:TimeInstant gml:id="timePeriod_ID_88afe5c2-1d15-4dcf-84a8-f473d7ea2e40">
-                                    <gml:timePosition>2026-07-02T00:00:00.000+02:00</gml:timePosition>
-                                </gml:TimeInstant>
-                            </gmd:extent>
-                        </gmd:EX_TemporalExtent>
-                    </gmd:temporalElement>
                 </gmd:EX_Extent>
             </gmd:extent>
             <gmd:supplementalInformation>
                 <baw:BAW_Metadata xmlns:baw="https://dl.datenrepository.baw.de/schemas/bawmd">
-                    <baw:measurement>
-                        <baw:Measurement>
-                            <baw:measurementMethod>
-                                <gco:CharacterString>ADCP (Acoustic Doppler Current Profiler)</gco:CharacterString>
-                            </baw:measurementMethod>
-                            <baw:measurementMethod>
-                                <gco:CharacterString>customMessverfahren</gco:CharacterString>
-                            </baw:measurementMethod>
-                            <baw:measurementDevice>
-                                <baw:MeasurementDevice>
-                                    <baw:deviceName>
-                                        <gco:CharacterString>geräte1</gco:CharacterString>
-                                    </baw:deviceName>
-                                    <baw:deviceId>
-                                        <gco:CharacterString>id1</gco:CharacterString>
-                                    </baw:deviceId>
-                                    <baw:deviceModel>
-                                        <gco:CharacterString>modell1</gco:CharacterString>
-                                    </baw:deviceModel>
-                                    <baw:description>
-                                        <gco:CharacterString>beschr1</gco:CharacterString>
-                                    </baw:description>
-                                </baw:MeasurementDevice>
-                            </baw:measurementDevice>
-                            <baw:measurementDevice>
-                                <baw:MeasurementDevice>
-                                    <baw:deviceName>
-                                        <gco:CharacterString>geräte2</gco:CharacterString>
-                                    </baw:deviceName>
-                                    <baw:deviceId>
-                                        <gco:CharacterString>id2</gco:CharacterString>
-                                    </baw:deviceId>
-                                    <baw:deviceModel>
-                                        <gco:CharacterString>modell2</gco:CharacterString>
-                                    </baw:deviceModel>
-                                    <baw:description>
-                                        <gco:CharacterString>beschr2</gco:CharacterString>
-                                    </baw:description>
-                                </baw:MeasurementDevice>
-                            </baw:measurementDevice>
-                            <baw:measurementParameter>
-                                <baw:MeasurementParameter>
+                    <baw:simulation>
+                        <baw:Simulation>
+                            <baw:simulationMethod>
+                                <gco:CharacterString>NCANALYSE</gco:CharacterString>
+                            </baw:simulationMethod>
+                            <baw:simulationMethodVersion>
+                                <gco:CharacterString>v1</gco:CharacterString>
+                            </baw:simulationMethodVersion>
+                            <baw:simulationMethodVersion>
+                                <gco:CharacterString>v2</gco:CharacterString>
+                            </baw:simulationMethodVersion>
+                            <baw:simulationMethodDependency>
+                                <gco:CharacterString>e1</gco:CharacterString>
+                            </baw:simulationMethodDependency>
+                            <baw:simulationMethodDependency>
+                                <gco:CharacterString>e2</gco:CharacterString>
+                            </baw:simulationMethodDependency>
+                            <baw:spatialDimensionality>
+                                <gco:CharacterString>2D-hor</gco:CharacterString>
+                            </baw:spatialDimensionality>
+                            <baw:timeStepSize>
+                                <gco:Decimal>9000000.0</gco:Decimal>
+                            </baw:timeStepSize>
+                            <baw:simulationModelType>
+                                <gco:CharacterString>Advektion</gco:CharacterString>
+                            </baw:simulationModelType>
+                            <baw:simulationModelType>
+                                <gco:CharacterString>gegenständlich</gco:CharacterString>
+                            </baw:simulationModelType>
+                            <baw:simulationParameter>
+                                <baw:SimulationParameter>
                                     <baw:parameterName>
-                                        <gco:CharacterString>Dichte</gco:CharacterString>
+                                        <gco:CharacterString>na1</gco:CharacterString>
                                     </baw:parameterName>
                                     <baw:parameterType>
-                                        <gco:CharacterString>Berechnet</gco:CharacterString>
+                                        <gco:CharacterString>Anfangsbedingung</gco:CharacterString>
                                     </baw:parameterType>
-                                    <baw:parameterFunction>
-                                        <gco:CharacterString>formel1</gco:CharacterString>
-                                    </baw:parameterFunction>
+                                    <baw:parameterValues>
+                                        <gco:RecordType>wert1</gco:RecordType>
+                                    </baw:parameterValues>
                                     <baw:uom>
-                                        <gco:CharacterString>%</gco:CharacterString>
+                                        <gco:CharacterString>maß1</gco:CharacterString>
                                     </baw:uom>
-                                </baw:MeasurementParameter>
-                            </baw:measurementParameter>
-                            <baw:measurementParameter>
-                                <baw:MeasurementParameter>
+                                </baw:SimulationParameter>
+                            </baw:simulationParameter>
+                            <baw:simulationParameter>
+                                <baw:SimulationParameter>
                                     <baw:parameterName>
-                                        <gco:CharacterString>CustomZielparameterName</gco:CharacterString>
+                                        <gco:CharacterString>na2</gco:CharacterString>
                                     </baw:parameterName>
                                     <baw:parameterType>
-                                        <gco:CharacterString>customZielparameterArt</gco:CharacterString>
+                                        <gco:CharacterString>Bathymetrie</gco:CharacterString>
                                     </baw:parameterType>
-                                    <baw:parameterFunction>
-                                        <gco:CharacterString>formel2</gco:CharacterString>
-                                    </baw:parameterFunction>
+                                    <baw:parameterValues>
+                                        <gco:RecordType>wert2</gco:RecordType>
+                                    </baw:parameterValues>
                                     <baw:uom>
-                                        <gco:CharacterString>℃</gco:CharacterString>
+                                        <gco:CharacterString>maß2</gco:CharacterString>
                                     </baw:uom>
-                                </baw:MeasurementParameter>
-                            </baw:measurementParameter>
-                            <baw:hydraulicEngineeringMeasurement>
-                                <baw:HydraulicEngineeringMeasurement>
-                                    <baw:measurementSpatiality>
-                                        <gco:CharacterString>Fläche</gco:CharacterString>
-                                    </baw:measurementSpatiality>
-                                    <baw:temporalAccuracy>
-                                        <gco:Decimal>2.222222222E9</gco:Decimal>
-                                    </baw:temporalAccuracy>
-                                    <baw:measurementFrequency>
-                                        <gco:Decimal>3.333333333E9</gco:Decimal>
-                                    </baw:measurementFrequency>
-                                    <baw:measurementDepth>
-                                        <baw:MeasurementDepth>
-                                            <baw:measurementDepth>
-                                                <gco:Decimal>1.11111111E8</gco:Decimal>
-                                            </baw:measurementDepth>
-                                            <baw:verticalCRS>
-                                                <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/5783">EPSG:5783 DHHN92 Höhe</gmx:Anchor>
-                                            </baw:verticalCRS>
-                                        </baw:MeasurementDepth>
-                                    </baw:measurementDepth>
-                                    <baw:gaugeZeroPoint>
-                                        <baw:GaugeZeroPoint>
-                                            <baw:gaugeZeroPoint>
-                                                <gco:Decimal>6666666666</gco:Decimal>
-                                            </baw:gaugeZeroPoint>
-                                            <baw:uom>
-                                                <gco:CharacterString>cd</gco:CharacterString>
-                                            </baw:uom>
-                                            <baw:verticalCRS>
-                                                <gco:CharacterString>EPSG:7699 DHHN12 Höhe</gco:CharacterString>
-                                            </baw:verticalCRS>
-                                            <baw:description>
-                                                <gco:CharacterString>beschrPegel1</gco:CharacterString>
-                                            </baw:description>
-                                        </baw:GaugeZeroPoint>
-                                    </baw:gaugeZeroPoint>
-                                    <baw:gaugeZeroPoint>
-                                        <baw:GaugeZeroPoint>
-                                            <baw:gaugeZeroPoint>
-                                                <gco:Decimal>777777777</gco:Decimal>
-                                            </baw:gaugeZeroPoint>
-                                            <baw:uom>
-                                                <gco:CharacterString>customPegelEinheit</gco:CharacterString>
-                                            </baw:uom>
-                                            <baw:verticalCRS>
-                                                <gco:CharacterString>EPSG:7837 DHHN2016 Höhe</gco:CharacterString>
-                                            </baw:verticalCRS>
-                                            <baw:description>
-                                                <gco:CharacterString>beschrPegel2</gco:CharacterString>
-                                            </baw:description>
-                                        </baw:GaugeZeroPoint>
-                                    </baw:gaugeZeroPoint>
-                                    <baw:meanWaterLevel>
-                                        <baw:MeanWaterLevel>
-                                            <baw:waterLevel>
-                                                <gco:Decimal>4444444444</gco:Decimal>
-                                            </baw:waterLevel>
-                                            <baw:uom>
-                                                <gco:CharacterString>A</gco:CharacterString>
-                                            </baw:uom>
-                                        </baw:MeanWaterLevel>
-                                    </baw:meanWaterLevel>
-                                    <baw:meanWaterLevel>
-                                        <baw:MeanWaterLevel>
-                                            <baw:waterLevel>
-                                                <gco:Decimal>5555555555</gco:Decimal>
-                                            </baw:waterLevel>
-                                            <baw:uom>
-                                                <gco:CharacterString>customWasserEinheit</gco:CharacterString>
-                                            </baw:uom>
-                                        </baw:MeanWaterLevel>
-                                    </baw:meanWaterLevel>
-                                    <baw:minDischarge>
-                                        <gco:Decimal>88888888888</gco:Decimal>
-                                    </baw:minDischarge>
-                                    <baw:maxDischarge>
-                                        <gco:Decimal>99999999</gco:Decimal>
-                                    </baw:maxDischarge>
-                                    <baw:dataQualityDescription>
-                                        <gco:CharacterString>Beschr Datenqualität</gco:CharacterString>
-                                    </baw:dataQualityDescription>
-                                </baw:HydraulicEngineeringMeasurement>
-                            </baw:hydraulicEngineeringMeasurement>
-                        </baw:Measurement>
-                    </baw:measurement>
+                                </baw:SimulationParameter>
+                            </baw:simulationParameter>
+                            <baw:shipCFD>
+                                <baw:ShipCFD>
+                                    <baw:shipName>
+                                        <gco:CharacterString>PPM42</gco:CharacterString>
+                                    </baw:shipName>
+                                    <baw:shipName>
+                                        <gco:CharacterString>customSchiff</gco:CharacterString>
+                                    </baw:shipName>
+                                    <baw:statementAboutPhysics>
+                                        <gco:CharacterString>LevelSet</gco:CharacterString>
+                                    </baw:statementAboutPhysics>
+                                    <baw:constantCrossSection>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </baw:constantCrossSection>
+                                    <baw:propulsion>
+                                        <gco:Boolean>false</gco:Boolean>
+                                    </baw:propulsion>
+                                    <baw:movementTypes>
+                                        <gco:CharacterString>DFBIMorphing</gco:CharacterString>
+                                    </baw:movementTypes>
+                                    <baw:trajectory>
+                                        <gco:CharacterString>ZigZag</gco:CharacterString>
+                                    </baw:trajectory>
+                                    <baw:cellCount>
+                                        <gco:Integer>142</gco:Integer>
+                                    </baw:cellCount>
+                                </baw:ShipCFD>
+                            </baw:shipCFD>
+                        </baw:Simulation>
+                    </baw:simulation>
                 </baw:BAW_Metadata>
             </gmd:supplementalInformation>
         </gmd:MD_DataIdentification>
