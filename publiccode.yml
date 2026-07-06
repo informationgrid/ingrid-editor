@@ -84,6 +84,7 @@ maintenance:
       website: 'https://www.wemove.com'
   type: contract
 name: InGrid Editor
+applicationSuite: InGrid
 platforms:
   - web
 releaseDate: '2026-04-01'
