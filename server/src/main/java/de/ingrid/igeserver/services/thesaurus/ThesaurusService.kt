@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services.thesaurus
 
+import de.ingrid.igeserver.ServerException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -38,7 +39,11 @@ abstract class ThesaurusService {
         val request = httpRequest(method, url)
         val http = httpClient(executor)
 
-        return http.send(request, HttpResponse.BodyHandlers.ofString()).body()
+        val resonse = http.send(request, HttpResponse.BodyHandlers.ofString())
+        if (resonse.statusCode() >= 400) {
+            throw ServerException.withReason("Thesaurus request '${request.uri()}' failed with status code ${resonse.statusCode()}")
+        }
+        return resonse.body()
     }
 
     private fun httpClient(executor: ExecutorService?) = HttpClient.newBuilder()

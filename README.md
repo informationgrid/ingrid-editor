@@ -192,7 +192,8 @@ c:\Windows\System32\Drivers\etc\hosts` and add the following entry:
 
 > 127.0.0.1 keycloak
 
-In your docker-compose file you would then use for your app the environment variable "KEYCLOAK_URL=http://keycloak:8080"
+In your docker-compose file you would then use for your app the environment variable "
+KEYCLOAK_URL_INTERNAL=http://keycloak:8080"
 to access keycloak in the container. Moreover, make sure the port mapping is the same "8080:8080" otherwise keycloak
 won't be able to map correctly.
 

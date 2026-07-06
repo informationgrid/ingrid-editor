@@ -19,7 +19,7 @@
  */
 import { registerLocaleData } from "@angular/common";
 import { ConfigService, Configuration } from "./services/config/config.service";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "./models/ige-error";
 import de from "@angular/common/locales/de";
@@ -222,7 +222,7 @@ export function ConfigLoader(
 
       if (err.status === 504) {
         throw new IgeError("Backend ist wohl nicht gestartet");
-      } else if (err instanceof IgeError) {
+      } else if (err instanceof IgeError || err instanceof HttpErrorResponse) {
         throw err;
       }
       throw new IgeError(err);

@@ -32,5 +32,5 @@ fi;
 
 ######## KTLINT-GRADLE HOOK END ########
 cd frontend || exit 1
-yarn lint-staged || { echo 'lint failed' ; exit 1; }
+yarn lint-staged --no-stash || { echo 'lint failed' ; exit 1; }
 exit $gradle_command_exit_code

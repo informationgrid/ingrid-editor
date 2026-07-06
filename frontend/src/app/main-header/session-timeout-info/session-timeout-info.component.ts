@@ -17,13 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, input, OnInit } from "@angular/core";
+import { Component, inject, input, OnInit } from "@angular/core";
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
 
 import { TimePipe } from "../../directives/time.pipe";
+import { HttpClient } from "@angular/common/http";
+import { ConfigService } from "../../services/config/config.service";
 
 @Component({
   selector: "ige-session-timeout-info",
@@ -38,13 +40,20 @@ import { TimePipe } from "../../directives/time.pipe";
   ],
 })
 export class SessionTimeoutInfoComponent implements OnInit {
-  @Input() timeout: number;
+  private http = inject(HttpClient);
+  private configService = inject(ConfigService);
+
+  timeout = input.required<number>();
   readonly autoHide = input<boolean>(true);
 
   ngOnInit(): void {}
 
   refreshSession() {
-    // TODO: ADAPT
-    // this.authFactory.refreshToken();
+    this.http
+      .get(
+        this.configService.getConfiguration().backendUrl +
+          "info/refreshSession",
+      )
+      .subscribe();
   }
 }

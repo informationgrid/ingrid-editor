@@ -73,7 +73,7 @@ export class IsoViewComponent {
 
   private exchangeService: ExchangeService = inject(ExchangeService);
   exportFormats = toSignal(
-    this.exchangeService.getExportTypes(true).pipe(
+    this.exchangeService.getExportTypes(!this.data.noFilter).pipe(
       map((type) => {
         if (this.data.noFilter) return type;
         return type.filter(

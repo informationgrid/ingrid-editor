@@ -464,7 +464,8 @@ class ImportService(
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else {
-            if ((ref.isAddress && options.overwriteAddresses) || (!ref.isAddress && options.overwriteDatasets)) {
+            val overwrite = if (ref.isAddress) options.overwriteAddresses else options.overwriteDatasets
+            if (overwrite) {
                 val wrapperId =
                     ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(
                         catalogId,

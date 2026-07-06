@@ -170,6 +170,6 @@ export class AddressCardComponent implements OnInit {
   @HostListener("window: keyup", ["$event"])
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
-    this.showCopy = event.ctrlKey;
+    this.showCopy = event.ctrlKey || event.metaKey;
   }
 }

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.UserInfo
+import io.swagger.v3.oas.annotations.Hidden
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
@@ -46,6 +47,7 @@ import java.security.Principal
  * and fetch the current authenticated user, while all Keycloak specifics
  * stay on the server side.
  */
+@Hidden
 @RestController
 @RequestMapping
 class AuthController(
@@ -155,7 +157,7 @@ class AuthController(
      * Show a generic access denied error page served by the backend.
      */
     @GetMapping("/access-denied")
-    fun accessDenied(): String = "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator."
+    fun accessDenied(): String = "Sie sind kein InGrid-Editor-Benutzer. Bitte wenden Sie sich an einen Administrator."
 
     /**
      * Show a generic login error page served by the backend.

@@ -265,7 +265,7 @@ interface UsersApi {
     @GetMapping(value = ["/info/refreshSession"])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun refreshSession(): ResponseEntity<Void>
+    fun refreshSession(principal: Principal): ResponseEntity<Map<String, Long>>
 
     @RequestMapping(
         value = ["/externalUsers"],

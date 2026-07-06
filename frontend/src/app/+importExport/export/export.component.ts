@@ -44,7 +44,7 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
-import { MatSelect, MatSelectChange } from "@angular/material/select";
+import { MatHint, MatSelect, MatSelectChange } from "@angular/material/select";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FeatureFlagDirective } from "../../directives/feature-flag.directive";
@@ -86,6 +86,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
     MatCheckbox,
     MatStepperPrevious,
     MatProgressSpinner,
+    MatHint,
   ],
 })
 export class ExportComponent implements OnInit {

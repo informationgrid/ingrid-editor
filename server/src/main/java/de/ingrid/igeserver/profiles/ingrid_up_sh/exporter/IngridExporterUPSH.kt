@@ -62,5 +62,5 @@ class IngridIdfExporterUPSH(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFUPSH")
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFUPSH", name = "InGrid IDF UP-SH")
 }

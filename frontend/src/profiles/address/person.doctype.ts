@@ -99,7 +99,9 @@ export class PersonDoctype extends AddressShared {
             expressions: {
               hide: () => {
                 const metadata = this.formStateService.metadata();
-                return !metadata.parentId;
+                return (
+                  !metadata.parentId || metadata.parentDocType === "FOLDER"
+                );
               },
             },
           }),

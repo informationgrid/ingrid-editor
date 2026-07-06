@@ -350,6 +350,11 @@
       "type": "keyword",
       "store": true
     },
+    "t02_address.institution": {
+      "type": "keyword",
+      "store": true,
+      "copy_to": "content"
+    },
     "t022_adr_adr.adr_from_id": {
       "type": "keyword",
       "store": true

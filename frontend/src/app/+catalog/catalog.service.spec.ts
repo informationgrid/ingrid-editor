@@ -58,6 +58,7 @@ describe("CatalogService", () => {
             null,
             null,
             null,
+            1800,
             "",
             "",
             "",

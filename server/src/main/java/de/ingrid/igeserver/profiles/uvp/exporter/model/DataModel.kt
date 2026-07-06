@@ -71,6 +71,8 @@ data class DataModel(
     }
 
     var steps: List<Step> = emptyList()
+
+    // TODO: check if this can be removed safely
     private fun setProcessingSteps(nodeSteps: List<JsonNode>) {
         steps = nodeSteps.mapNotNull { step ->
             val type = step.get("type").textValue()

@@ -39,6 +39,7 @@ export class Configuration {
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
+    public sessionTimeout: number,
     public mapTileUrl: string,
     public mapWMSUrl: string,
     public mapWMSLayers: string,

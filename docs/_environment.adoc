@@ -20,7 +20,7 @@
 |ige-ng
 
 |APP_PROXY_URL
-|Set a proxy to be used when communicating with Keycloak. Often Keycloak is on the same host, so that communication can be done locally. See KEYCLOAK_URL and KEYCLOAK_URL_FRONTEND
+|Set a proxy to be used when communicating with Keycloak. Often Keycloak is on the same host, so that communication can be done locally. See KEYCLOAK_URL_INTERNAL and KEYCLOAK_URL
 |
 
 |BROKER_URL
@@ -88,11 +88,11 @@
 |ige-ng-frontend
 
 |KEYCLOAK_URL
-|The URL to Keycloak. When an internal IP is used, then the environment variable `KEYCLOAK_URL_FRONTEND` must be set in order to authenticate through the browser.
+|The external URL to Keycloak. Is needed for the users to be redirected.
 |https://keycloak.informationgrid.eu
 
-|KEYCLOAK_URL_FRONTEND
-|Is needed, when backend-communication to keycloak is established through an internal IP. You need to provide an external URL that can be reached from the outside.
+|KEYCLOAK_URL_INTERNAL
+|The internal URL to Keycloak. Used by the backend for direct communication (token exchange, certificate fetching, admin client). If not set, KEYCLOAK_URL is used.
 |wie KEYCLOAK_URL
 
 |OPEN_AI_TOKEN

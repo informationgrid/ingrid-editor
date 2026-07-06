@@ -25,7 +25,6 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -63,18 +62,12 @@ import java.util.*
 @Profile("!dev")
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
-internal class KeycloakConfig {
+internal class KeycloakConfig(
+    val generalProperties: GeneralProperties,
+    val userRepository: UserRepository,
+    val roleRepository: RoleRepository,
+) {
     val log = logger()
-
-    @Autowired
-    lateinit var generalProperties: GeneralProperties
-
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var roleRepository: RoleRepository
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
@@ -133,16 +126,19 @@ internal class KeycloakConfig {
                 // BFF auth endpoints
                 authorize("/auth/login", permitAll)
                 authorize("/auth/logout", permitAll)
-                authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin"))
-                authorize("/auth/update-password", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/auth/me", hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"))
+                authorize(
+                    "/auth/update-password",
+                    hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"),
+                )
                 authorize("/login-error", permitAll)
                 authorize("/access-denied", permitAll)
-                authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
+                authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin", "editor_user", "editor_admin"))
                 authorize("/actuator/health", permitAll)
                 if (generalProperties.actuatorPermitAll) {
                     authorize("/actuator/**", permitAll)
                 } else {
-                    authorize("/actuator/**", hasAnyRole("ige-super-admin"))
+                    authorize("/actuator/**", hasAnyRole("ige-super-admin", "editor_admin"))
                 }
                 authorize(anyRequest, permitAll)
             }
@@ -355,6 +351,12 @@ class OidcRealmRoleMapper(
 
         val roles = extractRoles(idTokenClaims).distinct()
 
+        val allowedRoles = setOf("editor_user", "editor_admin", "ige-user", "ige-super-admin")
+
+        if (roles.none { it in allowedRoles }) {
+            return mutableListOf()
+        }
+
         // Add ROLE_ prefix for Spring realm roles
         result.addAll(roles.map { SimpleGrantedAuthority("ROLE_$it") })
 
@@ -362,7 +364,7 @@ class OidcRealmRoleMapper(
         val username = (idTokenClaims["preferred_username"] as? String)
             ?: (idTokenClaims["email"] as? String)
 
-        val isSuperAdmin = roles.contains("ige-super-admin")
+        val isSuperAdmin = roles.contains("ige-super-admin") || roles.contains("editor_admin")
         val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
             username,
             isSuperAdmin,

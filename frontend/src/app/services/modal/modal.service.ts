@@ -65,7 +65,13 @@ export class ModalService {
       this.isExclusive = true;
       this.errors.set([error]);
     } else {
-      this.errors.update((prev) => [...prev, error]);
+      this.errors.update((prev) => {
+        // prevent duplicate messages
+        if (prev.some((e) => e.message === error.message)) {
+          return prev;
+        }
+        return [...prev, error];
+      });
     }
 
     if (this.dialogRef) {
