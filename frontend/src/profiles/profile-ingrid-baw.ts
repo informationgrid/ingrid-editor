@@ -31,6 +31,9 @@ import { SimulationDoctypeBaw } from "./ingrid-baw/doctypes/simulation.doctype";
 import { MeasurementDoctypeBaw } from "./ingrid-baw/doctypes/measurement.doctype";
 import { PublicationAddressDoctype } from "./ingrid-baw/doctypes/publicationAddress.doctype";
 import { LaboratoryDataDoctypeBaw } from "./ingrid-baw/doctypes/laboratoryData.doctype";
+import { DeleteReferenceHandlerService } from "../app/+catalog/+behaviours/system/DeleteReferenceHandler/delete-reference-handler.service";
+import { DocumentAbstract } from "../app/store/document/document.model";
+import { TreeNode } from "../app/store/tree/tree-node.model";
 
 @Component({
   template: "",
@@ -51,6 +54,7 @@ class InGridBawComponent extends InGridComponent {
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
   common = inject(CommonFieldsBaw);
+  deleteReferenceHandlerService = inject(DeleteReferenceHandlerService);
 
   protected getDocTypes = () => [
     this.folder,
@@ -72,6 +76,9 @@ class InGridBawComponent extends InGridComponent {
     super();
     this.isoView.defaultExportFormat = () => "ingridISOBaw";
     this.modifyFormFieldConfiguration();
+    this.deleteReferenceHandlerService.registerDisabledConditionFunction(
+      this.disableConditionReplaceAddress,
+    );
   }
 
   private modifyFormFieldConfiguration() {
@@ -91,6 +98,18 @@ class InGridBawComponent extends InGridComponent {
       docType.options.optional.additionalInformationSection = true;
     });
   }
+
+  private disableConditionReplaceAddress = (
+    source: DocumentAbstract,
+    node: TreeNode,
+  ) => {
+    return (
+      node._uuid === source._uuid ||
+      node.state === "W" ||
+      (source._type !== "PublicationAddressDoc" &&
+        node.type === "PublicationAddressDoc")
+    );
+  };
 }
 
 export class ProfilePack {

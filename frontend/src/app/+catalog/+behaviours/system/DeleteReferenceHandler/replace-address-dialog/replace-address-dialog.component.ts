@@ -41,10 +41,11 @@ import { MatIcon } from "@angular/material/icon";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { TreeComponent } from "../../../../../+form/sidebars/tree/tree.component";
 import { AddressTreeStore } from "../../../../../store/address-tree/address-tree.store";
+import { DeleteReferenceHandlerService } from "../delete-reference-handler.service";
+import { DocumentAbstract } from "../../../../../store/document/document.model";
 
 export interface ReplaceAddressDialogData {
-  source: string;
-  type: string;
+  source: DocumentAbstract;
   showInfo: boolean;
 }
 
@@ -71,21 +72,20 @@ export interface ReplaceAddressDialogData {
 export class ReplaceAddressDialogComponent {
   addressTreeStore = inject(AddressTreeStore);
   private documentService = inject(DocumentService);
+  private deleteReferenceHandlerService = inject(DeleteReferenceHandlerService);
   private dialog = inject(MatDialog);
   page = signal<number>(0);
   selectedAddress = signal<string[]>(null);
-  private readonly source: string;
-  private readonly type: string;
-  showInfo = signal<boolean>(true);
-  disableTreeNode = (node: TreeNode) =>
-    node._uuid === this.source ||
-    node.state === "W" ||
-    (this.type !== "PublicationAddressDoc" &&
-      node.type === "PublicationAddressDoc");
+  private readonly source: DocumentAbstract;
 
+  showInfo = signal<boolean>(true);
+  disableReplacementAddress = (node: TreeNode) =>
+    this.deleteReferenceHandlerService.cannotReplaceWithAddress(
+      this.source,
+      node,
+    );
   constructor(@Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData) {
     this.source = data.source;
-    this.type = data.type;
     this.showInfo.set(data.showInfo);
   }
 
@@ -95,7 +95,7 @@ export class ReplaceAddressDialogComponent {
         filter((confirmed) => confirmed),
         switchMap(() =>
           this.documentService.replaceAddress(
-            this.source,
+            this.source._uuid,
             this.selectedAddress()[0],
           ),
         ),
@@ -139,7 +139,7 @@ export class ReplaceAddressDialogComponent {
 
   private reloadAddress() {
     this.documentService.reload$.next({
-      uuid: this.source,
+      uuid: this.source._uuid,
       forAddress: true,
     });
   }
