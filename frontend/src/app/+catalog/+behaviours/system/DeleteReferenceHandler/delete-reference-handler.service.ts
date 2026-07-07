@@ -25,24 +25,31 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 export class DeleteReferenceHandlerService {
   private disabledConditionAlternative?;
 
-  cannotReplaceWithAddress = (source: DocumentAbstract, node: TreeNode) => {
+  cannotReplaceWithAddress = (
+    source: DocumentAbstract,
+    node: TreeNode,
+  ): boolean => {
     return (
       this.disabledConditionAlternative?.(source, node) ??
       this.disabledCondition(source, node)
     );
   };
 
-  private disabledCondition = (source: DocumentAbstract, node: TreeNode) => {
+  private disabledCondition = (
+    source: DocumentAbstract,
+    node: TreeNode,
+  ): boolean => {
     return node._uuid === source._uuid || node.state === "W";
   };
 
-  registerDisabledConditionFunction(fn) {
+  registerAdditionalDisabledCondition(fn) {
     if (fn != null && this.disabledConditionAlternative != null) {
       console.error(
         "There are multiple DisabledCondition functions registered for the tree. Will ignore others!",
       );
     } else {
-      this.disabledConditionAlternative = fn;
+      this.disabledConditionAlternative = (source, node) =>
+        this.disabledCondition(source, node) || fn(source, node);
     }
   }
 }

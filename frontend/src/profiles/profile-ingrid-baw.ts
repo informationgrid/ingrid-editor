@@ -76,7 +76,7 @@ class InGridBawComponent extends InGridComponent {
     super();
     this.isoView.defaultExportFormat = () => "ingridISOBaw";
     this.modifyFormFieldConfiguration();
-    this.deleteReferenceHandlerService.registerDisabledConditionFunction(
+    this.deleteReferenceHandlerService.registerAdditionalDisabledCondition(
       this.disableConditionReplaceAddress,
     );
   }
@@ -103,11 +103,10 @@ class InGridBawComponent extends InGridComponent {
     source: DocumentAbstract,
     node: TreeNode,
   ) => {
+    // Addresses of type Publication (Literature) can not replace addresses of other types
     return (
-      node._uuid === source._uuid ||
-      node.state === "W" ||
-      (source._type !== "PublicationAddressDoc" &&
-        node.type === "PublicationAddressDoc")
+      source._type !== "PublicationAddressDoc" &&
+      node.type === "PublicationAddressDoc"
     );
   };
 }
