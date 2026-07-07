@@ -53,7 +53,7 @@ class ZabbixService(
     zabbixProperties: ZabbixProperties,
     private val httpClient: HttpClient = buildHttpClient(),
 ) {
-    private var log = logger()
+    private val log = logger()
     private val apiKey = zabbixProperties.apiKey
     private val apiURL = zabbixProperties.apiURL
     private val checkDelay = zabbixProperties.checkDelay
@@ -62,6 +62,8 @@ class ZabbixService(
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
     private val cleanupDays = zabbixProperties.cleanup.days
+
+    private val objectMapper = jacksonObjectMapper()
 
     private val jsonRpc: ContentType
         get() = ContentType("application", "json-rpc")
@@ -73,7 +75,7 @@ class ZabbixService(
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
         val documentsToDelete = getUploadedDocuments(remoteUploads)
 
-        // TODO: explain what is happening here or use more functions
+        // sync uploaded documents with remote uploads
         data.uploads.forEach { upload ->
             val remoteUpload = remoteUploads.find { upload.url == it.url }
             if (remoteUpload == null) {
@@ -120,7 +122,7 @@ class ZabbixService(
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
         val params = ZabbixModel.UserParams(addressMail, passwd, "4", paramsUsergroup, paramsMedias)
         val user = ZabbixModel.User(method = "user.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(user)
+        val values = objectMapper.writeValueAsString(user)
         val response = requestApi(values)
 
         // check for invalid email address
@@ -204,13 +206,13 @@ class ZabbixService(
 
     private fun deleteUser(userid: List<String>) {
         val user = ZabbixModel.Delete(method = "user.delete", params = userid)
-        val values = jacksonObjectMapper().writeValueAsString(user)
+        val values = objectMapper.writeValueAsString(user)
         requestApi(values)
     }
 
     private fun deleteAction(actionid: List<String>) {
         val action = ZabbixModel.Delete(method = "action.delete", params = actionid)
-        val values = jacksonObjectMapper().writeValueAsString(action)
+        val values = objectMapper.writeValueAsString(action)
         requestApi(values)
     }
 
@@ -240,27 +242,33 @@ class ZabbixService(
         val docNameShort = shortenString(docName, 64)
         val triggerName = createDocumentName(docName, docUrl)
 
-        val triggerDoc = getTrigger("Dokument: $docNameShort")
-        val triggerHash = getTrigger("Dokument: $triggerName")
+        fun getExistingTriggerId(): String = getTriggerIdByName(triggerName)
+            ?: getTriggerIdByName(docNameShort)
+            ?: ""
 
-        fun JsonNode.hasResult() = get("result")?.isEmpty == false
+        val existingTriggerId = getExistingTriggerId()
+        if (existingTriggerId.isNotEmpty()) return existingTriggerId
+        if (isUploadExpired(webscenarioName)) return ""
 
-        if (!triggerDoc.hasResult() && !triggerHash.hasResult() && !isUploadExpired(webscenarioName)) {
-            createTrigger(
-                uuid = getTag(response, "id"),
-                docName = docName,
-                docUrl = docUrl,
-                hash = webscenarioName.takeLast(4) == triggerName.takeLast(4),
-            )
-            return getTriggerId(response)
-        }
+        createTrigger(
+            uuid = getTag(response, "id"),
+            docName = docName,
+            docUrl = docUrl,
+            hash = webscenarioName.takeLast(4) == triggerName.takeLast(4),
+        )
+        return getExistingTriggerId()
+    }
 
-        return when {
-            triggerDoc.hasResult() -> getFromResultArray(triggerDoc, "triggerid").asText()
-            triggerHash.hasResult() -> getFromResultArray(triggerHash, "triggerid").asText()
-            else -> ""
+    private fun getTriggerIdByName(name: String): String? {
+        val trigger = getTrigger("Dokument: $name")
+        return if (trigger.hasResult()) {
+            getFromResultArray(trigger, "triggerid").asText()
+        } else {
+            null
         }
     }
+
+    private fun JsonNode.hasResult() = get("result")?.isEmpty == false
 
     private fun isUploadExpired(name: String): Boolean {
         val response = requestApi(
@@ -300,15 +308,14 @@ class ZabbixService(
     }
 
     private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document ->
-        // TODO: explain why webscenario is updated and not deleted as the function name suggests
-        updateWebscenario(document.webscenarioId)
+        expireWebscenario(document.webscenarioId)
         deleteTrigger(listOf(document.triggerId))
     }
 
     private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)
         val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(hostgroup)
+        val values = objectMapper.writeValueAsString(hostgroup)
         val response = requestApi(values)
         return getFromResultAsList(response, "groupids")[0].asText()
     }
@@ -350,7 +357,7 @@ class ZabbixService(
         val params = ZabbixModel.HostParams(uuid, visiblename, groups, tags)
         val host = ZabbixModel.Host(method = "host.create", params = params)
         val response = requestApi(
-            jacksonObjectMapper().writeValueAsString(host),
+            objectMapper.writeValueAsString(host),
         )
         return getFromResultAsList(response, "hostids")[0].asText()
     }
@@ -456,7 +463,7 @@ class ZabbixService(
 
         val params = ZabbixModel.UpdateWebscenarioParams(httptestId, updatedTags)
         val update = ZabbixModel.UpdateWebscenario(method = "httptest.update", params = params)
-        requestApi(jacksonObjectMapper().writeValueAsString(update))
+        requestApi(objectMapper.writeValueAsString(update))
     }
 
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
@@ -479,14 +486,14 @@ class ZabbixService(
             listOf(ZabbixModel.Step(name = docNameStep, retrieve_mode = retrieveMode, url = docUrl, required = required))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String, hash: Boolean = true) {
         val docNameShort = createDocumentName(docName, docUrl, hash)
-        //  wrap docName in quotes if it contains a comma for zabbix compatibility
-        val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
+        //  wrap docName in quotes for zabbix compatibility
+        val docNameTriggerExpression = formatParameter(docNameShort)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
 
@@ -503,33 +510,43 @@ class ZabbixService(
             tags = tags,
         )
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(trigger)
+        val values = objectMapper.writeValueAsString(trigger)
         requestApi(values)
+    }
+
+    private fun formatParameter(value: String): String {
+        val needsQuotes = value.any { it == ',' || it == '[' || it == ']' || it == '"' || it == '\\' }
+        if (!needsQuotes) return value
+
+        return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .let { "\"$it\"" }
     }
 
     private fun isExpiredWebscenario(webscenario: JsonNode?): Boolean = webscenario?.let { getTag(it, "expired").isNotEmpty() } == true
 
     private fun deleteHosts(ids: List<String>) {
         val host = ZabbixModel.Delete(method = "host.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(host)
+        val values = objectMapper.writeValueAsString(host)
         requestApi(values)
     }
 
     private fun deleteWebscenario(ids: List<String>) {
         if (ids.isEmpty()) return
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
     private fun deleteTrigger(ids: List<String>) {
         if (ids.isEmpty() || ids.any { it.isBlank() }) return
         val trigger = ZabbixModel.Delete(method = "trigger.delete", params = ids)
-        val values = jacksonObjectMapper().writeValueAsString(trigger)
+        val values = objectMapper.writeValueAsString(trigger)
         requestApi(values)
     }
 
-    private fun updateWebscenario(id: String) {
+    private fun expireWebscenario(id: String) {
         val existingWebscenario = getWebscenarioById(id) ?: return
         val existingTags = readTags(existingWebscenario).orEmpty()
 
@@ -541,10 +558,11 @@ class ZabbixService(
 
         val params = ZabbixModel.UpdateWebscenarioParams(id, tags)
         val webscenario = ZabbixModel.UpdateWebscenario(method = "httptest.update", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(webscenario)
+        val values = objectMapper.writeValueAsString(webscenario)
         requestApi(values)
     }
 
+    // delete document if expired else update expired tags
     fun updateDocument(uuid: String) {
         val id = getHostId(uuid) ?: return
         val existingHost = getHostById(id) ?: return
@@ -570,14 +588,14 @@ class ZabbixService(
         }
         val params = ZabbixModel.UpdateHostParams(id, tags, status = 0)
         val host = ZabbixModel.UpdateHost(method = "host.update", params = params)
-        val values = jacksonObjectMapper().writeValueAsString(host)
+        val values = objectMapper.writeValueAsString(host)
         requestApi(values)
 
         // update verfahren
         val url = getTag(existingHost, "url")
         val docName = createDocumentName("Verfahren", url)
         getWebscenarioByNameAndHost(docName, id)?.let { webscenario ->
-            updateWebscenario(webscenario.get("httptestid").asText())
+            expireWebscenario(webscenario.get("httptestid").asText())
         }
     }
 
@@ -637,7 +655,7 @@ class ZabbixService(
         deleteHosts(listOf(hostId.asText()))
 
         val action = getAction(uuid)
-        val user = getAction(uuid)?.let { getUserFromAction(it.userid) }
+        val user = action?.let { getUserFromAction(it.userid) }
         action?.let {
             log.debug("Delete action ${action.id}")
             deleteAction(listOf(action.id))
@@ -705,7 +723,7 @@ class ZabbixService(
             }
         }
         runBlocking {
-            response.bodyAsText().let { jacksonObjectMapper().readTree(it) }
+            response.bodyAsText().let { objectMapper.readTree(it) }
         }
     } catch (e: ClientRequestException) {
         // handles 400 errors
