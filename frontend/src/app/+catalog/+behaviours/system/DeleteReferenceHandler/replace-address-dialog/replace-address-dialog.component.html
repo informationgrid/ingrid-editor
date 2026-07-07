@@ -30,7 +30,7 @@
                 <ige-tree
                     [treeStore]="addressTreeStore"
                     [forAddresses]="true"
-                    [disabledCondition]="disableTreeNode"
+                    [disabledCondition]="disableReplacementAddress"
                     (activate)="selectedAddress.set($event)"
                 ></ige-tree>
             </mat-tab>

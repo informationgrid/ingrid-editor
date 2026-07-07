@@ -43,7 +43,6 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   defaultActive = true;
 
   private addressTreeStore = inject(AddressTreeStore);
-
   private openedAddress = this.generalStore.openedAddress;
 
   constructor(
@@ -72,7 +71,6 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
 
   register() {
     super.register();
-
     const subscription = this.docEvents
       .onError(this.forAddress())
       .pipe(filter((error) => error.errorCode === "IS_REFERENCED_ERROR"))
@@ -87,7 +85,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
         error.response.handled = true;
         const doc = this.addressTreeStore.entityMap()[selectedNodes[0]];
 
-        this.showDialog(doc._uuid)
+        this.showDialog(doc)
           .pipe(filter((response) => response))
           .subscribe(() => this.docEvents.sendEvent({ type: "DELETE" }));
       });
@@ -96,7 +94,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       .onEvent("REPLACE_ADDRESS")
       .subscribe((event) => {
         console.debug("REPLACE_ADDRESS", event);
-        this.showDialog(event.data.uuid, false).subscribe();
+        this.showDialog(event.data.doc, false).subscribe();
       });
 
     this.subscriptions.push(subscription, onEvent);
@@ -118,13 +116,16 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
         action: () =>
           this.docEventsService.sendEvent({
             type: "REPLACE_ADDRESS",
-            data: { uuid: doc._uuid },
+            data: { doc: doc },
           }),
       });
     }
   }
 
-  private showDialog(source: string, showInfo = true): Observable<any> {
+  private showDialog(
+    source: DocumentAbstract,
+    showInfo = true,
+  ): Observable<any> {
     return this.dialog
       .open(ReplaceAddressDialogComponent, {
         data: <ReplaceAddressDialogData>{
