@@ -48,6 +48,8 @@ class ExpiredZabbixTask(
 ) {
     val log = logger()
 
+    val defaultUuidPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" // (lowercase UUID)
+
     @Scheduled(cron = "\${zabbix.cleanup.schedule}")
     fun cleanup() {
         runAsAdmin("ExpiredZabbix", "Task") { _ ->
@@ -58,7 +60,7 @@ class ExpiredZabbixTask(
                         val catalog = catalogRepo.findByIdentifier(catalogId)
                         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
                         val configs = indexingTask.getExporterConfigForCatalog(catalog, catalogProfile)
-                        findDocuments(catalogId, configs)
+                        processExpiredDocuments(catalogId, configs)
                     } catch (e: Exception) {
                         log.warn("Documents not found in catalog $catalogId", e)
                     }
@@ -67,8 +69,7 @@ class ExpiredZabbixTask(
         }
     }
 
-    // TODO: this function needs more comments, also the name is misleading, since deleteDocuments is called inside
-    private fun findDocuments(catalogId: String, configs: List<ExtendedExporterConfig>) {
+    private fun processExpiredDocuments(catalogId: String, configs: List<ExtendedExporterConfig>) {
         configs
             .filter { it.category == DocumentCategory.DATA }
             .forEach { config ->
@@ -78,57 +79,63 @@ class ExpiredZabbixTask(
                     config.tags,
                     config.exporter.exportSql(catalogId),
                 )
+
+                // collect published document UUIDs from the index
                 val docsPublished = mutableListOf<String>()
                 val totalHits = indexService.getNumberOfPublishableDocuments(queryInfo)
 
-                // TODO: extract this loop into a function
-                var page = -1
-                do {
-                    page++
-                    val publishedDocuments = indexService.getPublishedDocuments(queryInfo, page)
-                    publishedDocuments.forEach {
-                        docsPublished.add(it.document.uuid)
-                    }
+                collectPublishedDocumentUuids(queryInfo, totalHits, docsPublished)
 
-                    val numExported = page * generalProperties.indexPageSize + publishedDocuments.numberOfElements
-                    val isLastPage = numExported.toLong() >= totalHits
-                } while (!isLastPage && !publishedDocuments.isEmpty)
                 log.info("Found ${docsPublished.size} published documents to process in catalog $catalogId")
 
+                // find expired documents
                 val docsZabbix = zabbixService.getHostIds(catalogId)
-                val docsToDelete = docsZabbix.toMutableList()
-                // uuid pattern
-                // TODO: pattern should be defined in class-field and default-pattern should be defined in application.properties
-                val pattern = zabbixProperties.cleanup.pattern.ifEmpty {
-                    "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                }
+                val docsToUpdate = docsZabbix.toMutableList()
+                val pattern = zabbixProperties.cleanup.pattern.ifEmpty { defaultUuidPattern }
                 val uuidRegex = Regex(pattern, RegexOption.IGNORE_CASE)
                 docsZabbix.forEach { doc ->
                     docsPublished
                         .find { doc == it || !uuidRegex.matches(doc) }
-                        ?.let { docsToDelete.remove(doc) }
+                        ?.let { docsToUpdate.remove(doc) }
                         ?: log.info("Zabbix document $doc not found in published documents of catalog $catalogId")
                 }
-                deleteDocuments(catalogId, docsToDelete, docsPublished.size)
+                updateExpiredDocuments(catalogId, docsToUpdate, docsPublished.size)
             }
     }
 
-    private fun deleteDocuments(catalogId: String, docsToDelete: List<String>, totalPublishedDocs: Int) {
+    private fun collectPublishedDocumentUuids(
+        queryInfo: QueryInfo,
+        totalHits: Long,
+        docsPublished: MutableList<String>,
+    ) {
+        var page = -1
+        do {
+            page++
+            val publishedDocuments = indexService.getPublishedDocuments(queryInfo, page)
+            publishedDocuments.forEach {
+                docsPublished.add(it.document.uuid)
+            }
+
+            val numExported = page * generalProperties.indexPageSize + publishedDocuments.numberOfElements
+            val isLastPage = numExported.toLong() >= totalHits
+        } while (!isLastPage && !publishedDocuments.isEmpty)
+    }
+
+    private fun updateExpiredDocuments(catalogId: String, docsToUpdate: List<String>, totalPublishedDocs: Int) {
         try {
-            // check if documents to delete exceed threshold
-            val deleteThreshold = totalPublishedDocs * zabbixProperties.cleanup.threshold / 100
-            if (docsToDelete.size > deleteThreshold) {
-                log.warn("Number of documents to delete (${docsToDelete.size}) exceeds ${zabbixProperties.cleanup.threshold}% of published documents ($totalPublishedDocs) in catalog $catalogId, skipping.")
+            // check if documents to update exceed threshold
+            val updateThreshold = totalPublishedDocs * zabbixProperties.cleanup.threshold / 100
+            if (docsToUpdate.size > updateThreshold) {
+                log.warn("Number of documents to update (${docsToUpdate.size}) exceeds ${zabbixProperties.cleanup.threshold}% of published documents ($totalPublishedDocs) in catalog $catalogId, skipping.")
                 return
             }
-            // TODO: this is confusing, since the docsToDelete are not the documents to delete, but the documents to update!?
-            docsToDelete.forEach {
+            docsToUpdate.forEach {
                 zabbixService.updateDocument(it)
-                log.info("Delete Zabbix document $it for catalog $catalogId")
+                log.info("Update Zabbix document $it for catalog $catalogId")
             }
-            log.info("Deleted ${docsToDelete.size} Zabbix documents for catalog $catalogId")
+            log.info("Updated ${docsToUpdate.size} Zabbix documents for catalog $catalogId")
         } catch (e: Exception) {
-            log.error("Could not delete documents: ${e.message}", e)
+            log.error("Could not update documents: ${e.message}", e)
         }
     }
 }
