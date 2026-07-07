@@ -166,8 +166,20 @@ data class StepScopeOfInvestigation(
     val type: String,
     val scopingDate: RangeModel,
     val scopingDateDocs: List<Document>?,
+    val scopingDateDocsPublishDuringScoping: Boolean = false,
     val scopingGeneralDocs: List<Document>?,
-) : Step
+    val scopingGeneralDocsPublishDuringScoping: Boolean = false,
+) : Step {
+    fun isPublishable(tableName: String): Boolean {
+        val today = Date().toInstant().toString()
+        val startDate = scopingDate.start ?: today
+        return when (tableName) {
+            "scopingDateDocs" -> !scopingDateDocsPublishDuringScoping || startDate <= today
+            "scopingGeneralDocs" -> !scopingGeneralDocsPublishDuringScoping || startDate <= today
+            else -> true
+        }
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Document(val title: String, val downloadURL: DownloadUrl, val validUntil: Date?) {

@@ -264,6 +264,7 @@ export class UvpShared extends BaseDoctype {
               "props.disabled": this.disabledWhenNotArchived,
             },
           }),
+          this.addScopingPublishConditionCheckbox("scopingDateDocs"),
           this.addTable("scopingGeneralDocs", "Scoping-Unterlagen", {
             required: true,
             columns: this.columnsForDocumentTable,
@@ -272,9 +273,22 @@ export class UvpShared extends BaseDoctype {
               "props.disabled": this.disabledWhenNotArchived,
             },
           }),
+          this.addScopingPublishConditionCheckbox("scopingGeneralDocs"),
         ]),
       ],
     };
+  }
+
+  addScopingPublishConditionCheckbox(id: string) {
+    return this.addCheckbox(id + "PublishDuringScoping", null, {
+      fieldLabel: "Erst mit Beginn des Scoping-Termins veröffentlichen",
+      className: "space-bottom-field negative-space-top-field",
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          // hide the checkbox if field does not exist or is empty
+          !field.model?.[id]?.length,
+      },
+    });
   }
 
   confirmAddScopeOfInvestigation = (): Observable<boolean> => {

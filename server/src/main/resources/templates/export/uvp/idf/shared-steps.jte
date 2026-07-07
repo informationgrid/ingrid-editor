@@ -52,8 +52,12 @@
                     <from>${((StepScopeOfInvestigation) step).getScopingDate().getStart()}</from>
                     <to>${((StepScopeOfInvestigation) step).getScopingDate().getEnd()}</to>
                 </datePeriod>
-                @template.export.uvp.idf.shared-docs(type = "scopingDateDocs", docs = ((StepScopeOfInvestigation) step).getScopingDateDocs(), docInfo = docInfo)
-                @template.export.uvp.idf.shared-docs(type = "scopingGeneralDocs", docs = ((StepScopeOfInvestigation) step).getScopingGeneralDocs(), docInfo = docInfo)
+                @if(((StepScopeOfInvestigation) step).isPublishable("scopingGeneralDocs"))
+                    @template.export.uvp.idf.shared-docs(type = "scopingGeneralDocs", docs = ((StepScopeOfInvestigation) step).getScopingGeneralDocs(), docInfo = docInfo)
+                @endif
+                @if(((StepScopeOfInvestigation) step).isPublishable("scopingDateDocs"))
+                    @template.export.uvp.idf.shared-docs(type = "scopingDateDocs", docs = ((StepScopeOfInvestigation) step).getScopingDateDocs(), docInfo = docInfo)
+                @endif
             </step>
         @endif
     @endfor
