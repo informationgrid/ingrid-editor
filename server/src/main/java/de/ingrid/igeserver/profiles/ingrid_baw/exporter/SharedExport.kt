@@ -478,9 +478,7 @@ private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc:
     citedParties = extractCitedParties(transformer, litDoc.data),
 )
 
-private fun extractPublicationDate(data: JsonNode): String? = data.getPath("temporal.events")?.find {
-    it.getString("referenceDateType.key") == "2" // Publication
-}?.getString("referenceDate")?.let { dateString ->
+private fun extractPublicationDate(data: JsonNode): String? = data.getString("temporal.event.firstPublished")?.let { dateString ->
     // Parse ISO datetime string and convert to local date
     val instant = Instant.parse(dateString)
     val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
