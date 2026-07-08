@@ -19,11 +19,42 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.exports.iso.BawExtension
+import de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement
+import de.ingrid.igeserver.exports.iso.BawMetadata
+import de.ingrid.igeserver.exports.iso.BawShipCFD
+import de.ingrid.igeserver.exports.iso.BawStructuralEngineeringSimulation
+import de.ingrid.igeserver.exports.iso.CharacterString
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.igeserver.utils.getPath
 
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+
+    val bawMetadata: BawMetadata?
+
+    init {
+        val xmlDeserializer: ObjectMapper = XmlMapper(
+            JacksonXmlModule().apply {
+                setDefaultUseWrapper(false)
+                setXMLTextElementName("innerText")
+            },
+        ).registerKotlinModule()
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+
+        val supplementalInformation = xmlDeserializer.readTree(isoData.rawData as String).getPath("identificationInfo.MD_DataIdentification.supplementalInformation")
+        bawMetadata = xmlDeserializer.treeToValue(supplementalInformation, BawExtension::class.java)?.bawMetadata
+    }
+
     override val splitSpatialSystems = true
     override val type = hierarchyLevelNameToDocumentType(metadata.hierarchyLevelName?.get(0)?.value)
 
@@ -106,7 +137,257 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
                 null
             }
         } ?: emptyList()
+
+    fun getBautechnikSimulation(): BautechnikSimulationImport? {
+        val raw = bawMetadata
+            ?.simulation?.simulation?.structuralEngineeringSimulation?.structuralEngineeringSimulation
+            ?: return null
+        return mapBautechnikSimulation(raw)
+    }
+
+    fun getCFDSimulation(): CFDSimulationImport? {
+        val raw = bawMetadata
+            ?.simulation?.simulation?.shipCFD?.shipCFD
+            ?: return null
+        return mapCFDSimulation(raw)
+    }
+
+    fun getWaterMeasurement(): WaterMeasurementImport? {
+        val raw = bawMetadata
+            ?.measurement?.measurement?.hydraulicEngineeringMeasurement?.hydraulicEngineeringMeasurement
+            ?: return null
+        return mapWaterMeasurement(raw)
+    }
+
+    fun getGauge(): List<GaugeImport> {
+        val raw = bawMetadata
+            ?.measurement?.measurement?.measurementDevice
+            ?: return emptyList()
+        return raw.mapNotNull { it.measurementDevice }.map { device ->
+            GaugeImport(
+                deviceName = device.deviceName?.value,
+                deviceId = device.deviceId?.value,
+                deviceModel = device.deviceModel?.value,
+                description = device.description?.value,
+            )
+        }
+    }
+
+    fun getTargetParameters(): List<TargetParameterImport> {
+        val raw = bawMetadata
+            ?.measurement?.measurement?.measurementParameter
+            ?: return emptyList()
+        return raw.mapNotNull { it.measurementParameter }.map { param ->
+            TargetParameterImport(
+                parameterName = param.parameterName?.value?.let { name -> codelistKeyValue("3950021", name) },
+                parameterType = param.parameterType?.value?.let { type -> codelistKeyValue("3950014", type) },
+                uom = param.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
+                parameterFunction = param.parameterFunction?.value,
+            )
+        }
+    }
+
+    private fun mapWaterMeasurement(raw: BawHydraulicEngineeringMeasurement): WaterMeasurementImport = WaterMeasurementImport(
+        spatiality = raw.measurementSpatiality?.value?.let { codelistKeyValue("3950012", it) },
+        measuringDepth = raw.measurementDepth?.firstOrNull()?.measurementDepth.let {
+            it?.let {
+                ValueUnitImport(
+                    value = it.measurementDepth?.value,
+                    verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("verticalSpatialSystems", crs) },
+                )
+            }
+        } ?: ValueUnitImport(),
+        timestep = raw.temporalAccuracy?.value ?: getTimestep(),
+        frequency = raw.measurementFrequency?.value,
+        averageWaterLevel = raw.meanWaterLevel?.mapNotNull { it.meanWaterLevel }?.map {
+            ValueUnitImport(
+                value = it.waterLevel?.value,
+                unit = it.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
+            )
+        } ?: emptyList(),
+        zeroLevel = raw.gaugeZeroPoint?.mapNotNull { it.gaugeZeroPoint }?.map {
+            ValueUnitImport(
+                value = it.gaugeZeroPoint?.value,
+                unit = it.uom?.value?.let { unit -> codelistKeyValue("3950020", unit) },
+                verticalCRS = it.verticalCRS?.value?.let { crs -> codelistKeyValue("verticalSpatialSystems", crs) },
+                description = it.description?.value,
+            )
+        } ?: emptyList(),
+        drain = DrainImport(
+            min = raw.minDischarge?.value,
+            max = raw.maxDischarge?.value,
+        ),
+        dataQualityDescription = raw.dataQualityDescription?.value,
+    )
+
+    private fun strings(list: List<CharacterString>?): List<String> = list?.mapNotNull { it.value }?.filter { it.isNotBlank() } ?: emptyList()
+
+    val version = strings(bawMetadata?.simulation?.simulation?.simulationMethodVersion)
+    val dependency = strings(bawMetadata?.simulation?.simulation?.simulationMethodDependency)
+
+    private fun mapBautechnikSimulation(raw: BawStructuralEngineeringSimulation): BautechnikSimulationImport {
+        val materialLinear = raw.materialConcept?.value?.let { it == "linear" }
+        val geometricLinear = raw.geometryConcept?.value?.let { it == "linear" }
+        val imperfections = raw.imperfections?.value?.let { it == "with" }
+
+        val calculationConcept = if (materialLinear != null || geometricLinear != null || imperfections != null) {
+            CalculationConceptImport(
+                isMaterialLinear = materialLinear,
+                isGeometricLinear = geometricLinear,
+                hasImperfections = imperfections,
+            )
+        } else {
+            null
+        }
+
+        val reinforcement = raw.reinforcementYieldStrength?.mapNotNull { it.value }
+            ?.map { YieldLimitImport(it) } ?: emptyList()
+        val steel = raw.steelYieldStrength?.mapNotNull { it.value }
+            ?.map { YieldLimitImport(it) } ?: emptyList()
+        val concrete = raw.concreteCompressiveStrength?.concreteCompressiveStrength
+            ?.map { ccs ->
+                val unitValue = ccs.parameter?.value
+                ConcreteImport(
+                    compressiveStrength = ccs.concreteCompressiveStrength?.value,
+                    unitOfMeasure = unitValue?.let {
+                        KeyValue(
+                            codeListService.getCodeListEntryId("BAW_simulationConcreteUnit", it, "de"),
+                            it,
+                            "BAW_simulationConcreteUnit",
+                        )
+                    },
+                )
+            } ?: emptyList()
+
+        val materialParameters = if (reinforcement.isNotEmpty() || steel.isNotEmpty() || concrete.isNotEmpty()) {
+            MaterialParametersImport(reinforcement, steel, concrete)
+        } else {
+            null
+        }
+
+        return BautechnikSimulationImport(
+            objects = strings(raw.objects).map { codelistKeyValue("BAW_simulationObject", it) },
+            objectPart = strings(raw.objectPart).map { codelistKeyValue("BAW_simulationObjectPart", it) },
+            researchGoal = strings(raw.investigationGoal).map { codelistKeyValue("BAW_simulationResearchGoal", it) },
+            dimension = DimensionImport(
+                spatialDimension = raw.spatialDimensionality?.value?.let { codelistKeyValue("BAW_simulationSpatialDimension", it) },
+                timeDimension = raw.timeDimension?.value,
+            ),
+            level = strings(raw.investigationLevel).map { codelistKeyValue("BAW_simulationLevel", it) },
+            phase = strings(raw.investigationStage).map { codelistKeyValue("BAW_simulationPhase", it) },
+            calculationConcept = calculationConcept,
+            materials = strings(raw.materials).map { codelistKeyValue("BAW_simulationMaterial", it) },
+            materialParameters = materialParameters,
+            materialModel = strings(raw.materialModel).map { codelistKeyValue("BAW_simulationMaterialModel", it) },
+            elementTypes = strings(raw.elementType).map { codelistKeyValue("BAW_simulationElementType", it) },
+            effects = strings(raw.impact).map { codelistKeyValue("BAW_simulationEffect", it) },
+            physics = strings(raw.physics).map { codelistKeyValue("BAW_simulationPhysics", it) },
+            analysisType = strings(raw.analysisType).map { codelistKeyValue("BAW_simulationAnalysisType", it) },
+        )
+    }
+
+    private fun mapCFDSimulation(raw: BawShipCFD): CFDSimulationImport = CFDSimulationImport(
+        shipName = strings(raw.shipName).map { codelistKeyValue("BAW_shipName", it) },
+        statementAboutPhysics = raw.statementAboutPhysics?.value?.let { codelistKeyValue("BAW_physics", it) },
+        constantCrossSection = raw.constantCrossSection?.value,
+        propulsion = raw.propulsion?.value,
+        movementTypes = raw.movementTypes?.value?.let { codelistKeyValue("BAW_movementType", it) },
+        trajectory = raw.trajectory?.value?.let { codelistKeyValue("BAW_trajectory", it) },
+        cellCount = raw.cellCount?.value,
+    )
+
+    private fun codelistKeyValue(codelistId: String, value: String): KeyValue = KeyValue(codeListService.getCodeListEntryId(codelistId, value, "de"), value, codelistId)
 }
+
+data class BautechnikSimulationImport(
+    val objects: List<KeyValue>,
+    val objectPart: List<KeyValue>,
+    val researchGoal: List<KeyValue>,
+    val dimension: DimensionImport,
+    val level: List<KeyValue>,
+    val phase: List<KeyValue>,
+    val calculationConcept: CalculationConceptImport?,
+    val materials: List<KeyValue>,
+    val materialParameters: MaterialParametersImport?,
+    val materialModel: List<KeyValue>,
+    val elementTypes: List<KeyValue>,
+    val effects: List<KeyValue>,
+    val physics: List<KeyValue>,
+    val analysisType: List<KeyValue>,
+)
+
+data class CFDSimulationImport(
+    val shipName: List<KeyValue>,
+    val statementAboutPhysics: KeyValue?,
+    val constantCrossSection: Boolean?,
+    val propulsion: Boolean?,
+    val movementTypes: KeyValue?,
+    val trajectory: KeyValue?,
+    val cellCount: Number?,
+)
+
+data class DimensionImport(
+    val spatialDimension: KeyValue?,
+    val timeDimension: Boolean?,
+)
+
+data class CalculationConceptImport(
+    val isMaterialLinear: Boolean?,
+    val isGeometricLinear: Boolean?,
+    val hasImperfections: Boolean?,
+)
+
+data class MaterialParametersImport(
+    val reinforcement: List<YieldLimitImport>,
+    val steel: List<YieldLimitImport>,
+    val concrete: List<ConcreteImport>,
+)
+
+data class YieldLimitImport(
+    val yieldLimit: Double,
+)
+
+data class ConcreteImport(
+    val compressiveStrength: Double?,
+    val unitOfMeasure: KeyValue?,
+)
+
+data class WaterMeasurementImport(
+    val spatiality: KeyValue?,
+    val measuringDepth: ValueUnitImport,
+    val timestep: Double?,
+    val frequency: Double?,
+    val averageWaterLevel: List<ValueUnitImport>,
+    val zeroLevel: List<ValueUnitImport>,
+    val drain: DrainImport,
+    val dataQualityDescription: String?,
+)
+
+data class ValueUnitImport(
+    val value: Double? = null,
+    val unit: KeyValue? = null,
+    val verticalCRS: KeyValue? = null,
+    val description: String? = null,
+)
+
+data class DrainImport(
+    val min: Double?,
+    val max: Double?,
+)
+
+data class GaugeImport(
+    val deviceName: String?,
+    val deviceId: String?,
+    val deviceModel: String?,
+    val description: String?,
+)
+
+data class TargetParameterImport(
+    val parameterName: KeyValue?,
+    val parameterType: KeyValue?,
+    val uom: KeyValue?,
+    val parameterFunction: String?,
+)
 
 data class SimulationParameter(
     val name: String,

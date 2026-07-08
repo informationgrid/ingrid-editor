@@ -114,31 +114,17 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
       fieldGroup: [
         this.addSection("Simulationsdaten (Bautechnik)", [
           { key: "type" },
-          this.addGroup("software", "Software", [
-            this.addAutocomplete("name", null, {
-              fieldLabel: "Name",
-              wrappers: ["form-field"],
-              required: true,
-              options: this.getCodelistForSelect(
-                "BAW_simulationSoftware",
-                "null",
-              ),
-            }),
-            this.addInput("version", null, {
-              required: true,
-              fieldLabel: "Version",
-              wrappers: ["form-field"],
-            }),
-          ]),
           this.addRepeatList("object", "Objekt", {
             required: true,
             options: this.getCodelistForSelect("BAW_simulationObject", "null"),
+            codelistId: "BAW_simulationObject",
           }),
           this.addRepeatList("objectPart", "Objektteil", {
             options: this.getCodelistForSelect(
               "BAW_simulationObjectPart",
               "null",
             ),
+            codelistId: "BAW_simulationObjectPart",
           }),
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
             required: true,
@@ -146,6 +132,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               "BAW_simulationResearchGoal",
               "null",
             ),
+            codelistId: "BAW_simulationResearchGoal",
           }),
           this.addGroup("dimension", "Dimensionen", [
             this.addSelect("spatialDimension", null, {
@@ -155,6 +142,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
                 "BAW_simulationSpatialDimension",
                 "null",
               ),
+              codelistId: "BAW_simulationSpatialDimension",
             }),
             this.addCheckboxInline("timeDimension", "Zeit"),
           ]),
@@ -162,10 +150,12 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             required: true,
             asSelect: true,
             options: this.getCodelistForSelect("BAW_simulationLevel", "null"),
+            codelistId: "BAW_simulationLevel",
           }),
           this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
             asSelect: true,
             options: this.getCodelistForSelect("BAW_simulationPhase", "null"),
+            codelistId: "BAW_simulationPhase",
           }),
           this.addButtonToggles("calculationConcept", "Berechnungskonzepte", {
             options: [
@@ -200,6 +190,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               "BAW_simulationMaterial",
               "null",
             ),
+            codelistId: "BAW_simulationMaterial",
           }),
           this.addSubSection(
             "materialParameters",
@@ -259,31 +250,34 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               }),
             ],
           ),
-          // subsection only for visual separation
-          this.addSubSection(null, "", []),
           this.addRepeatList("materialModel", "Materialmodell", {
             options: this.getCodelistForSelect(
               "BAW_simulationMaterialModel",
               "null",
             ),
+            codelistId: "BAW_simulationMaterialModel",
           }),
           this.addRepeatList("elementTypes", "Elementtypen", {
             options: this.getCodelistForSelect(
               "BAW_simulationElementType",
               "null",
             ),
+            codelistId: "BAW_simulationElementType",
           }),
           this.addRepeatList("effects", "Einwirkung", {
             options: this.getCodelistForSelect("BAW_simulationEffect", "null"),
+            codelistId: "BAW_simulationEffect",
           }),
           this.addRepeatList("physics", "Physik", {
             options: this.getCodelistForSelect("BAW_simulationPhysics", "null"),
+            codelistId: "BAW_simulationPhysics",
           }),
           this.addRepeatList("analysisType", "Analysetyp", {
             options: this.getCodelistForSelect(
               "BAW_simulationAnalysisType",
               "null",
             ),
+            codelistId: "BAW_simulationAnalysisType",
           }),
         ]),
       ],

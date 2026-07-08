@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service
 
 data class IsoImportData(
     val data: Metadata,
+    val rawData: Any,
     val codelistService: CodelistHandler,
     val catalogId: String,
     val documentService: DocumentService,
@@ -103,6 +104,7 @@ class ISOImport(
 
         val isoData = IsoImportData(
             finalObject,
+            data,
             codelistService,
             catalogId,
             documentService,

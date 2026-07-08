@@ -40,6 +40,11 @@ fun JsonNode.getDouble(path: String): Double? = path.split(".")
         node?.get(fieldName)
     }?.let { if (it.isNull) null else it.asDouble() }
 
+fun JsonNode.getInteger(path: String): Int? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }?.let { if (it.isNull) null else it.asInt() }
+
 fun JsonNode.getStringOrEmpty(path: String): String = this.getString(path) ?: ""
 
 fun JsonNode.getPath(path: String): JsonNode? = path.split(".")

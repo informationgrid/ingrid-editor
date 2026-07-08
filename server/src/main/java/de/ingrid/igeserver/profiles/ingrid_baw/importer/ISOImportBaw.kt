@@ -28,49 +28,49 @@ import org.springframework.stereotype.Service
 class ISOImportBaw : ISOImportProfile {
     override fun handle(
         isoData: IsoImportData,
-    ): ImportProfileData? {
-        return when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
-            "dataset", "series" -> {
-                return when (hierarchyLevelNameToDocumentType(isoData.data.hierarchyLevelName?.get(0)?.value)) {
-                    "BawSimulation" -> ImportProfileData(
-                        "imports/ingrid-baw/simulation.jte",
-                        GeodatasetMapperBaw(isoData),
-                    )
-                    "BawMeasurement" -> ImportProfileData(
-                        "imports/ingrid-baw/measurement.jte",
-                        GeodatasetMapperBaw(isoData),
-                    )
-                    "InGridGeoDataset" -> ImportProfileData(
-                        "imports/ingrid-baw/geodataset.jte",
-                        GeodatasetMapperBaw(isoData),
-                    )
-
-                    else -> throw IllegalArgumentException("Unsupported hierarchyLevelName: ${isoData.data.hierarchyLevelName?.get(0)?.value}")
-                }
-            }
-
-            "service" -> {
-                ImportProfileData(
-                    "imports/ingrid-baw/geoservice.jte",
-                    GeoserviceMapperBaw(isoData),
+    ): ImportProfileData? = when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        "dataset", "series" -> {
+            when (hierarchyLevelNameToDocumentType(isoData.data.hierarchyLevelName?.get(0)?.value)) {
+                "BawSimulation" -> ImportProfileData(
+                    "imports/ingrid-baw/simulation.jte",
+                    GeodatasetMapperBaw(isoData),
                 )
-            }
 
-            "application" -> {
-                ImportProfileData(
-                    "imports/ingrid-baw/software.jte",
-                    SoftwareMapperBaw(isoData),
+                "BawMeasurement" -> ImportProfileData(
+                    "imports/ingrid-baw/measurement.jte",
+                    GeodatasetMapperBaw(isoData),
                 )
-            }
 
-            "nonGeographicDataset" -> {
-                ImportProfileData(
-                    "imports/ingrid-baw/project.jte",
-                    ProjectMapperBaw(isoData),
+                "InGridGeoDataset" -> ImportProfileData(
+                    "imports/ingrid-baw/geodataset.jte",
+                    GeodatasetMapperBaw(isoData),
                 )
-            }
 
-            else -> null
+                else -> throw IllegalArgumentException("Unsupported hierarchyLevelName: ${isoData.data.hierarchyLevelName?.get(0)?.value}")
+            }
         }
+
+        "service" -> {
+            ImportProfileData(
+                "imports/ingrid-baw/geoservice.jte",
+                GeoserviceMapperBaw(isoData),
+            )
+        }
+
+        "application" -> {
+            ImportProfileData(
+                "imports/ingrid-baw/software.jte",
+                SoftwareMapperBaw(isoData),
+            )
+        }
+
+        "nonGeographicDataset" -> {
+            ImportProfileData(
+                "imports/ingrid-baw/project.jte",
+                ProjectMapperBaw(isoData),
+            )
+        }
+
+        else -> null
     }
 }

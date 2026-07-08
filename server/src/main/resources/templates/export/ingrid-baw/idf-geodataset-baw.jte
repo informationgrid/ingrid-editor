@@ -1,12 +1,11 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.TestProcedure
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
-@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.TargetParameter
 @import java.util.Map
+
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetTransformerBaw)map.get("model"));}
@@ -96,268 +95,368 @@ aggregateInformation = @`
             </gmd:MD_AggregateInformation>
         </gmd:aggregationInfo>
     @endfor
-    !{var lab = page.getLaboratoryData();}
-    @if(lab != null)
-        <labordaten>
-            @for(String reason : lab.getDataCollectionReason())
-                <AnlassDerDatenerhebung>
-                    <anlassDerDatenerhebung>${reason}</anlassDerDatenerhebung>
-                </AnlassDerDatenerhebung>
-            @endfor
-            @for(String origin : lab.getSampleOrigin())
-                <Probenherkunft>
-                    <probenherkunft>${origin}</probenherkunft>
-                </Probenherkunft>
-            @endfor
-            @for(String material : lab.getTestedMaterial())
-                <GeprueftesMaterial>
-                    <geprueftesMaterial>${material}</geprueftesMaterial>
-                </GeprueftesMaterial>
-            @endfor
-            @for(TestProcedure tp : lab.getTestProcedures())
-                <MessUndPruefverfahren>
-                    @if(TransformationTools.hasValue(tp.getTestMethod()))
-                        <messUndPruefverfahren>${tp.getTestMethod()}</messUndPruefverfahren>
-                    @endif
-                    @if(TransformationTools.hasValue(tp.getInstrument()))
-                        <messgeraete>${tp.getInstrument()}</messgeraete>
-                    @endif
-                    @if(TransformationTools.hasValue(tp.getStandard()))
-                        <Norm>
-                            <normBezeichnung>${tp.getStandard()}</normBezeichnung>
-                            @if(TransformationTools.hasValue(tp.getStandardIssueDate()))
-                                <ausgabedatum>${tp.getStandardIssueDate()}</ausgabedatum>
-                            @endif
-                        </Norm>
-                    @endif
-                </MessUndPruefverfahren>
-            @endfor
-            <Zulassungspruefung>
-                <zulassungspruefung>
-                    <gco:Boolean>${lab.isApprovalProcedure()}</gco:Boolean>
-                </zulassungspruefung>
-                @if(TransformationTools.hasValue(lab.getTestNumber()))
-                    <pruefnummer>${lab.getTestNumber()}</pruefnummer>
-                @endif
-                @if(TransformationTools.hasValue(lab.getSystemSetup()))
-                    <aufbauDesSystems>${lab.getSystemSetup()}</aufbauDesSystems>
-                @endif
-                @for(String visibility : lab.getDatasetVisibility())
-                    <Sichtbarkeit>
-                        <sichtbarkeit>${visibility}</sichtbarkeit>
-                    </Sichtbarkeit>
-                @endfor
-            </Zulassungspruefung>
-        </labordaten>
-    @endif
-    !{var bautechnikS = page.getBautechnikSimulation();}
-<%--
-    TODO: Reenable after release or replace with ISO Mapping when clear
-    @if(bautechnikS != null)
-        <bautechnikSimulationsdaten>
-            @if(bautechnikS.getSoftware() != null)
-                <Software>
-                    <name>${bautechnikS.getSoftware().getName()}</name>
-                    <version>${bautechnikS.getSoftware().getVersion()}</version>
-                </Software>
-            @endif
-            @for(String obj : bautechnikS.getObjects())
-                <Objekt>
-                    <objekt>${obj}</objekt>
-                </Objekt>
-            @endfor
-            @for(String part : bautechnikS.getObjectParts())
-                <Objektteil>
-                    <objektteil>${part}</objektteil>
-                </Objektteil>
-            @endfor
-            @for(String goal : bautechnikS.getResearchGoals())
-                <Untersuchungsziel>
-                    <untersuchungsziel>${goal}</untersuchungsziel>
-                </Untersuchungsziel>
-            @endfor
-            <Dimensionen>
-                @if(TransformationTools.hasValue(bautechnikS.getSpatialDimension()))
-                    <raeumlicheDimensionen>${bautechnikS.getSpatialDimension()}</raeumlicheDimensionen>
-                @endif
-                @if(bautechnikS.getTimeDimension() != null)
-                    <zeit>
-                        <gco:Boolean>${bautechnikS.getTimeDimension()}</gco:Boolean>
-                    </zeit>
-                @endif
-            </Dimensionen>
-            @for(String level : bautechnikS.getLevels())
-                <LevelDerUntersuchung>
-                    <levelDerUntersuchung>${level}</levelDerUntersuchung>
-                </LevelDerUntersuchung>
-            @endfor
-            @for(String phase : bautechnikS.getPhases())
-                <Untersuchungsstufe>
-                    <untersuchungsstufe>${phase}</untersuchungsstufe>
-                </Untersuchungsstufe>
-            @endfor
-            @if(bautechnikS.getCalculationConcept() != null)
-                <Berechnungskonzepte>
-                    @if(bautechnikS.getCalculationConcept().getMaterialLinear() != null)
-                        <materiellLinear>
-                            <gco:Boolean>${bautechnikS.getCalculationConcept().getMaterialLinear()}</gco:Boolean>
-                        </materiellLinear>
-                    @endif
-                    @if(bautechnikS.getCalculationConcept().getGeometricLinear() != null)
-                        <geometrischLinear>
-                            <gco:Boolean>${bautechnikS.getCalculationConcept().getGeometricLinear()}</gco:Boolean>
-                        </geometrischLinear>
-                    @endif
-                    @if(bautechnikS.getCalculationConcept().getImperfections() != null)
-                        <imperfektionen>
-                            <gco:Boolean>${bautechnikS.getCalculationConcept().getImperfections()}</gco:Boolean>
-                        </imperfektionen>
-                    @endif
-                </Berechnungskonzepte>
-            @endif
-            @for(String material : bautechnikS.getMaterials())
-                <Werkstoffe>
-                    <werkstoffe>${material}</werkstoffe>
-                </Werkstoffe>
-            @endfor
-            @if(bautechnikS.getMaterialParameters() != null)
-                <GrundlegendeWerkstoffparameter>
-                    @for(var r : bautechnikS.getMaterialParameters().getReinforcement())
-                        <Bewehrung>
-                            <fliessgrenzeBewehrung>${r.getYieldLimit()}</fliessgrenzeBewehrung>
-                        </Bewehrung>
-                    @endfor
-                    @for(var s : bautechnikS.getMaterialParameters().getSteel())
-                        <Stahl>
-                            <fliessgrenzeStahl>${s.getYieldLimit()}</fliessgrenzeStahl>
-                        </Stahl>
-                    @endfor
-                    @for(var c : bautechnikS.getMaterialParameters().getConcrete())
-                        <Betondruckfestigkeit>
-                            <betondruckfestigkeit>${c.getValue()}</betondruckfestigkeit>
-                            <einheit>${c.getUnit()}</einheit>
-                        </Betondruckfestigkeit>
-                    @endfor
-                </GrundlegendeWerkstoffparameter>
-            @endif
-            @for(String model : bautechnikS.getMaterialModels())
-                <Materialmodell>
-                    <materialmodell>${model}</materialmodell>
-                </Materialmodell>
-            @endfor
-            @for(String elementType : bautechnikS.getElementTypes())
-                <Elementtypen>
-                    <elementtypen>${elementType}</elementtypen>
-                </Elementtypen>
-            @endfor
-            @for(String einwirkung : bautechnikS.getEffects())
-                <Einwirkung>
-                    <einwirkung>${einwirkung}</einwirkung>
-                </Einwirkung>
-            @endfor
-            @for(String physics : bautechnikS.getPhysics())
-                <Physik>
-                    <physik>${physics}</physik>
-                </Physik>
-            @endfor
-            @for(String analysis : bautechnikS.getAnalysisTypes())
-                <Analysetyp>
-                    <analysetyp>${analysis}</analysetyp>
-                </Analysetyp>
-            @endfor
-        </bautechnikSimulationsdaten>
-    @endif--%>
-    !{var cfdS = page.getCfdSimulation();}
-    @if(cfdS != null)
-        <cfdSimulationsdaten>
-            @for(String shipName : cfdS.getShipNames())
-                <bawSchiffsname>${shipName}</bawSchiffsname>
-            @endfor
-            @if(TransformationTools.hasValue(cfdS.getPhysics()))
-                <angabenZurPhysik>${cfdS.getPhysics()}</angabenZurPhysik>
-            @endif
-            @if(cfdS.getConstantCrossSection() != null)
-                <konstanteQuerschnitt>
-                    <gco:Boolean>${cfdS.getConstantCrossSection()}</gco:Boolean>
-                </konstanteQuerschnitt>
-            @endif
-            @if(cfdS.getPropulsion() != null)
-                <propulsion>
-                    <gco:Boolean>${cfdS.getPropulsion()}</gco:Boolean>
-                </propulsion>
-            @endif
-            @if(TransformationTools.hasValue(cfdS.getMovementType()))
-                <bewegungsarten>${cfdS.getMovementType()}</bewegungsarten>
-            @endif
-            @if(TransformationTools.hasValue(cfdS.getTrajectory()))
-                <trajektorie>${cfdS.getTrajectory()}</trajektorie>
-            @endif
-            @if(TransformationTools.hasValue(cfdS.getCellCount()))
-                <zellanzahl>${cfdS.getCellCount()}</zellanzahl>
-            @endif
-        </cfdSimulationsdaten>
-    @endif
 `,
 additionalIdentification = @`
-    <measurementInfo>
-        @for(String method : page.getMeasuringMethod())
-            <MeasurementMethod>
-                <measurementMethod>${method}</measurementMethod>
-            </MeasurementMethod>
-        @endfor
-        @if(TransformationTools.hasValue(page.getSpatiality()))
-            <spatialOrientation>${page.getSpatiality()}</spatialOrientation>
-        @endif
-        @if(page.getMeasuringDepth() != null)
-            <MeasurementDepth>
-                <depth>${page.getMeasuringDepth().getValue()}</depth>
-                <uom>m</uom>
-                <verticalCRS>${page.getMeasuringDepth().getCrs()}</verticalCRS>
-            </MeasurementDepth>
-        @endif
-        @if(TransformationTools.hasValue(page.getFrequency()))
-            <measurementFrequency>${page.getFrequency()}</measurementFrequency>
-        @endif
-        @for(AverageWaterLevel level : page.getAverageWaterLevel())
-            <MeanWaterLevel>
-                <waterLevel>${level.getValue()}</waterLevel>
-                <uom>${level.getUnit()}</uom>
-            </MeanWaterLevel>
-        @endfor
-        @for(ZeroLevel level : page.getZeroLevel())
-            <GaugeDatum>
-                <datum>${level.getValue()}</datum>
-                <uom>${level.getUnit()}</uom>
-                <verticalCRS>${level.getCrs()}</verticalCRS>
-                <description>${level.getDescription()}</description>
-            </GaugeDatum>
-        @endfor
-        @if(TransformationTools.hasValue(page.getMaxDrain()))
-            <maxDischarge>${page.getMaxDrain()}</maxDischarge>
-        @endif
-        @if(TransformationTools.hasValue(page.getMinDrain()))
-            <minDischarge>${page.getMinDrain()}</minDischarge>
-        @endif
-        @for( MeasurementDevice device : page.getMeasurementDevices())
-            <MeasurementDevice>
-                <name>${device.getName()}</name>
-                <id>${device.getId()}</id>
-                <model>${device.getModel()}</model>
-                <description>${device.getDescription()}</description>
-            </MeasurementDevice>
-        @endfor
-        @for(TargetParameter param : page.getTargetParameters())
-            <MeasuredQuantities>
-                <name>${param.getName()}</name>
-                <type>${param.getType()}</type>
-                <uom>${param.getUnit()}</uom>
-                <calculationFormula>${param.getFormula()}</calculationFormula>
-            </MeasuredQuantities>
-        @endfor
-        @if(TransformationTools.hasValue(page.getDataQualityDescription()))
-            <dataQualityDescription>${page.getDataQualityDescription()}</dataQualityDescription>
-        @endif
-    </measurementInfo>
+    @if(page.isBawSimulation() || page.isBawMeasurement())
+        <gmd:supplementalInformation>
+            <baw:BAW_Metadata xmlns:baw="https://dl.datenrepository.baw.de/schemas/bawmd">
+                @if(page.isBawSimulation())
+                    <baw:simulation>
+                        <baw:Simulation>
+                            @if(TransformationTools.hasValue(page.getProcess()))
+                                <baw:simulationMethod>
+                                    <gco:CharacterString>${page.getProcess()}</gco:CharacterString>
+                                </baw:simulationMethod>
+                            @endif
+                            @for(String version : page.getSimulationVersion())
+                                <baw:simulationMethodVersion>
+                                    <gco:CharacterString>${version}</gco:CharacterString>
+                                </baw:simulationMethodVersion>
+                            @endfor
+                            @for(String dep : page.getSimulationExtension())
+                                <baw:simulationMethodDependency>
+                                    <gco:CharacterString>${dep}</gco:CharacterString>
+                                </baw:simulationMethodDependency>
+                            @endfor
+                            @if(TransformationTools.hasValue(page.getDimensionality()))
+                                <baw:spatialDimensionality>
+                                    <gco:CharacterString>${page.getDimensionality()}</gco:CharacterString>
+                                </baw:spatialDimensionality>
+                            @endif
+                            @if(page.getTimestep() != null)
+                                <baw:timeStepSize>
+                                    <gco:Decimal>${page.getTimestep()}</gco:Decimal>
+                                </baw:timeStepSize>
+                            @endif
+                            @for(String modelType : page.getModelType())
+                                <baw:simulationModelType>
+                                    <gco:CharacterString>${modelType}</gco:CharacterString>
+                                </baw:simulationModelType>
+                            @endfor
+                            @for(SimParameter param : page.getSimulationParameters())
+                                <baw:simulationParameter>
+                                    <baw:SimulationParameter>
+                                        <baw:parameterName>
+                                            <gco:CharacterString>${param.getName()}</gco:CharacterString>
+                                        </baw:parameterName>
+                                        <baw:parameterType>
+                                            <gco:CharacterString>${param.getRole()}</gco:CharacterString>
+                                        </baw:parameterType>
+                                        <baw:parameterValues>
+                                            <gco:RecordType>${param.getValue()}</gco:RecordType>
+                                        </baw:parameterValues>
+                                        <baw:uom>
+                                            <gco:CharacterString>${param.getUnit()}</gco:CharacterString>
+                                        </baw:uom>
+                                    </baw:SimulationParameter>
+                                </baw:simulationParameter>
+                            @endfor
+                            !{var cfdS = page.getCfdSimulation();}
+                            @if(cfdS != null)
+                                <baw:shipCFD>
+                                    <baw:ShipCFD>
+                                        @for(String shipName : cfdS.getShipNames())
+                                            <baw:shipName>
+                                                <gco:CharacterString>${shipName}</gco:CharacterString>
+                                            </baw:shipName>
+                                        @endfor
+                                        @if(TransformationTools.hasValue(cfdS.getPhysics()))
+                                            <baw:statementAboutPhysics>
+                                                <gco:CharacterString>${cfdS.getPhysics()}</gco:CharacterString>
+                                            </baw:statementAboutPhysics>
+                                        @endif
+                                        @if(cfdS.getConstantCrossSection() != null)
+                                            <baw:constantCrossSection>
+                                                <gco:Boolean>${cfdS.getConstantCrossSection()}</gco:Boolean>
+                                            </baw:constantCrossSection>
+                                        @endif
+                                        @if(cfdS.getPropulsion() != null)
+                                            <baw:propulsion>
+                                                <gco:Boolean>${cfdS.getPropulsion()}</gco:Boolean>
+                                            </baw:propulsion>
+                                        @endif
+                                        @if(TransformationTools.hasValue(cfdS.getMovementType()))
+                                            <baw:movementTypes>
+                                                <gco:CharacterString>${cfdS.getMovementType()}</gco:CharacterString>
+                                            </baw:movementTypes>
+                                        @endif
+                                        @if(TransformationTools.hasValue(cfdS.getTrajectory()))
+                                            <baw:trajectory>
+                                                <gco:CharacterString>${cfdS.getTrajectory()}</gco:CharacterString>
+                                            </baw:trajectory>
+                                        @endif
+                                        @if(TransformationTools.hasValue(cfdS.getCellCount()))
+                                            <baw:cellCount>
+                                                <gco:Integer>${cfdS.getCellCount()}</gco:Integer>
+                                            </baw:cellCount>
+                                        @endif
+                                    </baw:ShipCFD>
+                                </baw:shipCFD>
+                            @endif
+                            !{var bautechnikS = page.getBautechnikSimulation();}
+                            @if(bautechnikS != null)
+                                <baw:structuralEngineeringSimulation>
+                                    <baw:StructuralEngineeringSimulation>
+                                        @for(String obj : bautechnikS.getObjects())
+                                            <baw:object>
+                                                <gco:CharacterString>${obj}</gco:CharacterString>
+                                            </baw:object>
+                                        @endfor
+                                        @for(String part : bautechnikS.getObjectParts())
+                                            <baw:objectPart>
+                                                <gco:CharacterString>${part}</gco:CharacterString>
+                                            </baw:objectPart>
+                                        @endfor
+                                        @for(String goal : bautechnikS.getResearchGoals())
+                                            <baw:investigationGoal>
+                                                <gco:CharacterString>${goal}</gco:CharacterString>
+                                            </baw:investigationGoal>
+                                        @endfor
+                                        @if(TransformationTools.hasValue(bautechnikS.getSpatialDimension()))
+                                            <baw:spatialDimensionality>
+                                                <gco:CharacterString>${bautechnikS.getSpatialDimension()}</gco:CharacterString>
+                                            </baw:spatialDimensionality>
+                                        @endif
+                                        @if(bautechnikS.getTimeDimension() != null)
+                                            <baw:timeDimension>
+                                                <gco:Boolean>${bautechnikS.getTimeDimension()}</gco:Boolean>
+                                            </baw:timeDimension>
+                                        @endif
+                                        @for(String level : bautechnikS.getLevels())
+                                            <baw:investigationLevel>
+                                                <gco:CharacterString>${level}</gco:CharacterString>
+                                            </baw:investigationLevel>
+                                        @endfor
+                                        @for(String phase : bautechnikS.getPhases())
+                                            <baw:investigationStage>
+                                                <gco:CharacterString>${phase}</gco:CharacterString>
+                                            </baw:investigationStage>
+                                        @endfor
+                                        @if(bautechnikS.getCalculationConcept() != null)
+                                            @if(bautechnikS.getCalculationConcept().getMaterialLinear() != null)
+                                                <baw:materialConcept>
+                                                    <gco:CharacterString>${bautechnikS.getCalculationConcept().getMaterialLinear() ? "linear" : "nonlinear"}</gco:CharacterString>
+                                                </baw:materialConcept>
+                                            @endif
+                                            @if(bautechnikS.getCalculationConcept().getGeometricLinear() != null)
+                                                <baw:geometryConcept>
+                                                    <gco:CharacterString>${bautechnikS.getCalculationConcept().getGeometricLinear() ? "linear" : "nonlinear"}</gco:CharacterString>
+                                                </baw:geometryConcept>
+                                            @endif
+                                            @if(bautechnikS.getCalculationConcept().getImperfections() != null)
+                                                <baw:imperfections>
+                                                    <gco:CharacterString>${bautechnikS.getCalculationConcept().getImperfections() ? "with" : "without"}</gco:CharacterString>
+                                                </baw:imperfections>
+                                            @endif
+                                        @endif
+                                        @for(String material : bautechnikS.getMaterials())
+                                            <baw:materials>
+                                                <gco:CharacterString>${material}</gco:CharacterString>
+                                            </baw:materials>
+                                        @endfor
+                                        @if(bautechnikS.getMaterialParameters() != null)
+                                            @for(var r : bautechnikS.getMaterialParameters().getReinforcement())
+                                                @if(r.getYieldLimit() != null)
+                                                    <baw:reinforcementYieldStrength>
+                                                        <gco:Decimal>${r.getYieldLimit()}</gco:Decimal>
+                                                    </baw:reinforcementYieldStrength>
+                                                @endif
+                                            @endfor
+                                            @for(var s : bautechnikS.getMaterialParameters().getSteel())
+                                                @if(s.getYieldLimit() != null)
+                                                    <baw:steelYieldStrength>
+                                                        <gco:Decimal>${s.getYieldLimit()}</gco:Decimal>
+                                                    </baw:steelYieldStrength>
+                                                @endif
+                                            @endfor
+                                            @if(!bautechnikS.getMaterialParameters().getConcrete().isEmpty())
+                                                <baw:concreteCompressiveStrength>
+                                            @for(var concreteEntry : bautechnikS.getMaterialParameters().getConcrete())
+                                                        <baw:ConcreteCompressiveStrength>
+                                                            <baw:concreteCompressiveStrength>
+                                                                <gco:Decimal>${concreteEntry.getValue()}</gco:Decimal>
+                                                            </baw:concreteCompressiveStrength>
+                                                            <baw:parameter>
+                                                                <gco:CharacterString>${concreteEntry.getUnit()}</gco:CharacterString>
+                                                            </baw:parameter>
+                                                        </baw:ConcreteCompressiveStrength>
+                                            @endfor
+                                                    </baw:concreteCompressiveStrength>
+                                            @endif
+                                        @endif
+                                        @for(String model : bautechnikS.getMaterialModels())
+                                            <baw:materialModel>
+                                                <gco:CharacterString>${model}</gco:CharacterString>
+                                            </baw:materialModel>
+                                        @endfor
+                                        @for(String elementType : bautechnikS.getElementTypes())
+                                            <baw:elementType>
+                                                <gco:CharacterString>${elementType}</gco:CharacterString>
+                                            </baw:elementType>
+                                        @endfor
+                                        @for(String einwirkung : bautechnikS.getEffects())
+                                            <baw:impact>
+                                                <gco:CharacterString>${einwirkung}</gco:CharacterString>
+                                            </baw:impact>
+                                        @endfor
+                                        @for(String physics : bautechnikS.getPhysics())
+                                            <baw:physics>
+                                                <gco:CharacterString>${physics}</gco:CharacterString>
+                                            </baw:physics>
+                                        @endfor
+                                        @for(String analysis : bautechnikS.getAnalysisTypes())
+                                            <baw:analysisType>
+                                                <gco:CharacterString>${analysis}</gco:CharacterString>
+                                            </baw:analysisType>
+                                        @endfor
+                                    </baw:StructuralEngineeringSimulation>
+                                </baw:structuralEngineeringSimulation>
+                            @endif
+                        </baw:Simulation>
+                    </baw:simulation>
+                @endif
+                @if(page.isBawMeasurement())
+                    <baw:measurement>
+                        <baw:Measurement>
+                            @for(String method : page.getMeasuringMethod())
+                                <baw:measurementMethod>
+                                    <gco:CharacterString>${method}</gco:CharacterString>
+                                </baw:measurementMethod>
+                            @endfor
+                            @for(MeasurementDevice device : page.getMeasurementDevices())
+                                <baw:measurementDevice>
+                                    <baw:MeasurementDevice>
+                                        <baw:deviceName>
+                                            <gco:CharacterString>${device.getName() != null ? device.getName() : ""}</gco:CharacterString>
+                                        </baw:deviceName>
+                                        @if(TransformationTools.hasValue(device.getId()))
+                                            <baw:deviceId>
+                                                <gco:CharacterString>${device.getId()}</gco:CharacterString>
+                                            </baw:deviceId>
+                                        @endif
+                                        @if(TransformationTools.hasValue(device.getModel()))
+                                            <baw:deviceModel>
+                                                <gco:CharacterString>${device.getModel()}</gco:CharacterString>
+                                            </baw:deviceModel>
+                                        @endif
+                                        @if(TransformationTools.hasValue(device.getDescription()))
+                                            <baw:description>
+                                                <gco:CharacterString>${device.getDescription()}</gco:CharacterString>
+                                            </baw:description>
+                                        @endif
+                                    </baw:MeasurementDevice>
+                                </baw:measurementDevice>
+                            @endfor
+                            @for(TargetParameter param : page.getTargetParameters())
+                                <baw:measurementParameter>
+                                    <baw:MeasurementParameter>
+                                        <baw:parameterName>
+                                            <gco:CharacterString>${param.getName() != null ? param.getName() : ""}</gco:CharacterString>
+                                        </baw:parameterName>
+                                        <baw:parameterType>
+                                            <gco:CharacterString>${param.getType() != null ? param.getType() : ""}</gco:CharacterString>
+                                        </baw:parameterType>
+                                        @if(TransformationTools.hasValue(param.getFormula()))
+                                            <baw:parameterFunction>
+                                                <gco:CharacterString>${param.getFormula()}</gco:CharacterString>
+                                            </baw:parameterFunction>
+                                        @endif
+                                        <baw:uom>
+                                            <gco:CharacterString>${param.getUnit() != null ? param.getUnit() : ""}</gco:CharacterString>
+                                        </baw:uom>
+                                    </baw:MeasurementParameter>
+                                </baw:measurementParameter>
+                            @endfor
+                            <baw:hydraulicEngineeringMeasurement>
+                                <baw:HydraulicEngineeringMeasurement>
+                                    @if(TransformationTools.hasValue(page.getSpatiality()))
+                                        <baw:measurementSpatiality>
+                                            <gco:CharacterString>${page.getSpatiality()}</gco:CharacterString>
+                                        </baw:measurementSpatiality>
+                                    @endif
+                                    @if(page.getTimestep() != null)
+                                        <baw:temporalAccuracy>
+                                            <gco:Decimal>${page.getTimestep()}</gco:Decimal>
+                                        </baw:temporalAccuracy>
+                                    @endif
+                                    @if(page.getFrequency() != null)
+                                        <baw:measurementFrequency>
+                                            <gco:Decimal>${page.getFrequency()}</gco:Decimal>
+                                        </baw:measurementFrequency>
+                                    @endif
+                                    @if(page.getMeasuringDepth() != null)
+                                        <baw:measurementDepth>
+                                            <baw:MeasurementDepth>
+                                                @if(page.getMeasuringDepth().getValue() != null)
+                                                    <baw:measurementDepth>
+                                                        <gco:Decimal>${page.getMeasuringDepth().getValue()}</gco:Decimal>
+                                                    </baw:measurementDepth>
+                                                @endif
+                                                @if(page.getMeasuringDepth().getCrs() != null)
+                                                    <baw:verticalCRS>
+                                                        @template.export.ingrid.idf.anchorOrCharacterString(model = page.getMeasuringDepth().getCrs())
+                                                    </baw:verticalCRS>
+                                                @endif
+                                            </baw:MeasurementDepth>
+                                        </baw:measurementDepth>
+                                    @endif
+                                    @for(ZeroLevel level : page.getZeroLevel())
+                                        <baw:gaugeZeroPoint>
+                                            <baw:GaugeZeroPoint>
+                                                <baw:gaugeZeroPoint>
+                                                    <gco:Decimal>${level.getValue() != null ? level.getValue() : ""}</gco:Decimal>
+                                                </baw:gaugeZeroPoint>
+                                                <baw:uom>
+                                                    <gco:CharacterString>${level.getUnit() != null ? level.getUnit() : ""}</gco:CharacterString>
+                                                </baw:uom>
+                                                @if(TransformationTools.hasValue(level.getCrs()))
+                                                    <baw:verticalCRS>
+                                                        <gco:CharacterString>${level.getCrs()}</gco:CharacterString>
+                                                    </baw:verticalCRS>
+                                                @endif
+                                                @if(TransformationTools.hasValue(level.getDescription()))
+                                                    <baw:description>
+                                                        <gco:CharacterString>${level.getDescription()}</gco:CharacterString>
+                                                    </baw:description>
+                                                @endif
+                                            </baw:GaugeZeroPoint>
+                                        </baw:gaugeZeroPoint>
+                                    @endfor
+                                    @for(AverageWaterLevel level : page.getAverageWaterLevel())
+                                        <baw:meanWaterLevel>
+                                            <baw:MeanWaterLevel>
+                                                <baw:waterLevel>
+                                                    <gco:Decimal>${level.getValue() != null ? level.getValue() : ""}</gco:Decimal>
+                                                </baw:waterLevel>
+                                                <baw:uom>
+                                                    <gco:CharacterString>${level.getUnit() != null ? level.getUnit() : ""}</gco:CharacterString>
+                                                </baw:uom>
+                                            </baw:MeanWaterLevel>
+                                        </baw:meanWaterLevel>
+                                    @endfor
+                                    @if(TransformationTools.hasValue(page.getMinDrain()))
+                                        <baw:minDischarge>
+                                            <gco:Decimal>${page.getMinDrain()}</gco:Decimal>
+                                        </baw:minDischarge>
+                                    @endif
+                                    @if(TransformationTools.hasValue(page.getMaxDrain()))
+                                        <baw:maxDischarge>
+                                            <gco:Decimal>${page.getMaxDrain()}</gco:Decimal>
+                                        </baw:maxDischarge>
+                                    @endif
+                                    @if(TransformationTools.hasValue(page.getDataQualityDescription()))
+                                        <baw:dataQualityDescription>
+                                            <gco:CharacterString>${page.getDataQualityDescription()}</gco:CharacterString>
+                                        </baw:dataQualityDescription>
+                                    @endif
+                                </baw:HydraulicEngineeringMeasurement>
+                            </baw:hydraulicEngineeringMeasurement>
+                        </baw:Measurement>
+                    </baw:measurement>
+                @endif
+            </baw:BAW_Metadata>
+        </gmd:supplementalInformation>
+    @endif
 `,
 extraContent = @`
     @if( TransformationTools.hasValue(page.getTimestep()) )

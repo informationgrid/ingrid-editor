@@ -1,0 +1,428 @@
+[
+  {
+    "title": "simulationsdaten bautechnik",
+    "_uuid": "0c9ba05d-97b2-4d47-a794-1fb41399bb02",
+    "_parent": null,
+    "_type": "BawSimulation",
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": false,
+      "subType": {
+        "key": "5",
+        "value": "Datensatz",
+        "_codelistId": "525"
+      }
+    },
+    "description": "grhtr",
+    "alternateTitle": "",
+    "parentIdentifier": "",
+    "pointOfContact": [
+      {
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+        "type": {
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
+        }
+      },
+      {
+        "ref": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+        "type": {
+          "key": "7",
+          "value": "Ansprechpartner",
+          "_codelistId": "505"
+        }
+      }
+    ],
+    "graphicOverviews": [],
+    "advProductGroups": [],
+    "themes": [],
+    "openDataCategories": [],
+    "keywords": {
+      "free": [],
+      "bawKeywords": [],
+      "subsoilKeywords": []
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Neuer Raumbezug",
+          "value": {
+            "lat1": 48.876231845692516,
+            "lon1": 6.899414062500001,
+            "lat2": 54.12120602665425,
+            "lon2": 14.018554687500002
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "9000002",
+          "value": "DE_DHDN / GK_3",
+          "_codelistId": "100"
+        }
+      ],
+      "verticalSpatialSystems": [],
+      "description": ""
+    },
+    "temporal": {
+      "event": {
+        "created": "2026-06-30T22:00:00.000Z"
+      },
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      },
+      "description": ""
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraints": [
+        {
+          "key": "1",
+          "value": "Es gelten keine Zugriffsbeschränkungen",
+          "_codelistId": "6010"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "24",
+            "value": "Andere geschlossene Lizenz",
+            "_codelistId": "6500"
+          },
+          "source": ""
+        }
+      ],
+      "useLimitation": ""
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [],
+    "fileReferences": [],
+    "invekosKeywords": [],
+    "hvdCategories": [],
+    "metadata": {
+      "language": {
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
+      },
+      "characterSet": null
+    },
+    "resolution": [],
+    "topicCategories": [
+      {
+        "key": "17",
+        "value": "Bauwerke",
+        "_codelistId": "527"
+      }
+    ],
+    "spatialRepresentationType": [],
+    "lineage": {
+      "statement": ""
+    },
+    "identifier": "https://registry.gdi-de.org/id/test1/7f97aa60-8d13-428f-89fd-dff68279be9a",
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": null,
+      "horizontal": null,
+      "griddedDataPositionalAccuracy": null
+    },
+    "qualities": [],
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "vectorSpatialRepresentation": [],
+    "bawOrderInfo": {
+      "key": null,
+      "value": "0.02.10003.00 - Auswahl, Installation und Betreuung der Mess- und Warnanlage",
+      "_codelistId": "bawOrderInfo"
+    },
+    "literatureReferences": [],
+    "timestep": null,
+    "simulationParameter": [],
+    "simulationModelType": [
+      {
+        "key": null,
+        "value": "Advektion",
+        "_codelistId": "3950003"
+      },
+      {
+        "key": null,
+        "value": "gegenständlich",
+        "_codelistId": "3950003"
+      }
+    ],
+    "dimensionality": {
+      "key": null,
+      "value": "2D-hor",
+      "_codelistId": "3950000"
+    },
+    "process": {
+      "key": null,
+      "value": "NCANALYSE",
+      "_codelistId": "3950001"
+    },
+    "version": [
+      "v1",
+      "v2"
+    ],
+    "extension": [
+      "e1",
+      "e2"
+    ],
+    "simulationPhases": [
+      {
+        "type": "bautechnikSimulation",
+        "object": [
+          {
+            "key": "7",
+            "value": "Brücken",
+            "_codelistId": "BAW_simulationObject"
+          },
+          {
+            "key": null,
+            "value": "customObject",
+            "_codelistId": "BAW_simulationObject"
+          }
+        ],
+        "objectPart": [
+          {
+            "key": "2",
+            "value": "Dammbalken",
+            "_codelistId": "BAW_simulationObjectPart"
+          },
+          {
+            "key": null,
+            "value": "customTeil",
+            "_codelistId": "BAW_simulationObjectPart"
+          }
+        ],
+        "researchGoal": [
+          {
+            "key": "10",
+            "value": "Bemessung Neubau",
+            "_codelistId": "BAW_simulationResearchGoal"
+          },
+          {
+            "key": null,
+            "value": "customUnter",
+            "_codelistId": "BAW_simulationResearchGoal"
+          }
+        ],
+        "dimension": {
+          "spatialDimension": {
+            "key": "2",
+            "value": "2D",
+            "_codelistId": "BAW_simulationSpatialDimension"
+          },
+          "timeDimension": true
+        },
+        "level": [
+          {
+            "key": "3",
+            "value": "design",
+            "_codelistId": "BAW_simulationLevel"
+          },
+          {
+            "key": "1",
+            "value": "mean",
+            "_codelistId": "BAW_simulationLevel"
+          }
+        ],
+        "phase": [
+          {
+            "key": "6",
+            "value": "TbVS III",
+            "_codelistId": "BAW_simulationPhase"
+          },
+          {
+            "key": "2",
+            "value": "TbW B",
+            "_codelistId": "BAW_simulationPhase"
+          }
+        ],
+        "calculationConcept": {
+          "isMaterialLinear": true,
+          "isGeometricLinear": false,
+          "hasImperfections": true
+        },
+        "materials": [
+          {
+            "key": "7",
+            "value": "Faserverstärkte Werkstoffe",
+            "_codelistId": "BAW_simulationMaterial"
+          },
+          {
+            "key": null,
+            "value": "customWerkstoff",
+            "_codelistId": "BAW_simulationMaterial"
+          }
+        ],
+        "materialParameters": {
+          "reinforcement": [
+            {
+              "yieldLimit": 2222222.0
+            },
+            {
+              "yieldLimit": 3333333.0
+            }
+          ],
+          "steel": [
+            {
+              "yieldLimit": 4444444.0
+            },
+            {
+              "yieldLimit": 5555555.0
+            }
+          ],
+          "concrete": [
+            {
+              "compressiveStrength": 66666.0,
+              "unitOfMeasure": {
+                "key": "3",
+                "value": "f_cd",
+                "_codelistId": "BAW_simulationConcreteUnit"
+              }
+            },
+            {
+              "compressiveStrength": 77777.0,
+              "unitOfMeasure": {
+                "key": "2",
+                "value": "f_ck",
+                "_codelistId": "BAW_simulationConcreteUnit"
+              }
+            },
+            {
+              "compressiveStrength": 88888.0,
+              "unitOfMeasure": {
+                "key": "1",
+                "value": "f_cm",
+                "_codelistId": "BAW_simulationConcreteUnit"
+              }
+            }
+          ]
+        },
+        "materialModel": [
+          {
+            "key": "4",
+            "value": "Bruchmechanik",
+            "_codelistId": "BAW_simulationMaterialModel"
+          },
+          {
+            "key": null,
+            "value": "customMatmod",
+            "_codelistId": "BAW_simulationMaterialModel"
+          }
+        ],
+        "elementTypes": [
+          {
+            "key": "7",
+            "value": "Interface/Kontakt",
+            "_codelistId": "BAW_simulationElementType"
+          },
+          {
+            "key": null,
+            "value": "cutomeletype",
+            "_codelistId": "BAW_simulationElementType"
+          }
+        ],
+        "effects": [
+          {
+            "key": "16",
+            "value": "Änderung der Stützbedingungen",
+            "_codelistId": "BAW_simulationEffect"
+          },
+          {
+            "key": null,
+            "value": "customein",
+            "_codelistId": "BAW_simulationEffect"
+          }
+        ],
+        "physics": [
+          {
+            "key": "3",
+            "value": "Fluiddynamik",
+            "_codelistId": "BAW_simulationPhysics"
+          },
+          {
+            "key": null,
+            "value": "customphysik",
+            "_codelistId": "BAW_simulationPhysics"
+          }
+        ],
+        "analysisType": [
+          {
+            "key": "7",
+            "value": "Beulanalyse",
+            "_codelistId": "BAW_simulationAnalysisType"
+          },
+          {
+            "key": null,
+            "value": "customanaly",
+            "_codelistId": "BAW_simulationAnalysisType"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_uuid": "a6c157df-3603-43e8-82f3-4128ffae0d29",
+    "_type": "InGridOrganisationDoc",
+    "title": "orga",
+    "organization": "orga",
+    "address": {
+      "country": {
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
+      },
+      "administrativeArea": null
+    },
+    "contact": [
+      {
+        "type": {
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
+        },
+        "connection": "sef@sfe.de"
+      }
+    ],
+    "positionName": "",
+    "hoursOfService": ""
+  }
+]
