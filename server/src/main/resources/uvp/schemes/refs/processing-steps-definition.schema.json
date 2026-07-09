@@ -35,15 +35,15 @@
         "disclosureDate": {
           "$ref": "general.schema.json#/definitions/Date"
         },
+        "publishDuringDisclosure": {
+          "type": ["null", "boolean"]
+        },
         "announcementDocs": {
           "type": ["null", "array"],
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           },
           "minItems": 1
-        },
-        "announcementDocsPublishDuringDisclosure": {
-          "type": ["null", "boolean"]
         },
         "applicationDocs": {
           "type": ["null", "array"],
@@ -52,26 +52,17 @@
           },
           "minItems": 1
         },
-        "applicationDocsPublishDuringDisclosure": {
-          "type": ["null", "boolean"]
-        },
         "reportsRecommendationDocs": {
           "type": ["null", "array"],
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           }
         },
-        "reportsRecommendationDocsPublishDuringDisclosure": {
-          "type": ["null", "boolean"]
-        },
         "furtherDocs": {
           "type": ["null", "array"],
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           }
-        },
-        "furtherDocsPublishDuringDisclosure": {
-          "type": ["null", "boolean"]
         }
       },
       "required": ["disclosureDate", "announcementDocs", "applicationDocs"]

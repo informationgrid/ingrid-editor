@@ -1023,6 +1023,23 @@ export class FormFieldHelper {
     };
   }
 
+  addToggle(id, label, options?: CheckboxOptions): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "toggle",
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel"],
+      defaultValue: options?.defaultValue ?? false,
+      props: {
+        color: "accent",
+        externalLabel: label,
+        label: options?.fieldLabel,
+      },
+      expressions: expressions,
+    };
+  }
+
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,

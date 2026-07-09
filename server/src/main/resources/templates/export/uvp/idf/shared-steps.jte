@@ -17,16 +17,10 @@
                     <from>${((StepPublicDisclosure) step).getDisclosureDate().getStart()}</from>
                     <to>${((StepPublicDisclosure) step).getDisclosureDate().getEnd()}</to>
                 </datePeriod>
-                @if(((StepPublicDisclosure) step).isPublishable("announcementDocs"))
-                    @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("applicationDocs"))
+                @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
+                @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("reportsRecommendationDocs"))
                     @template.export.uvp.idf.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("furtherDocs"))
                     @template.export.uvp.idf.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
                 @endif
             </step>
