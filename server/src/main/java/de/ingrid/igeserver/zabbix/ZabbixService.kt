@@ -485,8 +485,7 @@ class ZabbixService(
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String, hash: Boolean = true) {
         val docNameShort = createDocumentName(docName, docUrl, hash)
-        //  wrap docName in quotes if it contains a comma for zabbix compatibility
-        val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
+        val docNameTriggerExpression = formatParameter(docNameShort)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
 
@@ -505,6 +504,16 @@ class ZabbixService(
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params)
         val values = jacksonObjectMapper().writeValueAsString(trigger)
         requestApi(values)
+    }
+
+    private fun formatParameter(value: String): String {
+        val needsQuotes = value.any { it == ',' || it == '[' || it == ']' || it == '"' || it == '\\' }
+        if (!needsQuotes) return value
+
+        return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .let { "\"$it\"" }
     }
 
     private fun isExpiredWebscenario(webscenario: JsonNode?): Boolean = webscenario?.let { getTag(it, "expired").isNotEmpty() } == true
