@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.3.1.2 (09.07.2026)
+
+### Bugfixes 
+
+* Sonderzeichen in Dokumentennamen führen zu Zabbix Fehlern (#9273)
+
+
 ## 8.3.1.1 (02.06.2026)
 
 ### Bugfixes 
