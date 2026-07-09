@@ -98,6 +98,7 @@ class InternalImportMigrations : AnnotationSpec() {
         // Check if the deprecated attribute is removed.
         val step0 = processingSteps.get(0)
         step0.has("announcementDocsPublishDuringDisclosure") shouldBe false
+        step0.has("publishDuringDisclosure") shouldBe false
 
         // Check if one of the target migration attributes is true.
         val step1 = processingSteps.get(1)
