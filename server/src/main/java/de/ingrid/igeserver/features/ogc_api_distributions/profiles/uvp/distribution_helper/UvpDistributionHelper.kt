@@ -77,6 +77,20 @@ data class PublicDisclosureReportsRecommendationDocs(
     val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
 )
 
+data class ScopeOfInvestigationDateDocs(
+    val type: String,
+    val scopingDate: JsonNode,
+    val scopingDateDocs: List<JsonNode>,
+    val scopingDateDocsPublishDuringScoping: Boolean,
+)
+
+data class ScopeOfInvestigationGeneralDocs(
+    val type: String,
+    val scopingDate: JsonNode,
+    val scopingGeneralDocs: List<JsonNode>,
+    val scopingGeneralDocsPublishDuringScoping: Boolean,
+)
+
 @Profile("uvp")
 @Service
 class UvpDistributionHelper(
@@ -211,8 +225,41 @@ class UvpDistributionHelper(
                         }
                     }
                 }
+
+                if (type == "scopeOfInvestigation") {
+                    val docTypeList: List<String> = listOf("scopingDateDocs", "scopingGeneralDocs")
+                    docTypeList.forEach { docType ->
+                        val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
+                        if (updatedProcessStep is JsonNode) {
+                            val scopingDateDocs = updatedProcessStep.get("scopingDateDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val scopingGeneralDocs = updatedProcessStep.get("scopingGeneralDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+
+                            if (scopingDateDocs.isNotEmpty()) {
+                                val requestedInfo = ScopeOfInvestigationDateDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    scopingDate = updatedProcessStep.get("scopingDate"),
+                                    scopingDateDocs = scopingDateDocs,
+                                    scopingDateDocsPublishDuringScoping = updatedProcessStep.getBoolean("scopingDateDocsPublishDuringScoping")!!,
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+
+                            if (scopingGeneralDocs.isNotEmpty()) {
+                                val requestedInfo = ScopeOfInvestigationGeneralDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    scopingDate = updatedProcessStep.get("scopingDate"),
+                                    scopingGeneralDocs = scopingGeneralDocs,
+                                    scopingGeneralDocsPublishDuringScoping = updatedProcessStep.getBoolean("scopingGeneralDocsPublishDuringScoping")!!,
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+                        }
+                    }
+                }
             }
-            return convertListToJsonNode(matchedDistributions as List<Any>)
+            convertListToJsonNode(matchedDistributions as List<Any>)
         }
     }
 
@@ -242,6 +289,12 @@ class UvpDistributionHelper(
 
                 "publicDisclosure" -> {
                     (distribution["furtherDocs"] + distribution["applicationDocs"] + distribution["announcementDocs"] + distribution["reportsRecommendationDocs"]).forEach { doc ->
+                        collectMissingFiles(doc, collectionId, userID, recordId, missingFiles)
+                    }
+                }
+
+                "scopeOfInvestigation" -> {
+                    (distribution["scopingGeneralDocs"] + distribution["scopingDateDocs"]).forEach { doc ->
                         collectMissingFiles(doc, collectionId, userID, recordId, missingFiles)
                     }
                 }
