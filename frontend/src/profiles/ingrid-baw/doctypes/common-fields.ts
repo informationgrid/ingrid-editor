@@ -233,8 +233,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
       fieldConfig,
       "references",
     );
-    this.addAfter(referencesPosition, this.getLfsReferencesFieldConfig(doc));
     this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
+    this.addAfter(referencesPosition, this.getLfsReferencesFieldConfig(doc));
 
     // remove fileReferences
     const fileReferencesPosition = this.findParentFieldElementWithId(

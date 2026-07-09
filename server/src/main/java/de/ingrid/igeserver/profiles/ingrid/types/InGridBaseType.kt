@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component
 data class IngridIncomingReferenceOptions(
     override val docStateFilter: DocStateFilter = DocStateFilter.LATEST,
     val onlyInCoupledResources: Boolean = false,
+    val literatureReferences: Boolean = false,
     val addStructuralChildren: Boolean = false,
 ) : IncomingReferenceOptions
 
@@ -85,6 +86,7 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
         val coupledResourceFilter =
             """ data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
         val referenceFilter = """ data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' """
+        val literatureReferences = """ data->'literatureReferences' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
         val parentIdentifierFilter = """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
         val structuralParentFilter =
             """ ( document_wrapper.parent_id = ${doc.wrapperId} AND document_wrapper.type != 'FOLDER' ) """
@@ -97,6 +99,10 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
             if (options.addStructuralChildren) {
                 useFilters.add(structuralParentFilter)
             }
+        }
+
+        if (!options.literatureReferences) {
+            useFilters.add(literatureReferences)
         }
 
         return useFilters.joinToString(" OR ", "(", ")")
