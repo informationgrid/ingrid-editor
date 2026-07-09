@@ -71,6 +71,7 @@ class M104MigratePublishDuringDisclosure : MigrationBase("0.104") {
             do {
                 val documents =
                     entityManager.createQuery("""SELECT doc FROM Document doc JOIN doc.catalog cat WHERE doc.state != "ARCHIVED" AND cat.identifier = :catalogId ORDER BY doc.id""")
+                        .setParameter("catalogId", catalogId)
                         .setFirstResult((page - 1) * pageSize)
                         .setMaxResults(pageSize)
                         .resultList
