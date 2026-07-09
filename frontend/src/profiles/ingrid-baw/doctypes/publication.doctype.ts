@@ -110,6 +110,25 @@ export class PublicationDoctypeBaw extends IngridShared {
       alternateTitlePosition,
       this.common.getBAWOrderInfoFieldConfig(this),
     );
+    const referencesPosition = IngridShared.findFieldElementWithId(
+      fieldConfig,
+      "references",
+    );
+    this.addAfter(
+      referencesPosition,
+      this.addIncomingReferences(
+        "Auf diese Literatur verweisende Datensätze",
+        true,
+        false,
+        "Diese Literatur wird von keinem Datensatz referenziert.",
+        "Die Referenz kann nur vom referenzierenden Datensatz entfernt werden.",
+        {
+          className: "optional",
+          contextHelpId: "literatureReferences",
+          queryOptions: ["literatureReferences"],
+        },
+      ),
+    );
 
     return fieldConfig;
   };
