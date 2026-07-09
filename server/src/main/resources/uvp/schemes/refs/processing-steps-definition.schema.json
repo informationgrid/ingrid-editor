@@ -102,12 +102,18 @@
           },
           "minItems": 1
         },
+        "scopingDateDocsPublishDuringScoping": {
+          "type": ["null", "boolean"]
+        },
         "scopingGeneralDocs": {
           "type": "array",
           "items": {
             "$ref": "general.schema.json#/definitions/Doc"
           },
           "minItems": 1
+        },
+        "scopingGeneralDocsPublishDuringScoping": {
+          "type": ["null", "boolean"]
         }
       }
     }
