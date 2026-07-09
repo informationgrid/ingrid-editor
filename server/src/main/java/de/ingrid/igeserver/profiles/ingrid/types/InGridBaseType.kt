@@ -82,12 +82,22 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
      * @return A SQL subquery string that can be used to identify documents linked
      *         to the specified document through various relation types.
      */
-    private fun getIncomingRelationSubquery(doc: Document, options: IngridIncomingReferenceOptions): String {
+    private fun getIncomingRelationSubquery(
+        doc: Document,
+        options: IngridIncomingReferenceOptions
+    ): String {
+        return getIncomingRelationFilters(doc, options)
+            .joinToString(" OR ", "(", ")")
+    }
+
+    fun getIncomingRelationFilters(
+        doc: Document,
+        options: IngridIncomingReferenceOptions
+    ): MutableList<String> {
         val coupledResourceFilter =
             """ data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
         val referenceFilter = """ data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' """
-        val literatureReferences = """ data->'literatureReferences' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
-        val parentIdentifierFilter = """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
+        val parentIdentifierFilter =  """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
         val structuralParentFilter =
             """ ( document_wrapper.parent_id = ${doc.wrapperId} AND document_wrapper.type != 'FOLDER' ) """
 
@@ -96,16 +106,13 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
         if (!options.onlyInCoupledResources) {
             useFilters.add(referenceFilter)
             useFilters.add(parentIdentifierFilter)
+
             if (options.addStructuralChildren) {
                 useFilters.add(structuralParentFilter)
             }
         }
 
-        if (!options.literatureReferences) {
-            useFilters.add(literatureReferences)
-        }
-
-        return useFilters.joinToString(" OR ", "(", ")")
+        return useFilters
     }
 
     override fun getUploads(doc: Document): List<String> {

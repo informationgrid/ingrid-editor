@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid_baw.types
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.convertToIngridOptionsWithStructuralChildren
@@ -63,13 +64,26 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val className = "BawPublication"
     override fun parentClassName() = super.className
     override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
-}
+    override fun getIncomingRelationFilters(
+        doc: Document,
+        options: IngridIncomingReferenceOptions
+    ): MutableList<String> {
+        val literatureReferences =
+            """ data->'literatureReferences' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
 
-@Component
-class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    // TODO: Add schema
-    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
-    override val profiles = arrayOf(BawProfile.ID)
-    override val className = "PublicationAddressDoc"
-    override fun parentClassName() = super.className
+        return super.getIncomingRelationFilters(doc, options).apply {
+            if (!options.literatureReferences) {
+                add(literatureReferences)
+            }
+        }
+    }
+
+    @Component
+    class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
+        // TODO: Add schema
+        override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+        override val profiles = arrayOf(BawProfile.ID)
+        override val className = "PublicationAddressDoc"
+        override fun parentClassName() = super.className
+    }
 }
