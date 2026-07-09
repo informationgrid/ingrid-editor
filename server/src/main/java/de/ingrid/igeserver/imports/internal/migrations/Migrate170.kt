@@ -45,8 +45,11 @@ class Migrate170 {
             if (processingSteps.isArray) {
                 processingSteps.forEach { step ->
                     if (step is ObjectNode) {
+                        if (step.has("announcementDocsPublishDuringDisclosure")) {
+                            step.remove("announcementDocsPublishDuringDisclosure")
+                        }
+
                         val oldKeys = listOf(
-                            "announcementDocsPublishDuringDisclosure",
                             "applicationDocsPublishDuringDisclosure",
                             "furtherDocsPublishDuringDisclosure",
                             "reportsRecommendationDocsPublishDuringDisclosure",

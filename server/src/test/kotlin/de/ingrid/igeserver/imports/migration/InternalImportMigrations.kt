@@ -79,7 +79,10 @@ class InternalImportMigrations : AnnotationSpec() {
             putArray("processingSteps").apply {
                 addObject().apply {
                     put("announcementDocsPublishDuringDisclosure", true)
-                    put("applicationDocsPublishDuringDisclosure", false)
+                }
+                addObject().apply {
+                    put("applicationDocsPublishDuringDisclosure", true)
+                    put("furtherDocsPublishDuringDisclosure", false)
                 }
                 addObject().apply {
                     put("announcementDocsPublishDuringDisclosure", false)
@@ -92,18 +95,22 @@ class InternalImportMigrations : AnnotationSpec() {
 
         val processingSteps = Migrate170.getProcessingStepsOfDocument(data)!!
 
-        // Check if one of the target migration attributes is true.
+        // Check if the deprecated attribute is removed.
         val step0 = processingSteps.get(0)
         step0.has("announcementDocsPublishDuringDisclosure") shouldBe false
-        step0.has("applicationDocsPublishDuringDisclosure") shouldBe false
-        step0.get("publishDuringDisclosure").asBoolean() shouldBe true
 
-        // Check if all target migration attributes are false.
+        // Check if one of the target migration attributes is true.
         val step1 = processingSteps.get(1)
-        step1.has("announcementDocsPublishDuringDisclosure") shouldBe false
         step1.has("applicationDocsPublishDuringDisclosure") shouldBe false
         step1.has("furtherDocsPublishDuringDisclosure") shouldBe false
-        step1.has("reportsRecommendationDocsPublishDuringDisclosure") shouldBe false
-        step1.get("publishDuringDisclosure").asBoolean() shouldBe false
+        step1.get("publishDuringDisclosure").asBoolean() shouldBe true
+
+        // Check if all target migration attributes are false.
+        val step2 = processingSteps.get(2)
+        step2.has("announcementDocsPublishDuringDisclosure") shouldBe false
+        step2.has("applicationDocsPublishDuringDisclosure") shouldBe false
+        step2.has("furtherDocsPublishDuringDisclosure") shouldBe false
+        step2.has("reportsRecommendationDocsPublishDuringDisclosure") shouldBe false
+        step2.get("publishDuringDisclosure").asBoolean() shouldBe false
     }
 }
