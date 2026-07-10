@@ -80,7 +80,7 @@ dependencies {
         frontendFiles project(':frontend')
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
     implementation 'org.apache.tika:tika-core:3.2.3'
     implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.1'
