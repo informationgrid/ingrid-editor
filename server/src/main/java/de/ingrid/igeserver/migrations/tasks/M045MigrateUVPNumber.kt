@@ -46,8 +46,6 @@ class M045MigrateUVPNumber : MigrationBase("0.45") {
     @Autowired
     private lateinit var docRepo: DocumentRepository
 
-    override fun exec() {}
-
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'").resultList

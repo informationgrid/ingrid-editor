@@ -267,8 +267,8 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         if (ignoreKeycloakSSL) {
             val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
                 override fun getAcceptedIssuers(): Array<X509Certificate>? = null
-                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) {}
-                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) {}
+                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) = Unit
+                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) = Unit
             })
 
             val sslContext = SSLContext.getInstance("TLS").apply {

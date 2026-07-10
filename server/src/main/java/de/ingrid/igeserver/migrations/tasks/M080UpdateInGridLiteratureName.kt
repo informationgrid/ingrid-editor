@@ -44,7 +44,6 @@ class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
 
     @Autowired
     private lateinit var queryRepo: QueryRepository
-    override fun exec() {}
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {

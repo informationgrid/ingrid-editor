@@ -61,8 +61,8 @@ internal class KeycloakMockConfig(
     @Bean
     fun oauth2AuthorizedClientRepository(): OAuth2AuthorizedClientRepository = object : OAuth2AuthorizedClientRepository {
         override fun <T : org.springframework.security.oauth2.client.OAuth2AuthorizedClient?> loadAuthorizedClient(registrationId: String?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?): T? = null
-        override fun saveAuthorizedClient(authorizedClient: org.springframework.security.oauth2.client.OAuth2AuthorizedClient?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) {}
-        override fun removeAuthorizedClient(registrationId: String?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) {}
+        override fun saveAuthorizedClient(authorizedClient: org.springframework.security.oauth2.client.OAuth2AuthorizedClient?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) = Unit
+        override fun removeAuthorizedClient(registrationId: String?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) = Unit
     }
 
     @Bean

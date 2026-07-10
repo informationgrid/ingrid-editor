@@ -76,13 +76,13 @@ comments:
 complexity:
   active: true
   CognitiveComplexMethod:
-    active: false
+    active: true
     allowedComplexity: 15
   ComplexCondition:
     active: true
     allowedConditions: 3
   ComplexInterface:
-    active: false
+    active: true
     allowedDefinitions: 10
     includeStaticDeclarations: false
     includePrivateDeclarations: false

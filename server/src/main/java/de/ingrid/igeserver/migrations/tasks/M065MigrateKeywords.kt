@@ -46,8 +46,6 @@ class M065MigrateKeywords : MigrationBase("0.65") {
     @Autowired
     private lateinit var docRepo: DocumentRepository
 
-    override fun exec() {}
-
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList

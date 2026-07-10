@@ -141,7 +141,7 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
                 throw ServerException.withReason(msg)
             }
 
-            override fun itemOk(operationType: OperationType, item: BulkResponse.ItemDetails) {}
+            override fun itemOk(operationType: OperationType, item: BulkResponse.ItemDetails) = Unit
 
             override fun bulkRequestFailed(e: Exception, ops: List<Pair<String, String?>>) {
                 log.error("Bulk Request Failed: ${e.message}")

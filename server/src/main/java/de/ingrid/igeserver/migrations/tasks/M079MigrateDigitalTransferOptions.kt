@@ -47,8 +47,6 @@ class M079MigrateDigitalTransferOptions : MigrationBase("0.79") {
     @Autowired
     private lateinit var docRepo: DocumentRepository
 
-    override fun exec() {}
-
     override fun postExec() {
         val pageSize = 100
         var page = 1

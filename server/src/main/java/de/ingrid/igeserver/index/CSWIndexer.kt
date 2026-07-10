@@ -49,11 +49,9 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
         true
     }
 
-    override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String) {
-    }
+    override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String): Unit = Unit
 
-    override fun checkAndCreateInformationIndex() {
-    }
+    override fun checkAndCreateInformationIndex(): Unit = Unit
 
     override fun update(indexinfo: IndexInfo, docAny: Any) {
         val doc = convertToElasticDocument(docAny)
@@ -63,14 +61,11 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
         client.insertOrUpdate(doc, catalogId, transactionId)
     }
 
-    override fun updateIPlugInformation(id: String, info: String) {
-    }
+    override fun updateIPlugInformation(id: String, info: String): Unit = Unit
 
-    override fun flush() {
-    }
+    override fun flush(): Unit = Unit
 
-    override fun deleteIndex(index: String) {
-    }
+    override fun deleteIndex(index: String): Unit = Unit
 
     override fun getIndices(filter: String): List<String> = emptyList()
 
