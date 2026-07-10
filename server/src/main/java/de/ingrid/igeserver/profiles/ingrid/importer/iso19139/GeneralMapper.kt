@@ -583,29 +583,31 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.mapNotNull { it?.geographicIdentifier?.mdIdentifier?.code?.value }
         ?.getOrNull(0) ?: ""
 
-    fun getVerticalExtent(): VerticalExtentModel? {
-        return metadata.identificationInfo[0].identificationInfo?.extent
-            ?.flatMap { it.extend?.verticalElement ?: emptyList() }
-            ?.map {
-                val uom =
-                    it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
-                val uomId = codeListService.getCodeListEntryId("102", uom, "iso")
-                val min = it.verticalElement?.minimumValue?.value
-                val max = it.verticalElement?.maximumValue?.value
-                val spatialSystem = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
-                val spatialSystemId = codeListService.getCodeListEntryId("101", spatialSystem, isoData.catalogLanguage)
-                return if (uomId == null || min == null || max == null || spatialSystemId == null) {
-                    null
-                } else {
-                    VerticalExtentModel(
-                        KeyValue(uomId, codeListService.getCodelistValue("102", uomId, catalogLanguage), "102"),
-                        min,
-                        max,
-                        KeyValue(spatialSystemId, codeListService.getCodelistValue("101", spatialSystemId, catalogLanguage), "101"),
-                    )
-                }
-            }?.getOrNull<VerticalExtentModel>(0)
-    }
+    fun getVerticalExtent(): VerticalExtentModel? = metadata.identificationInfo[0].identificationInfo?.extent
+        ?.flatMap { it.extend?.verticalElement.orEmpty() }
+        // get First complete vertical extent
+        ?.firstNotNullOfOrNull { element ->
+            val vertical = element.verticalElement ?: return@firstNotNullOfOrNull null
+
+            val uomId = codeListService.getCodeListEntryId(
+                "102",
+                vertical.verticalCRS.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom,
+                "iso",
+            ) ?: return@firstNotNullOfOrNull null
+
+            val spatialSystemId = codeListService.getCodeListEntryId(
+                "101",
+                vertical.verticalCRS.verticalCRS?.verticalDatum?.verticalDatum?.name,
+                isoData.catalogLanguage,
+            ) ?: return@firstNotNullOfOrNull null
+
+            VerticalExtentModel(
+                KeyValue(uomId, codeListService.getCodelistValue("102", uomId, catalogLanguage), "102"),
+                vertical.minimumValue.value ?: return@firstNotNullOfOrNull null,
+                vertical.maximumValue.value ?: return@firstNotNullOfOrNull null,
+                KeyValue(spatialSystemId, codeListService.getCodelistValue("101", spatialSystemId, catalogLanguage), "101"),
+            )
+        }
 
     fun getLanguage(): KeyValue {
         val value = metadata.language?.codelist?.codeListValue!!
