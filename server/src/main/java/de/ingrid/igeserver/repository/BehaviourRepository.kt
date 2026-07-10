@@ -24,6 +24,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface BehaviourRepository : JpaRepository<Behaviour, Int> {
 
-    @Suppress("ktlint:standard:function-naming")
+    @Suppress("ktlint:standard:function-naming", "detekt:FunctionNaming", "detekt:FunctionParameterNaming")
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<Behaviour>
 }
