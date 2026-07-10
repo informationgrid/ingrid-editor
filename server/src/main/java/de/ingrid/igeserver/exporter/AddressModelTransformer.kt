@@ -256,7 +256,7 @@ open class AddressModelTransformer(
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
         documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 
@@ -269,7 +269,7 @@ open class AddressModelTransformer(
         val convertedDoc = try {
             val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid)
             DocumentData(wrapper, publishedDoc)
-        } catch (ex: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             // no published document found
             null
         }

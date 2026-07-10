@@ -68,7 +68,7 @@ abstract class OgcApiResearchQuery {
         val instance: Instant
         try {
             instance = Instant.parse(date)
-        } catch (ex: AccessDeniedException) {
+        } catch (_: AccessDeniedException) {
             throw ClientException.withReason("Malformed request syntax of DateTime:  $date") // how to throw correct error ?
         }
 

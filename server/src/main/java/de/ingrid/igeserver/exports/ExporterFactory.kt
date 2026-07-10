@@ -30,7 +30,7 @@ class ExporterFactory(private val exporterList: List<IgeExporter>) {
     fun getExporter(category: DocumentCategory, format: String): IgeExporter {
         try {
             return exporterList.first { exporter: IgeExporter -> category == exporter.typeInfo.category && format == exporter.typeInfo.type }
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw ConfigurationException.withReason("No exporter found for format '$format'.")
         }
     }

@@ -139,7 +139,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .map { user -> mapUser(user) }
         users.forEach { user -> user.role = ROLE_IGE_USER }
         users
-    } catch (e: jakarta.ws.rs.NotFoundException) {
+    } catch (_: jakarta.ws.rs.NotFoundException) {
         log.warn("No users found with role '$ROLE_IGE_USER'")
         emptyList()
     }
@@ -154,7 +154,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .map { mapUser(it) }
         users.forEach { user -> user.role = ROLE_CLIENT_USER }
         users
-    } catch (e: jakarta.ws.rs.NotFoundException) {
+    } catch (_: jakarta.ws.rs.NotFoundException) {
         log.warn("No users found with client role '$ROLE_CLIENT_USER' for client '${keycloakClient.clientId}'")
         emptyList()
     }
@@ -203,7 +203,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .flatMap { groups.group(it.id).members() }
             .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
             .map { mapUser(it) }
-    } catch (e: jakarta.ws.rs.NotFoundException) {
+    } catch (_: jakarta.ws.rs.NotFoundException) {
         log.warn("No groups with users found with client role '$ROLE_CLIENT_USER' for client '${keycloakClient.clientId}'")
         emptyList()
     }
@@ -293,7 +293,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             return keycloakClient.realm().users()
                 .search(username, true)
                 .first()
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(username, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(username, e)
@@ -305,7 +305,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             return keycloakClient.realm().users()
                 .search("id:$uuid", 1, 1)
                 .first()
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(uuid, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(uuid, e)
@@ -430,9 +430,9 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         if (user != null) {
             try {
                 users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
-            } catch (ex: ForbiddenException) {
+            } catch (_: ForbiddenException) {
                 throw de.ingrid.igeserver.api.ForbiddenException.withUser("<current>")
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 throw InvalidParameterException.withInvalidParameters(user.email)
             }
         } else {

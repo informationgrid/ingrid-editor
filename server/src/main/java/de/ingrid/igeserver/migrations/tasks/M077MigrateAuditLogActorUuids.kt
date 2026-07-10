@@ -80,7 +80,7 @@ class M077MigrateAuditLogActorUuids : MigrationBase("0.77") {
         try {
             val user = userManagementService.getKeycloakUserWithUuid(uuid)
             return user.username
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.info("User with uuid '$uuid' not found. Ignore if uuid is a username.")
             return null
         }

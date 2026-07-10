@@ -367,7 +367,7 @@ class ImportService(
         } else {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid, true)
         }
-    } catch (ex: NotFoundException) {
+    } catch (_: NotFoundException) {
         null
     }
 
@@ -416,7 +416,7 @@ class ImportService(
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             false
         }
 

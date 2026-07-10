@@ -264,7 +264,8 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                         val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
                         title = doc.title
                         identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
+                        // no published document found
                         return@mapNotNull null
                     }
                 }

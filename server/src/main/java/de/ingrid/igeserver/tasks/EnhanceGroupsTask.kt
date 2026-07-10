@@ -117,7 +117,7 @@ class EnhanceGroupsTask(
     }.flatMap {
         try {
             documentService.getReferencedWrapperIds(catalogIdentifier, it)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // ignore invalid references
             emptySet()
         }

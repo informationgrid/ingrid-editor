@@ -178,7 +178,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             if (!options.useDraft) {
                 try {
                     getPublishedVersion(catalogId, doc)
-                } catch (ex: NotFoundException) {
+                } catch (_: NotFoundException) {
                     return null
                 }
             } else {
@@ -202,7 +202,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             doc.uuid,
             true,
         )
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
         throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
