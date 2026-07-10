@@ -46,7 +46,7 @@ class JSPostProcessor : ExportPostProcessors {
             engine.eval("logMe.Info('From Script!!!'); target.language = 'chinese';", newContext)
         } catch (e: ScriptException) {
             // TODO Auto-generated catch block
-            e.printStackTrace()
+            log.error(e)
         }
         return exportedDoc
     }
