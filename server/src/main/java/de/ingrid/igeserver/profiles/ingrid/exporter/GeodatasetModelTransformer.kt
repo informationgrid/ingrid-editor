@@ -78,69 +78,67 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         "relativeInternalPositionalAccuracy" to "DQ_RelativeInternalPositionalAccuracy",
     )
 
-    private fun getMeasureIdentification(type: String, measureKey: String?): String? {
-        return when (type) {
-            "completenessComission" -> return when (measureKey) {
-                "1" -> "3"
-                "2" -> "4"
-                else -> null
-            }
-
-            "conceptualConsistency" -> return when (measureKey) {
-                "1" -> "11"
-                "2" -> "13"
-                else -> null
-            }
-
-            "domainConsistency" -> return when (measureKey) {
-                "1" -> "17"
-                else -> null
-            }
-
-            "formatConsistency" -> return when (measureKey) {
-                "1" -> "20"
-                else -> null
-            }
-
-            "topologicalConsistency" -> return when (measureKey) {
-                "1" -> "11"
-                "2" -> "23"
-                "3" -> "24"
-                "4" -> "25"
-                "5" -> "26"
-                "6" -> "27"
-                "7" -> "21"
-                "8" -> "missing"
-                "9" -> "missing"
-                "10" -> "missing"
-                "11" -> "missing"
-                else -> null
-            }
-
-            "temporalConsistency" -> return when (measureKey) {
-                "1" -> "missing"
-                else -> null
-            }
-
-            "thematicClassificationCorrectness" -> return when (measureKey) {
-                "1" -> "61"
-                else -> null
-            }
-
-            "nonQuantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> "67"
-                else -> null
-            }
-
-            "quantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> "71"
-                else -> null
-            }
-
-            "relativeInternalPositionalAccuracy" -> return "28"
-
-            else -> ""
+    private fun getMeasureIdentification(type: String, measureKey: String?): String? = when (type) {
+        "completenessComission" -> when (measureKey) {
+            "1" -> "3"
+            "2" -> "4"
+            else -> null
         }
+
+        "conceptualConsistency" -> when (measureKey) {
+            "1" -> "11"
+            "2" -> "13"
+            else -> null
+        }
+
+        "domainConsistency" -> when (measureKey) {
+            "1" -> "17"
+            else -> null
+        }
+
+        "formatConsistency" -> when (measureKey) {
+            "1" -> "20"
+            else -> null
+        }
+
+        "topologicalConsistency" -> when (measureKey) {
+            "1" -> "11"
+            "2" -> "23"
+            "3" -> "24"
+            "4" -> "25"
+            "5" -> "26"
+            "6" -> "27"
+            "7" -> "21"
+            "8" -> "missing"
+            "9" -> "missing"
+            "10" -> "missing"
+            "11" -> "missing"
+            else -> null
+        }
+
+        "temporalConsistency" -> when (measureKey) {
+            "1" -> "missing"
+            else -> null
+        }
+
+        "thematicClassificationCorrectness" -> when (measureKey) {
+            "1" -> "61"
+            else -> null
+        }
+
+        "nonQuantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> "67"
+            else -> null
+        }
+
+        "quantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> "71"
+            else -> null
+        }
+
+        "relativeInternalPositionalAccuracy" -> "28"
+
+        else -> ""
     }
 
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
