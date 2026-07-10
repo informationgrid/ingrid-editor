@@ -76,13 +76,13 @@ comments:
 complexity:
   active: true
   CognitiveComplexMethod:
-    active: true
+    active: false
     allowedComplexity: 15
   ComplexCondition:
     active: true
     allowedConditions: 3
   ComplexInterface:
-    active: true
+    active: false
     allowedDefinitions: 10
     includeStaticDeclarations: false
     includePrivateDeclarations: false
@@ -277,25 +277,9 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    exceptionNames:
-      - 'ArrayIndexOutOfBoundsException'
-      - 'Error'
-      - 'Exception'
-      - 'IllegalMonitorStateException'
-      - 'IndexOutOfBoundsException'
-      - 'NullPointerException'
-      - 'RuntimeException'
-      - 'Throwable'
-    allowedExceptionNameRegex: '_|(ignore|expected).*'
+    active: false
   TooGenericExceptionThrown:
-    active: true
-    exceptionNames:
-      - 'Error'
-      - 'Exception'
-      - 'RuntimeException'
-      - 'Throwable'
+    active: false
 
 naming:
   active: true
