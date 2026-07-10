@@ -167,61 +167,53 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         </gmd:valueUnit>
     """.trimIndent()
 
-    fun getUnitDefinition(type: String, measureKey: String): String {
-        return when (type) {
-            "completenessComission" -> {
-                return when (measureKey) {
-                    "1" -> percentageValueUnit("completeness commission")
-                    "2" -> inapplicableValueUnit
-                    else -> unknownValueUnit
-                }
-            }
+    private fun percentageOrUnknown(measureKey: String, quantityType: String): String = when (measureKey) {
+        "1" -> percentageValueUnit(quantityType)
+        else -> unknownValueUnit
+    }
 
-            "conceptualConsistency" -> return when (measureKey) {
-                "1" -> inapplicableValueUnit
-                "2" -> percentageValueUnit("conceptual consistency")
-                else -> unknownValueUnit
-            }
-
-            "domainConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("domain consistency")
-                else -> unknownValueUnit
-            }
-
-            "formatConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("format consistency")
-                else -> unknownValueUnit
-            }
-
-            "topologicalConsistency" -> return when (measureKey) {
-                "-1" -> unknownValueUnit
-                else -> inapplicableValueUnit
-            }
-
-            "temporalConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("temporal consistency")
-                else -> unknownValueUnit
-            }
-
-            "thematicClassificationCorrectness" -> return when (measureKey) {
-                "1" -> percentageValueUnit("thematic classification correctness")
-                else -> unknownValueUnit
-            }
-
-            "nonQuantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> percentageValueUnit("non quantitative attribute accuracy")
-                else -> unknownValueUnit
-            }
-
-            "quantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> inapplicableValueUnit
-                else -> unknownValueUnit
-            }
-
-            "relativeInternalPositionalAccuracy" -> meterValueUnit("relative internal positional accuracy")
-
-            else -> ""
+    fun getUnitDefinition(type: String, measureKey: String): String = when (type) {
+        "completenessComission" -> when (measureKey) {
+            "1" -> percentageValueUnit("completeness commission")
+            "2" -> inapplicableValueUnit
+            else -> unknownValueUnit
         }
+
+        "conceptualConsistency" -> when (measureKey) {
+            "1" -> inapplicableValueUnit
+            "2" -> percentageValueUnit("conceptual consistency")
+            else -> unknownValueUnit
+        }
+
+        "domainConsistency" ->
+            percentageOrUnknown(measureKey, "domain consistency")
+
+        "formatConsistency" ->
+            percentageOrUnknown(measureKey, "format consistency")
+
+        "temporalConsistency" ->
+            percentageOrUnknown(measureKey, "temporal consistency")
+
+        "thematicClassificationCorrectness" ->
+            percentageOrUnknown(measureKey, "thematic classification correctness")
+
+        "nonQuantitativeAttributeAccuracy" ->
+            percentageOrUnknown(measureKey, "non quantitative attribute accuracy")
+
+        "topologicalConsistency" -> when (measureKey) {
+            "-1" -> unknownValueUnit
+            else -> inapplicableValueUnit
+        }
+
+        "quantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> inapplicableValueUnit
+            else -> unknownValueUnit
+        }
+
+        "relativeInternalPositionalAccuracy" ->
+            meterValueUnit("relative internal positional accuracy")
+
+        else -> ""
     }
 
     private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
