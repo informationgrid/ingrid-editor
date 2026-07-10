@@ -333,6 +333,7 @@ test {
     ignoreFailures = true
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 publishing {
