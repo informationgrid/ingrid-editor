@@ -24,6 +24,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.getISO3166v1Alpha3FromNumericLanguageCode
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -135,7 +136,7 @@ open class AddressModelTransformer(
         ?.takeIf { !it.isNull }
         ?.mapToKeyValue()
         ?.let {
-            TransformationTools.getISO3166v1Alpha3FromNumericLanguageCode(it)
+            getISO3166v1Alpha3FromNumericLanguageCode(it)
         }
     val zipCode = displayAddress.data.getString("address.zip-code")
     val zipPoBox = displayAddress.data.getString("address.zip-po-box")
