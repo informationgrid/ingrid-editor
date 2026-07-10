@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.schema.ingrid
+package de.ingrid.igeserver.schema.ingrid_hmdk
 
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.core.spec.style.AnnotationSpec
