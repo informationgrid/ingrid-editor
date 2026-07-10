@@ -426,7 +426,7 @@ open class IngridModelTransformer(
                 referenceSystemEntry,
             )
                 ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
-        val epsgLink = when {
+        val url = when {
             // like EPSG:1234 Bla
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
 
@@ -440,9 +440,19 @@ open class IngridModelTransformer(
                 }
             }
 
+            // like CRS 84: Bla
+            referenceSystem.startsWith("CRS") -> {
+                val endIndex = referenceSystem.indexOf(":")
+                if (endIndex > 0) {
+                    "http://www.opengis.net/def/crs/OGC/1.3/CRS${referenceSystem.substring(4, endIndex)}"
+                } else {
+                    null
+                }
+            }
+
             else -> null
         }
-        return CharacterStringModel(referenceSystem, epsgLink)
+        return CharacterStringModel(referenceSystem, url)
     }
 
     open val description = data.description
