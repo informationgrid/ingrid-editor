@@ -42,8 +42,6 @@ class M094CleanupScheduler : MigrationBase("0.94") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    override fun exec() {}
-
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")

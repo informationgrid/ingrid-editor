@@ -71,7 +71,7 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
 
     override fun isConnected(id: String): Boolean = try {
         iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 

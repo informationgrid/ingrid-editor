@@ -74,7 +74,7 @@ class OgcHtmlExporter(
     private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
         val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
         getRawJsonFromDocument(document)
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
         // allow to export only draft versions
         null
     }

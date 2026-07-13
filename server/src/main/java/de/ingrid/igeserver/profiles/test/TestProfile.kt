@@ -180,8 +180,11 @@ class TestProfile : CatalogProfile {
 
         when (codelistId) {
             "20000" -> removeAndAddCodelist(catalogId, codelist20000)
+
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
+
             "20002" -> removeAndAddCodelist(catalogId, codelist20002)
+
             null -> {
                 removeAndAddCodelist(catalogId, codelist20000)
                 codelistRepo.save(codelist20000)
@@ -190,6 +193,7 @@ class TestProfile : CatalogProfile {
                 removeAndAddCodelist(catalogId, codelist20002)
                 codelistRepo.save(codelist20002)
             }
+
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
     }
@@ -215,9 +219,6 @@ class TestProfile : CatalogProfile {
             modified = dateService.now()
         }
         query.save(queryTest)
-    }
-
-    override fun initIndices() {
     }
 
     override fun getElasticsearchMapping(format: String): String = ""

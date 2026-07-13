@@ -26,10 +26,7 @@ import io.kotest.matchers.shouldBe
 class MigrationBaseTest :
     ShouldSpec({
 
-        class DummyStrategy(override val version: Version) : MigrationBase("") {
-            override fun exec() {
-            }
-        }
+        class DummyStrategy(override val version: Version) : MigrationBase("")
 
         @Suppress("ktlint:standard:property-naming")
         val strategy1_2_3 = DummyStrategy(Version("1.2.3"))

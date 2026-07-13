@@ -124,7 +124,7 @@ class OpenDataModelTransformerAdditional(
 
     fun getLastPublishedDocument(uuid: String): Document? = try {
         documentService.getLastPublishedDocument(catalogId, uuid, forExport = true)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         log.warn("Could not get last published document: $uuid")
         null
     }

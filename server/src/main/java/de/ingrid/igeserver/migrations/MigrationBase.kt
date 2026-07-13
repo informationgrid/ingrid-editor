@@ -43,7 +43,9 @@ abstract class MigrationBase(val versionString: String) : MigrationStrategy {
 
     override fun hashCode(): Int = version.hashCode()
 
-    override fun postExec() {}
+    override fun exec(): Unit = Unit
+
+    override fun postExec(): Unit = Unit
 
     override fun compareWithVersion(version: String): VersionCompare {
         val result = this.version.compareTo(Version(version))

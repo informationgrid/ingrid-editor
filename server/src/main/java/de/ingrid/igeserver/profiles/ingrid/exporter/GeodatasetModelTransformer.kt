@@ -78,69 +78,67 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         "relativeInternalPositionalAccuracy" to "DQ_RelativeInternalPositionalAccuracy",
     )
 
-    private fun getMeasureIdentification(type: String, measureKey: String?): String? {
-        return when (type) {
-            "completenessComission" -> return when (measureKey) {
-                "1" -> "3"
-                "2" -> "4"
-                else -> null
-            }
-
-            "conceptualConsistency" -> return when (measureKey) {
-                "1" -> "11"
-                "2" -> "13"
-                else -> null
-            }
-
-            "domainConsistency" -> return when (measureKey) {
-                "1" -> "17"
-                else -> null
-            }
-
-            "formatConsistency" -> return when (measureKey) {
-                "1" -> "20"
-                else -> null
-            }
-
-            "topologicalConsistency" -> return when (measureKey) {
-                "1" -> "11"
-                "2" -> "23"
-                "3" -> "24"
-                "4" -> "25"
-                "5" -> "26"
-                "6" -> "27"
-                "7" -> "21"
-                "8" -> "missing"
-                "9" -> "missing"
-                "10" -> "missing"
-                "11" -> "missing"
-                else -> null
-            }
-
-            "temporalConsistency" -> return when (measureKey) {
-                "1" -> "missing"
-                else -> null
-            }
-
-            "thematicClassificationCorrectness" -> return when (measureKey) {
-                "1" -> "61"
-                else -> null
-            }
-
-            "nonQuantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> "67"
-                else -> null
-            }
-
-            "quantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> "71"
-                else -> null
-            }
-
-            "relativeInternalPositionalAccuracy" -> return "28"
-
-            else -> ""
+    private fun getMeasureIdentification(type: String, measureKey: String?): String? = when (type) {
+        "completenessComission" -> when (measureKey) {
+            "1" -> "3"
+            "2" -> "4"
+            else -> null
         }
+
+        "conceptualConsistency" -> when (measureKey) {
+            "1" -> "11"
+            "2" -> "13"
+            else -> null
+        }
+
+        "domainConsistency" -> when (measureKey) {
+            "1" -> "17"
+            else -> null
+        }
+
+        "formatConsistency" -> when (measureKey) {
+            "1" -> "20"
+            else -> null
+        }
+
+        "topologicalConsistency" -> when (measureKey) {
+            "1" -> "11"
+            "2" -> "23"
+            "3" -> "24"
+            "4" -> "25"
+            "5" -> "26"
+            "6" -> "27"
+            "7" -> "21"
+            "8" -> "missing"
+            "9" -> "missing"
+            "10" -> "missing"
+            "11" -> "missing"
+            else -> null
+        }
+
+        "temporalConsistency" -> when (measureKey) {
+            "1" -> "missing"
+            else -> null
+        }
+
+        "thematicClassificationCorrectness" -> when (measureKey) {
+            "1" -> "61"
+            else -> null
+        }
+
+        "nonQuantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> "67"
+            else -> null
+        }
+
+        "quantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> "71"
+            else -> null
+        }
+
+        "relativeInternalPositionalAccuracy" -> "28"
+
+        else -> ""
     }
 
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
@@ -167,61 +165,53 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         </gmd:valueUnit>
     """.trimIndent()
 
-    fun getUnitDefinition(type: String, measureKey: String): String {
-        return when (type) {
-            "completenessComission" -> {
-                return when (measureKey) {
-                    "1" -> percentageValueUnit("completeness commission")
-                    "2" -> inapplicableValueUnit
-                    else -> unknownValueUnit
-                }
-            }
+    private fun percentageOrUnknown(measureKey: String, quantityType: String): String = when (measureKey) {
+        "1" -> percentageValueUnit(quantityType)
+        else -> unknownValueUnit
+    }
 
-            "conceptualConsistency" -> return when (measureKey) {
-                "1" -> inapplicableValueUnit
-                "2" -> percentageValueUnit("conceptual consistency")
-                else -> unknownValueUnit
-            }
-
-            "domainConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("domain consistency")
-                else -> unknownValueUnit
-            }
-
-            "formatConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("format consistency")
-                else -> unknownValueUnit
-            }
-
-            "topologicalConsistency" -> return when (measureKey) {
-                "-1" -> unknownValueUnit
-                else -> inapplicableValueUnit
-            }
-
-            "temporalConsistency" -> return when (measureKey) {
-                "1" -> percentageValueUnit("temporal consistency")
-                else -> unknownValueUnit
-            }
-
-            "thematicClassificationCorrectness" -> return when (measureKey) {
-                "1" -> percentageValueUnit("thematic classification correctness")
-                else -> unknownValueUnit
-            }
-
-            "nonQuantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> percentageValueUnit("non quantitative attribute accuracy")
-                else -> unknownValueUnit
-            }
-
-            "quantitativeAttributeAccuracy" -> return when (measureKey) {
-                "1" -> inapplicableValueUnit
-                else -> unknownValueUnit
-            }
-
-            "relativeInternalPositionalAccuracy" -> meterValueUnit("relative internal positional accuracy")
-
-            else -> ""
+    fun getUnitDefinition(type: String, measureKey: String): String = when (type) {
+        "completenessComission" -> when (measureKey) {
+            "1" -> percentageValueUnit("completeness commission")
+            "2" -> inapplicableValueUnit
+            else -> unknownValueUnit
         }
+
+        "conceptualConsistency" -> when (measureKey) {
+            "1" -> inapplicableValueUnit
+            "2" -> percentageValueUnit("conceptual consistency")
+            else -> unknownValueUnit
+        }
+
+        "domainConsistency" ->
+            percentageOrUnknown(measureKey, "domain consistency")
+
+        "formatConsistency" ->
+            percentageOrUnknown(measureKey, "format consistency")
+
+        "temporalConsistency" ->
+            percentageOrUnknown(measureKey, "temporal consistency")
+
+        "thematicClassificationCorrectness" ->
+            percentageOrUnknown(measureKey, "thematic classification correctness")
+
+        "nonQuantitativeAttributeAccuracy" ->
+            percentageOrUnknown(measureKey, "non quantitative attribute accuracy")
+
+        "topologicalConsistency" -> when (measureKey) {
+            "-1" -> unknownValueUnit
+            else -> inapplicableValueUnit
+        }
+
+        "quantitativeAttributeAccuracy" -> when (measureKey) {
+            "1" -> inapplicableValueUnit
+            else -> unknownValueUnit
+        }
+
+        "relativeInternalPositionalAccuracy" ->
+            meterValueUnit("relative internal positional accuracy")
+
+        else -> ""
     }
 
     private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
@@ -264,7 +254,8 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                         val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
                         title = doc.title
                         identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
+                        // no published document found
                         return@mapNotNull null
                     }
                 }

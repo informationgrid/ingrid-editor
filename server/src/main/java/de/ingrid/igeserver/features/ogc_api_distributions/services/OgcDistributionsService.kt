@@ -98,7 +98,7 @@ class OgcDistributionsService(
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
         try {
             return documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId, false)
-        } catch (error: Exception) {
+        } catch (_: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }
     }
@@ -106,7 +106,7 @@ class OgcDistributionsService(
     private fun getDocument(collectionId: String, recordId: String): Document {
         try {
             return documentService.getLastPublishedDocument(collectionId, recordId, false)
-        } catch (error: Exception) {
+        } catch (_: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }
     }

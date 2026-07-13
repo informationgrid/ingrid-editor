@@ -26,7 +26,6 @@ import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
-import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
@@ -49,6 +48,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.getLanguageISO639v2Value
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -394,9 +394,9 @@ open class IngridModelTransformer(
     open val uomMeter = "meter"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
     val metadataLanguage =
-        if (data.metadata != null) TransformationTools.getLanguageISO639v2Value(data.metadata.language) else null
+        if (data.metadata != null) getLanguageISO639v2Value(data.metadata.language) else null
     val dataLanguages =
-        data.dataset?.languages?.map { TransformationTools.getLanguageISO639v2Value(KeyValue(it, null)) }
+        data.dataset?.languages?.map { getLanguageISO639v2Value(KeyValue(it, null)) }
             ?: emptyList()
 
     val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso", true)
@@ -1201,7 +1201,7 @@ open class IngridModelTransformer(
         return try {
             documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Could not get last published document: $uuid")
             null
         }

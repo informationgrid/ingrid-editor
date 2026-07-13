@@ -54,8 +54,6 @@ class M099MigrateEnvironmentDescriptionLubw : MigrationBase("0.99") {
     @Autowired
     private lateinit var codelistHandler: CodelistHandler
 
-    override fun exec() {}
-
     override fun postExec() {
         val pageSize = 100
         var page = 1

@@ -25,7 +25,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
-@Suppress("ktlint:standard:function-naming")
+@Suppress("ktlint:standard:function-naming", "detekt:FunctionNaming", "detekt:FunctionParameterNaming")
 interface GroupRepository : JpaRepository<Group, Int> {
 
     fun findAllByCatalog_Identifier(catalog_identifier: String, sort: Sort = Sort.by(Sort.Direction.ASC, "name")): List<Group>

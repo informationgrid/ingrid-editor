@@ -5,7 +5,7 @@ import static org.cyclonedx.model.Component.Type
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '2.3.0'
+    ext.kotlin_version = '2.4.0'
     ext.spring_boot_version = '3.5.15'
     ext.kotest_version = '6.1.9'
     ext.jte_version = '3.2.4'
@@ -33,6 +33,7 @@ plugins {
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
     id "org.cyclonedx.bom"
+    id "dev.detekt" version "2.0.0-alpha.5"
 }
 
 repositories {
@@ -79,7 +80,7 @@ dependencies {
         frontendFiles project(':frontend')
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
     implementation 'org.apache.tika:tika-core:3.2.3'
     implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.1'
@@ -479,4 +480,19 @@ cyclonedxDirectBom {
     schemaVersion = Version.VERSION_15
 
     componentVersion = rootProject.version
+}
+
+detekt {
+    toolVersion = "2.0.0-alpha.5"
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+}
+
+tasks.named("detektMain").configure {
+    reports {
+        checkstyle.required.set(true)
+        html.required.set(true)
+        sarif.required.set(true)
+        markdown.required.set(true)
+    }
 }

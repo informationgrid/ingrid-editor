@@ -70,7 +70,7 @@ class AddressExport(val config: GeneralTransformerConfig, val mapPointOfContactM
         return try {
             config.documentService.getLastPublishedDocument(config.catalogIdentifier, uuid, forExport = true)
                 .also { config.cache.documents[uuid] = it }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Could not get last published document: $uuid")
             null
         }

@@ -24,7 +24,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PreAuthorize
 
-@Suppress("ktlint:standard:function-naming")
+@Suppress("ktlint:standard:function-naming", "detekt:FunctionNaming", "detekt:FunctionParameterNaming")
 interface MessageRepository : JpaRepository<Message, Int> {
 
     fun findAllByCatalog_Identifier(catalog_identifier: String?): List<Message>

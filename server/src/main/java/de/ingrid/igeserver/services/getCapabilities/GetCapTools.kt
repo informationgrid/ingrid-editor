@@ -21,31 +21,6 @@ package de.ingrid.igeserver.services.getCapabilities
 
 import org.geotools.referencing.CRS
 
-enum class CoordType {
-    COORDS_ETRS89_UTM31N,
-    COORDS_ETRS89_UTM32N,
-    COORDS_ETRS89_UTM33N,
-    COORDS_ETRS89_UTM32N_NE,
-    COORDS_ETRS89_UTM33N_NE,
-    COORDS_ETRS89_UTM32N_ZE,
-    COORDS_ETRS89_UTM33N_ZE,
-    COORDS_ETRS89_UTM34N,
-    COORDS_GK2,
-    COORDS_GK3,
-    COORDS_GK4,
-    COORDS_GK5,
-    COORDS_GK2_EN,
-    COORDS_GK3_EN,
-    COORDS_GK4_EN,
-    COORDS_GK5_EN,
-    COORDS_ETRS89_LCC,
-    COORDS_ETRS89_LCC_DE,
-    COORDS_ETRS89_LAEA,
-    COORDS_CRS84,
-    COORDS_WGS84_PM,
-    COORDS_WGS84,
-}
-
 private const val COORDS_WKT_GK2 =
     "PROJCS[\"DHDN / Gauss-Kruger zone 2\",GEOGCS[\"DHDN\",DATUM[\"Deutsches Hauptdreiecksnetz\", SPHEROID[\"Bessel 1841\", 6377397.155, 299.1528128, AUTHORITY[\"EPSG\",\"7004\"]], TOWGS84[612.4, 77.0, 440.2, -0.054, 0.057, -2.797, 0.5259752559300956], AUTHORITY[\"EPSG\",\"6314\"]], PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], UNIT[\"degree\", 0.017453292519943295], AXIS[\"Geodetic longitude\", EAST], AXIS[\"Geodetic latitude\", NORTH],    AUTHORITY[\"EPSG\",\"4314\"]],  PROJECTION[\"Transverse Mercator\", AUTHORITY[\"EPSG\",\"9807\"]],  PARAMETER[\"central_meridian\", 6.0],  PARAMETER[\"latitude_of_origin\", 0.0],  PARAMETER[\"scale_factor\", 1.0],  PARAMETER[\"false_easting\", 2500000.0],  PARAMETER[\"false_northing\", 0.0],  UNIT[\"m\", 1.0],  AXIS[\"Easting\", EAST],  AXIS[\"Northing\", NORTH],  AUTHORITY[\"EPSG\",\"31466\"]]"
 private const val COORDS_WKT_GK3 =
@@ -138,6 +113,31 @@ private const val COORDS_SYSTEM_ETRS89_LAEA = "LAEA Europa"
 private const val COORDS_SYSTEM_CRS84 = "CRS 84"
 private const val COORDS_SYSTEM_WGS84_PM = "WGS 84 Pseudo-Mercator"
 private const val COORDS_SYSTEM_WGS84 = "WGS 84"
+
+enum class CoordType {
+    COORDS_ETRS89_UTM31N,
+    COORDS_ETRS89_UTM32N,
+    COORDS_ETRS89_UTM33N,
+    COORDS_ETRS89_UTM32N_NE,
+    COORDS_ETRS89_UTM33N_NE,
+    COORDS_ETRS89_UTM32N_ZE,
+    COORDS_ETRS89_UTM33N_ZE,
+    COORDS_ETRS89_UTM34N,
+    COORDS_GK2,
+    COORDS_GK3,
+    COORDS_GK4,
+    COORDS_GK5,
+    COORDS_GK2_EN,
+    COORDS_GK3_EN,
+    COORDS_GK4_EN,
+    COORDS_GK5_EN,
+    COORDS_ETRS89_LCC,
+    COORDS_ETRS89_LCC_DE,
+    COORDS_ETRS89_LAEA,
+    COORDS_CRS84,
+    COORDS_WGS84_PM,
+    COORDS_WGS84,
+}
 
 fun getUnionOfBoundingBoxes(boundingBoxesFromLayers: List<LocationBean>): LocationBean {
     val unionLocation = LocationBean()

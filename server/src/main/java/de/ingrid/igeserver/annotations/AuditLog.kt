@@ -126,7 +126,7 @@ class AuditLogAspect {
         val strValue = value.toString()
         return try {
             jacksonObjectMapper().readTree(strValue)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             jacksonObjectMapper().createObjectNode().apply {
                 put("text", strValue)
             }

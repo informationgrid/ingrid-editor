@@ -90,7 +90,7 @@ class UpdateExternalCoupledResourcesTask(
                 } else {
                     log.debug("Coupled Resource Identifier did not change")
                 }
-            } catch (ex: FileNotFoundException) {
+            } catch (_: FileNotFoundException) {
                 log.warn("Resource not found: ${it.url}")
                 summary.corrupt++
             } catch (ex: Exception) {

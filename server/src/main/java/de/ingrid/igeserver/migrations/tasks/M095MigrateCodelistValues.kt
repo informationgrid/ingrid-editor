@@ -38,24 +38,7 @@ class M095MigrateCodelistValues(val scheduler: SchedulerService, val catalogServ
 
     private var log = logger()
 
-//    @Autowired
-//    lateinit var entityManager: EntityManager
-
-//    @Autowired
-//    private lateinit var transactionManager: PlatformTransactionManager
-
-    override fun exec() {}
-
     override fun postExec() {
-        /*ClosableTransaction(transactionManager).use {
-            setAdminAuthentication("Migration", "Task")
-            val removed = entityManager.createNativeQuery("""DELETE FROM qrtz_cron_triggers WHERE trigger_name='index'""")
-                .executeUpdate()
-            entityManager.createNativeQuery("""DELETE FROM qrtz_triggers WHERE trigger_name='index'""")
-                .executeUpdate()
-            log.info("""$removed cron triggers removed""")
-        }*/
-
         catalogService.getCatalogs().forEach { catalog ->
             val jobKey = JobKey.jobKey(MigrateCodelistIdsIntoDatasets.JOB_KEY, catalog.identifier)
             val jobDataMap = JobDataMap().apply {

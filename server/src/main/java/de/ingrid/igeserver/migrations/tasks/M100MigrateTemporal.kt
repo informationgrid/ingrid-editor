@@ -44,8 +44,6 @@ class M100MigrateTemporal : MigrationBase("0.100") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    override fun exec() {}
-
     override fun postExec() {
         val pageSize = 100
         var page = 1

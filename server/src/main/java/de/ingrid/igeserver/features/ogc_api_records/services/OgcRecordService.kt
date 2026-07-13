@@ -285,7 +285,7 @@ class OgcRecordService(
         try {
             val catalogData: Catalog = catalogService.getCatalogById(collectionId)
             return exporter.run(catalogData)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             throw NotFoundException.withMissingResource(collectionId, "collection")
         }
     }
