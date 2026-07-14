@@ -20,30 +20,40 @@ description:
       - Modernes, responsives Web-Interface auf Basis von Angular.
       - Unterstützung für aktuelle Standards wie die OGC API for Records.
     longDescription: >
-      Der InGrid Editor ist eine zentrale Komponente der InGrid-Softwarefamilie,
-      einer Open-Source-Lösung für den Aufbau, die Verwaltung und die
-      Bereitstellung von metadatengesteuerten Informationssystemen.
+      Der InGrid Editor ist eine zentrale Komponente der [InGrid-Softwarefamilie](https://opencode.de/de/software/in-grid-10691),
+      einer leistungsfähigen und flexiblen Softwarelösung für die Erfassung, Verwaltung
+      und Bereitstellung von Daten und Metadaten, entwickelt und permanent gepflegt im
+      Rahmen einer Bund-Länder-Verwaltungskooperation.
 
 
-      Die Anwendung ermöglicht die effiziente Pflege von Metadaten durch die
-      Erstellung, Validierung und Veröffentlichung von ISO 19115/19119, OGC- und
-      INSPIRE-konformen Metadaten. Durch eine modulare Architektur können
-      verschiedene Profile (wie z.B. Opendata oder UVP) integriert werden, um
-      spezifische Anforderungen an die Datenerfassung zu erfüllen.
+      Der InGrid-Editor ermöglicht die Erfassung, Pflege, Validierung und Veröffentlichung von Metadaten
+      über flexible Formulare und bietet einen umfangreichen Workflow, der den Import sowie den Export
+      verschiedener Formate erlaubt. Insbesondere wird die Erfassung und Publikation von ISO 19115/19119-,
+      OGC-, INSPIRE- und DCAT-AP.DE-konformen Metadaten unterstützt. Durch eine modulare Architektur können verschiedene
+      fachliche Profile (wie z.B. Opendata, INSPIRE, HVD oder UVP) integriert werden, um spezifische Anforderungen
+      an die Datenerfassung zu erfüllen.
 
 
       Wichtige Funktionen sind:
 
-      - Webbasiertes Interface für die Metadatenerfassung
+      - Webbasierte Benutzeroberfläche für die Metadatenerfassung und -pflege
 
-      - Unterstützung von ISO und INSPIRE Standards
-
-      - Flexible Import- und Export-Schnittstellen
+      - Assistenten für die Metadatenerfassung
+      
+      - Validierungstools
+      
+      - Flexibles Rollen- und Rechte-Modell
 
       - Integration in bestehende Infrastrukturen via Keycloak
+      
+      Weiterführende Links:
+
+      - [Dokumentation](https://ingrid-oss.eu/latest/components/editor/)
+      - [Infos zum Projekt](https://ingrid-oss.eu/latest/contributing/organisation/)
+      - [Projektpartner](https://ingrid-oss.eu/latest/contributing/partner/)
     shortDescription: >
-      Zentrale Komponente zur Pflege von ISO 19115/19119, OGC- und
-      INSPIRE-konformen Metadaten innerhalb der InGrid-Plattform.
+      Zentrale Komponente zur Pflege von ISO 19115/19119, OGC-, INSPIRE- und
+      DCAT-AP.DE-konformen Metadaten innerhalb der InGrid-Plattform.
     genericName: Metadaten-Editor
 
 developmentStatus: stable
