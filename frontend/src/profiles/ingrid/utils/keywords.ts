@@ -93,22 +93,39 @@ export class KeywordAnalysis {
     thesaurusTopics: boolean,
   ) {
     let dirtyForm = false;
+
     data.forEach((item: ThesaurusResult) => {
+      const keywordExists = this.keywordExists(item, form);
       const isInspireTopic = item.thesaurus === "INSPIRE-Themen";
-      if (!this.keywordExists(item, form)) {
-        this.addKeyword(item, form);
-        if (isInspireTopic && thesaurusTopics)
-          this.updateIsoCategory(item.value, form);
-        dirtyForm = true;
-      }
-      if (item.status === "removed" && this.keywordExists(item, form)) {
+      const shouldUpdateIsoCategory = isInspireTopic && thesaurusTopics;
+
+      if (item.status === "removed") {
+        if (!keywordExists) return;
+
         this.removeKeyword(item, form);
-        if (isInspireTopic && thesaurusTopics)
+
+        if (shouldUpdateIsoCategory) {
           this.updateIsoCategory(item.value, form, true);
+        }
+
         dirtyForm = true;
+        return;
       }
+
+      if (keywordExists) return;
+
+      this.addKeyword(item, form);
+
+      if (shouldUpdateIsoCategory) {
+        this.updateIsoCategory(item.value, form);
+      }
+
+      dirtyForm = true;
     });
-    if (dirtyForm) form.markAsDirty();
+
+    if (dirtyForm) {
+      form.markAsDirty();
+    }
   }
 
   updateIsoCategory(
