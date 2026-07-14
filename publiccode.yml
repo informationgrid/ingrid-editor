@@ -46,10 +46,13 @@ description:
 
       - Integration in bestehende Infrastrukturen via Keycloak
       
+      
       Weiterführende Links:
 
       - [Dokumentation](https://ingrid-oss.eu/latest/components/editor/)
+      
       - [Infos zum Projekt](https://ingrid-oss.eu/latest/contributing/organisation/)
+      
       - [Projektpartner](https://ingrid-oss.eu/latest/contributing/partner/)
     shortDescription: >
       Zentrale Komponente zur Pflege von ISO 19115/19119, OGC-, INSPIRE- und
