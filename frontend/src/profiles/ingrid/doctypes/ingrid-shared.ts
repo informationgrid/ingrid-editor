@@ -1121,8 +1121,7 @@ export abstract class IngridShared extends BaseDoctype {
                     ),
                     this.addDatepicker("lastModified", "Letzte Änderung", {
                       hintStart: "Wann wurde der Datensatz zuletzt geändert?",
-                      className:
-                        "ige-date-picker force-optional space-bottom-field",
+                      className: "ige-date-picker force-optional",
                       validators: {
                         ...(this.showInVeKoSField && {
                           invekos: {

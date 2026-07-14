@@ -17,15 +17,17 @@ ige-form-error {
 
 :host(.bordered) {
   display: block;
+  padding: 4px 16px;
   margin-bottom: 24px;
   border: 1px solid vars.$ige-background-bar;
   border-radius: 4px;
 
-  // leave space for context help icon
-  padding: 4px 16px 4px 46px;
+  mat-divider {
+    margin: 0px -16px 20px;
+  }
 
-  .mat-divider {
-    margin: 0px -16px 20px -46px;
+  ::ng-deep ige-form-label {
+    margin-left: 30px;
   }
 }
 
