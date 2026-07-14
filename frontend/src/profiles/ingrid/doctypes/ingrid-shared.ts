@@ -1701,6 +1701,7 @@ export abstract class IngridShared extends BaseDoctype {
             },
           }),
           requiredFieldsInItems: {
+            // required: type and title, when url then no uuidRef, when uuidRef then no url, when Datendownload then urlDataType
             expression: (ctrl: FormControl) =>
               !ctrl.value ||
               ctrl.value.length === 0 ||
@@ -1709,7 +1710,9 @@ export abstract class IngridShared extends BaseDoctype {
                   row.type &&
                   row.title?.length > 0 &&
                   ((row.url?.length > 0 && row.uuidRef == null) ||
-                    (row.url == null && row.uuidRef?.length > 0)),
+                    (row.url == null && row.uuidRef?.length > 0)) &&
+                  (row.type?.key !== "9990" ||
+                    row.urlDataType?.key?.length > 0),
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
