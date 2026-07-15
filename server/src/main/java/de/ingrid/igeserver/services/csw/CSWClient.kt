@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services.csw
 
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.utils.ElasticDocument
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -101,6 +102,9 @@ class CSWClient(
 
         if (response.contains("ExceptionReport")) {
             log.error("CSW $operation returned an exception: $response")
+            throw IndexException.withReason(response)
+        } else if (response.contains("403 Forbidden")) {
+            log.error("CSW $operation returned a 403 Forbidden error, which might be a problem with modsecurity: $response")
             return
         }
 
@@ -176,7 +180,7 @@ class CSWClient(
             }.bodyAsText()
         } catch (e: Exception) {
             log.error("Failed to execute CSW Request to endpoint '$endpoint': ${e.message}", e)
-            null
+            throw IndexException.withReason("Failed to execute CSW Request to endpoint '$endpoint': ${e.message}")
         }
     }
 
