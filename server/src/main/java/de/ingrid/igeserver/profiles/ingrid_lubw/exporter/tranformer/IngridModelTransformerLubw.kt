@@ -33,7 +33,12 @@ class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridM
 
     // if the document is a service with "Zugang geschützt" or it is a geoservice or geodataset with access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
     override fun hasAccessConstraints(): Boolean = super.hasAccessConstraints() ||
-        (listOf("InGridGeoDataset", "InGridGeoService").contains(doc.type) && (data.resource?.accessConstraints?.any { it.key != "1" } == true))
+        (
+            listOf(
+                "InGridGeoDataset",
+                "InGridGeoService",
+            ).contains(doc.type) && (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+            )
 
     val treePathNames: List<String>
     val treePathUuids: List<String>
