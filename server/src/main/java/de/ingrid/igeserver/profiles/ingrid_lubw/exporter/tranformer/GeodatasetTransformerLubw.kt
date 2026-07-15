@@ -19,15 +19,20 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer
 
+import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.amendLubwDescriptiveKeywords
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getEnvironmentDescription
+import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.getStringOrEmpty
 
 class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     private val docData = doc.data
+    private val codelist = transformerConfig.codelists
 
     override val systemEnvironment =
         if (!super.systemEnvironment.isNullOrEmpty()) {
@@ -40,4 +45,37 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
 
     // if the document has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
     override fun hasAccessConstraints(): Boolean = data.resource?.accessConstraints?.any { it.key != "1" } == true
+
+    fun getObjectAttributes(): List<Attribute> {
+        val attributes: ArrayNode? = doc.data.getPath("featureCatalogueDescription.objectAttributes") as ArrayNode?
+        return attributes?.map {
+            Attribute(
+                group = codelist.codelistHandler.getCatalogCodelistValue(
+                    transformerConfig.catalogIdentifier,
+                    "30002",
+                    it.getString("group.key")!!,
+                )!!,
+                category = codelist.codelistHandler.getCatalogCodelistValue(
+                    transformerConfig.catalogIdentifier,
+                    "30003",
+                    it.getString("category.key")!!,
+                )!!,
+                description = it.getStringOrEmpty("description"),
+                designation = it.getStringOrEmpty("designation"),
+                transmissionLevel = codelist.codelistHandler.getCatalogCodelistValue(
+                    transformerConfig.catalogIdentifier,
+                    "30004",
+                    it.getString("transmissionLevel.key")!!,
+                )!!,
+            )
+        } ?: emptyList()
+    }
 }
+
+data class Attribute(
+    val group: String,
+    val category: String,
+    val description: String,
+    val designation: String,
+    val transmissionLevel: String,
+)

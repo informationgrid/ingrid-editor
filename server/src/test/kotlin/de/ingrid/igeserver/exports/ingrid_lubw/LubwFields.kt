@@ -66,7 +66,13 @@ class LubwFields : GeodatasetBase() {
             }
 
             should("export environmentdescription to: $docType") {
-                every { super.codelistHandler.getCatalogCodelistValue(this.any(), "30001", "1") } returns "test_environmentDescription"
+                every {
+                    super.codelistHandler.getCatalogCodelistValue(
+                        this.any(),
+                        "30001",
+                        "1",
+                    )
+                } returns "test_environmentDescription"
                 val context =
                     jacksonObjectMapper()
                         .readTree(
@@ -88,6 +94,50 @@ class LubwFields : GeodatasetBase() {
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain SYSTEM_ENVIRONMENT
             }
+        }
+        should("export objectAttributes") {
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30002", "2")
+            } returns "Group Test"
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30003", "3")
+            } returns "Pflichtdaten Test"
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30004", "4")
+            } returns "Level Test"
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{ 
+                          "featureCatalogueDescription": {
+                            "objectAttributes": [
+                              {
+                                "group": {
+                                  "key": "2",
+                                  "value": "Berichte",
+                                  "_codelistId": null
+                                },
+                                "category": {
+                                  "key": "3",
+                                  "value": "Pflichtdaten",
+                                  "_codelistId": null
+                                },
+                                "description": "Beschreibung 1",
+                                "designation": "Test 1",
+                                "transmissionLevel": {
+                                  "key": "4",
+                                  "value": "4 - beschränkt auf bestimmte Behörden, Mitgliedsgemeinden des SKDV-Datenverbunds (bezeichnet nach Auswahlliste)",
+                                  "_codelistId": null
+                                }
+                              }
+                            ]
+                          }
+                        }
+                        """.trimIndent(),
+                    ) as ObjectNode
+
+            val result = exportJsonToXML(exporter, docSamples["InGridGeoDataset"]!!, context)
+            result shouldContain OBJECT_ATTRIBUTES
         }
     }
 }

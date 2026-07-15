@@ -34,3 +34,13 @@ const val SYSTEM_ENVIRONMENT = """
                         <gco:CharacterString>test_environmentDescription</gco:CharacterString>
                     </gmd:environmentDescription>
 """
+
+const val OBJECT_ATTRIBUTES = """
+            <idf:objectAttribute>
+                <idf:group>Group Test</idf:group>
+                <idf:designation>Test 1</idf:designation>
+                <idf:description>Beschreibung 1</idf:description>
+                <idf:category>Pflichtdaten Test</idf:category>
+                <idf:transmissionLevel>Level Test</idf:transmissionLevel>
+            </idf:objectAttribute>
+"""
