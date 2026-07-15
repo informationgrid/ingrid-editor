@@ -42,7 +42,6 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
-import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
 import { MatHint, MatSelect, MatSelectChange } from "@angular/material/select";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -58,7 +57,7 @@ import { MatOption } from "@angular/material/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { DocumentTreeStore } from "../../store/tree/document-tree.store";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { rxResource, toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-export",
@@ -97,7 +96,7 @@ export class ExportComponent implements OnInit {
 
   optionsFormGroup: UntypedFormGroup;
   datasetSelected = signal<boolean>(false);
-  private selectedIds: number[];
+  private selectedIds = signal<number[]>([]);
   exportResult = signal<HttpResponse<Blob> | null>(null);
   exportFormats = toSignal(
     this.exportService
@@ -111,6 +110,12 @@ export class ExportComponent implements OnInit {
   showMore = signal<boolean>(false);
   showDraftsCheckbox = signal<boolean>(true);
   exportFinished = signal<boolean>(false);
+
+  numSelectedDatasets = rxResource({
+    params: () => ({ ids: this.selectedIds() }),
+    stream: ({ params }) =>
+      this.exportService.getNumExportedDatasets(params.ids),
+  });
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -129,7 +134,7 @@ export class ExportComponent implements OnInit {
   }
 
   selectDatasets(ids: number[]) {
-    this.selectedIds = ids;
+    this.selectedIds.set(ids);
     if (ids.length > 0) {
       this.datasetSelected.set(true);
       // only get path if exactly one dataset is selected
@@ -145,7 +150,10 @@ export class ExportComponent implements OnInit {
 
   runExport() {
     let model = this.optionsFormGroup.value;
-    const options = ExchangeService.prepareExportInfo(this.selectedIds, model);
+    const options = ExchangeService.prepareExportInfo(
+      this.selectedIds(),
+      model,
+    );
     this.exportResult.set(null);
     this.exportFinished.set(false);
     this.exportService

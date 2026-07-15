@@ -43,7 +43,8 @@ interface ExportApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The stored dataset, which might contain additional storage information.",
-            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "500", description = "Unexpected error"),
         ],
     )
     @PostMapping(value = ["/export"], produces = ["application/zip"])
@@ -60,13 +61,23 @@ interface ExportApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The supported types for export.",
-            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "500", description = "Unexpected error"),
         ],
     )
     @GetMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun exportTypes(
         principal: Principal,
         @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String,
-        @Parameter(description = "Limit the export types to only public ones") @RequestParam(value = "onlyPublic", defaultValue = "true") onlyPublic: Boolean,
+        @Parameter(description = "Limit the export types to only public ones") @RequestParam(
+            value = "onlyPublic",
+            defaultValue = "true",
+        ) onlyPublic: Boolean,
     ): ResponseEntity<List<ExportTypeInfo>>
+
+    @GetMapping(value = ["/export/count"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun numExportedDatasets(
+        principal: Principal,
+        @Parameter(description = "The dataset IDs to calculate the total sum of selected datasets") @RequestParam(value = "ids") ids: List<Int>?,
+    ): ResponseEntity<Int>
 }

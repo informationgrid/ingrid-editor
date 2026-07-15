@@ -42,8 +42,12 @@
                 <mat-divider aria-hidden="true"></mat-divider>
 
                 <div
-                    class="action-bar flex-row justify-content-end align-items-stretch"
+                    class="action-bar flex-row justify-content-space-between align-items-center"
                 >
+                    <div class="comment">
+                        Ausgewählte Datensätze:
+                        {{ numSelectedDatasets.value() }}
+                    </div>
                     <button
                         mat-flat-button
                         color="primary"
@@ -79,10 +83,12 @@
                                     </mat-option>
                                 }
                             </mat-select>
-                            <mat-hint>{{
-                                $any(optionsFormGroup.get("format").value)
-                                    ?.description
-                            }}</mat-hint>
+                            <mat-hint
+                                >{{
+                                    $any(optionsFormGroup.get("format").value)
+                                        ?.description
+                                }}
+                            </mat-hint>
                         </mat-form-field>
                     </div>
                     @if (showDraftsCheckbox()) {
@@ -170,8 +176,8 @@
                 <div class="flex-col justify-content-center align-items-center">
                     <div class="section-title">Datei exportiert</div>
                     <mat-icon class="big-icon success-color"
-                        >check_circle_outline
-                    </mat-icon>
+                        >check_circle_outline</mat-icon
+                    >
                     <div>
                         Die Datei wurde in Ihrem Download-Ordner abgelegt.
                     </div>
