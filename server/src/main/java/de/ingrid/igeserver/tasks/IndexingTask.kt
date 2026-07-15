@@ -311,9 +311,12 @@ class IndexingTask(
         null
     }
 
-    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) = "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${
-        exportTarget.lowercase().replace(" ", "")
-    }"
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String): String {
+        val alias = "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${
+            exportTarget.lowercase().replace(" ", "")
+        }"
+        return indexService.getPrefixedIndexName(alias)
+    }
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
@@ -373,7 +376,7 @@ class IndexingTask(
         var currentIndex =
             exporter.target.getIndexNameFromAliasName(elasticsearchAlias)
         if (currentIndex == null) {
-            currentIndex = IndexService.getNextIndexName(elasticsearchAlias)
+            currentIndex = indexService.getNextIndexName(elasticsearchAlias)
             exporter.target.createIndex(
                 currentIndex,
                 if (exporter.category == DocumentCategory.ADDRESS) "address" else "base",

@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 package de.ingrid.igeserver.index
+
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jillesvangurp.ktsearch.BulkSession
@@ -35,6 +36,7 @@ import com.jillesvangurp.searchdsls.querydsl.term
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.META_INDEX
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
@@ -45,8 +47,6 @@ data class ElasticClient(
     val bulkProcessor: BulkSession,
 )
 
-private const val META_INDEX = "ingrid_meta"
-
 /**
  * Utility class to manage elasticsearch indices and documents.
  * @author Andre
@@ -54,8 +54,11 @@ private const val META_INDEX = "ingrid_meta"
 class ElasticIndexer(override val name: String, private val elastic: ElasticClient) : IIndexManager {
     private val log = logger()
 
-    private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
-    private val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
+    private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText()
+        ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
+    private val defaultSettings: String =
+        ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText()
+            ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
     companion object {
 
@@ -111,7 +114,11 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     override fun update(indexinfo: IndexInfo, docAny: Any) {
         runBlocking {
             val doc = convertToElasticDocument(docAny)
-            elastic.bulkProcessor.index(jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(), indexinfo.getRealIndexName(), doc[indexinfo.docIdField].toString())
+            elastic.bulkProcessor.index(
+                jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(),
+                indexinfo.getRealIndexName(),
+                doc[indexinfo.docIdField].toString(),
+            )
         }
     }
 
@@ -126,7 +133,8 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
             when (response.hits?.total?.value) {
                 1L -> {
-                    val docId = response.hits?.hits?.get(0)?.id ?: throw ServerException.withReason("Could not find iPlug information document in index of: $id")
+                    val docId = response.hits?.hits?.get(0)?.id
+                        ?: throw ServerException.withReason("Could not find iPlug information document in index of: $id")
                     // add index request to queue to avoid sending of too many requests
                     elastic.bulkProcessor.update(docId, info, META_INDEX)
                 }
