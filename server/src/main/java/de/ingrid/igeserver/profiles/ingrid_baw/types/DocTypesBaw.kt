@@ -72,7 +72,7 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
             """ data->'literatureReferences' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
 
         return super.getIncomingRelationFilters(doc, options).apply {
-            if (!options.literatureReferences) {
+            if (options.literatureReferences) {
                 add(literatureReferences)
             }
         }
