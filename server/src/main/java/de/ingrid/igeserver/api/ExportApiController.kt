@@ -49,8 +49,17 @@ class ExportApiController : ExportApi {
             .body(exportResult.result)
     }
 
-    override fun exportTypes(principal: Principal, profile: String, onlyPublic: Boolean): ResponseEntity<List<ExportTypeInfo>> {
+    override fun exportTypes(
+        principal: Principal,
+        profile: String,
+        onlyPublic: Boolean,
+    ): ResponseEntity<List<ExportTypeInfo>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return ResponseEntity.ok(exportService.getExportTypes(catalogId, profile, onlyPublic))
     }
+
+    override fun numExportedDatasets(
+        principal: Principal,
+        ids: List<Int>?,
+    ): ResponseEntity<Int> = ResponseEntity.ok(ids?.let { exportService.getNumExportedDatasets(it) } ?: 0)
 }

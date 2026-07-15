@@ -57,7 +57,11 @@ class ExportService(val exporterFactory: ExporterFactory) {
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
         return exporterFactory.typeInfos
-            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.any { p -> profile.linkedProfiles.contains(p) } }
+            .filter {
+                it.profiles.isEmpty() ||
+                    profileId in it.profiles ||
+                    it.profiles.any(profile.linkedProfiles::contains)
+            }
             .filter { if (onlyPublic) it.isPublic else true }
     }
 
@@ -221,5 +225,9 @@ class ExportService(val exporterFactory: ExporterFactory) {
         } else {
             resultList + Pair(doc.uuid, result)
         }
+    }
+
+    fun getNumExportedDatasets(ids: List<Int>): Int = ids.sumOf {
+        documentService.getAllDescendantIds("", it).count() + 1
     }
 }
