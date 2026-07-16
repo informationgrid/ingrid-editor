@@ -180,7 +180,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     }
     val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.map { level ->
         ZeroLevel(
-            value = level.getString("value"),
+            value = level.getDouble("value"),
             crs = level.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
             unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
             description = level.getString("description"),
@@ -189,13 +189,13 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     val averageWaterLevel = waterMeasurements?.getPath("averageWaterLevel")?.map { level ->
         AverageWaterLevel(
-            value = level.getString("value"),
+            value = level.getDouble("value"),
             unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
         )
     } ?: emptyList()
 
-    val maxDrain = waterMeasurements?.getString("drain.max")
-    val minDrain = waterMeasurements?.getString("drain.min")
+    val maxDrain = waterMeasurements?.getDouble("drain.max")
+    val minDrain = waterMeasurements?.getDouble("drain.min")
 
     val measurementDevices = doc.data.getPath("gauge")?.map { device ->
         MeasurementDevice(
@@ -236,11 +236,11 @@ data class MeasurementDevice(
 )
 
 data class AverageWaterLevel(
-    val value: String?,
+    val value: Double?,
     val unit: String?,
 )
 data class ZeroLevel(
-    val value: String?,
+    val value: Double?,
     val crs: String?,
     val unit: String?,
     val description: String?,

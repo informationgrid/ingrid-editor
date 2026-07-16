@@ -3,6 +3,7 @@
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.*
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.MeasurementDepth
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
 @import java.util.Map
 
@@ -326,9 +327,11 @@ additionalIdentification = @`
                             @for(MeasurementDevice device : page.getMeasurementDevices())
                                 <baw:measurementDevice>
                                     <baw:MeasurementDevice>
-                                        <baw:deviceName>
-                                            <gco:CharacterString>${device.getName() != null ? device.getName() : ""}</gco:CharacterString>
-                                        </baw:deviceName>
+                                        @if(TransformationTools.hasValue(device.getName()))
+                                            <baw:deviceName>
+                                                <gco:CharacterString>${device.getName()}</gco:CharacterString>
+                                            </baw:deviceName>
+                                        @endif
                                         @if(TransformationTools.hasValue(device.getId()))
                                             <baw:deviceId>
                                                 <gco:CharacterString>${device.getId()}</gco:CharacterString>
@@ -350,20 +353,26 @@ additionalIdentification = @`
                             @for(TargetParameter param : page.getTargetParameters())
                                 <baw:measurementParameter>
                                     <baw:MeasurementParameter>
-                                        <baw:parameterName>
-                                            <gco:CharacterString>${param.getName() != null ? param.getName() : ""}</gco:CharacterString>
-                                        </baw:parameterName>
-                                        <baw:parameterType>
-                                            <gco:CharacterString>${param.getType() != null ? param.getType() : ""}</gco:CharacterString>
-                                        </baw:parameterType>
+                                        @if(TransformationTools.hasValue(param.getName()))
+                                            <baw:parameterName>
+                                                <gco:CharacterString>${param.getName()}</gco:CharacterString>
+                                            </baw:parameterName>
+                                        @endif
+                                        @if(TransformationTools.hasValue(param.getType()))
+                                            <baw:parameterType>
+                                                <gco:CharacterString>${param.getType()}</gco:CharacterString>
+                                            </baw:parameterType>
+                                        @endif
                                         @if(TransformationTools.hasValue(param.getFormula()))
                                             <baw:parameterFunction>
                                                 <gco:CharacterString>${param.getFormula()}</gco:CharacterString>
                                             </baw:parameterFunction>
                                         @endif
-                                        <baw:uom>
-                                            <gco:CharacterString>${param.getUnit() != null ? param.getUnit() : ""}</gco:CharacterString>
-                                        </baw:uom>
+                                        @if(TransformationTools.hasValue(param.getUnit()))
+                                            <baw:uom>
+                                                <gco:CharacterString>${param.getUnit()}</gco:CharacterString>
+                                            </baw:uom>
+                                        @endif
                                     </baw:MeasurementParameter>
                                 </baw:measurementParameter>
                             @endfor
@@ -374,12 +383,12 @@ additionalIdentification = @`
                                             <gco:CharacterString>${page.getSpatiality()}</gco:CharacterString>
                                         </baw:measurementSpatiality>
                                     @endif
-                                    @if(page.getTimestep() != null)
+                                    @if(TransformationTools.hasValue(page.getTimestep()))
                                         <baw:temporalAccuracy>
                                             <gco:Decimal>${page.getTimestep()}</gco:Decimal>
                                         </baw:temporalAccuracy>
                                     @endif
-                                    @if(page.getFrequency() != null)
+                                    @if(TransformationTools.hasValue(page.getFrequency()))
                                         <baw:measurementFrequency>
                                             <gco:Decimal>${page.getFrequency()}</gco:Decimal>
                                         </baw:measurementFrequency>
@@ -387,7 +396,7 @@ additionalIdentification = @`
                                     @if(page.getMeasuringDepth() != null)
                                         <baw:measurementDepth>
                                             <baw:MeasurementDepth>
-                                                @if(page.getMeasuringDepth().getValue() != null)
+                                                @if(TransformationTools.hasValue(page.getMeasuringDepth().getValue()))
                                                     <baw:measurementDepth>
                                                         <gco:Decimal>${page.getMeasuringDepth().getValue()}</gco:Decimal>
                                                     </baw:measurementDepth>
@@ -403,12 +412,16 @@ additionalIdentification = @`
                                     @for(ZeroLevel level : page.getZeroLevel())
                                         <baw:gaugeZeroPoint>
                                             <baw:GaugeZeroPoint>
-                                                <baw:gaugeZeroPoint>
-                                                    <gco:Decimal>${level.getValue() != null ? level.getValue() : ""}</gco:Decimal>
-                                                </baw:gaugeZeroPoint>
-                                                <baw:uom>
-                                                    <gco:CharacterString>${level.getUnit() != null ? level.getUnit() : ""}</gco:CharacterString>
-                                                </baw:uom>
+                                                @if(TransformationTools.hasValue(level.getValue()))
+                                                    <baw:gaugeZeroPoint>
+                                                        <gco:Decimal>${level.getValue()}</gco:Decimal>
+                                                    </baw:gaugeZeroPoint>
+                                                @endif
+                                                @if(TransformationTools.hasValue(level.getUnit()))
+                                                    <baw:uom>
+                                                        <gco:CharacterString>${level.getUnit()}</gco:CharacterString>
+                                                    </baw:uom>
+                                                @endif
                                                 @if(TransformationTools.hasValue(level.getCrs()))
                                                     <baw:verticalCRS>
                                                         <gco:CharacterString>${level.getCrs()}</gco:CharacterString>
@@ -425,12 +438,16 @@ additionalIdentification = @`
                                     @for(AverageWaterLevel level : page.getAverageWaterLevel())
                                         <baw:meanWaterLevel>
                                             <baw:MeanWaterLevel>
-                                                <baw:waterLevel>
-                                                    <gco:Decimal>${level.getValue() != null ? level.getValue() : ""}</gco:Decimal>
-                                                </baw:waterLevel>
-                                                <baw:uom>
-                                                    <gco:CharacterString>${level.getUnit() != null ? level.getUnit() : ""}</gco:CharacterString>
-                                                </baw:uom>
+                                                @if(TransformationTools.hasValue(level.getValue()))
+                                                    <baw:waterLevel>
+                                                        <gco:Decimal>${level.getValue()}</gco:Decimal>
+                                                    </baw:waterLevel>
+                                                @endif
+                                                @if(TransformationTools.hasValue(level.getUnit()))
+                                                    <baw:uom>
+                                                        <gco:CharacterString>${level.getUnit()}</gco:CharacterString>
+                                                    </baw:uom>
+                                                @endif
                                             </baw:MeanWaterLevel>
                                         </baw:meanWaterLevel>
                                     @endfor
