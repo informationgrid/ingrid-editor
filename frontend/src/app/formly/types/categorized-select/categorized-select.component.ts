@@ -70,6 +70,7 @@ export interface CategorizedSelectProps extends InputOptions {
   showHeader?: boolean;
   categories: SelectCategory[] | Observable<SelectCategory[]>;
   codelistId: string;
+  restrictToSingleCategory?: boolean;
 }
 
 @Component({
@@ -123,17 +124,25 @@ export class CategorizedSelectComponent
 
   filteredCategories = computed(() => {
     const query = this.filterQuery().toLowerCase();
-    if (!query) return this.categories();
+    const selectedOption = this.selectedOptions()[0];
+    const restrictToSingleCategory = this.props.restrictToSingleCategory;
 
-    // Filter by the given query.
     return this.categories()
-      .map((cat) => ({
-        ...cat,
-        options: cat.options.filter((opt) =>
-          opt.label.toLowerCase().includes(query),
+      .filter((category) =>
+        this.isCategoryAllowed(
+          category,
+          selectedOption,
+          restrictToSingleCategory,
+        ),
+      )
+      .map((category) => ({
+        ...category,
+        // filter options by query
+        options: category.options.filter(
+          (option) => option.label.toLowerCase().includes(query) || !query,
         ),
       }))
-      .filter((cat) => cat.options.length > 0);
+      .filter((category) => category.options.length > 0);
   });
 
   // Uncategorized options with the query filter.
@@ -229,6 +238,21 @@ export class CategorizedSelectComponent
   isSelected(option: SelectOption): boolean {
     const values = new Set(this.selectedOptions().map((o) => o.value));
     return values.has(option.value);
+  }
+
+  private isCategoryAllowed(
+    category: SelectCategory,
+    selectedOption: SelectOption | undefined,
+    restrictToSingleCategory: boolean | undefined,
+  ): boolean {
+    // if not restricting to single category, or no selected option, allow all categories
+    if (!restrictToSingleCategory || !selectedOption) {
+      return true;
+    }
+
+    return category.options.some(
+      (option) => option.value === selectedOption.value,
+    );
   }
 
   private getSelectedCount(category: SelectCategory) {

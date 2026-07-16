@@ -1116,6 +1116,7 @@ export class FormFieldHelper {
         showHeader: options?.showHeader,
         categories: options?.categories,
         contextHelpId: options?.contextHelpId,
+        restrictToSingleCategory: options?.restrictToSingleCategory,
       },
     };
   }
