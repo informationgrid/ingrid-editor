@@ -47,6 +47,10 @@ interface DocumentWrapperRepository :
     fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.id IN :ids AND dw.type != 'FOLDER'")
+    fun findNonFolderWrapperByIds(@Param("ids") ids: List<Int>): List<DocumentWrapper>
+
+    @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findAllByCatalog_IdentifierAndResponsibleUser_Id(catalog_identifier: String, responsibleUser_id: Int): List<DocumentWrapper>
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")

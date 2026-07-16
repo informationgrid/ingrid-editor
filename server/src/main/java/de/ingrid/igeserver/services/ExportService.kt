@@ -227,7 +227,11 @@ class ExportService(val exporterFactory: ExporterFactory) {
         }
     }
 
-    fun getNumExportedDatasets(ids: List<Int>): Int = ids.sumOf {
-        documentService.getAllDescendantIds("", it).count() + 1
+    fun getNumExportedDatasets(ids: List<Int>): Int {
+        val allIds = ids.flatMap {
+            documentService.getAllDescendantIds("", it) + it
+        }.toSet()
+
+        return documentService.docWrapperRepo.findNonFolderWrapperByIds(allIds.map { it }).size
     }
 }
