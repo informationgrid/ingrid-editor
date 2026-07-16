@@ -169,7 +169,7 @@ export class ConnectionForm extends FormFieldHelper {
         required: true,
         updateOn: "change",
         validators: {
-          validation: ["url"],
+          validation: ["urlAllowIpAlias"],
         },
       }),
       this.addCheckboxInline("isSecure", "ist abgesichert"),

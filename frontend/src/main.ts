@@ -138,6 +138,7 @@ import {
   NotEmptyArrayValidator,
   PositiveNumValidator,
   UrlValidator,
+  UrlValidatorWithIpAlias,
 } from "./app/formly/input.validators";
 import { withFormlyFieldToggle } from "@ngx-formly/material/toggle";
 import { withFormlyFieldDatepicker } from "@ngx-formly/material/datepicker";
@@ -363,6 +364,7 @@ bootstrapApplication(AppComponent, {
           { name: "email", validation: EmailValidator },
           { name: "notEmptyArray", validation: NotEmptyArrayValidator },
           { name: "url", validation: UrlValidator },
+          { name: "urlAllowIpAlias", validation: UrlValidatorWithIpAlias },
           { name: "positiveNum", validation: PositiveNumValidator },
           { name: "doiPrefix", validation: DoiPrefixValidator },
           { name: "doi", validation: DoiValidator },

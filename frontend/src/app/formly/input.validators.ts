@@ -27,6 +27,8 @@ import { isNotEmptyObject } from "../shared/utils";
 
 export const REGEX_URL =
   "^(https?://)(([0-9a-zA-Z.-]+)\\.([0-9a-z.]{2,6})|localhost)(:\\d+)?(/.*)?$";
+export const REGEX_URL_WITH_IP_ALIAS =
+  "^(https?://)(([0-9a-zA-Z.-]+)|localhost)(:\\d+)?(/.*)?$";
 
 export function IpValidator(control: AbstractControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
@@ -58,6 +60,15 @@ const regExp = new RegExp(REGEX_URL);
 
 export function UrlValidator(control: AbstractControl): ValidationErrors {
   return !control.value || regExp.test(control.value?.trim())
+    ? null
+    : { url: true };
+}
+
+const regExpIpAlias = new RegExp(REGEX_URL_WITH_IP_ALIAS);
+export function UrlValidatorWithIpAlias(
+  control: AbstractControl,
+): ValidationErrors {
+  return !control.value || regExpIpAlias.test(control.value?.trim())
     ? null
     : { url: true };
 }
