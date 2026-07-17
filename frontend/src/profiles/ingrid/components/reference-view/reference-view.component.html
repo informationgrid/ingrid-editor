@@ -6,7 +6,11 @@
     </div>
     @if (urlItem()?.urlDataType) {
         <div class="comment-field">
-            {{ urlItem().urlDataType?.key | codelist: "1320" | async }}
+            {{
+                urlItem().urlDataType?.key
+                    | codelist: urlItem().urlDataType?._codelistId
+                    | async
+            }}
         </div>
     }
 </div>
