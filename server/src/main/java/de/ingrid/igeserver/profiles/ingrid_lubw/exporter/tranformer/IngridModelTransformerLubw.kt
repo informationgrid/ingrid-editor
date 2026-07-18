@@ -37,7 +37,8 @@ class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridM
             listOf(
                 "InGridGeoDataset",
                 "InGridGeoService",
-            ).contains(doc.type) && (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+            ).contains(doc.type) &&
+                (data.resource?.accessConstraints?.any { it.key != "1" } == true)
             )
 
     val treePathNames: List<String>
