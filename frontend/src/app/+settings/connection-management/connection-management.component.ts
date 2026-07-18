@@ -58,11 +58,12 @@ export class ConnectionManagementComponent implements OnInit {
   private configService = inject(ConfigService);
 
   form = new FormGroup<any>({});
-  fields = inject(ConnectionForm).fields;
+  fields = inject(ConnectionForm).fields((model: any) => this.canRemove(model));
   model: any;
 
   $valid = signal<boolean>(false);
   $connectionStates = signal<any[]>([]);
+  $connectionUsage = signal<{ [connectionId: string]: string[] }>({});
   private connectionSubscriptions: Subscription[];
 
   constructor() {
@@ -79,6 +80,10 @@ export class ConnectionManagementComponent implements OnInit {
         tap((config) => (this.model = config)),
       )
       .subscribe();
+
+    this.configService
+      .getConnectionUsage()
+      .subscribe((usage) => this.$connectionUsage.set(usage));
   }
 
   save() {
@@ -86,6 +91,9 @@ export class ConnectionManagementComponent implements OnInit {
     this.configService.saveConnectionConfig(config).subscribe((response) => {
       this.form.patchValue({ connections: response });
       this.checkConnectionState(response);
+      this.configService
+        .getConnectionUsage()
+        .subscribe((usage) => this.$connectionUsage.set(usage));
     });
   }
 
@@ -110,5 +118,16 @@ export class ConnectionManagementComponent implements OnInit {
           this.$connectionStates.set([...connectionStates]);
         });
     });
+  }
+
+  private canRemove(model: any): boolean {
+    const connectionIsUsed =
+      (this.$connectionUsage()[model.id]?.length ?? 0) > 0;
+    if (connectionIsUsed) {
+      alert(
+        "Diese Verbindung kann nicht gelöscht werden, da sie noch in Verwendung ist.",
+      );
+    }
+    return !connectionIsUsed;
   }
 }

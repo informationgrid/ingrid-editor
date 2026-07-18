@@ -2,8 +2,8 @@
     <div class="flex-row align-items-center gap-6">
         <span>{{ info.label }}:</span>
         @if (info.connected !== undefined) {
-            <span class="flex-row"
-                ><mat-icon
+            <span class="flex-row">
+                <mat-icon
                     [class.success-color]="info.connected"
                     [class.error-color]="!info.connected"
                     [matTooltip]="
@@ -14,10 +14,24 @@
                             ? "check_circle_outline"
                             : "error_outline"
                     }}</mat-icon
-                ></span
-            >
+                >
+            </span>
         } @else {
             <mat-spinner diameter="24"></mat-spinner>
         }
     </div>
+    @let catalogs = usage()[info.id + ""];
+    <div class="padding-horizontal">
+        @if (catalogs?.length > 0) {
+            Verwendet in:
+            <ul>
+                @for (catalog of catalogs; track catalog) {
+                    <li>catalog</li>
+                }
+            </ul>
+        } @else {
+            <em>Wird in keinem Katalog verwendet</em>
+        }
+    </div>
+    <mat-divider class="padding-vertical"></mat-divider>
 }

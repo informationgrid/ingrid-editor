@@ -104,6 +104,7 @@ export interface RepeatOptions extends Options {
   addButtonTitle?: string;
   noDrag?: boolean;
   maxLength?: number;
+  canRemove?: (model) => boolean;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -630,6 +631,7 @@ export class FormFieldHelper {
         addButtonTitle: options?.addButtonTitle,
         noDrag: options?.noDrag,
         attributes: { "data-cy": `repeat-${id}` },
+        canRemove: options?.canRemove,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
