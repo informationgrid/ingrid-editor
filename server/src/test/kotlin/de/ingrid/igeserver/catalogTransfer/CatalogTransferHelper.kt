@@ -47,7 +47,6 @@ fun mockEntityManagerTupleResults(entityManager: EntityManager) {
 
         when {
             sql.contains("SELECT * FROM catalog") -> mockTuples(listOf(catalogInfo))
-
             sql.contains("FROM behaviour") -> mockTuples(behaviours)
             sql.contains("FROM codelist") -> mockTuples(codelists)
             sql.contains("FROM query") -> mockTuples(queries)
@@ -57,7 +56,6 @@ fun mockEntityManagerTupleResults(entityManager: EntityManager) {
             sql.contains("FROM permission_group") -> mockTuples(permissionGroup)
             sql.contains("FROM user_group") -> mockTuples(userGroup)
             sql.contains("FROM version_info") -> mockTuples(versionInfo)
-
             sql.contains("INSERT INTO user_info") -> mockTuples(insertedUser)
             sql.contains("INSERT INTO catalog") -> mockTuples(createdCatalogAnswer)
             sql.contains("INSERT INTO document_wrapper") -> emptyList<Tuple>()

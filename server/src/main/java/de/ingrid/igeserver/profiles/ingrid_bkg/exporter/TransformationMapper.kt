@@ -29,13 +29,19 @@ import kotlin.reflect.KClass
 
 fun getBkgTransformer(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerBkg::class
+
     "InGridGeoService" -> GeoserviceTransformerBkg::class
+
     "InGridDataCollection" -> DataCollectionTransformerBkg::class
-//    "InGridSpecialisedTask" -> IngridModelTransformerBkg::class
+
+    //    "InGridSpecialisedTask" -> IngridModelTransformerBkg::class
     "InGridPublication" -> PublicationModelTransformerBkg::class
+
     "InGridProject" -> ProjectModelTransformerBkg::class
+
     "InGridInformationSystem" -> InformationSystemModelTransformerBkg::class
-//    "InGridOrganisationDoc" -> AddressModelTransformer::class
+
+    //    "InGridOrganisationDoc" -> AddressModelTransformer::class
 //    "InGridPersonDoc" -> AddressModelTransformer::class
     else -> null
 }

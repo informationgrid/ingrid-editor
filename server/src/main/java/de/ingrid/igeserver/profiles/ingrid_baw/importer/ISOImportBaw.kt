@@ -36,10 +36,12 @@ class ISOImportBaw : ISOImportProfile {
                         "imports/ingrid-baw/simulation.jte",
                         GeodatasetMapperBaw(isoData),
                     )
+
                     "BawMeasurement" -> ImportProfileData(
                         "imports/ingrid-baw/measurement.jte",
                         GeodatasetMapperBaw(isoData),
                     )
+
                     "InGridGeoDataset" -> ImportProfileData(
                         "imports/ingrid-baw/geodataset.jte",
                         GeodatasetMapperBaw(isoData),

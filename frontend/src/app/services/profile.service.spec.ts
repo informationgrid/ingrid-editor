@@ -51,6 +51,7 @@ describe("ProfileService", () => {
           version: null,
           lastLogin: new Date(),
           permissions: [],
+          fromLdap: false,
         }),
       }),
       // provideMatomoTesting(),
