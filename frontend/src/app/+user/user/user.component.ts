@@ -63,7 +63,10 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import {
+  MATOMO_DIRECTIVES,
+  MatomoTrackClickDirective,
+} from "ngx-matomo-client";
 
 @Component({
   selector: "ige-user-manager",
@@ -86,6 +89,7 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     HeaderMoreComponent,
     MATOMO_DIRECTIVES,
     FormlyForm,
+    MatomoTrackClickDirective,
   ],
   providers: [UserManagementService],
 })
@@ -109,7 +113,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
   formChange$ = toSignal(this.form.valueChanges);
   userTitle = computed<string>(() => {
-    const value = this.formChange$();
+    // listen on changes on form
+    this.formChange$();
+    // ... but get raw value to also get content of disabled fields
+    const value = this.form.getRawValue();
     const title = `${value.firstName} ${value.lastName}`;
     return title.trim().length === 0 ? "Kein Titel" : title;
   });
@@ -119,6 +126,7 @@ export class UserComponent implements OnInit, OnDestroy {
       this.groupStore.entities(),
       this.groupSelectCallback,
       this.roleChangeCallback,
+      this.loadedUser()?.fromLdap,
     );
   });
 

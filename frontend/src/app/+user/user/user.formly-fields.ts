@@ -29,6 +29,7 @@ export const getUserFormFields = (
   groups: Group[],
   groupClickCallback: (id: string) => void = undefined,
   roleChangeCallback: FormlyAttributeEvent = undefined,
+  isLdapUser: boolean,
 ): FormlyFieldConfig[] => {
   return [
     {
@@ -75,6 +76,7 @@ export const getUserFormFields = (
                 required: true,
                 label: "Vorname",
                 appearance: "outline",
+                disabled: isLdapUser,
               },
             },
             {
@@ -85,6 +87,7 @@ export const getUserFormFields = (
                 required: true,
                 label: "Nachname",
                 appearance: "outline",
+                disabled: isLdapUser,
               },
             },
           ],
@@ -99,6 +102,7 @@ export const getUserFormFields = (
         externalLabel: "E-Mail",
         appearance: "outline",
         required: true,
+        disabled: isLdapUser,
       },
       validators: {
         validation: ["email"],
@@ -111,6 +115,7 @@ export const getUserFormFields = (
       props: {
         externalLabel: "Organisation",
         appearance: "outline",
+        disabled: isLdapUser,
       },
     },
     {
@@ -120,6 +125,7 @@ export const getUserFormFields = (
       props: {
         externalLabel: "Abteilung",
         appearance: "outline",
+        disabled: isLdapUser,
       },
     },
     {
@@ -129,6 +135,7 @@ export const getUserFormFields = (
       props: {
         externalLabel: "Telefonnummer",
         appearance: "outline",
+        disabled: isLdapUser,
       },
     },
     {

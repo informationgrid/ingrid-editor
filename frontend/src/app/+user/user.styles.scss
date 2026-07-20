@@ -10,6 +10,11 @@
     flex: 1;
   }
 
+  .no-fields-selected-notice {
+    padding: 4px 12px;
+    margin-bottom: 12px;
+  }
+
   ::ng-deep ige-repeat-list .list-item {
     background: vars.$ige-background;
     margin-bottom: 2px;
