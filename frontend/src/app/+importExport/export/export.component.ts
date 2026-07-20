@@ -145,7 +145,7 @@ export class ExportComponent implements OnInit {
       } else {
         this.path.set(null);
       }
-    }
+    } else this.datasetSelected.set(false);
   }
 
   runExport() {
