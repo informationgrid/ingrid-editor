@@ -37,10 +37,17 @@ const val SYSTEM_ENVIRONMENT = """
 
 const val OBJECT_ATTRIBUTES = """
             <idf:objectAttribute>
-                <idf:group>Group Test</idf:group>
-                <idf:designation>Test 1</idf:designation>
-                <idf:description>Beschreibung 1</idf:description>
+                <idf:group>Berichte</idf:group>
+                <idf:designation>Test 2</idf:designation>
+                <idf:description>Beschreibung Zwei</idf:description>
                 <idf:category>Pflichtdaten Test</idf:category>
-                <idf:transmissionLevel>Level Test</idf:transmissionLevel>
+                <idf:transmissionLevel>1 - unbeschränkt (im Internet)</idf:transmissionLevel>
+            </idf:objectAttribute>
+            <idf:objectAttribute>
+                <idf:group>Bewertung</idf:group>
+                <idf:designation>Open 1</idf:designation>
+                <idf:description>Beschreibung 3</idf:description>
+                <idf:category>Angebotsdaten</idf:category>
+                <idf:transmissionLevel>0 - Open Data</idf:transmissionLevel>
             </idf:objectAttribute>
 """
