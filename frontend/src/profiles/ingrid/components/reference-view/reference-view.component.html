@@ -7,9 +7,9 @@
     @if (urlItem()?.urlDataType) {
         <div class="comment-field">
             {{
-                urlItem().urlDataType?.key
+                (urlItem().urlDataType?.key
                     | codelist: urlItem().urlDataType?._codelistId
-                    | async
+                    | async) ?? urlItem().urlDataType?.value
             }}
         </div>
     }
