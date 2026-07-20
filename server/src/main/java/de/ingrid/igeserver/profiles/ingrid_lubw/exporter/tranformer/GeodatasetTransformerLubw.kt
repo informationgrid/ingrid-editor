@@ -48,27 +48,29 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
 
     fun getObjectAttributes(): List<Attribute> {
         val attributes: ArrayNode? = doc.data.getPath("featureCatalogueDescription.objectAttributes") as ArrayNode?
-        return attributes?.map {
-            Attribute(
-                group = codelist.codelistHandler.getCatalogCodelistValue(
-                    transformerConfig.catalogIdentifier,
-                    "30002",
-                    it.getString("group.key")!!,
-                )!!,
-                category = codelist.codelistHandler.getCatalogCodelistValue(
-                    transformerConfig.catalogIdentifier,
-                    "30003",
-                    it.getString("category.key")!!,
-                )!!,
-                description = it.getStringOrEmpty("description"),
-                designation = it.getStringOrEmpty("designation"),
-                transmissionLevel = codelist.codelistHandler.getCatalogCodelistValue(
-                    transformerConfig.catalogIdentifier,
-                    "30004",
-                    it.getString("transmissionLevel.key")!!,
-                )!!,
-            )
-        } ?: emptyList()
+        return attributes
+            ?.filter { it.getString("transmissionLevel.key") in setOf("0", "1") }
+            ?.map {
+                Attribute(
+                    group = codelist.codelistHandler.getCatalogCodelistValue(
+                        transformerConfig.catalogIdentifier,
+                        "30002",
+                        it.getString("group.key")!!,
+                    )!!,
+                    category = codelist.codelistHandler.getCatalogCodelistValue(
+                        transformerConfig.catalogIdentifier,
+                        "30003",
+                        it.getString("category.key")!!,
+                    )!!,
+                    description = it.getStringOrEmpty("description"),
+                    designation = it.getStringOrEmpty("designation"),
+                    transmissionLevel = codelist.codelistHandler.getCatalogCodelistValue(
+                        transformerConfig.catalogIdentifier,
+                        "30004",
+                        it.getString("transmissionLevel.key")!!,
+                    )!!,
+                )
+            } ?: emptyList()
     }
 }
 
