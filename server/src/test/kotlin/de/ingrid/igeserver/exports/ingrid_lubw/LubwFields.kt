@@ -97,14 +97,23 @@ class LubwFields : GeodatasetBase() {
         }
         should("export objectAttributes") {
             every {
-                super.codelistHandler.getCatalogCodelistValue(this.any(), "30002", "2")
-            } returns "Group Test"
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30002", "11")
+            } returns "Bewertung"
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30002", "19")
+            } returns "Berichte"
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30003", "1")
+            } returns "Angebotsdaten"
             every {
                 super.codelistHandler.getCatalogCodelistValue(this.any(), "30003", "3")
             } returns "Pflichtdaten Test"
             every {
-                super.codelistHandler.getCatalogCodelistValue(this.any(), "30004", "4")
-            } returns "Level Test"
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30004", "0")
+            } returns "0 - Open Data"
+            every {
+                super.codelistHandler.getCatalogCodelistValue(this.any(), "30004", "1")
+            } returns "1 - unbeschränkt (im Internet)"
             val context =
                 jacksonObjectMapper()
                     .readTree(
@@ -113,21 +122,59 @@ class LubwFields : GeodatasetBase() {
                             "objectAttributes": [
                               {
                                 "group": {
-                                  "key": "2",
+                                  "key": "47",
+                                  "value": "Allgemeine Daten",
+                                  "_codelistId": "30002"
+                                },
+                                "category": {
+                                  "key": "1",
+                                  "value": "Angebotsdaten",
+                                  "_codelistId": "30003"
+                                },
+                                "description": "Testbeschreibung",
+                                "designation": "Test 1",
+                                "transmissionLevel": {
+                                  "key": "3",
+                                  "value": "3 - beschränkt auf alle Partner des SKDV-Datenverbund pauschal ohne Vorprüfung",
+                                  "_codelistId": "30004"
+                                }
+                              },
+                              {
+                                "group": {
+                                  "key": "19",
                                   "value": "Berichte",
-                                  "_codelistId": null
+                                  "_codelistId": "30002"
                                 },
                                 "category": {
                                   "key": "3",
                                   "value": "Pflichtdaten",
-                                  "_codelistId": null
+                                  "_codelistId": "30003"
                                 },
-                                "description": "Beschreibung 1",
-                                "designation": "Test 1",
+                                "description": "Beschreibung Zwei",
+                                "designation": "Test 2",
                                 "transmissionLevel": {
-                                  "key": "4",
-                                  "value": "4 - beschränkt auf bestimmte Behörden, Mitgliedsgemeinden des SKDV-Datenverbunds (bezeichnet nach Auswahlliste)",
-                                  "_codelistId": null
+                                  "key": "1",
+                                  "value": "1 - unbeschränkt (im Internet)",
+                                  "_codelistId": "30004"
+                                }
+                              },
+                              {
+                                "group": {
+                                  "key": "11",
+                                  "value": "Bewertung",
+                                  "_codelistId": "30002"
+                                },
+                                "designation": "Open 1",
+                                "description": "Beschreibung 3",
+                                "category": {
+                                  "key": "1",
+                                  "value": "Angebotsdaten",
+                                  "_codelistId": "30003"
+                                },
+                                "transmissionLevel": {
+                                  "key": "0",
+                                  "value": "0 - Open Data",
+                                  "_codelistId": "30004"
                                 }
                               }
                             ]
