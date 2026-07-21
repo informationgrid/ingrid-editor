@@ -14,7 +14,7 @@
 
 {
 "id": "${page.getModel().getUuid()}",
-"schema_version": "0.0.1",
+"$schema": "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
 "metadata": {
 "data_type": "INGRID",
 "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
@@ -140,14 +140,16 @@
 "specific_usage": "${page.getSpecificUsage()}",
 "purpose": "${page.getPurpose()}",
 "conformance_result": [
-@for(var entry : ForSupport.of(page.getData().getConformanceResult()))
-    {
-    "pass": "${page.getConformancePass(entry.get())}",
-    "specification": $unsafe{page.renderKeyValue(entry.get().getSpecification())},
-    "publicationDate": "${entry.get().getPublicationDate()}",
-    "explanation": "${entry.get().getExplanation()}"
-    }@if (!entry.isLast()),@endif
-@endfor
+@if (page.getData().getConformanceResult() != null)
+    @for(var entry : ForSupport.of(page.getData().getConformanceResult()))
+        {
+        "pass": "${page.getConformancePass(entry.get())}",
+        "specification": $unsafe{page.renderKeyValue(entry.get().getSpecification())},
+        "publicationDate": "${entry.get().getPublicationDate()}",
+        "explanation": "${entry.get().getExplanation()}"
+        }@if (!entry.isLast()),@endif
+    @endfor
+@endif
 ],
 "order_info": "${page.getData().getOrderInfo()}",
 "data_quality": {}

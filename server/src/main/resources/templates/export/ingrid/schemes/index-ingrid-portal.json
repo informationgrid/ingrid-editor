@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/schemas/1.0.0/dcat.yaml",
-  "title": "Schema for InGrid Index 'InGrid'",
+  "$id": "https://schema.ingrid-oss.eu/index/draft/schema/index-ingrid.json",
+  "title": "InGrid Index - InGrid",
+  "description": "Dies ist das JSON-Schema für den InGrid-Index.\nFolgende Anmerkungen zu den \"Root fields\":\n\n* references[].type kann die folgenden Werte enthalten\n  * Codeliste 2000\n  * previewGraphic\n",
   "type": "object",
   "unevaluatedProperties": false,
   "allOf": [
@@ -12,10 +13,17 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "The ID of the Dataset. The ID **must** be unique in the index.\n",
+          "description": "Die ID des Datensatzes. Die ID **muss** eindeutig im Index sein.",
           "examples": [
             "Für UMWELTNAVI <oid>-<part> i.e. 'nlwkn-dsk-4922-21000-0'",
             "For InGrid Editor i.e. 'd43dad1f-a19f-4043-bca4-447cf5e7cabb'"
+          ]
+        },
+        "$schema": {
+          "type": "string",
+          "description": "Enthält die URL des JSON-Schemas, das für die Validierung verwendet wird.",
+          "examples": [
+            "https://example.com/schemas/order/v2.1.0/schema.json"
           ]
         },
         "schema_version": {
@@ -38,6 +46,14 @@
                 "UmweltNAVI Datensatz ['UMWELTNAVI']",
                 "InGrid Datensatz ['INGRID']",
                 "UVP Datensatz ['UVP']"
+              ]
+            },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie Wird im Profil definiert.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
               ]
             },
             "created": {
@@ -74,7 +90,7 @@
             },
             "partner": {
               "type": "string",
-              "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110.\n",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
               "examples": [
                 "bb",
                 "st"
@@ -82,7 +98,7 @@
             },
             "provider": {
               "type": "string",
-              "description": "Der Anbieter der Datenquelle als Kürzel. Siehe auch Codeliste 111.\n",
+              "description": "Der Anbieter der Datenquelle.",
               "examples": [
                 "ni_gll",
                 "bw_mj"
@@ -90,7 +106,7 @@
             },
             "language": {
               "title": "language",
-              "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet.",
+              "description": "Enthält die Sprache des Metadatensatzes.",
               "additionalProperties": false,
               "properties": {
                 "key": {
@@ -127,7 +143,7 @@
           ]
         },
         "sort_uuid": {
-          "description": "Sortier-UUID für die Sortierung von Datensätzen, die bei einer leeren Suche durchmischt angezeigt werden sollen.",
+          "description": "Sortier-UUID für die Sortierung von Datensätzen, die bei einer leeren Suche durchmischt angezeigt werden sollen. Außerdem wird hiermit gewährt, dass die Reihenfolge der Datensätze beim Paging erhalten bleibt. Hier wird eine UUID verwendet, die über alle Indizes einmalig sein sollte.",
           "type": "string"
         },
         "title": {
@@ -332,19 +348,19 @@
                   "date": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Datum der Messreihe"
+                    "description": "Datum des Ereignisses"
                   },
                   "date_range": {
                     "type": "object",
                     "title": "Zeitabschnitt",
-                    "description": "Zeitabschnitt der Messreihe",
+                    "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
                     "properties": {
-                      "start": {
+                      "gte": {
                         "type": "string",
                         "format": "date-time",
                         "description": "Startdatum der Zeitangabe"
                       },
-                      "end": {
+                      "lte": {
                         "type": "string",
                         "format": "date-time",
                         "description": "Enddatum der Zeitangabe"
@@ -384,9 +400,6 @@
                       "date_text"
                     ]
                   }
-                ],
-                "required": [
-                  "date_type"
                 ]
               }
             }
@@ -425,6 +438,79 @@
             ]
           }
         },
+        "references": {
+          "type": "array",
+          "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind. Hier können auch URLs zu getCapabilities-Anfragen angegeben werden.",
+          "items": {
+            "type": "object",
+            "title": "item",
+            "if": {
+              "properties": {
+                "internal": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "uuid_ref"
+              ]
+            },
+            "else": {
+              "required": [
+                "url"
+              ]
+            },
+            "properties": {
+              "internal": {
+                "type": "boolean",
+                "description": "Gibt an, ob es sich um einen internen oder externen Verweis handelt."
+              },
+              "url": {
+                "$comment": "Sollten url und uuidRef vereint werden? Wodurch die Logik vereinfacht wird?",
+                "type": "string",
+                "description": "Die URL zur externen Ressource oder Download."
+              },
+              "uuid_ref": {
+                "type": "string",
+                "description": "Die UUID des internen Datensatzes."
+              },
+              "type": {
+                "type": "object",
+                "title": "type",
+                "description": "Gibt den Typ der externen Ressource oder Download an.",
+                "examples": [
+                  "3600 - Gekoppelte Daten",
+                  "5304 - Bestellung",
+                  "3535 - Schlüsselkatalog"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "title": {
+                "type": "string",
+                "description": "Ein Titel der externen Ressource oder Download."
+              },
+              "explanation": {
+                "type": "string",
+                "description": "Eine Beschreibung der externen Ressource oder Download."
+              }
+            }
+          }
+        },
         "fulltext": {
           "type": "array",
           "description": "Für Full Text Suche. Signifikanz von genauen Treffern kann hier geboostet werden. Entsprechende Felder sollten mit copy_to-Operation in Elasticsearch kopiert werden.",
@@ -440,7 +526,7 @@
       },
       "required": [
         "id",
-        "schema_version",
+        "$schema",
         "metadata",
         "title"
       ],
@@ -574,6 +660,14 @@
                 "UVP Datensatz ['UVP']"
               ]
             },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie Wird im Profil definiert.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
+              ]
+            },
             "created": {
               "type": [
                 "string",
@@ -608,7 +702,7 @@
             },
             "partner": {
               "type": "string",
-              "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110.\n",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
               "examples": [
                 "bb",
                 "st"
@@ -616,7 +710,7 @@
             },
             "provider": {
               "type": "string",
-              "description": "Der Anbieter der Datenquelle als Kürzel. Siehe auch Codeliste 111.\n",
+              "description": "Der Anbieter der Datenquelle.",
               "examples": [
                 "ni_gll",
                 "bw_mj"
@@ -624,7 +718,7 @@
             },
             "language": {
               "title": "language",
-              "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet.",
+              "description": "Enthält die Sprache des Metadatensatzes.",
               "additionalProperties": false,
               "properties": {
                 "key": {
@@ -659,6 +753,57 @@
             "created",
             "modified"
           ]
+        },
+        "ReferenceItem": {
+          "type": "object",
+          "properties": {
+            "internal": {
+              "type": "boolean",
+              "description": "Gibt an, ob es sich um einen internen oder externen Verweis handelt."
+            },
+            "url": {
+              "$comment": "Sollten url und uuidRef vereint werden? Wodurch die Logik vereinfacht wird?",
+              "type": "string",
+              "description": "Die URL zur externen Ressource oder Download."
+            },
+            "uuid_ref": {
+              "type": "string",
+              "description": "Die UUID des internen Datensatzes."
+            },
+            "type": {
+              "type": "object",
+              "title": "type",
+              "description": "Gibt den Typ der externen Ressource oder Download an.",
+              "examples": [
+                "3600 - Gekoppelte Daten",
+                "5304 - Bestellung",
+                "3535 - Schlüsselkatalog"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "title": {
+              "type": "string",
+              "description": "Ein Titel der externen Ressource oder Download."
+            },
+            "explanation": {
+              "type": "string",
+              "description": "Eine Beschreibung der externen Ressource oder Download."
+            }
+          }
         }
       }
     },
@@ -681,6 +826,14 @@
                     "UmweltNAVI Datensatz ['UMWELTNAVI']",
                     "InGrid Datensatz ['INGRID']",
                     "UVP Datensatz ['UVP']"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie Wird im Profil definiert.",
+                  "examples": [
+                    "InGridGeoDataset",
+                    "InGridGeoService"
                   ]
                 },
                 "created": {
@@ -717,7 +870,7 @@
                 },
                 "partner": {
                   "type": "string",
-                  "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110.\n",
+                  "description": "Der Partner der Datenquelle als Kürzel.\n",
                   "examples": [
                     "bb",
                     "st"
@@ -725,7 +878,7 @@
                 },
                 "provider": {
                   "type": "string",
-                  "description": "Der Anbieter der Datenquelle als Kürzel. Siehe auch Codeliste 111.\n",
+                  "description": "Der Anbieter der Datenquelle.",
                   "examples": [
                     "ni_gll",
                     "bw_mj"
@@ -733,7 +886,7 @@
                 },
                 "language": {
                   "title": "language",
-                  "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet.",
+                  "description": "Enthält die Sprache des Metadatensatzes.",
                   "additionalProperties": false,
                   "properties": {
                     "key": {
@@ -775,7 +928,54 @@
               "properties": {
                 "data_type": {
                   "type": "string",
-                  "const": "INGRID"
+                  "enum": [
+                    "INGRID",
+                    "UMWELTNAVI"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes."
+                },
+                "language": {
+                  "type": "string",
+                  "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet."
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110."
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle als Kürzel. Dieser wird aus der Codeliste 111 genommen.",
+                  "examples": [
+                    "ni_gll"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "data_type": {
+                    "const": "INGRID"
+                  }
+                },
+                "required": [
+                  "data_type"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "document_type": {
+                    "enum": [
+                      "InGridGeoDataset",
+                      "InGridDataCollection",
+                      "InGridGeoService",
+                      "InGridInformationSystem",
+                      "InGridPublication",
+                      "InGridProject",
+                      "InGridSpecialisedTask"
+                    ]
+                  }
                 }
               },
               "required": [
@@ -800,19 +1000,19 @@
                       "date": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Datum der Messreihe"
+                        "description": "Datum des Ereignisses"
                       },
                       "date_range": {
                         "type": "object",
                         "title": "Zeitabschnitt",
-                        "description": "Zeitabschnitt der Messreihe",
+                        "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
                         "properties": {
-                          "start": {
+                          "gte": {
                             "type": "string",
                             "format": "date-time",
                             "description": "Startdatum der Zeitangabe"
                           },
-                          "end": {
+                          "lte": {
                             "type": "string",
                             "format": "date-time",
                             "description": "Enddatum der Zeitangabe"
@@ -852,9 +1052,6 @@
                           "date_text"
                         ]
                       }
-                    ],
-                    "required": [
-                      "date_type"
                     ]
                   }
                 }
@@ -934,116 +1131,6 @@
             "alternate_title": {
               "type": "string",
               "description": "Ermöglicht das Setzen eines alternativen Titels oder eine Kurzbeschreibung des Datensatzes."
-            },
-            "metadata": {
-              "description": "Informationen zum Metadatensatz",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Beschreibt den Typ des Metadatensatzes.",
-                  "enum": [
-                    "InGridGeoDataset",
-                    "InGridDataCollection",
-                    "InGridGeoService",
-                    "InGridInformationSystem",
-                    "InGridPublication",
-                    "InGridProject",
-                    "InGridSpecialisedTask"
-                  ]
-                },
-                "character_set": {
-                  "description": "Aktuell nicht im Portal angezeigt?",
-                  "deprecated": true,
-                  "additionalProperties": false,
-                  "properties": {
-                    "key": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "value": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "references": {
-              "type": "array",
-              "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind. Hier können auch URLs zu getCapabilities-Anfragen angegeben werden.",
-              "items": {
-                "type": "object",
-                "title": "item",
-                "properties": {
-                  "internal": {
-                    "type": "boolean",
-                    "description": "Gibt an, ob es sich um einen internen oder externen Verweis handelt."
-                  },
-                  "url": {
-                    "$comment": "Sollten url und uuidRef vereint werden? Wodurch die Logik vereinfacht wird?",
-                    "type": "string",
-                    "description": "Die URL zur externen Ressource oder Download."
-                  },
-                  "uuid_ref": {
-                    "type": "string",
-                    "description": "Die UUID des internen Datensatzes."
-                  },
-                  "type": {
-                    "type": "object",
-                    "title": "type",
-                    "description": "Gibt den Typ der externen Ressource oder Download an. Es wird die Codeliste 2000 verwendet. Achtung: Vorschaugrafik nicht dabei als Typ. Zusatztyp?",
-                    "examples": [
-                      "3600 - Gekoppelte Daten",
-                      "5304 - Bestellung",
-                      "3535 - Schlüsselkatalog"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                      "key": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "value": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
-                  "title": {
-                    "type": "string",
-                    "description": "Ein Titel der externen Ressource oder Download."
-                  },
-                  "explanation": {
-                    "type": "string",
-                    "description": "Eine Beschreibung der externen Ressource oder Download."
-                  }
-                },
-                "if": {
-                  "properties": {
-                    "internal": {
-                      "const": true
-                    }
-                  }
-                },
-                "then": {
-                  "required": [
-                    "uuid_ref"
-                  ]
-                },
-                "else": {
-                  "required": [
-                    "url"
-                  ]
-                }
-              }
             },
             "licenses": {
               "type": "array",
@@ -1353,10 +1440,688 @@
                   }
                 }
               }
+            },
+            "character_set": {
+              "type": "object",
+              "description": "Angaben zu dem im beschriebenen Datensatz benutzten Zeichensatz.",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
             }
           }
         }
       }
     }
-  ]
+  ],
+  "$defs": {
+    "InGrid": {
+      "type": "object",
+      "title": "InGrid",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "description": "Enthält zusätzliche Metadaten zum Datensatz.",
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+                  "examples": [
+                    "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                    "InGrid Datensatz ['INGRID']",
+                    "UVP Datensatz ['UVP']"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie Wird im Profil definiert.",
+                  "examples": [
+                    "InGridGeoDataset",
+                    "InGridGeoService"
+                  ]
+                },
+                "created": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "modified": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "issued": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel.\n",
+                  "examples": [
+                    "bb",
+                    "st"
+                  ]
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle.",
+                  "examples": [
+                    "ni_gll",
+                    "bw_mj"
+                  ]
+                },
+                "language": {
+                  "title": "language",
+                  "description": "Enthält die Sprache des Metadatensatzes.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "datasource": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Die ID der Datenquelle."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Der Name der Datenquelle."
+                    }
+                  }
+                }
+              },
+              "required": [
+                "data_type",
+                "created",
+                "modified"
+              ]
+            },
+            {
+              "type": "object",
+              "title": "InGrid Metadata",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "enum": [
+                    "INGRID",
+                    "UMWELTNAVI"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes."
+                },
+                "language": {
+                  "type": "string",
+                  "description": "Enthält die Sprache des Metadatensatzes. Hier wird die Codeliste 99999999 verwendet."
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel. Siehe auch Codeliste 110."
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle als Kürzel. Dieser wird aus der Codeliste 111 genommen.",
+                  "examples": [
+                    "ni_gll"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "data_type": {
+                    "const": "INGRID"
+                  }
+                },
+                "required": [
+                  "data_type"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "document_type": {
+                    "enum": [
+                      "InGridGeoDataset",
+                      "InGridDataCollection",
+                      "InGridGeoService",
+                      "InGridInformationSystem",
+                      "InGridPublication",
+                      "InGridProject",
+                      "InGridSpecialisedTask"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "data_type"
+              ]
+            }
+          ]
+        },
+        "temporal": {
+          "type": "object",
+          "description": "Enthält zusätzliche Informationen zur Aktualität des Datensatzes, einschließlich Status, Pflegeintervall und benutzerdefinierten Pflegeintervall.",
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "data_temporal": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Datum des Ereignisses"
+                      },
+                      "date_range": {
+                        "type": "object",
+                        "title": "Zeitabschnitt",
+                        "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
+                        "properties": {
+                          "gte": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Startdatum der Zeitangabe"
+                          },
+                          "lte": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Enddatum der Zeitangabe"
+                          }
+                        }
+                      },
+                      "date_text": {
+                        "type": "string",
+                        "description": "Wird verwendet, wenn der Wert nicht in eine gültige DateRange Übertragbar ist",
+                        "examples": [
+                          "Sommer 2010"
+                        ]
+                      },
+                      "date_type": {
+                        "type": "string",
+                        "description": "Typ der Zeitangabe",
+                        "enum": [
+                          "created",
+                          "last_updated",
+                          "first_published"
+                        ]
+                      }
+                    },
+                    "oneOf": [
+                      {
+                        "required": [
+                          "date"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "date_range"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "date_text"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "title": "InGrid Temporal",
+              "properties": {
+                "status": {
+                  "description": "In welchem Zustand ist der Datensatz? Hier wird die Codeliste 523 verwendet.",
+                  "examples": [
+                    "1 - abgeschlossen",
+                    "2 - historisches Archiv"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "maintenance_frequency": {
+                  "description": "Enthält das Pflegeintervall des Datensatzes. Es wird die Codeliste 518 verwendet.",
+                  "examples": [
+                    "2 - täglich",
+                    "3 - wöchentlich",
+                    "5 - monatlich"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "user_defined_maintenance_frequency_in_sec": {
+                  "type": "string",
+                  "description": "Enthält das benutzerdefinierte Pflegeintervall des Datensatzes in Sekunden.",
+                  "examples": [
+                    60
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "exports": {
+          "unevaluatedProperties": false,
+          "properties": {
+            "iso": {
+              "type": "string",
+              "description": "Enthält das vollständige ISO-19139-Dokument im XML-Format."
+            }
+          }
+        },
+        "ingrid": {
+          "properties": {
+            "alternate_title": {
+              "type": "string",
+              "description": "Ermöglicht das Setzen eines alternativen Titels oder eine Kurzbeschreibung des Datensatzes."
+            },
+            "licenses": {
+              "type": "array",
+              "description": "Liste der Nutzungsbedingungen oder Einschränkungen für die Verwendung der externen Ressource oder Download.",
+              "items": {
+                "type": "object",
+                "title": "item",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Typ der Nutzungsbedingung oder Einschränkung. Kann 'accessConstraints', 'useConstraints' oder 'useLimitations' sein.",
+                    "enum": [
+                      "accessConstraints",
+                      "useConstraints",
+                      "useLimitations"
+                    ]
+                  },
+                  "items": {
+                    "type": "array",
+                    "description": "Liste von Einschränkungen oder Nutzungsbedingungen abhängig vom Typ. Es wird die Codeliste 6500 für useConstraints, 6010 für accessConstraints und freie Werte für useLimitations verwendet.",
+                    "items": {
+                      "title": "item",
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "parent_identifier": {
+              "type": "string",
+              "description": "UUID des übergeordneten Datensatzes. Kann für die Strukturierung von Datensätzen verwendet werden."
+            },
+            "datasource_identifier": {
+              "type": "string",
+              "description": "Enthält den Identifikator der Datenquelle. Dieser muss eine auflösbare URL sein, die den Direktzugriff auf das XML des Daten-Metadatensatzes ermöglicht.",
+              "examples": [
+                "https://registry.gdi-de.org/id/ingrid_cat/d848fd14-7a22-40ba-980a-3ea7e3fcbcae"
+              ]
+            },
+            "spatial_representation": {
+              "type": "array",
+              "title": "Digitale Repräsentation",
+              "items": {
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "title": "Typ",
+                    "description": "Beschreibt den Typ der Repräsentation",
+                    "enum": [
+                      "text",
+                      "vector",
+                      "tin",
+                      "video",
+                      "stereomodel",
+                      "grid"
+                    ]
+                  },
+                  "vector": {
+                    "type": "array",
+                    "title": "Vector",
+                    "description": "Beschreibt die digitale Repräsentation als eine Liste von Vektor-Daten.",
+                    "items": {
+                      "properties": {
+                        "topology": {
+                          "type": "string",
+                          "description": "Beschreibt die Topologie des Vektor-Datensatzes"
+                        },
+                        "geometry_type": {
+                          "type": "string",
+                          "description": "Beschreibt den Typ der Geometrie"
+                        },
+                        "number": {
+                          "type": "integer",
+                          "description": "Beschreibt die Anzahl der Punkt- oder Vektortypelemente im Datensatz"
+                        }
+                      }
+                    }
+                  },
+                  "grid": {
+                    "title": "Raster/Gitter",
+                    "description": "Enthält die Information über die Strukturelemente der Rasterdaten. Aktuell nicht im Portal angezeigt?",
+                    "properties": {
+                      "axes": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "label": {
+                              "type": "string",
+                              "description": "Beschreibt den Namen der Achse"
+                            },
+                            "number": {
+                              "type": "integer",
+                              "description": "Beschreibt die Anzahl der Achsen im Raster"
+                            },
+                            "resolution": {
+                              "type": "integer",
+                              "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
+                            }
+                          }
+                        }
+                      },
+                      "available_parameters": {
+                        "type": "boolean",
+                        "description": "Beschreibt, ob Parameter für das Raster verfügbar sind"
+                      },
+                      "number_dimensions": {
+                        "type": "integer",
+                        "description": "Beschreibt die Anzahl der unabhängigen räumlich-zeitlichen Achsen"
+                      },
+                      "cell_geometry": {
+                        "description": "Angabe, ob die Rasterdatenzelle einen Punkt oder eine Fläche beschreibt. Hier wird die Codeliste 509 verwendet.",
+                        "additionalProperties": false,
+                        "properties": {
+                          "key": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "value": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "rectified": {
+                        "title": "Georektifiziertes Raster",
+                        "properties": {
+                          "checkPointAvailability": {
+                            "type": "boolean",
+                            "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
+                          },
+                          "checkPointDescription": {
+                            "type": "string",
+                            "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
+                          },
+                          "cornerPoints": {
+                            "type": "string"
+                          },
+                          "pointInPixel": {
+                            "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
+                            "additionalProperties": false,
+                            "properties": {
+                              "key": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "value": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "referenced": {
+                        "title": "Georeferenzierbares Raster",
+                        "properties": {
+                          "orientationParameterAvailability": {
+                            "type": "boolean",
+                            "description": "Angabe, ob Orientierungsparameter verfügbar sind."
+                          },
+                          "controlPointAvaliability": {
+                            "type": "boolean",
+                            "description": "Angabe, ob Passpunkte existieren."
+                          },
+                          "parameters": {
+                            "type": "string",
+                            "description": "Parameter, die die Georeferenzierung der Rasterdaten ermöglichen"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "specific_usage": {
+              "type": "string"
+            },
+            "purpose": {
+              "type": "string"
+            },
+            "conformance_result": {
+              "type": "array",
+              "items": {
+                "title": "item",
+                "properties": {
+                  "pass": {
+                    "type": "string",
+                    "enum": [
+                      "conformant",
+                      "not-conformant",
+                      "not-evaluated"
+                    ]
+                  },
+                  "specification": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "key": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "value": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "publicationDate": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "order_info": {
+              "type": "string"
+            },
+            "data_quality": {
+              "properties": {
+                "completenessOmission": {
+                  "type": "number"
+                },
+                "positionalAccuracy": {
+                  "properties": {
+                    "horizontal": {
+                      "type": "number"
+                    },
+                    "vertical": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "qualities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "completenessComission",
+                          "conceptualConsistency",
+                          "domainConsistency",
+                          "formatConsistency",
+                          "topologicalConsistency",
+                          "temporalConsistency",
+                          "thematicClassificationCorrectness",
+                          "nonQuantitativeAttributeAccuracy",
+                          "quantitativeAttributeAccuracy",
+                          "relativeInternalPositionalAccuracy"
+                        ]
+                      },
+                      "measure_type": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "key": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "value": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "parameter": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "character_set": {
+              "type": "object",
+              "description": "Angaben zu dem im beschriebenen Datensatz benutzten Zeichensatz.",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
