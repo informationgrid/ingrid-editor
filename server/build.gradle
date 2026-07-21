@@ -363,7 +363,7 @@ jib {
                 tags = [version.toString()]
             }
         }
-        image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
+        image = 'registry.opencode.de/informationgrid/ingrid-editor:' + tag
     }
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'
