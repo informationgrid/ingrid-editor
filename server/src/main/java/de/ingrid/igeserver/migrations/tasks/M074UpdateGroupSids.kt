@@ -62,7 +62,7 @@ class M074UpdateGroupSids : MigrationBase("0.74") {
                     log.info("Update Catalog: " + catalog.name)
                     updateGroupSidsOfCatalog(catalog.identifier)
                 }
-            } catch (e: NotFoundException) {
+            } catch (_: NotFoundException) {
                 log.debug("Cannot update acl entries to include BasePermission.ADMINISTRATION")
             }
         }

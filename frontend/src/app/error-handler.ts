@@ -84,6 +84,10 @@ export class GlobalErrorHandler implements ErrorHandler {
       e.setMessage(error.errorText);
       this.modalService.showIgeError(e);
     } else if (error.rejection) {
+      if (error.rejection instanceof IgeError) {
+        this.modalService.showIgeError(error.rejection);
+        return;
+      }
       const e = new IgeError();
       const message =
         error.rejection.error?.errorText ?? error.rejection.message;
@@ -136,6 +140,8 @@ export class GlobalErrorHandler implements ErrorHandler {
           default:
             return "Sie haben keine Berechtigung für diese Aktion.";
         }
+      case "USER_NOT_FOUND":
+        return `Der Benutzer '${error.data.user}' wurde nicht gefunden.`;
       default:
         return null;
     }

@@ -382,7 +382,7 @@ class CatalogService(
             }
 
         val missingUsers = catalogUsers.filter { catUser -> keyCloakUsers.none { it.login == catUser.userId } }
-        if (missingUsers.isNotEmpty())log.error("The following users in catalog '$catalogId' were not found in Keycloak: ${missingUsers.map { it.userId }}")
+        if (missingUsers.isNotEmpty()) log.error("The following users in catalog '$catalogId' were not found in Keycloak: ${missingUsers.map { it.userId }}")
 
         return mappedUsers
     }

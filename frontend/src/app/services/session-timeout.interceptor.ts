@@ -19,83 +19,115 @@
  */
 import { inject, Injectable } from "@angular/core";
 import {
+  HttpClient,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
 } from "@angular/common/http";
-import { Observable, Subscription, timer } from "rxjs";
+import { firstValueFrom, Observable, Subscription, timer } from "rxjs";
 import { scan, takeWhile } from "rxjs/operators";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
 import { GeneralStore } from "../store/general.store";
+import { ConfigService } from "./config/config.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class SessionTimeoutInterceptor implements HttpInterceptor {
   private generalStore = inject(GeneralStore);
+  private configService = inject(ConfigService);
+  private http = inject(HttpClient);
+
   timer$: Subscription;
   private oneSecondInMilliseconds = 1000;
+  private lastReset = 0;
 
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: ModalService) {
+    window.addEventListener("storage", (event) => {
+      if (event.key === "ige-session-last-reset" && event.newValue) {
+        const lastReset = parseInt(event.newValue, 10);
+        if (lastReset > this.lastReset) {
+          this.lastReset = lastReset;
+          this.calculateDuration().then((duration) => {
+            this.startTimer(duration);
+          });
+        }
+      }
+    });
+  }
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
+    const isApiCall =
+      request.url.includes("/api/") && !request.url.includes("/api/config");
+
+    if (isApiCall) {
+      this.resetSessionTimeout();
+    }
+
     return next.handle(request);
   }
 
   private resetSessionTimeout() {
+    const now = Date.now();
+    if (now - this.lastReset < 5000) return; // 5 seconds throttle
+    this.lastReset = now;
+    localStorage.setItem("ige-session-last-reset", now.toString());
+
+    this.calculateDuration().then((duration) => {
+      this.startTimer(duration);
+    });
+  }
+
+  private startTimer(duration: number) {
     if (this.timer$) {
       this.timer$.unsubscribe();
     }
 
-    /*const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
-    if (!refreshToken) return;*/
-
-    let duration = this.calculateDuration();
     this.updateStore(duration);
+    if (duration <= 0) return;
 
-    this.timer$ = timer(0, this.oneSecondInMilliseconds)
+    this.timer$ = timer(1000, this.oneSecondInMilliseconds)
       .pipe(
         scan((acc) => --acc, duration),
         takeWhile((x) => x >= -10),
       )
       .subscribe((time) => {
-        if (time % 60 == 0 || time < 300) {
-          duration = this.calculateDuration();
-          this.updateStore(duration);
-        }
+        this.updateStore(time);
       });
   }
 
-  private calculateDuration() {
-    return 999;
-    /*const refreshToken = this.keycloak.getKeycloakInstance().refreshTokenParsed;
-    if (!refreshToken) {
-      this.updateStore(-1);
-      return;
-    }
-
-    const endTime = refreshToken.exp;
-
-    const now = Math.ceil(new Date().getTime() / 1000);
-    return endTime - now;*/
+  private async calculateDuration(): Promise<number> {
+    const config = this.configService.getConfiguration();
+    return config?.sessionTimeout ?? 1800;
   }
 
   private updateStore(time: number) {
+    const previousTime = this.generalStore.sessionTimeoutIn();
     this.generalStore.setSessionTimeout(time);
 
-    if (time <= 0) {
+    if (time <= 0 && time !== -1 && (previousTime > 0 || previousTime === -1)) {
       const error = new IgeError(
         "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.",
       );
       this.modalService.showIgeError(error);
-      // TODO: ADAPT
-      // setTimeout(() => this.authFactory.logout(), 5000);
-      this.timer$.unsubscribe();
+      setTimeout(async () => {
+        const config = this.configService.getConfiguration();
+        // the session refresh call should end in a 401-error and automatically redirect to login
+        const response = await firstValueFrom(
+          this.http.get<{ remaining: number }>(
+            config.backendUrl + "info/refreshSession",
+          ),
+        );
+        console.log("Remaining: ", response.remaining);
+      }, 5000);
+      if (this.timer$) {
+        this.timer$.unsubscribe();
+      }
     }
   }
 }

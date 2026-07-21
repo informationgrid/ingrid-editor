@@ -36,6 +36,7 @@ import { RepeatListProps } from "../app/formly/types/repeat-list/repeat-list.com
 import { PagedSearchResult } from "../app/store/codelist/codelist.model";
 import { SpatialLocationType } from "../app/formly/types/map/spatial-list/spatial-list.component";
 import { ButtonTogglesProps } from "../app/formly/types/button-toggles-type/button-toggles-type.component";
+import { CategorizedSelectProps } from "../app/formly/types/categorized-select/categorized-select.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -103,6 +104,7 @@ export interface RepeatOptions extends Options {
   addButtonTitle?: string;
   noDrag?: boolean;
   maxLength?: number;
+  canRemove?: (model) => boolean;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -629,6 +631,7 @@ export class FormFieldHelper {
         addButtonTitle: options?.addButtonTitle,
         noDrag: options?.noDrag,
         attributes: { "data-cy": `repeat-${id}` },
+        canRemove: options?.canRemove,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -1022,6 +1025,23 @@ export class FormFieldHelper {
     };
   }
 
+  addToggle(id, label, options?: CheckboxOptions): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "toggle",
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel"],
+      defaultValue: options?.defaultValue ?? false,
+      props: {
+        color: "accent",
+        externalLabel: label,
+        label: options?.fieldLabel,
+      },
+      expressions: expressions,
+    };
+  }
+
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
@@ -1073,6 +1093,32 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         queryOptions: options?.queryOptions,
+      },
+    };
+  }
+
+  addCategorizedSelect(
+    id: string,
+    label: string,
+    options: CategorizedSelectProps,
+  ) {
+    return {
+      key: id,
+      id: id,
+      type: "categorized-select",
+      wrappers: ["panel"],
+      defaultValue: options?.defaultValue ?? [],
+      className: options?.className,
+      props: {
+        codelistId: options?.codelistId,
+        externalLabel: label,
+        placeholder: this.determinePlaceholder({ asSelect: true }),
+        disabled: options?.disabled,
+        required: options?.required,
+        showHeader: options?.showHeader,
+        categories: options?.categories,
+        contextHelpId: options?.contextHelpId,
+        restrictToSingleCategory: options?.restrictToSingleCategory,
       },
     };
   }

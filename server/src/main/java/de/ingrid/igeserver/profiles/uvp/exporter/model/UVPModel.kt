@@ -177,6 +177,7 @@ data class UVPModel(
                 is StepPublicDisclosure -> "phase1"
                 is StepPublicHearing -> "phase2"
                 is StepDecisionOfAdmission -> "phase3"
+                is StepScopeOfInvestigation -> "scopeOfInvestigation"
                 else -> "???"
             }
         }

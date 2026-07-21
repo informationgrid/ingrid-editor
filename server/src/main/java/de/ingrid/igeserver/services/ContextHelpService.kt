@@ -44,8 +44,8 @@ class ContextHelpService(
         helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
-        val linkedProfiles = catalogService.getCatalogProfile(profile).linkedProfiles
-        val parentDocTypes = getParentDocTypes(docType, profile, linkedProfiles)
+        val linkedProfiles = if (profile != "all") catalogService.getCatalogProfile(profile).linkedProfiles else emptyList()
+        val parentDocTypes = if (profile != "all") getParentDocTypes(docType, profile, linkedProfiles) else emptyList()
 
         val lookupList = mutableListOf<MarkdownContextHelpItem?>()
         lookupList.add(getContextHelp(profile, docType, id))

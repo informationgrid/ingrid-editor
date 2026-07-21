@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services.csw
 
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.utils.ElasticDocument
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -51,7 +52,12 @@ class CSWClient(
     private val xslResourcePath: String,
 ) {
 
-    constructor(client: HttpClient, url: String, name: String) : this(client, url, name, "idf_1_0_0_to_iso_metadata.xsl")
+    constructor(client: HttpClient, url: String, name: String) : this(
+        client,
+        url,
+        name,
+        "idf_1_0_0_to_iso_metadata.xsl",
+    )
 
     private val log = logger()
     private val documentBuilderFactory = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }
@@ -64,11 +70,16 @@ class CSWClient(
     }
 
     fun insertOrUpdate(doc: ElasticDocument, catalogId: String, transactionId: String) {
-        val response = doc["idf"]?.toString() ?: throw RuntimeException("Document ${doc.get("t01_object.id")} does not contain an IDF. Skipping it.")
+        val response = doc["idf"]?.toString()
+            ?: throw RuntimeException("Document ${doc.get("t01_object.id")} does not contain an IDF. Skipping it.")
         val idfXml = documentBuilder.parse(InputSource(StringReader(response)))
         val transformedXml = transformXml(idfXml)
 
-        transformedXml.addDescriptiveKeywordsWithThesaurus(listOf(catalogId, transactionId), "INGRID - internal system keywords", "2025-01-01")
+        transformedXml.addDescriptiveKeywordsWithThesaurus(
+            listOf(catalogId, transactionId),
+            "INGRID - internal system keywords",
+            "2025-01-01",
+        )
 
         if (recordExists(doc)) {
             val updateRequest = createCswTransactionRequest(transformedXml, "Update")
@@ -101,18 +112,35 @@ class CSWClient(
 
         if (response.contains("ExceptionReport")) {
             log.error("CSW $operation returned an exception: $response")
-            return
+            throw IndexException.withReason(response)
+        } else if (response.contains("403 Forbidden")) {
+            log.error("CSW $operation returned a 403 Forbidden error, which might be a problem with modsecurity: $response")
+            throw IndexException.withReason(response)
         }
 
         try {
             val doc = documentBuilder.parse(InputSource(StringReader(response)))
-            val transactionSummaryNode = doc.documentElement.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "TransactionSummary").item(0) as? Element
+            val transactionSummaryNode =
+                doc.documentElement.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "TransactionSummary")
+                    .item(0) as? Element
 
             if (transactionSummaryNode != null) {
                 val count = when (operation) {
-                    "Delete" -> transactionSummaryNode.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "totalDeleted").item(0)?.textContent?.toIntOrNull() ?: 0
-                    "Insert" -> transactionSummaryNode.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "totalInserted").item(0)?.textContent?.toIntOrNull() ?: 0
-                    "Update" -> transactionSummaryNode.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "totalUpdated").item(0)?.textContent?.toIntOrNull() ?: 0
+                    "Delete" -> transactionSummaryNode.getElementsByTagNameNS(
+                        "http://www.opengis.net/cat/csw/2.0.2",
+                        "totalDeleted",
+                    ).item(0)?.textContent?.toIntOrNull() ?: 0
+
+                    "Insert" -> transactionSummaryNode.getElementsByTagNameNS(
+                        "http://www.opengis.net/cat/csw/2.0.2",
+                        "totalInserted",
+                    ).item(0)?.textContent?.toIntOrNull() ?: 0
+
+                    "Update" -> transactionSummaryNode.getElementsByTagNameNS(
+                        "http://www.opengis.net/cat/csw/2.0.2",
+                        "totalUpdated",
+                    ).item(0)?.textContent?.toIntOrNull() ?: 0
+
                     else -> 0
                 }
                 log.debug("CSW $operation operation successful. $count record" + (if (count > 1) "s" else "") + " ${operation.lowercase()}" + (if (operation == "Insert") "ed" else "d") + ".")
@@ -127,7 +155,12 @@ class CSWClient(
     private fun recordExists(doc: ElasticDocument): Boolean = runBlocking {
         val uuid = doc["t01_object.id"]
         try {
-            val response: String = client.get(getOperationEndpoint("GetRecordById", "GET") + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1").bodyAsText()
+            val response: String = client.get(
+                getOperationEndpoint(
+                    "GetRecordById",
+                    "GET",
+                ) + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1",
+            ).bodyAsText()
             val cswResponse = documentBuilder.parse(InputSource(StringReader(response)))
             cswResponse.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "BriefRecord").length > 0
         } catch (e: Exception) {
@@ -145,12 +178,19 @@ class CSWClient(
 
             val endpoints = mutableMapOf<String, String>()
 
-            val getRecordsPost = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
-            val getRecordsGet = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
-            val getRecordByIdPost = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
-            val getRecordByIdGet = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
-            val transactionPost = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
-            val transactionGet = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
+            val getRecordsPost =
+                doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
+            val getRecordsGet =
+                doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
+            val getRecordByIdPost =
+                doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Post")
+                    .item(0) as? Element
+            val getRecordByIdGet =
+                doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
+            val transactionPost =
+                doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
+            val transactionGet =
+                doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
 
             getRecordsPost?.let { endpoints["GetRecords-POST"] = it.getAttribute("xlink:href") }
             getRecordsGet?.let { endpoints["GetRecords-GET"] = it.getAttribute("xlink:href") }
@@ -176,7 +216,7 @@ class CSWClient(
             }.bodyAsText()
         } catch (e: Exception) {
             log.error("Failed to execute CSW Request to endpoint '$endpoint': ${e.message}", e)
-            null
+            throw IndexException.withReason("Failed to execute CSW Request to endpoint '$endpoint': ${e.message}")
         }
     }
 
@@ -311,7 +351,10 @@ class CSWClient(
         val date2Element = createElementNS(namespaceURI, "$namespacePrefix:date")
         val dateTypeElement = createElementNS(namespaceURI, "$namespacePrefix:dateType")
         val ciDateTypeCodeElement = createElementNS(namespaceURI, "$namespacePrefix:CI_DateTypeCode")
-        ciDateTypeCodeElement.setAttribute("codeList", "http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode")
+        ciDateTypeCodeElement.setAttribute(
+            "codeList",
+            "http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode",
+        )
         ciDateTypeCodeElement.setAttribute("codeListValue", "publication")
         ciDateTypeCodeElement.textContent = "publication"
 
@@ -340,14 +383,23 @@ class CSWClient(
         if (identificationInfoElement != null) {
             // Find the correct position for the new element based on ISO 19139 order
             val possibleSiblingElements = listOf(
-                "gmd:citation", "gmd:abstract", "gmd:purpose", "gmd:credit", "gmd:status", "gmd:pointOfContact", "gmd:resourceMaintenance", "gmd:graphicOverview", "gmd:resourceFormat", // Elements *before* descriptiveKeywords
+                "gmd:citation",
+                "gmd:abstract",
+                "gmd:purpose",
+                "gmd:credit",
+                "gmd:status",
+                "gmd:pointOfContact",
+                "gmd:resourceMaintenance",
+                "gmd:graphicOverview",
+                "gmd:resourceFormat", // Elements *before* descriptiveKeywords
                 "gmd:descriptiveKeywords", // descriptiveKeywords can also be placed multiple times
             ).reversed()
 
             var insertionPoint: org.w3c.dom.Node? = null
 
             for (siblingElementName in possibleSiblingElements) {
-                insertionPoint = evaluateXPath("//gmd:identificationInfo//$siblingElementName[last()]").item(0) as? Element
+                insertionPoint =
+                    evaluateXPath("//gmd:identificationInfo//$siblingElementName[last()]").item(0) as? Element
 
                 if (insertionPoint != null) {
                     insertionPoint = insertionPoint.nextSibling // Insert *after* the sibling

@@ -204,12 +204,14 @@ export class UserService {
     groups: Group[],
     groupClickCallback: (id: string) => void = undefined,
     roleChangeCallback: FormlyAttributeEvent = undefined,
+    isLdapUser: boolean,
   ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
       groups,
       groupClickCallback,
       roleChangeCallback,
+      isLdapUser,
     );
   }
 

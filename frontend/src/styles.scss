@@ -1400,7 +1400,7 @@ table.big-font {
 
 .negative-space-top-field {
   display: block;
-  margin-top: -22px;
+  margin-top: -16px;
 }
 
 .mat-mdc-menu-panel.mat-menu-panel,
@@ -1414,6 +1414,14 @@ table.big-font {
   .mat-button-toggle-label-content {
     line-height: 30px;
   }
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 
 .line-clamp-2 {

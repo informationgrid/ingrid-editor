@@ -31,6 +31,7 @@ export abstract class User {
   latestLogin?: Date;
   email?: string;
   phoneNumber?: string;
+  fromLdap: boolean;
 
   constructor(values: Object = {}) {
     Object.assign(this, values);

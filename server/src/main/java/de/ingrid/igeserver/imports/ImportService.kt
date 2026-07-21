@@ -367,7 +367,7 @@ class ImportService(
         } else {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid, true)
         }
-    } catch (ex: NotFoundException) {
+    } catch (_: NotFoundException) {
         null
     }
 
@@ -416,7 +416,7 @@ class ImportService(
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             false
         }
 
@@ -464,7 +464,8 @@ class ImportService(
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else {
-            if ((ref.isAddress && options.overwriteAddresses) || (!ref.isAddress && options.overwriteDatasets)) {
+            val overwrite = if (ref.isAddress) options.overwriteAddresses else options.overwriteDatasets
+            if (overwrite) {
                 val wrapperId =
                     ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(
                         catalogId,

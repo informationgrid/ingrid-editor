@@ -57,7 +57,11 @@ class ExportService(val exporterFactory: ExporterFactory) {
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
         return exporterFactory.typeInfos
-            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.any { p -> profile.linkedProfiles.contains(p) } }
+            .filter {
+                it.profiles.isEmpty() ||
+                    profileId in it.profiles ||
+                    it.profiles.any(profile.linkedProfiles::contains)
+            }
             .filter { if (onlyPublic) it.isPublic else true }
     }
 
@@ -178,7 +182,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             if (!options.useDraft) {
                 try {
                     getPublishedVersion(catalogId, doc)
-                } catch (ex: NotFoundException) {
+                } catch (_: NotFoundException) {
                     return null
                 }
             } else {
@@ -202,7 +206,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             doc.uuid,
             true,
         )
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
         throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
@@ -221,5 +225,13 @@ class ExportService(val exporterFactory: ExporterFactory) {
         } else {
             resultList + Pair(doc.uuid, result)
         }
+    }
+
+    fun getNumExportedDatasets(ids: List<Int>): Int {
+        val allIds = ids.flatMap {
+            documentService.getAllDescendantIds("", it) + it
+        }.toSet()
+
+        return documentService.docWrapperRepo.findNonFolderWrapperByIds(allIds.map { it }).size
     }
 }

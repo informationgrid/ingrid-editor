@@ -15,7 +15,10 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
-/.junie
+
+# Junie
+/.junie/memory/
+/.junie/plans/
 
 # IDE - VSCode
 .vscode/*

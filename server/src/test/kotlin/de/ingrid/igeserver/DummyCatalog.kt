@@ -41,6 +41,7 @@ class DummyCatalog(override val identifier: String = "DUMMY") : CatalogProfile {
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        TODO("Not yet implemented")
     }
 
     override fun initCatalogQueries(catalogId: String) {

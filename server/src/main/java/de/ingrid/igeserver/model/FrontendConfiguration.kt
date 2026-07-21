@@ -22,4 +22,5 @@ package de.ingrid.igeserver.model
 data class FrontendConfiguration(
     val supportEmail: String,
     val keycloakEnabled: Boolean,
+    val sessionTimeout: Int,
 )

@@ -85,7 +85,7 @@ class IngridIdfExporterHmdk(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdk")
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdk", name = "InGrid IDF HMDK")
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
@@ -99,7 +99,7 @@ class IngridIdfExporterHmdkMetaver(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdkMetaver")
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFHmdkMetaver", name = "InGrid IDF HMDK-Metaver")
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelMetaverTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }

@@ -51,7 +51,7 @@ class ZabbixReportApiController(
                 // throws an exception if the document does not exist or the principal does not have sufficient rights
                 documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it.docUuid)
                 true
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 false
             }
         }.let { ResponseEntity.ok(it) }

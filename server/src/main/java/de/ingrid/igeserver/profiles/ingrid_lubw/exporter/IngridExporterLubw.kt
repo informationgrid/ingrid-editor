@@ -71,9 +71,16 @@ class IngridIdfExporterLubw(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFLubw")
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFLubw", name = "InGrid IDF LUBW")
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLubwModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+
+    override fun getTemplateForDoctype(type: String): String = getLubwTemplateForDocType(type) ?: super.getTemplateForDoctype(type)
+
+    private fun getLubwTemplateForDocType(docType: String): String? = when (docType) {
+        "InGridGeoDataset" -> "export/ingrid-lubw/idf-geodataset-lubw.jte"
+        else -> null
+    }
 }
 
 @Service
@@ -89,7 +96,11 @@ class IngridLuceneExporterLubw(
     documentService,
 ) {
 
-    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> = when (doc.type) {
+    override fun getTemplateForDoctype(
+        doc: Document,
+        catalog: Catalog,
+        options: ExportOptions,
+    ): Pair<String, Map<String, Any>> = when (doc.type) {
         "InGridSpecialisedTask",
         "InGridGeoDataset",
         "InGridPublication",

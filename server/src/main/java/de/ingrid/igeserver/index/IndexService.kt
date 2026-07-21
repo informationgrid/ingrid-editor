@@ -33,6 +33,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.META_INDEX
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.IndexConfig
 import de.ingrid.igeserver.tasks.IndexingTask
@@ -79,13 +80,22 @@ class IndexService(
 
     companion object {
         const val JOB_KEY: String = "index"
+    }
 
-        fun getNextIndexName(name: String): String {
-            val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
-            val date: String = dateFormat.format(Date())
+    fun getPrefixedIndexName(name: String): String {
+        val prefix = generalProperties.indexPrefix
+        if (prefix.isNullOrBlank() || name == META_INDEX) return name
+        val prefixWithUnderscore = "${prefix}_"
+        if (name.startsWith(prefixWithUnderscore)) return name
+        return "$prefixWithUnderscore$name"
+    }
 
-            return name + "_" + date
-        }
+    fun getNextIndexName(name: String): String {
+        val prefixedName = getPrefixedIndexName(name)
+        val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
+        val date: String = dateFormat.format(Date())
+
+        return prefixedName + "_" + date
     }
 
     @EventListener(ApplicationReadyEvent::class)

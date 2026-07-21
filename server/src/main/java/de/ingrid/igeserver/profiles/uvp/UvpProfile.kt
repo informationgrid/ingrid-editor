@@ -130,9 +130,6 @@ class UvpProfile(
         ),
     )
 
-    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-    }
-
     override fun initCatalogQueries(catalogId: String) {
         val behaviours = listOf("plugin.tags", "plugin.assigned.user").map {
             Behaviour().apply {
@@ -141,9 +138,6 @@ class UvpProfile(
             }
         }
         behaviourService.save(catalogId, behaviours)
-    }
-
-    override fun initIndices() {
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/uvp/default-mapping.json")?.readText() ?: ""

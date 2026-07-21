@@ -1,5 +1,5 @@
 <ige-dialog-template
-    [label]="data?.newEntry ? 'Eintrag hinzufügen' : 'Eintrag bearbeiten'"
+    [label]="data?.isNew ? 'Eintrag hinzufügen' : 'Eintrag bearbeiten'"
     [disabled]="disabled()"
     (submit)="submit()"
 >

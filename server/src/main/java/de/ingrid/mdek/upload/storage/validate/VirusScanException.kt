@@ -31,7 +31,7 @@ open class VirusScanException(message: String, file: String, scanReport: String)
     }
 
     val scanReport: String
-        /**
+        /*
          * Get the whole log returned by the virus scan
          * @return String
          */

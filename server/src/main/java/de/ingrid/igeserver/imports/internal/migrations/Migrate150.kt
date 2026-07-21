@@ -151,7 +151,9 @@ class Migrate150 {
                 "requestTime" -> "continuously"
                 else -> "not-available"
             }
+
             "till" -> "date"
+
             else -> "not-available"
         }
     }

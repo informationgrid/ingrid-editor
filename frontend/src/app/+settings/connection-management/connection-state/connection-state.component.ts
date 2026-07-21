@@ -21,6 +21,7 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatDivider } from "@angular/material/list";
 
 export interface ConnectionStateInfo {
   id: string;
@@ -30,11 +31,12 @@ export interface ConnectionStateInfo {
 
 @Component({
   selector: "ige-connection-state",
-  imports: [MatIcon, MatTooltip, MatProgressSpinner],
+  imports: [MatIcon, MatTooltip, MatProgressSpinner, MatDivider],
   templateUrl: "./connection-state.component.html",
   styleUrl: "./connection-state.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectionStateComponent {
   connectionStates = input.required<ConnectionStateInfo[]>();
+  usage = input<{ [p: string]: string[] }>({});
 }

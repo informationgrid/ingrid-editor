@@ -103,6 +103,14 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   }
 
   addSection(name: string) {
-    this.add(null, { type: name });
+    let section = this.sectionTypes.find((type) => type.name === name);
+    if (section?.props.confirmAddition) {
+      section?.props.confirmAddition().subscribe((confirmed: boolean) => {
+        if (confirmed) this.add(null, { type: name });
+      });
+    } else {
+      // if no confirmAddition expression is defined, always add the section
+      this.add(null, { type: name });
+    }
   }
 }

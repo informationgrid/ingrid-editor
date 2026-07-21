@@ -35,6 +35,7 @@ import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormDialogData } from "../../../../app/formly/types/table/form-dialog/form-dialog.component";
 
 @Component({
   templateUrl: "./geometry-context-dialog.component.html",
@@ -65,7 +66,7 @@ export class GeometryContextDialogComponent implements OnInit {
 
   constructor(
     private dlgRef: MatDialogRef<any>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
   ) {}
 
   ngOnInit(): void {

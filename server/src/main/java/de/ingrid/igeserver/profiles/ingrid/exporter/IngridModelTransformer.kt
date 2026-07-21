@@ -26,7 +26,6 @@ import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
-import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
@@ -51,6 +50,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.getLanguageISO639v2Value
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -440,9 +440,9 @@ open class IngridModelTransformer(
     open val uomMeter = "meter"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
     val metadataLanguage =
-        if (data.metadata != null) TransformationTools.getLanguageISO639v2Value(data.metadata.language) else null
+        if (data.metadata != null) getLanguageISO639v2Value(data.metadata.language) else null
     val dataLanguages =
-        data.dataset?.languages?.map { TransformationTools.getLanguageISO639v2Value(KeyValue(it, null)) }
+        data.dataset?.languages?.map { getLanguageISO639v2Value(KeyValue(it, null)) }
             ?: emptyList()
 
     val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso", true)
@@ -472,7 +472,7 @@ open class IngridModelTransformer(
                 referenceSystemEntry,
             )
             ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
-        val epsgLink = when {
+        val url = when {
             // like EPSG:1234 Bla
             referenceSystem.startsWith("EPSG:") ->
                 "http://www.opengis.net/def/crs/EPSG/0/${
@@ -489,9 +489,19 @@ open class IngridModelTransformer(
                 }
             }
 
+            // like CRS 84: Bla
+            referenceSystem.startsWith("CRS") -> {
+                val endIndex = referenceSystem.indexOf(":")
+                if (endIndex > 0) {
+                    "http://www.opengis.net/def/crs/OGC/1.3/CRS${referenceSystem.substring(4, endIndex)}"
+                } else {
+                    null
+                }
+            }
+
             else -> null
         }
-        return CharacterStringModel(referenceSystem, epsgLink)
+        return CharacterStringModel(referenceSystem, url)
     }
 
     open val description = data.description
@@ -738,8 +748,6 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
-    val contentField: MutableList<String> = mutableListOf()
-
     protected open fun mapDocumentType(type: String): String = when (type) {
         "InGridSpecialisedTask" -> InGridDocType.InGridSpecialisedTask.typeId
         "InGridGeoDataset" -> InGridDocType.InGridGeoDataset.typeId
@@ -748,6 +756,7 @@ open class IngridModelTransformer(
         "InGridProject" -> InGridDocType.InGridProject.typeId
         "InGridDataCollection" -> InGridDocType.InGridDataCollection.typeId
         "InGridInformationSystem" -> InGridDocType.InGridInformationSystem.typeId
+        "OpenDataDoc" -> "OpenDataDoc"
         else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
@@ -1297,7 +1306,7 @@ open class IngridModelTransformer(
         return try {
             documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Could not get last published document: $uuid")
             null
         }

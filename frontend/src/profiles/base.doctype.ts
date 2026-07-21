@@ -23,12 +23,13 @@ import { Observable } from "rxjs";
 import {
   CodelistService,
   CodelistSort,
+  SelectCategory,
   SelectOption,
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { FormFieldHelper } from "./form-field-helper";
-import { clone } from "../app/shared/utils";
+import { clone, groupBy } from "../app/shared/utils";
 import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
@@ -128,6 +129,30 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.codelistService.observe(codelistId, sortBy);
   }
 
+  getCodelistForCategorizedSelect(
+    codelistId: string,
+    categoryKey: string = "category",
+  ): Observable<SelectCategory[]> {
+    return this.codelistService.observeRaw(codelistId).pipe(
+      map((codelist) => {
+        const grouped = groupBy(
+          codelist.entries,
+          (entry) => entry.fields[categoryKey],
+        );
+
+        return Object.keys(grouped).map((category) => ({
+          title: category,
+          options: grouped[category].map((entry) =>
+            this.codelistService.getCodelistEntryAsSelectOption(
+              codelistId,
+              entry.id,
+            ),
+          ),
+        }));
+      }),
+    );
+  }
+
   getExternalCodelistForSelect(
     codelistId: string,
     filter: string,
@@ -147,19 +172,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
     // this.getFieldMap(this.fields);
 
-    this.cleanFields = JSON.parse(
-      JSON.stringify(this.fields, this.removeObservables),
-    );
+    this.cleanFields = clone(this.fields);
     console.debug(`Document type ${this.id} initialized`);
   }
 
   isInitialized() {
     return Promise.resolve();
-  }
-
-  private removeObservables(_: string, value: any) {
-    if (value?.subscribe !== undefined) return undefined;
-    else return value;
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {

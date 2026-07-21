@@ -73,7 +73,15 @@ class CSWService(val settingsService: SettingsService) : IConnection {
         config.name,
     )
 
-    fun getClient(index: String): CSWClient = clientMap[index] ?: throw ServerException.withReason("No CSW-Client found. Please check the connection.")
+    fun getClient(index: String): CSWClient {
+        clientMap[index]?.let { return it }
+
+        // try to setup connections again
+        setupConnections()
+
+        return clientMap[index]
+            ?: throw ServerException.withReason("No CSW-Client found. Please check the connection.")
+    }
 
     override fun isConnected(id: String): Boolean = runBlocking {
         try {

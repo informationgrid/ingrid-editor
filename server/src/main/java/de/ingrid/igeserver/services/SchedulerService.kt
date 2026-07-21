@@ -99,6 +99,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
             }
 
             JobCommand.stop -> stop(jobKey)
+
             JobCommand.resume -> TODO()
         }
     }

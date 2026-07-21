@@ -40,6 +40,7 @@ data class UserInfo(
     val permissions: List<String>,
     var linkedProfiles: List<String> = emptyList(),
     val plugins: List<Behaviour> = emptyList(),
+    val fromLdap: Boolean,
 )
 
 data class Version(val version: String?, val date: Date?, val commitId: String?)

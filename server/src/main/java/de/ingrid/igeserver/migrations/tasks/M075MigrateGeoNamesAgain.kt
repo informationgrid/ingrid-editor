@@ -49,8 +49,6 @@ class M075MigrateGeoNamesAgain : MigrationBase("0.75") {
     @Autowired
     private lateinit var docRepo: DocumentRepository
 
-    override fun exec() {}
-
     override fun postExec() {
         val pageSize = 100
         var page = 1

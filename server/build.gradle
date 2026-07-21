@@ -1,14 +1,14 @@
 import gg.jte.ContentType
+import org.cyclonedx.Version
+import static org.cyclonedx.model.Component.Type
 
 import java.nio.file.Paths
 
-//import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
-
 buildscript {
-    ext.kotlin_version = '2.3.0'
-    ext.spring_boot_version = '3.5.14'
+    ext.kotlin_version = '2.4.0'
+    ext.spring_boot_version = '3.5.15'
     ext.kotest_version = '6.1.9'
-    ext.jte_version = '3.2.3'
+    ext.jte_version = '3.2.4'
     ext.geotools_version = '34.2'
     ext.ktor_client = '3.4.1'
 }
@@ -32,6 +32,8 @@ plugins {
     id "org.hibernate.orm" version "6.6.38.Final"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
+    id "org.cyclonedx.bom"
+    id "dev.detekt" version "2.0.0-alpha.5"
 }
 
 repositories {
@@ -78,7 +80,7 @@ dependencies {
         frontendFiles project(':frontend')
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
     implementation 'org.apache.tika:tika-core:3.2.3'
     implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.1'
@@ -145,7 +147,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.10.3'
 
-    implementation "de.ingrid:ingrid-codelist-service:8.2.0"
+    implementation "de.ingrid:ingrid-codelist-service:8.3.1"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.15.0'
@@ -242,7 +244,7 @@ springBoot {
 
 if (hasProperty('filename')) {
     bootJar {
-        archiveFileName=getProperty('filename')
+        archiveFileName = getProperty('filename')
     }
 }
 
@@ -279,7 +281,7 @@ tasks.register('updateGitHooks', Copy) {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
     compilerOptions {
         freeCompilerArgs.add("-Xannotation-default-target=param-property")
@@ -287,7 +289,7 @@ kotlin {
 }
 
 kapt {
-    includeCompileClasspath=false
+    includeCompileClasspath = false
 }
 
 jte {
@@ -306,7 +308,7 @@ gitProperties {
         def gitDirLine = dotGitFileContent.readLines().find { it.startsWith("gitdir: ") }
         if (gitDirLine != null) {
             def gitDirPath = gitDirLine.substring('gitdir: '.length(), gitDirLine.lastIndexOf('/.git/'))
-            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath+ "/.git")
+            dotGitDirectory = rootProject.layout.projectDirectory.dir(gitDirPath + "/.git")
         } else {
             throw new GradleException("No .git directory found in project .git file.")
         }
@@ -332,6 +334,7 @@ test {
     ignoreFailures = true
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 publishing {
@@ -352,7 +355,7 @@ jib {
     def tag = name == "develop" ? "latest" : name
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'bellsoft/liberica-openjre-alpine:21'
+        image = 'bellsoft/liberica-openjre-alpine:25'
     }
     to {
         // in case we build a release we also add release tag from version
@@ -380,11 +383,11 @@ jib {
             }
         }
         permissions = [
-                '/*.sh': '755',
-                '/logs': '777',
-                '/codelists': '777',
+                '/*.sh'                           : '755',
+                '/logs'                           : '777',
+                '/codelists'                      : '777',
                 '/app/resources/static/index.html': '777',
-                '/app/resources/static/assets': '777'
+                '/app/resources/static/assets'    : '777'
         ]
     }
 }
@@ -472,9 +475,24 @@ cyclonedxDirectBom {
     // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
     skipConfigs = ["compileClasspath", "testCompileClasspath"]
     // Specified the type of project being built. Defaults to 'library'
-    projectType = "application"
+    projectType = Type.APPLICATION
     // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
-    schemaVersion = "VERSION_15"
+    schemaVersion = Version.VERSION_15
 
     componentVersion = rootProject.version
+}
+
+detekt {
+    toolVersion = "2.0.0-alpha.5"
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+}
+
+tasks.named("detektMain").configure {
+    reports {
+        checkstyle.required.set(true)
+        html.required.set(true)
+        sarif.required.set(true)
+        markdown.required.set(true)
+    }
 }

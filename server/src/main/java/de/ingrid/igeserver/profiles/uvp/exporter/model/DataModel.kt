@@ -71,6 +71,8 @@ data class DataModel(
     }
 
     var steps: List<Step> = emptyList()
+
+    // TODO: check if this can be removed safely
     private fun setProcessingSteps(nodeSteps: List<JsonNode>) {
         steps = nodeSteps.mapNotNull { step ->
             val type = step.get("type").textValue()
@@ -78,12 +80,20 @@ data class DataModel(
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepPublicDisclosure::class.java,
-                ) // Step1
-                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java) // Step1
+                )
+
+                "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java)
+
                 "decisionOfAdmission" -> jacksonObjectMapper().treeToValue(
                     step,
                     StepDecisionOfAdmission::class.java,
-                ) // Step1
+                )
+
+                "scopeOfInvestigation" -> jacksonObjectMapper().treeToValue(
+                    step,
+                    StepScopeOfInvestigation::class.java,
+                )
+
                 else -> {
                     null
                 }
@@ -110,24 +120,15 @@ data class StepPublicDisclosure(
     val type: String,
     val disclosureDate: RangeModel,
     val announcementDocs: List<Document>?,
-    val announcementDocsPublishDuringDisclosure: Boolean = false,
+    val publishDuringDisclosure: Boolean = false,
     val applicationDocs: List<Document>?,
-    val applicationDocsPublishDuringDisclosure: Boolean = false,
     val reportsRecommendationDocs: List<Document>?,
-    val reportsRecommendationDocsPublishDuringDisclosure: Boolean = false,
     val furtherDocs: List<Document>?,
-    val furtherDocsPublishDuringDisclosure: Boolean = false,
 ) : Step {
-    fun isPublishable(tableName: String): Boolean {
+    fun isPublishable(): Boolean {
         val today = Date().toInstant().toString()
         val startDate = disclosureDate.start ?: today
-        return when (tableName) {
-            "announcementDocs" -> !announcementDocsPublishDuringDisclosure || startDate <= today
-            "applicationDocs" -> !applicationDocsPublishDuringDisclosure || startDate <= today
-            "reportsRecommendationDocs" -> !reportsRecommendationDocsPublishDuringDisclosure || startDate <= today
-            "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
-            else -> true
-        }
+        return !publishDuringDisclosure || startDate <= today
     }
 }
 
@@ -150,6 +151,26 @@ data class StepDecisionOfAdmission(
     val approvalDocs: List<Document>?,
     val decisionDocs: List<Document>?,
 ) : Step
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class StepScopeOfInvestigation(
+    val type: String,
+    val scopingDate: RangeModel,
+    val scopingDateDocs: List<Document>?,
+    val scopingDateDocsPublishDuringScoping: Boolean = false,
+    val scopingGeneralDocs: List<Document>?,
+    val scopingGeneralDocsPublishDuringScoping: Boolean = false,
+) : Step {
+    fun isPublishable(tableName: String): Boolean {
+        val today = Date().toInstant().toString()
+        val startDate = scopingDate.start ?: today
+        return when (tableName) {
+            "scopingDateDocs" -> !scopingDateDocsPublishDuringScoping || startDate <= today
+            "scopingGeneralDocs" -> !scopingGeneralDocsPublishDuringScoping || startDate <= today
+            else -> true
+        }
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Document(val title: String, val downloadURL: DownloadUrl, val validUntil: Date?) {

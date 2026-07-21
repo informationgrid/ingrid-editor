@@ -107,7 +107,7 @@ class M037MigrateToDBID : MigrationBase("0.37") {
 
                 permission.put("id", id)
                 permission.remove("uuid")
-            } catch (e: NoResultException) {
+            } catch (_: NoResultException) {
                 // document does not exist to permission and can be ignored
             }
         }

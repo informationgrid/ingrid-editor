@@ -30,7 +30,7 @@ class OgcCatalogExporterFactory(private val catalogExporterList: List<OgcCatalog
     fun getExporter(format: CollectionFormat): OgcCatalogExporter {
         try {
             return catalogExporterList.first { exporter: OgcCatalogExporter -> format.exportType == exporter.typeInfo.type }
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw ConfigurationException.withReason("No exporter found for format '$format'.")
         }
     }

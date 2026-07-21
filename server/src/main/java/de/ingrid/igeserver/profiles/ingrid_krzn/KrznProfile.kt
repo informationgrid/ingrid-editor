@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
-import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_krzn.importer.ISOImportKRZN
+import de.ingrid.igeserver.profiles.ingrid_with_opendata.InGridWithOpendataProfile
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
@@ -47,8 +47,8 @@ class KrznProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportKRZN: ISOImportKRZN,
-    @JsonIgnore @Qualifier("openDataProfile") val opendataProfile: OpenDataProfile,
-) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
+    @JsonIgnore @Qualifier("openDataProfile") override val opendataProfile: OpenDataProfile,
+) : InGridWithOpendataProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory, opendataProfile) {
 
     companion object {
         const val ID = "ingrid-krzn"
@@ -77,7 +77,6 @@ class KrznProfile(
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
 
-        opendataProfile.initCatalogCodelists(catalogId, codelistId)
         super.initCatalogCodelists(catalogId, codelistId)
     }
 

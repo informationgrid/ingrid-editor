@@ -491,7 +491,7 @@ class DatasetsApiController(
             val docData = documentService.getDocumentFromCatalog(catalogId, id)
             val metadata = prepareDocumentWithMetadata(docData)
             return ResponseEntity.ok(metadata)
-        } catch (ex: AccessDeniedException) {
+        } catch (_: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")
         }
     }

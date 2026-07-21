@@ -19,21 +19,26 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ConnectionService
 import de.ingrid.igeserver.services.SettingsService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
     val settingsService: SettingsService,
     val connectionService: ConnectionService,
+    val generalProperties: GeneralProperties,
+    val catalogService: CatalogService,
 ) : ConfigApi {
 
     @Value("\${frontend.support-email}")
@@ -46,6 +51,7 @@ class ConfigApiController(
         FrontendConfiguration(
             keycloakEnabled = keycloakEnabled,
             supportEmail = supportEmail,
+            sessionTimeout = generalProperties.sessionTimeout,
         ),
     )
 
@@ -71,6 +77,17 @@ class ConfigApiController(
         }
         connectionService.setupConnections()
         return ResponseEntity.ok().body(config)
+    }
+
+    override fun getConnectionUsage(principal: Principal): ResponseEntity<Map<String, List<String>>> {
+        val catalogs = catalogService.getCatalogs()
+        val usageMap = mutableMapOf<String, MutableList<String>>()
+        catalogs.forEach { catalog ->
+            catalog.settings.exports.forEach { export ->
+                usageMap.getOrPut(export.target) { mutableListOf() }.add(catalog.name)
+            }
+        }
+        return ResponseEntity.ok(usageMap)
     }
 
     override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {

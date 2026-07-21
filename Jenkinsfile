@@ -8,7 +8,7 @@ pipeline {
     }
 
     tools {
-        jdk 'jdk21'
+        jdk 'jdk25'
     }
 
     options {

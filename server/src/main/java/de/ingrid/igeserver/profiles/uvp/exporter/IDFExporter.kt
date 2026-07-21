@@ -68,10 +68,15 @@ class IDFExporter(val uploadConfig: UploadConfig) : IgeExporter {
 
     private fun getTemplateForDoctype(type: String): String = when (type) {
         "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
+
         "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
+
         "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
+
         "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+
         "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+
         else -> {
             throw ServerException.withReason("Cannot get template for type: $type")
         }

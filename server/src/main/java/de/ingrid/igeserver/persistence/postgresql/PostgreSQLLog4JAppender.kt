@@ -185,8 +185,11 @@ class PostgreSQLLog4JAppender(
     override fun append(event: LogEvent) {
         if (checkInitialized()) {
             val item = mapEvent(event)
-            queue.add(item)
-            if (queue.size >= MAX_QUEUE_LENGTH) {
+            val shouldSave = synchronized(queue) {
+                queue.add(item)
+                queue.size >= MAX_QUEUE_LENGTH
+            }
+            if (shouldSave) {
                 saveQueue()
             }
         } else {
@@ -198,7 +201,7 @@ class PostgreSQLLog4JAppender(
         // create message node
         val msg: JsonNode = try {
             mapper.readTree(event.message.formattedMessage)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             // message is no valid json
             mapper.createObjectNode().apply {
                 put("text", event.message.formattedMessage)
@@ -230,11 +233,14 @@ class PostgreSQLLog4JAppender(
      */
     @Transactional
     fun saveQueue() {
-        if (queue.size == 0) return
+        val parameters = synchronized(queue) {
+            if (queue.isEmpty()) return
+            val items = queue.filterNotNull().toTypedArray()
+            queue.clear()
+            items
+        }
 
         try {
-            // somehow it happens in rare cases that the queue contains null values
-            val parameters = queue.filterNotNull().toTypedArray()
             val count = table?.let {
                 jdbcTemplate.batchUpdate(INSERT_RECORD_STMT.replace(TABLE_NAME_VAR, it), parameters)
             }
@@ -242,6 +248,5 @@ class PostgreSQLLog4JAppender(
         } catch (e: Exception) {
             error("Unexpected exception while saving log events", null, e)
         }
-        queue.clear()
     }
 }

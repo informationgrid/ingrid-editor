@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.services.geothesaurus
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import java.net.URI
 import java.net.http.HttpClient
@@ -61,7 +63,34 @@ abstract class GeoThesaurusService {
         val request = httpRequest(method, url, body)
         val http = httpClient(executor)
 
-        return http.send(request, HttpResponse.BodyHandlers.ofString()).body()
+        val response = http.send(request, HttpResponse.BodyHandlers.ofString())
+        if (response.statusCode() >= 400) {
+            throw ServerException.withReason(
+                "Request failed with status ${response.statusCode()}: ${
+                    extractErrorMessage(
+                        response.body(),
+                    )
+                }",
+            )
+        }
+        return response.body()
+    }
+
+    private fun extractErrorMessage(body: String): String {
+        if (body.isBlank()) return ""
+        return try {
+            val mapper = XmlMapper()
+            val node = mapper.readTree(body)
+            val exceptionNode = node.findValue("ServiceException")
+            val message = if (exceptionNode != null && exceptionNode.isObject) {
+                exceptionNode.get("")?.asText() ?: exceptionNode.asText()
+            } else {
+                exceptionNode?.asText()
+            }
+            message?.trim()?.ifBlank { null } ?: body
+        } catch (_: Exception) {
+            body
+        }
     }
 
     private fun httpClient(executor: ExecutorService?) = HttpClient.newBuilder()

@@ -46,11 +46,14 @@ class ConnectionService(
 
     fun getIndexerForConnection(id: String): IIndexManager = when (val connection = settingsService.getConnectionConfig(id)) {
         is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
+
         is ElasticConfig -> ElasticIndexer(
             connection.name,
             elasticsearchService.getClient(id),
         )
+
         is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
+
         else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
     }
 

@@ -138,6 +138,7 @@ import {
   NotEmptyArrayValidator,
   PositiveNumValidator,
   UrlValidator,
+  UrlValidatorWithIpAlias,
 } from "./app/formly/input.validators";
 import { withFormlyFieldToggle } from "@ngx-formly/material/toggle";
 import { withFormlyFieldDatepicker } from "@ngx-formly/material/datepicker";
@@ -157,6 +158,7 @@ import { ExplanationTextComponent } from "./app/formly/types/explanation-text/ex
 import { SubSectionWrapper } from "./app/formly/wrapper/sub-section-wrapper.component";
 import { TimeReferenceComponent } from "./app/formly/types/time-reference/time-reference.component";
 import { ButtonTogglesTypeComponent } from "./app/formly/types/button-toggles-type/button-toggles-type.component";
+import { CategorizedSelectComponent } from "./app/formly/types/categorized-select/categorized-select.component";
 
 if (environment.production) {
   enableProdMode();
@@ -300,6 +302,10 @@ bootstrapApplication(AppComponent, {
             name: "button-toggles",
             component: ButtonTogglesTypeComponent,
           },
+          {
+            name: "categorized-select",
+            component: CategorizedSelectComponent,
+          },
           /* FOR PREVIEW */
           {
             name: "inputPrint",
@@ -358,6 +364,7 @@ bootstrapApplication(AppComponent, {
           { name: "email", validation: EmailValidator },
           { name: "notEmptyArray", validation: NotEmptyArrayValidator },
           { name: "url", validation: UrlValidator },
+          { name: "urlAllowIpAlias", validation: UrlValidatorWithIpAlias },
           { name: "positiveNum", validation: PositiveNumValidator },
           { name: "doiPrefix", validation: DoiPrefixValidator },
           { name: "doi", validation: DoiValidator },

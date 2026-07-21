@@ -76,6 +76,7 @@ class GroupsApiController(
 
         return when (val group = groupService.get(catalogId, id)) {
             null -> ResponseEntity.notFound().build()
+
             else -> if (hasAccessToGroup(principal, id)) {
                 ResponseEntity.ok(FrontendGroup(group, userBelongsToGroup(principal, id)))
             } else {

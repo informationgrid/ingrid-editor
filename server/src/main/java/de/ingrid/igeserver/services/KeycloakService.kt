@@ -55,7 +55,12 @@ import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.net.URI
 import java.security.Principal
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.util.*
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 @Service
 @Profile("!dev")
@@ -64,18 +69,22 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
     companion object {
         // 48h * 60min * 60s => 2 days in seconds
         const val ROLE_IGE_USER = "ige-user"
+        const val ROLE_CLIENT_USER = "user"
         const val EMAIL_VALID_IN_SECONDS = 172800
     }
 
-    class KeycloakWithRealm(val client: Keycloak, private val realm: String) {
+    class KeycloakWithRealm(val client: Keycloak, val realmName: String, val clientId: String, val clientUuid: String) {
 
-        fun realm(): RealmResource = client.realm(realm)
+        fun realm(): RealmResource = client.realm(realmName)
     }
 
     private val log = logger()
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
+
+    @Value("\${keycloak.ignore-certificates:false}")
+    private val ignoreKeycloakSSL: Boolean = false
 
     private var proxyHost = "localhost"
 
@@ -101,7 +110,10 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             val usersWithRole = getUsersWithRole(realm)
             val externalUsersWithRole = getUsersFromUserFederation(realm)
             val userInGroupsWithRole = getUsersInGroupsWithRole(realm)
-            return (usersWithRole + externalUsersWithRole + userInGroupsWithRole).distinctBy { it.login }.toSet()
+            val usersWithClientRole = getUsersWithClientRole(realm)
+            val usersInGroupsWithClientRole = getUsersInGroupsWithClientRole(realm)
+            return (usersWithRole + externalUsersWithRole + userInGroupsWithRole + usersWithClientRole + usersInGroupsWithClientRole).distinctBy { it.login }
+                .toSet()
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
@@ -127,8 +139,23 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .map { user -> mapUser(user) }
         users.forEach { user -> user.role = ROLE_IGE_USER }
         users
-    } catch (e: jakarta.ws.rs.NotFoundException) {
+    } catch (_: jakarta.ws.rs.NotFoundException) {
         log.warn("No users found with role '$ROLE_IGE_USER'")
+        emptyList()
+    }
+
+    private fun getUsersWithClientRole(
+        realm: RealmResource,
+        ignoreUsers: Set<User> = emptySet(),
+    ): List<User> = try {
+        val clientUuid = keycloakClient.clientUuid
+        val users = realm.clients().get(clientUuid).roles()[ROLE_CLIENT_USER].getUserMembers(0, 10000)
+            .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
+            .map { mapUser(it) }
+        users.forEach { user -> user.role = ROLE_CLIENT_USER }
+        users
+    } catch (_: jakarta.ws.rs.NotFoundException) {
+        log.warn("No users found with client role '$ROLE_CLIENT_USER' for client '${keycloakClient.clientId}'")
         emptyList()
     }
 
@@ -142,10 +169,11 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
     private fun getUsersFromUserFederation(realm: RealmResource): List<User> = keycloakClient.realm().users().list()
         .filter { it.federationLink != null }
         .filter { user ->
-            realm.users().get(user.id)
-                .roles()
-                .realmLevel()
-                .listAll().any { it.name == ROLE_IGE_USER }
+            val userResource = realm.users().get(user.id)
+            val hasRealmRole = userResource.roles().realmLevel().listAll().any { it.name == ROLE_IGE_USER }
+            val hasClientRole = userResource.roles().clientLevel(keycloakClient.clientUuid).listAll()
+                .any { it.name == ROLE_CLIENT_USER }
+            hasRealmRole || hasClientRole
         }
         .map { mapUser(it) }
 
@@ -159,8 +187,24 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .flatMap { groups.group(it.id).members() }
             .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
             .map { mapUser(it) }
-    } catch (e: jakarta.ws.rs.NotFoundException) {
+    } catch (_: jakarta.ws.rs.NotFoundException) {
         log.warn("No groups with users found with role '$ROLE_IGE_USER'")
+        emptyList()
+    }
+
+    private fun getUsersInGroupsWithClientRole(
+        realm: RealmResource,
+        ignoreUsers: Set<User> = emptySet(),
+    ): List<User> = try {
+        val groups = realm.groups()
+        val clientUuid = keycloakClient.clientUuid
+
+        realm.clients().get(clientUuid).roles()[ROLE_CLIENT_USER].getRoleGroupMembers(0, 1000)
+            .flatMap { groups.group(it.id).members() }
+            .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
+            .map { mapUser(it) }
+    } catch (_: jakarta.ws.rs.NotFoundException) {
+        log.warn("No groups with users found with client role '$ROLE_CLIENT_USER' for client '${keycloakClient.clientId}'")
         emptyList()
     }
 
@@ -171,18 +215,18 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         val provider = oauth2Properties.provider["keycloak"]
             ?: throw IllegalStateException("OAuth2 provider 'keycloak' not found")
 
-        // Parse authorization-uri
-        // Format: <server-url>/realms/<realm>/protocol/openid-connect/auth
-        val authUri = provider.authorizationUri
-            ?: throw IllegalStateException("Authorization URI not configured for keycloak provider")
+        // Parse URIs
+        // Format: <server-url>/realms/<realm>/protocol/openid-connect/...
+        val internalUri = provider.tokenUri ?: provider.authorizationUri
+            ?: throw IllegalStateException("Neither Token URI nor Authorization URI configured for keycloak provider")
 
-        if (!authUri.contains("/realms/")) {
-            throw IllegalStateException("Authorization URI does not match expected Keycloak pattern (.../realms/...): $authUri")
+        if (!internalUri.contains("/realms/")) {
+            throw IllegalStateException("Keycloak URI does not match expected pattern (.../realms/...): $internalUri")
         }
 
-        val serverUrl = authUri.substringBefore("/realms/")
+        val serverUrl = internalUri.substringBefore("/realms/")
         // Extract realm: everything between "/realms/" and the next "/"
-        val realmName = authUri.substringAfter("/realms/").substringBefore("/")
+        val realmName = internalUri.substringAfter("/realms/").substringBefore("/")
 
         val client: Keycloak = KeycloakBuilder.builder()
             .serverUrl(serverUrl)
@@ -190,20 +234,27 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .clientId(registration.clientId)
             .clientSecret(registration.clientSecret)
             .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//            .grantType(OAuth2Constants.PASSWORD)
-//            .username(backendUser)
-//            .password(backendUserPassword)
             .resteasyClient(buildResteasyClient())
             .build()
 
-        keycloakClient = KeycloakWithRealm(client, realmName)
+        val clientId = registration.clientId
+        val clientUuid = try {
+            client.realm(realmName).clients().findByClientId(clientId).firstOrNull()?.id
+                ?: throw IllegalStateException("Client '$clientId' not found in realm '$realmName'")
+        } catch (ex: Exception) {
+            throw ServerException.withReason(
+                ">$serverUrl< is not reachable. Please check if Keycloak is running and the URL is correct. Error: ${ex.message}",
+            )
+        }
+        keycloakClient = KeycloakWithRealm(client, realmName, clientId, clientUuid)
 
         try {
             keycloakClient.realm().clients().findAll()
             return keycloakClient
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
             throw ServerException.withReason(
-                "Failed to access Keycloak Client-ID '${registration.clientId}'. Please check if client exists with correct secret.",
+                "Failed to access Keycloak Client-ID '$clientId' at '$serverUrl' with realm '$realmName'. Please check if client exists with correct secret.",
+                ex,
             )
         }
     }
@@ -212,6 +263,20 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         val client = ResteasyClientBuilderImpl()
         if (this.keycloakProxyUrl != null) {
             client.defaultProxy(proxyHost, proxyPort)
+        }
+        if (ignoreKeycloakSSL) {
+            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+                override fun getAcceptedIssuers(): Array<X509Certificate>? = null
+                override fun checkClientTrusted(chain: Array<X509Certificate>?, authType: String?) = Unit
+                override fun checkServerTrusted(chain: Array<X509Certificate>?, authType: String?) = Unit
+            })
+
+            val sslContext = SSLContext.getInstance("TLS").apply {
+                init(null, trustAllCerts, SecureRandom())
+            }
+
+            client.sslContext(sslContext)
+            client.hostnameVerifier { _, _ -> true }
         }
         return client
             .register(JacksonProvider::class.java, 100)
@@ -228,7 +293,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             return keycloakClient.realm().users()
                 .search(username, true)
                 .first()
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(username, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(username, e)
@@ -240,7 +305,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             return keycloakClient.realm().users()
                 .search("id:$uuid", 1, 1)
                 .first()
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw NotFoundException.withMissingResource(uuid, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(uuid, e)
@@ -312,11 +377,16 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
         usersResource.get(userId).apply {
-            val roles = keycloakClient.realm().roles()
-            val userRoles = mutableListOf(
-                roles.get(ROLE_IGE_USER).toRepresentation(),
-            )
-            roles().realmLevel().add(userRoles)
+            try {
+                val clientResource = keycloakClient.realm().clients().get(keycloakClient.clientUuid)
+                roles().clientLevel(keycloakClient.clientUuid).add(
+                    listOf(
+                        clientResource.roles().get(ROLE_CLIENT_USER).toRepresentation(),
+                    ),
+                )
+            } catch (e: Exception) {
+                log.warn("Failed to add client role '$ROLE_CLIENT_USER' to new user. Maybe it doesn't exist: ${e.message}")
+            }
 
             return password
         }
@@ -360,9 +430,9 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
         if (user != null) {
             try {
                 users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
-            } catch (ex: ForbiddenException) {
+            } catch (_: ForbiddenException) {
                 throw de.ingrid.igeserver.api.ForbiddenException.withUser("<current>")
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 throw InvalidParameterException.withInvalidParameters(user.email)
             }
         } else {
@@ -432,7 +502,11 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
     private fun hasOnlyIgeRoles(userResource: UserResource): Boolean {
         val realmRolesOfUser = userResource.roles().realmLevel().listAll().map { it.name }
         val userRolesNonIge = filterRoles(realmRolesOfUser)
-        return userRolesNonIge.isEmpty()
+        if (userRolesNonIge.isNotEmpty()) return false
+
+        val clientRolesOfUser = userResource.roles().clientLevel(keycloakClient.clientUuid).listAll().map { it.name }
+        val otherClientRoles = clientRolesOfUser.filter { it != ROLE_CLIENT_USER }
+        return otherClientRoles.isEmpty()
     }
 
     private fun removeIgeRoles(
@@ -446,6 +520,16 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
                     roles.get(ROLE_IGE_USER).toRepresentation(),
                 ),
             )
+            try {
+                val clientResource = client.realm().clients().get(client.clientUuid)
+                roles().clientLevel(client.clientUuid).remove(
+                    listOf(
+                        clientResource.roles().get(ROLE_CLIENT_USER).toRepresentation(),
+                    ),
+                )
+            } catch (e: Exception) {
+                log.warn("Failed to remove client role '$ROLE_CLIENT_USER' from user. Maybe it doesn't exist: ${e.message}")
+            }
         }
     }
 

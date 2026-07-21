@@ -1,10 +1,12 @@
+import org.cyclonedx.Version
+import static org.cyclonedx.model.Component.Type
 import org.jetbrains.changelog.ExtensionsKt
 
 plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
     id "org.jetbrains.changelog" version "1.1.2"
     id "com.diffplug.spotless" version "7.0.2" apply false
-    id 'org.cyclonedx.bom' version '3.1.0'
+    id 'org.cyclonedx.bom' version '3.2.4'
 }
 
 group = 'de.ingrid'
@@ -44,9 +46,9 @@ allprojects {
 
 cyclonedxBom {
     // Specified the type of project being built. Defaults to 'library'
-    projectType = "application"
+    projectType = Type.APPLICATION
     // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
-    schemaVersion = "VERSION_15"
+    schemaVersion = Version.VERSION_15
     componentVersion = rootProject.version
 
     includeBuildSystem = false

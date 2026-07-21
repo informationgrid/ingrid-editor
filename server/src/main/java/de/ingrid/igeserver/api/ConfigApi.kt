@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import java.security.Principal
 
 @Hidden
 @Tag(name = "Config", description = "the configs API")
@@ -50,6 +51,9 @@ interface ConfigApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setConnections(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<ConnectionConfig>
+
+    @GetMapping(value = ["/config/connections/usage"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getConnectionUsage(principal: Principal): ResponseEntity<Map<String, List<String>>>
 
     @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>>

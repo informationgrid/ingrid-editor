@@ -253,7 +253,7 @@ class UploadApiController(
                     IOUtils.copy(data, output)
                     output.flush()
                 }
-            } catch (ex: IOException) {
+            } catch (_: IOException) {
                 throw NotFoundException.withMissingResource(params.file, "file")
             }
         }

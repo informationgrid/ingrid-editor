@@ -298,23 +298,18 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "cfdSimulation",
       },
       props: {
-        label: "Simulationsdaten (CFD)",
+        label: "CFD-Simulationen (Schiff)",
       },
       fieldGroup: [
-        this.addSection("Simulationsdaten (CFD)", [
+        this.addSection("CFD-Simulationen (Schiff)", [
           { key: "type" },
           this.addRepeatList("shipName", "BAW-Schiffsname", {
-            options: [
-              { label: "PPM42", value: "PPM42" },
-              { label: "PPM46", value: "PPM46" },
-              { label: "sonstiges", value: "sonstiges" },
-            ],
+            options: this.getCodelistForSelect("BAW_shipName", "null"),
+            codelistId: "BAW_shipName",
           }),
           this.addAutocomplete("physics", "Angaben zur Physik", {
-            options: [
-              { label: "VolumeOfFluid (VOF)", value: "VolumeOfFluid (VOF)" },
-              { label: "LevelSet", value: "LevelSet" },
-            ],
+            options: this.getCodelistForSelect("BAW_physics", "null"),
+            codelistId: "BAW_physics",
           }),
           this.addButtonToggles("properties", "Eigenschaften", {
             options: [
@@ -337,22 +332,12 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
             ],
           }),
           this.addAutocomplete("movementType", "Bewegungsarten", {
-            options: [
-              { label: "DFBIMorphing", value: "DFBIMorphing" },
-              {
-                label: "Moving Reference Frame",
-                value: "Moving Reference Frame",
-              },
-              { label: "keine", value: "keine" },
-            ],
+            options: this.getCodelistForSelect("BAW_movementType", "null"),
+            codelistId: "BAW_movementType",
           }),
           this.addAutocomplete("trajectory", "Trajektorie", {
-            options: [
-              { label: "geradeaus", value: "geradeaus" },
-              { label: "Kurs", value: "Kurs" },
-              { label: "ZigZag", value: "ZigZag" },
-              { label: "Drehkreis", value: "Drehkreis" },
-            ],
+            options: this.getCodelistForSelect("BAW_trajectory", "null"),
+            codelistId: "BAW_trajectory",
           }),
           this.addInput("cellCount", "Zellanzahl", {
             className: "single-field width-25 right-align",

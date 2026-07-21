@@ -180,7 +180,7 @@ class GroupService(
                 ObjectIdentityImpl(DocumentWrapper::class.java, if (it.get("id").isNull) null else it.get("id").asInt())
             val acl: MutableAcl = try {
                 aclService.readAclById(objIdentity) as MutableAcl
-            } catch (ex: org.springframework.security.acls.model.NotFoundException) {
+            } catch (_: org.springframework.security.acls.model.NotFoundException) {
                 log.warn("Created new ACL for already existing group: ${group.id}")
                 aclService.createAcl(objIdentity)
             }
@@ -205,6 +205,7 @@ class GroupService(
 
     private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asText()) {
         "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
+
         "writeTreeExceptParent" -> listOf(
             BasePermission.READ,
             BasePermission.ADMINISTRATION,
@@ -212,6 +213,7 @@ class GroupService(
         )
 
         "readTree" -> listOf(BasePermission.READ)
+
         else -> listOf(BasePermission.READ)
     }
 
@@ -226,7 +228,7 @@ class GroupService(
                 try {
                     val user = keycloakService.getUser(it.userId).apply { role = it.role?.name ?: "" }
                     catalogService.applyIgeUserInfo(user, it, catalogId)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     log.error("Couldn't find keycloak user with login: ${it.userId}")
                     null
                 }

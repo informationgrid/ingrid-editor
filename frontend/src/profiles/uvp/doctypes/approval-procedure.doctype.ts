@@ -100,6 +100,7 @@ export class ApprovalProcedureDoctype extends UvpShared {
                 this.addPublicDisclosure(),
                 this.addPublicHearing(),
                 this.addDecisionOfAdmission(),
+                this.addScopeOfInvestigation(),
               ],
             },
             validators: {

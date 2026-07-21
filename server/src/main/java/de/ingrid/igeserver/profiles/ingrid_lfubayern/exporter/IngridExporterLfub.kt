@@ -70,7 +70,7 @@ class IngridIdfExporterLfub(
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
-    override val typeInfo = super.typeInfo.copy(type = "ingridIDFLfuBayern")
+    override val typeInfo = super.typeInfo.copy(type = "ingridIDFLfuBayern", name = "InGrid IDF LfU Bayern")
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernTransformer(docType) ?: super.getModelTransformerClass(docType)
 }

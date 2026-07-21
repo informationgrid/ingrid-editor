@@ -144,10 +144,15 @@ class OpenDataProfile(
 //            "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
             // "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002) // Deprecated Liste "Download Typ"
             "20003" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
+
             "20004" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20004)
+
             "20005" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20005)
+
             "20006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20006)
+
             "20007" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
+
             null -> {
 //                codelistHandler.removeAndAddCodelist(catalogId, codelist505)
 //                codelistRepo.save(codelist505)
@@ -167,12 +172,6 @@ class OpenDataProfile(
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
-    }
-
-    override fun initCatalogQueries(catalogId: String) {
-    }
-
-    override fun initIndices() {
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/opendata/mappings/default-mapping.json")?.readText() ?: ""

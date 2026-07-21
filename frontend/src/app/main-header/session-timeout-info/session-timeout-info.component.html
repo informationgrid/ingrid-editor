@@ -1,31 +1,35 @@
-<div
-    class="timeout-wrapper"
-    [class.warn]="timeout < 300"
-    [class.auto-hide]="autoHide()"
-    tabindex="0"
-    cdkMonitorElementFocus
-    aria-labelledby="timeout-info"
-    aria-description="Klick auf die Eingabetaste, um die Zeitspanne zum Auto-Logout zurückzusetzen"
-    (keyup.enter)="refreshSession()"
->
-    <span id="timeout-info" aria-hidden="true">
-        <span>Logout in&nbsp;</span>
-        @if (timeout >= 300) {
-            <span class="time">{{ timeout | time: "short" }}&nbsp;Minuten</span>
-        }
-        @if (timeout < 300) {
-            <span class="time">{{ timeout | time }}</span>
-        }
-    </span>
-
-    <div class="separator"></div>
-
-    <button
-        mat-icon-button
-        matTooltip="Aktualisieren"
-        (click)="refreshSession()"
-        tabindex="-1"
+@if (timeout() >= 0) {
+    <div
+        class="timeout-wrapper"
+        [class.warn]="timeout() < 300"
+        [class.auto-hide]="autoHide()"
+        tabindex="0"
+        cdkMonitorElementFocus
+        aria-labelledby="timeout()-info"
+        aria-description="Klick auf die Eingabetaste, um die Zeitspanne zum Auto-Logout zurückzusetzen"
+        (keyup.enter)="refreshSession()"
     >
-        <mat-icon>refresh</mat-icon>
-    </button>
-</div>
+        <span id="timeout()-info" aria-hidden="true">
+            <span>Logout in&nbsp;</span>
+            @if (timeout() >= 300) {
+                <span class="time"
+                    >{{ timeout() | time: "short" }}&nbsp;Minuten</span
+                >
+            }
+            @if (timeout() < 300) {
+                <span class="time">{{ timeout() | time }}</span>
+            }
+        </span>
+
+        <div class="separator"></div>
+
+        <button
+            mat-icon-button
+            matTooltip="Aktualisieren"
+            (click)="refreshSession()"
+            tabindex="-1"
+        >
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+}

@@ -104,7 +104,7 @@ open class BmiModelTransformer(
         return try {
             documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Could not get last published document: $uuid")
             null
         }
