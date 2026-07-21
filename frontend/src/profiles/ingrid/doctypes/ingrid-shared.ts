@@ -1711,7 +1711,8 @@ export abstract class IngridShared extends BaseDoctype {
                   ((row.url?.length > 0 && row.uuidRef == null) ||
                     (row.url == null && row.uuidRef?.length > 0)) &&
                   (row.type?.key !== "9990" ||
-                    row.urlDataType?.key?.length > 0),
+                    row.urlDataType?.key?.length > 0 ||
+                    row.urlDataType?.value?.length > 0),
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
