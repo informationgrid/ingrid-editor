@@ -780,68 +780,80 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addGroupSimple("keywords", [
-          this.addRepeatList("gemet", "Gemet-Schlagworte", {
-            view: "chip",
-            className: "optional",
-            placeholder: "Im Gemet suchen",
-            restCall: (query: string) =>
-              this.http.get<any[]>(
-                `${ConfigService.backendApiUrl}keywords/gemet?q=${query}`,
-              ),
-            labelField: "label",
-            selectLabelField: (item) => {
-              return item.alternativeLabel
-                ? `${item.label} (${item.alternativeLabel})`
-                : item.label;
-            },
-            validators: {
-              ...(this.showInVeKoSField && {
-                invekos: {
-                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
-                    const invekosValue =
-                      field.options.formState.mainModel?.properties?.invekos
-                        ?.key;
-                    if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                      return true;
+        this.addGroupSimple(
+          "keywords",
+          [
+            this.addRepeatList("gemet", "Gemet-Schlagworte", {
+              view: "chip",
+              className: "optional",
+              placeholder: "Im Gemet suchen",
+              restCall: (query: string) =>
+                this.http.get<any[]>(
+                  `${ConfigService.backendApiUrl}keywords/gemet?q=${query}`,
+                ),
+              labelField: "label",
+              selectLabelField: (item) => {
+                return item.alternativeLabel
+                  ? `${item.label} (${item.alternativeLabel})`
+                  : item.label;
+              },
+              validators: {
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
 
-                    return ctrl.value?.some(
-                      (item: any) => item.label === "Gemeinsame Agrarpolitik",
-                    );
+                      return ctrl.value?.some(
+                        (item: any) => item.label === "Gemeinsame Agrarpolitik",
+                      );
+                    },
+                    message:
+                      "Das Schlagwort 'Gemeinsame Agrarpolitik' ist verpflichtend",
                   },
-                  message:
-                    "Das Schlagwort 'Gemeinsame Agrarpolitik' ist verpflichtend",
-                },
-              }),
-            },
-          }),
-          this.addRepeatList("umthes", "Umthes-Schlagworte", {
-            view: "chip",
-            className: "optional",
-            placeholder: "Im Umweltthesaurus suchen",
-            restCall: (query: string) =>
-              this.http.get<any[]>(
-                `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`,
-              ),
-            labelField: "label",
-            selectLabelField: (item) => {
-              return item.alternativeLabel
-                ? `${item.label} (${item.alternativeLabel})`
-                : item.label;
-            },
-          }),
-          this.addRepeatList("free", "Freie Schlagworte", {
-            view: "chip",
-            required: this.options.required.freeKeywords,
-            hint: this.keywordFieldHint,
-            convert: (val) => (val ? { label: val } : null),
-            labelField: "label",
-            expressions: {
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
-            },
-          }),
-        ]),
+                }),
+              },
+            }),
+            this.addRepeatList("umthes", "Umthes-Schlagworte", {
+              view: "chip",
+              className: "optional",
+              placeholder: "Im Umweltthesaurus suchen",
+              restCall: (query: string) =>
+                this.http.get<any[]>(
+                  `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`,
+                ),
+              labelField: "label",
+              selectLabelField: (item) => {
+                return item.alternativeLabel
+                  ? `${item.label} (${item.alternativeLabel})`
+                  : item.label;
+              },
+            }),
+            options.mobilithekTopics &&
+            this.behaviourService
+              .getBehaviour("plugin.ingrid.mobilithek")
+              ?.isActive()
+              ? this.createMobilithekSelect()
+              : null,
+            this.addRepeatList("free", "Freie Schlagworte", {
+              view: "chip",
+              required: this.options.required.freeKeywords,
+              hint: this.keywordFieldHint,
+              convert: (val) => (val ? { label: val } : null),
+              labelField: "label",
+              expressions: {
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
+            }),
+          ].filter(Boolean),
+        ),
         this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
           wrappers: ["panel", "button", "form-field"],
@@ -870,6 +882,20 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ].filter(Boolean),
     );
+  }
+
+  private createMobilithekSelect() {
+    const required = this.behaviourService.getBehaviour(
+      "plugin.ingrid.mobilithek",
+    )?.data?.required;
+    return this.addCategorizedSelect("mobilithek", "Mobilithek", {
+      required,
+      className: required ? "" : "optional",
+      categories: this.getCodelistForCategorizedSelect("mobilithek"),
+      codelistId: "mobilithek",
+      showHeader: true,
+      restrictToSingleCategory: true,
+    });
   }
 
   private async analyzeKeywords(
