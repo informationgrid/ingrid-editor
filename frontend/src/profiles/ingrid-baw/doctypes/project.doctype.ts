@@ -32,6 +32,11 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
   showManager = false;
   showParticipants = false;
 
+  constructor() {
+    super();
+    this.activeThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);
     const alternateTitlePosition = IngridShared.findFieldElementWithId(

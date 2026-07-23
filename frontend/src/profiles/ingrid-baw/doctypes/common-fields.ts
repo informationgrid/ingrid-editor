@@ -34,9 +34,18 @@ import {
   PreviewImageSelector,
 } from "../../../app/formly/types/preview-image/preview-image.component";
 import { LfsSelectorDialogComponent } from "../components/lfs-selector/lfs-selector-dialog.component";
+import { Thesaurus } from "../../ingrid/utils/keywords";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
+  static BawKeywordThesaurus: Thesaurus = {
+    codelistId: "bawKeywords",
+    id: "bawKeywords",
+    label: "BAW-Schlagworte",
+    modelPath: "keywords.bawKeywords",
+    type: "codelist",
+  };
+
   getBAWOrderInfoFieldConfig(
     doc: IngridShared,
     options: SelectOptions = {},

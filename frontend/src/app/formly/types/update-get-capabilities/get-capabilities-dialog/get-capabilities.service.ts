@@ -40,8 +40,13 @@ import {
 } from "./get-capabilities.model";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
-import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
+import {
+  KeywordAnalysis,
+  Thesaurus,
+} from "../../../../../profiles/ingrid/utils/keywords";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { GeoServiceDoctype } from "../../../../../profiles/ingrid/doctypes/geo-service.doctype";
+import { GeoDatasetDoctype } from "../../../../../profiles/ingrid/doctypes/geo-dataset.doctype";
 
 @Injectable({
   providedIn: "root",
@@ -50,6 +55,9 @@ export class GetCapabilitiesService {
   private codelistStore = inject(CodelistStore);
 
   private backendUrl: string;
+
+  private geoserviceThesauri: Thesaurus[];
+  private geodatasetThesauri: Thesaurus[];
 
   constructor(
     private http: HttpClient,
@@ -60,6 +68,8 @@ export class GetCapabilitiesService {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
+    this.geoserviceThesauri = new GeoServiceDoctype().activeThesauri;
+    this.geodatasetThesauri = new GeoDatasetDoctype().activeThesauri;
   }
 
   analyze(url: string, username?: string, password?: string) {
@@ -84,7 +94,7 @@ export class GetCapabilitiesService {
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
       if (key === "keywords") {
-        await this.addKeywordsToModel(value, model);
+        await this.addKeywordsToModel(value, model, this.geoserviceThesauri);
       }
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
@@ -131,23 +141,31 @@ export class GetCapabilitiesService {
     this.handleDefaultTemporalEvent(model);
   }
 
-  private async addKeywordsToModel(value: string[], model: any) {
-    const response = await this.keywordAnalysis.analyzeKeywords(value, false);
+  private async addKeywordsToModel(
+    value: string[],
+    model: any,
+    keywordTheasuri: Thesaurus[],
+  ) {
+    const response = await this.keywordAnalysis.analyzeKeywords(
+      value,
+      keywordTheasuri,
+    );
+    // TODO check for easier / more readable assignment
     response.forEach((item) => {
-      switch (item.thesaurus) {
-        case "INSPIRE-Themen":
-          model.themes.push(item.value);
-          break;
-        case "Gemet-Schlagworte":
-          model.keywords.gemet.push(item.value);
-          break;
-        case "Umthes-Schlagworte":
-          model.keywords.umthes.push(item.value);
-          break;
-        case "Freie Schlagworte":
-          model.keywords.free.push(item.value);
-          break;
-      }
+      let target: any[] = null;
+      item.thesaurus.modelPath.split(".").forEach((key, index, path) => {
+        switch (index) {
+          case 0:
+            target = model[key];
+            break;
+          case path.length - 1:
+            target.push(path);
+            break;
+          default:
+            target = target[key];
+            break;
+        }
+      });
     });
   }
 
@@ -301,7 +319,11 @@ export class GetCapabilitiesService {
         }),
       },
     };
-    await this.addKeywordsToModel(resource.keywords, doc);
+    await this.addKeywordsToModel(
+      resource.keywords,
+      doc,
+      this.geodatasetThesauri,
+    );
     return doc;
   }
 

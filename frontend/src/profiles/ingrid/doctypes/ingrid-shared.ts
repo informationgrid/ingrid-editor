@@ -43,7 +43,11 @@ import { ThesaurusReportComponent } from "../components/thesaurus-report.compone
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
+import {
+  KeywordAnalysis,
+  KeywordSectionOptions,
+  Thesaurus,
+} from "../utils/keywords";
 import {
   MetadataOption,
   MetadataOptionItems,
@@ -98,6 +102,23 @@ export abstract class IngridShared extends BaseDoctype {
   protected codelistStore = inject(CodelistStore);
   protected generalStore = inject(GeneralStore);
   protected codelistService = inject(CodelistService);
+
+  protected static defaultThesauri: Thesaurus[] = [
+    {
+      id: "gemet",
+      label: "Gemet-Schlagworte",
+      modelPath: "keywords.gemet",
+      type: "external",
+    },
+    {
+      id: "umthes",
+      label: "Umthes-Schlagworte",
+      modelPath: "keywords.umthes",
+      type: "external",
+    },
+  ];
+
+  activeThesauri: Thesaurus[] = IngridShared.defaultThesauri;
 
   options = {
     dynamicRequired: {
@@ -910,13 +931,20 @@ export abstract class IngridShared extends BaseDoctype {
     this.snack.dismiss();
 
     const formState = field.options.formState;
+
+    // TODO: Special case: only use inspireTopics thesaurus when formState.mainModel?.["properties"]?.isInspireIdentified
+    // TODO: try to integrate check at a better place
     const checkThemes =
       options.inspireTopics &&
       formState.mainModel?.["properties"]?.isInspireIdentified;
+    const filteredThesauri = checkThemes
+      ? this.activeThesauri
+      : this.activeThesauri.filter((t) => t.id != "inspireTopics");
+
     try {
       const response = await this.keywordAnalysis.analyzeKeywords(
         value.split(","),
-        checkThemes,
+        filteredThesauri,
       );
       if (response.length == 0) return;
 

@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ThesaurusResult, ThesaurusType } from "../components/thesaurus-result";
+import { ThesaurusResult } from "../components/thesaurus-result";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
-import { IgeError } from "../../../app/models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormArray, FormGroup } from "@angular/forms";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
@@ -33,6 +32,14 @@ export interface KeywordSectionOptions {
   thesaurusTopics?: boolean;
   inspireTopics?: boolean;
   mobilithekTopics?: boolean;
+}
+
+export interface Thesaurus {
+  id: string;
+  label: string;
+  type: "external" | "codelist";
+  modelPath: string;
+  codelistId?: string;
 }
 
 @Injectable({ providedIn: "root" })
@@ -78,13 +85,13 @@ export class KeywordAnalysis {
 
   async analyzeKeywords(
     values: string[],
-    checkThemes: boolean,
+    thesauri: Thesaurus[],
   ): Promise<ThesaurusResult[]> {
     return await Promise.all(
       values
         .map((item: string) => item.trim())
         .filter((item: string) => item.length > 0)
-        .map(async (item) => await this.assignKeyword(item, checkThemes)),
+        .map(async (item) => await this.assignKeyword(item, thesauri)),
     );
   }
 
@@ -97,7 +104,7 @@ export class KeywordAnalysis {
 
     data.forEach((item: ThesaurusResult) => {
       const keywordExists = this.keywordExists(item, form);
-      const isInspireTopic = item.thesaurus === "INSPIRE-Themen";
+      const isInspireTopic = item.thesaurus.id === "inspireTopics"; // TODO generalize
       const shouldUpdateIsoCategory = isInspireTopic && thesaurusTopics;
 
       if (item.status === "removed") {
@@ -163,9 +170,9 @@ export class KeywordAnalysis {
   }
 
   keywordExists(item: ThesaurusResult, form: FormGroup | FormArray): boolean {
-    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
     return thesaurusCtrl.value?.some((keyword: any) => {
-      if (item.thesaurus === "INSPIRE-Themen") {
+      if (item.thesaurus.type == "codelist") {
         return keyword.key === item.value.key;
       } else {
         return keyword.label === item.value.label;
@@ -174,66 +181,43 @@ export class KeywordAnalysis {
   }
 
   addKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
-    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
     thesaurusCtrl.setValue([...thesaurusCtrl.value, item.value]);
   }
 
   removeKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
-    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
     thesaurusCtrl.setValue(
-      thesaurusCtrl.value.filter(
-        (keyword: any) => keyword.label !== item.value.label,
-      ),
+      thesaurusCtrl.value.filter((keyword: any) => {
+        if (item.thesaurus.type == "codelist") {
+          return keyword.key !== item.value.key;
+        } else {
+          return keyword.label !== item.value.label;
+        }
+      }),
     );
   }
 
-  private mapThesaurusToModel(item: ThesaurusResult): string {
-    switch (item.thesaurus) {
-      case "Gemet-Schlagworte":
-        return "keywords.gemet";
-      case "Umthes-Schlagworte":
-        return "keywords.umthes";
-      case "Freie Schlagworte":
-        return "keywords.free";
-      case "INSPIRE-Themen":
-        return "themes";
-      default:
-        throw new IgeError(`Thesaurus not supported: ${item.thesaurus}`);
-    }
-  }
-
-  private mapThesaurusToLabel(thesaurus: string): ThesaurusType {
-    switch (thesaurus) {
-      case "gemet":
-        return "Gemet-Schlagworte";
-      case "umthes":
-        return "Umthes-Schlagworte";
-      case "free":
-        return "Freie Schlagworte";
-      case "themes":
-        return "INSPIRE-Themen";
-      default:
-        throw new IgeError(`Model not supported: ${thesaurus}`);
-    }
-  }
-
-  private async assignKeyword(item: string, checkThemes: boolean) {
-    if (checkThemes) {
-      const resultTheme = this.checkInThemes(item);
-      if (resultTheme.found) return resultTheme;
+  private async assignKeyword(item: string, thesauri: Thesaurus[]) {
+    for (const thesaurus of thesauri) {
+      let result: ThesaurusResult;
+      if (thesaurus.type === "codelist") {
+        result = this.checkInCodelistThesaurus(item, thesaurus);
+      } else {
+        result = await this.checkInExternalThesaurus(item, thesaurus);
+      }
+      if (result.found) return result;
     }
 
-    const gemetResult = await this.checkInThesaurus(item, "gemet");
-    if (gemetResult.found) return gemetResult;
-
-    const umthesResult = await this.checkInThesaurus(item, "umthes");
-    if (umthesResult.found) return umthesResult;
-    else return this.addFreeKeyword(item);
+    return this.addFreeKeyword(item);
   }
 
-  checkInThemes(item: string): ThesaurusResult {
+  checkInCodelistThesaurus(
+    item: string,
+    thesaurus: Thesaurus,
+  ): ThesaurusResult {
     const codeListEntry = this.codelistStore.getCodelistEntryByValue(
-      "6100",
+      thesaurus.codelistId,
       item,
       "de",
       false,
@@ -241,9 +225,12 @@ export class KeywordAnalysis {
     const id = codeListEntry?.id;
     const label = codeListEntry?.fields["de"];
     return {
-      thesaurus: "INSPIRE-Themen",
+      thesaurus: thesaurus,
       found: id !== undefined,
-      value: id !== undefined ? { key: id } : null,
+      value:
+        id !== undefined
+          ? { key: id, value: label, _codelistId: thesaurus.codelistId }
+          : null,
       label: label,
     };
   }
@@ -253,30 +240,29 @@ export class KeywordAnalysis {
       found: true,
       value: { label: item },
       label: item,
-      thesaurus: "Freie Schlagworte",
+      thesaurus: null, // TODO: generalize either with empty FreeKeyword thesauraus or handle diferently
     };
   }
 
-  private async checkInThesaurus(
+  private async checkInExternalThesaurus(
     item: string,
-    thesaurus: string,
+    thesaurus: Thesaurus,
   ): Promise<ThesaurusResult> {
     const response = await firstValueFrom(
       this.http.get<any[]>(
-        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
+        `${ConfigService.backendApiUrl}keywords/${thesaurus.id}?q=${encodeURI(
           item,
         )}&type=EXACT`,
       ),
     );
-    const thesaurusName = this.mapThesaurusToLabel(thesaurus);
     if (response.length > 0) {
       return {
-        thesaurus: thesaurusName,
+        thesaurus: thesaurus,
         found: true,
         value: response[0],
         label: response[0].label,
       };
     }
-    return { thesaurus: thesaurusName, found: false, value: null, label: item };
+    return { thesaurus: thesaurus, found: false, value: null, label: item };
   }
 }

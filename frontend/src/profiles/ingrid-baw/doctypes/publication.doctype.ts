@@ -54,6 +54,8 @@ export class PublicationDoctypeBaw extends IngridShared {
         legalBasicsDescriptions: true,
       },
     };
+
+    this.activeThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   documentFields = () => {
