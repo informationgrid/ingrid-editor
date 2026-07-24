@@ -150,22 +150,16 @@ export class GetCapabilitiesService {
       value,
       keywordTheasuri,
     );
-    // TODO check for easier / more readable assignment
     response.forEach((item) => {
-      let target: any[] = null;
-      item.thesaurus.modelPath.split(".").forEach((key, index, path) => {
-        switch (index) {
-          case 0:
-            target = model[key];
-            break;
-          case path.length - 1:
-            target.push(path);
-            break;
-          default:
-            target = target[key];
-            break;
-        }
-      });
+      const keys = item.thesaurus.modelPath.split(".");
+      let target = model;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!target[keys[i]]) target[keys[i]] = {};
+        target = target[keys[i]];
+      }
+      const lastKey = keys[keys.length - 1];
+      if (!target[lastKey]) target[lastKey] = [];
+      target[lastKey].push(item.value);
     });
   }
 
