@@ -118,6 +118,22 @@ export abstract class IngridShared extends BaseDoctype {
     },
   ];
 
+  static InspireThesaurus: Thesaurus = {
+    codelistId: "6100",
+    id: "inspireTopics",
+    label: "INSPIRE-Themen",
+    modelPath: "themes",
+    type: "codelist",
+  };
+
+  static MobilithekThesaurus: Thesaurus = {
+    codelistId: "mobilithek",
+    id: "mobilithekTopics",
+    label: "Mobilithek-Themen",
+    modelPath: "mobilithekThemes",
+    type: "codelist",
+  };
+
   activeThesauri: Thesaurus[] = IngridShared.defaultThesauri;
 
   options = {
@@ -532,6 +548,8 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
+    this.addKeywordThesauri(options);
+
     return this.addSection(
       "Verschlagwortung",
       [
@@ -903,6 +921,13 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ].filter(Boolean),
     );
+  }
+
+  protected addKeywordThesauri(options: KeywordSectionOptions) {
+    if (options.inspireTopics)
+      this.activeThesauri.unshift(IngridShared.InspireThesaurus);
+    if (options.mobilithekTopics)
+      this.activeThesauri.unshift(IngridShared.MobilithekThesaurus);
   }
 
   private createMobilithekSelect() {

@@ -30,7 +30,6 @@ import {
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { dataOrigin } from "./geo-dataset.dataOrigin";
 import { GeometryContextDialogComponent } from "../dialogs/geometry-context/geometry-context-dialog.component";
-import { Thesaurus } from "../utils/keywords";
 
 @Injectable({
   providedIn: "root",
@@ -78,14 +77,6 @@ export class GeoDatasetDoctype extends IngridShared {
   showDataQualitySection = true;
   isGeoDataset = true;
 
-  static InspireThesaurus: Thesaurus = {
-    codelistId: "6100",
-    id: "inspireTopics",
-    label: "INSPIRE-Themen",
-    modelPath: "themes",
-    type: "codelist",
-  };
-
   constructor() {
     super();
     this.options.dynamicRequired.spatialSystems = () => true;
@@ -97,8 +88,6 @@ export class GeoDatasetDoctype extends IngridShared {
     this.options.dynamicRequired.spatialScope = (field: FormlyFieldConfig) =>
       field.options.formState.mainModel?.properties?.isInspireIdentified !==
       undefined;
-
-    this.activeThesauri.unshift(GeoDatasetDoctype.InspireThesaurus);
   }
 
   protected metadataOptions(): MetadataOption[] {

@@ -37,10 +37,17 @@ export interface KeywordSectionOptions {
 export interface Thesaurus {
   id: string;
   label: string;
-  type: "external" | "codelist";
+  type: "external" | "codelist" | "free";
   modelPath: string;
   codelistId?: string;
 }
+
+export const FREE_THESAURUS: Thesaurus = {
+  id: "free",
+  label: "Freie Schlagworte",
+  modelPath: "keywords.free",
+  type: "free",
+};
 
 @Injectable({ providedIn: "root" })
 export class KeywordAnalysis {
@@ -104,8 +111,8 @@ export class KeywordAnalysis {
 
     data.forEach((item: ThesaurusResult) => {
       const keywordExists = this.keywordExists(item, form);
-      const isInspireTopic = item.thesaurus.id === "inspireTopics"; // TODO generalize
-      const shouldUpdateIsoCategory = isInspireTopic && thesaurusTopics;
+      const shouldUpdateIsoCategory =
+        item.thesaurus?.id === "inspireTopics" && thesaurusTopics;
 
       if (item.status === "removed") {
         if (!keywordExists) return;
@@ -240,7 +247,7 @@ export class KeywordAnalysis {
       found: true,
       value: { label: item },
       label: item,
-      thesaurus: null, // TODO: generalize either with empty FreeKeyword thesauraus or handle diferently
+      thesaurus: FREE_THESAURUS,
     };
   }
 

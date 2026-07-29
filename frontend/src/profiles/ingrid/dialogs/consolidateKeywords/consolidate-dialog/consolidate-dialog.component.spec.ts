@@ -35,14 +35,47 @@ import {
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { ConfigService } from "../../../../../app/services/config/config.service";
-import { ThesaurusType } from "../../../components/thesaurus-result";
-import { KeywordAnalysis } from "../../../utils/keywords";
+import {
+  FREE_THESAURUS,
+  KeywordAnalysis,
+  Thesaurus,
+} from "../../../utils/keywords";
+import { ProfileService } from "../../../../../app/services/profile.service";
+import { IngridShared } from "../../../doctypes/ingrid-shared";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
+import { MatSnackBar } from "@angular/material/snack-bar";
+
+class MockIngridDoctype extends IngridShared {
+  id = "mock";
+  label = "mock";
+  constructor() {
+    super();
+    this.activeThesauri = [
+      {
+        id: "gemet",
+        label: "Gemet-Schlagworte",
+        modelPath: "keywords.gemet",
+        type: "external",
+      },
+      {
+        id: "umthes",
+        label: "Umthes-Schlagworte",
+        modelPath: "keywords.umthes",
+        type: "external",
+      },
+    ];
+  }
+  getFields = () => [];
+  getFieldsForPrint = () => [];
+  init = () => Promise.resolve();
+  documentFields = () => [];
+  cleanFields = [];
+}
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
@@ -53,6 +86,19 @@ describe("ConsolidateDialogComponent", () => {
       provideZonelessChangeDetection(),
       { provide: MAT_DIALOG_DATA, useValue: [] },
       { provide: MatDialogRef, useValue: [] },
+      {
+        provide: ProfileService,
+        useValue: {
+          getDoctype: () => new MockIngridDoctype(),
+        },
+      },
+      FormStateService,
+      KeywordAnalysis,
+      {
+        provide: CodelistStore,
+        useValue: { getCodelistEntryByValue: () => {} },
+      },
+      { provide: MatSnackBar, useValue: { open: () => {} } },
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
     ],
@@ -75,6 +121,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [], gemet: [], umthes: [] });
 
     await spectator.fixture.whenStable();
+    spectator.detectChanges();
     expect(spectator.query("ige-dialog-template").textContent).contains(
       "In diesem Datensatz sind keine Schlagworte vorhanden.",
     );
@@ -222,7 +269,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   function expectKeywordCount(
-    thesaurus: ThesaurusType,
+    thesaurus: string,
     count: number,
     value?: string,
     state?: "removed" | "added" | "unchanged",
@@ -246,7 +293,7 @@ describe("ConsolidateDialogComponent", () => {
     }
   }
 
-  function expectThesaurusNotExists(thesaurus: ThesaurusType) {
+  function expectThesaurusNotExists(thesaurus: string) {
     expect(spectator.query(`div[aria-label='${thesaurus}']`)).toBe(null);
   }
 
@@ -300,6 +347,7 @@ describe("ConsolidateDialogComponent", () => {
       docType: "InGridGeoService",
       parentId: null,
     });
+    spectator.detectChanges();
   }
 
   async function mockHttp(data?: {
@@ -315,25 +363,29 @@ describe("ConsolidateDialogComponent", () => {
     const httpCtrl = spectator.inject(HttpTestingController);
 
     await spectator.fixture.whenStable();
-    const reqGemet = httpCtrl.expectOne(
-      "/api/keywords/gemet?q=test&type=EXACT",
+    spectator.detectChanges();
+
+    const reqGemet = httpCtrl.expectOne((req) =>
+      req.url.includes("keywords/gemet"),
     );
     reqGemet.flush(data?.gemet ?? []);
 
     if (data?.gemet && !data?.umthes) {
       // If gemet was found, we don't need to check umthes.
-      httpCtrl.expectNone("/api/keywords/umthes?q=test&type=EXACT");
+      httpCtrl.expectNone((req) => req.url.includes("keywords/umthes"));
       httpCtrl.verify();
       return;
     }
 
     await waitSomeTime();
-    const reqUmthes = httpCtrl.expectOne(
-      "/api/keywords/umthes?q=test&type=EXACT",
+    const reqUmthes = httpCtrl.expectOne((req) =>
+      req.url.includes("keywords/umthes"),
     );
     reqUmthes.flush(data?.umthes ?? []);
 
     // Finally, assert that there are no outstanding requests.
+    await spectator.fixture.whenStable();
+    spectator.detectChanges();
     httpCtrl.verify();
   }
 
