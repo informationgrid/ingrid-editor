@@ -129,6 +129,7 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
+    implementation "com.openai:openai-java:3.4.1"
     implementation platform('com.aallam.openai:openai-client-bom:4.1.0')
 
     // define dependencies without versions

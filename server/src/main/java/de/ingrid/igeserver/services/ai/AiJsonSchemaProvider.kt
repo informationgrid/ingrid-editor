@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.services.ai
 
 import com.aallam.openai.api.chat.JsonSchema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -27,6 +29,24 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import org.springframework.stereotype.Component
+
+object EvaluationResponseFormat {
+    data class Evaluation(
+        val key: String,
+
+        @Schema(minimum = "1", maximum = "5")
+        val score: Int,
+
+        val reason: String,
+
+        @ArraySchema
+        val options: List<Any>,
+    )
+
+    data class EvaluationList(
+        val evaluations: List<Evaluation>,
+    )
+}
 
 @Component
 class AiJsonSchemaProvider {

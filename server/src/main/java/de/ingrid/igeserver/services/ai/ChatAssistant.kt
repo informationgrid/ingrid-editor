@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,18 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.model
+package de.ingrid.igeserver.services.ai
 
-data class AiSettings(
-    var hostUrl: String?,
-    var modelId: String?,
-    var apiKey: String?,
-    var instruction: String?,
-    var mcpServers: List<McpServer>?,
-)
+import de.ingrid.igeserver.services.ai.model.EvaluationResult
+import dev.langchain4j.service.UserMessage
 
-data class McpServer(
-    var url: String,
-    var apiKey: String?,
-    var customHeaders: Map<String, String>?,
-)
+interface ChatAssistant {
+    fun chat(
+        @UserMessage userMessage: String,
+    ): String
+
+    fun evaluate(
+        @UserMessage uuid: String,
+    ): EvaluationResult
+}

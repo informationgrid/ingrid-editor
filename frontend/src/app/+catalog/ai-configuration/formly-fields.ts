@@ -49,17 +49,19 @@ export const fields = () =>
       props: {
         externalLabel: "API Token",
         appearance: "outline",
-        description: "Es wird nur eingestellt, wenn eingegeben.",
+        description: "Nur bei Eingabe wird der Token überschrieben.",
       },
     },
     {
-      key: "effort",
-      type: "input",
-      wrappers: ["panel", "form-field"],
+      key: "mcpIds",
+      type: "repeatList",
+      wrappers: ["panel"],
       className: "width-100",
       props: {
-        externalLabel: "Effort",
+        view: "chip",
+        externalLabel: "MCP IDs",
         appearance: "outline",
+        hint: "Geben Sie IDs des MCP-Servers (Model Context Protocol) ein, die auf dem KI-Server bereitgestellt sind.",
       },
     },
     {

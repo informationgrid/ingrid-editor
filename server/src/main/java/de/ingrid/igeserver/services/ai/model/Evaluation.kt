@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,18 +17,24 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.model
+package de.ingrid.igeserver.services.ai.model
 
-data class AiSettings(
-    var hostUrl: String?,
-    var modelId: String?,
-    var apiKey: String?,
-    var instruction: String?,
-    var mcpServers: List<McpServer>?,
+import dev.langchain4j.model.output.structured.Description
+
+data class Evaluation(
+    @Description("Der exakte Feldname aus dem JSON")
+    val key: String,
+
+    @Description("Die Punktzahl der Bewertung")
+    val score: Int,
+
+    @Description("Die Begründung der Bewertung")
+    val reason: String,
+
+    @Description("Optionen zum Ersatz des Feldes")
+    val options: List<Any>,
 )
 
-data class McpServer(
-    var url: String,
-    var apiKey: String?,
-    var customHeaders: Map<String, String>?,
+data class EvaluationResult(
+    val evaluations: List<Evaluation>,
 )

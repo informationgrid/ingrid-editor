@@ -46,7 +46,7 @@ export interface AiSettings {
   modelId: string;
   apiToken: string;
   systemPrompt?: string;
-  effort?: string;
+  mcpIds?: string[];
 }
 
 @Injectable({
@@ -77,11 +77,10 @@ export class AiService {
     );
   }
 
-  evaluateDataset(data: any): Observable<EvaluationResult> {
-    const cleanedData = removeEmptyValuesFromAnObject(data);
+  evaluateDataset(uuid: String): Observable<EvaluationResult> {
     return this.http.post<EvaluationResult>(
       this.configuration.backendUrl + "ai/dataset/evaluate",
-      cleanedData,
+      uuid,
     );
   }
 

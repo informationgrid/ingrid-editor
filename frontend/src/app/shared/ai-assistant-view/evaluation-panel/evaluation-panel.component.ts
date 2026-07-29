@@ -113,14 +113,8 @@ export class EvaluationPanelComponent {
   evaluate() {
     this.reset();
 
-    // Prepare data.
-    const data = {
-      ...this.form().value,
-      uuid: this.metadata()?.uuid,
-    };
-
     this.loadingUuid.set(this.metadata()?.uuid);
-    this.aiService.evaluateDataset(data).subscribe({
+    this.aiService.evaluateDataset(this.metadata()?.uuid).subscribe({
       next: (result) => {
         if (this.loadingUuid() !== this.metadata()?.uuid) return;
         this.loadingUuid.set(null);

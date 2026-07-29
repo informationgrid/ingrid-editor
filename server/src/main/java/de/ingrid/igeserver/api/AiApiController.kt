@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.AiSettings
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ai.AiService
+import de.ingrid.igeserver.services.ai.model.EvaluationResult
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
@@ -39,8 +40,8 @@ class AiApiController(
     override fun evaluate(
         principal: Principal,
         body: String,
-    ): ResponseEntity<String?> {
-        var response: String? = null
+    ): ResponseEntity<EvaluationResult?> {
+        var response: EvaluationResult? = null
         runBlocking {
             launch {
                 response = aiService.evaluate(body)
@@ -60,7 +61,15 @@ class AiApiController(
         return ResponseEntity.ok(response)
     }
 
-    override fun getEvaluateAllReport(principal: Principal): ResponseEntity<String?> = ResponseEntity.ok(aiService.evaluateResults)
+    override fun getCachedEvaluations(principal: Principal): ResponseEntity<List<EvaluationResult>> {
+        var response: List<EvaluationResult>? = null
+        runBlocking {
+            launch {
+                response = aiService.getCachedEvaluations()
+            }
+        }
+        return ResponseEntity.ok(response)
+    }
 
     override fun getSettings(principal: Principal): ResponseEntity<AiSettings?> {
         val settings = aiService.getSettingsWithoutToken()

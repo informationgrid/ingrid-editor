@@ -19,55 +19,42 @@
  */
 package de.ingrid.igeserver.services.ai
 
-import com.aallam.openai.api.chat.ChatCompletion
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatResponseFormat
-import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.chat.Effort
-import com.aallam.openai.api.chat.JsonSchema
-import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.logging.Logger
-import com.aallam.openai.api.model.ModelId
-import com.aallam.openai.client.LoggingConfig
-import com.aallam.openai.client.OpenAI
-import com.aallam.openai.client.OpenAIHost
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.AiSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ai.model.AssistantOptions
+import de.ingrid.igeserver.services.ai.model.EvaluationResult
+import de.ingrid.igeserver.services.ai.model.buildAssistant
+import net.sf.ehcache.util.concurrent.ConcurrentHashMap
 import org.springframework.stereotype.Service
-import kotlin.time.Duration.Companion.seconds
 
 @Service
 class AiService(
-    private val generalProperties: GeneralProperties,
     private val settingsRepo: SettingsRepository,
     private val documentService: DocumentService,
-    private val promptProvider: AiPromptProvider,
-    private val schemaProvider: AiJsonSchemaProvider,
 ) {
     // TODO: this is just a temporary way to store the evaluation results.
     var evaluateResults: String? = null
+
+    private val cachedEvaluations = ConcurrentHashMap<String, EvaluationResult>()
 
     fun updateSettings(settings: AiSettings): AiSettings {
         val aiSettings = getSettings() ?: settings
         aiSettings.apply {
             if (settings.hostUrl.isNullOrEmpty()) {
                 // Reset api token if the host url is not given.
-                apiToken = null
-            } else if (!settings.apiToken.isNullOrEmpty()) {
+                apiKey = null
+            } else if (!settings.apiKey.isNullOrEmpty()) {
                 // Only set api token if it is given.
-                apiToken = settings.apiToken
+                apiKey = settings.apiKey
             }
             hostUrl = settings.hostUrl?.takeIf { it.isNotEmpty() }
             modelId = settings.modelId?.takeIf { it.isNotEmpty() }
-            systemPrompt = settings.systemPrompt?.takeIf { it.isNotEmpty() }
-            effort = settings.effort?.takeIf { it.isNotEmpty() }
+            instruction = settings.instruction?.takeIf { it.isNotEmpty() }
+            mcpServers = settings.mcpServers?.takeIf { it.isNotEmpty() }
         }
 
         val dbSettings = settingsRepo.findByKey("aiSettings") ?: Settings().apply { this.key = "aiSettings" }
@@ -76,34 +63,16 @@ class AiService(
         return aiSettings
     }
 
-    fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiToken = null)
+    fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiKey = null)
 
-    private fun getSettings(): AiSettings? {
-        val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
-        return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
-    }
+    // Evaluate the dataset by the given uuid.
+    suspend fun evaluate(uuid: String): EvaluationResult? {
+        val options = getAssistantOptions(uuid).takeIf { it != null } ?: return null
+        val assistant = options.buildAssistant()
+        val result = assistant.evaluate(uuid)
 
-    suspend fun evaluate(body: String): String? {
-        val (openAI, modelId, effort) = getOpenAIClient()
-
-        val chatCompletionRequest = buildChatRequest(
-            modelId = modelId,
-            effort = effort,
-            systemPrompt = getSettings()?.systemPrompt ?: promptProvider.getEvaluatePrompt(),
-            userPrompt = body,
-            jsonSchema = schemaProvider.getEvaluateResponseSchema(),
-        )
-
-        val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-        val result = completion.choices.firstOrNull()?.message?.content
-
-        // TODO: temporarily append result to evaluateResults.
-        if (result != null) {
-            val results = jacksonObjectMapper().run {
-                writeValueAsString(createObjectNode().set("data", createArrayNode().add(readTree(result))))
-            }
-            appendResults(results)
-        }
+        // Store evaluations to the temporary cache.
+        cachedEvaluations[uuid] = result
 
         return result
     }
@@ -118,82 +87,33 @@ class AiService(
             jacksonObjectMapper().writeValueAsString(data)
         }.toString()
 
-        // Submit all documents for evaluation.
-        val (openAI, modelId, effort) = getOpenAIClient()
-        val chatCompletionRequest = buildChatRequest(
+        return ""
+    }
+
+    suspend fun getCachedEvaluations(): List<EvaluationResult> = cachedEvaluations.values.toList()
+
+    // Get current settings.
+    private fun getSettings(): AiSettings? {
+        val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
+        return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
+    }
+
+    // Get AssistantOptions by the current settings.
+    private fun getAssistantOptions(input: String): AssistantOptions? {
+        val settings = getSettings() ?: return null
+
+        // Return null if any necessary values are not present.
+        val clientUrl = settings.hostUrl?.takeIf { it.isNotEmpty() } ?: return null
+        val modelId = settings.modelId?.takeIf { it.isNotEmpty() } ?: return null
+        val apiKey = settings.apiKey?.takeIf { it.isNotEmpty() } ?: return null
+
+        return AssistantOptions(
+            clientUrl = clientUrl,
             modelId = modelId,
-            effort = effort,
-            systemPrompt = promptProvider.getEvaluateAllPrompt(
-                getSettings()?.systemPrompt ?: promptProvider.getEvaluatePrompt(),
-            ),
-            userPrompt = documentsInJson,
-            jsonSchema = schemaProvider.getEvaluateAllResponseSchema(),
+            apiKey = apiKey,
+            mcpServers = settings.mcpServers,
+            instruction = settings.instruction,
+            input = input,
         )
-        val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-
-        // Append results to evaluateResults.
-        val results = completion.choices.firstOrNull()?.message?.content
-        appendResults(results)
-
-        return evaluateResults
     }
-
-    private fun appendResults(results: String?) {
-        if (results == null) return
-        val mapper = jacksonObjectMapper()
-        val seenUuids = mutableSetOf<String>()
-
-        val combinedData = listOfNotNull(results, evaluateResults)
-            .flatMap { mapper.readTree(it)?.get("data")?.toList().orEmpty() }
-            .filter { node -> node.get("uuid")?.asText()?.let { seenUuids.add(it) } != false }
-            .fold(mapper.createArrayNode()) { arr, node -> arr.add(node) }
-
-        evaluateResults = combinedData.takeUnless { it.isEmpty }
-            ?.let { mapper.writeValueAsString(mapper.createObjectNode().set("data", it)) }
-    }
-
-    private fun getOpenAIClient(): Triple<OpenAI, String, String?> {
-        val settings = getSettings()
-        val hostUrl = settings?.hostUrl ?: generalProperties.openAIHost
-        val apiToken = settings?.apiToken ?: generalProperties.openAIToken
-        val modelId = settings?.modelId ?: generalProperties.openAIModel
-        val effort = settings?.effort
-
-        if (apiToken.isNullOrEmpty()) {
-            throw ServerException.withReason("No OpenAI-Token configured")
-        }
-
-        val openAI = OpenAI(
-            host = OpenAIHost(baseUrl = hostUrl),
-            token = apiToken,
-            timeout = Timeout(socket = 600.seconds),
-            logging = LoggingConfig(logger = Logger.Empty),
-        )
-
-        return Triple(openAI, modelId, effort)
-    }
-
-    private fun buildChatRequest(
-        modelId: String,
-        effort: String?,
-        systemPrompt: String,
-        userPrompt: String,
-        jsonSchema: JsonSchema,
-    ): ChatCompletionRequest = ChatCompletionRequest(
-        model = ModelId(modelId),
-        reasoningEffort = effort?.let { Effort(it) },
-        messages = listOf(
-            ChatMessage(
-                role = ChatRole.System,
-                content = systemPrompt,
-            ),
-            ChatMessage(
-                role = ChatRole.User,
-                content = userPrompt,
-            ),
-        ),
-        responseFormat = ChatResponseFormat.jsonSchema(
-            jsonSchema,
-        ),
-    )
 }
