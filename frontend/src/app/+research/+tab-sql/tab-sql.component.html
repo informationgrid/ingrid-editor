@@ -44,8 +44,7 @@
         @if (activeQuery()) {
             <div class="active-query">
                 <div [class.has-changed]="isSqlQueryChanged()">
-                    {{ activeQuery().name }}
-                    <span>*</span>
+                    {{ activeQuery().name }}{{ isSqlQueryChanged() ? "*" : "" }}
                 </div>
                 <div class="text-hint text-sm">
                     {{ activeQuery().description }}
@@ -62,6 +61,10 @@
                 [formControl]="sql"
                 aria-label="Suche nach SQL Anfragen"
             ></textarea>
+
+            @if (activeQuery() && isSqlQueryChanged()) {
+                <mat-hint>*: SQL wurde verändert.</mat-hint>
+            }
         </mat-form-field>
 
         <div class="flex-row gap-12 justify-content-end">

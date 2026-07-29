@@ -41,7 +41,7 @@ import { ConfigService } from "../../services/config/config.service";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { MatButton } from "@angular/material/button";
 import { MatInput } from "@angular/material/input";
-import { MatFormField } from "@angular/material/form-field";
+import { MatFormField, MatHint } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
 import {
@@ -62,6 +62,7 @@ import { NavigationEnd, Router } from "@angular/router";
     MatInput,
     ReactiveFormsModule,
     MatFormField,
+    MatHint,
     ResultTableComponent,
   ],
 })

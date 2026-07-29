@@ -10,17 +10,9 @@
   gap: 6px;
   margin-bottom: 12px;
 
-  span {
-    display: none;
-  }
-
   .has-changed {
     color: vars.$ige-primary;
     font-weight: bold;
-
-    span {
-      display: inline;
-    }
   }
 }
 
