@@ -177,7 +177,9 @@ export class KeywordAnalysis {
   }
 
   keywordExists(item: ThesaurusResult, form: FormGroup | FormArray): boolean {
-    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath.split("."));
+    console.log(item);
+    console.log(thesaurusCtrl);
     return thesaurusCtrl.value?.some((keyword: any) => {
       if (item.thesaurus.type == "codelist") {
         return keyword.key === item.value.key;
@@ -188,12 +190,12 @@ export class KeywordAnalysis {
   }
 
   addKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
-    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath.split("."));
     thesaurusCtrl.setValue([...thesaurusCtrl.value, item.value]);
   }
 
   removeKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
-    const thesaurusCtrl = form.get(item.thesaurus.modelPath);
+    const thesaurusCtrl = form.get(item.thesaurus.modelPath.split("."));
     thesaurusCtrl.setValue(
       thesaurusCtrl.value.filter((keyword: any) => {
         if (item.thesaurus.type == "codelist") {

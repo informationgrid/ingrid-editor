@@ -130,7 +130,7 @@ export abstract class IngridShared extends BaseDoctype {
     codelistId: "mobilithek",
     id: "mobilithekTopics",
     label: "Mobilithek-Themen",
-    modelPath: "mobilithekThemes",
+    modelPath: "keywords.mobilithek",
     type: "codelist",
   };
 

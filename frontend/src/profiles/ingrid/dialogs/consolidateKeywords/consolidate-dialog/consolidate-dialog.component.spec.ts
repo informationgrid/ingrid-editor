@@ -17,7 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
+import {
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from "@ngneat/spectator/vitest";
 import {
   ConsolidateDialogComponent,
   Keyword,
@@ -45,10 +49,11 @@ import { IngridShared } from "../../../doctypes/ingrid-shared";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { GeneralStore } from "../../../../../app/store/general.store";
 
 class MockIngridDoctype extends IngridShared {
   id = "mock";
@@ -92,6 +97,9 @@ describe("ConsolidateDialogComponent", () => {
           getDoctype: () => new MockIngridDoctype(),
         },
       },
+      mockProvider(GeneralStore, {
+        getOpenedDocument: { _type: "InGridGeoService" },
+      }),
       FormStateService,
       KeywordAnalysis,
       {
