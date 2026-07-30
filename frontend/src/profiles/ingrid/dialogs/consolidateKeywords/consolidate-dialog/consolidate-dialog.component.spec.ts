@@ -98,7 +98,7 @@ describe("ConsolidateDialogComponent", () => {
         },
       },
       mockProvider(GeneralStore, {
-        getOpenedDocument: { _type: "InGridGeoService" },
+        getOpenedDocument: () => ({ _type: "InGridGeoService" }),
       }),
       FormStateService,
       KeywordAnalysis,
