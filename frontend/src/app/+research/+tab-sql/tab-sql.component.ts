@@ -44,6 +44,9 @@ import { MatFormField } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
 import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
+import { MatChipsModule } from "@angular/material/chips";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
 
 @Component({
   selector: "ige-tab-sql",
@@ -56,6 +59,9 @@ import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
     ReactiveFormsModule,
     MatFormField,
     ResultTableComponent,
+    MatIcon,
+    MatChipsModule,
+    MatTooltip,
   ],
 })
 export class TabSqlComponent implements OnInit {
@@ -80,19 +86,23 @@ export class TabSqlComponent implements OnInit {
       (this.config.getConfiguration().featureFlags.openAISearch ?? false),
   );
 
-  private activeQuery = toObservable(this.generalStore.activeQuery);
+  activeQuery = this.generalStore.activeQuery;
+  private activeQuery$ = toObservable(this.activeQuery);
 
   ngOnInit(): void {
-    this.activeQuery
+    this.activeQuery$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "sql"),
       )
       .subscribe((entity: Query) => {
-        this.researchService.setActiveQuery(null);
         this.sql.setValue((<SqlQuery>entity).sql);
         this.search((<SqlQuery>entity).sql);
       });
+  }
+
+  resetActiveQuery() {
+    this.researchService.setActiveQuery(null);
   }
 
   search(sql: string) {
@@ -116,23 +126,47 @@ export class TabSqlComponent implements OnInit {
       .open(SaveQueryDialogComponent, {
         hasBackdrop: true,
         maxWidth: 600,
+        data: this.activeQuery(),
       })
       .afterClosed()
       .subscribe((dialogOptions) => {
         if (dialogOptions) {
-          this.researchService
-            .saveQuery(this.sql.value, dialogOptions, true)
-            .subscribe(() =>
-              this.snackBar.open(
-                `Suche '${dialogOptions.name}' gespeichert`,
-                "",
-                {
-                  panelClass: "green",
-                },
-              ),
-            );
+          if (this.activeQuery()) {
+            // Update an existing query.
+            this.researchService
+              .updateQuery(this.activeQuery().id, dialogOptions)
+              .subscribe(() => {
+                // Refresh active query.
+                this.researchService.setActiveQuery(this.activeQuery().id);
+                this.snackBar.open(
+                  `Suche '${dialogOptions.name}' aktualisiert`,
+                  "",
+                  {
+                    panelClass: "green",
+                  },
+                );
+              });
+          } else {
+            // Create a new query.
+            this.researchService
+              .saveQuery(this.sql.value, dialogOptions, true)
+              .subscribe(() =>
+                this.snackBar.open(
+                  `Suche '${dialogOptions.name}' gespeichert`,
+                  "",
+                  {
+                    panelClass: "green",
+                  },
+                ),
+              );
+          }
         }
       });
+  }
+
+  applyExampleQuery(value: string) {
+    this.resetActiveQuery();
+    this.updateSqlControl(value);
   }
 
   updateSqlControl(value: string) {

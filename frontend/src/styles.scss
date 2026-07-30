@@ -83,7 +83,8 @@ button.button-with-text {
 }
 
 // prevent hint and error wrappers from overlapping other fields
-.mat-mdc-form-field-bottom-align {
+mat-form-field:not([subscriptsizing="dynamic"])
+  .mat-mdc-form-field-bottom-align {
   min-height: 22px;
 
   &:before {
@@ -507,6 +508,10 @@ nav a:focus.active {
 .padding-horizontal {
   display: block;
   padding: 0 10px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
 }
 
 .field-padding {
