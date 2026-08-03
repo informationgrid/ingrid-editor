@@ -177,7 +177,7 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
             this.addInput("testNumber", "Prüfnummer", {
               wrappers: ["panel", "form-field"],
             }),
-            this.addTextArea("systemSetup", "Aufbau des Systems", {
+            this.addTextArea("systemSetup", "Aufbau des Systems", "", {
               className: "width-100",
               wrappers: ["panel", "form-field"],
             }),

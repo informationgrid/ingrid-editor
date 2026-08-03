@@ -36,9 +36,7 @@ export function objectAttributesFields(
       required: true,
       wrappers: ["panel", "form-field"],
     }),
-    fieldHelper.addTextArea("description", "Beschreibung", {
-      wrappers: ["panel", "form-field"],
-    }),
+    fieldHelper.addTextArea("description", "Beschreibung"),
     fieldHelper.addSelect("category", "Kategorie", {
       required: true,
       options: categoryCodelist,

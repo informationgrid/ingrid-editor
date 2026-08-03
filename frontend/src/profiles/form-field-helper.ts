@@ -323,9 +323,9 @@ export class FormFieldHelper {
    * @param options
    */
   addTextArea(
-    id,
-    label,
-    elementIdPrefix,
+    id: string,
+    label: string,
+    elementIdPrefix: string = "",
     options?: TextAreaOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
@@ -361,9 +361,9 @@ export class FormFieldHelper {
   }
 
   addTextAreaInline(
-    id,
-    label,
-    elementIdPrefix,
+    id: string,
+    label: string,
+    elementIdPrefix: string,
     options: TextAreaOptions = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {

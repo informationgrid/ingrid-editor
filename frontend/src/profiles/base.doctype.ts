@@ -63,24 +63,18 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   private metaFields: FormlyFieldConfig[] = [
     this.addSection("", [
-      this.addTextArea("title", "Titel", {
+      this.addTextArea("title", "Titel", "", {
         className: "width-100",
         wrappers: ["panel", "form-field"],
       }),
       this.addDatepicker("_created", "Erstellt am", {
         className: "flex-1",
       }),
-      this.addTextArea("_createdBy", "Ersteller", {
-        className: "flex-1",
-        wrappers: ["panel", "form-field"],
-      }),
+      this.addTextArea("_createdBy", "Ersteller"),
       this.addDatepicker("_contentModified", "Geändert am", {
         className: "flex-1",
       }),
-      this.addTextArea("_contentModifiedBy", "Bearbeiter", {
-        className: "flex-1",
-        wrappers: ["panel", "form-field"],
-      }),
+      this.addTextArea("_contentModifiedBy", "Bearbeiter"),
     ]),
   ];
 

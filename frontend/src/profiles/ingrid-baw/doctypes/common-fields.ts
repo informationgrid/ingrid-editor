@@ -479,7 +479,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
           ],
           { fieldGroupClassName: "flex-row gap-12" },
         ),
-        this.addTextAreaInline("explanation", "Erläuterung", {
+        this.addTextAreaInline("explanation", "Erläuterung", "", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
         }),

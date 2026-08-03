@@ -1998,7 +1998,7 @@ export abstract class IngridShared extends BaseDoctype {
         { fieldGroupClassName: "flex-row gap-12" },
       ),
       this.addGroupSimple(null, [
-        this.addTextAreaInline("explanation", "Erläuterungen", {
+        this.addTextAreaInline("explanation", "Erläuterungen", "", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
         }),

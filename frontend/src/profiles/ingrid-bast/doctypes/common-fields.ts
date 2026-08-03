@@ -52,8 +52,6 @@ export class CommonFieldsBast extends FormFieldHelper {
   }
 
   private getCommentsFieldConfig(): FormlyFieldConfig {
-    return this.addTextArea("supplementalInformation", "Bemerkungen", {
-      wrappers: ["panel", "form-field"],
-    });
+    return this.addTextArea("supplementalInformation", "Bemerkungen");
   }
 }

@@ -244,9 +244,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     return this.addTextArea(
       "dataQualityDescription",
       "Beschreibung der Datenqualität",
-      {
-        wrappers: ["panel", "form-field"],
-      },
     );
   }
 }
