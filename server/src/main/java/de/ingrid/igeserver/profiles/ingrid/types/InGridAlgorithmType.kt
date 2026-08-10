@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2024-2026 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,13 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
-enum class InGridDocType(val typeId: String) {
-    InGridSpecialisedTask("0"),
-    InGridGeoDataset("1"),
-    InGridPublication("2"),
-    InGridGeoService("3"),
-    InGridProject("4"),
-    InGridDataCollection("5"),
-    InGridInformationSystem("6"),
-    InGridAlgorithm("7"),
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.stereotype.Component
+
+@Component
+class InGridAlgorithmType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+    override val className = "InGridAlgorithm"
+
+    override val jsonSchema = "/ingrid/schemes/algorithm.schema.json"
 }

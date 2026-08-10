@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2024-2026 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,15 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.types
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-enum class InGridDocType(val typeId: String) {
-    InGridSpecialisedTask("0"),
-    InGridGeoDataset("1"),
-    InGridPublication("2"),
-    InGridGeoService("3"),
-    InGridProject("4"),
-    InGridDataCollection("5"),
-    InGridInformationSystem("6"),
-    InGridAlgorithm("7"),
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
+
+class AlgorithmTransformerKrzn(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

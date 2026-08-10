@@ -43,6 +43,7 @@ import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { DataformatPlugin } from "./ingrid/behaviours/dataformat.plugin";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { AlgorithmDoctype } from "./ingrid/doctypes/algorithm.doctype";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -52,6 +53,7 @@ export enum InGridDoctype {
   InGridProject = "InGridProject",
   InGridDataCollection = "InGridDataCollection",
   InGridInformationSystem = "InGridInformationSystem",
+  InGridAlgorithm = "InGridAlgorithm",
 }
 
 @Component({
@@ -68,6 +70,7 @@ export class InGridComponent implements OnInit {
   project = inject(ProjectDoctype);
   dataCollection = inject(DataCollectionDoctype);
   informationSystem = inject(InformationSystemDoctype);
+  algorithm = inject(AlgorithmDoctype);
   person = inject(IngridPersonDoctype);
   organisation = inject(IngridOrganisationDoctype);
   // will be created and registered automatically, but needs to be injected!
@@ -100,6 +103,7 @@ export class InGridComponent implements OnInit {
       this.project,
       this.dataCollection,
       this.informationSystem,
+      this.algorithm,
       this.person,
       this.organisation,
     ];

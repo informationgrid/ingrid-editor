@@ -26,6 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.AlgorithmTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.DataCollectionTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeodatasetTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeoserviceTransformerKrzn
@@ -48,6 +49,7 @@ fun getKrznTransformer(docType: String): KClass<out Any>? {
         InGridDocType.InGridPublication -> PublicationTransformerKrzn::class
         InGridDocType.InGridProject -> ProjectTransformerKrzn::class
         InGridDocType.InGridSpecialisedTask -> SpecializedTaskTransformerKrzn::class
+        InGridDocType.InGridAlgorithm -> AlgorithmTransformerKrzn::class
     }
 }
 

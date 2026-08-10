@@ -78,6 +78,7 @@ export enum IngridClass {
   "InGridProject" = "4",
   "InGridDataCollection" = "5",
   "InGridInformationSystem" = "6",
+  "InGridAlgorithm" = "7",
 }
 
 export abstract class IngridShared extends BaseDoctype {
