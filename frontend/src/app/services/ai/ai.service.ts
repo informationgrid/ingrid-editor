@@ -44,9 +44,15 @@ export interface Evaluation {
 export interface AiSettings {
   hostUrl: string;
   modelId: string;
-  apiToken: string;
-  systemPrompt?: string;
-  mcpIds?: string[];
+  apiKey: string;
+  instruction?: string;
+  mcpServers?: McpServer[];
+}
+
+export interface McpServer {
+  url: string;
+  apiKey: string;
+  customHeaders?: { [key: string]: string };
 }
 
 @Injectable({

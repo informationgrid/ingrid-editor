@@ -41,29 +41,42 @@ class AiService(
 
     private val cachedEvaluations = ConcurrentHashMap<String, EvaluationResult>()
 
-    fun updateSettings(settings: AiSettings): AiSettings {
-        val aiSettings = getSettings() ?: settings
-        aiSettings.apply {
-            if (settings.hostUrl.isNullOrEmpty()) {
+    fun updateSettings(newSettings: AiSettings): AiSettings {
+        val currentSettings = getSettings() ?: newSettings
+        val currentMcpApiKeys = currentSettings.mcpServers?.associate { it.name to it.apiKey } ?: emptyMap()
+
+        // Update the current settings.
+        currentSettings.apply {
+            if (newSettings.hostUrl.isNullOrEmpty()) {
                 // Reset api token if the host url is not given.
                 apiKey = null
-            } else if (!settings.apiKey.isNullOrEmpty()) {
+            } else if (!newSettings.apiKey.isNullOrEmpty()) {
                 // Only set api token if it is given.
-                apiKey = settings.apiKey
+                apiKey = newSettings.apiKey
             }
-            hostUrl = settings.hostUrl?.takeIf { it.isNotEmpty() }
-            modelId = settings.modelId?.takeIf { it.isNotEmpty() }
-            instruction = settings.instruction?.takeIf { it.isNotEmpty() }
-            mcpServers = settings.mcpServers?.takeIf { it.isNotEmpty() }
+            hostUrl = newSettings.hostUrl?.takeIf { it.isNotEmpty() }
+            modelId = newSettings.modelId?.takeIf { it.isNotEmpty() }
+            instruction = newSettings.instruction?.takeIf { it.isNotEmpty() }
+            mcpServers = newSettings.mcpServers?.takeIf { it.isNotEmpty() }?.map { server ->
+                // Only update the api key if it is given.
+                if (server.apiKey.isNullOrEmpty()) server.copy(apiKey = currentMcpApiKeys[server.name]) else server
+            }
         }
 
-        val dbSettings = settingsRepo.findByKey("aiSettings") ?: Settings().apply { this.key = "aiSettings" }
-        dbSettings.value = aiSettings
-        settingsRepo.save(dbSettings)
-        return aiSettings
+        // Store the modified settings.
+        val toStored = settingsRepo.findByKey("aiSettings") ?: Settings().apply { this.key = "aiSettings" }
+        toStored.value = currentSettings
+        settingsRepo.save(toStored)
+
+        return currentSettings
     }
 
-    fun getSettingsWithoutToken(): AiSettings? = getSettings()?.copy(apiKey = null)
+    fun getSettingsWithoutSecrets(): AiSettings? = getSettings()?.let { settings ->
+        settings.copy(
+            apiKey = null,
+            mcpServers = settings.mcpServers?.map { it.copy(apiKey = null) },
+        )
+    }
 
     // Evaluate the dataset by the given uuid.
     suspend fun evaluate(uuid: String): EvaluationResult? {

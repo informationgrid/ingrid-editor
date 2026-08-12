@@ -126,3 +126,26 @@ export function patternWithMessage(
     }
   };
 }
+
+export function JsonValidator(control: AbstractControl): ValidationErrors {
+  if (
+    control.value === null ||
+    control.value === undefined ||
+    control.value.toString().trim() === ""
+  ) {
+    return null;
+  }
+
+  const error = {
+    valid_json: {
+      message: "Bitte geben Sie ein gültiges JSON-Objekt ein.",
+    },
+  };
+
+  try {
+    const parsed = JSON.parse(control.value);
+    return typeof parsed === "object" && parsed !== null ? null : error;
+  } catch {
+    return error;
+  }
+}

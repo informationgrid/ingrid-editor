@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2024-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,19 +17,22 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.model
+import { Component, input } from "@angular/core";
+import { MatDivider } from "@angular/material/list";
 
-data class AiSettings(
-    var hostUrl: String?,
-    var modelId: String?,
-    var apiKey: String?,
-    var instruction: String?,
-    var mcpServers: List<McpServer>?,
-)
+interface McpItem {
+  name: string;
+  url: string;
+  apiKey?: any;
+  customHeaders: any;
+}
 
-data class McpServer(
-    var name: String,
-    var url: String,
-    var apiKey: String?,
-    var customHeaders: Map<String, String>?,
-)
+@Component({
+  selector: "ige-mcp-server-entry",
+  imports: [MatDivider],
+  templateUrl: "./mcp-server-entry.component.html",
+  styleUrl: "./mcp-server-entry.component.scss",
+})
+export class McpServerEntryComponent {
+  item = input<McpItem>();
+}
