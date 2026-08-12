@@ -127,8 +127,8 @@ export class TabQualityAnalysisComponent implements OnInit, AfterViewInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (!response?.data) return;
-          this.dataSource.data = response.data;
+          if (!response) return;
+          this.dataSource.data = response;
         },
         error: (error) => {
           alert("Etwas ist leider schief gelaufen.");
@@ -143,8 +143,8 @@ export class TabQualityAnalysisComponent implements OnInit, AfterViewInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response) => {
-          if (!response.data) return;
-          this.dataSource.data = response.data;
+          if (!response) return;
+          this.dataSource.data = response;
         },
         error: (error) => {
           alert("Etwas ist leider schief gelaufen.");

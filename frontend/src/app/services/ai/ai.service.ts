@@ -25,20 +25,17 @@ import { removeEmptyValuesFromAnObject } from "../../shared/utils";
 
 export interface EvaluationResult {
   uuid: string;
-  title: string;
   summary: string;
-  totalScore: number;
-  totalSuggestionCount?: number;
-  evaluations: Array<Evaluation>;
+  averageScore: number;
+  evaluations: Evaluation[];
 }
 
 export interface Evaluation {
   key: string;
-  label: string;
-  score?: number;
-  originalValue?: string;
-  reasoning?: string;
-  suggestions?: Array<string>;
+  name: string;
+  score: number;
+  reason: string;
+  options?: any[];
 }
 
 export interface AiSettings {
@@ -50,8 +47,9 @@ export interface AiSettings {
 }
 
 export interface McpServer {
+  name: string;
   url: string;
-  apiKey: string;
+  apiKey?: string;
   customHeaders?: { [key: string]: string };
 }
 
@@ -91,14 +89,14 @@ export class AiService {
   }
 
   evaluateAll() {
-    return this.http.post<{ data: EvaluationResult[] }>(
+    return this.http.post<EvaluationResult[]>(
       this.configuration.backendUrl + "ai/dataset/evaluateAll",
       null,
     );
   }
 
   getLatestReport() {
-    return this.http.get<{ data: EvaluationResult[] }>(
+    return this.http.get<EvaluationResult[]>(
       this.configuration.backendUrl + "ai/dataset/latestReport",
     );
   }

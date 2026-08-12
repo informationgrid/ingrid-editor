@@ -73,7 +73,7 @@ export class EvaluationPanelComponent {
   evaluationResult = signal<EvaluationResult>(null);
   evaluations = computed(() =>
     this.evaluationResult()?.evaluations.filter(
-      (e) => e.reasoning !== null || e.suggestions !== null,
+      (e) => e.reason !== null || e.options !== null,
     ),
   );
 
@@ -97,7 +97,7 @@ export class EvaluationPanelComponent {
     this.initialValues = { ...this.form().value };
     this.aiService.getLatestReport().subscribe({
       next: (report) => {
-        const result = report?.data?.find((r) => r.uuid === uuid);
+        const result = report.find((r) => r.uuid === uuid);
         if (result) this.evaluationResult.set(result);
       },
       error: (error) => {},
@@ -129,14 +129,13 @@ export class EvaluationPanelComponent {
   }
 
   protected onSuggestionReset(key: string) {
-    this.form().patchValue({
-      [key]: this.initialValues[key],
-    });
+    const initialValue = key
+      .split(".")
+      .reduce((acc, key) => acc?.[key], this.initialValues);
+    this.form().get(key)?.patchValue(initialValue);
   }
 
   protected onSuggestionApply(event: { key: string; value: any }) {
-    this.form().patchValue({
-      [event.key]: event.value,
-    });
+    this.form().get(event.key)?.patchValue(event.value);
   }
 }

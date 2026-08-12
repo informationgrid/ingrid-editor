@@ -53,8 +53,8 @@ export class EvaluationEntryComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    if (this.evaluation().suggestions?.length > 0) {
-      this.formControl = new FormControl([this.evaluation().suggestions.at(0)]);
+    if (this.evaluation().options?.length > 0) {
+      this.formControl = new FormControl([this.evaluation().options.at(0)]);
     }
   }
 

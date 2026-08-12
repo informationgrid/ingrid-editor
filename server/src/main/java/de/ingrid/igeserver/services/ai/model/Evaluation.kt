@@ -25,6 +25,9 @@ data class Evaluation(
     @Description("Der exakte Feldname aus dem JSON")
     val key: String,
 
+    @Description("Der Name des Feldes")
+    val name: String,
+
     @Description("Die Punktzahl der Bewertung")
     val score: Int,
 
@@ -36,5 +39,13 @@ data class Evaluation(
 )
 
 data class EvaluationResult(
+    val uuid: String,
+
+    @Description("Zusammenfassung der Bewertungen")
+    val summary: String,
+
+    @Description("Die durchschnittliche Punktzahl aller Bewertungen")
+    val averageScore: Int,
+
     val evaluations: List<Evaluation>,
 )
