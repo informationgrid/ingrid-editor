@@ -101,7 +101,7 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
             }
         }
 
-        if (!options.literatureReferences) {
+        if (options.literatureReferences) {
             useFilters.add(literatureReferences)
         }
 

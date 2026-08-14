@@ -454,6 +454,7 @@ export class DocumentService {
 
     switch (errorCode) {
       case "IS_REFERENCED_ERROR":
+      case "IS_REFERENCED_ERROR_LITERATURE":
         this.handleIsReferencedError(error);
         break;
     }

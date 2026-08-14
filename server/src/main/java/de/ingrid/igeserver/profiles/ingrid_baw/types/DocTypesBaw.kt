@@ -19,9 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.exceptions.IsReferencedException
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
+import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.convertToIngridOptionsWithStructuralChildren
@@ -63,6 +66,14 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val className = "BawPublication"
     override fun parentClassName() = super.className
     override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+    override fun onDelete(doc: Document) {
+        super.onDelete(doc)
+        val result = this.getIncomingReferenceUUIDs(doc, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.LATEST, literatureReferences=true))
+
+        if (result.isNotEmpty()) {
+            throw IsReferencedException.literatureByDatasets(result)
+        }
+    }
 }
 
 @Component

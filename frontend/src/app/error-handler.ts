@@ -109,6 +109,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         );
       case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
         return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
+      case "IS_REFERENCED_ERROR_LITERATURE":
+        return `Dieses Literaturdokument wird von mindestens einem anderen Datensatz referenziert und kann nicht gelöscht werden`;
       case "CATALOG_NOT_FOUND":
         return `Dem Benutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       case "CONFLICT_WHEN_MOVING":
