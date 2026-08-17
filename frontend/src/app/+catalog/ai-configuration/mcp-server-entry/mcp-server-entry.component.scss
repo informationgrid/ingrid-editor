@@ -1,0 +1,19 @@
+:host {
+  width: 100%;
+}
+
+.url {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+mat-divider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-top: 5px;
+}
+
+.content {
+  margin-top: 12px;
+}

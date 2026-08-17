@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.AiSettings
+import de.ingrid.igeserver.services.ai.model.EvaluationResult
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -40,7 +41,7 @@ interface AiApi {
     fun evaluate(
         principal: Principal,
         @RequestBody body: String,
-    ): ResponseEntity<String?>
+    ): ResponseEntity<EvaluationResult?>
 
     @PostMapping(value = ["/ai/dataset/evaluateAll"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Evaluate all datasets using AI")
@@ -50,9 +51,9 @@ interface AiApi {
 
     @GetMapping(value = ["/ai/dataset/latestReport"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get the latest AI evaluation report")
-    fun getEvaluateAllReport(
+    fun getCachedEvaluations(
         principal: Principal,
-    ): ResponseEntity<String?>
+    ): ResponseEntity<List<EvaluationResult>>
 
     @GetMapping(value = ["/ai/settings"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get AI settings")

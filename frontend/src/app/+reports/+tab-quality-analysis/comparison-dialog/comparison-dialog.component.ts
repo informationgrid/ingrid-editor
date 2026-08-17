@@ -61,7 +61,7 @@ import { EvaluationResult } from "../../../services/ai/ai.service";
 export class ComparisonDialogComponent implements OnInit {
   result = signal<EvaluationResult>(undefined);
   evaluations = computed(() =>
-    this.result().evaluations.filter((e) => e.suggestions?.length > 0),
+    this.result().evaluations.filter((e) => e.options?.length > 0),
   );
 
   formGroup = new FormGroup({});
@@ -75,7 +75,7 @@ export class ComparisonDialogComponent implements OnInit {
     this.evaluations().forEach((evaluation) => {
       this.formGroup.addControl(
         evaluation.key,
-        new FormControl([evaluation.suggestions[0]]),
+        new FormControl([evaluation.options[0]]),
       );
       this.isExpanded.update((state) => ({
         ...state,

@@ -19,10 +19,10 @@
  */
 import { Component, OnInit, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
-import { fields } from "./formly-fields";
+import { aiConfigFields } from "./ai-configuration.fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { MatButton } from "@angular/material/button";
-import { FormlyForm } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { AiService } from "../../services/ai/ai.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -35,13 +35,15 @@ import { TranslocoDirective } from "@jsverse/transloco";
 })
 export class AiConfigurationComponent implements OnInit {
   form = new UntypedFormGroup({});
-  fields = fields();
+  fields: FormlyFieldConfig[];
   model = signal<any>({});
 
   constructor(
     private aiService: AiService,
     private snackbar: MatSnackBar,
-  ) {}
+  ) {
+    this.fields = aiConfigFields();
+  }
 
   ngOnInit(): void {
     this.aiService.getSettings().subscribe((value) => {

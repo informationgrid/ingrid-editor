@@ -25,28 +25,32 @@ import { removeEmptyValuesFromAnObject } from "../../shared/utils";
 
 export interface EvaluationResult {
   uuid: string;
-  title: string;
   summary: string;
-  totalScore: number;
-  totalSuggestionCount?: number;
-  evaluations: Array<Evaluation>;
+  averageScore: number;
+  evaluations: Evaluation[];
 }
 
 export interface Evaluation {
   key: string;
-  label: string;
-  score?: number;
-  originalValue?: string;
-  reasoning?: string;
-  suggestions?: Array<string>;
+  name: string;
+  score: number;
+  reason: string;
+  options?: any[];
 }
 
 export interface AiSettings {
   hostUrl: string;
   modelId: string;
-  apiToken: string;
-  systemPrompt?: string;
-  effort?: string;
+  apiKey: string;
+  instruction?: string;
+  mcpServers?: McpServer[];
+}
+
+export interface McpServer {
+  name: string;
+  url: string;
+  apiKey?: string;
+  customHeaders?: { [key: string]: string };
 }
 
 @Injectable({
@@ -77,23 +81,22 @@ export class AiService {
     );
   }
 
-  evaluateDataset(data: any): Observable<EvaluationResult> {
-    const cleanedData = removeEmptyValuesFromAnObject(data);
+  evaluateDataset(uuid: String): Observable<EvaluationResult> {
     return this.http.post<EvaluationResult>(
       this.configuration.backendUrl + "ai/dataset/evaluate",
-      cleanedData,
+      uuid,
     );
   }
 
   evaluateAll() {
-    return this.http.post<{ data: EvaluationResult[] }>(
+    return this.http.post<EvaluationResult[]>(
       this.configuration.backendUrl + "ai/dataset/evaluateAll",
       null,
     );
   }
 
   getLatestReport() {
-    return this.http.get<{ data: EvaluationResult[] }>(
+    return this.http.get<EvaluationResult[]>(
       this.configuration.backendUrl + "ai/dataset/latestReport",
     );
   }

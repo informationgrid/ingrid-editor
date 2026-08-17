@@ -1,14 +1,16 @@
 <div class="flex-col gap-8">
-    <div class="flex-row gap-8 justify-content-space-between font-medium">
-        <div>{{ evaluation().label }}</div>
+    <div
+        class="flex-row gap-8 align-items-center justify-content-space-between font-medium"
+    >
+        <div class="flex-1">{{ evaluation().name }}</div>
         <ige-score-indicator [score]="evaluation().score" />
     </div>
 
-    @if (evaluation().reasoning) {
-        <div class="text-sm">{{ evaluation().reasoning }}</div>
+    @if (evaluation().reason) {
+        <div class="text-sm">{{ evaluation().reason }}</div>
     }
 
-    @if (evaluation().suggestions && evaluation().suggestions.length) {
+    @if (evaluation().options && evaluation().options.length) {
         <mat-divider></mat-divider>
 
         <mat-selection-list
@@ -16,16 +18,16 @@
             [multiple]="false"
             [formControl]="formControl"
         >
-            @for (suggestion of evaluation().suggestions; track suggestion) {
-                @if (isExpanded() || suggestion === list._value?.at(0)) {
-                    <mat-list-option class="no-wrap" [value]="suggestion">
-                        {{ suggestion }}
+            @for (option of evaluation().options; track option) {
+                @if (isExpanded() || option === list._value?.at(0)) {
+                    <mat-list-option class="no-wrap" [value]="option">
+                        {{ option }}
                     </mat-list-option>
                 }
             }
         </mat-selection-list>
 
-        @if (evaluation().suggestions.length > 1) {
+        @if (evaluation().options.length > 1) {
             <button matButton="outlined" (click)="toggleIsExpanded()">
                 {{ isExpanded() ? "Weniger" : "Mehr" }}
             </button>

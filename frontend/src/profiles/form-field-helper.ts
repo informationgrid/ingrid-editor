@@ -220,6 +220,7 @@ export interface InputOptions extends Options {
 export interface TextAreaOptions extends Options {
   fieldLabel?: string;
   rows?: number;
+  validators?: any;
   autosize?: boolean;
   autosizeMinRows?: number;
   autosizeMaxRows?: number;
@@ -352,6 +353,7 @@ export class FormFieldHelper {
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
       },
+      validators: options?.validators,
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>

@@ -133,6 +133,7 @@ import {
   ElasticsearchAliasValidator,
   EmailValidator,
   IpValidator,
+  JsonValidator,
   LowercaseValidator,
   NoSpaceValidator,
   NotEmptyArrayValidator,
@@ -368,6 +369,7 @@ bootstrapApplication(AppComponent, {
           { name: "positiveNum", validation: PositiveNumValidator },
           { name: "doiPrefix", validation: DoiPrefixValidator },
           { name: "doi", validation: DoiValidator },
+          { name: "valid_json", validation: JsonValidator },
         ],
         /*,
           wrappers: [

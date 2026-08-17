@@ -129,6 +129,9 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
+    implementation 'dev.langchain4j:langchain4j:1.18.1'
+    implementation 'dev.langchain4j:langchain4j-mcp:1.18.1-beta28'
+    implementation 'dev.langchain4j:langchain4j-open-ai:1.18.1'
     implementation platform('com.aallam.openai:openai-client-bom:4.1.0')
 
     // define dependencies without versions

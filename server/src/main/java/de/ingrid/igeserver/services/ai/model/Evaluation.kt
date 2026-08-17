@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * Copyright (C) 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,26 +17,35 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.configuration
+package de.ingrid.igeserver.services.ai.model
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.Name
+import dev.langchain4j.model.output.structured.Description
 
-@ConfigurationProperties("app")
-data class GeneralProperties(
+data class Evaluation(
+    @Description("Der exakte Feldname aus dem JSON")
+    val key: String,
+
+    @Description("Der Name des Feldes")
+    val name: String,
+
+    @Description("Die Punktzahl der Bewertung")
+    val score: Int,
+
+    @Description("Die Begründung der Bewertung")
+    val reason: String,
+
+    @Description("Optionen zum Ersatz des Feldes")
+    val options: List<Any>,
+)
+
+data class EvaluationResult(
     val uuid: String,
-    val enableCsrf: Boolean,
-    val enableCors: Boolean,
-    val enableHttps: Boolean,
-    val markInsteadOfDelete: Boolean,
-    @Name("host")
-    val appUrl: String,
-    val externalHelp: String?,
-    val instanceId: String = "ige-ng",
-    val indexPageSize: Int = 100,
-    val openAIToken: String? = null,
-    val frontendStacktrace: Boolean = false,
-    val actuatorPermitAll: Boolean = false,
-    val sessionTimeout: Int = 1800,
-    val indexPrefix: String? = null,
+
+    @Description("Zusammenfassung der Bewertungen")
+    val summary: String,
+
+    @Description("Die durchschnittliche Punktzahl aller Bewertungen")
+    val averageScore: Int,
+
+    val evaluations: List<Evaluation>,
 )
