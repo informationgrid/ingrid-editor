@@ -73,7 +73,14 @@ class ExportService(val exporterFactory: ExporterFactory) {
         return if (isSingleNonFolderDocument) {
             val doc = docs[0]
             val data = handleSingleDataset(options, doc.wrapper, catalogId)
-                ?: throw ServerException.withReason("Document was not exported: ${doc.wrapper.uuid}")
+                ?: run {
+                    val message = if (!options.useDraft) {
+                        "Document was not exported since it might not have a published version: ${doc.wrapper.uuid}"
+                    } else {
+                        "Document could not be exported: ${doc.wrapper.uuid}"
+                    }
+                    throw ServerException.withReason(message, data = mapOf("uuid" to doc.wrapper.uuid))
+                }
 
             if (exporter is InternalExporter) {
                 return handleInternalExport(options, doc, catalogId, data, exporter)
@@ -207,6 +214,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             true,
         )
     } catch (_: Exception) {
+        log.debug("Could not get last published document: ${doc.uuid}")
         throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
