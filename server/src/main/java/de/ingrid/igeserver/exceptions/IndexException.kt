@@ -24,7 +24,13 @@ import org.springframework.http.HttpStatus
 
 open class IndexException : ServerException {
 
-    protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
+    protected constructor(
+        statusCode: HttpStatus,
+        errorCode: String,
+        errorText: String,
+        data: Map<String, Any?>? = null,
+        cause: Throwable? = null,
+    ) :
         super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
@@ -42,7 +48,7 @@ open class IndexException : ServerException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): IndexException = IndexException(STATUS_CODE, ERROR_CODE, reason, null, cause)
+        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): IndexException = IndexException(STATUS_CODE, ERROR_CODE, reason, data, cause)
 
         fun folderWithNoPublishedDocs(uuid: String): IndexException = IndexException(STATUS_CODE, ERROR_CODE_FOLDER_WITH_NO_CHILDREN, uuid)
 
