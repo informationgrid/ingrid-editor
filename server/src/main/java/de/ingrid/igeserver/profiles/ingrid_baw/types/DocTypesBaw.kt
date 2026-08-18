@@ -68,7 +68,7 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
     override fun onDelete(doc: Document) {
         super.onDelete(doc)
-        val result = this.getIncomingReferenceUUIDs(doc, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.LATEST, literatureReferences=true))
+        val result = this.getIncomingReferenceUUIDs(doc, IngridIncomingReferenceOptions(docStateFilter = DocStateFilter.LATEST, literatureReferences = true))
 
         if (result.isNotEmpty()) {
             throw IsReferencedException.literatureByDatasets(result)
