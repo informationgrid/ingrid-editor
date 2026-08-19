@@ -306,15 +306,6 @@ class CswtApiControllerTest : IntegrationTest() {
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_XML),
         ).andExpect(MockMvcResultMatchers.status().isOk)
-
-        /*verify(exactly = 1) {
-            ogcCswtService.cswTransaction(
-                cswtInsert,
-                catalog,
-                mockPrincipal,
-                any(),
-            )
-        }*/
     }
 
     private fun createCswtDocument(metadataId: String, operation: String = "Insert"): String {
