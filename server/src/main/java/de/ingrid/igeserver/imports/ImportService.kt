@@ -477,30 +477,31 @@ class ImportService(
                 setVersionInfo(catalogId, wrapperId, ref.document)
 
                 // run in parallel to greatly improve speed
-                val job = GlobalScope.async {
-                    // set same principal in new context
-                    val contextForThread = SecurityContextHolder.createEmptyContext()
-                    contextForThread.authentication = principal
-                    SecurityContextHolder.setContext(contextForThread)
-                    try {
-                        if (publish) {
-                            documentService.publishDocument(
-                                principal,
-                                catalogId,
-                                wrapperId,
-                                ref.document,
-                                skipValidation = options.skipValidation,
-                            )
-                        } else {
-                            documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
-                        }
-                    } finally {
-                        SecurityContextHolder.clearContext()
+                // ATTENTION: remove parallel execution due to deadlock of multiple nested transactions in multiple threads
+/*                val job = GlobalScope.async {
+                // set same principal in new context
+                val contextForThread = SecurityContextHolder.createEmptyContext()
+                contextForThread.authentication = principal
+                SecurityContextHolder.setContext(contextForThread)*/
+                try {
+                    if (publish) {
+                        documentService.publishDocument(
+                            principal,
+                            catalogId,
+                            wrapperId,
+                            ref.document,
+                            skipValidation = options.skipValidation,
+                        )
+                    } else {
+                        documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
                     }
+                } finally {
+                    SecurityContextHolder.clearContext()
                 }
+//                }
 
                 counter.overwritten++
-                return job
+//                return job
             } else {
                 counter.skipped++
             }
