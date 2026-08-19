@@ -45,6 +45,7 @@ import de.ingrid.igeserver.services.FIELD_MODIFIED_BY
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.runAsAdmin
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -449,9 +450,11 @@ class ImportService(
             )
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
-            // undelete first to completely delete afterwards
-            removeDeletedFlag(ref.wrapperId!!)
-            documentService.deleteDocument(principal, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            // undelete first to completely delete afterward
+            runAsAdmin("REAL_DELETE_IMPORT", "Import") { admin ->
+                removeDeletedFlag(ref.wrapperId!!)
+                documentService.deleteDocument(admin, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            }
             documentService.createDocument(
                 principal,
                 catalogId,

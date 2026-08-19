@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.oauth2.jwt.Jwt
@@ -57,7 +58,13 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
         }
 
         is UsernamePasswordAuthenticationToken -> {
-            principal.principal as String
+            if (principal.principal is String) {
+                principal.principal as String
+            } else if (principal.principal is User) {
+                (principal.principal as User).username
+            } else {
+                "???"
+            }
         }
 
         else -> {

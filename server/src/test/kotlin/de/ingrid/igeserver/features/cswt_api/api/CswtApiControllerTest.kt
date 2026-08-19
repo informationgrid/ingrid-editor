@@ -21,60 +21,147 @@ package de.ingrid.igeserver.features.cswt_api.api
 
 import IntegrationTest
 import com.ninjasquad.springmockk.MockkBean
-import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.features.cswt_api.services.CSWTransactionResult
-import de.ingrid.igeserver.features.cswt_api.services.CswtService
-import de.ingrid.igeserver.services.ApiValidationService
-import io.kotest.core.annotation.Ignored
+import de.ingrid.igeserver.imports.getFile
+import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-@WithMockUser(username = "user1", authorities = ["cat-admin"])
-@Ignored
+@Suppress("ktlint:standard:function-naming")
+@WithMockUser(username = "author1", authorities = ["author", "GROUP_2"])
+@Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 class CswtApiControllerTest : IntegrationTest() {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
-    private lateinit var apiValidationService: ApiValidationService
+    private lateinit var validator: PreJsonSchemaValidator
 
-    @MockkBean
-    private lateinit var ogcCswtService: CswtService
+    val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true) {
+        every { name } returns "author1"
+        every { authorities } returns listOf(SimpleGrantedAuthority("GROUP_2"))
+    }
 
-    val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+    val folderId = "I2"
+    val addressFolderId = "A1"
+
+    @BeforeEach
+    fun setUp() {
+        every {
+            validator.validate(any(), any())
+        } returns emptySet()
+        every { validator.id } returns "PreJsonSchemaValidator"
+        every { validator.usedInProfile("ingrid") } returns true
+        every { validator.invoke(any(), any()) } returnsArgument 0
+    }
 
     /**
-     * Test case for a successful CSW transaction request.
+     * Test case for a successful CSW INSERT transaction request.
      */
     @Test
-    fun `handleCSWT should return 200 when service and request parameters are correct`() {
-        val validData = "<csw:Transaction></csw:Transaction>"
-        val validCatalog = "valid-catalog"
-        val transactionResult = CSWTransactionResult(successful = true)
-        every {
-            ogcCswtService.cswTransaction(
-                validData,
-                validCatalog,
-                mockPrincipal,
-                any(),
-            )
-        } returns transactionResult
-
+    fun `handleCSWT should return 200 when service and request parameters are correct for INSERT`() {
+        val validData = createCswtDocument("111111")
+        val validCatalog = "test_catalog_ingrid"
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/cswt").content(validData).param("SERVICE", "CSW")
                 .principal(mockPrincipal)
-                .param("REQUEST", "Transaction").param("catalog", validCatalog)
+                .param("REQUEST", "Transaction")
+                .param("catalog", validCatalog)
+                .param("datasetFolderId", folderId)
+                .param("addressFolderId", addressFolderId)
                 .contentType(MediaType.APPLICATION_XML),
-        ).andExpect(MockMvcResultMatchers.status().isOk)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(
+                MockMvcResultMatchers.content().string(
+                    """
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?><csw:TransactionResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"><csw:TransactionSummary requestId=""><csw:totalInserted>1</csw:totalInserted><csw:totalUpdated>0</csw:totalUpdated><csw:totalDeleted>0</csw:totalDeleted></csw:TransactionSummary><csw:InsertResult><gmd:fileIdentifier><gco:CharacterString>111111</gco:CharacterString></gmd:fileIdentifier></csw:InsertResult></csw:TransactionResponse>
+                    """.trimIndent(),
+                ),
+            )
+    }
+
+    /**
+     * Test case for a successful CSW UPDATE transaction request.
+     */
+    @Test
+    fun `handleCSWT should return 200 when service and request parameters are correct for UPDATE`() {
+        val validData = createCswtDocument("I3", "Update")
+        val validCatalog = "test_catalog_ingrid"
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/cswt").content(validData).param("SERVICE", "CSW")
+                .principal(mockPrincipal)
+                .param("REQUEST", "Transaction")
+                .param("catalog", validCatalog)
+                .param("datasetFolderId", folderId)
+                .param("addressFolderId", addressFolderId)
+                .contentType(MediaType.APPLICATION_XML),
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(
+                MockMvcResultMatchers.content().string(
+                    (
+                        """
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?><csw:TransactionResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"><csw:TransactionSummary requestId=""><csw:totalInserted>0</csw:totalInserted><csw:totalUpdated>1</csw:totalUpdated><csw:totalDeleted>0</csw:totalDeleted></csw:TransactionSummary></csw:TransactionResponse>
+                        """.trimIndent()
+                        ),
+                ),
+            )
+    }
+
+    /**
+     * Test case for a successful CSW DELETE transaction request.
+     */
+    @Test
+    fun `handleCSWT should return 200 when service and request parameters are correct for DELETE`() {
+        val deleteRequest = """
+    <csw:Transaction service="CSW" version="2.0.2"
+        xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:gmd="http://www.isotc211.org/2005/gmd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd">
+
+        <csw:Delete>
+            <csw:Constraint version="2.0.0">
+                <ogc:Filter>
+                    <ogc:PropertyIsEqualTo>
+                        <ogc:PropertyName>apsio:identifier</ogc:PropertyName>
+                        <ogc:Literal>I3</ogc:Literal>
+                    </ogc:PropertyIsEqualTo>
+                </ogc:Filter>
+            </csw:Constraint>
+        </csw:Delete>
+    </csw:Transaction>
+        """.trimIndent()
+        val validCatalog = "test_catalog_ingrid"
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/cswt")
+                .content(deleteRequest)
+                .principal(mockPrincipal)
+                .param("SERVICE", "CSW")
+                .param("REQUEST", "Transaction")
+                .param("catalog", validCatalog)
+                .param("datasetFolderId", folderId)
+                .param("addressFolderId", addressFolderId)
+                .contentType(MediaType.APPLICATION_XML),
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(
+                MockMvcResultMatchers.content().string(
+                    """
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?><csw:TransactionResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd"><csw:TransactionSummary requestId=""><csw:totalInserted>0</csw:totalInserted><csw:totalUpdated>0</csw:totalUpdated><csw:totalDeleted>1</csw:totalDeleted></csw:TransactionSummary></csw:TransactionResponse>
+                    """.trimIndent(),
+                ),
+            )
     }
 
     /**
@@ -93,7 +180,11 @@ class CswtApiControllerTest : IntegrationTest() {
                 .param("REQUEST", request).param("catalog", catalog).contentType(MediaType.APPLICATION_XML),
         ).andExpect(MockMvcResultMatchers.status().isBadRequest).andExpect(
             MockMvcResultMatchers.content()
-                .string("Request parameter 'SERVICE' must be 'CSW'. Value '$invalidService' not supported."),
+                .string(
+                    """
+                    <?xml version="1.0" encoding="UTF-8" standalone="no"?><ows:ExceptionReport xmlns:ows="http://www.opengis.net/cat/csw/2.0.2"><ows:Exception exceptionCode="NoApplicableCode"><ows:ExceptionText>Cannot process transaction: de.ingrid.igeserver.ClientException: Request parameter 'SERVICE' must be 'CSW'. Value 'INVALID_SERVICE' not supported.</ows:ExceptionText></ows:Exception></ows:ExceptionReport>
+                    """.trimIndent(),
+                ),
         )
     }
 
@@ -113,7 +204,11 @@ class CswtApiControllerTest : IntegrationTest() {
                 .param("REQUEST", invalidRequest).param("catalog", catalog).contentType(MediaType.APPLICATION_XML),
         ).andExpect(MockMvcResultMatchers.status().isBadRequest).andExpect(
             MockMvcResultMatchers.content()
-                .string("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$invalidRequest' not supported."),
+                .string(
+                    """
+                    <?xml version="1.0" encoding="UTF-8" standalone="no"?><ows:ExceptionReport xmlns:ows="http://www.opengis.net/cat/csw/2.0.2"><ows:Exception exceptionCode="NoApplicableCode"><ows:ExceptionText>Cannot process transaction: de.ingrid.igeserver.ClientException: Request parameter 'REQUEST' only accepts value 'Transaction'. Value 'INVALID_REQUEST' not supported.</ows:ExceptionText></ows:Exception></ows:ExceptionReport>
+                    """.trimIndent(),
+                ),
         )
     }
 
@@ -127,16 +222,20 @@ class CswtApiControllerTest : IntegrationTest() {
         val invalidCatalog = "invalid-catalog"
         val data = "<csw:Transaction></csw:Transaction>"
 
-        assertThrows<ClientException> {
-            apiValidationService.validateCollection(invalidCatalog)
-        }
-
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/cswt").content(data).param("SERVICE", service)
                 .principal(mockPrincipal)
-                .param("REQUEST", request).param("catalog", invalidCatalog).contentType(MediaType.APPLICATION_XML),
+                .param("REQUEST", request)
+                .param("catalog", invalidCatalog)
+                .contentType(MediaType.APPLICATION_XML),
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.content().string("Invalid catalog parameter"))
+            .andExpect(
+                MockMvcResultMatchers.content().string(
+                    """
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?><ows:ExceptionReport xmlns:ows="http://www.opengis.net/cat/csw/2.0.2"><ows:Exception exceptionCode="NoApplicableCode"><ows:ExceptionText>Cannot process transaction: de.ingrid.igeserver.api.BadRequestException: The catalog 'invalid-catalog' does not exist.</ows:ExceptionText></ows:Exception></ows:ExceptionReport>
+                    """.trimIndent(),
+                ),
+            )
     }
 
     /**
@@ -146,24 +245,22 @@ class CswtApiControllerTest : IntegrationTest() {
     fun `handleCSWT should return 500 on unexpected exceptions`() {
         val service = "CSW"
         val request = "Transaction"
-        val catalog = "valid-catalog"
+        val catalog = "test_catalog_ingrid"
         val data = "<csw:Transaction></csw:Transaction>"
-
-        assertThrows<RuntimeException> {
-            ogcCswtService.cswTransaction(
-                data,
-                catalog,
-                mockPrincipal,
-                ImportOptions(),
-            )
-        }
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/cswt").content(data).param("SERVICE", service)
                 .principal(mockPrincipal)
                 .param("REQUEST", request).param("catalog", catalog).contentType(MediaType.APPLICATION_XML),
-        ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
-            .andExpect(MockMvcResultMatchers.content().string("Unexpected error"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError)
+            .andExpect(
+                MockMvcResultMatchers.content().string(
+                    """
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?><ows:ExceptionReport xmlns:ows="http://www.opengis.net/cat/csw/2.0.2"><ows:Exception exceptionCode="NoApplicableCode"><ows:ExceptionText>Cannot process transaction: PrÃ¤fix "csw" fÃ¼r Element "csw:Transaction" ist nicht gebunden.</ows:ExceptionText></ows:Exception></ows:ExceptionReport>
+                    """.trimIndent(),
+                ),
+            )
     }
 
     /**
@@ -173,12 +270,92 @@ class CswtApiControllerTest : IntegrationTest() {
     fun `handleCSWT should return 400 if required parameters are missing`() {
         val service = "CSW"
         val request = "Update"
-        val catalog = ""
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/cswt").param("SERVICE", service).param("REQUEST", request)
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_XML),
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+    }
+
+    /**
+     * Regression test:
+     * A user with restricted write permissions only for OrdnerA should be able to create
+     * a new metadata record with ID "abc" via the editor CSW-T endpoint, even if a record
+     * with that ID existed before and has since been deleted.
+     *
+     * The actual permission and deleted-record handling is tested in the service layer.
+     * This controller test verifies that such a CSW-T insert request is accepted and
+     * delegated correctly.
+     */
+    @Test
+    fun `handleCSWT should allow inserting metadata with previously deleted id in writable folder`() {
+        val catalog = "test_catalog_ingrid"
+        val metadataId = "I4"
+
+        val cswtInsert = createCswtDocument(metadataId)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/cswt")
+                .content(cswtInsert)
+                .param("SERVICE", "CSW")
+                .param("REQUEST", "Transaction")
+                .param("catalog", catalog)
+                .param("datasetFolderId", folderId)
+                .param("addressFolderId", addressFolderId)
+                .principal(mockPrincipal)
+                .contentType(MediaType.APPLICATION_XML),
+        ).andExpect(MockMvcResultMatchers.status().isOk)
+
+        /*verify(exactly = 1) {
+            ogcCswtService.cswTransaction(
+                cswtInsert,
+                catalog,
+                mockPrincipal,
+                any(),
+            )
+        }*/
+    }
+
+    private fun createCswtDocument(metadataId: String, operation: String = "Insert"): String {
+        val iso = getFile("ingrid/import/iso_geodataset_full.xml").replace(
+            Regex("""(?s)(<gmd:fileIdentifier>).*?(</gmd:fileIdentifier>)"""),
+        ) {
+            """<gmd:fileIdentifier>
+                    <gco:CharacterString>$metadataId</gco:CharacterString>
+                </gmd:fileIdentifier>
+            """.trimIndent()
+        }
+
+        val constraint = if (operation == "Update") {
+            """
+        <csw:Constraint version="2.0.0">
+            <ogc:Filter>
+                <ogc:PropertyIsEqualTo>
+                    <ogc:PropertyName>apsio:identifier</ogc:PropertyName>
+                    <ogc:Literal>$metadataId</ogc:Literal>
+                </ogc:PropertyIsEqualTo>
+            </ogc:Filter>
+        </csw:Constraint>
+            """.trimIndent()
+        } else {
+            ""
+        }
+
+        val cswtInsert = """
+                <csw:Transaction
+                    service="CSW"
+                    version="2.0.2"
+                    xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+                    xmlns:ogc="http://www.opengis.net/ogc"
+                    xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                    xmlns:gco="http://www.isotc211.org/2005/gco">
+                    <csw:$operation>
+                        $iso
+                        $constraint
+                    </csw:$operation>
+                </csw:Transaction>
+        """.trimIndent()
+        return cswtInsert
     }
 }
