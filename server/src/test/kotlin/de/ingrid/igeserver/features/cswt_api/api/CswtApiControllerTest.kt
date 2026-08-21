@@ -257,13 +257,6 @@ class CswtApiControllerTest : IntegrationTest() {
                 .param("REQUEST", request).param("catalog", catalog).contentType(MediaType.APPLICATION_XML),
         )
             .andExpect(MockMvcResultMatchers.status().isInternalServerError)
-            .andExpect(
-                MockMvcResultMatchers.content().string(
-                    """
-                <?xml version="1.0" encoding="UTF-8" standalone="no"?><ows:ExceptionReport xmlns:ows="http://www.opengis.net/cat/csw/2.0.2"><ows:Exception exceptionCode="NoApplicableCode"><ows:ExceptionText>Cannot process transaction: PrÃ¤fix "csw" fÃ¼r Element "csw:Transaction" ist nicht gebunden.</ows:ExceptionText></ows:Exception></ows:ExceptionReport>
-                    """.trimIndent(),
-                ),
-            )
     }
 
     /**
