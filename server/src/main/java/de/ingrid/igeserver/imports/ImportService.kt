@@ -478,30 +478,31 @@ class ImportService(
 
                 // run in parallel to greatly improve speed
                 // ATTENTION: remove parallel execution due to deadlock of multiple nested transactions in multiple threads
-/*                val job = GlobalScope.async {
-                // set same principal in new context
-                val contextForThread = SecurityContextHolder.createEmptyContext()
-                contextForThread.authentication = principal
-                SecurityContextHolder.setContext(contextForThread)*/
-                try {
-                    if (publish) {
-                        documentService.publishDocument(
-                            principal,
-                            catalogId,
-                            wrapperId,
-                            ref.document,
-                            skipValidation = options.skipValidation,
-                        )
-                    } else {
-                        documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                // in csw-t test this seemed to happen but could not be reproduced in production
+                val job = GlobalScope.async {
+                    // set same principal in new context
+                    val contextForThread = SecurityContextHolder.createEmptyContext()
+                    contextForThread.authentication = principal
+                    SecurityContextHolder.setContext(contextForThread)
+                    try {
+                        if (publish) {
+                            documentService.publishDocument(
+                                principal,
+                                catalogId,
+                                wrapperId,
+                                ref.document,
+                                skipValidation = options.skipValidation,
+                            )
+                        } else {
+                            documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                        }
+                    } finally {
+                        SecurityContextHolder.clearContext()
                     }
-                } finally {
-                    SecurityContextHolder.clearContext()
                 }
-//                }
 
                 counter.overwritten++
-//                return job
+                return job
             } else {
                 counter.skipped++
             }
