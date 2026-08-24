@@ -493,3 +493,14 @@ tasks.named("detektMain").configure {
         markdown.required.set(true)
     }
 }
+
+tasks.cyclonedxBom {
+    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
+    // setIncludeConfigs(listOf("runtimeClasspath"))
+    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
+    // setSkipConfigs(listOf("compileClasspath", "testCompileClasspath"))
+    projectType = Type.APPLICATION
+    schemaVersion = Version.VERSION_15
+    jsonOutput = file("build/reports/bom.json")
+    componentVersion = rootProject.version.toString()
+}
