@@ -21,6 +21,8 @@ node {
   download = true
 }
 
+def yarnVersion = '4.17.0'
+
 def buildArgs = ['run', 'prod']
 if (hasProperty('baseHref')) {
   buildArgs = ['run', 'prod', '--base-href', getProperty('baseHref')]
@@ -28,19 +30,36 @@ if (hasProperty('baseHref')) {
 
 tasks.register('yarnUpgrade', YarnTask) {
   dependsOn 'yarnSetup'
-  args = ['set', 'version', '4.17.0']
+  inputs.property('version', yarnVersion)
+  outputs.file(".yarn/releases/yarn-${yarnVersion}.cjs")
+  outputs.file('.yarnrc.yml')
+  args = ['set', 'version', yarnVersion]
 }
 
 tasks.register('yarnInstall', YarnTask) {
   dependsOn 'yarnUpgrade'
+  inputs.files('package.json', 'yarn.lock', '.yarnrc.yml', '.npmrc')
+  inputs.file(".yarn/releases/yarn-${yarnVersion}.cjs")
+  outputs.dir('node_modules')
+  outputs.file('.yarn/install-state.gz')
   args = ['install', '--immutable']
 }
 
 tasks.register('bundle', YarnTask) {
   dependsOn 'yarnInstall'
+  inputs.property('buildArgs', buildArgs)
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
-  inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
+  inputs.files(
+    'package.json',
+    'yarn.lock',
+    'angular.json',
+    'tsconfig.json',
+    'tsconfig.app.json',
+    'transloco.config.js',
+    '.browserslistrc',
+    '.yarnrc.yml'
+  )
 
   outputs.dir('build/dist/browser')
 
