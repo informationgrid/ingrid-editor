@@ -16,6 +16,7 @@ buildscript {
 plugins {
     id 'base'
     id 'java'
+    id 'application'
     id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
@@ -240,6 +241,16 @@ description = 'IGE-NG Server'
 
 springBoot {
     buildInfo()
+}
+
+application {
+    applicationName = 'ingrid-editor'
+    mainClass = 'de.ingrid.igeserver.IgeServerKt'
+}
+
+bootDistZip {
+    archiveBaseName = 'ingrid-editor'
+    destinationDirectory = rootProject.layout.buildDirectory.dir("distributions")
 }
 
 if (hasProperty('filename')) {
