@@ -234,12 +234,14 @@ export class UserService {
   }
 
   private handleUserOperationError(error: any): Observable<any> {
+    // TODO Refactor to be more readable and less custom and perhaps move localization elsewhere
     const errorText: string = error.error?.errorText;
     const EMAIL_NOT_UNIQUE =
       "New user cannot be created, because another user might have the same email address";
     if (error.status === 409) {
       if (errorText.includes("User already exists with login")) {
-        const login = errorText.split(" ").pop();
+        // Extract login from error text like: "User already exists with login: USER_LOGIN (Error-ID 123456789)"
+        const login = errorText.split(" (Error-ID").shift().split(" ").pop();
         throw new IgeError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
