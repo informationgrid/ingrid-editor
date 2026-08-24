@@ -52,7 +52,7 @@ pipeline {
             when { expression { return shouldBuildDevOrRelease() } }
             agent {
                 docker {
-                    image 'docker-registry.wemove.com/ingrid-rpmbuilder-jdk21-improved'
+                    image 'docker-registry.wemove.com/ingrid-rpmbuilder'
                     reuseNode true
                 }
             }
