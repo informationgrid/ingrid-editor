@@ -253,6 +253,13 @@ bootDistZip {
     destinationDirectory = rootProject.layout.buildDirectory.dir("distributions")
 }
 
+distTar {
+    enabled = false
+}
+bootDistTar {
+    enabled = false
+}
+
 if (hasProperty('filename')) {
     bootJar {
         archiveFileName = getProperty('filename')
