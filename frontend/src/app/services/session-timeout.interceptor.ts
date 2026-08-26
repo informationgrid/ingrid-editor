@@ -26,7 +26,7 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { firstValueFrom, Observable, Subscription, timer } from "rxjs";
-import { scan, takeWhile } from "rxjs/operators";
+import { map, takeWhile } from "rxjs/operators";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
 import { GeneralStore } from "../store/general.store";
@@ -91,9 +91,11 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.updateStore(duration);
     if (duration <= 0) return;
 
+    const endTime = Date.now() + duration * 1000;
+
     this.timer$ = timer(1000, this.oneSecondInMilliseconds)
       .pipe(
-        scan((acc) => --acc, duration),
+        map(() => Math.round((endTime - Date.now()) / 1000)),
         takeWhile((x) => x >= -10),
       )
       .subscribe((time) => {
