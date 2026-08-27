@@ -47,12 +47,14 @@ import {
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
 import { GeoServiceDoctype } from "../../../../../profiles/ingrid/doctypes/geo-service.doctype";
 import { GeoDatasetDoctype } from "../../../../../profiles/ingrid/doctypes/geo-dataset.doctype";
+import { FormStateService } from "../../../../+form/form-state.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
   private codelistStore = inject(CodelistStore);
+  private formStateService = inject(FormStateService);
 
   private backendUrl: string;
 
@@ -147,11 +149,11 @@ export class GetCapabilitiesService {
     model: any,
     keywordTheasuri: Thesaurus[],
   ) {
+    const form = this.formStateService.getForm();
     const response = await this.keywordAnalysis.analyzeKeywords(
       value,
       keywordTheasuri,
-      // FIXME implement
-      null,
+      form,
     );
     response.forEach((item) => {
       const keys = item.thesaurus.modelPath.split(".");

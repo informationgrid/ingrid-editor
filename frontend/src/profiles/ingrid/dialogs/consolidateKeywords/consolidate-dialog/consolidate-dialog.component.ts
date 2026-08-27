@@ -102,7 +102,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   hasKeywords: boolean;
   canHaveIsoCategories: boolean;
-  thesauri: Thesaurus[] = [];
+  enabledThesauri: Thesaurus[] = [];
 
   isoCategories: any[] = [];
 
@@ -131,9 +131,10 @@ export class ConsolidateDialogComponent implements OnInit {
     const doctype = this.profileService.getDoctype(
       this.doc._type,
     ) as IngridShared;
-    console.log(doctype);
     if (doctype && "keywordThesauri" in doctype) {
-      this.thesauri = doctype.keywordThesauri;
+      this.enabledThesauri = doctype.keywordThesauri.filter(
+        (thesaurus) => thesaurus.isEnabled?.(this.form) ?? true,
+      );
     }
 
     this.isInspireIdentified = this.form.value.properties?.isInspireIdentified;
@@ -142,7 +143,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isoCategories = this.form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
     this.hasKeywords =
-      this.thesauri
+      this.enabledThesauri
         .map(
           (thesaurus) =>
             this.form.get(thesaurus.modelPath.split("."))?.value || [],
@@ -155,15 +156,11 @@ export class ConsolidateDialogComponent implements OnInit {
     }
 
     this.keywordHierarchyMap = new Map();
-    this.thesauri.forEach((thesaurus) => {
+    this.enabledThesauri.forEach((thesaurus) => {
       const keywords =
         this.form.get(thesaurus.modelPath.split("."))?.value || [];
       this.keywordHierarchyMap.set(thesaurus, [keywords, []]);
     });
-    this.keywordHierarchyMap.set(FREE_THESAURUS, [
-      this.form.get(FREE_THESAURUS.modelPath.split("."))?.value || [],
-      [],
-    ]);
 
     return true;
   }
@@ -173,26 +170,20 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOut = false;
 
     try {
-      const allOldKeywords = Array.from(this.keywordHierarchyMap.entries())
-        .filter(([thesaurus]) => thesaurus.type !== "free")
-        .flatMap(([thesaurus, [keywords]]) => {
-          if (thesaurus.id === "inspireTopics") {
-            return keywords.map((keyword) => this.getInspireLabel(keyword));
-          }
-          return keywords;
-        });
-      const freeKeywords = this.keywordHierarchyMap.get(FREE_THESAURUS)[0];
-      const allKeywordsToAnalyze = [...allOldKeywords, ...freeKeywords].map(
-        (keyword) => keyword.label,
-      );
+      const allKeywordsToAnalyze = Array.from(
+        this.keywordHierarchyMap.entries(),
+      ).flatMap(([thesaurus, [keywords]]) => {
+        return keywords.map((keyword) =>
+          thesaurus.type === "codelist" ? keyword.value : keyword.label,
+        );
+      });
 
       let analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
         allKeywordsToAnalyze,
-        this.thesauri,
+        this.enabledThesauri,
         this.form,
       );
 
-      console.log(analyzedKeywords);
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
@@ -228,7 +219,7 @@ export class ConsolidateDialogComponent implements OnInit {
     thesaurus: Thesaurus,
   ) {
     const results: any[] = [];
-    if (thesaurus.id === "inspireTopics") {
+    if (thesaurus.type === "codelist") {
       newKeywords.forEach((keyword) => {
         if (!oldKeywords.some((item) => item.key === keyword.value.key)) {
           results.push({ ...keyword, status: "added" });
@@ -240,7 +231,7 @@ export class ConsolidateDialogComponent implements OnInit {
         if (!newKeywords.some((k) => k.value.key === keyword.key)) {
           results.push({
             found: false,
-            label: this.getInspireLabel(keyword).label,
+            label: keyword.value,
             value: { key: keyword.key },
             thesaurus: thesaurus,
             status: "removed",
@@ -297,7 +288,7 @@ export class ConsolidateDialogComponent implements OnInit {
     let otherThesauriNewKeywords: ThesaurusResult[] = [];
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      if (thesaurus.id === "inspireTopics") {
+      if (thesaurus.type !== "external") {
         continue;
       }
       otherThesauriNewKeywords = Array.from(this.keywordHierarchyMap)
@@ -353,7 +344,7 @@ export class ConsolidateDialogComponent implements OnInit {
   private removeAllDuplicateKeywords() {
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      if (thesaurus.id === "inspireTopics") {
+      if (thesaurus.type !== "external") {
         continue;
       }
       // Remove duplicates case-insensitively

@@ -124,10 +124,10 @@ export abstract class IngridShared extends BaseDoctype {
     label: "INSPIRE-Themen",
     modelPath: "themes",
     type: "codelist",
-    isEnabled: (fieldConfig) =>
+    isEnabled: (form) =>
       // only enable if isInspireIdentified and themes available in form
-      fieldConfig.form.get("themes") != undefined &&
-      fieldConfig.options.formState.mainModel?.properties?.isInspireIdentified,
+      form.get("themes") != undefined &&
+      form.value?.properties?.isInspireIdentified,
   };
 
   readonly mobilithekModelPath = "keywords.mobilithek";
@@ -137,8 +137,7 @@ export abstract class IngridShared extends BaseDoctype {
     label: "Mobilithek-Themen",
     modelPath: this.mobilithekModelPath,
     type: "codelist",
-    isEnabled: (fieldConfig) =>
-      fieldConfig.form.get(this.mobilithekModelPath) != undefined,
+    isEnabled: (form) => form.get(this.mobilithekModelPath) != undefined,
   };
 
   keywordThesauri: Thesaurus[] = [
@@ -965,7 +964,7 @@ export abstract class IngridShared extends BaseDoctype {
       const response = await this.keywordAnalysis.analyzeKeywords(
         value.split(","),
         this.keywordThesauri,
-        fieldConfig,
+        fieldConfig.form,
       );
       if (response.length == 0) return;
 

@@ -23,7 +23,7 @@ import { firstValueFrom } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { FormArray, FormGroup } from "@angular/forms";
+import { FormArray, FormGroup, UntypedFormGroup } from "@angular/forms";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
@@ -41,7 +41,7 @@ export interface Thesaurus {
   type: "external" | "codelist" | "free";
   modelPath: string;
   codelistId?: string;
-  isEnabled?: (fieldConfig: FormlyFieldConfig) => boolean;
+  isEnabled?: (form: FormGroup | FormArray) => boolean;
   actionAfterAdd?: () => void;
 }
 
@@ -96,12 +96,9 @@ export class KeywordAnalysis {
   async analyzeKeywords(
     values: string[],
     thesauri: Thesaurus[],
-    fieldConfig: FormlyFieldConfig,
+    form: FormGroup | FormArray,
   ): Promise<ThesaurusResult[]> {
-    const enabledThesauri = thesauri.filter(
-      (t) => t.isEnabled === undefined || t.isEnabled(fieldConfig),
-    );
-    console.log(enabledThesauri);
+    const enabledThesauri = thesauri.filter((t) => t.isEnabled?.(form) ?? true);
     return await Promise.all(
       values
         .map((item: string) => item.trim())
