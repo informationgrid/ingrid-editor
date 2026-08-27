@@ -68,8 +68,9 @@ export class GetCapabilitiesService {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
-    this.geoserviceThesauri = new GeoServiceDoctype().activeThesauri;
-    this.geodatasetThesauri = new GeoDatasetDoctype().activeThesauri;
+    // FIXME possible not the intended ones if profile specific
+    this.geoserviceThesauri = new GeoServiceDoctype().keywordThesauri;
+    this.geodatasetThesauri = new GeoDatasetDoctype().keywordThesauri;
   }
 
   analyze(url: string, username?: string, password?: string) {
@@ -149,6 +150,8 @@ export class GetCapabilitiesService {
     const response = await this.keywordAnalysis.analyzeKeywords(
       value,
       keywordTheasuri,
+      // FIXME implement
+      null,
     );
     response.forEach((item) => {
       const keys = item.thesaurus.modelPath.split(".");

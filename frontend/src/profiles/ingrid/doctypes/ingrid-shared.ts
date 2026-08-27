@@ -44,6 +44,7 @@ import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import {
+  FREE_THESAURUS,
   KeywordAnalysis,
   KeywordSectionOptions,
   Thesaurus,
@@ -103,38 +104,50 @@ export abstract class IngridShared extends BaseDoctype {
   protected generalStore = inject(GeneralStore);
   protected codelistService = inject(CodelistService);
 
-  protected static defaultThesauri: Thesaurus[] = [
-    {
-      id: "gemet",
-      label: "Gemet-Schlagworte",
-      modelPath: "keywords.gemet",
-      type: "external",
-    },
-    {
-      id: "umthes",
-      label: "Umthes-Schlagworte",
-      modelPath: "keywords.umthes",
-      type: "external",
-    },
-  ];
+  gemetThesaurus: Thesaurus = {
+    id: "gemet",
+    label: "Gemet-Schlagworte",
+    modelPath: "keywords.gemet",
+    type: "external",
+  };
 
-  static InspireThesaurus: Thesaurus = {
+  umthesThesaurus: Thesaurus = {
+    id: "umthes",
+    label: "Umthes-Schlagworte",
+    modelPath: "keywords.umthes",
+    type: "external",
+  };
+
+  inspireThesaurus: Thesaurus = {
     codelistId: "6100",
     id: "inspireTopics",
     label: "INSPIRE-Themen",
     modelPath: "themes",
     type: "codelist",
+    isEnabled: (fieldConfig) =>
+      // only enable if isInspireIdentified and themes available in form
+      fieldConfig.form.get("themes") != undefined &&
+      fieldConfig.options.formState.mainModel?.properties?.isInspireIdentified,
   };
 
-  static MobilithekThesaurus: Thesaurus = {
+  readonly mobilithekModelPath = "keywords.mobilithek";
+  mobilithekThesaurus: Thesaurus = {
     codelistId: "mobilithek",
     id: "mobilithekTopics",
     label: "Mobilithek-Themen",
-    modelPath: "keywords.mobilithek",
+    modelPath: this.mobilithekModelPath,
     type: "codelist",
+    isEnabled: (fieldConfig) =>
+      fieldConfig.form.get(this.mobilithekModelPath) != undefined,
   };
 
-  activeThesauri: Thesaurus[] = IngridShared.defaultThesauri;
+  keywordThesauri: Thesaurus[] = [
+    this.gemetThesaurus,
+    this.umthesThesaurus,
+    this.inspireThesaurus,
+    this.mobilithekThesaurus,
+    FREE_THESAURUS,
+  ];
 
   options = {
     dynamicRequired: {
@@ -548,8 +561,6 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
-    this.addKeywordThesauri(options);
-
     return this.addSection(
       "Verschlagwortung",
       [
@@ -903,7 +914,7 @@ export abstract class IngridShared extends BaseDoctype {
           buttonConfig: {
             text: "Analysieren",
             onClick: async (_, field) => {
-              await this.analyzeKeywords(field, options);
+              await this.analyzeKeywords(field);
             },
           },
           validators: {
@@ -923,13 +934,6 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  protected addKeywordThesauri(options: KeywordSectionOptions) {
-    if (options.inspireTopics)
-      this.activeThesauri.unshift(IngridShared.InspireThesaurus);
-    if (options.mobilithekTopics)
-      this.activeThesauri.unshift(IngridShared.MobilithekThesaurus);
-  }
-
   private createMobilithekSelect() {
     const required = this.behaviourService.getBehaviour(
       "plugin.ingrid.mobilithek",
@@ -944,38 +948,30 @@ export abstract class IngridShared extends BaseDoctype {
     });
   }
 
-  private async analyzeKeywords(
-    field: FormlyFieldConfig,
-    options: KeywordSectionOptions,
-  ) {
-    const value = field.formControl.value;
+  private async analyzeKeywords(fieldConfig: FormlyFieldConfig) {
+    const value = fieldConfig.formControl.value;
     if (!value) return;
 
-    field.formControl.setValue("Schlagworte werden analysiert ...");
-    field.formControl.disable();
+    fieldConfig.formControl.setValue("Schlagworte werden analysiert ...");
+    fieldConfig.formControl.disable();
     this.snack.dismiss();
 
-    const formState = field.options.formState;
-
-    // TODO: Special case: only use inspireTopics thesaurus when formState.mainModel?.["properties"]?.isInspireIdentified
-    // TODO: try to integrate check at a better place
-    const checkThemes =
-      options.inspireTopics &&
-      formState.mainModel?.["properties"]?.isInspireIdentified;
-    const filteredThesauri = checkThemes
-      ? this.activeThesauri
-      : this.activeThesauri.filter((t) => t.id != "inspireTopics");
+    // // filter with enabled
+    // const filteredThesauri = this.keywordThesauri.filter(
+    //   (t) => t.isEnabled === undefined || t.isEnabled(fieldConfig),
+    // );
 
     try {
       const response = await this.keywordAnalysis.analyzeKeywords(
         value.split(","),
-        filteredThesauri,
+        this.keywordThesauri,
+        fieldConfig,
       );
       if (response.length == 0) return;
 
       this.keywordAnalysis.updateForm(
         response,
-        field.form,
+        fieldConfig.form,
         this.thesaurusTopics,
       );
       this.informUserAboutThesaurusAnalysis(response);
@@ -985,8 +981,8 @@ export abstract class IngridShared extends BaseDoctype {
         error.stack,
       );
     } finally {
-      field.formControl.enable();
-      field.formControl.setValue("");
+      fieldConfig.formControl.enable();
+      fieldConfig.formControl.setValue("");
     }
   }
 

@@ -34,7 +34,7 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
 
   constructor() {
     super();
-    this.activeThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
+    this.keywordThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {

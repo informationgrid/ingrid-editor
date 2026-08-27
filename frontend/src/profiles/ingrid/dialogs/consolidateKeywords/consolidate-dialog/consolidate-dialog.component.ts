@@ -45,6 +45,7 @@ import { UntypedFormGroup } from "@angular/forms";
 import { BackendOption } from "../../../../../app/store/codelist/codelist.model";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { GeneralStore } from "../../../../../app/store/general.store";
+import { IngridShared } from "../../../doctypes/ingrid-shared";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -101,7 +102,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   hasKeywords: boolean;
   canHaveIsoCategories: boolean;
-  activeThesauri: Thesaurus[] = [];
+  thesauri: Thesaurus[] = [];
 
   isoCategories: any[] = [];
 
@@ -127,9 +128,12 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading.set(true);
 
     this.form = this.formStateService.getForm();
-    const doctype = this.profileService.getDoctype(this.doc._type);
-    if (doctype && "activeThesauri" in doctype) {
-      this.activeThesauri = (doctype as any).activeThesauri;
+    const doctype = this.profileService.getDoctype(
+      this.doc._type,
+    ) as IngridShared;
+    console.log(doctype);
+    if (doctype && "keywordThesauri" in doctype) {
+      this.thesauri = doctype.keywordThesauri;
     }
 
     this.isInspireIdentified = this.form.value.properties?.isInspireIdentified;
@@ -138,7 +142,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isoCategories = this.form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
     this.hasKeywords =
-      this.activeThesauri
+      this.thesauri
         .map(
           (thesaurus) =>
             this.form.get(thesaurus.modelPath.split("."))?.value || [],
@@ -151,7 +155,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
 
     this.keywordHierarchyMap = new Map();
-    this.activeThesauri.forEach((thesaurus) => {
+    this.thesauri.forEach((thesaurus) => {
       const keywords =
         this.form.get(thesaurus.modelPath.split("."))?.value || [];
       this.keywordHierarchyMap.set(thesaurus, [keywords, []]);
@@ -184,9 +188,11 @@ export class ConsolidateDialogComponent implements OnInit {
 
       let analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
         allKeywordsToAnalyze,
-        this.activeThesauri,
+        this.thesauri,
+        this.form,
       );
 
+      console.log(analyzedKeywords);
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();

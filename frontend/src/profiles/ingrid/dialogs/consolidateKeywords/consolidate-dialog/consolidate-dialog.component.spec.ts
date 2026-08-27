@@ -60,7 +60,7 @@ class MockIngridDoctype extends IngridShared {
   label = "mock";
   constructor() {
     super();
-    this.activeThesauri = [
+    this.keywordThesauri = [
       {
         id: "gemet",
         label: "Gemet-Schlagworte",

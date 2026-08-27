@@ -25,6 +25,7 @@ import { inject, Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormArray, FormGroup } from "@angular/forms";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export interface KeywordSectionOptions {
   priorityDataset?: boolean;
@@ -40,6 +41,8 @@ export interface Thesaurus {
   type: "external" | "codelist" | "free";
   modelPath: string;
   codelistId?: string;
+  isEnabled?: (fieldConfig: FormlyFieldConfig) => boolean;
+  actionAfterAdd?: () => void;
 }
 
 export const FREE_THESAURUS: Thesaurus = {
@@ -93,12 +96,17 @@ export class KeywordAnalysis {
   async analyzeKeywords(
     values: string[],
     thesauri: Thesaurus[],
+    fieldConfig: FormlyFieldConfig,
   ): Promise<ThesaurusResult[]> {
+    const enabledThesauri = thesauri.filter(
+      (t) => t.isEnabled === undefined || t.isEnabled(fieldConfig),
+    );
+    console.log(enabledThesauri);
     return await Promise.all(
       values
         .map((item: string) => item.trim())
         .filter((item: string) => item.length > 0)
-        .map(async (item) => await this.assignKeyword(item, thesauri)),
+        .map(async (item) => await this.assignKeyword(item, enabledThesauri)),
     );
   }
 
@@ -178,8 +186,6 @@ export class KeywordAnalysis {
 
   keywordExists(item: ThesaurusResult, form: FormGroup | FormArray): boolean {
     const thesaurusCtrl = form.get(item.thesaurus.modelPath.split("."));
-    console.log(item);
-    console.log(thesaurusCtrl);
     return thesaurusCtrl.value?.some((keyword: any) => {
       if (item.thesaurus.type == "codelist") {
         return keyword.key === item.value.key;
@@ -210,15 +216,18 @@ export class KeywordAnalysis {
   private async assignKeyword(item: string, thesauri: Thesaurus[]) {
     for (const thesaurus of thesauri) {
       let result: ThesaurusResult;
+      // TODO change to exhaustive switch case
       if (thesaurus.type === "codelist") {
         result = this.checkInCodelistThesaurus(item, thesaurus);
-      } else {
+      } else if (thesaurus.type === "external") {
         result = await this.checkInExternalThesaurus(item, thesaurus);
+      } else {
+        // Thesaurus Type free
+        result = this.addFreeKeyword(item, thesaurus);
       }
       if (result.found) return result;
+      console.log(result, "not found");
     }
-
-    return this.addFreeKeyword(item);
   }
 
   checkInCodelistThesaurus(
@@ -244,12 +253,12 @@ export class KeywordAnalysis {
     };
   }
 
-  private addFreeKeyword(item: string): ThesaurusResult {
+  private addFreeKeyword(item: string, thesaurus: Thesaurus): ThesaurusResult {
     return {
       found: true,
       value: { label: item },
       label: item,
-      thesaurus: FREE_THESAURUS,
+      thesaurus: thesaurus,
     };
   }
 

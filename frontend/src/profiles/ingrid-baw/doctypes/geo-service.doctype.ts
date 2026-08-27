@@ -30,7 +30,7 @@ export class GeoServiceDoctypeBaw extends GeoServiceDoctype {
 
   constructor() {
     super();
-    this.activeThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
+    this.keywordThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
