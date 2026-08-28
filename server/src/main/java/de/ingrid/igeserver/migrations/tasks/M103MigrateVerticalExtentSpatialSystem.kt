@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -31,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
 
 @Profile("ingrid")
 @Service
@@ -65,7 +65,7 @@ class M103MigrateVerticalExtentSpatialSystem : MigrationBase("0.103") {
                         if (spatial != null && spatial.isObject) {
                             val verticalExtent = spatial.get("verticalExtent")
                             if (verticalExtent is ObjectNode && verticalExtent.has("Datum")) {
-                                verticalExtent.set<JsonNode>("spatialSystem", verticalExtent.get("Datum"))
+                                verticalExtent.set("spatialSystem", verticalExtent.get("Datum"))
                                 verticalExtent.remove("Datum")
                                 log.info("Migrated doc with dbID ${it.id}")
                             }

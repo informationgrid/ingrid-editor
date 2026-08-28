@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_UUID
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
 
 class Migrate001 {
 

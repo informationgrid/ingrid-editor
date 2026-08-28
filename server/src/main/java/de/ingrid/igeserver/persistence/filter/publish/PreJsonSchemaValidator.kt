@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.persistence.filter.publish
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.networknt.schema.InputFormat
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
@@ -33,6 +32,7 @@ import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
+import tools.jackson.databind.node.ObjectNode
 
 data class JsonErrorEntry(
     val error: String,

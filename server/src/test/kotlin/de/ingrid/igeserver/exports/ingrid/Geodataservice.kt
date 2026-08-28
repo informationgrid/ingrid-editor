@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
@@ -48,6 +47,7 @@ import io.mockk.mockkObject
 import mockBehaviours
 import mockCatalog
 import mockCodelists
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class Geodataservice : ShouldSpec() {
 

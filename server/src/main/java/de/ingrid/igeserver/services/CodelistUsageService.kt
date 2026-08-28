@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.NullNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.FreeEntryUsage
 import de.ingrid.igeserver.api.dto.ReplaceFreeEntryResult
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.NullNode
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class CodelistUsageService(
@@ -155,11 +155,11 @@ class CodelistUsageService(
 
         if (node is ObjectNode) {
             // Check if this node is a codelist entry with matching conditions
-            val clId = node.get("_codelistId")?.asText()
+            val clId = node.get("_codelistId")?.asString()
             val keyNode = node.get("key")
             val valueNode = node.get("value")
             val keyIsNullOrMissing = keyNode == null || keyNode is NullNode
-            val valueMatches = valueNode != null && valueNode.isTextual && valueNode.asText() == fromValue
+            val valueMatches = valueNode != null && valueNode.isString && valueNode.asString() == fromValue
             if (clId == codelistId && keyIsNullOrMissing && valueMatches) {
                 node.put("key", toKey)
                 node.put("value", toValue)

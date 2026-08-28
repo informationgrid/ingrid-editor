@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -30,6 +29,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
 
 /**
  * Migrate field eiaNumber to eiaNumbers
@@ -69,7 +69,7 @@ class M046MigrateUVPNumberField : MigrationBase("0.46") {
         val value = doc.data.get("eiaNumber")
         if (value != null && !value.isNull) {
             doc.data.remove("eiaNumber")
-            doc.data.set<ArrayNode>("eiaNumbers", value)
+            doc.data.set("eiaNumbers", value)
         }
     }
 }

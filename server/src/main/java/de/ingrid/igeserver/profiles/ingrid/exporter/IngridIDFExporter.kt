@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exceptions.NoExporterException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -53,6 +51,8 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.w3c.dom.Node
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 import kotlin.reflect.KClass
 
@@ -67,7 +67,7 @@ class IngridIDFExporter(
 
     val log = logger()
 
-    protected val mapper = ObjectMapper().registerKotlinModule()
+    protected val mapper = jacksonObjectMapper()
 
     private var xpathUtils: XPathUtils
 

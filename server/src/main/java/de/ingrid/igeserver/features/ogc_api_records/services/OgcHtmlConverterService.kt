@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.JsonNodeType
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.JsonNodeType
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class OgcHtmlConverterService(

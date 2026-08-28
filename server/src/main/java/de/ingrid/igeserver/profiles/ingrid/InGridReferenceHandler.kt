@@ -20,13 +20,13 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {

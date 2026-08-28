@@ -19,14 +19,14 @@
  */
 package de.ingrid.igeserver.services.thesaurus
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.net.URLEncoder
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
@@ -62,7 +62,7 @@ class SNSGemetThesaurus : ThesaurusService() {
         log.debug("Processing ${json.size()} keywords in parallel")
 
         // Create a list of CompletableFuture for each request using our thread pool
-        val futures = json.map { item ->
+        val futures = json.values().map { item ->
             CompletableFuture.supplyAsync({
                 val uri = item.getStringOrEmpty("uri")
                 log.debug("Fetching English label for concept: $uri")

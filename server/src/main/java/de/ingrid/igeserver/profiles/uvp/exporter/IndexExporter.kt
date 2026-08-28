@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.exporter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter, val behaviourService: BehaviourService) : IgeExporter {

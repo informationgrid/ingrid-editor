@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.zabbix
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import io.ktor.client.HttpClient
@@ -40,6 +37,9 @@ import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import kotlin.collections.plus
@@ -70,7 +70,7 @@ class ZabbixService(
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
         val remoteUploads = requestApi(getUploadsPayload(data.uuid)).get("result")
-            .map { getUpload(it) }.toMutableList()
+            .values().map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
         val documentsToDelete = getUploadedDocuments(remoteUploads)
@@ -384,12 +384,13 @@ class ZabbixService(
             log.debug("No problems found for catalog $catalogName")
             return emptyList()
         }
-        return response.get("result").map { getProblem(it) }
+        return response.get("result").values().map { getProblem(it) }
     }
 
     private fun getTag(item: JsonNode, tagName: String): String {
         val tags = item.get("tags") ?: item.get(0)?.get("tags") ?: return ""
         return tags
+            .values()
             .firstOrNull { it.get("tag")?.asText() == tagName }
             ?.get("value")
             ?.asText()
@@ -449,6 +450,7 @@ class ZabbixService(
         if (httptestId.isEmpty()) return
 
         val existingTags = tagsNode
+            .values()
             .mapNotNull { tag ->
                 val tagName = tag.get("tag")?.asText() ?: return@mapNotNull null
                 val tagValue = tag.get("value")?.asText().orEmpty()
@@ -665,7 +667,7 @@ class ZabbixService(
 
     private fun getFromResultAsList(response: JsonNode, field: String): List<JsonNode> {
         val array = response.get("result").get(field) as ArrayNode
-        return array.map { it }
+        return array.values().map { it }
     }
 
     private fun getFromResultArrayAsList(response: JsonNode, field: String): List<String> {
@@ -761,7 +763,7 @@ class ZabbixService(
             log.debug("No problems found for trigger $triggerId")
             return null
         } else {
-            return response.get("result").map { getProblem(it) }
+            return response.get("result").values().map { getProblem(it) }
         }
     }
 

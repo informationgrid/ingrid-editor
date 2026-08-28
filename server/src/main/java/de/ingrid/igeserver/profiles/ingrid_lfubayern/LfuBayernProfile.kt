@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
@@ -33,6 +32,7 @@ import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class LfuBayernProfile(

@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import IntegrationTest
-import com.fasterxml.jackson.databind.JsonNode
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -37,6 +36,7 @@ import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import tools.jackson.databind.JsonNode
 
 @Sql(scripts = ["/test_data-codelist.sql"], config = SqlConfig(encoding = "UTF-8"))
 class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {

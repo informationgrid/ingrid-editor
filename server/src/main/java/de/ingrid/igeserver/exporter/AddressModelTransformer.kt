@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
@@ -35,6 +34,8 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.dao.EmptyResultDataAccessException
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -187,7 +188,7 @@ open class AddressModelTransformer(
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
-    val allCommunications = displayAddress.data.get("contact")?.map {
+    val allCommunications: List<KeyValue> = displayAddress.data.get("contact")?.values()?.map {
         KeyValue(
             it.get("type")?.getString("key"),
             it.getString("connection"),
@@ -215,13 +216,13 @@ open class AddressModelTransformer(
                 doc.uuid,
                 doc.title ?: "",
                 doc.type,
-                doc.data.get("description")?.textValue(),
+                doc.data.get("description")?.asString(),
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
-                    if (fileName?.get("asLink")?.booleanValue() == true) {
-                        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
+                    if (fileName?.get("asLink")?.asBoolean() == true) {
+                        fileName.get("uri")?.asString()?.let { transformUrl(it) } // TODO encode uri
                     } else {
-                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
+                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.asString()}"
                     }
                 } else {
                     null
@@ -287,7 +288,7 @@ open class AddressModelTransformer(
         }
     }
 
-    private fun contactType(type: String): List<String> = displayAddress.data.get("contact")
+    private fun contactType(type: String): List<String> = (displayAddress.data.get("contact") as? ArrayNode)
         ?.filter { it.get("type")?.getString("key") == type }
         ?.mapNotNull { it.getString("connection") }
         ?: emptyList()

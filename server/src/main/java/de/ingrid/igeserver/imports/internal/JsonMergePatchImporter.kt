@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.imports.internal
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.fge.jsonpatch.JsonPatch
 import com.gravity9.jsonpatch.mergepatch.JsonMergePatch
 import de.ingrid.igeserver.ServerException
@@ -32,6 +30,8 @@ import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 data class IgeJsonPatch(
     val uuid: String,
@@ -72,9 +72,10 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
 
         // get complete json as if from internal export
         val jsonDoc = getRawJsonFromDocument(doc, true)
-        val patchedNode: JsonNode? = input.jsonPatch?.apply(jsonDoc) ?: input.jsonMerge?.apply(jsonDoc)
+        val legacyDoc = com.fasterxml.jackson.databind.ObjectMapper().readTree(jsonDoc.toString())
+        val patchedNode: com.fasterxml.jackson.databind.JsonNode? = input.jsonPatch?.apply(legacyDoc) ?: input.jsonMerge?.apply(legacyDoc)
 
-        return jacksonObjectMapper().treeToValue(patchedNode, JsonNode::class.java)
+        return jacksonObjectMapper().readTree(patchedNode.toString())
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

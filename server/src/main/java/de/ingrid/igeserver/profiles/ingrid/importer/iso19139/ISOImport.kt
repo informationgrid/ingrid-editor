@@ -19,14 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.exports.output.JsonStringOutput
@@ -44,6 +36,13 @@ import gg.jte.TemplateOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.MapperFeature
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 data class IsoImportData(
     val data: Metadata,
@@ -88,14 +87,13 @@ class ISOImport(
             throw ServerException.withReason("CSW-Antworten werden für den Import nicht unterstützt (csw:GetRecordByIdResponse). Bitte stellen Sie ein ISO-XML-Dokument bereit, bei dem gmd:MD_Metadata ein Wurzelelement ist.")
         }
 
-        val xmlDeserializer = XmlMapper(
-            JacksonXmlModule().apply {
-                setDefaultUseWrapper(false)
-                setXMLTextElementName("innerText")
-            },
-        ).registerKotlinModule()
+        val xmlDeserializer = XmlMapper.builder()
+            .defaultUseWrapper(false)
+            .nameForTextElement("innerText")
+            .addModule(kotlinModule())
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build()
 
         val finalObject = xmlDeserializer.readValue(data, Metadata::class.java)
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"

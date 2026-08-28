@@ -20,9 +20,9 @@
 package de.ingrid.igeserver.features.ogc_api_records.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.Instant
 import java.time.OffsetDateTime
 data class RecordCollection(

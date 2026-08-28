@@ -19,18 +19,20 @@
  */
 package de.ingrid.igeserver.configuration
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.comm.HttpCLCommunication
 import de.ingrid.codelists.comm.ICodeListCommunication
 import de.ingrid.codelists.persistency.ICodeListPersistency
 import de.ingrid.codelists.persistency.XmlCodeListPersistency
 import org.hibernate.cfg.AvailableSettings
-import org.hibernate.type.format.jackson.JacksonJsonFormatMapper
+import org.hibernate.type.format.jackson.Jackson3JsonFormatMapper
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
+import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 
 // @ComponentScan(basePackages = ["de.ingrid.igeserver"])
 @Configuration
@@ -75,11 +77,45 @@ class BeansConfiguration {
         return service
     }
 
+    @Bean
+    fun objectMapper(): ObjectMapper = JsonMapper.builder()
+        .changeDefaultVisibility({ vc -> vc.withFieldVisibility(JsonAutoDetect.Visibility.NONE) })
+        .build()
+//    @Bean
+//    fun objectMapper(): ObjectMapper = jacksonObjectMapper()
+//        .registerModule(JavaTimeModule())
+//        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+//        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+//        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+
+/*    override fun extendMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
+        val index = converters.indexOfFirst { it.javaClass.name.contains("JacksonJsonHttpMessageConverter") }
+//        val jackson2Converter = MappingJackson2HttpMessageConverter(objectMapper())
+        val jackson2Converter = Jackson2ObjectMapperBuilder.json() // MappingJackson2HttpMessageConverter(objectMapper())
+        if (index >= 0) {
+            converters.add(index, jackson2Converter)
+        } else {
+            converters.add(jackson2Converter)
+        }
+    }
+
+    override fun configureMessageConverters(builder: HttpMessageConverters.ServerBuilder) {
+        val index = converters.indexOfFirst { it.javaClass.name.contains("JacksonJsonHttpMessageConverter") }
+//        val jackson2Converter = MappingJackson2HttpMessageConverter(objectMapper())
+        val jackson2Converter = JsonMapper.builder()
+        builder.withJsonConverter(jackson2Converter)
+        if (index >= 0) {
+            converters.add(index, jackson2Converter)
+        } else {
+            converters.add(jackson2Converter)
+        }
+    }*/
+
     /**
      * This mapper is needed to correctly convert JSONB columns into Classes, especially OffsetDateTime!
      */
     @Bean
-    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer = HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
-        properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
+    fun jsonFormatMapperCustomizer(): HibernatePropertiesCustomizer = HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
+        properties[AvailableSettings.JSON_FORMAT_MAPPER] = Jackson3JsonFormatMapper()
     }
 }

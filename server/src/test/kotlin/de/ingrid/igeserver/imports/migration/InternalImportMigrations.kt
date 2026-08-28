@@ -17,8 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.imports.internal.InternalImporter
 import de.ingrid.igeserver.imports.internal.migrations.Migrate160
@@ -27,6 +25,8 @@ import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class InternalImportMigrations : AnnotationSpec() {
 
@@ -47,16 +47,16 @@ class InternalImportMigrations : AnnotationSpec() {
     fun testMigrate160() {
         val mapper = jacksonObjectMapper()
         val data = mapper.createObjectNode().apply {
-            set<ObjectNode>(
+            set(
                 "spatial",
                 mapper.createObjectNode().apply {
-                    set<ObjectNode>(
+                    set(
                         "verticalExtent",
                         mapper.createObjectNode().apply {
                             put("minimumValue", 10)
                             put("maximumValue", 20)
-                            set<ObjectNode>("unitOfMeasure", mapper.createObjectNode().put("key", "m"))
-                            set<ObjectNode>("Datum", mapper.createObjectNode().put("key", "EPSG:5714"))
+                            set("unitOfMeasure", mapper.createObjectNode().put("key", "m"))
+                            set("Datum", mapper.createObjectNode().put("key", "EPSG:5714"))
                         },
                     )
                 },
@@ -69,7 +69,7 @@ class InternalImportMigrations : AnnotationSpec() {
         val verticalExtent = spatial.get("verticalExtent")
         verticalExtent.has("Datum") shouldBe false
         verticalExtent.has("spatialSystem") shouldBe true
-        verticalExtent.get("spatialSystem").get("key").asText() shouldBe "EPSG:5714"
+        verticalExtent.get("spatialSystem").get("key").asString() shouldBe "EPSG:5714"
     }
 
     @Test

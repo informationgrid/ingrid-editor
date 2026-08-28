@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.export_record
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -33,6 +31,8 @@ import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class OgcHtmlExporter(

@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.exports
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.XMLConstants

@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
 
 class Migrate170 {
 
@@ -32,7 +32,7 @@ class Migrate170 {
                     if (docVersion.has("data") && docVersion.get("data").isObject) {
                         val data = docVersion.get("data") as ObjectNode
                         getProcessingStepsOfDocument(data)?.let { processingSteps ->
-                            data.set<JsonNode>("processingSteps", processingSteps)
+                            data.set("processingSteps", processingSteps)
                         }
                     }
                 }
@@ -41,7 +41,7 @@ class Migrate170 {
         }
 
         fun getProcessingStepsOfDocument(data: ObjectNode): JsonNode? {
-            val processingSteps = data.get("processingSteps")?.deepCopy<JsonNode>() ?: return null
+            val processingSteps = data.get("processingSteps")?.deepCopy() ?: return null
             if (processingSteps.isArray) {
                 processingSteps.forEach { step ->
                     if (step is ObjectNode) {

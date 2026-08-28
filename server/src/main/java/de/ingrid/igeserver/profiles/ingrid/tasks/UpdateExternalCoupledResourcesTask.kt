@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.tasks
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
@@ -34,6 +30,10 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.FileNotFoundException
 
 @Component

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -32,6 +31,7 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
+import tools.jackson.databind.node.ArrayNode
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
@@ -77,12 +77,12 @@ class OpenDataRDFTransformer(
     val catalogDescription = catalog.description
     val catalogTitle = catalog.name
     val uploadUrl = "$documentsUrl$catalogId/${doc.uuid}"
-    val themes = doc.data.get("DCATThemes")?.map {
+    val themes = doc.data.get("DCATThemes")?.values()?.map {
         "http://publications.europa.eu/resource/authority/data-theme/" +
             codelistTransformer.getData("6400", it.getStringOrEmpty("key"))
     } ?: emptyList()
 
-    val keywords = (doc.data.get("keywords")?.map { it.asText() } ?: emptyList())
+    val keywords = (doc.data.get("keywords")?.values()?.map { it.asString() } ?: emptyList())
 
     val qualityProcessURI = doc.data.getStringOrEmpty("qualityProcessURI")
     val accrualPeriodicity = doc.data.getString("accrualPeriodicity.key")
@@ -106,8 +106,8 @@ class OpenDataRDFTransformer(
     }
 
     val temporalResolution = doc.data.get("userDefinedAccrualPeriodicity")?.let {
-        val number = it.get("number")?.asText()?.toIntOrNull()
-        val unit = it.get("unit")?.get("key")?.asText()
+        val number = it.get("number")?.asString()?.toIntOrNull()
+        val unit = it.get("unit")?.get("key")?.asString()
         if (number != null && unit != null) {
             when (unit) {
                 "1" -> "PT${number}S"
@@ -152,7 +152,7 @@ class OpenDataRDFTransformer(
     val maintainer = mapAddress("2")
 
     private fun mapAddress(type: String): AddressModelTransformer? {
-        val addressUuid = doc.data.get("addresses").find { it.getString("type.key") == type }?.getStringOrEmpty("ref")
+        val addressUuid = doc.data.get("addresses")?.values()?.find { it.getString("type.key") == type }?.getStringOrEmpty("ref")
         return getAddress(addressUuid)
     }
 
@@ -173,7 +173,7 @@ class OpenDataRDFTransformer(
         )
     }
 
-    val spatials: List<SpatialModel> = doc.data.get("spatial")?.map { spatial ->
+    val spatials: List<SpatialModel> = doc.data.get("spatial")?.values()?.map { spatial ->
         SpatialModel(
             type = spatial.getStringOrEmpty("type"),
             title = spatial.getStringOrEmpty("title"),
@@ -190,7 +190,7 @@ class OpenDataRDFTransformer(
         )
     } ?: emptyList()
 
-    val distributions: List<Distribution> = doc.data.get("distributions")?.map { dist ->
+    val distributions: List<Distribution> = doc.data.get("distributions")?.values()?.map { dist ->
         val isLink = dist.getBoolean("link.asLink") ?: false
         val accessURL = if (isLink) dist.getStringOrEmpty("link.uri") else uploadUrl + "/" + dist.getString("link.uri")
         Distribution(
@@ -206,7 +206,7 @@ class OpenDataRDFTransformer(
                 )
             },
             byClause = dist.getStringOrEmpty("byClause"),
-            languages = (dist.get("languages") as ArrayNode).map { it.getStringOrEmpty("key") },
+            languages = dist.get("languages")?.values()?.map { it.getStringOrEmpty("key") } ?: emptyList(),
             availability = dist.getStringOrEmpty("availability.key"),
         )
     } ?: emptyList()

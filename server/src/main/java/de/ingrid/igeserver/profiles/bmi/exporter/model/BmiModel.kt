@@ -21,11 +21,11 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 

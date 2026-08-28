@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.catalogTransfer
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.CatalogApiController
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
@@ -43,6 +41,8 @@ import io.mockk.verify
 import jakarta.persistence.EntityManager
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.nio.file.Files
 import java.nio.file.Paths
 

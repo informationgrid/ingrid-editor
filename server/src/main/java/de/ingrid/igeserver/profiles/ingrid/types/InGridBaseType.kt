@@ -43,8 +43,8 @@ data class IngridIncomingReferenceOptions(
 abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val profiles = arrayOf("ingrid")
 
-    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("pointOfContact").map { address ->
-        address.path("ref").textValue()
+    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("pointOfContact").values().mapNotNull { address ->
+        address.path("ref").asString()
     }
 
     override fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> {

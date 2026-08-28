@@ -20,7 +20,6 @@
 package de.ingrid.igeserver
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.InvalidParameterException
 import org.apache.logging.log4j.kotlin.logger
@@ -36,6 +35,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * This class handles all REST errors globally. There's no need to handle each error individually in each controller.
@@ -46,9 +47,9 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     val log = logger()
 
     private val mapper: ObjectMapper by lazy {
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        mapper
+        JsonMapper.builder()
+            .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
+            .build()
     }
 
     /**

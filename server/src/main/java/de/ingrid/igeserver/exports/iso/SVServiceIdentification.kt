@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 open class SVServiceIdentification(
     open val citation: Citation,

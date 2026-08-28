@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.model
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.node.ObjectNode
 import java.time.OffsetDateTime
 
 data class DocumentWithMetadata(

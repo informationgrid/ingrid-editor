@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.persistence.postgresql
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.PersistenceException
 import jakarta.transaction.Transactional
 import org.apache.logging.log4j.LogManager
@@ -44,6 +42,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.namedparam.SqlParameterSource
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.sql.Types
 import java.time.Instant
 import java.time.ZoneId

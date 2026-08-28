@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -43,6 +41,8 @@ import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class IngridLuceneExporter(
@@ -196,5 +196,5 @@ data class TransformerData(
     val codelistTransformer: CodelistTransformer,
     val doc: Document,
     val tags: List<String>,
-    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
+    val mapper: ObjectMapper = jacksonObjectMapper(),
 )

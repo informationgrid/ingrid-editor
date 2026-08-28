@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.utils
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.model.DocMetadata
 import de.ingrid.igeserver.model.DocumentWithMetadata
@@ -29,6 +27,8 @@ import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
 import java.time.format.DateTimeFormatter
 
 fun documentInPublishedState(document: Document) = document.state == DocumentState.PUBLISHED || document.state == DocumentState.DRAFT_AND_PUBLISHED || document.state == DocumentState.PENDING

@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Address
 import de.ingrid.igeserver.exports.iso.CIContact
@@ -41,6 +37,10 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.databind.JsonNode
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.util.*
 
 open class GeneralMapper(val isoData: IsoImportData) {

@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.json.JsonMapper
 import org.apache.commons.io.IOUtils
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.Lang
 import org.apache.jena.riot.RDFDataMgr
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import java.io.IOException
 
 object TransformUtils {

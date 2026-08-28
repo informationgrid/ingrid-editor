@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import tools.jackson.dataformat.xml.annotation.JacksonXmlText
 
 data class IdentificationInfo(
     @JacksonXmlProperty(localName = "SV_ServiceIdentification") private val serviceIdentificationInfo: SVServiceIdentification?,

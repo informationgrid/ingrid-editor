@@ -19,11 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
-import com.bedatadriven.jackson.datatype.jts.JtsModule
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.dcatparser.dcatapde.model.dcat.Catalog
 import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
 import de.ingrid.dcatparser.dcatapeia.serialization.DcatApEiaDeserializer
@@ -38,15 +33,14 @@ import de.ingrid.mdek.upload.UploadConfig
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     private val mapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .registerModule(JtsModule())
-        .registerKotlinModule()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)

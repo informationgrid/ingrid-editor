@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -37,6 +36,7 @@ import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.Publication
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import tools.jackson.databind.JsonNode
 import kotlin.reflect.KClass
 
 fun amendHMDKDescriptiveKeywords(

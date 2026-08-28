@@ -114,9 +114,8 @@ dependencies {
 //    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Jackson
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "tools.jackson.module:jackson-module-kotlin"
+    implementation "tools.jackson.dataformat:jackson-dataformat-xml"
     implementation "com.gravity9:json-patch-path:2.0.2"
 
     // JSON schema validation

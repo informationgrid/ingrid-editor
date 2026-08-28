@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
@@ -64,6 +63,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.time.Instant
 

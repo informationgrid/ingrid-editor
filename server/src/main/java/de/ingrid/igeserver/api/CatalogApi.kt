@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.imports.CatalogImportOptions
 import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -42,6 +41,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
+import tools.jackson.databind.ObjectMapper
 import java.security.Principal
 
 @Component

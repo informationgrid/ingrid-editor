@@ -22,11 +22,11 @@ package de.ingrid.igeserver.profiles.ingrid.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime

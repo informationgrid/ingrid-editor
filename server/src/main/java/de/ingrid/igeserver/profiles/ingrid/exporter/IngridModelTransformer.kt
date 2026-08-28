@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -69,6 +67,8 @@ import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.text.StringEscapeUtils.escapeJson
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -116,7 +116,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map {
+    open val digitalTransferOptions: List<DigitalTransferOption> = doc.data.get("digitalTransferOptions")?.values()?.map {
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(
@@ -412,7 +412,7 @@ open class IngridModelTransformer(
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
 
     fun getGeometryContexts(): List<GeometryContext> = doc.data.get("geometryContext")
-        ?.map { convertToGeometryContext(it) } ?: emptyList()
+        ?.values()?.map { convertToGeometryContext(it) } ?: emptyList()
 
     open val spatialSystems = data.spatial.spatialSystems?.map { mapToCharacterStringModel("100", it) } ?: emptyList()
 
@@ -1275,7 +1275,7 @@ open class IngridModelTransformer(
             if (featureType == "OtherFeature") "attributeContent" else "attributeCode",
             item.getStringOrEmpty("dataType"),
             item.getStringOrEmpty("description"),
-            item.get("attributes")?.asIterable()?.map {
+            item.get("attributes")?.values()?.map {
                 GeometryContextAttribute(it.getStringOrEmpty("key"), it.getStringOrEmpty("value"))
             } ?: emptyList(),
             item.getDouble("min"),

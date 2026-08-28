@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class Migrate120 {
 
@@ -44,7 +44,7 @@ class Migrate120 {
                     val docType = docVersion.getString("_type")!!
                     if (includedTypes.contains(docType)) {
                         val migratedData = getPropertiesOfDocument(docVersion, docType)
-                        docVersion.set<JsonNode>("properties", migratedData)
+                        docVersion.set("properties", migratedData)
                     }
                 }
             }
@@ -60,9 +60,9 @@ class Migrate120 {
             val hvd = doc.remove("hvd")
             val publicationHmbTG = doc.remove("publicationHmbTG")
 
-            if (publicationHmbTG?.booleanValue() == true) set<JsonNode>("publicationHmbTG", publicationHmbTG)
-            if (isOpenData?.booleanValue() == true) set<JsonNode>("isOpenData", isOpenData)
-            if (isAdVCompatible?.booleanValue() == true) set<JsonNode>("isAdVCompatible", isAdVCompatible)
+            if (publicationHmbTG?.booleanValue() == true) set("publicationHmbTG", publicationHmbTG)
+            if (isOpenData?.booleanValue() == true) set("isOpenData", isOpenData)
+            if (isAdVCompatible?.booleanValue() == true) set("isAdVCompatible", isAdVCompatible)
             if (isInspireIdentified?.booleanValue() == true) {
                 if (docType == "InGridGeoDataset") {
                     if (isInspireConform == null || isInspireConform.isNull || !isInspireConform.booleanValue()) {
@@ -72,14 +72,14 @@ class Migrate120 {
                     }
                     val invekos = doc.remove("invekos")
                     if (invekos?.isNull == false && invekos.getString("key") != "none") {
-                        set<JsonNode>("invekos", invekos)
+                        set("invekos", invekos)
                     }
                 } else {
                     put("isInspireIdentified", "relevant")
                 }
             }
-            if (subType?.isNull == false) set<JsonNode>("subType", subType)
-            if (hvd?.booleanValue() == true) set<JsonNode>("isHvd", hvd)
+            if (subType?.isNull == false) set("subType", subType)
+            if (hvd?.booleanValue() == true) set("isHvd", hvd)
         }
     }
 }

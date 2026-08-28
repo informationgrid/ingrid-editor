@@ -19,14 +19,14 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bkg.importer
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UseConstraint
 import de.ingrid.igeserver.utils.getString
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 data class AccessConstraint(
     val title: KeyValue?,

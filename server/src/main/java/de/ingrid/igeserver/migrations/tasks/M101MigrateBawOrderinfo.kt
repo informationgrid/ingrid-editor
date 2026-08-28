@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeType
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.migrations.MigrationBase
@@ -36,6 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.JsonNodeType
 
 @Profile("ingrid-baw")
 @Service
@@ -110,7 +110,7 @@ class M101MigrateBawOrderinfo : MigrationBase("0.101") {
         val data = doc.data
         return when (data.get("orderNumber")?.nodeType) {
             JsonNodeType.STRING -> data.getString("orderNumber")
-            JsonNodeType.ARRAY -> data.get("orderNumber").get(0)?.asText()
+            JsonNodeType.ARRAY -> data.get("orderNumber").get(0)?.asString()
             else -> null
         }?.trim()
     }
@@ -137,7 +137,7 @@ class M101MigrateBawOrderinfo : MigrationBase("0.101") {
                 ?: data.get("orderTitles")
                     ?.let { titles ->
                         if (titles.isArray) {
-                            titles.joinToString { it.asText().trim() }
+                            titles.joinToString { it.asString().trim() }
                         } else {
                             null
                         }
@@ -158,7 +158,7 @@ class M101MigrateBawOrderinfo : MigrationBase("0.101") {
             }
         }
 
-        data.set<JsonNode>("bawOrderInfo", keyValue)
+        data.set("bawOrderInfo", keyValue)
         data.remove("orderNumber")
         data.remove("orderTitle")
         data.remove("orderTitles")

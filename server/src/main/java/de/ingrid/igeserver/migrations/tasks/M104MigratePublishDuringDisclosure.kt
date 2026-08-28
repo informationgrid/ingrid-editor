@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.internal.migrations.Migrate170
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
 
 @Profile("uvp")
 @Service
@@ -82,7 +82,7 @@ class M104MigratePublishDuringDisclosure : MigrationBase("0.104") {
                     try {
                         val data = it.data
                         Migrate170.getProcessingStepsOfDocument(data)?.let { processingSteps ->
-                            data.set<JsonNode>("processingSteps", processingSteps)
+                            data.set("processingSteps", processingSteps)
                             entityManager.merge(it)
                         }
                     } catch (e: Exception) {

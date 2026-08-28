@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
+import tools.jackson.databind.JsonNode
 
 interface ExportPostProcessors {
     enum class TransformationType {

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.services.DocumentService
@@ -29,6 +28,7 @@ import de.ingrid.igeserver.services.IgeAclService
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.JsonNodeFactory
 
 @Component
 class EnhanceGroupsTask(

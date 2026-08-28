@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.utils.UploadInfo
+import tools.jackson.databind.JsonNode
 import java.time.OffsetDateTime
 
 val sqlStepsPublished = """

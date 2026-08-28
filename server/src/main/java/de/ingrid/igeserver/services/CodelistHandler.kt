@@ -19,11 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.codelists.model.CodeListEntry
@@ -34,6 +29,11 @@ import de.ingrid.igeserver.repository.CodelistRepository
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jacksonTypeRef
 
 @Service
 class CodelistHandler(
@@ -54,7 +54,7 @@ class CodelistHandler(
         ): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
             if (data != null) put("data", data)
-            set<JsonNode>(
+            set(
                 "localisations",
                 jacksonObjectMapper().createObjectNode().apply {
                     put("de", german)
@@ -97,9 +97,9 @@ class CodelistHandler(
                 name = it.name
                 description = it.description
                 defaultEntry = it.defaultEntry
-                entries = it.data?.map { entry ->
+                entries = it.data?.values()?.map { entry ->
                     CodeListEntry().apply {
-                        id = entry.get("id")?.asText()
+                        id = entry.get("id")?.asString()
                             ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
                         description =
                             if (entry.get("description") == null || entry.get("description").isNull) {
@@ -107,14 +107,14 @@ class CodelistHandler(
                             } else {
                                 entry.get(
                                     "description",
-                                ).asText()
+                                ).asString()
                             }
                         data =
                             if (entry.get("data") == null || entry.get("data").isNull) {
                                 null
                             } else {
                                 entry.get("data")
-                                    .asText()
+                                    .asString()
                             }
                         fields = ObjectMapper().convertValue(
                             entry.get("localisations"),

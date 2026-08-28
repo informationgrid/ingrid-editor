@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -28,6 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getEnvironmentDescripti
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import tools.jackson.databind.node.ArrayNode
 
 class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 

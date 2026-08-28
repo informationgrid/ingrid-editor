@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.tasks.quartz
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -34,6 +31,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ObjectNode
 import java.util.*
 
 @Component

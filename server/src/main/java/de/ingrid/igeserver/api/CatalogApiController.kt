@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
@@ -48,6 +44,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import tools.jackson.core.StreamReadFeature
+import tools.jackson.module.kotlin.jacksonMapperBuilder
+import tools.jackson.module.kotlin.readValue
 import java.security.Principal
 import java.text.SimpleDateFormat
 import java.util.*

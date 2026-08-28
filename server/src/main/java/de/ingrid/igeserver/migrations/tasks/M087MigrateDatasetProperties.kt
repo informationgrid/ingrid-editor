@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.internal.migrations.Migrate120
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -30,6 +29,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
 
 /**
  * Transform userIds of users to lowercase
@@ -68,7 +68,7 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
                 documents.forEach {
                     it as Document
                     val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
-                    it.data.set<JsonNode>("properties", properties)
+                    it.data.set("properties", properties)
                     log.info("Migrated doc with dbID ${it.id}")
                 }
                 page++

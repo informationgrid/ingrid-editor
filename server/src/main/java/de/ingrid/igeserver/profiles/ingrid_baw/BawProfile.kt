@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_baw
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
@@ -41,6 +40,7 @@ import de.ingrid.igeserver.services.DocumentService
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 @EnableConfigurationProperties(BawProperties::class)

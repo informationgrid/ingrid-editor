@@ -21,8 +21,8 @@ package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)

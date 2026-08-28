@@ -19,12 +19,6 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.NullNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
@@ -42,6 +36,11 @@ import jakarta.persistence.EntityManager
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.NullNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.Principal
 
 @Component
@@ -85,8 +84,8 @@ class PostMigrationTask(
             val spatialSystems = spatial.get("spatialSystems") as ArrayNode? ?: return@forEach
             if (!spatialSystems.isEmpty) {
                 spatialSystems.map { lookupSpatialSystem(it) }
-                spatial.set<ArrayNode>("spatialSystems", spatialSystems)
-                data.set<JsonNode>("spatial", spatial)
+                spatial.set("spatialSystems", spatialSystems)
+                data.set("spatial", spatial)
                 doc.data = data
                 docRepo.save(doc)
             }
@@ -94,7 +93,7 @@ class PostMigrationTask(
     }
 
     private fun lookupSpatialSystem(spatialSystem: JsonNode): JsonNode {
-        val potentialId = spatialSystem.get("value")?.asText() ?: return spatialSystem
+        val potentialId = spatialSystem.get("value")?.asString() ?: return spatialSystem
         if (codelistHandler.getCodelistEntry("100", potentialId) != null) {
             (spatialSystem as ObjectNode).put("key", potentialId)
         }
@@ -115,8 +114,8 @@ class PostMigrationTask(
             val spatialReferences = spatial.get("references") as ArrayNode? ?: return@forEach
             if (!spatialReferences.isEmpty) {
                 spatialReferences.map { lookupBwastrTitle(it) }
-                spatial.set<ArrayNode>("references", spatialReferences)
-                data.set<JsonNode>("spatial", spatial)
+                spatial.set("references", spatialReferences)
+                data.set("spatial", spatial)
                 doc.data = data
                 docRepo.save(doc)
             }
@@ -206,9 +205,9 @@ class PostMigrationTask(
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
                 if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) {
-                    child.document.data.set<TextNode>(
+                    child.document.data.put(
                         "parentIdentifier",
-                        TextNode(doc.uuid),
+                        doc.uuid,
                     )
                 }
                 documentService.docRepo.saveAndFlush(child.document)

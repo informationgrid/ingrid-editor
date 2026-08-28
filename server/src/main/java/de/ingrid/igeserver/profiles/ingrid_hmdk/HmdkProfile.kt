@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
@@ -36,6 +35,7 @@ import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class HmdkProfile(

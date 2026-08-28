@@ -32,8 +32,6 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIHost
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.AiSettings
@@ -41,6 +39,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.stereotype.Service
+import tools.jackson.core.type.TypeReference
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.time.Duration.Companion.seconds
 
 @Service

@@ -20,11 +20,10 @@
 package de.ingrid.igeserver.persistence.postgresql
 
 import IntegrationTest
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.services.DocumentState
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
@@ -33,6 +32,9 @@ import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -42,6 +44,9 @@ class JpaTest : IntegrationTest() {
 
     @Autowired
     private lateinit var em: EntityManager
+
+    @Autowired
+    private lateinit var codelistRepo: CodelistRepository
 
     @Test
     fun `saving a document with typed embedded data`() {
@@ -94,9 +99,9 @@ class JpaTest : IntegrationTest() {
 
         val addressData = loadedDoc.data
         addressData shouldNotBe null
-        addressData.get("firstName").asText() shouldBe "Petra"
-        addressData.get("lastName").asText() shouldBe "Mustermann"
-        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
+        addressData.get("firstName").asString() shouldBe "Petra"
+        addressData.get("lastName").asString() shouldBe "Mustermann"
+        addressData.get("company").asString() shouldBe "LWL-Schulverwaltung Münster"
     }
 
     @Test
@@ -148,9 +153,9 @@ class JpaTest : IntegrationTest() {
 
         val addressData = loadedDoc.data
         addressData shouldNotBe null
-        addressData.get("firstName").asText() shouldBe "Petra"
-        addressData.get("lastName").asText() shouldBe "Mustermann"
-        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
+        addressData.get("firstName").asString() shouldBe "Petra"
+        addressData.get("lastName").asString() shouldBe "Mustermann"
+        addressData.get("company").asString() shouldBe "LWL-Schulverwaltung Münster"
     }
 
     @Test
@@ -203,9 +208,9 @@ class JpaTest : IntegrationTest() {
 
         val addressData = loadedDoc.data
         addressData shouldNotBe null
-        addressData.get("firstName").asText() shouldBe "Petra"
-        addressData.get("lastName").asText() shouldBe "Mustermann"
-        addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
+        addressData.get("firstName").asString() shouldBe "Petra"
+        addressData.get("lastName").asString() shouldBe "Mustermann"
+        addressData.get("company").asString() shouldBe "LWL-Schulverwaltung Münster"
 
         val q2 =
             em.createNativeQuery("SELECT d.* FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
@@ -215,6 +220,49 @@ class JpaTest : IntegrationTest() {
                 .setParameter("type", "uvp")
         val result2 = q2.resultList
         result2.size shouldBeExactly 8
+    }
+
+    @Test
+    fun `saving and querying a codelist with codelistRepository`() {
+        val cat = Catalog().apply {
+            name = "Test Catalog Codelist"
+            identifier = "test_catalog_codelist"
+            type = "uvp"
+        }
+        em.persist(cat)
+
+        val codelistData = jacksonObjectMapper().createArrayNode().apply {
+            add(
+                jacksonObjectMapper().createObjectNode().apply {
+                    put("key", "val1")
+                    put("value", "First Value")
+                },
+            )
+        }
+
+        val codelist = Codelist().apply {
+            identifier = "test_cl"
+            name = "Test Codelist"
+            catalog = cat
+            data = codelistData
+        }
+        codelistRepo.save(codelist)
+
+        em.flush()
+        em.clear()
+
+        val found = codelistRepo.findByCatalog_IdentifierAndIdentifier("test_catalog_codelist", "test_cl")
+        found shouldNotBe null
+        found.identifier shouldBe "test_cl"
+        found.name shouldBe "Test Codelist"
+        val data = found.data
+        data shouldNotBe null
+        data!!.size() shouldBe 1
+        data[0].get("key").asString() shouldBe "val1"
+        data[0].get("value").asString() shouldBe "First Value"
+
+        val allCodelists = codelistRepo.findAllByCatalog_Identifier("test_catalog_codelist")
+        allCodelists.size shouldBe 1
     }
 
     private fun convertDate(date: OffsetDateTime?): String? = date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))

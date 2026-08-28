@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.index
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jillesvangurp.ktsearch.BulkSession
 import com.jillesvangurp.ktsearch.RestException
 import com.jillesvangurp.ktsearch.SearchClient
@@ -40,6 +38,8 @@ import de.ingrid.igeserver.services.META_INDEX
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.IOException
 
 data class ElasticClient(

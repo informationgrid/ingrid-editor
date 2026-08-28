@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.ServerException.Companion.withReason
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.TransformUtils.getRdfModel
@@ -53,6 +50,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
 import java.io.IOException
 import java.net.URISyntaxException
 import java.time.Instant
@@ -64,11 +63,6 @@ import java.util.function.Function
 class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val validationUtils: ValidationUtils) : Deserializer {
 
     val uuidPattern = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
-
-    init {
-        // make sure we don't get an XmlMapper
-        require(mapper !is XmlMapper) { "XmlMapper cannot be used to deserialize GeoJson." }
-    }
 
     @Throws(ServerException::class)
     override fun deserializeRecord(serializedRecordProperties: String?): RecordPLUProperties? {
@@ -363,7 +357,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                 val jsonNode = mapper.readTree(nodeValue)
                 val typeNode = jsonNode["type"]
                     ?: throw withReason("GeoJSON must contain \"type\" property", null)
-                val type = typeNode.textValue()
+                val type = typeNode.asString()
                 if ("FeatureCollection" == type) {
                     val featuresNode = jsonNode["features"]
                         ?: throw withReason("FeatureCollection must contain \"features\" property", null)
@@ -376,11 +370,11 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                         },
                     )
                     val objectNode = mapper.createObjectNode()
-                    objectNode.set<JsonNode>(
+                    objectNode.set(
                         "type",
                         mapper.convertValue("GeometryCollection", JsonNode::class.java),
                     )
-                    objectNode.set<JsonNode>("geometries", geometries)
+                    objectNode.set("geometries", geometries)
                     return mapper.readValue(objectNode.toString(), Map::class.java) as Map<String, Any>
                 } else if ("Feature" == type) {
                     val geometryNode = jsonNode["geometry"]

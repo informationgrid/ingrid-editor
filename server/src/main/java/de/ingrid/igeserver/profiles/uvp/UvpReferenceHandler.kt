@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {

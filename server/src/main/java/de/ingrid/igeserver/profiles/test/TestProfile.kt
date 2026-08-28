@@ -20,9 +20,6 @@
 package de.ingrid.igeserver.profiles.test
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
@@ -44,6 +41,9 @@ import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class TestProfile : CatalogProfile {
@@ -207,14 +207,14 @@ class TestProfile : CatalogProfile {
             data = jacksonObjectMapper().createObjectNode().apply {
                 val model = jacksonObjectMapper().createObjectNode().apply {
                     put("type", "selectDocuments")
-                    set<ObjectNode>(
+                    set(
                         "docType",
                         jacksonObjectMapper().createObjectNode().apply {
                             put("selectDocTest", true)
                         },
                     )
                 }
-                set<ObjectNode>("model", model)
+                set("model", model)
             }
             modified = dateService.now()
         }
@@ -233,7 +233,7 @@ class TestProfile : CatalogProfile {
 
     private fun toCodelistEntry(id: String, german: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
         put("id", id)
-        set<JsonNode>(
+        set(
             "localisations",
             jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)

@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.utils
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
+import tools.jackson.databind.JsonNode
 
 /**
  * Get the text value of a given path in a JsonNode. The path is delimited by a "."
@@ -28,7 +28,7 @@ import de.ingrid.igeserver.model.KeyValue
 fun JsonNode.getString(path: String): String? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
         node?.get(fieldName)
-    }?.let { if (it.isNull) null else it.asText() }
+    }?.let { if (it.isNull) null else it.asString() }
 
 fun JsonNode.getBoolean(path: String): Boolean? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->

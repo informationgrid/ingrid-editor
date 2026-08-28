@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -36,6 +34,8 @@ import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.UploadConfig
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 
 class OpenDataModelTransformerAdditional(
@@ -46,7 +46,7 @@ class OpenDataModelTransformerAdditional(
     val documentService: DocumentService,
 ) {
 
-    fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
+    fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.values()?.map { dist ->
         Distribution(
             dist.getStringOrEmpty("format.key"),
             getDownloadLink(dist, doc.uuid),
@@ -55,7 +55,7 @@ class OpenDataModelTransformerAdditional(
             dist.getStringOrEmpty("description"),
             mapLicense(dist.getString("license.key")),
             dist.getStringOrEmpty("byClause"),
-            dist.get("languages").mapNotNull { mapLanguage(it) },
+            dist.get("languages")?.values()?.mapNotNull { mapLanguage(it) } ?: emptyList(),
             mapAvailability(dist.getStringOrEmpty("availability.key")),
         )
     } ?: emptyList()
@@ -64,7 +64,7 @@ class OpenDataModelTransformerAdditional(
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getString("description") ?: ""
     fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
-    fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull {
+    fun getThemes() = doc.data.get("openDataCategories")?.values()?.mapNotNull {
         codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
     } ?: emptyList()
 
@@ -72,7 +72,7 @@ class OpenDataModelTransformerAdditional(
     fun getModified() = doc.modified.toString()
     fun getPeriodicity() = "" // doc.data.getmodified.toString()
     fun getKeywords() = emptyList<String>()
-    fun getAddresses() = doc.data.get("pointOfContact").map {
+    fun getAddresses(): List<AddressInfo> = doc.data.get("pointOfContact")?.values()?.map {
         val address = toAddressModelTransformer(AddressRefModel(KeyValue(it.getString("type.key")), it.getString("ref")))
         AddressInfo(
             mapAddressType(it.getString("type.key") ?: ""),
@@ -84,7 +84,7 @@ class OpenDataModelTransformerAdditional(
                     (address?.homepage?.let { ContactSimple("URL", it) })
                 ).filterNotNull(),
         )
-    }
+    } ?: emptyList()
 
     private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
         val lastPublishedDoc =

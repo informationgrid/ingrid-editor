@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.internal.migrations.Migrate150
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
 
 @Profile("ingrid")
 @Service
@@ -62,7 +62,7 @@ class M100MigrateTemporal : MigrationBase("0.100") {
 
                     try {
                         val temporal = Migrate150.getTemporalOfDocument(it.data)
-                        it.data.set<JsonNode>("temporal", temporal)
+                        it.data.set("temporal", temporal)
                         log.info("Migrated doc with dbID ${it.id}")
                     } catch (e: Exception) {
                         log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")

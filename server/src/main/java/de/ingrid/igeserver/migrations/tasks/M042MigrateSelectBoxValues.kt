@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -34,6 +30,10 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M042MigrateSelectBoxValues : MigrationBase("0.42") {
@@ -82,7 +82,7 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
     }
 
     private fun migrateField(doc: Document, field: String, codelistId: String? = null) {
-        var value = doc.data.get(field)?.textValue() ?: return
+        var value = doc.data.get(field)?.asString() ?: return
 
         if (codelistId != null) {
             value =
@@ -92,7 +92,7 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
             put("key", value)
         }
-        doc.data.set<JsonNode>(field, updatedValue)
+        doc.data.set(field, updatedValue)
     }
 
     private fun handleCodelistValue(
@@ -114,7 +114,7 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
                 put("key", null as String?)
                 put("value", value)
             }
-            item.set<JsonNode>(field, updatedValue)
+            item.set(field, updatedValue)
             null
         } else {
             entry.id
@@ -131,9 +131,9 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
         if (value.isNull) return
 
         val updatedValue = jacksonObjectMapper().createObjectNode().apply {
-            put("key", value.textValue())
+            put("key", value.asString())
         }
-        temporal.set<JsonNode>(nestedField, updatedValue)
+        temporal.set(nestedField, updatedValue)
     }
 
     private fun migrateArray(doc: Document, arrayField: String, field: String, codelistId: String? = null) {
@@ -148,7 +148,7 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
 
             item as ObjectNode
 
-            var value = fieldElement.textValue()
+            var value = fieldElement.asString()
 
             if (value != null) {
                 if (codelistId != null) {
@@ -162,7 +162,7 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
 //                    put("key", null as String)
 //                    put("value", value)
                 }
-                item.set<JsonNode>(field, updatedValue)
+                item.set(field, updatedValue)
             }
         }
     }

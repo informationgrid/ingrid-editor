@@ -19,14 +19,14 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
 import java.net.URI
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -45,7 +45,7 @@ class JsonSchemaService(
             ?: error("Schema file not found: $schemaPath")
 
         val baseUri = resource.toURI()
-        val rootSchema = ObjectMapper().readTree(resource)
+        val rootSchema = ObjectMapper().readTree(resource.openStream())
 
         val completeJsonSchema = resolveAllRefs(rootSchema, baseUri)
 
@@ -56,20 +56,20 @@ class JsonSchemaService(
         return when (node) {
             is ObjectNode -> {
                 if (node.has("\$ref")) {
-                    val ref = node["\$ref"].asText()
+                    val ref = node["\$ref"].asString()
                     val targetUri = if (ref.startsWith("#")) baseUri else baseUri.resolve(ref.substringBefore("#"))
                     val resolved = resolveRef(ref, baseUri)
                     return resolveAllRefs(resolved, targetUri)
                 }
 
-                node.deepCopy<ObjectNode>().apply {
+                node.deepCopy().apply {
                     properties().forEach { (field, value) ->
-                        set<JsonNode>(field, resolveAllRefs(value, baseUri))
+                        set(field, resolveAllRefs(value, baseUri))
                     }
                 }
             }
 
-            is ArrayNode -> node.deepCopy<ArrayNode>().apply {
+            is ArrayNode -> node.deepCopy().apply {
                 for (i in 0 until size()) {
                     set(i, resolveAllRefs(get(i), baseUri))
                 }
@@ -85,7 +85,7 @@ class JsonSchemaService(
         }
 
         val uri = if (relativePath.isEmpty()) baseUri else baseUri.resolve(relativePath)
-        val rootNode = ObjectMapper().readTree(uri.toURL())
+        val rootNode = ObjectMapper().readTree(uri.toURL().openStream())
 
         return fragment?.let {
             val pointer = toJsonPointer(it)

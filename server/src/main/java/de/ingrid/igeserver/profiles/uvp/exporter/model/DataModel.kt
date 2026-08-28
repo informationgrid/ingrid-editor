@@ -21,8 +21,6 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.RangeModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -31,6 +29,8 @@ import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import org.springframework.web.util.UriUtils
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.ZoneId

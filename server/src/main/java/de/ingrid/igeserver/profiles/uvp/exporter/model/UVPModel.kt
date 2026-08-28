@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -39,6 +38,7 @@ import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import tools.jackson.databind.annotation.JsonDeserialize
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*

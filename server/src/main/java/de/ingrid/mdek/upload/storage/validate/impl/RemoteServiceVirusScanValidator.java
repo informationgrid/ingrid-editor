@@ -21,11 +21,12 @@ package de.ingrid.mdek.upload.storage.validate.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.util.StdConverter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.util.StdConverter;
 import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import de.ingrid.mdek.upload.storage.validate.VirusFoundException;
@@ -75,9 +76,7 @@ public class RemoteServiceVirusScanValidator implements Validator {
         }
     });
     private static final ThreadLocal<ObjectMapper> objectMapper = ThreadLocal.withInitial(() -> {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(df);
-        return objectMapper;
+        return JsonMapper.builder().defaultDateFormat(df).build();
     });
 
     private String scanBaseUrl;
@@ -244,7 +243,7 @@ public class RemoteServiceVirusScanValidator implements Validator {
                         final String errorMessage ="Virus scan failed: " + getObjectMapper().writeValueAsString(response);
                         log.error(errorMessage);
                         throw new RuntimeException(errorMessage);
-                    } catch (final JsonProcessingException ex) {
+                    } catch (final JacksonException ex) {
                         log.error("Could not serialize response", ex);
                     }
                 } else {

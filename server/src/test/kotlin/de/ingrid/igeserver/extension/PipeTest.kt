@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.extension
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.services.DateService
@@ -36,6 +35,7 @@ import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 // @ApplyExtension(SpringExtension::class)
 @ContextConfiguration(classes = [(PipeTestConfig::class)])

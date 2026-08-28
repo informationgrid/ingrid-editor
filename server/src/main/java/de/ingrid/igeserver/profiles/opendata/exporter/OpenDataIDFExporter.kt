@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -46,6 +44,8 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 
 @Service
@@ -100,7 +100,7 @@ class OpenDataIDFExporter(
         }
     }
 
-    private val mapper = ObjectMapper().registerKotlinModule()
+    private val mapper = jacksonObjectMapper()
 
     private fun getModelTransformer(json: Document, catalogId: String, options: ExportOptions): Any {
         val ingridModel: IngridModel?

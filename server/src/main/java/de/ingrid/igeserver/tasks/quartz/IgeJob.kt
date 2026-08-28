@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.tasks.quartz
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.messaging.Message
 import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 abstract class IgeJob : InterruptableJob {
 

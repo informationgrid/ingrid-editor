@@ -19,14 +19,14 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.utils.getString
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream
 
 @Component
@@ -61,10 +61,10 @@ class MigrateUrlDataTypeTask(
             val doc = docRepo.findById(it).get()
             val references = doc.data.get("references")
             references
-                .filter { ref -> ref.getString("url") == info.url }
-                .forEach { ref ->
-                    ref as ObjectNode
-                    ref.set<JsonNode>(
+                ?.values()
+                ?.filter { ref -> ref.getString("url") == info.url }
+                ?.forEach { ref ->
+                    (ref as ObjectNode).set(
                         "urlDataType",
                         jacksonObjectMapper().createObjectNode().apply { put("key", info.key) },
                     )

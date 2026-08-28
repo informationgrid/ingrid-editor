@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -37,6 +33,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Profile("bmi")
 @Service
@@ -107,7 +106,7 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
             (doc.data.get("spatial") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-                .filter { it.get("type")?.asText() == "geo-name" }
+                .filter { it.get("type")?.asString() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
 
@@ -128,13 +127,13 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
             simpleThemes.forEach {
                 add(
                     jacksonObjectMapper().createObjectNode().apply {
-                        put("key", it.asText())
+                        put("key", it.asString())
                     },
                 )
             }
         }
 
-        doc.data.set<ArrayNode>("DCATThemes", keyThemes)
+        doc.data.set("DCATThemes", keyThemes)
         return true
     }
 
@@ -145,7 +144,7 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
         if (adresses.isEmpty()) return false
 
         adresses.forEach {
-            val oldAddressType = (it as ObjectNode).get("type")?.get("key")?.textValue()
+            val oldAddressType = (it as ObjectNode).get("type")?.get("key")?.asString()
             val newAddressType = mapAddressType(oldAddressType)
             (it.get("type") as ObjectNode).put("key", newAddressType)
         }
@@ -174,7 +173,7 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
         if (distributions.isEmpty() && license == null) return false
 
         distributions.forEach {
-            (it as ObjectNode).set<ObjectNode>("license", license)
+            (it as ObjectNode).set("license", license)
         }
 
         doc.data.remove("license")
@@ -183,15 +182,15 @@ class M072UpdateBmiCatalog : MigrationBase("0.72") {
     }
 
     private fun migrateOrigin(doc: Document): Boolean {
-        val origin = doc.data.get("origin") as TextNode?
+        val origin = doc.data.get("origin")
 
         val distributions =
             (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
-        if (distributions.isEmpty() && origin == null && origin?.asText()?.isEmpty() == true) return false
+        if (distributions.isEmpty() && origin == null && origin?.asString()?.isEmpty() == true) return false
 
         distributions.forEach {
-            (it as ObjectNode).set<TextNode>("byClause", origin)
+            (it as ObjectNode).set("byClause", origin)
         }
 
         doc.data.remove("origin")
