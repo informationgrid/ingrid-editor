@@ -24,6 +24,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -37,6 +39,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
@@ -45,12 +48,14 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
@@ -151,8 +156,9 @@ internal class KeycloakConfig(
                 authenticationSuccessHandler = SimpleUrlAuthenticationSuccessHandler(
                     generalProperties.appUrl,
                 )
-                authenticationFailureHandler = SimpleUrlAuthenticationFailureHandler(
-                    "${generalProperties.appUrl.trimEnd('/')}/login-error",
+                authenticationFailureHandler = KeycloakAuthenticationFailureHandler(
+                    loginErrorUrl = "${generalProperties.appUrl.trimEnd('/')}/login-error",
+                    loginUrl = "${generalProperties.appUrl.trimEnd('/')}/auth/login",
                 )
                 userInfoEndpoint {
                     userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
@@ -379,5 +385,45 @@ class OidcRealmRoleMapper(
         result.addAll(dbUserRoles)
 
         return result
+    }
+}
+
+/**
+ * Authentication failure handler for OAuth2 login.
+ * When authentication fails due to an expired or missing state ID (e.g. from an old login page
+ * left open overnight), redirects the user to /auth/login so the authentication flow is
+ * automatically re-initiated with a fresh state ID. Since the user was already authenticated
+ * in Keycloak, Keycloak immediately redirects back and logs the user in seamlessly.
+ * Other errors fall back to redirecting to the login error page.
+ */
+class KeycloakAuthenticationFailureHandler(
+    loginErrorUrl: String,
+    loginUrl: String,
+) : AuthenticationFailureHandler {
+    private val defaultFailureHandler = SimpleUrlAuthenticationFailureHandler(loginErrorUrl)
+    private val loginRedirectHandler = SimpleUrlAuthenticationFailureHandler(loginUrl)
+
+    override fun onAuthenticationFailure(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        exception: AuthenticationException,
+    ) {
+        if (isStateError(exception)) {
+            loginRedirectHandler.onAuthenticationFailure(request, response, exception)
+        } else {
+            defaultFailureHandler.onAuthenticationFailure(request, response, exception)
+        }
+    }
+
+    private fun isStateError(exception: AuthenticationException): Boolean {
+        if (exception is OAuth2AuthenticationException) {
+            val errorCode = exception.error.errorCode
+            if (errorCode == "authorization_request_not_found" || errorCode == "invalid_state_parameter") {
+                return true
+            }
+        }
+        val message = exception.message ?: ""
+        return message.contains("authorization_request_not_found", ignoreCase = true) ||
+            message.contains("invalid_state_parameter", ignoreCase = true)
     }
 }
