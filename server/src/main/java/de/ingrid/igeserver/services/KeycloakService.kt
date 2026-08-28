@@ -44,7 +44,7 @@ import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -237,7 +237,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
             .resteasyClient(buildResteasyClient())
             .build()
 
-        val clientId = registration.clientId
+        val clientId = registration.clientId ?: ""
         val clientUuid = try {
             client.realm(realmName).clients().findByClientId(clientId).firstOrNull()?.id
                 ?: throw IllegalStateException("Client '$clientId' not found in realm '$realmName'")
@@ -341,7 +341,7 @@ class KeycloakService(private val oauth2Properties: OAuth2ClientProperties, priv
 
     override fun getRoles(principal: Authentication): Set<String>? {
         principal as JwtAuthenticationToken
-        return principal.authorities.map { it.authority }.toSet()
+        return principal.authorities.mapNotNull { it.authority }.toSet()
     }
 
     override fun getName(principal: Principal): String? = authUtils.getUsernameFromPrincipal(principal)

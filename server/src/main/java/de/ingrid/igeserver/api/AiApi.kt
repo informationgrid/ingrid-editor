@@ -40,30 +40,30 @@ interface AiApi {
     fun evaluate(
         principal: Principal,
         @RequestBody body: String,
-    ): ResponseEntity<String?>
+    ): ResponseEntity<String>
 
     @PostMapping(value = ["/ai/dataset/evaluateAll"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Evaluate all datasets using AI")
     fun evaluateAll(
         principal: Principal,
-    ): ResponseEntity<String?>
+    ): ResponseEntity<String>
 
     @GetMapping(value = ["/ai/dataset/latestReport"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get the latest AI evaluation report")
     fun getEvaluateAllReport(
         principal: Principal,
-    ): ResponseEntity<String?>
+    ): ResponseEntity<String>
 
     @GetMapping(value = ["/ai/settings"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Get AI settings")
     fun getSettings(
         principal: Principal,
-    ): ResponseEntity<AiSettings?>
+    ): ResponseEntity<AiSettings>
 
     @PutMapping(value = ["/ai/settings"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Update AI settings")
     fun updateSettings(
         principal: Principal,
         @RequestBody settings: AiSettings,
-    ): ResponseEntity<AiSettings?>
+    ): ResponseEntity<AiSettings>
 }

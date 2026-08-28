@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.4.0'
-    ext.spring_boot_version = '3.5.15'
+    ext.spring_boot_version = '4.1.1'
     ext.kotest_version = '6.1.9'
     ext.jte_version = '3.2.4'
     ext.geotools_version = '34.5'
@@ -30,7 +30,6 @@ plugins {
     id 'io.kotest' version "$kotest_version"
     id "com.github.ben-manes.versions" version "0.53.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.6.38.Final"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
     id "org.cyclonedx.bom"
@@ -90,12 +89,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
+//    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
     implementation('org.springframework.boot:spring-boot-starter-actuator') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
@@ -146,7 +146,6 @@ dependencies {
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.11'
     implementation "org.hibernate.orm:hibernate-core"
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.10.3'
 
     implementation "de.ingrid:ingrid-codelist-service:8.3.1"
     implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -194,6 +193,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation("org.springframework.boot:spring-boot-testcontainers") {
         exclude group: "org.testcontainers"

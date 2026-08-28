@@ -51,7 +51,7 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager, val
 
     @Bean
     fun aclCache(): SpringCacheBasedAclCache = SpringCacheBasedAclCache(
-        cacheManager.getCache("aclCache"),
+        cacheManager.getCache("aclCache")!!,
         permissionGrantingStrategy(),
         aclAuthorizationStrategy(),
     )

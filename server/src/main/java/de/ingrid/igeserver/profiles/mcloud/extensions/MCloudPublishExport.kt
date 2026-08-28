@@ -76,7 +76,7 @@ class MCloudPublishExport(
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexMCloudDoc(context, it) }
+        docsWithReferences.filterNotNull().forEach { indexMCloudDoc(context, it) }
     }
 
     private fun indexMCloudDoc(context: Context, docId: String) {

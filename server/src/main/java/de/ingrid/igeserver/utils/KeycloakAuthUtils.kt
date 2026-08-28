@@ -46,14 +46,13 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     override fun getUsernameFromPrincipal(principal: Principal): String = when (principal) {
         is JwtAuthenticationToken -> {
-            (principal.principal as Jwt).getClaimAsString("preferred_username")
+            (principal.principal as Jwt).getClaimAsString("preferred_username") ?: "???"
         }
 
         is OAuth2AuthenticationToken -> {
             val oidcUser = principal.principal as? OidcUser
             oidcUser?.getClaim<String>("preferred_username")
                 ?: oidcUser?.email
-                ?: oidcUser?.name
                 ?: "???"
         }
 
@@ -75,7 +74,7 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     override fun getFullNameFromPrincipal(principal: Principal): String {
         return try {
             when (principal) {
-                is JwtAuthenticationToken -> ((principal.principal as Jwt).getClaimAsString("name"))
+                is JwtAuthenticationToken -> ((principal.principal as Jwt).getClaimAsString("name")) ?: getUsernameFromPrincipal(principal)
 
                 is OAuth2AuthenticationToken -> (principal.principal as? OidcUser)?.fullName
                     ?: (principal.principal as? OidcUser)?.name
@@ -103,8 +102,8 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     override fun isAuthor(principal: Principal): Boolean = containsRole(principal, "author")
 
     override fun getCurrentUserRoles(catalogId: String): Set<Group> {
-        val authentication: Authentication = SecurityContextHolder.getContext().authentication
-        val userName: String = getUsernameFromPrincipal(authentication)
+        val authentication: Authentication? = SecurityContextHolder.getContext().authentication
+        val userName: String = if (authentication != null) getUsernameFromPrincipal(authentication) else "???"
         return catalogService.getUser(userName)?.getGroupsForCatalog(catalogId) ?: emptySet()
     }
 

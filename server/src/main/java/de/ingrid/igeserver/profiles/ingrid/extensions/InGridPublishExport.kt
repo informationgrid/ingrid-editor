@@ -119,7 +119,7 @@ class InGridPublishExport(
 
         // use GlobalScope only for indexing, not for determining which documents to index
         GlobalScope.launch {
-            docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
+            docsWithReferences.filterNotNull().forEach { indexDoc(context, it, DocumentCategory.DATA) }
         }
     }
 

@@ -27,15 +27,18 @@ import de.ingrid.igeserver.repository.UserRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
 import org.springframework.security.web.SecurityFilterChain
@@ -53,16 +56,16 @@ internal class KeycloakMockConfig(
 ) : KeycloakConfig(generalProperties, userRepository, roleRepository) {
 
     @Bean
-    fun clientRegistrationRepository(): ClientRegistrationRepository = object : ClientRegistrationRepository, Iterable<org.springframework.security.oauth2.client.registration.ClientRegistration> {
-        override fun findByRegistrationId(registrationId: String?): org.springframework.security.oauth2.client.registration.ClientRegistration? = null
-        override fun iterator(): Iterator<org.springframework.security.oauth2.client.registration.ClientRegistration> = emptyList<org.springframework.security.oauth2.client.registration.ClientRegistration>().iterator()
+    fun clientRegistrationRepository(): ClientRegistrationRepository = object : ClientRegistrationRepository, Iterable<ClientRegistration> {
+        override fun findByRegistrationId(registrationId: String): ClientRegistration? = null
+        override fun iterator(): Iterator<ClientRegistration> = emptyList<ClientRegistration>().iterator()
     }
 
     @Bean
     fun oauth2AuthorizedClientRepository(): OAuth2AuthorizedClientRepository = object : OAuth2AuthorizedClientRepository {
-        override fun <T : org.springframework.security.oauth2.client.OAuth2AuthorizedClient?> loadAuthorizedClient(registrationId: String?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?): T? = null
-        override fun saveAuthorizedClient(authorizedClient: org.springframework.security.oauth2.client.OAuth2AuthorizedClient?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) = Unit
-        override fun removeAuthorizedClient(registrationId: String?, authentication: org.springframework.security.core.Authentication?, request: HttpServletRequest?, response: HttpServletResponse?) = Unit
+        override fun <T : OAuth2AuthorizedClient> loadAuthorizedClient(clientRegistrationId: String, principal: Authentication, request: HttpServletRequest): T? = null
+        override fun saveAuthorizedClient(authorizedClient: OAuth2AuthorizedClient, principal: Authentication, request: HttpServletRequest, response: HttpServletResponse) = Unit
+        override fun removeAuthorizedClient(clientRegistrationId: String, principal: Authentication, request: HttpServletRequest, response: HttpServletResponse) = Unit
     }
 
     @Bean

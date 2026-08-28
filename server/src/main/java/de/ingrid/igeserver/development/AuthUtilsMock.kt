@@ -56,7 +56,8 @@ class AuthUtilsMock(@Lazy val catalogService: CatalogService) : AuthUtils {
     override fun isAuthor(principal: Principal): Boolean = containsRole(principal, "author")
 
     override fun getCurrentUserRoles(catalogId: String): Set<Group> {
-        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val authentication: Authentication? = SecurityContextHolder.getContext().authentication
+        if (authentication == null) return emptySet()
         val userName: String = getUsernameFromPrincipal(authentication)
         return catalogService.getUser(userName)?.getGroupsForCatalog(catalogId) ?: emptySet()
     }

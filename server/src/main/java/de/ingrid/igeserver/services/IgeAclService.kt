@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -40,6 +39,7 @@ import org.springframework.security.acls.model.Sid
 import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
 import java.util.concurrent.ConcurrentHashMap
 
 data class PermissionInfo(
@@ -162,8 +162,7 @@ class IgeAclService(
         } catch (_: NotFoundException) {
             try {
                 if (permission == BasePermission.WRITE &&
-                    acl.parentAcl != null &&
-                    acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
+                    acl.parentAcl?.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false) == true
                 ) {
                     return true
                 }
@@ -202,7 +201,7 @@ class IgeAclService(
         val acl = aclService.readAclById(objIdentity) as MutableAcl
 
         if (parentId == null) {
-            acl.setParent(null)
+            MutableAcl::class.java.getMethod("setParent", Acl::class.java).invoke(acl, null)
         } else {
             val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
             val parentAcl = aclService.readAclById(parentObjIdentity)

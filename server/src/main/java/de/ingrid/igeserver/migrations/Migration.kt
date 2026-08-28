@@ -49,7 +49,7 @@ class Migration : ApplicationRunner {
     /**
      * Install migrations after spring application context is initialized
      */
-    override fun run(args: ApplicationArguments?) {
+    override fun run(args: ApplicationArguments) {
         setupVersioning()
         update()
     }

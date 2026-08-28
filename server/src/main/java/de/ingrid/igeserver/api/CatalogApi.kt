@@ -137,7 +137,7 @@ interface CatalogApi {
             required = true,
         ) @PathVariable("identifier") catalogIdentifier: String,
         @RequestBody(required = false) options: ExportCatalogOptions = ExportCatalogOptions(),
-    ): ResponseEntity<ByteArray?>
+    ): ResponseEntity<ByteArray>
 }
 
 data class ExportCatalogOptions(

@@ -461,15 +461,15 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
     private fun cleanURL(accessURL: Any?, format: String?): String? {
         val replaceableParams: List<String> = mutableListOf("request", "service", "version")
         // only clean WMS URLs
-        if ("WMS" != format) {
+        if ("WMS" != format || accessURL !is String) {
             return accessURL as String?
         }
         try {
-            val uriComponentsBuilder = UriComponentsBuilder.fromUriString(accessURL as String?)
+            val uriComponentsBuilder = UriComponentsBuilder.fromUriString(accessURL)
             val uriBuilder = URIBuilder(accessURL)
             for (entry in uriBuilder.queryParams) {
                 if (replaceableParams.contains(entry.name.lowercase(Locale.getDefault()))) {
-                    uriComponentsBuilder.replaceQueryParam(entry.name, null as Array<Any?>?)
+                    uriComponentsBuilder.replaceQueryParam(entry.name)
                 }
             }
             return uriComponentsBuilder.build().toUriString()

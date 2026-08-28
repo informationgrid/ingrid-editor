@@ -75,10 +75,10 @@ class ResearchService(
     fun query(
         catalogId: String,
         query: ResearchQuery,
-        principal: Principal = SecurityContextHolder.getContext().authentication,
+        principal: Principal? = SecurityContextHolder.getContext().authentication,
     ): ResearchResponse {
         val groups = authUtils.getCurrentUserRoles(catalogId)
-        val hasReadAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(groups)
+        val hasReadAccessToRootDocs = (principal != null && authUtils.isAdmin(principal)) || aclService.hasRootReadAccess(groups)
         val idsToSearchIn = if (hasReadAccessToRootDocs) null else aclService.getDatasetIdsSetInGroups(groups)
 
         // if a user has no groups then user is not allowed anything
@@ -284,13 +284,13 @@ class ResearchService(
     private fun filterAndMapResult(
         result: List<Tuple>,
         isAdmin: Boolean,
-        principal: Principal,
+        principal: Principal?,
     ): List<Result> {
-        val authPrincipal = principal as Authentication
+        val authPrincipal = principal as? Authentication
         return result.mapNotNull { item ->
             val itemId = item.get("wrapperid") as? Int ?: return@mapNotNull null
-            val permissionInfo = aclService.getPermissionInfo(authPrincipal, itemId)
-            if (isAdmin || permissionInfo.canRead) {
+            val permissionInfo = if (authPrincipal != null) aclService.getPermissionInfo(authPrincipal, itemId) else null
+            if (isAdmin || permissionInfo?.canRead == true) {
                 Result(
                     title = item.get("title") as? String,
                     uuid = item.get("uuid") as? String,
@@ -299,8 +299,8 @@ class ResearchService(
                     contentModified = (item.get("contentModified") as? Instant)?.let { Date.from(it) },
                     state = (item.get("state") as? String)?.let { determineDocumentState(it) },
                     category = item.get("category") as? String,
-                    hasWritePermission = isAdmin || permissionInfo.canWrite,
-                    hasOnlySubtreeWritePermission = !isAdmin && permissionInfo.canOnlyWriteSubtree,
+                    hasWritePermission = isAdmin || permissionInfo?.canWrite == true,
+                    hasOnlySubtreeWritePermission = !isAdmin && permissionInfo?.canOnlyWriteSubtree == true,
                     id = itemId,
                     tags = (item.get("tags") as? Array<String>)?.toList() ?: emptyList(),
                     responsibleUser = item.get("responsibleUser"),
