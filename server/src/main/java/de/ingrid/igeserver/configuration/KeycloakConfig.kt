@@ -30,11 +30,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.core.convert.converter.Converter
+import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
@@ -49,6 +51,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
@@ -116,8 +121,7 @@ internal class KeycloakConfig(
             }
             // For API/BFF style flows we want 401 on unauthenticated requests instead of 302 redirects during XHR
             exceptionHandling {
-                authenticationEntryPoint =
-                    org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                authenticationEntryPoint = HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
             }
             authorizeHttpRequests {
                 // secure api-routes except a few necessary ones
@@ -144,18 +148,18 @@ internal class KeycloakConfig(
             }
             oauth2Login {
                 // After successful OAuth2 login, send the browser to the SPA root
-                authenticationSuccessHandler =
-                    org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler(
-                        generalProperties.appUrl,
-                    )
-                authenticationFailureHandler =
-                    org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler("/login-error")
+                authenticationSuccessHandler = SimpleUrlAuthenticationSuccessHandler(
+                    generalProperties.appUrl,
+                )
+                authenticationFailureHandler = SimpleUrlAuthenticationFailureHandler(
+                    "${generalProperties.appUrl.trimEnd('/')}/login-error",
+                )
                 userInfoEndpoint {
                     userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
                 }
             }
             sessionManagement {
-                sessionCreationPolicy = org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED
+                sessionCreationPolicy = SessionCreationPolicy.IF_REQUIRED
             }
             oauth2ResourceServer {
                 jwt {
