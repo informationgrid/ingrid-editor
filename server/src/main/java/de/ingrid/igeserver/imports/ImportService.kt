@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
@@ -332,13 +333,13 @@ class ImportService(
         // Check for duplicate UUIDs across categories
         documentWrapper?.let { wrapper ->
             if (wrapper.category == DocumentCategory.DATA.value && isAddress) {
-                throw IllegalArgumentException(
+                throw ServerException.withReason(
                     "The UUID of the address ${document.title} is already used as a data document.",
                 )
             }
 
             if (wrapper.category == DocumentCategory.ADDRESS.value && !isAddress) {
-                throw IllegalArgumentException(
+                throw ServerException.withReason(
                     "The UUID of the data document ${document.title} is already used as an address.",
                 )
             }
