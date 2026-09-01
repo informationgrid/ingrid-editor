@@ -9,7 +9,7 @@ buildscript {
     ext.spring_boot_version = '4.1.1'
     ext.kotest_version = '6.1.9'
     ext.jte_version = '3.2.4'
-    ext.geotools_version = '34.5'
+    ext.geotools_version = '35.1'
     ext.ktor_client = '3.4.1'
 }
 
@@ -119,13 +119,13 @@ dependencies {
     implementation "com.gravity9:json-patch-path:2.0.2"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:1.5.8'
+    implementation 'com.networknt:json-schema-validator:3.0.6'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:26.0.8'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.12'
 
     // OpenAI
     // import Kotlin API client BOM
@@ -140,7 +140,8 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.27.1"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.27.1"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11'
+//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-api:4.0.0'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.11'
