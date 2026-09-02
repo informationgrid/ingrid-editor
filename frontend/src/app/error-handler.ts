@@ -49,7 +49,6 @@ export class GlobalErrorHandler implements ErrorHandler {
           "Not logged in, redirecting to login page should be already initiated by bff-interceptor",
         );
         return;
-        // window.location.href = "/auth/logout";
       }
       if (error.error?.errorCode) {
         const e = new IgeError();
