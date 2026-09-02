@@ -17,38 +17,40 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
-import { CommonFieldsBaw } from "./common-fields";
-import { ProjectDoctype } from "../../ingrid/doctypes/project.doctype";
-import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
+import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
+import { PluginService } from "../../../app/services/plugin/plugin.service";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Injectable({
   providedIn: "root",
 })
-export class ProjectDoctypeBaw extends ProjectDoctype {
-  common = inject(CommonFieldsBaw);
-
-  showManager = false;
-  showParticipants = false;
+export class MobilithekPlugin extends Plugin {
+  id = "plugin.ingrid.mobilithek";
+  name = "Mobilithek Schlagwörter anzeigen";
+  description = `Ermöglicht die Auswahl von Mobilithek Schlagwörtern im Formular`;
+  defaultActive = false;
+  fields: FormlyFieldConfig[] = [
+    {
+      key: "required",
+      type: "checkbox",
+      defaultValue: false,
+      wrappers: [],
+      props: { label: "Angabe verpflichtend" },
+    },
+  ];
 
   constructor() {
     super();
-    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
+
+    inject(PluginService).registerPlugin(this);
   }
 
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    this.common.addSharedFields(this, fieldConfig);
-    const alternateTitlePosition = IngridShared.findFieldElementWithId(
-      fieldConfig,
-      "alternateTitle",
-    );
-    // Auftragsnummer / -titel
-    this.common.addBefore(
-      alternateTitlePosition,
-      this.common.getBAWOrderInfoFieldConfig(this),
-    );
+  register() {
+    super.register();
+  }
 
-    return fieldConfig;
-  };
+  unregister() {
+    super.unregister();
+  }
 }

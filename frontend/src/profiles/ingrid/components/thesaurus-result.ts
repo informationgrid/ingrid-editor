@@ -17,17 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
+import { Thesaurus } from "../utils/keywords";
+
 export interface ThesaurusResult {
-  thesaurus: ThesaurusType;
+  thesaurus: Thesaurus;
   value: any;
   label: string;
   found: boolean;
   alreadyExists?: boolean;
   status?: string;
 }
-
-export type ThesaurusType =
-  | "INSPIRE-Themen"
-  | "Gemet-Schlagworte"
-  | "Umthes-Schlagworte"
-  | "Freie Schlagworte";
