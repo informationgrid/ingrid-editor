@@ -39,7 +39,7 @@ export class GeoDatasetDoctypeBaw extends GeoDatasetDoctype {
     this.geodatasetOptions.optional.dataOrigin = true;
     this.geodatasetOptions.optional.dataQualitySection = true;
 
-    this.keywordThesauri.push(CommonFieldsBaw.BawKeywordThesaurus);
+    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {

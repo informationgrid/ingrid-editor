@@ -53,6 +53,7 @@ import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GeneralStore } from "../../../../../app/store/general.store";
+import { CommonFieldsBaw } from "../../../../../profiles/ingrid-baw/doctypes/common-fields";
 
 const mockKeywordThesauri: Thesaurus[] = [
   {
@@ -75,6 +76,7 @@ const mockKeywordThesauri: Thesaurus[] = [
     codelistId: "6100",
     isEnabled: (form) => form.value?.properties?.isInspireIdentified,
   },
+  CommonFieldsBaw.BawKeywordThesaurus,
   FREE_THESAURUS,
 ];
 
@@ -162,6 +164,23 @@ describe("ConsolidateDialogComponent", () => {
     await waitSomeTime();
     expectKeywordCount("Freie Schlagworte", 1, "test", "removed");
     expectKeywordCount("Gemet-Schlagworte", 1, "test", "added");
+    expectThesaurusNotExists("Umthes-Schlagworte");
+  });
+
+  it("should move a free keyword to the BAW thesaurus", async () => {
+    initForm({ free: [{ label: "Schlagwort1" }], bawKeywords: [] });
+
+    mockCheckInCodelist({
+      description: "",
+      id: "Schlagwort1",
+      fields: { de: "Schlagwort1" },
+    });
+    await mockHttp({});
+    await waitSomeTime();
+
+    expectKeywordCount("Freie Schlagworte", 1, "Schlagwort1", "removed");
+    expectKeywordCount("BAW-Schlagworte", 1, "Schlagwort1", "added");
+    expectThesaurusNotExists("Gemet-Schlagworte");
     expectThesaurusNotExists("Umthes-Schlagworte");
   });
 
@@ -306,7 +325,7 @@ describe("ConsolidateDialogComponent", () => {
   }
 
   function initForm(
-    keywords: Keywords,
+    keywords: Keywords & { bawKeywords?: Keyword[] },
     themes: {
       key: string;
     }[] = [],
@@ -324,6 +343,12 @@ describe("ConsolidateDialogComponent", () => {
       }),
       themes: new FormArray([]),
     });
+    if (keywords.bawKeywords) {
+      (form.get("keywords") as FormGroup).addControl(
+        "bawKeywords",
+        new FormArray([]),
+      );
+    }
     if (keywords.free?.length > 0) {
       keywords.free.forEach((keyword: Keyword) => {
         form.controls.keywords.controls.free.push(
@@ -342,6 +367,17 @@ describe("ConsolidateDialogComponent", () => {
       keywords.umthes.forEach((keyword: Keyword) => {
         form.controls.keywords.controls.umthes.push(
           new FormControl({ id: keyword.id, label: keyword.label }),
+        );
+      });
+    }
+    if (keywords.bawKeywords?.length > 0) {
+      keywords.bawKeywords.forEach((keyword: Keyword) => {
+        (form.get("keywords.bawKeywords") as unknown as FormArray).push(
+          new FormControl({
+            key: keyword.id,
+            value: keyword.label,
+            _codelistId: "3950005",
+          }),
         );
       });
     }
@@ -398,6 +434,11 @@ describe("ConsolidateDialogComponent", () => {
   }
 
   function mockCheckInThemes(data?: CodelistEntry) {
+    const codelistStore = spectator.inject(CodelistStore);
+    vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
+  }
+
+  function mockCheckInCodelist(data?: CodelistEntry) {
     const codelistStore = spectator.inject(CodelistStore);
     vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
   }
