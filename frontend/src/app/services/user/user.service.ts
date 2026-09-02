@@ -35,7 +35,6 @@ import { Group } from "../../models/user-group";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
 import { TranslocoService } from "@jsverse/transloco";
-import { ModalService } from "../modal/modal.service";
 
 @Injectable({
   providedIn: "root",
@@ -43,7 +42,6 @@ import { ModalService } from "../modal/modal.service";
 export class UserService {
   private groupStore = inject(GroupStore);
   private loco = inject(TranslocoService);
-  private modalService = inject(ModalService);
 
   availableRoles: SelectOptionUi[] = [
     new SelectOption("cat-admin", this.loco.translate("roles.cat-admin")),
@@ -224,7 +222,9 @@ export class UserService {
   }
 
   updatePassword(): void {
-    window.location.href = "/auth/update-password";
+    window.location.href =
+      this.configService.getConfiguration().contextPath +
+      "auth/update-password";
   }
 
   resetPassword(login: string) {
@@ -252,7 +252,7 @@ export class UserService {
       throw new IgeError("Es gab ein Problem beim Versenden der Email");
     } else {
       if (errorText.includes("Error creating user")) {
-        let reason;
+        let reason: any;
         try {
           reason = JSON.parse(errorText.substring(errorText.indexOf("{")));
         } catch (e) {
