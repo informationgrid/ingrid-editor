@@ -492,8 +492,8 @@ open class IngridModelTransformer(
             data.keywords?.mobilithek?.firstOrNull()?.let {
                 val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
                 KeywordIso(
-                    name = categoryIso,
-                    link = transformToMobilithekLink(categoryIso!!),
+                    name = transformToDisplayName(categoryIso!!),
+                    link = transformToMobilithekLink(categoryIso),
                 )
             },
         ) + (
