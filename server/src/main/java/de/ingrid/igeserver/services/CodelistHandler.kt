@@ -196,15 +196,15 @@ class CodelistHandler(
 
         // Check if value already exists
         val existingEntry = entries.find {
-            it.get("localisations")?.get("de")?.asText() == value
+            it.get("localisations")?.get("de")?.asString() == value
         }
 
         if (existingEntry != null) {
             log.warn("Duplicate entry detected for value '$value' in codelist $codelistId. Skipping addition.")
-            return existingEntry.get("id").asText()
+            return existingEntry.get("id").asString()
         }
 
-        val existingIds = entries.mapNotNull { it.get("id")?.asText() }
+        val existingIds = entries.mapNotNull { it.get("id")?.asString() }
         val newId = generateNewId(existingIds)
         entries.add(toCodelistEntry(newId, value))
         dbCodelist.data = entries

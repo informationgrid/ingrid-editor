@@ -914,10 +914,10 @@ open class GeneralMapper(val isoData: IsoImportData) {
             val value = otherConstraints[index]
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
-                val text = node.get("name").asText()
+                val text = node.get("name").asString()
                 val keyValue = convertUserConstraintToKeyValue(text)
                 val note = getUseConstraintNoteWhenJsonExists(otherConstraints, index, groupStartIndex)
-                result.add(UseConstraint(keyValue, node.get("quelle").asText(), note))
+                result.add(UseConstraint(keyValue, node.get("quelle").asString(), note))
                 index++
                 continue
             }

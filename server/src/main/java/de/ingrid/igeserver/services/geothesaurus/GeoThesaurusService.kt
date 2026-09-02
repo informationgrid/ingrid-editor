@@ -83,9 +83,9 @@ abstract class GeoThesaurusService {
             val node = mapper.readTree(body)
             val exceptionNode = node.findValue("ServiceException")
             val message = if (exceptionNode != null && exceptionNode.isObject) {
-                exceptionNode.get("")?.asText() ?: exceptionNode.asText()
+                exceptionNode.get("")?.asString() ?: exceptionNode.asString()
             } else {
-                exceptionNode?.asText()
+                exceptionNode?.asString()
             }
             message?.trim()?.ifBlank { null } ?: body
         } catch (_: Exception) {

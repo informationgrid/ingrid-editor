@@ -216,7 +216,7 @@ class PostgreSQLLog4JAppender(
             value = mapper.writeValueAsString(msg)
         }
         return MapSqlParameterSource()
-            .addValue(TYPE, msg.get(RECORD_TYPE).asText(), Types.VARCHAR)
+            .addValue(TYPE, msg.get(RECORD_TYPE).asString(), Types.VARCHAR)
             .addValue(LOGGER, event.loggerName, Types.VARCHAR)
             .addValue(TIMESTAMP, utcDate, Types.TIMESTAMP_WITH_TIMEZONE)
             .addValue(LEVEL, event.level?.name(), Types.VARCHAR)

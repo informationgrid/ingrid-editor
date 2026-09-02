@@ -423,7 +423,7 @@ class InGridProfile(
         report.references
             .flatMap { it.document.data.get("service")?.get("coupledResources")?.toList() ?: emptyList() }
             .filter { !it.get("isExternalRef").asBoolean() }
-            .map { it.get("uuid").asText() }
+            .map { it.get("uuid").asString() }
             .forEach { coupledUuid ->
                 val referenceInImport = report.references.any { it.document.uuid == coupledUuid }
                 if (!referenceInImport) {

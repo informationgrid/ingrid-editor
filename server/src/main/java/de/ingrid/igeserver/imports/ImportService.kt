@@ -514,9 +514,9 @@ class ImportService(
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
             ref.document.title = if (data.has("organization")) {
-                data.get("organization").asText()
+                data.get("organization").asString()
             } else {
-                "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
+                "${data.get("lastName").asString()}, ${data.get("firstName").asString()}"
             }
         }
     }

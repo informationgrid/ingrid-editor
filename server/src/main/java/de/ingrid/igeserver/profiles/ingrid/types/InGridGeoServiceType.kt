@@ -35,7 +35,7 @@ class InGridGeoServiceType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
 
         val allCoupledResourcesPublished = doc.data.get("service")?.get("coupledResources")
             ?.filter { !it.get("isExternalRef").asBoolean() }
-            ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.get("uuid").asText()) }
+            ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.get("uuid").asString()) }
             ?.all { it.state == DocumentState.PUBLISHED } ?: true
 
         if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(listOf(InvalidField("service.coupledResources", "COUPLED_RESOURCES_MUST_BE_PUBLISHED")))

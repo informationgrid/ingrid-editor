@@ -27,7 +27,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
-import org.springframework.lang.Nullable
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -114,7 +113,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
      */
     override fun handleExceptionInternal(
         ex: java.lang.Exception,
-        @Nullable body: Any?,
+        body: Any?,
         headers: HttpHeaders,
         status: HttpStatusCode,
         request: WebRequest,

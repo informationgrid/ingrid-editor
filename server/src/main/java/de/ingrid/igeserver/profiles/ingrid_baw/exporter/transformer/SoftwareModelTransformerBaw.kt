@@ -87,13 +87,13 @@ open class SoftwareModelTransformerBaw(transformerConfig: TransformerConfig) : I
     val installationHlr = doc.data.getBoolean("installation.hlr") ?: false
     val installationServer = doc.data.getBoolean("installation.server") ?: false
     val hlrNames = doc.data.getPath("hlrNames")?.mapNotNull { codelists.getValue("3950033", it.mapToKeyValue()) } ?: emptyList()
-    val serverNames = doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
+    val serverNames = doc.data.getPath("serverNames")?.mapNotNull { if (it.isNull) null else it.asString() } ?: emptyList()
 
     val serviceVersions = doc.data.getPath("serviceVersion")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
 
     val programmingLanguages = doc.data.getPath("programmingLanguage")?.mapNotNull { codelists.getValue("3950030", it.mapToKeyValue()) } ?: emptyList()
     val developmentEnvironment = doc.data.getPath("developmentEnvironment")?.mapNotNull { codelists.getValue("3950031", it.mapToKeyValue()) } ?: emptyList()
-    val libraries = doc.data.getPath("libraries")?.mapNotNull { if (it.isNull) null else it.asText() } ?: emptyList()
+    val libraries = doc.data.getPath("libraries")?.mapNotNull { if (it.isNull) null else it.asString() } ?: emptyList()
 
     val hasSourceRights = doc.data.getBoolean("resource.hasSourceRights") ?: false
     val sourceRightsNotes = doc.data.getString("resource.sourceRightsNotes")

@@ -71,8 +71,8 @@
     @endif
     "t02_address${entry.getIndex() + 1}.adr_id": "${entry.get().getDocument().getUuid()}",
     "t02_address${entry.getIndex() + 1}.typ": "${page.getAddressDocType(entry.get().getDocument().type)}",
-    "title${entry.getIndex() + 1}": "${entry.get().getDocument().data.get("organization").asText()}",
-    "t02_address.parents.title": "${entry.get().getDocument().data.get("organization").asText()}",
+    "title${entry.getIndex() + 1}": "${entry.get().getDocument().data.get("organization").asString()}",
+    "t02_address.parents.title": "${entry.get().getDocument().data.get("organization").asString()}",
 @endfor
 
     "t021_communication.commtype_key": [

@@ -337,7 +337,7 @@ class CatalogImportService(
         permission as ObjectNode
         if (permission.has("uuid")) {
             val catalogIdentifier = catalogService.getCatalogs().find { it.id == catalogId }?.identifier!!
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asText()).let {
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asString()).let {
                 permission.put("id", it.id!!)
             }
         } else {

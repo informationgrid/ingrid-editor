@@ -357,7 +357,7 @@ class CatalogService(
 
         val isFolder = entry["isFolder"]?.asBoolean() ?: false
         val hasAnyWritePermission =
-            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
+            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asString())
 
         isFolder && hasAnyWritePermission
     }

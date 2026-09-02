@@ -67,7 +67,7 @@ class CodelistApiControllerTest(private val mockMvc: MockMvc) : IntegrationTest(
         val array = mapper.readTree(json)
 
         val resultMap = array.associate { node ->
-            node.get("value").asText() to node.get("count").asInt()
+            node.get("value").asString() to node.get("count").asInt()
         }
 
         resultMap.size shouldBe 2

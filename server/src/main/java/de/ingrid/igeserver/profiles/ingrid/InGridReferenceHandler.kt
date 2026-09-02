@@ -135,7 +135,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         val operations: JsonNode = service["operations"] ?: return mutableListOf()
 
         return operations
-            .mapNotNull { it["methodCall"]?.asText() }
+            .mapNotNull { it["methodCall"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("Operationen", node, null) }
             .toMutableList()
@@ -145,7 +145,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         if (references == null) return mutableListOf()
 
         return references
-            .mapNotNull { it["url"]?.asText() }
+            .mapNotNull { it["url"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("Reference", node, null) }
             .toMutableList()
@@ -155,7 +155,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         if (serviceURLs == null) return mutableListOf()
 
         return serviceURLs
-            .mapNotNull { it["url"]?.asText() }
+            .mapNotNull { it["url"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("serviceURLs", node, null) }
             .toMutableList()

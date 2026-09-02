@@ -149,7 +149,7 @@ class IgeAclService(
         // filter for permission level
         .map { permissions ->
             permissions.filter { permission ->
-                permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
+                permissionLevel.isEmpty() || permission.get("permission").asString() == permissionLevel
             }
         }
         // get the dataset ids and flatten the list

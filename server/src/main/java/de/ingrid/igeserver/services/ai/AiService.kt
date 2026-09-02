@@ -145,7 +145,7 @@ class AiService(
 
         val combinedData = listOfNotNull(results, evaluateResults)
             .flatMap { mapper.readTree(it)?.get("data")?.toList().orEmpty() }
-            .filter { node -> node.get("uuid")?.asText()?.let { seenUuids.add(it) } != false }
+            .filter { node -> node.get("uuid")?.asString()?.let { seenUuids.add(it) } != false }
             .fold(mapper.createArrayNode()) { arr, node -> arr.add(node) }
 
         evaluateResults = combinedData.takeUnless { it.isEmpty }

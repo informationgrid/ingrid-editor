@@ -98,7 +98,7 @@ class M037MigrateToDBID : MigrationBase("0.37") {
 
         permissions.forEach { permission ->
             permission as ObjectNode
-            val uuid = permission.get("uuid").asText()
+            val uuid = permission.get("uuid").asString()
 
             try {
                 val id = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw WHERE dw.uuid = :uuid")

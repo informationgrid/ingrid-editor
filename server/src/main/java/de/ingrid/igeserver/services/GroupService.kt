@@ -72,7 +72,7 @@ class GroupService(
         return groupRepo.save(group)
 
         /*group.permissions?.documents?.forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asString())
             val acl = aclService.createAcl(objIdentity)
             aclService.updateAcl(acl)
         }*/
@@ -205,7 +205,7 @@ class GroupService(
             }
     }
 
-    private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asText()) {
+    private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asString()) {
         "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
 
         "writeTreeExceptParent" -> listOf(

@@ -159,7 +159,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
     private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo? {
         val validUntilDateField = it.get("validUntil")
         val expiredDate =
-            if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
+            if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
         val uri = it.get("downloadURL")?.get("uri")?.textValue() ?: return null
         return UploadInfo(field, uri, expiredDate)
     }

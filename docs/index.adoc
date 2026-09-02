@@ -194,7 +194,7 @@ class DefaultUpdateValidator : Filter<PreUpdatePayload> {
   private lateinit var dbService: DBApi
 
   override fun invoke(payload: PreUpdatePayload, context: Context): PreUpdatePayload {
-    val docId = payload.document[FIELD_ID].asText();
+    val docId = payload.document[FIELD_ID].asString();
 
     context.addMessage(Message(this, "Validate document data '$docId' before update"))
 

@@ -126,10 +126,10 @@ class ZabbixService(
         val response = requestApi(values)
 
         // check for invalid email address
-        if (response.get("error")?.get("data")?.asText()?.contains("Invalid email address") == true) {
+        if (response.get("error")?.get("data")?.asString()?.contains("Invalid email address") == true) {
             throw InvalidParameterException.withInvalidParameters("addressMail")
         }
-        return getFromResultAsList(response, "userids")[0].asText()
+        return getFromResultAsList(response, "userids")[0].asString()
     }
 
     data class Action(
@@ -148,8 +148,8 @@ class ZabbixService(
         val response = requestApi(request).get("result").get(0) ?: return null
 
         return Action(
-            id = response.get("actionid").asText(),
-            userid = response["operations"].get(0).get("opmessage_usr").get(0).get("userid").asText(),
+            id = response.get("actionid").asString(),
+            userid = response["operations"].get(0).get("opmessage_usr").get(0).get("userid").asString(),
         )
     }
 
@@ -159,11 +159,11 @@ class ZabbixService(
         val response = requestApi(request)
         val actionSize = response["result"]
             .filter {
-                it["operations"]?.get(0)?.get("opmessage_usr")?.get(0)?.get("userid")?.asText() == userid
+                it["operations"]?.get(0)?.get("opmessage_usr")?.get(0)?.get("userid")?.asString() == userid
             }.size
 
         return User(
-            sendto = getUser("userid", userid)?.get("medias")?.get(0)?.get("sendto")?.get(0)?.asText(),
+            sendto = getUser("userid", userid)?.get("medias")?.get(0)?.get("sendto")?.get(0)?.asString(),
             actions = actionSize,
         )
     }
@@ -192,7 +192,7 @@ class ZabbixService(
     }
 
     private fun createAction(uuid: String, addressMail: String) {
-        val userid = getUser("username", addressMail)?.get("userid")?.asText() ?: createUser(addressMail)
+        val userid = getUser("username", addressMail)?.get("userid")?.asString() ?: createUser(addressMail)
         val updatedUserId = updateUserMail(uuid, addressMail) ?: userid
         requestApi(getActionPayload(uuid, updatedUserId))
     }
@@ -201,7 +201,7 @@ class ZabbixService(
         val jsonUserGet =
             """{"jsonrpc":"$JSONRPC","method":"user.get","params":{"output":["userid","username"],"filter":{"username":["$username"]}},"id":1}"""
         val responseUserGet = requestApi(jsonUserGet)
-        return responseUserGet.get("result").get(0)?.get("userid")?.asText()
+        return responseUserGet.get("result").get(0)?.get("userid")?.asString()
     }
 
     private fun deleteUser(userid: List<String>) {
@@ -223,7 +223,7 @@ class ZabbixService(
         getTriggerId(item),
     )
 
-    private fun getWebscenarioId(response: JsonNode) = response.get("httptestid").asText()
+    private fun getWebscenarioId(response: JsonNode) = response.get("httptestid").asString()
 
     private fun getTrigger(name: String): JsonNode {
         val jsonTriggerGet =
@@ -262,7 +262,7 @@ class ZabbixService(
     private fun getTriggerIdByName(name: String): String? {
         val trigger = getTrigger("Dokument: $name")
         return if (trigger.hasResult()) {
-            getFromResultArray(trigger, "triggerid").asText()
+            getFromResultArray(trigger, "triggerid").asString()
         } else {
             null
         }
@@ -317,21 +317,21 @@ class ZabbixService(
         val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params)
         val values = objectMapper.writeValueAsString(hostgroup)
         val response = requestApi(values)
-        return getFromResultAsList(response, "groupids")[0].asText()
+        return getFromResultAsList(response, "groupids")[0].asString()
     }
 
     private fun getHostGroupId(catalogName: String): String? {
         val jsonHostGroupGet =
             """{"jsonrpc":"$JSONRPC","method":"hostgroup.get","params":{"output":"extend","filter":{"name":["$catalogName"]}},"id":1}"""
         val responseHostGroupGet = requestApi(jsonHostGroupGet)
-        return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText()
+        return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asString()
     }
 
     private fun getHostId(uuid: String): String? {
         val jsonHostGet =
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"id":1}"""
         val responseHostGet = requestApi(jsonHostGet)
-        return responseHostGet.get("result").get(0)?.get("hostid")?.asText()
+        return responseHostGet.get("result").get(0)?.get("hostid")?.asString()
     }
 
     fun getHostById(hostId: String): JsonNode? {
@@ -359,7 +359,7 @@ class ZabbixService(
         val response = requestApi(
             objectMapper.writeValueAsString(host),
         )
-        return getFromResultAsList(response, "hostids")[0].asText()
+        return getFromResultAsList(response, "hostids")[0].asString()
     }
 
     fun getProblems(catalogName: String): List<ZabbixModel.Problem> {
@@ -391,22 +391,22 @@ class ZabbixService(
         val tags = item.get("tags") ?: item.get(0)?.get("tags") ?: return ""
         return tags
             .values()
-            .firstOrNull { it.get("tag")?.asText() == tagName }
+            .firstOrNull { it.get("tag")?.asString() == tagName }
             ?.get("value")
-            ?.asText()
+            ?.asString()
             .orEmpty()
     }
 
     private fun getProblem(item: JsonNode) = ZabbixModel.Problem(
-        eventid = item.get("eventid").asText(),
-        objectid = item.get("objectid").asText(),
-        clock = item.get("clock").asText(),
+        eventid = item.get("eventid").asString(),
+        objectid = item.get("objectid").asString(),
+        clock = item.get("clock").asString(),
         docName = getTag(item, "document name"),
         name = getTag(item, "name"),
         url = getTag(item, "url"),
         docUrl = getTag(item, "document url"),
         docUuid = getTag(item, "id"),
-        severity = item.get("severity").asText(),
+        severity = item.get("severity").asString(),
     )
 
     private fun getWebscenarioByNameAndHost(name: String, hostId: String): JsonNode? {
@@ -446,14 +446,14 @@ class ZabbixService(
 
     private fun removeTagsIfPresent(webscenario: JsonNode, tagsToRemove: List<String>) {
         val tagsNode = webscenario.get("tags") ?: return
-        val httptestId = webscenario.get("httptestid")?.asText().orEmpty()
+        val httptestId = webscenario.get("httptestid")?.asString().orEmpty()
         if (httptestId.isEmpty()) return
 
         val existingTags = tagsNode
             .values()
             .mapNotNull { tag ->
-                val tagName = tag.get("tag")?.asText() ?: return@mapNotNull null
-                val tagValue = tag.get("value")?.asText().orEmpty()
+                val tagName = tag.get("tag")?.asString() ?: return@mapNotNull null
+                val tagValue = tag.get("value")?.asString().orEmpty()
                 ZabbixModel.Tag(tagName, tagValue)
             }
 
@@ -597,14 +597,14 @@ class ZabbixService(
         val url = getTag(existingHost, "url")
         val docName = createDocumentName("Verfahren", url)
         getWebscenarioByNameAndHost(docName, id)?.let { webscenario ->
-            expireWebscenario(webscenario.get("httptestid").asText())
+            expireWebscenario(webscenario.get("httptestid").asString())
         }
     }
 
     private fun readTags(node: JsonNode): List<ZabbixModel.Tag>? = node.get("tags")
         ?.mapNotNull { tag ->
-            val tagName = tag.get("tag")?.asText() ?: return@mapNotNull null
-            val tagValue = tag.get("value")?.asText().orEmpty()
+            val tagName = tag.get("tag")?.asString() ?: return@mapNotNull null
+            val tagValue = tag.get("value")?.asString().orEmpty()
             ZabbixModel.Tag(tagName, tagValue)
         }
 
@@ -626,8 +626,8 @@ class ZabbixService(
         val expirationDate = LocalDateTime.now().minusDays(cleanupDays)
 
         val idsToDelete = response.get("result").filter { scenario ->
-            val expiredTag = scenario.get("tags").find { it.get("tag").asText() == "expired" }
-            val expiredDateStr = expiredTag?.get("value")?.asText()
+            val expiredTag = scenario.get("tags").find { it.get("tag").asString() == "expired" }
+            val expiredDateStr = expiredTag?.get("value")?.asString()
 
             try {
                 val expiredDate = LocalDateTime.parse(expiredDateStr)
@@ -636,7 +636,7 @@ class ZabbixService(
                 log.warn("could not parse expired date: $expiredDateStr", e)
                 false
             }
-        }.map { it.get("httptestid").asText() }
+        }.map { it.get("httptestid").asString() }
 
         if (idsToDelete.isNotEmpty()) {
             log.info("deleting ${idsToDelete.size} expired webscenarios")
@@ -654,7 +654,7 @@ class ZabbixService(
         }
         val hostId = getFromResultArray(response, "hostid")
         log.debug("Delete host $uuid")
-        deleteHosts(listOf(hostId.asText()))
+        deleteHosts(listOf(hostId.asString()))
 
         val action = getAction(uuid)
         val user = action?.let { getUserFromAction(it.userid) }
@@ -677,7 +677,7 @@ class ZabbixService(
         for (i in 0 until array.size()) {
             val hasTags = array.get(i).has("tags") && array.get(i).get("tags").size() > 0
             if (hasTags) {
-                val value = array.get(i).get(field)?.asText()
+                val value = array.get(i).get(field)?.asString()
                 if (value != null) values.add(value)
             }
         }
@@ -688,7 +688,7 @@ class ZabbixService(
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
 
-    private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asText()
+    private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asString()
 
     /**
      * Shortens a string to a given length and adds a delimiter in the middle
@@ -781,7 +781,7 @@ class ZabbixService(
                 }
             """.trimIndent()
         val results = requestApi(jsonTriggerGet).get("result") as ArrayNode
-        return results.mapNotNull { it.get("triggerid")?.asText() }
+        return results.mapNotNull { it.get("triggerid")?.asString() }
     }
 
     private fun createHash(url: String): String {
@@ -842,7 +842,7 @@ private fun retryOnError(request: HttpRequest, response: HttpResponse): Boolean 
     }
     if (!json.has("error")) return false
 
-    val error = json.get("error").get("data")?.asText()
+    val error = json.get("error").get("data")?.asString()
     with(error) {
         return when {
             isNullOrEmpty() -> {

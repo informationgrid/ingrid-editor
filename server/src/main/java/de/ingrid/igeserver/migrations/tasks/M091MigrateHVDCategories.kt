@@ -82,7 +82,7 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
         if (hvdCategories.isEmpty) return false
 
         hvdCategories.forEach {
-            (it as ObjectNode).put("key", it.get("key").asText().removePrefix("http://data.europa.eu/bna/"))
+            (it as ObjectNode).put("key", it.get("key").asString().removePrefix("http://data.europa.eu/bna/"))
         }
 
         return true

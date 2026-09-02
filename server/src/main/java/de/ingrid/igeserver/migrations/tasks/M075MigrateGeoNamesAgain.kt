@@ -96,7 +96,7 @@ class M075MigrateGeoNamesAgain : MigrationBase("0.75") {
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
             (doc.data.get("spatial")?.get("references") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-                .filter { it.get("type")?.asText() == "geo-name" }
+                .filter { it.get("type")?.asString() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
 

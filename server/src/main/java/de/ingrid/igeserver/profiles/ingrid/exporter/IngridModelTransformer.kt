@@ -1146,7 +1146,7 @@ open class IngridModelTransformer(
     private fun getRefTypeFromIncomingReference(data: JsonNode): KeyValue? {
         val asCoupledResource = data.get("service")?.get("coupledResources")
             ?.filter { !it.get("isExternalRef").asBoolean() }
-            ?.find { it.get("uuid").asText() == this.model.uuid }
+            ?.find { it.get("uuid").asString() == this.model.uuid }
 
         if (asCoupledResource != null) return KeyValue("3600", null)
 

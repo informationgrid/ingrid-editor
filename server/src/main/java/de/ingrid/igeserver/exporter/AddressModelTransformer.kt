@@ -122,7 +122,7 @@ open class AddressModelTransformer(
         return ancestorsWithoutEldest
             .filter {
                 it.document.data.getStringOrEmpty("organization").isNotEmpty()
-            }.joinToString(", ") { it.document.data.get("organization").asText() }
+            }.joinToString(", ") { it.document.data.get("organization").asString() }
     }
 
     val id = displayAddress.id

@@ -104,7 +104,7 @@ class UpdateExternalCoupledResourcesTask(
         val doc = documentService.docRepo.findById(id).get().apply {
             val arrayNode = data.get("service").get("coupledResources") as ArrayNode
             arrayNode.forEach {
-                if (it.get("url")?.asText() == url) {
+                if (it.get("url")?.asString() == url) {
                     it as ObjectNode
                     it.put("uuid", record.uuid)
                     it.put("identifier", record.identifier)
