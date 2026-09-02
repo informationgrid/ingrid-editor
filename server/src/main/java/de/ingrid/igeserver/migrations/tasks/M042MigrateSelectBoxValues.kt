@@ -30,7 +30,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.ArrayNode
 import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper

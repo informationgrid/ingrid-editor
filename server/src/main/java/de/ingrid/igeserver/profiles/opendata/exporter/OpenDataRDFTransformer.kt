@@ -31,7 +31,6 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
-import tools.jackson.databind.node.ArrayNode
 import java.time.OffsetDateTime
 import java.time.ZoneId
 

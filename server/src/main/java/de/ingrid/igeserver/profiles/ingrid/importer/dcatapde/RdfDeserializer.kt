@@ -197,6 +197,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             record.geometry = createGeoShape(model, location, "locn", "geometry")
             val geoPointMap = createGeoShape(model, location, "dcat", "centroid")
             if (geoPointMap != null) {
+                @Suppress("UNCHECKED_CAST")
                 val geoPoint = geoPointMap["coordinates"] as List<Double>?
                 record.centroid = geoPoint!!.toTypedArray<Double>()
             }
@@ -327,6 +328,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                     }
                     propMap[localName] = periodOfTime
                 } else if (localName == "distribution") {
+                    @Suppress("UNCHECKED_CAST")
                     var distributions = propMap["distributions"] as MutableSet<Map<String, Any>?>?
                     if (distributions == null) {
                         distributions = HashSet()
@@ -375,12 +377,15 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                         mapper.convertValue("GeometryCollection", JsonNode::class.java),
                     )
                     objectNode.set("geometries", geometries)
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(objectNode.toString(), Map::class.java) as Map<String, Any>
                 } else if ("Feature" == type) {
                     val geometryNode = jsonNode["geometry"]
                         ?: throw withReason("Feature must contain \"geometry\" property", null)
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(jsonNode["geometry"].toString(), MutableMap::class.java) as Map<String, Any>
                 } else if (legalGeometries.contains(type)) {
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(nodeValue, MutableMap::class.java) as Map<String, Any>
                 } else {
                     throw withReason("GeoJSON must contain a valid type, was \"$type\"", null)
@@ -483,6 +488,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             processStep.temporal = processStepAsMap["temporal"] as PeriodOfTime?
             processStep.title = processStepAsMap["title"] as String?
             if (processStepAsMap.containsKey("distributions")) {
+                @Suppress("UNCHECKED_CAST")
                 processStep.distributions =
                     mapsToDistributions(processStepAsMap["distributions"] as Set<Map<String, Any>>?)
             }

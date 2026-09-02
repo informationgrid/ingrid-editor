@@ -93,7 +93,7 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
         return roles.contains(SimpleGrantedAuthority(role)) || roles.contains(SimpleGrantedAuthority("ROLE_$role"))
     }
 
-    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> = principal.authorities ?: emptyList()
+    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> = principal.authorities
 
     override fun isAdmin(principal: Principal): Boolean = containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
 

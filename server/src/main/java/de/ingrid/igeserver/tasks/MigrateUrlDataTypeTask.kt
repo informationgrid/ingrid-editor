@@ -51,6 +51,7 @@ class MigrateUrlDataTypeTask(
     }
 
     private fun updateDatasetsWithUrls(info: DataTypeInfo) {
+        @Suppress("UNCHECKED_CAST")
         val docIds = entityManager
             .createNativeQuery("""SELECT id FROM document doc WHERE doc.data -> 'references' @> '[{"url": "${info.url}"}]'""")
             .resultList as List<Int>

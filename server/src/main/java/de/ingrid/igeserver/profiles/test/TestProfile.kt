@@ -42,7 +42,6 @@ import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import tools.jackson.databind.JsonNode
-import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service

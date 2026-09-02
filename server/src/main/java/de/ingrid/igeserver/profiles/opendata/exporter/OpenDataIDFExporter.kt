@@ -44,7 +44,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 

@@ -160,7 +160,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
         val validUntilDateField = it.get("validUntil")
         val expiredDate =
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
-        val uri = it.get("downloadURL")?.get("uri")?.textValue() ?: return null
+        val uri = it.get("downloadURL")?.get("uri")?.stringValue() ?: return null
         return UploadInfo(field, uri, expiredDate)
     }
 

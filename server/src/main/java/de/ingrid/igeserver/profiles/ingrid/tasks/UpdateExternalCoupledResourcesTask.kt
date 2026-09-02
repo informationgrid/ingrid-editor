@@ -118,6 +118,7 @@ class UpdateExternalCoupledResourcesTask(
 
     private fun getAllExternalCoupledResources(): List<CoupledResourceResult> {
         ClosableTransaction(transactionManager).use {
+            @Suppress("UNCHECKED_CAST")
             return entityManager.createNativeQuery(
                 """
     SELECT id, uuid, (data -> 'service' -> 'coupledResources'), catalog_id FROM document

@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.ObjectNode
 
 @Profile("opendata")

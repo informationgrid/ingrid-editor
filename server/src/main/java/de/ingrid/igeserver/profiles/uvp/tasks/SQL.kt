@@ -202,5 +202,5 @@ private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
     val expiredDate =
         if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
-    return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
+    return UploadInfo("", it.get("downloadURL").get("uri").stringValue(), expiredDate)
 }

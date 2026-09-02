@@ -25,7 +25,6 @@ import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
-import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class InternalImportMigrations : AnnotationSpec() {

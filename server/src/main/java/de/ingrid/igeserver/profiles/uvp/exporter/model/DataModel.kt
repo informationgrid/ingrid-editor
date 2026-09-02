@@ -61,8 +61,8 @@ data class DataModel(
                 val data = jacksonObjectMapper().readTree(entry.data)
                 UVPNumber(
                     codeValue,
-                    data.get("type").textValue(),
-                    data.get("cat").textValue(),
+                    data.get("type").stringValue(),
+                    data.get("cat").stringValue(),
                 )
             } else {
                 null
@@ -75,7 +75,7 @@ data class DataModel(
     // TODO: check if this can be removed safely
     private fun setProcessingSteps(nodeSteps: List<JsonNode>) {
         steps = nodeSteps.mapNotNull { step ->
-            val type = step.get("type").textValue()
+            val type = step.get("type").stringValue()
             when (type) {
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,

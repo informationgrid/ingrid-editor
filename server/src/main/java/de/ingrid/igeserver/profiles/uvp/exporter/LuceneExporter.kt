@@ -30,7 +30,6 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import org.springframework.stereotype.Service
-import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service

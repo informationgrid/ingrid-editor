@@ -291,6 +291,7 @@ class ResearchService(
             val itemId = item.get("wrapperid") as? Int ?: return@mapNotNull null
             val permissionInfo = if (authPrincipal != null) aclService.getPermissionInfo(authPrincipal, itemId) else null
             if (isAdmin || permissionInfo?.canRead == true) {
+                @Suppress("UNCHECKED_CAST")
                 Result(
                     title = item.get("title") as? String,
                     uuid = item.get("uuid") as? String,
