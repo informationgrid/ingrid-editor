@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.4.0.1 (02.09.2026)
+
+
+### Bugfixes
+
+* Passwort ändern leitet falsch weiter (#9467)
+    
 ## 8.4.0 (03.07.2026)
 
 ### Features
