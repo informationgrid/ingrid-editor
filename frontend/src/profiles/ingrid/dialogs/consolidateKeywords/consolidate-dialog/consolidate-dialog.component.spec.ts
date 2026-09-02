@@ -45,42 +45,40 @@ import {
   Thesaurus,
 } from "../../../utils/keywords";
 import { ProfileService } from "../../../../../app/services/profile.service";
-import { IngridShared } from "../../../doctypes/ingrid-shared";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
-import { provideZonelessChangeDetection, signal } from "@angular/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GeneralStore } from "../../../../../app/store/general.store";
 
-class MockIngridDoctype extends IngridShared {
-  id = "mock";
-  label = "mock";
-  constructor() {
-    super();
-    this.keywordThesauri = [
-      {
-        id: "gemet",
-        label: "Gemet-Schlagworte",
-        modelPath: "keywords.gemet",
-        type: "external",
-      },
-      {
-        id: "umthes",
-        label: "Umthes-Schlagworte",
-        modelPath: "keywords.umthes",
-        type: "external",
-      },
-    ];
-  }
-  getFields = () => [];
-  getFieldsForPrint = () => [];
-  init = () => Promise.resolve();
-  documentFields = () => [];
-  cleanFields = [];
-}
+const mockKeywordThesauri: Thesaurus[] = [
+  {
+    id: "gemet",
+    label: "Gemet-Schlagworte",
+    modelPath: "keywords.gemet",
+    type: "external",
+  },
+  {
+    id: "umthes",
+    label: "Umthes-Schlagworte",
+    modelPath: "keywords.umthes",
+    type: "external",
+  },
+  {
+    id: "inspireTopics",
+    label: "INSPIRE-Themen",
+    modelPath: "themes",
+    type: "codelist",
+    codelistId: "6100",
+    isEnabled: (form) => form.value?.properties?.isInspireIdentified,
+  },
+  FREE_THESAURUS,
+];
+
+const mockDoctype = { keywordThesauri: mockKeywordThesauri };
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
@@ -94,7 +92,7 @@ describe("ConsolidateDialogComponent", () => {
       {
         provide: ProfileService,
         useValue: {
-          getDoctype: () => new MockIngridDoctype(),
+          getDoctype: () => mockDoctype,
         },
       },
       mockProvider(GeneralStore, {
@@ -189,6 +187,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Freie Schlagworte", 1, "Adressen", "removed");
@@ -200,6 +199,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ gemet: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Gemet-Schlagworte", 1, "Adressen", "removed");
@@ -242,6 +242,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ umthes: [{ id: "1", label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Umthes-Schlagworte", 1, "Adressen", "removed");
@@ -250,8 +251,6 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should notify if thesauri are not available", async () => {
-    initForm({ free: [{ label: "test" }] });
-
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
     vi.spyOn(keywordAnalysis, "analyzeKeywords").mockReturnValue(
       // @ts-ignore
@@ -260,6 +259,7 @@ describe("ConsolidateDialogComponent", () => {
         resolve("Some error message.");
       }),
     );
+    initForm({ free: [{ label: "test" }] });
     await waitSomeTime();
     expect(spectator.query("div.legend")).toBe(null);
     // .textContent).not.contains(
