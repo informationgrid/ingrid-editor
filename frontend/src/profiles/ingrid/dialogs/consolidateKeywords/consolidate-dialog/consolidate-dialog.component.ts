@@ -288,7 +288,7 @@ export class ConsolidateDialogComponent implements OnInit {
     let otherThesauriNewKeywords: ThesaurusResult[] = [];
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      if (thesaurus.type !== "external") {
+      if (thesaurus.type === "codelist") {
         continue;
       }
       otherThesauriNewKeywords = Array.from(this.keywordHierarchyMap)
