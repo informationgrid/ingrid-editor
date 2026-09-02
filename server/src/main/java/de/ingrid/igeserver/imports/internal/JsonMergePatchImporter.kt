@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.imports.internal
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonpatch.JsonPatch
 import com.gravity9.jsonpatch.mergepatch.JsonMergePatch
 import de.ingrid.igeserver.ServerException
@@ -37,13 +38,14 @@ data class IgeJsonPatch(
     val uuid: String,
     // type is needed in case a new dataset needs to be created
     val type: String,
-    val jsonPatch: JsonPatch?,
-    val jsonMerge: JsonMergePatch?,
+    val jsonPatch: JsonNode? = null,
+    val jsonMerge: JsonNode? = null,
 )
 
 @Service
 class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter {
     private val log = logger()
+    private val legacyObjectMapper = ObjectMapper()
 
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(
@@ -72,8 +74,16 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
 
         // get complete json as if from internal export
         val jsonDoc = getRawJsonFromDocument(doc, true)
-        val legacyDoc = com.fasterxml.jackson.databind.ObjectMapper().readTree(jsonDoc.toString())
-        val patchedNode: com.fasterxml.jackson.databind.JsonNode? = input.jsonPatch?.apply(legacyDoc) ?: input.jsonMerge?.apply(legacyDoc)
+        val legacyDoc = legacyObjectMapper.readTree(jsonDoc.toString())
+        val patchedNode = if (input.jsonPatch != null) {
+            val legacyPatchNode = legacyObjectMapper.readTree(input.jsonPatch.toString())
+            val patch = JsonPatch.fromJson(legacyPatchNode)
+            patch.apply(legacyDoc)
+        } else {
+            val legacyMergeNode = legacyObjectMapper.readTree(input.jsonMerge.toString())
+            val mergePatch = JsonMergePatch.fromJson(legacyMergeNode)
+            mergePatch.apply(legacyDoc)
+        }
 
         return jacksonObjectMapper().readTree(patchedNode.toString())
     }

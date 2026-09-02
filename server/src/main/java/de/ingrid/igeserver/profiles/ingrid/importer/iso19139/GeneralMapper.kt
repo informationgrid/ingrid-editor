@@ -505,8 +505,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 // TODO: handle bounding polygons
                 it.boundingPolygon?.polygon?.let { _ ->
                     val xmlMapper = XmlMapper()
-                    val xml = xmlMapper.writer().withoutRootName().writeValueAsString(it.boundingPolygon.polygon)
-                    val convertedWKT = convertGml32ToWkt(xml.substring(2, xml.length - 3))
+                    val xml = xmlMapper.writeValueAsString(it.boundingPolygon.polygon)
+                    val convertedWKT = convertGml32ToWkt(xml)
                     references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
                 }
             }

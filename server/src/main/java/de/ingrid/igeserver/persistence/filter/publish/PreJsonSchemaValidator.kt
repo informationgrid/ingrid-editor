@@ -23,7 +23,9 @@ import com.networknt.schema.Error
 import com.networknt.schema.InputFormat
 import com.networknt.schema.SchemaLocation
 import com.networknt.schema.SchemaRegistry
+import com.networknt.schema.SchemaRegistryConfig
 import com.networknt.schema.dialect.Dialects
+import com.networknt.schema.path.PathType
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
@@ -91,12 +93,19 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         val schemaLocation = SchemaLocation.of("classpath:$schemaFile")
 
         val schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft202012()) { builder ->
-            builder.schemas(mapOf("https://wemove.com/schemas/" to "classpath:/"))
+            builder.schemaIdResolvers { resolvers ->
+                resolvers.mapPrefix("https://wemove.com/schemas/", "classpath:/")
+            }
+            builder.schemaRegistryConfig(
+                SchemaRegistryConfig.builder().pathType(PathType.JSON_PATH).build(),
+            )
             builder
                 .nodeReader { reader -> reader.locationAware() }
-                // 2. Allow the classpath prefix pattern through the library sandbox
+                // Allow classpath and wemove schema prefix patterns through the library sandbox
                 .schemaLoader { loader ->
-                    loader.allow { iri -> iri.toString().startsWith("classpath:") }
+                    loader.allow { iri ->
+                        iri.toString().startsWith("classpath:") || iri.toString().startsWith("https://wemove.com/schemas/")
+                    }
                 }
         }
 

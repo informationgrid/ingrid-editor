@@ -153,7 +153,7 @@ class LfuBayernFields : GeodatasetBase() {
                             "resource": {
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 
@@ -175,7 +175,7 @@ class LfuBayernFields : GeodatasetBase() {
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 

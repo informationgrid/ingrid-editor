@@ -312,23 +312,25 @@ data class ConformanceResult(
     val pass: KeyValue,
     val isInspire: Boolean?,
     val specification: KeyValue?,
+    @JsonProperty("explanation") private val _explanation: String? = null,
+    @JsonProperty("publicationDate") private val _publicationDate: String? = null,
 ) {
-    val explanation: String? = null
+    val explanation: String?
         get() {
-            return if (field.isNullOrEmpty()) "see the referenced specification" else field
+            return if (_explanation.isNullOrEmpty()) "see the referenced specification" else _explanation
         }
 
-    val publicationDate: String? = null
+    val publicationDate: String?
         get() {
-            return if (field?.contains("Z") == true) {
+            return if (_publicationDate?.contains("Z") == true) {
                 val isoDate: Date = try {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(field)
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(_publicationDate)
                 } catch (_: ParseException) {
-                    Date.from(OffsetDateTime.parse(field).toInstant())
+                    Date.from(OffsetDateTime.parse(_publicationDate).toInstant())
                 }
                 SimpleDateFormat("yyyy-MM-dd").format(isoDate)
             } else {
-                field
+                _publicationDate
             }
         }
 }
