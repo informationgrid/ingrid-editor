@@ -21,7 +21,7 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.BadRequestException
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import kotlin.math.abs
@@ -34,7 +34,7 @@ class ApiValidationService(
 ) {
 
     fun validateCollection(collectionId: String) {
-        if (!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+        if (!catalogService.catalogExists(collectionId)) throw BadRequestException.withMissingCatalog(collectionId)
     }
 
     fun validateRequestParams(allRequestParams: Map<String, String>, validParams: List<String>) {

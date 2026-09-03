@@ -124,17 +124,9 @@ export class CategorizedSelectComponent
 
   filteredCategories = computed(() => {
     const query = this.filterQuery().toLowerCase();
-    const selectedOption = this.selectedOptions()[0];
-    const restrictToSingleCategory = this.props.restrictToSingleCategory;
 
     return this.categories()
-      .filter((category) =>
-        this.isCategoryAllowed(
-          category,
-          selectedOption,
-          restrictToSingleCategory,
-        ),
-      )
+      .filter((category) => this.isCategoryAllowed(category))
       .map((category) => ({
         ...category,
         // filter options by query
@@ -147,9 +139,11 @@ export class CategorizedSelectComponent
 
   // Uncategorized options with the query filter.
   filteredOptions = computed(() => {
-    const options = this.categories().reduce((acc, cat) => {
-      return [...acc, ...cat.options];
-    }, []);
+    const options = this.categories()
+      .filter((category) => this.isCategoryAllowed(category))
+      .reduce((acc, cat) => {
+        return [...acc, ...cat.options];
+      }, []);
     const query = this.filterQuery().toLowerCase();
     if (!query) return options;
     return options
@@ -240,18 +234,17 @@ export class CategorizedSelectComponent
     return values.has(option.value);
   }
 
-  private isCategoryAllowed(
-    category: SelectCategory,
-    selectedOption: SelectOption | undefined,
-    restrictToSingleCategory: boolean | undefined,
-  ): boolean {
-    // if not restricting to single category, or no selected option, allow all categories
-    if (!restrictToSingleCategory || !selectedOption) {
+  private isCategoryAllowed(category: SelectCategory): boolean {
+    const restrictToSingleCategory = this.props.restrictToSingleCategory;
+
+    // if not restricting to single category, or no selected options, allow all categories
+    if (!restrictToSingleCategory || !this.selectedOptions().length) {
       return true;
     }
 
+    // only allow category if it contains the first selected option
     return category.options.some(
-      (option) => option.value === selectedOption.value,
+      (option) => option.value === this.selectedOptions()[0].value,
     );
   }
 

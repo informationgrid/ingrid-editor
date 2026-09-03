@@ -69,6 +69,11 @@ class OpenDataRDFExporter(
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") {
             throw IndexException.skipFolders(doc.uuid)
+        } else if (doc.type != "OpenDataDoc") {
+            throw IndexException.withReason(
+                "RDF-Export not supported",
+                data = mapOf("uuid" to doc.uuid),
+            )
         }
 
         val indexDocument = createIndexDocument(doc, catalogId, options)

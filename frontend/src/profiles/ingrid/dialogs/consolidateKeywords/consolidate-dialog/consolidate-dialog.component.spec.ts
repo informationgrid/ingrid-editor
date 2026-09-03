@@ -17,7 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { createComponentFactory, Spectator } from "@ngneat/spectator/vitest";
+import {
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from "@ngneat/spectator/vitest";
 import {
   ConsolidateDialogComponent,
   Keyword,
@@ -35,14 +39,48 @@ import {
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { ConfigService } from "../../../../../app/services/config/config.service";
-import { ThesaurusType } from "../../../components/thesaurus-result";
-import { KeywordAnalysis } from "../../../utils/keywords";
+import {
+  FREE_THESAURUS,
+  KeywordAnalysis,
+  Thesaurus,
+} from "../../../utils/keywords";
+import { ProfileService } from "../../../../../app/services/profile.service";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { GeneralStore } from "../../../../../app/store/general.store";
+import { CommonFieldsBaw } from "../../../../../profiles/ingrid-baw/doctypes/common-fields";
+
+const mockKeywordThesauri: Thesaurus[] = [
+  {
+    id: "gemet",
+    label: "Gemet-Schlagworte",
+    modelPath: "keywords.gemet",
+    type: "external",
+  },
+  {
+    id: "umthes",
+    label: "Umthes-Schlagworte",
+    modelPath: "keywords.umthes",
+    type: "external",
+  },
+  {
+    id: "inspireTopics",
+    label: "INSPIRE-Themen",
+    modelPath: "themes",
+    type: "codelist",
+    codelistId: "6100",
+    isEnabled: (form) => form.value?.properties?.isInspireIdentified,
+  },
+  CommonFieldsBaw.BawKeywordThesaurus,
+  FREE_THESAURUS,
+];
+
+const mockDoctype = { keywordThesauri: mockKeywordThesauri };
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
@@ -53,6 +91,22 @@ describe("ConsolidateDialogComponent", () => {
       provideZonelessChangeDetection(),
       { provide: MAT_DIALOG_DATA, useValue: [] },
       { provide: MatDialogRef, useValue: [] },
+      {
+        provide: ProfileService,
+        useValue: {
+          getDoctype: () => mockDoctype,
+        },
+      },
+      mockProvider(GeneralStore, {
+        getOpenedDocument: () => ({ _type: "InGridGeoService" }),
+      }),
+      FormStateService,
+      KeywordAnalysis,
+      {
+        provide: CodelistStore,
+        useValue: { getCodelistEntryByValue: () => {} },
+      },
+      { provide: MatSnackBar, useValue: { open: () => {} } },
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
     ],
@@ -75,6 +129,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [], gemet: [], umthes: [] });
 
     await spectator.fixture.whenStable();
+    spectator.detectChanges();
     expect(spectator.query("ige-dialog-template").textContent).contains(
       "In diesem Datensatz sind keine Schlagworte vorhanden.",
     );
@@ -112,6 +167,23 @@ describe("ConsolidateDialogComponent", () => {
     expectThesaurusNotExists("Umthes-Schlagworte");
   });
 
+  it("should move a free keyword to the BAW thesaurus", async () => {
+    initForm({ free: [{ label: "Schlagwort1" }], bawKeywords: [] });
+
+    mockCheckInCodelist({
+      description: "",
+      id: "Schlagwort1",
+      fields: { de: "Schlagwort1" },
+    });
+    await mockHttp({});
+    await waitSomeTime();
+
+    expectKeywordCount("Freie Schlagworte", 1, "Schlagwort1", "removed");
+    expectKeywordCount("BAW-Schlagworte", 1, "Schlagwort1", "added");
+    expectThesaurusNotExists("Gemet-Schlagworte");
+    expectThesaurusNotExists("Umthes-Schlagworte");
+  });
+
   it("should keep a free keyword and add synonym to gemet", async () => {
     initForm({ free: [{ label: "test" }] });
     await mockHttp({ gemet: [{ id: "1", label: "test-other" }] });
@@ -134,6 +206,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ free: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Freie Schlagworte", 1, "Adressen", "removed");
@@ -145,6 +218,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ gemet: [{ label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Gemet-Schlagworte", 1, "Adressen", "removed");
@@ -187,6 +261,7 @@ describe("ConsolidateDialogComponent", () => {
     initForm({ umthes: [{ id: "1", label: "Adressen" }] }, [], "conform");
 
     mockCheckInThemes({ description: "", id: "1", fields: { de: "Adressen" } });
+    await mockHttp({});
     await waitSomeTime();
     expectKeywordCount("INSPIRE-Themen", 1, "Adressen", "added");
     expectKeywordCount("Umthes-Schlagworte", 1, "Adressen", "removed");
@@ -195,8 +270,6 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   it("should notify if thesauri are not available", async () => {
-    initForm({ free: [{ label: "test" }] });
-
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
     vi.spyOn(keywordAnalysis, "analyzeKeywords").mockReturnValue(
       // @ts-ignore
@@ -205,6 +278,7 @@ describe("ConsolidateDialogComponent", () => {
         resolve("Some error message.");
       }),
     );
+    initForm({ free: [{ label: "test" }] });
     await waitSomeTime();
     expect(spectator.query("div.legend")).toBe(null);
     // .textContent).not.contains(
@@ -222,7 +296,7 @@ describe("ConsolidateDialogComponent", () => {
   });
 
   function expectKeywordCount(
-    thesaurus: ThesaurusType,
+    thesaurus: string,
     count: number,
     value?: string,
     state?: "removed" | "added" | "unchanged",
@@ -246,12 +320,12 @@ describe("ConsolidateDialogComponent", () => {
     }
   }
 
-  function expectThesaurusNotExists(thesaurus: ThesaurusType) {
+  function expectThesaurusNotExists(thesaurus: string) {
     expect(spectator.query(`div[aria-label='${thesaurus}']`)).toBe(null);
   }
 
   function initForm(
-    keywords: Keywords,
+    keywords: Keywords & { bawKeywords?: Keyword[] },
     themes: {
       key: string;
     }[] = [],
@@ -269,6 +343,12 @@ describe("ConsolidateDialogComponent", () => {
       }),
       themes: new FormArray([]),
     });
+    if (keywords.bawKeywords) {
+      (form.get("keywords") as FormGroup).addControl(
+        "bawKeywords",
+        new FormArray([]),
+      );
+    }
     if (keywords.free?.length > 0) {
       keywords.free.forEach((keyword: Keyword) => {
         form.controls.keywords.controls.free.push(
@@ -290,6 +370,17 @@ describe("ConsolidateDialogComponent", () => {
         );
       });
     }
+    if (keywords.bawKeywords?.length > 0) {
+      keywords.bawKeywords.forEach((keyword: Keyword) => {
+        (form.get("keywords.bawKeywords") as unknown as FormArray).push(
+          new FormControl({
+            key: keyword.id,
+            value: keyword.label,
+            _codelistId: "3950005",
+          }),
+        );
+      });
+    }
     if (themes.length > 0) {
       themes.forEach((theme) => {
         form.controls.themes.push(new FormControl({ key: theme.key }));
@@ -300,6 +391,7 @@ describe("ConsolidateDialogComponent", () => {
       docType: "InGridGeoService",
       parentId: null,
     });
+    spectator.detectChanges();
   }
 
   async function mockHttp(data?: {
@@ -315,29 +407,38 @@ describe("ConsolidateDialogComponent", () => {
     const httpCtrl = spectator.inject(HttpTestingController);
 
     await spectator.fixture.whenStable();
-    const reqGemet = httpCtrl.expectOne(
-      "/api/keywords/gemet?q=test&type=EXACT",
+    spectator.detectChanges();
+
+    const reqGemet = httpCtrl.expectOne((req) =>
+      req.url.includes("keywords/gemet"),
     );
     reqGemet.flush(data?.gemet ?? []);
 
     if (data?.gemet && !data?.umthes) {
       // If gemet was found, we don't need to check umthes.
-      httpCtrl.expectNone("/api/keywords/umthes?q=test&type=EXACT");
+      httpCtrl.expectNone((req) => req.url.includes("keywords/umthes"));
       httpCtrl.verify();
       return;
     }
 
     await waitSomeTime();
-    const reqUmthes = httpCtrl.expectOne(
-      "/api/keywords/umthes?q=test&type=EXACT",
+    const reqUmthes = httpCtrl.expectOne((req) =>
+      req.url.includes("keywords/umthes"),
     );
     reqUmthes.flush(data?.umthes ?? []);
 
     // Finally, assert that there are no outstanding requests.
+    await spectator.fixture.whenStable();
+    spectator.detectChanges();
     httpCtrl.verify();
   }
 
   function mockCheckInThemes(data?: CodelistEntry) {
+    const codelistStore = spectator.inject(CodelistStore);
+    vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
+  }
+
+  function mockCheckInCodelist(data?: CodelistEntry) {
     const codelistStore = spectator.inject(CodelistStore);
     vi.spyOn(codelistStore, "getCodelistEntryByValue").mockReturnValue(data);
   }

@@ -3,6 +3,7 @@ import static org.cyclonedx.model.Component.Type
 import org.jetbrains.changelog.ExtensionsKt
 
 plugins {
+    id 'base' // handles clean - task
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
     id "org.jetbrains.changelog" version "1.1.2"
     id "com.diffplug.spotless" version "7.0.2" apply false

@@ -9,13 +9,14 @@ buildscript {
     ext.spring_boot_version = '3.5.15'
     ext.kotest_version = '6.1.9'
     ext.jte_version = '3.2.4'
-    ext.geotools_version = '34.2'
+    ext.geotools_version = '34.5'
     ext.ktor_client = '3.4.1'
 }
 
 plugins {
     id 'base'
     id 'java'
+    id 'application'
     id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
@@ -242,6 +243,23 @@ springBoot {
     buildInfo()
 }
 
+application {
+    applicationName = 'ingrid-editor'
+    mainClass = 'de.ingrid.igeserver.IgeServerKt'
+}
+
+bootDistZip {
+    archiveBaseName = 'ingrid-editor'
+    destinationDirectory = rootProject.layout.buildDirectory.dir("distributions")
+}
+
+distTar {
+    enabled = false
+}
+bootDistTar {
+    enabled = false
+}
+
 if (hasProperty('filename')) {
     bootJar {
         archiveFileName = getProperty('filename')
@@ -282,9 +300,6 @@ tasks.register('updateGitHooks', Copy) {
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(25))
-    }
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
@@ -495,4 +510,15 @@ tasks.named("detektMain").configure {
         sarif.required.set(true)
         markdown.required.set(true)
     }
+}
+
+tasks.cyclonedxBom {
+    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
+    // setIncludeConfigs(listOf("runtimeClasspath"))
+    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
+    // setSkipConfigs(listOf("compileClasspath", "testCompileClasspath"))
+    projectType = Type.APPLICATION
+    schemaVersion = Version.VERSION_15
+    jsonOutput = file("build/reports/bom.json")
+    componentVersion = rootProject.version.toString()
 }

@@ -20,28 +20,41 @@
 package de.ingrid.igeserver.utils
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 
 object DateHelper {
 
     private val OUTPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    private val GERMANY_ZONE = ZoneId.of("Europe/Berlin")
+
+    private val PARSER = DateTimeFormatterBuilder()
+        .appendOptional(DateTimeFormatter.ISO_DATE_TIME)
+        .appendOptional(DateTimeFormatter.ISO_DATE)
+        .toFormatter()
 
     @JvmStatic
     fun normalizeToUtc(dateTime: String?): String? {
         if (dateTime.isNullOrBlank()) return null
-        val parsed = try {
-            OffsetDateTime.parse(dateTime)
+
+        val temporal = try {
+            PARSER.parseBest(dateTime, OffsetDateTime::from, LocalDateTime::from, LocalDate::from)
         } catch (e: DateTimeParseException) {
-            try {
-                LocalDate.parse(dateTime).atStartOfDay(ZoneId.of("Europe/Berlin")).toOffsetDateTime()
-            } catch (e2: DateTimeParseException) {
-                return null
-            }
+            throw IllegalArgumentException("Unable to parse date: $dateTime", e)
         }
+
+        val parsed = when (temporal) {
+            is OffsetDateTime -> temporal
+            is LocalDateTime -> temporal.atZone(GERMANY_ZONE).toOffsetDateTime()
+            is LocalDate -> temporal.atStartOfDay(GERMANY_ZONE).toOffsetDateTime()
+            else -> throw IllegalArgumentException("Unable to parse date: $dateTime")
+        }
+
         val utc = parsed.withOffsetSameInstant(ZoneOffset.UTC)
         return utc.format(OUTPUT_FORMAT)
     }

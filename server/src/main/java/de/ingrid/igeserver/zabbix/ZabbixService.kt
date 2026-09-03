@@ -709,7 +709,7 @@ class ZabbixService(
         }
     }
 
-    private fun addAuthToBody(requestBody: String) = if (requestBody.contains("auth")) {
+    private fun addAuthToBody(requestBody: String) = if (requestBody.contains("\"auth\":")) {
         requestBody
     } else {
         requestBody.substringBeforeLast("}") + ", \"auth\": \"${this.apiKey}\" }"

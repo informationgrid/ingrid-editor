@@ -17,33 +17,31 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver
+package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ClientException
 import org.springframework.http.HttpStatus
 
-/**
- * Base class for exceptions that occur while processing a valid request to the REST API
- */
-open class ServerException : IgeException {
+open class BadRequestException : ClientException {
 
-    protected constructor(
-        statusCode: HttpStatus,
-        errorCode: String,
-        errorText: String,
-        data: Map<String, Any?>? = null,
-        cause: Throwable? = null,
-    ) :
+    protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
         super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
-        val STATUS_CODE = HttpStatus.INTERNAL_SERVER_ERROR
+        val STATUS_CODE = HttpStatus.BAD_REQUEST
 
-        private const val ERROR_CODE = "INTERNAL_ERROR"
-        private const val ERROR_TEXT = "The operation has failed, but detailed information is not available."
+        private const val ERROR_CODE_MISSING_CATALOG = "CATALOG_NOT_FOUND"
+        private const val ERROR_TEXT_MISSING_CATALOG = "The catalog '\${catalog}' does not exist."
 
         /**
-         * Factory method for an arbitrary reason
+         * Factory method for missing catalog
          */
-        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): ServerException = ServerException(STATUS_CODE, ERROR_CODE, reason, data, cause)
+        fun withMissingCatalog(catalog: String, cause: Throwable? = null): BadRequestException = BadRequestException(
+            STATUS_CODE,
+            ERROR_CODE_MISSING_CATALOG,
+            ERROR_TEXT_MISSING_CATALOG,
+            mapOf("catalog" to catalog),
+            cause,
+        )
     }
 }

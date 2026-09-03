@@ -62,7 +62,7 @@ export class ThesaurusReportComponent implements OnInit {
   report: string[];
 
   ngOnInit(): void {
-    const groupedByThesaurus = groupBy(this.data, (i) => i.thesaurus);
+    const groupedByThesaurus = groupBy(this.data, (i) => i.thesaurus.label);
 
     this.report = Object.keys(groupedByThesaurus)
       .filter((key) => groupedByThesaurus[key].length > 0)

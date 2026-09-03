@@ -17,24 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { GeoServiceDoctype } from "../../ingrid/doctypes/geo-service.doctype";
-import { CommonFieldsBaw } from "./common-fields";
 
 @Injectable({
   providedIn: "root",
 })
-export class GeoServiceDoctypeBaw extends GeoServiceDoctype {
-  common = inject(CommonFieldsBaw);
-
+export class GeoServiceDoctypeLubwSkdvOk extends GeoServiceDoctype {
   constructor() {
     super();
-    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
+    this.showAdVCompatible = false;
+    this.showAdVProductGroup = false;
   }
-
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    this.common.addSharedFields(this, fieldConfig);
-    return fieldConfig;
-  };
 }
