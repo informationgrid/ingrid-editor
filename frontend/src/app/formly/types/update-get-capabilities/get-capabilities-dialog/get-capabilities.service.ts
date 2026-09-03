@@ -47,14 +47,13 @@ import {
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
 import { GeoServiceDoctype } from "../../../../../profiles/ingrid/doctypes/geo-service.doctype";
 import { GeoDatasetDoctype } from "../../../../../profiles/ingrid/doctypes/geo-dataset.doctype";
-import { FormStateService } from "../../../../+form/form-state.service";
+import { FormArray, FormControl, FormGroup } from "@angular/forms";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
   private codelistStore = inject(CodelistStore);
-  private formStateService = inject(FormStateService);
 
   private backendUrl: string;
 
@@ -86,6 +85,7 @@ export class GetCapabilitiesService {
     model: any,
     values: GetCapabilitiesAnalysis,
     parentFolder: number,
+    form?: FormGroup | FormArray,
   ) {
     const urlReferences: Url[] = [];
     for (const [key, value] of Object.entries(values)) {
@@ -97,7 +97,12 @@ export class GetCapabilitiesService {
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
       if (key === "keywords") {
-        await this.addKeywordsToModel(value, model, this.geoserviceThesauri);
+        await this.addKeywordsToModel(
+          value,
+          model,
+          this.geoserviceThesauri,
+          form,
+        );
       }
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
@@ -148,12 +153,14 @@ export class GetCapabilitiesService {
     value: string[],
     model: any,
     keywordTheasuri: Thesaurus[],
+    form?: FormGroup | FormArray,
   ) {
-    const form = this.formStateService.getForm();
+    // new documents do not have form yet, so we create a minimal form from the model for isEnabled validation
+    const analysisForm = form ?? this.createFormFromModel(model);
     const response = await this.keywordAnalysis.analyzeKeywords(
       value,
       keywordTheasuri,
-      form,
+      analysisForm,
     );
     response.forEach((item) => {
       const keys = item.thesaurus.modelPath.split(".");
@@ -165,6 +172,34 @@ export class GetCapabilitiesService {
       const lastKey = keys[keys.length - 1];
       if (!target[lastKey]) target[lastKey] = [];
       target[lastKey].push(item.value);
+    });
+  }
+
+  /**
+   * Creates the minimal form needed by the Ingrid thesaurus `isEnabled`
+   * predicates while a newly created document has no Formly form yet.
+   * This is intentionally not a complete document form; when an `isEnabled`
+   * predicate starts reading another path, that path must be added here.
+   */
+  private createFormFromModel(model: any): FormGroup {
+    // currently supports mobilithek and inspire keywords
+
+    const keywords = new FormGroup({});
+    if (model?.keywords && "mobilithek" in model.keywords) {
+      keywords.addControl(
+        "mobilithek",
+        new FormControl(model.keywords.mobilithek),
+      );
+    }
+
+    return new FormGroup({
+      themes: new FormControl(model?.themes),
+      properties: new FormGroup({
+        isInspireIdentified: new FormControl(
+          model?.properties?.isInspireIdentified,
+        ),
+      }),
+      keywords,
     });
   }
 
