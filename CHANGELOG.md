@@ -1,5 +1,21 @@
 # Changelog
 
+## 8.4.1 (04.09.2026)
+
+### Features
+
+* Anzahl (Summe) der ausgewählten Datensätze beim Export anzeigen (#9220)
+* Neuer Verfahrensschritt: „Unterrichtung über den Untersuchungsrahmen“ (#8934)
+* ISO Erweiterung für BAW-spezifische Felder (#8814)
+* applicationProfile - Anzeige im Editor (#6393)
+
+### Bugfixes
+
+* Passwort ändern leitet falsch weiter (#9467)
+* ISO-Schemenvalidierungsfehler in der GDI-DE Testsuite schlägt bei Datengrundlage/Herkunft fehl (#9351)
+* IGE: Veröffentlichungsdatum von Literaturverweise fehlen im ISO und Portal (#9269)
+* Refactoring des Zabbix-Aufräumjobs und Dokumentation (#8319)
+    
 ## 8.4.0 (03.07.2026)
 
 ### Features
