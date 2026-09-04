@@ -209,7 +209,7 @@
         "type": "cfdSimulation",
         "shipName": [
           {
-            "key": 1,
+            "key": "1",
             "value": "PPM42",
             "_codelistId": "BAW_shipName"
           },
