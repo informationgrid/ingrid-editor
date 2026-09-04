@@ -45,7 +45,8 @@ open class CodelistTransformer(
     fun getValue(codelistId: String, entry: KeyValue?, field: String): String? = getValue(codelistId, entry, field, false)
 
     fun getValue(codelistId: String, entry: KeyValue?, field: String, restrictToField: Boolean? = false): String? = if (entry?.key != null) {
-        val value = codelistHandler.getCodelistValue(codelistId, entry.key, field)
+        // TODO Analyze why there is an empty string returned when field not foun. (we need to check for empty string because of it)  example: list 2000 key 9999
+        val value = codelistHandler.getCodelistValue(codelistId, entry.key, field)?.ifEmpty { null }
         if (restrictToField == true) return value
         value ?: codelistHandler.getCodelistValue(codelistId, entry.key, "de")
             ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, field)
