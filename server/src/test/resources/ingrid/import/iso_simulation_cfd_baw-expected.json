@@ -209,7 +209,7 @@
         "type": "cfdSimulation",
         "shipName": [
           {
-            "key": null,
+            "key": "1",
             "value": "PPM42",
             "_codelistId": "BAW_shipName"
           },
@@ -220,17 +220,17 @@
           }
         ],
         "physics": {
-          "key": null,
+          "key": "2",
           "value": "LevelSet",
           "_codelistId": "BAW_physics"
         },
         "movementType": {
-          "key": null,
+          "key": "1",
           "value": "DFBIMorphing",
           "_codelistId": "BAW_movementType"
         },
         "trajectory": {
-          "key": null,
+          "key": "3",
           "value": "ZigZag",
           "_codelistId": "BAW_trajectory"
         },
