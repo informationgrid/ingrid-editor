@@ -28,8 +28,8 @@ rm -Rf %{buildroot}*
 mkdir -p %{target}/conf
 unzip -qq "${WORKSPACE}/build/distributions/ingrid-editor-[0-9]*.zip"
 mv ./ingrid-editor-*/* %{target}
-cp ${WORKSPACE}/server/build/resources/main/application.properties %{target}/conf
-cp ${WORKSPACE}/server/build/resources/main/log4j2.xml %{target}/conf
+cp ${WORKSPACE}/server/build/resources/main/application.properties %{target}/config
+cp ${WORKSPACE}/server/build/resources/main/log4j2.xml %{target}/config
 
 # Copy over the systemd unit file
 mkdir -p %{buildroot}%{systemd_dir}
@@ -39,8 +39,8 @@ cp ${WORKSPACE}/rpm/%{ingrid_unit_name} %{buildroot}%{systemd_dir}
 %defattr(0644,ingrid,ingrid,0755)
 %attr(0755,ingrid,ingrid) /opt/ingrid/ingrid-editor
 %attr(0644,root,root) %{ingrid_service}
-%config(noreplace) /opt/ingrid/ingrid-editor/conf/application.properties
-%config(noreplace) /opt/ingrid/ingrid-editor/conf/log4j2.xml
+%config(noreplace) /opt/ingrid/ingrid-editor/config/application.properties
+%config(noreplace) /opt/ingrid/ingrid-editor/config/log4j2.xml
 
 ################################################################################
 %pre
