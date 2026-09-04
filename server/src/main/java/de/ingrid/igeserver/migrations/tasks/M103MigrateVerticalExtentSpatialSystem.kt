@@ -44,8 +44,6 @@ class M103MigrateVerticalExtentSpatialSystem : MigrationBase("0.103") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    override fun exec() {}
-
     override fun postExec() {
         val pageSize = 100
         var page = 1

@@ -81,6 +81,7 @@ export interface UserInfo {
   permissions: string[];
   linkedProfiles: string[];
   plugins?: BehaviourFormatBackend[];
+  fromLdap: boolean;
 }
 
 export interface CMSPage {
@@ -311,6 +312,12 @@ export class ConfigService {
   isConnectionOK(id: string) {
     return this.http.get<boolean>(
       `${this.config.backendUrl}config/connections/connected/${id}`,
+    );
+  }
+
+  getConnectionUsage(): Observable<{ [connectionId: string]: string[] }> {
+    return this.http.get<{ [connectionId: string]: string[] }>(
+      `${this.config.backendUrl}config/connections/usage`,
     );
   }
 

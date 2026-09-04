@@ -22,6 +22,7 @@ import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
 import { AsyncPipe } from "@angular/common";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
+import { MatDivider } from "@angular/material/list";
 
 interface ReferenceItem {
   type: any;
@@ -41,7 +42,7 @@ interface ReferenceItemInternal extends ReferenceItem {
 
 @Component({
   selector: "ige-reference-view",
-  imports: [CodelistPipe, AsyncPipe],
+  imports: [CodelistPipe, AsyncPipe, MatDivider],
   templateUrl: "./reference-view.component.html",
   styleUrl: "./reference-view.component.scss",
 })

@@ -45,13 +45,13 @@ interface CatalogProfile {
     fun getFacetDefinitionsForAddresses(): Array<FacetGroup>
 
     @JsonIgnore
-    fun initCatalogCodelists(catalogId: String, codelistId: String? = null)
+    fun initCatalogCodelists(catalogId: String, codelistId: String? = null): Unit = Unit
 
     @JsonIgnore
-    fun initCatalogQueries(catalogId: String)
+    fun initCatalogQueries(catalogId: String): Unit = Unit
 
     @JsonIgnore
-    fun initIndices()
+    fun initIndices(): Unit = Unit
 
     @JsonIgnore
     fun getElasticsearchMapping(format: String): String

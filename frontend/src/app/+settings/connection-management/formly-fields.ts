@@ -24,36 +24,39 @@ import { FormControl } from "@angular/forms";
 
 @Injectable({ providedIn: "root" })
 export class ConnectionForm extends FormFieldHelper {
-  fields: FormlyFieldConfig[] = [
-    this.addRepeat("connections", "", {
-      wrappers: [],
-      hasExtendedGap: true,
-      showBorder: true,
-      menuOptions: [
-        {
-          key: "ibus",
-          value: "iBus",
-          fields: {
-            fieldGroup: [...this.addFieldsForIBus()],
+  fields(canRemoveFn): FormlyFieldConfig[] {
+    return [
+      this.addRepeat("connections", "", {
+        wrappers: [],
+        hasExtendedGap: true,
+        showBorder: true,
+        canRemove: canRemoveFn,
+        menuOptions: [
+          {
+            key: "ibus",
+            value: "iBus",
+            fields: {
+              fieldGroup: [...this.addFieldsForIBus()],
+            },
           },
-        },
-        {
-          key: "elastic",
-          value: "Elasticsearch",
-          fields: {
-            fieldGroup: [...this.addFieldsForElastic()],
+          {
+            key: "elastic",
+            value: "Elasticsearch",
+            fields: {
+              fieldGroup: [...this.addFieldsForElastic()],
+            },
           },
-        },
-        {
-          key: "cswt",
-          value: "CSW-T",
-          fields: {
-            fieldGroup: [...this.addFieldsForCSWT()],
+          {
+            key: "cswt",
+            value: "CSW-T",
+            fields: {
+              fieldGroup: [...this.addFieldsForCSWT()],
+            },
           },
-        },
-      ],
-    }),
-  ];
+        ],
+      }),
+    ];
+  }
 
   private addFieldsForIBus() {
     return [
@@ -169,7 +172,7 @@ export class ConnectionForm extends FormFieldHelper {
         required: true,
         updateOn: "change",
         validators: {
-          validation: ["url"],
+          validation: ["urlAllowIpAlias"],
         },
       }),
       this.addCheckboxInline("isSecure", "ist abgesichert"),

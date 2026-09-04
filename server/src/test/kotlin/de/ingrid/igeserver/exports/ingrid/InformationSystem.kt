@@ -82,7 +82,6 @@ class InformationSystem : ShouldSpec() {
                 "1350_61" -> "23. Bundesimmissionsschutzverordnung"
                 "1350_62" -> "Abfallgesetz (AbfG)"
                 "1350_63" -> "AdV-Plenumsbeschluß von 1994"
-
                 else -> codelistId + "_" + entryId
             }
         }

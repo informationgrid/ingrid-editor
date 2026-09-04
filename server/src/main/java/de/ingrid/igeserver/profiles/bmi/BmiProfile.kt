@@ -78,12 +78,6 @@ class BmiProfile(
         ),
     )
 
-    override fun initCatalogQueries(catalogId: String) {
-    }
-
-    override fun initIndices() {
-    }
-
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
 
     override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/bmi/default-settings.json")?.readText() ?: ""

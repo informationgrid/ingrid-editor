@@ -99,6 +99,7 @@ export class NewUserDialogComponent implements OnInit {
       role: "",
       id: null,
       groups: [],
+      fromLdap: false,
     };
 
     this.form = new FormGroup({

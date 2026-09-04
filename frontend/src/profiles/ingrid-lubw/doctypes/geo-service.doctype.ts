@@ -17,30 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.api
+import { Injectable } from "@angular/core";
+import { GeoServiceDoctype } from "../../ingrid/doctypes/geo-service.doctype";
 
-import jakarta.servlet.Filter
-import jakarta.servlet.FilterChain
-import jakarta.servlet.FilterConfig
-import jakarta.servlet.ServletRequest
-import jakarta.servlet.ServletResponse
-import jakarta.servlet.http.HttpServletResponse
-
-class ApiOriginFilter : Filter {
-
-    override fun doFilter(
-        request: ServletRequest,
-        response: ServletResponse,
-        chain: FilterChain,
-    ) {
-        val res = response as HttpServletResponse
-        res.addHeader("Access-Control-Allow-Origin", "*")
-        res.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
-        res.addHeader("Access-Control-Allow-Headers", "Content-Type")
-        chain.doFilter(request, response)
-    }
-
-    override fun destroy() {}
-
-    override fun init(filterConfig: FilterConfig) {}
+@Injectable({
+  providedIn: "root",
+})
+export class GeoServiceDoctypeLubwSkdvOk extends GeoServiceDoctype {
+  constructor() {
+    super();
+    this.showAdVCompatible = false;
+    this.showAdVProductGroup = false;
+  }
 }

@@ -61,7 +61,15 @@ export class DefaultUserBehaviour extends Plugin {
     this.formMenuService.addMenuItem("user", {
       title: "Passwort zurücksetzen",
       name: "reset-password",
-      action: () => this.resetPassword(this.userService.selectedUser$().login),
+      action: () => {
+        const user = this.userService.selectedUser$();
+        if (user.fromLdap) {
+          throw new IgeError(
+            "Passwort kann für diesen Benutzer nicht zurückgesetzt werden",
+          );
+        }
+        this.resetPassword(user.login);
+      },
     });
     this.formMenuService.addMenuItem("user", {
       title: "Löschen",

@@ -57,7 +57,9 @@ export interface SubSectionWrapperProps extends FormlyFieldProps {
         <formly-validation-message [field]="field"></formly-validation-message>
       </ige-form-error>
     }
-    <ng-container #fieldComponent></ng-container>
+    <div class="field-wrapper">
+      <ng-container #fieldComponent></ng-container>
+    </div>
     @if (!props.hideDivider && !props.bordered) {
       <mat-divider aria-hidden="true" class="space-bottom-field"></mat-divider>
     }

@@ -35,7 +35,6 @@ import { Group } from "../../models/user-group";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
 import { TranslocoService } from "@jsverse/transloco";
-import { ModalService } from "../modal/modal.service";
 
 @Injectable({
   providedIn: "root",
@@ -43,7 +42,6 @@ import { ModalService } from "../modal/modal.service";
 export class UserService {
   private groupStore = inject(GroupStore);
   private loco = inject(TranslocoService);
-  private modalService = inject(ModalService);
 
   availableRoles: SelectOptionUi[] = [
     new SelectOption("cat-admin", this.loco.translate("roles.cat-admin")),
@@ -204,12 +202,14 @@ export class UserService {
     groups: Group[],
     groupClickCallback: (id: string) => void = undefined,
     roleChangeCallback: FormlyAttributeEvent = undefined,
+    isLdapUser: boolean,
   ): FormlyFieldConfig[] {
     return getUserFormFields(
       this.availableRoles,
       groups,
       groupClickCallback,
       roleChangeCallback,
+      isLdapUser,
     );
   }
 
@@ -224,7 +224,9 @@ export class UserService {
   }
 
   updatePassword(): void {
-    window.location.href = "/auth/update-password";
+    window.location.href =
+      this.configService.getConfiguration().contextPath +
+      "auth/update-password";
   }
 
   resetPassword(login: string) {
@@ -232,12 +234,14 @@ export class UserService {
   }
 
   private handleUserOperationError(error: any): Observable<any> {
+    // TODO Refactor to be more readable and less custom and perhaps move localization elsewhere
     const errorText: string = error.error?.errorText;
     const EMAIL_NOT_UNIQUE =
       "New user cannot be created, because another user might have the same email address";
     if (error.status === 409) {
       if (errorText.includes("User already exists with login")) {
-        const login = errorText.split(" ").pop();
+        // Extract login from error text like: "User already exists with login: USER_LOGIN (Error-ID 123456789)"
+        const login = errorText.split(" (Error-ID").shift().split(" ").pop();
         throw new IgeError(
           "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
@@ -252,7 +256,7 @@ export class UserService {
       throw new IgeError("Es gab ein Problem beim Versenden der Email");
     } else {
       if (errorText.includes("Error creating user")) {
-        let reason;
+        let reason: any;
         try {
           reason = JSON.parse(errorText.substring(errorText.indexOf("{")));
         } catch (e) {

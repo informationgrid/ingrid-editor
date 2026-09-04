@@ -88,7 +88,7 @@ abstract class GeoThesaurusService {
                 exceptionNode?.asText()
             }
             message?.trim()?.ifBlank { null } ?: body
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             body
         }
     }

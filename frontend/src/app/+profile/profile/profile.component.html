@@ -33,16 +33,18 @@
         <section main-content>
             <div class="info-header-row flex-row">
                 <h2>Persönliche Daten</h2>
-                <button
-                    data-cy="change-full-name-id"
-                    mat-button
-                    color="primary"
-                    (click)="openChangeNameDialog()"
-                    matomoClickCategory="Userprofile"
-                    matomoClickAction="ChangeName"
-                >
-                    Ändern
-                </button>
+                @if (!userInfo.fromLdap) {
+                    <button
+                        data-cy="change-full-name-id"
+                        mat-button
+                        color="primary"
+                        (click)="openChangeNameDialog()"
+                        matomoClickCategory="Userprofile"
+                        matomoClickAction="ChangeName"
+                    >
+                        Ändern
+                    </button>
+                }
             </div>
             <div class="info-row flex-row">
                 <div>Vorname</div>
@@ -66,32 +68,36 @@
                     </ige-emailform>
                 } @else {
                     <div>{{ userInfo.email }}</div>
-                    <button
-                        data-cy="change-email-id"
-                        mat-button
-                        color="primary"
-                        (click)="editingEmail = true"
-                        matomoClickCategory="Userprofile"
-                        matomoClickAction="ChangeEmail"
-                    >
-                        Ändern
-                    </button>
+                    @if (!userInfo.fromLdap) {
+                        <button
+                            data-cy="change-email-id"
+                            mat-button
+                            color="primary"
+                            (click)="editingEmail = true"
+                            matomoClickCategory="Userprofile"
+                            matomoClickAction="ChangeEmail"
+                        >
+                            Ändern
+                        </button>
+                    }
                 }
             </div>
             <h2>Sicherheit</h2>
             <div class="info-row flex-row">
                 <div>Passwort</div>
                 <div>••••••</div>
-                <button
-                    data-cy="change-password-id"
-                    mat-button
-                    color="primary"
-                    (click)="openResetPasswordDialog()"
-                    matomoClickCategory="Userprofile"
-                    matomoClickAction="ResetPassword"
-                >
-                    Ändern
-                </button>
+                @if (!userInfo.fromLdap) {
+                    <button
+                        data-cy="change-password-id"
+                        mat-button
+                        color="primary"
+                        (click)="openResetPasswordDialog()"
+                        matomoClickCategory="Userprofile"
+                        matomoClickAction="ResetPassword"
+                    >
+                        Ändern
+                    </button>
+                }
             </div>
         </section>
     </page-template-no-header>

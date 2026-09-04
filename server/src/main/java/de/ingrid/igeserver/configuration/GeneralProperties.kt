@@ -37,7 +37,7 @@ data class GeneralProperties(
     val openAIHost: String,
     val openAIToken: String? = null,
     val openAIModel: String,
-    val frontendStacktrace: Boolean = false,
     val actuatorPermitAll: Boolean = false,
     val sessionTimeout: Int = 1800,
+    val indexPrefix: String? = null,
 )

@@ -158,7 +158,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             }
 
             logger.debug("Returning false - ACLs returned, but insufficient permissions for this principal")
-        } catch (nfe: NotFoundException) {
+        } catch (_: NotFoundException) {
             // no permission found for the node
             // try special permission WRITE_ONLY_SUBTREE if we want to write
             // but make sure we don't want to write on the top node where we only have read access
@@ -172,7 +172,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
                     logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
                     return true
                 }
-            } catch (nfe: NotFoundException) {
+            } catch (_: NotFoundException) {
                 logger.debug("WRITE_ONLY_SUBTREE permission also not found")
             }
 
@@ -190,7 +190,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             // check for simple write permission
             domainObject.hasWritePermission = try {
                 acl.isGranted(listOf(BasePermission.WRITE), sids, false)
-            } catch (nfe: NotFoundException) {
+            } catch (_: NotFoundException) {
                 // in case parent has WRITE_ONLY_SUBTREE permission, children can still have write-permission
                 // so check parent ACL if it has the permission
                 try {
@@ -200,7 +200,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
                             sids,
                             false,
                         )
-                } catch (nfe: NotFoundException) {
+                } catch (_: NotFoundException) {
                     false
                 }
             }
@@ -217,7 +217,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
                         sids,
                         false,
                     )
-            } catch (nfe: NotFoundException) {
+            } catch (_: NotFoundException) {
                 false
             }
         }
@@ -245,7 +245,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
 
     private fun buildPermission(permString: String): Permission? = try {
         this.permissionFactory.buildFromName(permString)
-    } catch (notfound: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         this.permissionFactory.buildFromName(permString.uppercase(Locale.ENGLISH))
     }
 }

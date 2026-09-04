@@ -70,13 +70,13 @@ class IsoXmlPostProcessor : ExportPostProcessors {
             engine.eval("target.put('specialField', 'cool');", newContext)
         } catch (e: ScriptException) {
             // TODO Auto-generated catch block
-            e.printStackTrace()
+            log.error(e)
         }
         try {
             return xmlMapper.writeValueAsString(xmlTree)
         } catch (e: JsonProcessingException) {
             // TODO Auto-generated catch block
-            e.printStackTrace()
+            log.error(e)
         }
         return null
     }

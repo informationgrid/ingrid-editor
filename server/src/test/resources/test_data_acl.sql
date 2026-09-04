@@ -14,6 +14,7 @@ TRUNCATE TABLE acl_sid RESTART IDENTITY CASCADE;
 -- catalogs
 INSERT INTO catalog VALUES (100, 'test_catalog', 'uvp', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL);
 INSERT INTO catalog VALUES (101, 'test_catalog_2', 'mcloud', 'Test Catalog 2', NULL, now(), now(), NULL);
+INSERT INTO catalog VALUES (102, 'test_catalog_ingrid', 'ingrid', 'Test Catalog InGrid', NULL, now(), now(), NULL);
 
 -- users
 INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}', 2);
@@ -23,6 +24,8 @@ INSERT INTO user_info VALUES (13, 'catadmin1', NULL, '{"recentLogins": [16041002
 INSERT INTO user_info VALUES (14, 'author2', NULL, '{"recentLogins": [1604100256021]}', 4);
 INSERT INTO user_info VALUES (15, 'authorRootWrite', NULL, '{"recentLogins": [1604100256021]}', 4);
 INSERT INTO catalog_user_info VALUES (100, 10);
+INSERT INTO catalog_user_info VALUES (102, 10);
+INSERT INTO catalog_user_info VALUES (102, 11);
 INSERT INTO catalog_user_info VALUES (100, 11);
 INSERT INTO catalog_user_info VALUES (100, 12);
 INSERT INTO catalog_user_info VALUES (100, 13);
@@ -68,6 +71,21 @@ INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 
 INSERT INTO document VALUES (2000, 100, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'Test Folder Other', '{}',
     0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
+INSERT INTO document VALUES (3000, 102, 'I1', 'FOLDER', 'Test Folder 1st Level', '{}',
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
+INSERT INTO document VALUES (3001, 102, 'I2', 'FOLDER', 'Test Folder 32nd Level', '{}',
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
+INSERT INTO document VALUES (3003, 102, 'I3', 'FOLDER', 'Test Folder 3rd Level', '{}',
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
+INSERT INTO document VALUES (3004, 102, 'I4', 'FOLDER', 'Test Folder 3rd Level DELETED', '{}',
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
+INSERT INTO document VALUES (3100, 102, 'A1', 'FOLDER', 'Address Test Folder 1st Level', '{}',
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+);
 
 INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data', 0);
 INSERT INTO document_wrapper VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'FOLDER', 'data', 0);
@@ -87,6 +105,12 @@ INSERT INTO document_wrapper VALUES (2510, 100, 2500, 'b304f85d-b8ff-470c-828c-7
 INSERT INTO document_wrapper VALUES (2520, 100, 2510, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 'FOLDER', 'data', 0);
 
 INSERT INTO document_wrapper VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address', 0);
+
+INSERT INTO document_wrapper VALUES (3000, 102, NULL, 'I1', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (3001, 102, 3000, 'I2', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (3002, 102, 3001, 'I3', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (3003, 102, 3001, 'I4', 'FOLDER', 'data', 0, null, 1);
+INSERT INTO document_wrapper VALUES (3100, 102, NULL, 'A1', 'FOLDER', 'address', 0);
 
 INSERT INTO document_archive VALUES (2002, 1002);
 
@@ -162,6 +186,7 @@ INSERT INTO audit_log VALUES (302, 'AuditLog', '{
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (1, false, 'GROUP_READTREE');
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (2, false, 'GROUP_WRITETREE');
 INSERT INTO public.acl_sid (id, principal, sid) VALUES (3, false, 'GROUP_WRITESUBTREE');
+INSERT INTO public.acl_sid (id, principal, sid) VALUES (4, false, 'GROUP_2');
 
 -- add entity class to protect
 INSERT INTO public.acl_class (id, class, class_id_type) VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.Integer');
@@ -183,6 +208,11 @@ INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity,
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (13, 1, 2500, null, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (14, 1, 2510, 13, 1, true);
 INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (15, 1, 2520, 14, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (17, 1, 3000, null, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (18, 1, 3001, 17, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (19, 1, 3002, 18, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (20, 1, 3003, 18, 1, true);
+INSERT INTO public.acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES (21, 1, 3100, null, 1, true);
 
 -- connect documents with permission groups
 -- read access for GROUP_READTREE
@@ -203,7 +233,23 @@ INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, gra
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (9, 14, 1, 3, 1, true, true, true);
 INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (10, 14, 2, 3, 32, true, true, true);
 
+-- ACL for InGrid catalog
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (11, 18, 1, 4, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (12, 18, 2, 4, 2, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (13, 20, 1, 2, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (14, 20, 2, 2, 2, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (15, 21, 1, 4, 1, true, true, true);
+INSERT INTO public.acl_entry (id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) VALUES (16, 21, 2, 4, 2, true, true, true);
+
 
 -- groups
 INSERT INTO public.permission_group (id, catalog_id, name, description, permissions, data, manager_id) VALUES (1, 100, 'Group with Write-Root', 'Root Write access to tree', '{"rootPermission": "WRITE"}', null, 10);
+INSERT INTO public.permission_group (id, catalog_id, name, description, permissions, data, manager_id) VALUES (2, 102, 'Group with Write-Tree', '',
+                                                                                                               '{"documents": [{"id": "3001", "permission": "writeTree"}], "addresses": [{"id": "3100", "permission": "writeTree"}]}', null, 10);
+
 INSERT INTO public.user_group VALUES (15, 1);
+INSERT INTO public.user_group VALUES (10, 2);
+INSERT INTO public.user_group VALUES (11, 2);
+
+ALTER SEQUENCE acl_sid_id_seq RESTART WITH 100;
+ALTER SEQUENCE acl_object_identity_id_seq RESTART WITH 100;

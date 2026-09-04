@@ -125,6 +125,13 @@
                         }
                     </mat-menu>
                 </div>
+                @if (loadedUser()?.fromLdap) {
+                    <div class="no-fields-selected-notice">
+                        Der Benutzer kann nur eingeschränkt bearbeitet werden,
+                        da dieser in einer externen Benutzerföderierung
+                        verwaltet wird.
+                    </div>
+                }
                 <user-header-more
                     [showMore]="showMore()"
                     [user]="loadedUser()"

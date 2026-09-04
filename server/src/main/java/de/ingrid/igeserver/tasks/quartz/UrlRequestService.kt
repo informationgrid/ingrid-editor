@@ -46,7 +46,7 @@ class UrlRequestService {
         }
         log.debug("Status of URL '$url' is $status")
         status
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         log.debug("URL seems invalid: $url")
         500
     }
@@ -55,7 +55,7 @@ class UrlRequestService {
         return try {
             val requestHead = createHttpRequest("GET", url)
             return httpRequestSync(requestHead).body()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.debug("URL seems invalid: $url")
             null
         }

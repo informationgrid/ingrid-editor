@@ -39,6 +39,7 @@ class ProcessStep : QuickFilter() {
     override val parameters = listOf(
         "publicDisclosure",
         "publicHearing",
+        "scopeOfInvestigation",
         "decisionOfAdmission",
     )
 }

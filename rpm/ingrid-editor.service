@@ -1,0 +1,19 @@
+[Unit]
+Description=InGrid Editor
+After=network.target
+
+[Service]
+Environment=
+Type=simple
+User=ingrid
+Group=ingrid
+WorkingDirectory=/opt/ingrid/ingrid-editor
+ExecStart=/opt/ingrid/ingrid-editor/bin/ingrid-editor
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ingrid-editor
+
+[Install]
+WantedBy=multi-user.target

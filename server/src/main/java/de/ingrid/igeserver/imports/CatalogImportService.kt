@@ -68,7 +68,7 @@ class CatalogImportService(
             val existingCatalog = catalogService.getCatalogById(catalogIdentifier)
             if (!options.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists. In order to update the catalog you need to toggle the button 'bestehenden Katalog aktualisieren'.""")
             existingCatalog.id!!
-        } catch (e: EmptyResultDataAccessException) {
+        } catch (_: EmptyResultDataAccessException) {
             createCatalog(exportedCatalog.catalog)
         }
 

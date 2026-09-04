@@ -70,6 +70,7 @@
 <mat-menu #menu="matMenu">
     @for (type of sectionTypes; track type) {
         <button
+            class="padding-btn"
             mat-menu-item
             [attr.data-cy]="'add_step_' + type.name"
             (click)="addSection(type.name)"

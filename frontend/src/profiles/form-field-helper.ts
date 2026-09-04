@@ -104,6 +104,7 @@ export interface RepeatOptions extends Options {
   addButtonTitle?: string;
   noDrag?: boolean;
   maxLength?: number;
+  canRemove?: (model) => boolean;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -322,9 +323,9 @@ export class FormFieldHelper {
    * @param options
    */
   addTextArea(
-    id,
-    label,
-    elementIdPrefix,
+    id: string,
+    label: string,
+    elementIdPrefix: string = "",
     options?: TextAreaOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
@@ -360,9 +361,9 @@ export class FormFieldHelper {
   }
 
   addTextAreaInline(
-    id,
-    label,
-    elementIdPrefix,
+    id: string,
+    label: string,
+    elementIdPrefix: string,
     options: TextAreaOptions = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
@@ -630,6 +631,7 @@ export class FormFieldHelper {
         addButtonTitle: options?.addButtonTitle,
         noDrag: options?.noDrag,
         attributes: { "data-cy": `repeat-${id}` },
+        canRemove: options?.canRemove,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -1023,6 +1025,23 @@ export class FormFieldHelper {
     };
   }
 
+  addToggle(id, label, options?: CheckboxOptions): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "toggle",
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel"],
+      defaultValue: options?.defaultValue ?? false,
+      props: {
+        color: "accent",
+        externalLabel: label,
+        label: options?.fieldLabel,
+      },
+      expressions: expressions,
+    };
+  }
+
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
@@ -1099,6 +1118,7 @@ export class FormFieldHelper {
         showHeader: options?.showHeader,
         categories: options?.categories,
         contextHelpId: options?.contextHelpId,
+        restrictToSingleCategory: options?.restrictToSingleCategory,
       },
     };
   }

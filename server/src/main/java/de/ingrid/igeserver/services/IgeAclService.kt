@@ -82,7 +82,9 @@ class IgeAclService(
                 @Suppress("UNREACHABLE_CODE")
                 isAllowed = when (permissionLevel) {
                     "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids) || hasRootWrite
+
                     "readTree" -> isAllowed(acl, BasePermission.READ, sids) || hasRootRead || hasRootWrite
+
                     "writeTreeExceptParent" ->
                         isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids) ||
                             isAllowed(acl, BasePermission.WRITE, sids) ||
@@ -120,7 +122,7 @@ class IgeAclService(
                 isAllowed(acl, BasePermission.WRITE, sids) || hasRootWrite,
                 isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids),
             )
-        } catch (nfe: NotFoundException) {
+        } catch (_: NotFoundException) {
             PermissionInfo()
         }
     }
@@ -157,7 +159,7 @@ class IgeAclService(
     private fun isAllowed(acl: Acl, permission: Permission, sids: List<Sid>): Boolean {
         return try {
             acl.isGranted(listOf(permission), sids, false)
-        } catch (nfe: NotFoundException) {
+        } catch (_: NotFoundException) {
             try {
                 if (permission == BasePermission.WRITE &&
                     acl.parentAcl != null &&

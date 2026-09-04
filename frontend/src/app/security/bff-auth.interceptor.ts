@@ -48,20 +48,9 @@ export class BffAuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (error?.status === 401) {
-          // If we are already on an error page, don't redirect back to login (prevent loop)
-          /*          debugger;
-          if (
-            window.location.pathname.includes("/login-error") ||
-            window.location.pathname.includes("/session-expired")
-          ) {
-            return throwError(() => error);
-          }*/
           // Directly initiate login via the backend (full-page redirect)
           window.location.href =
             this.configService.getConfiguration().contextPath + "auth/login";
-        } else if (error?.status === 403) {
-          // If the user lacks the required role, redirect to the access-denied page served by the backend
-          // window.location.href = "/access-denied";
         }
         return throwError(() => error);
       }),

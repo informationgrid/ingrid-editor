@@ -54,6 +54,7 @@ export interface RepeatProps extends FormlyFieldProps {
   hasExtendedGap: boolean;
   showBorder: boolean;
   addButtonTitle: string;
+  canRemove: (id: number) => boolean;
 }
 
 @Component({
@@ -163,5 +164,11 @@ export class RepeatComponent
       (i) => i?._type ?? "none",
     );
     this.groupedFieldsKeys.set(Object.keys(this.groupedFields));
+  }
+
+  protected removeItem(index: number) {
+    if (!this.props.canRemove || this.props.canRemove(this.model[index])) {
+      this.remove(index);
+    }
   }
 }

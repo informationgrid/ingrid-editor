@@ -56,7 +56,7 @@ class M038UpdateMcloudCodelists : MigrationBase("0.38") {
                         log.info("Update Catalog: " + catalog.name)
                         catalogService.initializeCodelists(catalog.identifier, catalog.type)
                     }
-            } catch (e: NotFoundException) {
+            } catch (_: NotFoundException) {
                 log.debug("Cannot update mcloud codelists, since mcloud profile is not activated")
             }
         }

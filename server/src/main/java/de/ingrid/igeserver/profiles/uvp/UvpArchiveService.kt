@@ -61,7 +61,10 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
             // modify valid date for documents according to selected option
             when (type) {
                 ArchiveType.HIDE_ALL -> handleHideAll(datasets)
-                ArchiveType.SHOW_ALL -> {} // do nothing
+
+                ArchiveType.SHOW_ALL -> {}
+
+                // do nothing
                 ArchiveType.SHOW_ONLY_DECISION -> handleShowOnlyDecision(datasets)
             }
         }

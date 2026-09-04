@@ -37,8 +37,6 @@ class M082MigrateCatalogSettings : MigrationBase("0.82") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    override fun exec() {}
-
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             entityManager

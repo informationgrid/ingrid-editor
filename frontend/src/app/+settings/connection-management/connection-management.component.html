@@ -1,12 +1,21 @@
 <page-template label="Verbindungen">
     <div left-side>
-        Auf dieser Seite können Sie verschiedene iBusse oder
-        Elasticsearch-Instanzen hinzufügen, die in einem oder mehreren Katalogen
-        verwendet werden können.
+        <p>
+            Auf dieser Seite können Sie verschiedene Verbindungen hinzufügen, in
+            denen indiziert werden kann. Jeder Katalog kann eine oder meherer
+            dieser Verbindungen verwenden. Definiert ein Katalog keine
+            Verbindung, so werden alle Verbindungen verwendet.
+        </p>
+        <p>
+            Der Status zeigt an, ob die Verbindungen erfolgreich funktionieren
+            und in welchen Katalogen sie explizit bei der Indizierung verwendet
+            werden.
+        </p>
 
         <h4>Verbindungsstatus:</h4>
         <ige-connection-state
             [connectionStates]="$connectionStates()"
+            [usage]="$connectionUsage()"
         ></ige-connection-state>
     </div>
 

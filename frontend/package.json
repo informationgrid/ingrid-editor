@@ -81,5 +81,5 @@
     "*.{ts,scss,js,css,html,md,json}": "prettier --check",
     "*.{spec,cy}.ts": "yarn stop-only --folder"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.17.0"
 }

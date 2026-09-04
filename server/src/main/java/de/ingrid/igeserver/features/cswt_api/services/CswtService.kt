@@ -105,7 +105,9 @@ class CswtService(
         for (i in 0 until updateDocs.length) {
             val item = updateDocs.item(i) as Element
             val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
+                ?: throw Exception("PropertyIsEqualTo/PropertyName is not defined")
             val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
+                ?: throw Exception("PropertyIsEqualTo/Literal is not defined")
             if ("uuid" == propName || patternIdentifier.matcher(propName).matches()) {
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
                 val docData = xmlNodeToString(metadataDoc) // convert Node to String
@@ -179,9 +181,12 @@ class CswtService(
     fun prepareException(exception: Exception): String {
         var errorMsg = exception.cause?.toString() ?: exception.toString()
         if (exception is ValidationException) {
-            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>?)?.lastOrNull()
-            if (lastError != null) {
-                errorMsg += " (${lastError.error}, location: ${lastError.instanceLocation})"
+            val errors = (exception.data?.get("error") as? List<*>)
+                ?.filterIsInstance<JsonErrorEntry>()
+            if (!errors.isNullOrEmpty()) {
+                errorMsg += " (" + errors.joinToString("; ") {
+                    "${it.error}, location: ${it.instanceLocation}"
+                } + ")"
             }
         }
         return errorMsg

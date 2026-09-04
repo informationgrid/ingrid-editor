@@ -52,8 +52,6 @@ class M042MigrateSelectBoxValues : MigrationBase("0.42") {
     @Autowired
     private lateinit var codelistHandler: CodelistHandler
 
-    override fun exec() {}
-
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList

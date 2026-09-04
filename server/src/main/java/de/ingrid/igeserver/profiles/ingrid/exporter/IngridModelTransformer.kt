@@ -26,7 +26,6 @@ import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
-import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
@@ -49,6 +48,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.getLanguageISO639v2Value
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -394,9 +394,9 @@ open class IngridModelTransformer(
     open val uomMeter = "meter"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
     val metadataLanguage =
-        if (data.metadata != null) TransformationTools.getLanguageISO639v2Value(data.metadata.language) else null
+        if (data.metadata != null) getLanguageISO639v2Value(data.metadata.language) else null
     val dataLanguages =
-        data.dataset?.languages?.map { TransformationTools.getLanguageISO639v2Value(KeyValue(it, null)) }
+        data.dataset?.languages?.map { getLanguageISO639v2Value(KeyValue(it, null)) }
             ?: emptyList()
 
     val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso", true)
@@ -426,7 +426,7 @@ open class IngridModelTransformer(
                 referenceSystemEntry,
             )
                 ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
-        val epsgLink = when {
+        val url = when {
             // like EPSG:1234 Bla
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5).substringBefore(" ")}"
 
@@ -440,9 +440,19 @@ open class IngridModelTransformer(
                 }
             }
 
+            // like CRS 84: Bla
+            referenceSystem.startsWith("CRS") -> {
+                val endIndex = referenceSystem.indexOf(":")
+                if (endIndex > 0) {
+                    "http://www.opengis.net/def/crs/OGC/1.3/CRS${referenceSystem.substring(4, endIndex)}"
+                } else {
+                    null
+                }
+            }
+
             else -> null
         }
-        return CharacterStringModel(referenceSystem, epsgLink)
+        return CharacterStringModel(referenceSystem, url)
     }
 
     open val description = data.description
@@ -473,6 +483,37 @@ open class IngridModelTransformer(
         "202" -> "http://inspire.ec.europa.eu/theme/lc"
 
         else -> null
+    }
+
+    val mobilithekKeywords = Thesaurus(
+        keywords =
+        listOfNotNull(
+            // only single category allowed, so we can use firstOrNull() here
+            data.keywords?.mobilithek?.firstOrNull()?.let {
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                KeywordIso(
+                    name = "mobilithek_category_$categoryIso",
+                    link = transformToMobilithekLink(categoryIso!!),
+                )
+            },
+        ) + (
+            data.keywords?.mobilithek?.mapNotNull {
+                val iso = codelists.getValue("mobilithek", it, "iso")!!
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                // is not a subcategory so it already gets added above
+                if (iso == categoryIso) return@mapNotNull null
+
+                KeywordIso(
+                    name = "mobilithek_subcategory_$iso",
+                    link = transformToMobilithekLink(iso),
+                )
+            } ?: emptyList()
+            ),
+    )
+
+    private fun transformToMobilithekLink(value: String): String {
+        val extractedCategory = value.replace("_", "-").lowercase()
+        return "https://w3id.org/mobilitydcat-ap/mobility-theme/$extractedCategory"
     }
 
     open fun getFreeKeywords(): Thesaurus {
@@ -621,6 +662,7 @@ open class IngridModelTransformer(
             umthesKeywords,
             inspireKeywords,
             hvdCategories,
+            mobilithekKeywords,
         )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
@@ -640,6 +682,7 @@ open class IngridModelTransformer(
         gemetKeywords,
         invekosKeywords,
         hvdCategories,
+        mobilithekKeywords,
     )
 
     val specificUsage = data.resource?.specificUsage
@@ -1191,7 +1234,7 @@ open class IngridModelTransformer(
         return try {
             documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Could not get last published document: $uuid")
             null
         }

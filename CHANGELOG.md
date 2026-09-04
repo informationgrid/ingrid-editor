@@ -1,5 +1,42 @@
 # Changelog
 
+## 8.4.0 (03.07.2026)
+
+### Features
+
+* Kommunaler MDK ST, Anpassung ingrid-with-opendata Profil (#9025)
+* Editor: zu CFD-Simulationen "Weitere Simulationsdaten" eingeben können (#8975)
+* Anzeige der Kontexthilfe Buttons auch ohne Hover (#8948)
+* Editor: Einführen von optionalen Sektionen und Erweiterung der optionalen Felder (#8939)
+* BKG-MIS: Portal und ISO-XML: Dienst-MD - Ausgabe der räumlichen Auflösung (Maßstab,...) korrigieren (#8897)
+* Konzeption Kategorisierte Combobox (#8709)
+* Zeitbezug: Markierung der Pflichtfelder und Hilfetexte (#8660)
+* Defaulteinstellung für Beschreibungselement "Identifikator der Datenquelle*"  (#8633)
+* Keycloak-Behandlung aus dem Frontend entfernen (Security) (#8538)
+* Rollenspezifische Bearbeitbarkeit von Feldern definieren (#8136)
+* CSW-Schnittstelle auf IGE-NG umstellen (#6656)
+
+### Bugfixes
+
+* RaceCondition beim Schreiben des Audit-Logs in die Datenbank (#9251)
+* ingrid-with-opendata: Export: 2x "Open-Data Index" als Export Format in drop-down, nur einer Funktioniert (#9233)
+* Editor: "Eintrag bearbeiten" bei Tabelle (#9204)
+* Löschen Button Ausrichtung bei Select-Boxen Suche ist falsch (#9161)
+* Unvollständiges Mapping für "Datensätze" führt zu fehlenden Ergebnissen im Portal (#9135)
+* Zabbix Jobs werden nicht abgebaut (#9097)
+* Raumbezugssuche im Portal funktioniert nicht mehr (#9086)
+* Fehler bei Zabbix-Service während der Indizierung (#9083)
+* Zurücksetzen einer einzelnen Codeliste im Profil InGrid mit OpenData schlägt fehl (#9071)
+* Anpassung Lucene Mapping für "Aktualität des Datensatzes" (#9055)
+* Einige Felder werden bei der Freitextsuche nicht berücksichtigt (#8995)
+* Indexierungsfehler in Archiv- bzw. LFS-Links (#8960)
+* Baumupdates beim Anlegen mehrerer Dokumente gelichzeitig durch Assistent (#8952)
+* Auswahl von BWaStr-Locator Einträge in mehreren Linien darstellen (#150)
+* YX Koordinaten für weitere Projektionen mit der WMS Version 1.3.0 (#149)
+* MapFish Aktualisierung (#148)
+* Anordnung der Layer durch Drag und Drop unter Aktive Dienste  falsch (#147)
+* Gruppenselektierung unter Aktive Dienste ist nicht korrekt (#146)
+    
 ## 8.3.0 (01.04.2026)
 
 ### Features

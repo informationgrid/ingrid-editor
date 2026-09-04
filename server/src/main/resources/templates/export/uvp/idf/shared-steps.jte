@@ -4,6 +4,7 @@
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicDisclosure
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepPublicHearing
 @import de.ingrid.igeserver.profiles.uvp.exporter.model.StepDecisionOfAdmission
+@import de.ingrid.igeserver.profiles.uvp.exporter.model.StepScopeOfInvestigation
 
 @param UVPModel page
 @param DocInfo docInfo
@@ -16,16 +17,10 @@
                     <from>${((StepPublicDisclosure) step).getDisclosureDate().getStart()}</from>
                     <to>${((StepPublicDisclosure) step).getDisclosureDate().getEnd()}</to>
                 </datePeriod>
-                @if(((StepPublicDisclosure) step).isPublishable("announcementDocs"))
-                    @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("applicationDocs"))
+                @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
+                @if(((StepPublicDisclosure) step).isPublishable())
                     @template.export.uvp.idf.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("reportsRecommendationDocs"))
                     @template.export.uvp.idf.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
-                @endif
-                @if(((StepPublicDisclosure) step).isPublishable("furtherDocs"))
                     @template.export.uvp.idf.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
                 @endif
             </step>
@@ -44,6 +39,19 @@
                 </date>
                 @template.export.uvp.idf.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs(), docInfo = docInfo)
                 @template.export.uvp.idf.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs(), docInfo = docInfo)
+            </step>
+        @elseif (step instanceof StepScopeOfInvestigation)
+            <step type="scopeOfInvestigation">
+                <datePeriod>
+                    <from>${((StepScopeOfInvestigation) step).getScopingDate().getStart()}</from>
+                    <to>${((StepScopeOfInvestigation) step).getScopingDate().getEnd()}</to>
+                </datePeriod>
+                @if(((StepScopeOfInvestigation) step).isPublishable("scopingGeneralDocs"))
+                    @template.export.uvp.idf.shared-docs(type = "scopingGeneralDocs", docs = ((StepScopeOfInvestigation) step).getScopingGeneralDocs(), docInfo = docInfo)
+                @endif
+                @if(((StepScopeOfInvestigation) step).isPublishable("scopingDateDocs"))
+                    @template.export.uvp.idf.shared-docs(type = "scopingDateDocs", docs = ((StepScopeOfInvestigation) step).getScopingDateDocs(), docInfo = docInfo)
+                @endif
             </step>
         @endif
     @endfor

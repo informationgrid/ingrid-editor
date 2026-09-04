@@ -126,10 +126,10 @@ class Project : ShouldSpec() {
 
     init {
 
-        /**
+        /*
          * export with all inputs possible.
          * address has an organization assigned.
-         **/
+         */
         should("maximalExport") {
             var result = exportJsonToXML(exporter, "/export/ingrid/project.sample.maximal.json")
             // replace generated UUIDs and windows line endings

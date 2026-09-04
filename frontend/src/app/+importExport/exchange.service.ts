@@ -24,7 +24,7 @@ import {
 import { inject, Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { GeneralStore } from "../store/general.store";
 
 export interface ImportLog<Type> {
@@ -190,5 +190,16 @@ export class ExchangeService {
     return this.http
       .post(`${this.configuration.backendUrl}jobs/import?command=stop`, {})
       .subscribe();
+  }
+
+  getNumExportedDatasets(ids: number[]): Observable<number> {
+    return this.http
+      .get(
+        `${this.configuration.backendUrl}export/count?ids=${ids.join(",")}`,
+        {
+          responseType: "text",
+        },
+      )
+      .pipe(map((response) => parseInt(response)));
   }
 }

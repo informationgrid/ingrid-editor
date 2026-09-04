@@ -58,7 +58,7 @@ class M054UpdateGroups : MigrationBase("0.54") {
                     log.info("Update Catalog: " + catalog.name)
                     saveAllGroupsOfCatalog(catalog.identifier)
                 }
-            } catch (e: NotFoundException) {
+            } catch (_: NotFoundException) {
                 log.debug("Cannot update acl entries to include BasePermission.ADMINISTRATION")
             }
         }

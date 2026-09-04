@@ -201,7 +201,7 @@ class PostgreSQLLog4JAppender(
         // create message node
         val msg: JsonNode = try {
             mapper.readTree(event.message.formattedMessage)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             // message is no valid json
             mapper.createObjectNode().apply {
                 put("text", event.message.formattedMessage)

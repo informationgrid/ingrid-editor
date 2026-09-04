@@ -32,7 +32,7 @@ import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
 import java.util.*
 
-@Suppress("ktlint:standard:function-naming")
+@Suppress("ktlint:standard:function-naming", "detekt:FunctionNaming", "detekt:FunctionParameterNaming")
 interface DocumentWrapperRepository :
     JpaRepository<DocumentWrapper, Int>,
     JpaSpecificationExecutor<DocumentWrapper> {
@@ -45,6 +45,10 @@ interface DocumentWrapperRepository :
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
+
+    @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
+    @Query("SELECT dw FROM DocumentWrapper dw WHERE dw.id IN :ids AND dw.type != 'FOLDER'")
+    fun findNonFolderWrapperByIds(@Param("ids") ids: List<Int>): List<DocumentWrapper>
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findAllByCatalog_IdentifierAndResponsibleUser_Id(catalog_identifier: String, responsibleUser_id: Int): List<DocumentWrapper>

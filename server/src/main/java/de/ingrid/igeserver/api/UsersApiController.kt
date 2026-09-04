@@ -409,6 +409,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             externalHelp = generalProperties.externalHelp,
             permissions = permissions,
             plugins = behaviourService.get(currentCatalog?.identifier ?: "???"),
+            fromLdap = user.fromLdap,
         )
         try {
             userInfo.currentCatalog?.type?.let {

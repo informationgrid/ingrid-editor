@@ -45,6 +45,7 @@ const val FIELD_DRAFT = "draft"
 const val FIELD_PUBLISHED = "published"
 const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
+const val META_INDEX = "ingrid_meta"
 
 enum class DocumentState {
     DRAFT,

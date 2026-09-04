@@ -70,6 +70,7 @@ export interface CategorizedSelectProps extends InputOptions {
   showHeader?: boolean;
   categories: SelectCategory[] | Observable<SelectCategory[]>;
   codelistId: string;
+  restrictToSingleCategory?: boolean;
 }
 
 @Component({
@@ -123,24 +124,26 @@ export class CategorizedSelectComponent
 
   filteredCategories = computed(() => {
     const query = this.filterQuery().toLowerCase();
-    if (!query) return this.categories();
 
-    // Filter by the given query.
     return this.categories()
-      .map((cat) => ({
-        ...cat,
-        options: cat.options.filter((opt) =>
-          opt.label.toLowerCase().includes(query),
+      .filter((category) => this.isCategoryAllowed(category))
+      .map((category) => ({
+        ...category,
+        // filter options by query
+        options: category.options.filter(
+          (option) => option.label.toLowerCase().includes(query) || !query,
         ),
       }))
-      .filter((cat) => cat.options.length > 0);
+      .filter((category) => category.options.length > 0);
   });
 
   // Uncategorized options with the query filter.
   filteredOptions = computed(() => {
-    const options = this.categories().reduce((acc, cat) => {
-      return [...acc, ...cat.options];
-    }, []);
+    const options = this.categories()
+      .filter((category) => this.isCategoryAllowed(category))
+      .reduce((acc, cat) => {
+        return [...acc, ...cat.options];
+      }, []);
     const query = this.filterQuery().toLowerCase();
     if (!query) return options;
     return options
@@ -229,6 +232,20 @@ export class CategorizedSelectComponent
   isSelected(option: SelectOption): boolean {
     const values = new Set(this.selectedOptions().map((o) => o.value));
     return values.has(option.value);
+  }
+
+  private isCategoryAllowed(category: SelectCategory): boolean {
+    const restrictToSingleCategory = this.props.restrictToSingleCategory;
+
+    // if not restricting to single category, or no selected options, allow all categories
+    if (!restrictToSingleCategory || !this.selectedOptions().length) {
+      return true;
+    }
+
+    // only allow category if it contains the first selected option
+    return category.options.some(
+      (option) => option.value === this.selectedOptions()[0].value,
+    );
   }
 
   private getSelectedCount(category: SelectCategory) {

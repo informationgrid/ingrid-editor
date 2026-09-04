@@ -349,20 +349,19 @@ class MCloudProfile(
 
         when (codelistId) {
             "20000" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20000)
+
             "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+
             "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002)
+
             "20003" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
+
             null -> {
                 codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist20000, codelist20001, codelist20002, codelist20003))
             }
+
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
-    }
-
-    override fun initCatalogQueries(catalogId: String) {
-    }
-
-    override fun initIndices() {
     }
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/mcloud/default-mapping.json")?.readText() ?: ""

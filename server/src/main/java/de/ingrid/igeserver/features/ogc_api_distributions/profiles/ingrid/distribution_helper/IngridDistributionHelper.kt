@@ -67,6 +67,7 @@ class IngridDistributionHelper(
         val fileReferences = document.data["fileReferences"] as ArrayNode? ?: mapper.createArrayNode()
         return when {
             distributionId.isNullOrEmpty() -> fileReferences
+
             else -> convertListToJsonNode(
                 fileReferences.filter {
                     it.getBoolean("link.asLink") == false && it.getString("link.uri") == distributionId
@@ -82,6 +83,7 @@ class IngridDistributionHelper(
         val graphicOverviews = document.data["graphicOverviews"] as ArrayNode? ?: mapper.createArrayNode()
         return when {
             distributionId.isNullOrEmpty() -> graphicOverviews
+
             else -> convertListToJsonNode(
                 graphicOverviews.filter {
                     it.getBoolean("fileName.asLink") == false && it.getString("fileName.uri") == distributionId

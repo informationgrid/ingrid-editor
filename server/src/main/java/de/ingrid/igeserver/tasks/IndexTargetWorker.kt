@@ -119,7 +119,7 @@ class IndexTargetWorker(
     }
 
     private fun indexPrePhase(): Pair<String?, String>? = try {
-        val newIndex = IndexService.getNextIndexName(categoryAlias)
+        val newIndex = indexService.getNextIndexName(categoryAlias)
 
         val oldIndex = config.target.getIndexNameFromAliasName(categoryAlias)
         config.target.createIndex(

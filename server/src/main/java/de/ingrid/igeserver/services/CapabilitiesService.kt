@@ -118,12 +118,20 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
     }
 
     private fun checkForUtf8BOMAndDiscardIfAny(inputStream: InputStream): InputStream {
-        val pushbackInputStream = PushbackInputStream(BufferedInputStream(inputStream), 3)
+        val stream = PushbackInputStream(BufferedInputStream(inputStream), 3)
         val bom = ByteArray(3)
-        if (pushbackInputStream.read(bom) != -1 && !(bom[0].equals(0xEF) && bom[1].equals(0xBB) && bom[2].equals(0xBF))) {
-            pushbackInputStream.unread(bom)
+        val bytesRead = stream.read(bom)
+
+        val hasUtf8Bom = bytesRead == 3 &&
+            bom[0] == 0xEF.toByte() &&
+            bom[1] == 0xBB.toByte() &&
+            bom[2] == 0xBF.toByte()
+
+        if (!hasUtf8Bom && bytesRead > 0) {
+            stream.unread(bom, 0, bytesRead)
         }
-        return pushbackInputStream
+
+        return stream
     }
 
     fun analyzeGetCapabilitiesUrl(

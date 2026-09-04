@@ -1,20 +1,40 @@
-<div class="type">
-    {{ (item().type?.key | codelist: "2000" | async) ?? item().type?.value }}
+<div class="type flex-row justify-content-space-between">
+    <div>
+        {{
+            (item().type?.key | codelist: "2000" | async) ?? item().type?.value
+        }}
+    </div>
+    @if (urlItem()?.urlDataType) {
+        <div class="comment-field">
+            {{
+                (urlItem().urlDataType?.key
+                    | codelist: urlItem().urlDataType?._codelistId
+                    | async) ?? urlItem().urlDataType?.value
+            }}
+        </div>
+    }
 </div>
 
-@if (urlItem()) {
-    <div class="title">{{ item().title }}</div>
-    <a class="url no-text-transform" [href]="urlItem().url" target="_blank">{{
-        urlItem().url
-    }}</a>
-} @else {
-    <a class="url no-text-transform" (click)="navigate(internalItem())">{{
-        internalItem().title
-    }}</a>
-}
+<mat-divider></mat-divider>
 
-@if (item()?.explanation) {
-    <div class="explanation">
-        {{ item().explanation }}
-    </div>
-}
+<div class="content">
+    @if (urlItem()) {
+        <div class="title">{{ item().title }}</div>
+        <a
+            class="url no-text-transform"
+            [href]="urlItem().url"
+            target="_blank"
+            >{{ urlItem().url }}</a
+        >
+    } @else {
+        <a class="url no-text-transform" (click)="navigate(internalItem())">{{
+            internalItem().title
+        }}</a>
+    }
+
+    @if (item()?.explanation) {
+        <div class="explanation">
+            {{ item().explanation }}
+        </div>
+    }
+</div>

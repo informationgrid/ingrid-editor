@@ -30,21 +30,22 @@ export function objectAttributesFields(
   return [
     fieldHelper.addAutocomplete("group", "Gruppe", {
       options: groupCodelist,
+      codelistId: "30002",
     }),
     fieldHelper.addInput("designation", "Bezeichnung", {
       required: true,
       wrappers: ["panel", "form-field"],
     }),
-    fieldHelper.addTextArea("description", "Beschreibung", {
-      wrappers: ["panel", "form-field"],
-    }),
+    fieldHelper.addTextArea("description", "Beschreibung"),
     fieldHelper.addSelect("category", "Kategorie", {
       required: true,
       options: categoryCodelist,
+      codelistId: "30003",
     }),
     fieldHelper.addSelect("transmissionLevel", "Übermittlungsstufe", {
       required: true,
       options: transmissionLevelCodelist,
+      codelistId: "30004",
     }),
   ];
 }
