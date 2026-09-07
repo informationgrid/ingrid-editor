@@ -54,7 +54,9 @@ export class ExportService {
   }
 
   private buildFileRow(values: string[]): string {
-    const escapedSplitter = values.map((item) => `"${item ?? ""}"`);
+    const escapedSplitter = values.map(
+      (item) => `"${(item ?? "").replace(/"/g, '""')}"`,
+    );
     return `${escapedSplitter.join(";")}\n`;
   }
 }
