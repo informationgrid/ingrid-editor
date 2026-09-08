@@ -25,11 +25,12 @@ InGrid Editor
 %install
 rm -Rf %{buildroot}*
 
-mkdir -p %{target}/conf
+mkdir -p %{target}/config/static
 unzip -qq "${WORKSPACE}/build/distributions/ingrid-editor-[0-9]*.zip"
 mv ./ingrid-editor-*/* %{target}
 cp ${WORKSPACE}/server/build/resources/main/application.properties %{target}/config
 cp ${WORKSPACE}/server/build/resources/main/log4j2.xml %{target}/config
+cp -r ${WORKSPACE}/frontend/build/dist/browser/* %{target}/config/static
 
 # Copy over the systemd unit file
 mkdir -p %{buildroot}%{systemd_dir}
