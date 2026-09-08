@@ -1,5 +1,5 @@
 @if (showMore()) {
-    <div [@slideDown] class="more-info">
+    <div [@slideDown] [@.disabled]="animationsDisabled" class="more-info">
         @if (metadata().docType !== "FOLDER" && !hideFields.state) {
             <div class="flex-row">
                 <div>Status</div>

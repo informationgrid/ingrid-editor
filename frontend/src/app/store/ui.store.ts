@@ -29,6 +29,7 @@ export type UiState = {
   showJSONView?: boolean;
   showAiAssistant?: boolean;
   userTableWidth?: number;
+  headerShowMore?: boolean;
   toggleFieldsButtonShowAll?: boolean;
   alwaysShowContextHelp?: boolean;
   currentSubpage: {
@@ -51,6 +52,7 @@ const initialState: UiState = {
   showJSONView: false,
   showAiAssistant: false,
   userTableWidth: 35,
+  headerShowMore: false,
   toggleFieldsButtonShowAll: false,
   alwaysShowContextHelp: false,
   currentSubpage: {
@@ -100,6 +102,9 @@ export const UiStore = signalStore(
     },
     setUserTableWidth(value: number) {
       patchState(store, { userTableWidth: value });
+    },
+    setHeaderShowMore(value: boolean) {
+      patchState(store, { headerShowMore: value });
     },
     setSidebarExpanded(value: boolean) {
       patchState(store, { sidebarExpanded: value });
