@@ -44,6 +44,7 @@ import { MatInput } from "@angular/material/input";
 import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { HeaderMoreComponent } from "../header-more/header-more.component";
+import { UiStore } from "../../../store/ui.store";
 
 @Component({
   selector: "ige-header-title-row",
@@ -69,6 +70,7 @@ import { HeaderMoreComponent } from "../header-more/header-more.component";
 export class HeaderTitleRowComponent implements OnInit {
   private formMenuService = inject(FormMenuService);
   private formStateService = inject(FormStateService);
+  private uiStore = inject(UiStore);
 
   @Input() set form(value: UntypedFormGroup) {
     this._form = value;
@@ -97,7 +99,7 @@ export class HeaderTitleRowComponent implements OnInit {
   _form: UntypedFormGroup;
   _model: IgeDocument;
   showTitleInput = signal<boolean>(false);
-  showMore = signal<boolean>(false);
+  showMore = this.uiStore.headerShowMore;
   showMoreActions = computed<boolean>(() => this.moreActions().length > 0);
   doc = signal<DocumentAbstract>(null);
 
@@ -114,7 +116,7 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   toggleMoreInfo() {
-    this.showMore.update((prev) => !prev);
+    this.uiStore.setHeaderShowMore(!this.showMore());
   }
 
   private updateHeaderMenuOptions() {

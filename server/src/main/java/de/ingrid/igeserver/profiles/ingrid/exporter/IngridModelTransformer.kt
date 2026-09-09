@@ -492,8 +492,8 @@ open class IngridModelTransformer(
             data.keywords?.mobilithek?.firstOrNull()?.let {
                 val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
                 KeywordIso(
-                    name = transformToDisplayName(categoryIso!!),
-                    link = transformToMobilithekLink(categoryIso),
+                    name = "mobilithek_category_$categoryIso",
+                    link = transformToMobilithekLink(categoryIso!!),
                 )
             },
         ) + (
@@ -504,24 +504,15 @@ open class IngridModelTransformer(
                 if (iso == categoryIso) return@mapNotNull null
 
                 KeywordIso(
-                    name = transformToDisplayName(iso),
+                    name = "mobilithek_subcategory_$iso",
                     link = transformToMobilithekLink(iso),
                 )
             } ?: emptyList()
             ),
     )
 
-    private fun transformToDisplayName(value: String): String {
-        val extractedCategory = value.substringAfter(":")
-        return if (value.startsWith("catd:")) {
-            "mobilithek_subcategory_$extractedCategory"
-        } else {
-            "mobilithek_category_$extractedCategory"
-        }
-    }
-
     private fun transformToMobilithekLink(value: String): String {
-        val extractedCategory = value.substringAfter(":").replace("_", "-").lowercase()
+        val extractedCategory = value.replace("_", "-").lowercase()
         return "https://w3id.org/mobilitydcat-ap/mobility-theme/$extractedCategory"
     }
 

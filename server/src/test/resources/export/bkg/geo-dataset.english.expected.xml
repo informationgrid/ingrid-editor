@@ -454,7 +454,7 @@
                                         <gco:CharacterString>data and services</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -472,7 +472,7 @@
                                         <gco:CharacterString>service "INSPIRE-WFS CORINE Land Cover – 5ha (2018)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -490,7 +490,7 @@
                                         <gco:CharacterString>service "INSPIRE-WMS CORINE Land Cover – 5ha (2018)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -508,7 +508,7 @@
                                         <gco:CharacterString>service "INSPIRE-WFS CORINE Land Cover – 5ha (2015)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -526,7 +526,7 @@
                                         <gco:CharacterString>service "INSPIRE-WMS CORINE Land Cover – 5ha (2015)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -544,7 +544,7 @@
                                         <gco:CharacterString>service "INSPIRE-WFS CORINE Land Cover – 5ha (2012)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
@@ -562,7 +562,7 @@
                                         <gco:CharacterString>service "INSPIRE-WMS CORINE Land Cover – 5ha (2012)" (GetCapabilities)</gco:CharacterString>
                                     </gmd:name>
                                     <gmd:function>
-                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="unspecificurl">unspecificurl</gmd:CI_OnLineFunctionCode>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                     </gmd:function>
                                     <idf:attachedToField entry-id="9999" list-id="2000">unspecific Link</idf:attachedToField>
                                 </idf:idfOnlineResource>
