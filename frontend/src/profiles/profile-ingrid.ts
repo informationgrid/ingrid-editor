@@ -158,14 +158,16 @@ export class InGridComponent implements OnInit {
 
   private checkForCoupledServiceWithGetCapOperation(metadata: Metadata) {
     return firstValueFrom(
-      this.checkForCoupledServiceWithGetCap(metadata.uuid).pipe(
-        switchMap((result) => {
-          if (result.totalHits === 0) return of(true);
-          return this.dialog
-            .open(PublicationCheckDialogComponent)
-            .afterClosed();
-        }),
-      ),
+      this.researchService
+        .hasCoupledServiceWithGetCapabilities(metadata.uuid)
+        .pipe(
+          switchMap((exists) => {
+            if (!exists) return of(true);
+            return this.dialog
+              .open(PublicationCheckDialogComponent)
+              .afterClosed();
+          }),
+        ),
     );
   }
 
@@ -187,26 +189,6 @@ export class InGridComponent implements OnInit {
         ? data.serviceUrls?.length > 0
         : false,
     ];
-  }
-
-  private checkForCoupledServiceWithGetCap(uuid: string) {
-    const sql = `WITH filtered_documents AS (SELECT document1.*, document1.data, document_wrapper.category
-                                             FROM document_wrapper
-                                                    JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                                             WHERE document1.is_latest = true
-                                               AND document_wrapper.deleted = 0
-                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
-                                                                     '$.service.coupledResources')
-                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
-                                                                     '$.service.operations'))
-                 SELECT DISTINCT fd.*
-                 FROM filtered_documents fd
-                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'coupledResources') AS cr(s) ON true
-                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'operations') AS o ON true
-                 WHERE cr.s ->> 'uuid' = '${uuid}'
-                   AND o -> 'name' ->> 'key' = '1'
-    `;
-    return this.researchService.searchBySQL(sql);
   }
 }
 
