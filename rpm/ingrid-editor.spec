@@ -25,15 +25,21 @@ InGrid Editor
 %install
 rm -Rf %{buildroot}*
 
-mkdir -p %{target}/conf
+mkdir -p %{target}/config
+mkdir -p %{target}/webapp/static
 unzip -qq "${WORKSPACE}/build/distributions/ingrid-editor-[0-9]*.zip"
 mv ./ingrid-editor-*/* %{target}
 cp ${WORKSPACE}/server/build/resources/main/application.properties %{target}/config
 cp ${WORKSPACE}/server/build/resources/main/log4j2.xml %{target}/config
+cp -r ${WORKSPACE}/frontend/build/dist/browser/* %{target}/webapp/static
+install -D ${WORKSPACE}/rpm/ingrid-editor.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/ingrid-editor
 
 # Copy over the systemd unit file
 mkdir -p %{buildroot}%{systemd_dir}
 cp ${WORKSPACE}/rpm/%{ingrid_unit_name} %{buildroot}%{systemd_dir}
+
+# update start script to allow static website folder to classpath
+sed -i 's|-jar "\\"\$JARPATH\\""|-cp "\\"\$JARPATH\\"" org.springframework.boot.loader.launch.PropertiesLauncher|g' %{target}/bin/ingrid-editor
 
 %files
 %defattr(0644,ingrid,ingrid,0755)
@@ -41,6 +47,7 @@ cp ${WORKSPACE}/rpm/%{ingrid_unit_name} %{buildroot}%{systemd_dir}
 %attr(0644,root,root) %{ingrid_service}
 %config(noreplace) /opt/ingrid/ingrid-editor/config/application.properties
 %config(noreplace) /opt/ingrid/ingrid-editor/config/log4j2.xml
+%config(noreplace) %attr(640, root, ingrid) %{_sysconfdir}/sysconfig/ingrid-editor
 
 ################################################################################
 %pre
