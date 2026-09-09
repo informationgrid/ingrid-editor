@@ -36,7 +36,6 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { firstValueFrom } from "rxjs";
-import { map } from "rxjs/operators";
 import { GeneralStore } from "../../../app/store/general.store";
 
 @Injectable({ providedIn: "root" })
@@ -132,25 +131,11 @@ export class ModifyPublishedBehaviour extends Plugin {
 
   private async getHmbTGDocTitles(
     publishedDocs: DocumentAbstract[],
-  ): Promise<String[]> {
+  ): Promise<string[]> {
     return firstValueFrom(
-      this.researchService
-        .searchBySQL(this.prepareSQL(publishedDocs.map((d) => d._uuid)))
-        .pipe(map((response) => response.hits.map((doc) => doc.title))),
-    );
-  }
-
-  private prepareSQL(uuids: string[]): string {
-    return `SELECT document1.*, document_wrapper.category
-                 FROM document_wrapper
-                        JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                 WHERE document1.uuid = ANY(('{<uuids>}'))
-                   AND document1.is_latest = true
-                   AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.properties.publicationHmbTG')
-                   AND data->'properties'->>'publicationHmbTG' = 'true'`.replace(
-      "<uuids>",
-      uuids.join(", "),
+      this.researchService.getHmbtgDocumentTitles(
+        publishedDocs.map((d) => d._uuid),
+      ),
     );
   }
 }

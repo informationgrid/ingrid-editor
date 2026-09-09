@@ -23,7 +23,7 @@ import {
   ConfigService,
   Configuration,
 } from "../services/config/config.service";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
@@ -73,6 +73,13 @@ export interface FacetGroup {
 export class ResearchResponse {
   totalHits: number;
   hits: IgeDocument[];
+}
+
+export interface TitleOrUuidSearchRequest {
+  term: string;
+  category?: "data" | "address";
+  excludeFolders?: boolean;
+  pageSize?: number;
 }
 
 @Injectable({
@@ -153,6 +160,33 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
+  searchByTitleOrUuid(
+    request: TitleOrUuidSearchRequest,
+  ): Observable<ResearchResponse> {
+    return this.http
+      .post<ResearchResponse>(
+        `${this.configuration.backendUrl}search/titleOrUuid`,
+        request,
+      )
+      .pipe(map((result) => this.mapDocumentIcons(result)));
+  }
+
+  hasCoupledServiceWithGetCapabilities(uuid: string): Observable<boolean> {
+    return this.http.post<boolean>(
+      `${this.configuration.backendUrl}search/hasCoupledServiceWithGetCapabilities`,
+      { uuid },
+    );
+  }
+
+  getHmbtgDocumentTitles(uuids: string[]): Observable<string[]> {
+    if (uuids.length === 0) return of([]);
+    return this.http.post<string[]>(
+      `${this.configuration.backendUrl}search/hmbtgDocumentTitles`,
+      { uuids: [...new Set(uuids)] },
+    );
+  }
+
+  /** Reserved for the SQL research tab. Use typed searches for application logic. */
   searchBySQL(
     sql: string,
     page?: number,

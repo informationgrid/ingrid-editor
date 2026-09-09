@@ -281,7 +281,7 @@ class ResearchService(
         return (countQuery.singleResult as Number).toInt()
     }
 
-    private fun filterAndMapResult(
+    internal fun filterAndMapResult(
         result: List<Tuple>,
         isAdmin: Boolean,
         principal: Principal,
