@@ -127,7 +127,7 @@ class CatalogAndGroupDeletionTest : IntegrationTest() {
 
     @Test
     @Transactional
-    fun `deleting a user who owns queries does not delete the queries`() {
+    fun `deleting a user deletes non-global queries and retains global queries with user set to null`() {
         val cat = catalogRepo.save(
             Catalog().apply {
                 name = "Catalog With Queries"
@@ -144,12 +144,24 @@ class CatalogAndGroupDeletionTest : IntegrationTest() {
             },
         )
 
-        val query = queryRepo.save(
+        val privateQuery = queryRepo.save(
             Query().apply {
-                name = "Saved Search"
+                name = "Private Saved Search"
                 category = "TEST"
                 catalog = cat
                 this.user = user
+                global = false
+                modified = java.time.OffsetDateTime.now()
+            },
+        )
+
+        val globalQuery = queryRepo.save(
+            Query().apply {
+                name = "Global Saved Search"
+                category = "TEST"
+                catalog = cat
+                this.user = user
+                global = true
                 modified = java.time.OffsetDateTime.now()
             },
         )
@@ -159,10 +171,77 @@ class CatalogAndGroupDeletionTest : IntegrationTest() {
         // User is deleted
         userRepo.findByUserId("query_owner") shouldBe null
 
-        // Query still exists with user = null
-        val reloadedQuery = queryRepo.findById(query.id!!).orElse(null)
-        reloadedQuery shouldNotBe null
-        reloadedQuery.user shouldBe null
+        // Non-global query is deleted
+        queryRepo.findById(privateQuery.id!!).isEmpty shouldBe true
+
+        // Global query still exists with user = null
+        val reloadedGlobalQuery = queryRepo.findById(globalQuery.id!!).orElse(null)
+        reloadedGlobalQuery shouldNotBe null
+        reloadedGlobalQuery.user shouldBe null
+    }
+
+    @Test
+    @Transactional
+    fun `removing a user from one catalog only deletes non-global queries in that catalog`() {
+        val cat1 = catalogRepo.save(
+            Catalog().apply {
+                name = "Catalog 1"
+                identifier = "cat_multi_1"
+                type = "uvp"
+            },
+        )
+
+        val cat2 = catalogRepo.save(
+            Catalog().apply {
+                name = "Catalog 2"
+                identifier = "cat_multi_2"
+                type = "uvp"
+            },
+        )
+
+        val user = userRepo.save(
+            UserInfo().apply {
+                userId = "multi_cat_user"
+                catalogs = mutableSetOf(cat1, cat2)
+                curCatalog = cat1
+            },
+        )
+
+        val queryInCat1 = queryRepo.save(
+            Query().apply {
+                name = "Cat1 Query"
+                category = "TEST"
+                catalog = cat1
+                this.user = user
+                global = false
+                modified = java.time.OffsetDateTime.now()
+            },
+        )
+
+        val queryInCat2 = queryRepo.save(
+            Query().apply {
+                name = "Cat2 Query"
+                category = "TEST"
+                catalog = cat2
+                this.user = user
+                global = false
+                modified = java.time.OffsetDateTime.now()
+            },
+        )
+
+        catalogService.deleteUser("cat_multi_1", "multi_cat_user")
+
+        // User still exists in cat2
+        val remainingUser = userRepo.findByUserId("multi_cat_user")
+        remainingUser shouldNotBe null
+
+        // Non-global query in cat1 is deleted
+        queryRepo.findById(queryInCat1.id!!).isEmpty shouldBe true
+
+        // Non-global query in cat2 still exists
+        val remainingQueriesInCat2 = queryRepo.findAllByCatalogAndUser(cat2, remainingUser!!)
+        remainingQueriesInCat2.any { it.id == queryInCat2.id } shouldBe true
+        queryRepo.findById(queryInCat2.id!!).isPresent shouldBe true
     }
 
     @Test

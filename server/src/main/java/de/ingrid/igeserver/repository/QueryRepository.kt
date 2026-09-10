@@ -21,8 +21,11 @@ package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface QueryRepository : JpaRepository<Query, Int> {
     fun findAllByCatalog(catalog: Catalog): List<Query>
+    fun findAllByCatalogAndUser(catalog: Catalog, user: UserInfo): List<Query>
+    fun findAllByUser(user: UserInfo): List<Query>
 }

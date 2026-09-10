@@ -32,6 +32,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
@@ -50,6 +51,7 @@ class CatalogService(
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
+    private val queryRepo: QueryRepository,
     private val authUtils: AuthUtils,
     @Lazy private val igeAclService: IgeAclService,
     private val keycloakService: UserManagementService,
@@ -249,13 +251,22 @@ class CatalogService(
     @Transactional
     fun deleteUser(catalogId: String, userId: String): Boolean {
         val user = userRepo.findByUserId(userId)!!
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val queriesToDelete = queryRepo.findAllByCatalogAndUser(catalog, user).filter { !it.global }
+        queryRepo.deleteAll(queriesToDelete)
+
         user.catalogs = user.catalogs.filter { it.identifier != catalogId }.toMutableSet()
 
         // only remove user if not connected to any catalog
         if (user.catalogs.isEmpty()) {
+            val allRemainingQueries = queryRepo.findAllByUser(user).filter { !it.global }
+            queryRepo.deleteAll(allRemainingQueries)
             userRepo.deleteByUserId(userId)
             return true
         } else {
+            if (user.curCatalog?.identifier == catalogId) {
+                user.curCatalog = user.catalogs.firstOrNull()
+            }
             userRepo.save(user)
             return false
         }
