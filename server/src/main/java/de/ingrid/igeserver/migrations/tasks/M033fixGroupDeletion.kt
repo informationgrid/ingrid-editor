@@ -44,7 +44,7 @@ class M033fixGroupDeletion : MigrationBase("0.33") {
         alter table user_group
         	add constraint user_group_permission_group_id_fk
         		foreign key (group_id) references permission_group
-        			on delete cascade;
+        			on delete set null;
     """.trimIndent()
 
     override fun exec() {

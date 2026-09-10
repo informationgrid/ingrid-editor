@@ -60,7 +60,8 @@ class Query {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    // TODO remove manually when deleting users if global=true
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JsonIgnore
     var user: UserInfo? = null
 

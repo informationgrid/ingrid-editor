@@ -39,12 +39,12 @@ class M034ModifyPremissionGroupTable : MigrationBase("0.34") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
-        alter table permission_group add manager_id integer not null default 1;
+        alter table permission_group add manager_id integer;
         
         alter table permission_group
         	add constraint permission_group_manager_id_fkey
         		foreign key (manager_id) references user_info (id)
-        			on delete cascade;
+        			on delete set null;
         
         alter table permission_group alter column manager_id drop default;
     """.trimIndent()

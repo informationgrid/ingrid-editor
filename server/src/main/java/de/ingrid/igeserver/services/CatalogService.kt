@@ -180,12 +180,25 @@ class CatalogService(
         catalogRepo.save(catalog)
     }
 
+    @Transactional
     fun removeCatalog(name: String) {
         if (!catalogExists(name)) {
             throw PersistenceException.withReason("Failed to delete non-existing catalog with name '$name'.")
         }
 
         val catalog = getCatalogById(name)
+
+        // remove catalog from users
+        val usersOfCatalog = userRepo.findAllByCatalogId(name)
+        for (user in usersOfCatalog) {
+            user.catalogs = user.catalogs.filter { it.identifier != name }.toMutableSet()
+            user.groups = user.groups.filter { it.catalog?.identifier != name }.toMutableSet()
+            if (user.curCatalog?.identifier == name) {
+                user.curCatalog = user.catalogs.firstOrNull()
+            }
+            userRepo.save(user)
+        }
+
         catalogRepo.delete(catalog)
     }
 
@@ -233,12 +246,13 @@ class CatalogService(
         return merge
     }
 
+    @Transactional
     fun deleteUser(catalogId: String, userId: String): Boolean {
         val user = userRepo.findByUserId(userId)!!
         user.catalogs = user.catalogs.filter { it.identifier != catalogId }.toMutableSet()
 
         // only remove user if not connected to any catalog
-        if (user.catalogs.size == 0) {
+        if (user.catalogs.isEmpty()) {
             userRepo.deleteByUserId(userId)
             return true
         } else {

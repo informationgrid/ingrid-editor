@@ -477,7 +477,7 @@ CREATE TABLE public.permission_group (
     description text,
     permissions jsonb,
     data jsonb,
-    manager_id integer NOT NULL
+    manager_id integer
 );
 
 
@@ -1862,7 +1862,7 @@ ALTER TABLE ONLY public.acl_entry
 --
 
 ALTER TABLE ONLY public.manager
-    ADD CONSTRAINT manager_catalog_id_fkey FOREIGN KEY (catalog_id) REFERENCES public.catalog(id) ON DELETE CASCADE;
+    ADD CONSTRAINT manager_catalog_id_fkey FOREIGN KEY (catalog_id) REFERENCES public.catalog(id) ON DELETE RESTRICT;
 
 
 --
@@ -1870,7 +1870,7 @@ ALTER TABLE ONLY public.manager
 --
 
 ALTER TABLE ONLY public.manager
-    ADD CONSTRAINT manager_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES public.user_info(id) ON DELETE CASCADE;
+    ADD CONSTRAINT manager_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES public.user_info(id) ON DELETE RESTRICT;
 
 
 --
@@ -1894,7 +1894,7 @@ ALTER TABLE ONLY public.permission_group
 --
 
 ALTER TABLE ONLY public.permission_group
-    ADD CONSTRAINT permission_group_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES public.user_info(id) ON DELETE CASCADE;
+    ADD CONSTRAINT permission_group_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES public.user_info(id) ON DELETE SET NULL;
 
 
 --
@@ -1942,7 +1942,7 @@ ALTER TABLE ONLY public.stand_in
 --
 
 ALTER TABLE ONLY public.user_group
-    ADD CONSTRAINT user_group_permission_group_id_fk FOREIGN KEY (group_id) REFERENCES public.permission_group(id) ON DELETE CASCADE;
+    ADD CONSTRAINT user_group_permission_group_id_fk FOREIGN KEY (group_id) REFERENCES public.permission_group(id) ON DELETE SET NULL;
 
 
 --
