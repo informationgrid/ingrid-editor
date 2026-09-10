@@ -1910,7 +1910,7 @@ ALTER TABLE ONLY public.query
 --
 
 ALTER TABLE ONLY public.query
-    ADD CONSTRAINT query_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_info(id) ON DELETE CASCADE;
+    ADD CONSTRAINT query_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_info(id) ON DELETE SET NULL;
 
 
 --
@@ -1942,7 +1942,7 @@ ALTER TABLE ONLY public.stand_in
 --
 
 ALTER TABLE ONLY public.user_group
-    ADD CONSTRAINT user_group_permission_group_id_fk FOREIGN KEY (group_id) REFERENCES public.permission_group(id) ON DELETE SET NULL;
+    ADD CONSTRAINT user_group_permission_group_id_fk FOREIGN KEY (group_id) REFERENCES public.permission_group(id) ON DELETE CASCADE;
 
 
 --
@@ -1950,7 +1950,7 @@ ALTER TABLE ONLY public.user_group
 --
 
 ALTER TABLE ONLY public.user_group
-    ADD CONSTRAINT user_group_user_info_id_fk FOREIGN KEY (user_info_id) REFERENCES public.user_info(id);
+    ADD CONSTRAINT user_group_user_info_id_fk FOREIGN KEY (user_info_id) REFERENCES public.user_info(id) ON DELETE CASCADE;
 
 
 --

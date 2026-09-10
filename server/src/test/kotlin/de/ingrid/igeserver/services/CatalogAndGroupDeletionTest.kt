@@ -22,9 +22,11 @@ package de.ingrid.igeserver.services
 import IntegrationTest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.repository.UserRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -48,6 +50,9 @@ class CatalogAndGroupDeletionTest : IntegrationTest() {
 
     @Autowired
     private lateinit var groupService: GroupService
+
+    @Autowired
+    private lateinit var queryRepo: QueryRepository
 
     @Test
     @Transactional
@@ -80,6 +85,84 @@ class CatalogAndGroupDeletionTest : IntegrationTest() {
         // Group should still exist and user should be deleted
         userRepo.findByUserId("manager1") shouldBe null
         groupRepo.findAllByCatalog_Identifier("cat_mgr_test").size shouldBe 1
+    }
+
+    @Test
+    @Transactional
+    fun `deleting a group that has members removes group membership without deleting users`() {
+        val cat = catalogRepo.save(
+            Catalog().apply {
+                name = "Catalog With Members"
+                identifier = "cat_member_test"
+                type = "uvp"
+            },
+        )
+
+        val testGroup = groupRepo.save(
+            Group().apply {
+                name = "Group With Members"
+                catalog = cat
+            },
+        )
+
+        val memberUser = userRepo.save(
+            UserInfo().apply {
+                userId = "member1"
+                catalogs = mutableSetOf(cat)
+                curCatalog = cat
+                groups = mutableSetOf(testGroup)
+            },
+        )
+
+        // Delete group
+        groupService.remove("cat_member_test", testGroup.id!!)
+
+        // Group is deleted
+        groupRepo.findById(testGroup.id!!).isEmpty shouldBe true
+
+        // User still exists
+        val reloadedUser = userRepo.findByUserId("member1")
+        reloadedUser shouldNotBe null
+    }
+
+    @Test
+    @Transactional
+    fun `deleting a user who owns queries does not delete the queries`() {
+        val cat = catalogRepo.save(
+            Catalog().apply {
+                name = "Catalog With Queries"
+                identifier = "cat_query_test"
+                type = "uvp"
+            },
+        )
+
+        val user = userRepo.save(
+            UserInfo().apply {
+                userId = "query_owner"
+                catalogs = mutableSetOf(cat)
+                curCatalog = cat
+            },
+        )
+
+        val query = queryRepo.save(
+            Query().apply {
+                name = "Saved Search"
+                category = "TEST"
+                catalog = cat
+                this.user = user
+                modified = java.time.OffsetDateTime.now()
+            },
+        )
+
+        catalogService.deleteUser("cat_query_test", "query_owner")
+
+        // User is deleted
+        userRepo.findByUserId("query_owner") shouldBe null
+
+        // Query still exists with user = null
+        val reloadedQuery = queryRepo.findById(query.id!!).orElse(null)
+        reloadedQuery shouldNotBe null
+        reloadedQuery.user shouldBe null
     }
 
     @Test
