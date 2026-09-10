@@ -54,7 +54,7 @@ class M021AddQueryTable : MigrationBase("0.21") {
           data            jsonb,
           CONSTRAINT "query_pkey" PRIMARY KEY ("id"),
           CONSTRAINT "query_catalog_id_fkey" FOREIGN KEY (catalog_id) REFERENCES catalog (id) ON DELETE CASCADE NOT DEFERRABLE,
-          CONSTRAINT "query_user_id_fkey" FOREIGN KEY (user_id) REFERENCES user_info (id) ON DELETE SET NULL
+          CONSTRAINT "query_user_id_fkey" FOREIGN KEY (user_id) REFERENCES user_info (id) ON DELETE CASCADE NOT DEFERRABLE
         ) WITH (oids = false);
     """.trimIndent()
 
