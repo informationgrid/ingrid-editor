@@ -438,7 +438,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Hamburg (02)</gco:CharacterString>
+                                                <gco:CharacterString>Hamburg (ARS: 02)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>

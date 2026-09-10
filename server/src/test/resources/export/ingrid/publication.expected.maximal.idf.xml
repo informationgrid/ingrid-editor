@@ -455,7 +455,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Berlin, Deutschland (administrative) (11)</gco:CharacterString>
+                                                <gco:CharacterString>Berlin, Deutschland (administrative) (ARS: 11)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -499,7 +499,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Berlin (11)</gco:CharacterString>
+                                                <gco:CharacterString>Berlin (ARS: 11)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>

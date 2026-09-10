@@ -1,5 +1,7 @@
 SERVER_PORT=8550
 APP_HOST_URL=http://localhost:8550
+KEYCLOAK_URL=http://localhost:8080
+# KEYCLOAK_URL_INTERNAL=
 KEYCLOAK_CLIENT_SECRET=editor_secret
 UPLOAD_DIR=/opt/ingrid/ingrid-editor/upload
 JAVA_OPTS="-Dloader.path=/opt/ingrid/ingrid-editor/webapp/"

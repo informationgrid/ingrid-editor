@@ -38,6 +38,9 @@ install -D ${WORKSPACE}/rpm/ingrid-editor.sysconfig %{buildroot}/%{_sysconfdir}/
 mkdir -p %{buildroot}%{systemd_dir}
 cp ${WORKSPACE}/rpm/%{ingrid_unit_name} %{buildroot}%{systemd_dir}
 
+# active ingrid-profile by default
+sed -i '1i spring.profiles.active=ingrid' %{target}/config/application.properties
+
 # update start script to allow static website folder to classpath
 sed -i 's|-jar "\\"\$JARPATH\\""|-cp "\\"\$JARPATH\\"" org.springframework.boot.loader.launch.PropertiesLauncher|g' %{target}/bin/ingrid-editor
 

@@ -367,7 +367,7 @@ jib {
     // tag for image on any feature branch will have the branch name
     def name
     if (project.hasProperty("branch_name")) name = project.ext.branch_name else name = "???"
-    def tag = name == "develop" ? "latest" : name
+    def tag = name == "main" ? "latest" : name
     tag = tag.replaceAll("/", "-")
     from {
         image = 'bellsoft/liberica-openjre-alpine:25'
