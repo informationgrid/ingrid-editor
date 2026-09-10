@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.imports
 
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DeleteOptions
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
@@ -316,6 +318,8 @@ class ImportService(
         isDraftAndPublished: Boolean = false,
     ): DocumentAnalysis {
         val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
+        val isAddress = documentService.isAddress(document.type)
+
         document.state = if (forcePublish) {
             DocumentState.PUBLISHED
         } else if (isDraftAndPublished) {
@@ -326,11 +330,26 @@ class ImportService(
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
+        // Check for duplicate UUIDs across categories
+        documentWrapper?.let { wrapper ->
+            if (wrapper.category == DocumentCategory.DATA.value && isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the address ${document.title} is already used as a data document.",
+                )
+            }
+
+            if (wrapper.category == DocumentCategory.ADDRESS.value && !isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the data document ${document.title} is already used as an address.",
+                )
+            }
+        }
+
         return DocumentAnalysis(
             document,
             documentWrapper?.id,
-            documentService.isAddress(document.type),
-            documentWrapper != null && documentWrapper.deleted == 0,
+            isAddress,
+            documentWrapper?.deleted == 0,
             documentWrapper?.deleted == 1,
             emptyList(),
             forcePublish,

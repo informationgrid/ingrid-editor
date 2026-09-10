@@ -52,8 +52,8 @@ class Group {
     var catalog: Catalog? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "manager_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JsonIgnore
     var manager: UserInfo? = null
 

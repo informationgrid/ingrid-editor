@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSetter
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -57,7 +56,7 @@ class UserInfo {
      * NOTE Since the JSON representation contains catalog identifiers ('catalogIds') only, we need
      * to map them manually to catalog instances for persistence
      */
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "catalog_user_info",
         joinColumns = [JoinColumn(name = "user_info_id")],
@@ -69,11 +68,10 @@ class UserInfo {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var role: Role? = null
 
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
         joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
@@ -102,7 +100,7 @@ class UserInfo {
      */
     @ManyToOne
     @JoinColumn(name = "cur_catalog_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JsonIgnore
     var curCatalog: Catalog? = null
 

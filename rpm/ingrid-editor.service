@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Environment=
+EnvironmentFile=-/etc/sysconfig/ingrid-editor
 Type=simple
 User=ingrid
 Group=ingrid

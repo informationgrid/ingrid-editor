@@ -485,6 +485,37 @@ open class IngridModelTransformer(
         else -> null
     }
 
+    val mobilithekKeywords = Thesaurus(
+        keywords =
+        listOfNotNull(
+            // only single category allowed, so we can use firstOrNull() here
+            data.keywords?.mobilithek?.firstOrNull()?.let {
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                KeywordIso(
+                    name = "mobilithek_category_$categoryIso",
+                    link = transformToMobilithekLink(categoryIso!!),
+                )
+            },
+        ) + (
+            data.keywords?.mobilithek?.mapNotNull {
+                val iso = codelists.getValue("mobilithek", it, "iso")!!
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                // is not a subcategory so it already gets added above
+                if (iso == categoryIso) return@mapNotNull null
+
+                KeywordIso(
+                    name = "mobilithek_subcategory_$iso",
+                    link = transformToMobilithekLink(iso),
+                )
+            } ?: emptyList()
+            ),
+    )
+
+    private fun transformToMobilithekLink(value: String): String {
+        val extractedCategory = value.replace("_", "-").lowercase()
+        return "https://w3id.org/mobilitydcat-ap/mobility-theme/$extractedCategory"
+    }
+
     open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
         if (data.properties?.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
@@ -631,6 +662,7 @@ open class IngridModelTransformer(
             umthesKeywords,
             inspireKeywords,
             hvdCategories,
+            mobilithekKeywords,
         )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
@@ -650,6 +682,7 @@ open class IngridModelTransformer(
         gemetKeywords,
         invekosKeywords,
         hvdCategories,
+        mobilithekKeywords,
     )
 
     val specificUsage = data.resource?.specificUsage

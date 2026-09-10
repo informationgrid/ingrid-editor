@@ -10,6 +10,8 @@ TRUNCATE TABLE acl_class RESTART IDENTITY CASCADE;
 TRUNCATE TABLE acl_entry RESTART IDENTITY CASCADE;
 TRUNCATE TABLE acl_object_identity RESTART IDENTITY CASCADE;
 TRUNCATE TABLE acl_sid RESTART IDENTITY CASCADE;
+TRUNCATE TABLE user_group RESTART IDENTITY CASCADE;
+TRUNCATE TABLE permission_group RESTART IDENTITY CASCADE;
 
 -- catalogs
 INSERT INTO catalog VALUES (100, 'test_catalog', 'uvp', 'Test Catalog', 'Test Catalog Description', now(), now(), NULL);
@@ -252,4 +254,5 @@ INSERT INTO public.user_group VALUES (10, 2);
 INSERT INTO public.user_group VALUES (11, 2);
 
 ALTER SEQUENCE acl_sid_id_seq RESTART WITH 100;
+ALTER SEQUENCE permission_group_id_seq RESTART WITH 100;
 ALTER SEQUENCE acl_object_identity_id_seq RESTART WITH 100;

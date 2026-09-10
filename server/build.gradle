@@ -147,7 +147,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.11'
     implementation "org.hibernate.orm:hibernate-core"
 
-    implementation "de.ingrid:ingrid-codelist-service:8.3.1"
+    implementation "de.ingrid:ingrid-codelist-service:8.5.0-SNAPSHOT"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.15.0'
@@ -369,7 +369,7 @@ jib {
     // tag for image on any feature branch will have the branch name
     def name
     if (project.hasProperty("branch_name")) name = project.ext.branch_name else name = "???"
-    def tag = name == "develop" ? "latest" : name
+    def tag = name == "main" ? "latest" : name
     tag = tag.replaceAll("/", "-")
     from {
         image = 'bellsoft/liberica-openjre-alpine:25'

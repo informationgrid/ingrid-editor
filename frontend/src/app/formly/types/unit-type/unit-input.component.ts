@@ -85,11 +85,18 @@ export class UnitInputComponent
           startWith(unitValue),
           debounceTime(0),
         )
-
         .subscribe((value: BackendOption) => {
           this.updateUnit(
             opts.find((option) => option.value === value?.key) ?? opts[0],
             false,
+          );
+        });
+
+      this.field.fieldGroup[0].formControl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: string) => {
+          this.field.fieldGroup[1].formControl.setValue(
+            value == null ? undefined : unitValue,
           );
         });
     });
@@ -97,13 +104,17 @@ export class UnitInputComponent
 
   updateUnit(item: SelectOptionUi, shouldEmitEvent: boolean = true) {
     this.$unit.set(item.label);
-    this.field.fieldGroup[1].formControl.setValue(
-      item.forBackend
-        ? item.forBackend(this.props.codelistId)
-        : new SelectOption(item.value, item.label).forBackend(null),
-      {
-        emitEvent: shouldEmitEvent,
-      },
-    );
+    if (this.field.fieldGroup[0].formControl.value != null) {
+      this.field.fieldGroup[1].formControl.setValue(
+        item.forBackend
+          ? item.forBackend(this.props.codelistId)
+          : new SelectOption(item.value, item.label).forBackend(null),
+        {
+          emitEvent: shouldEmitEvent,
+        },
+      );
+    } else {
+      this.field.fieldGroup[1].formControl.setValue(undefined);
+    }
   }
 }

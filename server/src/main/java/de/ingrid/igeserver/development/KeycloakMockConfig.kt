@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -53,7 +54,8 @@ internal class KeycloakMockConfig(
     generalProperties: GeneralProperties,
     userRepository: UserRepository,
     roleRepository: RoleRepository,
-) : KeycloakConfig(generalProperties, userRepository, roleRepository) {
+    @Lazy oauth2Properties: OAuth2ClientProperties,
+) : KeycloakConfig(generalProperties, userRepository, roleRepository, oauth2Properties) {
 
     @Bean
     fun clientRegistrationRepository(): ClientRegistrationRepository = object : ClientRegistrationRepository, Iterable<ClientRegistration> {
@@ -87,9 +89,7 @@ internal class KeycloakMockConfig(
     override fun authorizedClientManager(
         clientRegistrationRepository: ClientRegistrationRepository,
         authorizedClientRepository: OAuth2AuthorizedClientRepository,
-    ): OAuth2AuthorizedClientManager = object : OAuth2AuthorizedClientManager {
-        override fun authorize(authorizeRequest: org.springframework.security.oauth2.client.OAuth2AuthorizeRequest): org.springframework.security.oauth2.client.OAuth2AuthorizedClient? = null
-    }
+    ): OAuth2AuthorizedClientManager = OAuth2AuthorizedClientManager { null }
 
     /**
      * Secure appropriate endpoints

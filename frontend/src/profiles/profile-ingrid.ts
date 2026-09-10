@@ -34,6 +34,7 @@ import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { DoiPlugin } from "./ingrid/behaviours/doi.plugin";
+import { MobilithekPlugin } from "./ingrid/behaviours/mobilithek.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
@@ -78,6 +79,8 @@ export class InGridComponent implements OnInit {
   // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
   dataformatPlugin = inject(DataformatPlugin);
   doi = inject(DoiPlugin);
+  // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
+  mobilithek = inject(MobilithekPlugin);
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
   pluginService = inject(PluginService);

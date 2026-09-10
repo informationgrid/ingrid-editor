@@ -549,6 +549,7 @@ data class Keywords(
     val free: List<Keyword>?,
     val umthes: List<Keyword>?,
     val gemet: List<Keyword>?,
+    val mobilithek: List<KeyValue>?,
 )
 
 data class Keyword(
