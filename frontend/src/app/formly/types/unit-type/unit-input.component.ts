@@ -114,7 +114,9 @@ export class UnitInputComponent
         },
       );
     } else {
-      this.field.fieldGroup[1].formControl.setValue(undefined);
+      this.field.fieldGroup[1].formControl.setValue(undefined, {
+        emitEvent: false,
+      });
     }
   }
 }
