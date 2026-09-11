@@ -45,8 +45,16 @@ tasks.register('yarnInstall', YarnTask) {
   args = ['install', '--immutable']
 }
 
-tasks.register('bundle', YarnTask) {
+tasks.register('cyclonedxBom', YarnTask) {
   dependsOn 'yarnInstall'
+  inputs.files('package.json', 'yarn.lock', '.yarnrc.yml')
+  inputs.dir(fileTree("node_modules").exclude(".cache"))
+  outputs.file('build/reports/bom.json')
+  args = ['cyclonedx-yarn', '--output-file', 'build/reports/bom.json']
+}
+
+tasks.register('bundle', YarnTask) {
+  dependsOn 'yarnInstall', 'cyclonedxBom'
   inputs.property('buildArgs', buildArgs)
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')

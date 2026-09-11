@@ -48,6 +48,25 @@ pipeline {
             }
         }
 
+        stage ('Merge SBOMs') {
+            agent {
+                docker {
+                    image 'cyclonedx/cyclonedx-cli:latest'
+                    // CRITICAL: Overrides the entrypoint so Jenkins can run it as a regular shell agent
+                    args '-u root --entrypoint=""'
+                    reuseNode true
+                }
+            }
+            steps {
+                script {
+                    sh """
+                        mkdir -p build/reports
+                        cyclonedx merge --input-files server/build/reports/bom.json frontend/build/reports/bom.json --output-file build/reports/bom.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                    """
+                }
+            }
+        }
+
         stage ('Build RPM') {
             when { expression { return shouldBuildDevOrRelease() } }
             agent {

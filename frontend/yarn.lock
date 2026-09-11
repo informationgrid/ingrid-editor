@@ -1107,6 +1107,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cyclonedx/yarn-plugin-cyclonedx@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@cyclonedx/yarn-plugin-cyclonedx@npm:3.4.0"
+  dependenciesMeta:
+    eslint:
+      unplugged: true
+    eslint-plugin-eslint-comments:
+      unplugged: true
+  bin:
+    cyclonedx-yarn: bin/cyclonedx-yarn-cli.js
+  checksum: 10c0/ceca0352a53798ea3cac44f9d02fa838a6544e3601d9aa979b035e93b0ba593d33d4e9efba878284dbce1764486e7c48337c8b64be9e1951490fc88c654be570
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:^1.7.1":
   version: 1.8.1
   resolution: "@emnapi/core@npm:1.8.1"
@@ -5774,6 +5788,7 @@ __metadata:
     "@angular/platform-browser": "npm:^21.2.5"
     "@angular/platform-browser-dynamic": "npm:^21.2.5"
     "@angular/router": "npm:^21.2.5"
+    "@cyclonedx/yarn-plugin-cyclonedx": "npm:^3.4.0"
     "@flowjs/flow.js": "npm:^2.14.1"
     "@flowjs/ngx-flow": "npm:^20.0.2"
     "@geoman-io/leaflet-geoman-free": "npm:^2.15.0"
