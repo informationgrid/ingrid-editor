@@ -93,11 +93,12 @@ export class UnitInputComponent
         });
 
       this.field.fieldGroup[0].formControl.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(0))
         .subscribe((value: string) => {
-          this.field.fieldGroup[1].formControl.setValue(
-            value == null ? undefined : unitValue,
-          );
+          const unitControl = this.field.fieldGroup[1].formControl;
+          if (unitControl.value === undefined) {
+            unitControl.setValue(value == null ? undefined : unitValue);
+          }
         });
     });
   }
