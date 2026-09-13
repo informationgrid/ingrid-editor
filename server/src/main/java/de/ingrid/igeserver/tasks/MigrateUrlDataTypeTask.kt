@@ -24,7 +24,6 @@ import de.ingrid.igeserver.utils.getString
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
-import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream

@@ -38,7 +38,7 @@ class Migrate110 {
             listOf("draft", "published").forEach { type ->
                 documents.get(type)?.let { docVersion ->
                     removeMetadata(docVersion)
-                    val addresses = getAddresses(docVersion, profile)?.map {
+                    val addresses = getAddresses(docVersion, profile)?.toList()?.map {
                         val uuid = it.getString("ref._uuid")
                         val ref = it.get("ref")
                         (it as ObjectNode).put("ref", uuid)
