@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -30,6 +29,7 @@ import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import tools.jackson.databind.JsonNode
 
 data class Keyword(
     val id: String?,
@@ -49,7 +49,7 @@ class OpenDataModelTransformer(
     val doc = transformerConfig.doc
     val contentField: MutableList<String> = mutableListOf()
 
-    fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
+    fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.values()?.map { dist ->
         Distribution(
             dist.getStringOrEmpty("format.key"),
             getDownloadLink(dist, doc.uuid),
@@ -58,7 +58,7 @@ class OpenDataModelTransformer(
             dist.getStringOrEmpty("description"),
             mapLicense(dist.getString("license.key")),
             dist.getStringOrEmpty("byClause"),
-            dist.get("languages").mapNotNull { mapLanguage(it) },
+            dist.get("languages")?.values()?.mapNotNull { mapLanguage(it) } ?: emptyList(),
             mapAvailability(dist.getStringOrEmpty("availability.key")),
         )
     } ?: emptyList()
@@ -68,7 +68,7 @@ class OpenDataModelTransformer(
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getStringOrEmpty("description")
     fun getLandingPage() = doc.data.getStringOrEmpty("landingPage")
-    fun getThemes() = doc.data.get("DCATThemes")?.mapNotNull {
+    fun getThemes() = doc.data.get("DCATThemes")?.values()?.mapNotNull {
         val key = it.getStringOrEmpty("key")
         Keyword(
             key,
@@ -77,8 +77,8 @@ class OpenDataModelTransformer(
         )
     } ?: emptyList()
 
-    fun getFreeKeywords() = doc.data.get("keywords")?.mapNotNull {
-        Keyword(null, it.asText(), "FREE")
+    fun getFreeKeywords() = doc.data.get("keywords")?.values()?.mapNotNull {
+        Keyword(null, it.asString(), "FREE")
     } ?: emptyList()
 
     fun getCreated() = doc.created.toString()
@@ -95,14 +95,14 @@ class OpenDataModelTransformer(
             emptyList()
         }
     }
-    fun getAddresses() = doc.data.get("addresses").mapNotNull {
+    fun getAddresses() = doc.data.get("addresses")?.values()?.mapNotNull {
         addressExporter.toAddressModelTransformer(
             AddressRefModel(
                 KeyValue(it.getString("type.key")),
                 it.getString("ref"),
             ),
         )
-    }
+    } ?: emptyList()
 
     fun mapAddressType(typeKey: String): String = when (typeKey) {
         "2" -> "maintainer"
@@ -121,7 +121,7 @@ class OpenDataModelTransformer(
         else -> "???"
     }
 
-    fun getSpatials(): List<String> = doc.data.get("spatial")?.mapNotNull { spatial ->
+    fun getSpatials(): List<String> = doc.data.get("spatial")?.values()?.mapNotNull { spatial ->
         val type = spatial.getString("type")
         when (type) {
             "free" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
@@ -137,8 +137,8 @@ class OpenDataModelTransformer(
         node.get("lat2").asDouble(),
         node.get("lon2").asDouble(),
     )
-    fun getSpatialTitles() = doc.data.get("spatial")?.map { it.getStringOrEmpty("title") } ?: emptyList()
-    fun getArs() = doc.data.get("spatial")?.map { it.getStringOrEmpty("ars") } ?: emptyList()
+    fun getSpatialTitles(): List<String> = doc.data.get("spatial")?.values()?.map { it.getStringOrEmpty("title") } ?: emptyList()
+    fun getArs(): List<String> = doc.data.get("spatial")?.values()?.map { it.getStringOrEmpty("ars") } ?: emptyList()
     fun getLegalBasis() = doc.data.getStringOrEmpty("legalBasis")
     fun getQualityProcessURI() = doc.data.getStringOrEmpty("qualityProcessURI")
     fun getPoliticalGeocodingLevel() = doc.data.getString("politicalGeocodingLevel.key")

@@ -39,7 +39,7 @@ class ExportApiController : ExportApi {
     @Autowired
     private lateinit var catalogService: CatalogService
 
-    override fun export(principal: Principal, options: ExportRequestParameter): ResponseEntity<ByteArray?> {
+    override fun export(principal: Principal, options: ExportRequestParameter): ResponseEntity<ByteArray> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val exportResult = exportService.export(catalogId, options)
 

@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.permissions
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
@@ -44,6 +43,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.support.TransactionTemplate
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Suppress("ktlint:standard:function-naming")
 class UserAuthorTests(

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.model.ResearchResponse
@@ -41,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.util.*
 

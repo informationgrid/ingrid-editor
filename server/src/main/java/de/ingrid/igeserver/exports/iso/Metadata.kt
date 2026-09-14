@@ -19,9 +19,9 @@
  */
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement
+import tools.jackson.dataformat.xml.annotation.JacksonXmlText
 
 // @XmlRootElement(name = "MD_Metadata", namespace = "http://www.isotc211.org/2005/gmd")
 // @XmlAccessorType(XmlAccessType.FIELD)

@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.exporter
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.log
 import de.ingrid.igeserver.utils.checkPublicationTags
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 
 class AddressExport(val config: GeneralTransformerConfig, val mapPointOfContactMD: Boolean = false) {

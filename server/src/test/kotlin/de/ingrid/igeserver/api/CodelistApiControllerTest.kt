@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.shouldBe
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -31,6 +30,7 @@ import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Sql(scripts = ["/test_data-free-entries.sql"], config = SqlConfig(encoding = "UTF-8"))
 class CodelistApiControllerTest(private val mockMvc: MockMvc) : IntegrationTest() {
@@ -67,7 +67,7 @@ class CodelistApiControllerTest(private val mockMvc: MockMvc) : IntegrationTest(
         val array = mapper.readTree(json)
 
         val resultMap = array.associate { node ->
-            node.get("value").asText() to node.get("count").asInt()
+            node.get("value").asString() to node.get("count").asInt()
         }
 
         resultMap.size shouldBe 2

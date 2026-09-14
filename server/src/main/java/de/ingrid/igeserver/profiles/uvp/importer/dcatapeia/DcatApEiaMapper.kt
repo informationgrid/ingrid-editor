@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.dcatparser.dcatapde.model.vcard.Kind
 import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
 import de.ingrid.dcatparser.dcatapeia.model.dct.Location
@@ -38,6 +36,8 @@ import de.ingrid.igeserver.services.DocumentService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.util.*
 
 data class DcatApEiaDto(

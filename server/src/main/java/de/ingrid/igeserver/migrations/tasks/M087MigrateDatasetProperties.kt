@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.internal.migrations.Migrate120
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -68,7 +67,7 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
                 documents.forEach {
                     it as Document
                     val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
-                    it.data.set<JsonNode>("properties", properties)
+                    it.data.set("properties", properties)
                     log.info("Migrated doc with dbID ${it.id}")
                 }
                 page++

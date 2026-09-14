@@ -20,8 +20,6 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -37,6 +35,8 @@ import io.mockk.every
 import io.mockk.mockk
 import mockCatalog
 import mockCodelists
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class PartialExports : ShouldSpec() {
 

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
@@ -33,6 +31,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 

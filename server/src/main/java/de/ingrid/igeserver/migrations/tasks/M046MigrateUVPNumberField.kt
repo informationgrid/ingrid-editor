@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -69,7 +68,7 @@ class M046MigrateUVPNumberField : MigrationBase("0.46") {
         val value = doc.data.get("eiaNumber")
         if (value != null && !value.isNull) {
             doc.data.remove("eiaNumber")
-            doc.data.set<ArrayNode>("eiaNumbers", value)
+            doc.data.set("eiaNumbers", value)
         }
     }
 }

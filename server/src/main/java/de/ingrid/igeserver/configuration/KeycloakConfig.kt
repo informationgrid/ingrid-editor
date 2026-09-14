@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -197,12 +197,12 @@ internal class KeycloakConfig(
                 val requestFactory = SimpleClientHttpRequestFactory()
                 requestFactory.setProxy(proxy) // should already work with system properties: http.proxyHost
                 return NimbusJwtDecoder
-                    .withJwkSetUri(jwkSetUri)
+                    .withJwkSetUri(jwkSetUri!!)
                     .restOperations(RestTemplate(requestFactory)).build()
             }
         } else {
             return NimbusJwtDecoder
-                .withJwkSetUri(jwkSetUri)
+                .withJwkSetUri(jwkSetUri!!)
                 .build()
         }
     }
@@ -335,11 +335,11 @@ class OidcRealmRoleMapper(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
 ) : GrantedAuthoritiesMapper {
-    override fun mapAuthorities(authorities: MutableCollection<out GrantedAuthority>?): MutableCollection<out GrantedAuthority> {
+    override fun mapAuthorities(authorities: Collection<GrantedAuthority>): Collection<GrantedAuthority> {
         val result = mutableSetOf<GrantedAuthority>()
 
         // Keep any already-present authorities
-        if (authorities != null) result.addAll(authorities)
+        result.addAll(authorities)
 
         // Extract realm roles from OIDC id token and userInfo
         val oidcAuth = authorities?.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority

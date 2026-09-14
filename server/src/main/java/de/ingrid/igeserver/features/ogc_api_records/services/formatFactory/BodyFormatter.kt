@@ -19,12 +19,11 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services.formatFactory
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.services.ExportResult
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.text.SimpleDateFormat
 
 interface BodyFormatter {
@@ -41,9 +40,9 @@ interface BodyFormatter {
     fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String
 
     fun convertObject2Json(data: Any): ObjectNode {
-        val mapper = jacksonObjectMapper()
-        mapper.registerModule(JavaTimeModule())
-        mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val mapper = jacksonMapperBuilder()
+            .defaultDateFormat(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+            .build()
         val node = mapper.convertValue(data, ObjectNode::class.java)
         node.properties().forEach { entry ->
             node.replace(entry.key, entry.value)

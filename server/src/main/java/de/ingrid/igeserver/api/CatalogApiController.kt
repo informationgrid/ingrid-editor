@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
@@ -48,6 +44,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import tools.jackson.core.StreamReadFeature
+import tools.jackson.module.kotlin.jacksonMapperBuilder
+import tools.jackson.module.kotlin.readValue
 import java.security.Principal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -165,9 +164,10 @@ class CatalogApiController(
 
         combinedFile?.let {
             // Actual Import
-            val exportedCatalog: ExportedCatalog = jacksonObjectMapper()
-                .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
-                .readValue(it.toFile())
+            val mapper = jacksonMapperBuilder()
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .build()
+            val exportedCatalog: ExportedCatalog = mapper.readValue(it.toFile())
             try {
                 catalogImportService.importCatalog(exportedCatalog, options)
             } catch (e: Exception) {
@@ -186,16 +186,15 @@ class CatalogApiController(
         principal: Principal,
         catalogIdentifier: String,
         options: ExportCatalogOptions,
-    ): ResponseEntity<ByteArray?> {
+    ): ResponseEntity<ByteArray> {
         authUtils.isSuperAdmin(principal).ifFalse {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .build()
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
         val exportedTables = catalogExportService.exportCatalog(catalogIdentifier, options)
-        val mapper = jacksonObjectMapper()
-        mapper.registerModule(JavaTimeModule())
-        mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val mapper = jacksonMapperBuilder()
+            .defaultDateFormat(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+            .build()
         val file = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(exportedTables)
         return ResponseEntity.ok()
             .header(CONTENT_DISPOSITION, "attachment;filename=catalogExport.json")

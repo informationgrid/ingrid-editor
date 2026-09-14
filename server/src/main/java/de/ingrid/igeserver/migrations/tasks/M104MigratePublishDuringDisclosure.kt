@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.imports.internal.migrations.Migrate170
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -82,7 +81,7 @@ class M104MigratePublishDuringDisclosure : MigrationBase("0.104") {
                     try {
                         val data = it.data
                         Migrate170.getProcessingStepsOfDocument(data)?.let { processingSteps ->
-                            data.set<JsonNode>("processingSteps", processingSteps)
+                            data.set("processingSteps", processingSteps)
                             entityManager.merge(it)
                         }
                     } catch (e: Exception) {

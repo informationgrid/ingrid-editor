@@ -19,10 +19,9 @@
  */
 package de.ingrid.igeserver.services.thesaurus
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.dataformat.xml.XmlMapper
 import java.net.URLEncoder
 
 @Service
@@ -39,19 +38,21 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
 
         val type = convertType(options.searchType)
         val response = sendRequest("GET", "$searchUrlTemplate$encodedTerm&qt=$type")
-        val mapper = XmlMapper(JacksonXmlModule())
-        return mapper.readTree(response).get("Description")
-            .mapNotNull { mapToKeyword(it) }
-            .toSet().toList().sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
+        val mapper = XmlMapper()
+        val description = mapper.readTree(response).get("Description")
+        return description?.values()
+            ?.mapNotNull { mapToKeyword(it) }
+            ?.toSet()?.toList()?.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
+            ?: emptyList()
     }
 
     private fun mapToKeyword(it: JsonNode): Keyword? {
         val labelElement = it.get("prefLabel") ?: it.get("officialName") ?: it.get("altLabel") ?: return null
-        val alternativeLabel = it.get("altLabel")?.get(1)?.get("")?.asText()
-        val label = labelElement.get(1).get("").asText()
+        val alternativeLabel = it.get("altLabel")?.get(1)?.get("")?.asString()
+        val label = labelElement.get(1).get("").asString()
 
         return Keyword(
-            labelElement.get(0).get("resource").asText(),
+            labelElement.get(0).get("resource").asString(),
             label,
             if (alternativeLabel == label) null else alternativeLabel,
         )

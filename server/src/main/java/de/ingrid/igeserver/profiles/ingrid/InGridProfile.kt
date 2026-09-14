@@ -20,9 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.DocumentAnalysis
@@ -56,6 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class InGridProfile(
@@ -423,7 +423,7 @@ class InGridProfile(
         report.references
             .flatMap { it.document.data.get("service")?.get("coupledResources")?.toList() ?: emptyList() }
             .filter { !it.get("isExternalRef").asBoolean() }
-            .map { it.get("uuid").asText() }
+            .map { it.get("uuid").asString() }
             .forEach { coupledUuid ->
                 val referenceInImport = report.references.any { it.document.uuid == coupledUuid }
                 if (!referenceInImport) {

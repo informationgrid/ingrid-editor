@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -75,7 +74,7 @@ class M048MigratePointOfContact : MigrationBase("0.48") {
         val publisher = doc?.data?.remove("publisher")
 
         if (publisher != null) {
-            doc.data.set<JsonNode>("pointOfContact", publisher)
+            doc.data.set("pointOfContact", publisher)
         }
     }
 }

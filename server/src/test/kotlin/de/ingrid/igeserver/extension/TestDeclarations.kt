@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.extension
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -27,6 +26,7 @@ import de.ingrid.igeserver.extension.pipe.Payload
 import de.ingrid.igeserver.extension.pipe.Pipe
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import tools.jackson.databind.JsonNode
 
 /**
  * Test payloads

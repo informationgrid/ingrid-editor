@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.persistence.postgresql
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.PersistenceException
 import jakarta.transaction.Transactional
 import org.apache.logging.log4j.LogManager
@@ -44,6 +42,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.namedparam.SqlParameterSource
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.sql.Types
 import java.time.Instant
 import java.time.ZoneId
@@ -216,7 +216,7 @@ class PostgreSQLLog4JAppender(
             value = mapper.writeValueAsString(msg)
         }
         return MapSqlParameterSource()
-            .addValue(TYPE, msg.get(RECORD_TYPE).asText(), Types.VARCHAR)
+            .addValue(TYPE, msg.get(RECORD_TYPE).asString(), Types.VARCHAR)
             .addValue(LOGGER, event.loggerName, Types.VARCHAR)
             .addValue(TIMESTAMP, utcDate, Types.TIMESTAMP_WITH_TIMEZONE)
             .addValue(LEVEL, event.level?.name(), Types.VARCHAR)

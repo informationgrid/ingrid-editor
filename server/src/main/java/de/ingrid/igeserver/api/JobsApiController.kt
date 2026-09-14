@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.ImportService
@@ -53,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.nio.file.Path
 import java.security.Principal
 import kotlin.io.path.absolutePathString

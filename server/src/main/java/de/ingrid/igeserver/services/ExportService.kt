@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.exports.ExportOptions
@@ -35,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream

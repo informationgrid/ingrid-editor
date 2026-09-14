@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.services.geothesaurus.BoundingBox
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.node.ArrayNode
 import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpClient
@@ -81,7 +81,7 @@ class BwastrLocatorService {
         val mapper = JsonMapper()
         val result = mapper.readTree(response).get("result")
         return if (result is ArrayNode) {
-            result.map {
+            result.values().map {
                 BwastrLocatorSearchResponse(
                     bwastrid = it.getString("bwastrid") ?: throw Exception("no bwastrid found in response"),
                     bwastr_name = it.getStringOrEmpty("bwastr_name"),
@@ -127,8 +127,8 @@ class BwastrLocatorService {
         val result = mapper.readTree(response).getPath("result")?.get(0) ?: throw Exception("no result found in BWaStr-Locator response")
         val coordinates = result.getPath("geometry.coordinates") ?: throw Exception("no coordinates found in BWaStr-Locator response")
         // combine  the coordinate arrays for each line in MultiLineString geometry
-        return coordinates.map { line ->
-            line.map { pair -> pair.map { it.asDouble() } }
+        return coordinates.values().map { line ->
+            line.values().map { pair -> pair.values().map { it.asDouble() } }
         }
     }
 

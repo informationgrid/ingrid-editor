@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_distributions.profiles.opendata.distribution_helper
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
 import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -29,6 +28,7 @@ import de.ingrid.igeserver.utils.ifFalse
 import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
 
 @Profile("opendata")
 @Service
