@@ -97,19 +97,22 @@ export class AppComponent implements OnInit {
 
     this.loadIcons();
 
-    // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
-    //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
-    //       loaded and replaced in store overwriting catalog codelists
-    //       Catalog Codelists should be loaded initially into the correct store!
-    codelistService.fetchCatalogCodelists();
-
     this.showTestBadge =
       this.configService.getConfiguration().featureFlags?.showTestBadge;
     if (this.showTestBadge)
       titleService.setTitle(titleService.getTitle() + " TEST");
     this.configService.$userInfo
       .pipe(map((info) => ProfileService.userHasAnyCatalog(info)))
-      .subscribe((isAssigned) => this.userHasCatalog.set(isAssigned));
+      .subscribe((isAssigned) => {
+        this.userHasCatalog.set(isAssigned);
+        if (isAssigned) {
+          // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
+          //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
+          //       loaded and replaced in store, overwriting catalog codelists
+          //       Catalog Codelists should be loaded initially into the correct store!
+          codelistService.fetchCatalogCodelists();
+        }
+      });
   }
 
   private updateStoreFromLocalStorage() {

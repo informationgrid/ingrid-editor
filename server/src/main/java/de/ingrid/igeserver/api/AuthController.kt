@@ -20,10 +20,12 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.configuration.KeycloakAuthenticationSuccessHandler
 import de.ingrid.igeserver.model.UserInfo
 import io.swagger.v3.oas.annotations.Hidden
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpSession
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -36,6 +38,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -59,9 +62,24 @@ class AuthController(
 
     /**
      * Redirect to Spring Security's OAuth2 login entry point (Keycloak).
+     * Preserves the requested redirect URL in the session so it can be restored after login.
      */
     @GetMapping("/auth/login")
-    fun login(request: HttpServletRequest): ResponseEntity<Void> {
+    fun login(
+        @RequestParam(name = "redirect_uri", required = false) redirectUri: String?,
+        @RequestParam(name = "redirectUrl", required = false) redirectUrl: String?,
+        @RequestParam(name = "targetUrl", required = false) targetUrl: String?,
+        @RequestParam(name = "from", required = false) from: String?,
+        request: HttpServletRequest,
+        session: HttpSession,
+    ): ResponseEntity<Void> {
+        val rawTarget = redirectUri ?: redirectUrl ?: targetUrl ?: from
+        if (!rawTarget.isNullOrBlank()) {
+            val pathOnly = rawTarget.trim().substringBefore("?").substringBefore("#")
+            if (!KeycloakAuthenticationSuccessHandler.isIgnoredPath(pathOnly) || rawTarget.contains("from=")) {
+                session.setAttribute("REDIRECT_URI", rawTarget)
+            }
+        }
         // Resolve the configured OAuth2 client registration dynamically instead of hardcoding "keycloak"
         val registrations = mutableListOf<ClientRegistration>()
         if (clientRegistrationRepository is Iterable<*>) {
