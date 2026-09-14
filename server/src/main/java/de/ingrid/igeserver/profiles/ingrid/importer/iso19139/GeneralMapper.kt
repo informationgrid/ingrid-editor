@@ -59,7 +59,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
     val importSettings = isoData.importSettings
 
-    val uuid = metadata.fileIdentifier?.value
+    val uuid = metadata.fileIdentifier?.value?.trim()
     open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
