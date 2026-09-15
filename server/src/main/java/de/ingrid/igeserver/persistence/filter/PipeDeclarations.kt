@@ -129,7 +129,13 @@ open class PrePublishPayload(
 /**
  * Payload holding document data after publishing the document
  */
-open class PostPublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
+open class PostPublishPayload(
+    type: EntityType,
+    catalogIdentifier: String,
+    document: Document,
+    wrapper: DocumentWrapper,
+    val skipValidation: Boolean,
+) : PostPersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before unpublishing the document

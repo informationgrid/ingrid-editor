@@ -323,6 +323,7 @@ class IndexingTask(
         catalogId: String,
         category: DocumentCategory,
         docUuid: String,
+        skipValidation: Boolean = true,
     ) {
         runAsAdmin("Indexing", "Task") { _ ->
             val catalog = catalogRepo.findByIdentifier(catalogId)
@@ -355,7 +356,7 @@ class IndexingTask(
                             cancellations,
                             (currentThread ?: Thread.currentThread()).threadId(),
                         )
-                            .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, doc.tags))
+                            .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, doc.tags, skipValidation))
 
                         it.target.flush()
                     }

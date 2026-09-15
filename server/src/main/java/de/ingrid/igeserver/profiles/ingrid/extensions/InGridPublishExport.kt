@@ -53,7 +53,7 @@ class InGridPublishExport(
 
         try {
             if (isDocument) {
-                indexDoc(context, docId, DocumentCategory.DATA)
+                indexDoc(context, docId, DocumentCategory.DATA, payload.skipValidation)
                 val dataType = payload.wrapper.type
                 val version = payload.document.version
                 // we cannot use GlobalScope directly here, because we need data from the previous version
@@ -83,7 +83,7 @@ class InGridPublishExport(
                     )
                 }
             } else if (isAddress) {
-                indexDoc(context, docId, DocumentCategory.ADDRESS)
+                indexDoc(context, docId, DocumentCategory.ADDRESS, payload.skipValidation)
                 indexReferencedDocs(
                     context,
                     "Index documents with referenced address $docId to Elasticsearch",
@@ -119,12 +119,19 @@ class InGridPublishExport(
 
         // use GlobalScope only for indexing, not for determining which documents to index
         GlobalScope.launch {
-            docsWithReferences.filterNotNull().forEach { indexDoc(context, it, DocumentCategory.DATA) }
+            docsWithReferences.filterNotNull().forEach {
+                indexDoc(
+                    context,
+                    it,
+                    DocumentCategory.DATA,
+                    false,
+                )
+            }
         }
     }
 
-    private fun indexDoc(context: Context, docId: String, category: DocumentCategory) {
+    private fun indexDoc(context: Context, docId: String, category: DocumentCategory, skipValidation: Boolean) {
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, category, docId)
+        indexingTask.updateDocument(context.catalogId, category, docId, skipValidation)
     }
 }

@@ -432,7 +432,15 @@ class DocumentService(
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
         // also run update/publish pipes!
-        val postWrapper = runPostUpdatePipes(docType, catalogId, newDocument, newWrapper, filterContext, publish)
+        val postWrapper = runPostUpdatePipes(
+            docType,
+            catalogId,
+            newDocument,
+            newWrapper,
+            filterContext,
+            publish,
+            skipValidation,
+        )
 
         return DocumentData(postWrapper, newDocument)
     }
@@ -462,7 +470,15 @@ class DocumentService(
                     val updatedWrapper = docWrapperRepo.save(wrapper)
                     val docType =
                         getDocumentType(updatedWrapper.type, filterContext.profile, filterContext.linkedProfiles)
-                    runPostUpdatePipes(docType, catalogId, updatedPublishedDoc, wrapper, filterContext, true)
+                    runPostUpdatePipes(
+                        docType,
+                        catalogId,
+                        updatedPublishedDoc,
+                        wrapper,
+                        filterContext,
+                        true,
+                        false,
+                    )
                 } catch (e: Exception) {
                     log.error("Error during publishing pending document: ${wrapper.uuid}", e)
                 }
@@ -513,7 +529,15 @@ class DocumentService(
             entityManager.detach(updatedDoc)
 
             val postWrapper =
-                runPostUpdatePipes(docType, catalogId, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
+                runPostUpdatePipes(
+                    docType,
+                    catalogId,
+                    updatedDoc,
+                    preUpdatePayload.wrapper,
+                    filterContext,
+                    false,
+                    true,
+                )
 
             return DocumentData(
                 postWrapper,
@@ -642,7 +666,7 @@ class DocumentService(
             entityManager.detach(updatedDoc)
 
             val postWrapper =
-                runPostUpdatePipes(docType, catalogId, updatedDoc, updatedWrapper, filterContext, publishDate == null)
+                runPostUpdatePipes(docType, catalogId, updatedDoc, updatedWrapper, filterContext, publishDate == null, skipValidation)
 
             return DocumentData(
                 postWrapper,
@@ -709,6 +733,7 @@ class DocumentService(
         updatedWrapper: DocumentWrapper,
         filterContext: Context,
         publish: Boolean,
+        skipValidation: Boolean,
     ): DocumentWrapper {
         try {
             // make sure database has current state
@@ -724,6 +749,7 @@ class DocumentService(
                         catalogId,
                         postUpdatePayload.document,
                         postUpdatePayload.wrapper,
+                        skipValidation,
                     )
                 postPublishPipe.runFilters(postPublishPayload, filterContext)
                 postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
