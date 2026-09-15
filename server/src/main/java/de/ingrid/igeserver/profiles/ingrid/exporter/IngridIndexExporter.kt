@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.networknt.schema.InputFormat
+import com.networknt.schema.SchemaLocation
 import com.networknt.schema.SchemaRegistry
 import com.networknt.schema.SchemaRegistryConfig
 import com.networknt.schema.dialect.Dialects
@@ -106,7 +107,8 @@ class IngridIndexExporter(
                 }
         }
 
-        val schema1 = schemaRegistry.getSchema("/templates/export/ingrid/schemes/index-ingrid.json")
+        val schemaLocation = SchemaLocation.of("classpath:/templates/export/ingrid/schemes/index-ingrid.json")
+        val schema1 = schemaRegistry.getSchema(schemaLocation)
         val assertions = schema1.validate(json, InputFormat.JSON)
 
         if (assertions.isNotEmpty()) {

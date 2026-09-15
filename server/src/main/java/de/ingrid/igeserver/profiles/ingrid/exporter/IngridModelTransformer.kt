@@ -415,7 +415,7 @@ open class IngridModelTransformer(
             geoJson = geoJson,
             bbox = spatial.value,
             wkt = spatial.wkt,
-            toponym = if (isToponym) spatial.title else null,
+            toponym = if (isToponym && spatial.title?.isNotEmpty() ?: false) spatial.title else null,
             administrativeArea = spatial.ars?.ifEmpty { null },
         )
     }
@@ -1450,7 +1450,22 @@ open class IngridModelTransformer(
         "3" -> "not-evaluated"
         else -> "unknown"
     }
+
+    fun getAllLicenses(): List<License> {
+        val accessConstraintItems = data.resource?.accessConstraints?.map { LicenseItem(it.key, it.value) }?.ifEmpty { null }
+        val useConstraintItems = data.resource?.useConstraints?.map { LicenseItem(it.title?.key, it.title?.value, it.source )}?.ifEmpty { null }
+        val useLimitationItem = data.resource?.useLimitation?.let { LicenseItem(null, it) }
+        return listOfNotNull(
+            accessConstraintItems?.let { License("accessConstraints", accessConstraintItems)},
+            useConstraintItems?.let { License("useConstraints", useConstraintItems)},
+            useLimitationItem?.let { License("useLimitations", listOf(useLimitationItem)) },
+        )
+    }
 }
+
+data class License(val type: String, val items: List<LicenseItem>)
+
+data class LicenseItem(val key: String?, val value: String?, val source: String? = null)
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)
 

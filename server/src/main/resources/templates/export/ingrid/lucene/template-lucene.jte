@@ -49,7 +49,7 @@
         ,"wkt": "${entry.get().getWkt()}"
     @endif
     @if(entry.get().getToponym() != null)
-        ,"toponym": "${entry.get().getToponym()}"
+        ,"toponym": ["${entry.get().getToponym()}"]
     @endif
     @if(entry.get().getAdministrativeArea() != null)
         ,"administrative": {
@@ -119,39 +119,53 @@
 @endfor],
 "exports": {},
 "ingrid": {
-"alternate_title": "${page.getAlternateTitle()}",
-"metadata": "",
-"references": [
-@for(var entry : ForSupport.of(page.getAllReferences()))
-    {
-    "internal": @if("url".equals(entry.get().getReferenceType()))false@else true@endif,
-    "url": "${entry.get().getUrl()}",
-    "uuid_ref": "${entry.get().getUuidRef()}",
-    "type": $unsafe{page.renderKeyValue(entry.get().getType())},
-    "title": "${entry.get().getTitle()}",
-    "explanation": "${entry.get().getExplanation()}"
-    }@if (!entry.isLast()),@endif
-@endfor
-],
-"licenses": [],
-"parent_identifier": "${page.getParentIdentifier()}",
-"datasource_identifier": "${page.getResourceIdentifier()}",
-"spatial_representation": [],
-"specific_usage": "${page.getSpecificUsage()}",
-"purpose": "${page.getPurpose()}",
-"conformance_result": [
-@if (page.getData().getConformanceResult() != null)
-    @for(var entry : ForSupport.of(page.getData().getConformanceResult()))
+    "alternate_title": "${page.getAlternateTitle()}",
+    "references": [
+    @for(var entry : ForSupport.of(page.getAllReferences()))
         {
-        "pass": "${page.getConformancePass(entry.get())}",
-        "specification": $unsafe{page.renderKeyValue(entry.get().getSpecification())},
-        "publicationDate": "${entry.get().getPublicationDate()}",
+        "internal": @if("url".equals(entry.get().getReferenceType()))false@else true@endif,
+        "url": "${entry.get().getUrl()}",
+        "uuid_ref": "${entry.get().getUuidRef()}",
+        "type": $unsafe{page.renderKeyValue(entry.get().getType())},
+        "title": "${entry.get().getTitle()}",
         "explanation": "${entry.get().getExplanation()}"
         }@if (!entry.isLast()),@endif
     @endfor
-@endif
-],
-"order_info": "${page.getData().getOrderInfo()}",
-"data_quality": {}
+    ],
+    "licenses": [
+    @for(var entry : ForSupport.of(page.getAllLicenses()))
+    {
+        "type": "${entry.get().getType()}",
+        "items": [
+        @for(var item : ForSupport.of(entry.get().getItems()))
+        {
+            "key": @if (item.get().getKey() == null)null@else"${item.get().getKey()}"@endif,
+            "value": "${item.get().getValue()}",
+            "source": "${item.get().getSource()}"
+        }@if (!item.isLast()),@endif
+        @endfor
+        ]
+    }@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "parent_identifier": "${page.getParentIdentifier()}",
+    "datasource_identifier": "${page.getResourceIdentifier()}",
+    "spatial_representation": [],
+    "specific_usage": "${page.getSpecificUsage()}",
+    "purpose": "${page.getPurpose()}",
+    "conformance_result": [
+    @if (page.getData().getConformanceResult() != null)
+        @for(var entry : ForSupport.of(page.getData().getConformanceResult()))
+            {
+            "pass": "${page.getConformancePass(entry.get())}",
+            "specification": $unsafe{page.renderKeyValue(entry.get().getSpecification())},
+            "publicationDate": "${entry.get().getPublicationDate()}",
+            "explanation": "${entry.get().getExplanation()}"
+            }@if (!entry.isLast()),@endif
+        @endfor
+    @endif
+    ],
+    "order_info": "${page.getData().getOrderInfo()}",
+    "data_quality": {}
 }
 }
