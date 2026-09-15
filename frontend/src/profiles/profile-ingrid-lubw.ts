@@ -24,6 +24,7 @@ import { TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../app/services/config/config.service";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
+import { GeoServiceDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-service.doctype";
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
@@ -36,6 +37,7 @@ import { IngridShared } from "./ingrid/doctypes/ingrid-shared";
 })
 class InGridLUBWComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
+  geoService = inject(GeoServiceDoctypeLubwSkdvOk);
   behaviourService = inject(BehaviourService);
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);

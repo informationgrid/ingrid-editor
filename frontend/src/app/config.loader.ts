@@ -175,6 +175,12 @@ export function ConfigLoader(
     }, 1000);
   }
 
+  function getCurrentUrl() {
+    return typeof window !== "undefined"
+      ? window.location.pathname + window.location.search + window.location.hash
+      : undefined;
+  }
+
   return async () => {
     try {
       await configService.load();
@@ -187,11 +193,16 @@ export function ConfigLoader(
       } catch (err: any) {
         // If we are unauthenticated, route to the session-expired page and finish init silently
         if (err && (err.status === 401 || err?.name === "HttpErrorResponse")) {
+          const currentUrl = getCurrentUrl();
           await router.navigate(["/session-expired"], {
             queryParams: {
               from:
-                typeof window !== "undefined"
-                  ? window.location.pathname
+                currentUrl &&
+                !currentUrl.includes("/session-expired") &&
+                !currentUrl.includes("/auth/login") &&
+                !currentUrl.includes("/login-error") &&
+                !currentUrl.includes("/access-denied")
+                  ? currentUrl
                   : undefined,
             },
           });

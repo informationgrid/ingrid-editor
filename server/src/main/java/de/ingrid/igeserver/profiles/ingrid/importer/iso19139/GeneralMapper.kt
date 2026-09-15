@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Address
 import de.ingrid.igeserver.exports.iso.CIContact
@@ -41,6 +37,10 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.databind.JsonNode
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.util.*
 
 open class GeneralMapper(val isoData: IsoImportData) {
@@ -59,7 +59,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
     val importSettings = isoData.importSettings
 
-    val uuid = metadata.fileIdentifier?.value
+    val uuid = metadata.fileIdentifier?.value?.trim()
     open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
@@ -505,8 +505,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 // TODO: handle bounding polygons
                 it.boundingPolygon?.polygon?.let { _ ->
                     val xmlMapper = XmlMapper()
-                    val xml = xmlMapper.writer().withoutRootName().writeValueAsString(it.boundingPolygon.polygon)
-                    val convertedWKT = convertGml32ToWkt(xml.substring(2, xml.length - 3))
+                    val xml = xmlMapper.writeValueAsString(it.boundingPolygon.polygon)
+                    val convertedWKT = convertGml32ToWkt(xml)
                     references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
                 }
             }
@@ -914,10 +914,10 @@ open class GeneralMapper(val isoData: IsoImportData) {
             val value = otherConstraints[index]
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
-                val text = node.get("name").asText()
+                val text = node.get("name").asString()
                 val keyValue = convertUserConstraintToKeyValue(text)
                 val note = getUseConstraintNoteWhenJsonExists(otherConstraints, index, groupStartIndex)
-                result.add(UseConstraint(keyValue, node.get("quelle").asText(), note))
+                result.add(UseConstraint(keyValue, node.get("quelle").asString(), note))
                 index++
                 continue
             }

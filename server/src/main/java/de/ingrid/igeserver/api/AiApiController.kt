@@ -39,17 +39,17 @@ class AiApiController(
     override fun evaluate(
         principal: Principal,
         body: String,
-    ): ResponseEntity<String?> {
+    ): ResponseEntity<String> {
         var response: String? = null
         runBlocking {
             launch {
                 response = aiService.evaluate(body)
             }
         }
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ofNullable(response)
     }
 
-    override fun evaluateAll(principal: Principal): ResponseEntity<String?> {
+    override fun evaluateAll(principal: Principal): ResponseEntity<String> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         var response: String? = null
         runBlocking {
@@ -57,18 +57,18 @@ class AiApiController(
                 response = aiService.evaluateAll(catalogId)
             }
         }
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ofNullable(response)
     }
 
-    override fun getEvaluateAllReport(principal: Principal): ResponseEntity<String?> = ResponseEntity.ok(aiService.evaluateResults)
+    override fun getEvaluateAllReport(principal: Principal): ResponseEntity<String> = ResponseEntity.ofNullable(aiService.evaluateResults)
 
-    override fun getSettings(principal: Principal): ResponseEntity<AiSettings?> {
+    override fun getSettings(principal: Principal): ResponseEntity<AiSettings> {
         val settings = aiService.getSettingsWithoutToken()
-        return ResponseEntity.ok(settings)
+        return ResponseEntity.ofNullable(settings)
     }
 
-    override fun updateSettings(principal: Principal, settings: AiSettings): ResponseEntity<AiSettings?> {
+    override fun updateSettings(principal: Principal, settings: AiSettings): ResponseEntity<AiSettings> {
         val updatedSettings = aiService.updateSettings(settings)
-        return ResponseEntity.ok(updatedSettings)
+        return ResponseEntity.ofNullable(updatedSettings)
     }
 }

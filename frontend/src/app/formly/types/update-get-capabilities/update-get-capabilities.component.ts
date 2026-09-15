@@ -61,6 +61,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
       this.field.model,
       values,
       this.formStateService.metadata().parentId,
+      this.form,
     );
     this.field.options.formState.updateModel();
     this.form.markAsDirty();

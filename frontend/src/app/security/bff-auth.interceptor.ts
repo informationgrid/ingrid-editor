@@ -31,6 +31,8 @@ import { ConfigService } from "../services/config/config.service";
 @Injectable({ providedIn: "root" })
 export class BffAuthInterceptor implements HttpInterceptor {
   private configService = inject(ConfigService);
+  private isRedirecting = false;
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
@@ -48,23 +50,40 @@ export class BffAuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (error?.status === 401) {
-          // If we are already on an error page, don't redirect back to login (prevent loop)
-          /*          debugger;
-          if (
-            window.location.pathname.includes("/login-error") ||
-            window.location.pathname.includes("/session-expired")
-          ) {
-            return throwError(() => error);
-          }*/
-          // Directly initiate login via the backend (full-page redirect)
-          window.location.href =
-            this.configService.getConfiguration().contextPath + "auth/login";
-        } else if (error?.status === 403) {
-          // If the user lacks the required role, redirect to the access-denied page served by the backend
-          // window.location.href = "/access-denied";
+          if (!this.isRedirecting) {
+            this.isRedirecting = true;
+            // Directly initiate login via the backend (full-page redirect)
+            const contextPath =
+              this.configService.getConfiguration()?.contextPath ?? "/";
+            const loginUrl =
+              (contextPath.endsWith("/") ? contextPath : contextPath + "/") +
+              "auth/login";
+            const currentUrl = this.getCurrentUrl();
+            if (this.isWebappTarget(currentUrl)) {
+              window.location.href =
+                loginUrl + "?redirect_uri=" + encodeURIComponent(currentUrl);
+            } else {
+              window.location.href = loginUrl;
+            }
+          }
         }
         return throwError(() => error);
       }),
     );
+  }
+  private isWebappTarget(currentUrl: string) {
+    return (
+      currentUrl &&
+      !currentUrl.includes("/session-expired") &&
+      !currentUrl.includes("/auth/login") &&
+      !currentUrl.includes("/login-error") &&
+      !currentUrl.includes("/access-denied")
+    );
+  }
+
+  private getCurrentUrl() {
+    return typeof window !== "undefined"
+      ? window.location.pathname + window.location.search + window.location.hash
+      : "";
   }
 }

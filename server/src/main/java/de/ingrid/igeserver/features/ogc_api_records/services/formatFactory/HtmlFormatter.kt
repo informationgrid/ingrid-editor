@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services.formatFactory
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.services.OgcHtmlConverterService
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.services.ExportResult
 import org.keycloak.util.JsonSerialization
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class HtmlFormatter(

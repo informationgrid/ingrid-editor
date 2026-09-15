@@ -39,25 +39,25 @@
                     ) {
                         <div matLine class="coordinates">
                             <span
-                                >SW Breite,Länge:
+                                >SW Breite / Länge:
                                 {{
                                     location.value.lat1
-                                        | number: ".6" : "en-US"
-                                }}°,
+                                        | number: ".3" : "en-US"
+                                }}° /
                                 {{
                                     location.value.lon1
-                                        | number: ".6" : "en-US"
+                                        | number: ".3" : "en-US"
                                 }}°</span
                             >
                             <span
-                                >NO Breite,Länge:
+                                >NO Breite / Länge:
                                 {{
                                     location.value.lat2
-                                        | number: ".6" : "en-US"
-                                }}°,
+                                        | number: ".3" : "en-US"
+                                }}° /
                                 {{
                                     location.value.lon2
-                                        | number: ".6" : "en-US"
+                                        | number: ".3" : "en-US"
                                 }}°</span
                             >
                         </div>

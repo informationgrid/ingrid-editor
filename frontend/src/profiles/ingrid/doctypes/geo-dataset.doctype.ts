@@ -137,6 +137,7 @@ export class GeoDatasetDoctype extends IngridShared {
         spatialScope: true,
         thesaurusTopics: true,
         inspireTopics: true,
+        mobilithekTopics: true,
       }),
 
       this.addSection(

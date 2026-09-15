@@ -20,9 +20,9 @@
 package de.ingrid.igeserver.services.geothesaurus
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
+import tools.jackson.dataformat.xml.XmlMapper
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -83,9 +83,9 @@ abstract class GeoThesaurusService {
             val node = mapper.readTree(body)
             val exceptionNode = node.findValue("ServiceException")
             val message = if (exceptionNode != null && exceptionNode.isObject) {
-                exceptionNode.get("")?.asText() ?: exceptionNode.asText()
+                exceptionNode.get("")?.asString() ?: exceptionNode.asString()
             } else {
-                exceptionNode?.asText()
+                exceptionNode?.asString()
             }
             message?.trim()?.ifBlank { null } ?: body
         } catch (_: Exception) {

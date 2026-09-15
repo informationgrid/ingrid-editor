@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -34,6 +33,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.security.core.Authentication
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class ImportServiceTest : ShouldSpec() {
 

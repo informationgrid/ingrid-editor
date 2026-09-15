@@ -20,8 +20,6 @@
 package de.ingrid.igeserver.services.externalCodelistRepository.repositories
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.services.externalCodelistRepository.ExternalCodelistRepository
 import de.ingrid.igeserver.services.externalCodelistRepository.PagedSearchResult
 import org.apache.logging.log4j.kotlin.logger
@@ -29,6 +27,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.io.InputStream
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

@@ -20,13 +20,13 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
@@ -135,7 +135,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         val operations: JsonNode = service["operations"] ?: return mutableListOf()
 
         return operations
-            .mapNotNull { it["methodCall"]?.asText() }
+            .mapNotNull { it["methodCall"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("Operationen", node, null) }
             .toMutableList()
@@ -145,7 +145,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         if (references == null) return mutableListOf()
 
         return references
-            .mapNotNull { it["url"]?.asText() }
+            .mapNotNull { it["url"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("Reference", node, null) }
             .toMutableList()
@@ -155,7 +155,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
         if (serviceURLs == null) return mutableListOf()
 
         return serviceURLs
-            .mapNotNull { it["url"]?.asText() }
+            .mapNotNull { it["url"]?.asString() }
             .filter { it.isNotBlank() }
             .map { node -> UploadInfo("serviceURLs", node, null) }
             .toMutableList()

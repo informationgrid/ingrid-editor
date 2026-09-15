@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
@@ -40,6 +38,8 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.data.domain.Page
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.IOException
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -193,8 +193,9 @@ class IndexTargetWorker(
             log.debug("Skip folder explicitly: ${ex.message}")
             targetMessage.numSkipped++
         } else {
+            val exceptionMessage = "${ex.cause?.message ?: ex.message}"
             val errorMessage =
-                "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+                "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': $exceptionMessage"
             log.error(errorMessage, ex)
             message.errors.add(errorMessage)
         }
@@ -234,7 +235,7 @@ class IndexTargetWorker(
                 put("adminUrl", generalProperties.appUrl)
                 put("lastHeartbeat", currentDate)
                 put("lastIndexed", currentDate)
-                set<JsonNode>(
+                set(
                     "plugdescription",
                     jacksonObjectMapper()
                         .convertValue(
@@ -248,7 +249,7 @@ class IndexTargetWorker(
                             JsonNode::class.java,
                         ),
                 )
-                set<JsonNode>(
+                set(
                     "indexingState",
                     jacksonObjectMapper().createObjectNode().apply {
                         put("numProcessed", 0)

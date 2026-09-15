@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.export_record
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -35,6 +31,9 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class OgcGeoJsonExporter(
@@ -100,7 +99,6 @@ class OgcGeoJsonExporter(
 
     fun convertToJsonNode(record: Record): JsonNode {
         val mapper = jacksonObjectMapper()
-        mapper.registerModule(JavaTimeModule())
 
         val node = mapper.convertValue(record, ObjectNode::class.java)
         node.properties().forEach { entry ->

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
@@ -29,6 +27,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
 import org.springframework.stereotype.Service
+import tools.jackson.core.type.TypeReference
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class SettingsService(

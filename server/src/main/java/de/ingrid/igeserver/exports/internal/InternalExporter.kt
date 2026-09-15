@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.exports.internal
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -33,6 +30,9 @@ import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 
 @Service
@@ -78,11 +78,11 @@ class InternalExporter(
             put("_export_date", OffsetDateTime.now().toString())
             put("_version", "1.5.0")
             put("_profile", profile)
-            set<ObjectNode>(
+            set(
                 "resources",
                 jacksonObjectMapper().createObjectNode().apply {
-                    publishedVersion?.let { set<JsonNode>("published", publishedVersion) }
-                    draftVersion?.let { set<JsonNode>("draft", draftVersion) }
+                    publishedVersion?.let { set("published", publishedVersion) }
+                    draftVersion?.let { set("draft", draftVersion) }
                 },
             )
         }

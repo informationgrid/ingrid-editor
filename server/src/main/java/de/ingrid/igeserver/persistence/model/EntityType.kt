@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.persistence.model
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
@@ -28,6 +27,7 @@ import de.ingrid.igeserver.services.InitiatorAction
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import tools.jackson.databind.JsonNode
 
 /**
  * Base interface for all entity types

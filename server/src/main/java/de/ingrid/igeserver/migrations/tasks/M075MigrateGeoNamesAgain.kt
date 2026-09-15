@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -33,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Profile("ingrid")
 @Service
@@ -96,7 +96,7 @@ class M075MigrateGeoNamesAgain : MigrationBase("0.75") {
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
             (doc.data.get("spatial")?.get("references") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-                .filter { it.get("type")?.asText() == "geo-name" }
+                .filter { it.get("type")?.asString() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
 

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.tasks.quartz
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.ValidationException
@@ -45,6 +43,8 @@ import org.quartz.PersistJobDataAfterExecution
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.security.Principal
 import java.util.*
 

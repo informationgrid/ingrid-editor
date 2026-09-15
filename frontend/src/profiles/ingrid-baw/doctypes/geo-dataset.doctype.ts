@@ -38,6 +38,8 @@ export class GeoDatasetDoctypeBaw extends GeoDatasetDoctype {
     this.options.hide.resourceGroup = true;
     this.geodatasetOptions.optional.dataOrigin = true;
     this.geodatasetOptions.optional.dataQualitySection = true;
+
+    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {

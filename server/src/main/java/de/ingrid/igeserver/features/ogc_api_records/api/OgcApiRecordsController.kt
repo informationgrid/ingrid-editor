@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
@@ -64,6 +63,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.time.Instant
 
@@ -132,7 +132,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getLandingPage(
@@ -158,7 +157,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getConformance(
@@ -184,7 +182,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getCatalogs(
@@ -211,7 +208,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getCatalog(
@@ -240,7 +236,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "204", description = "No Content"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun deleteDataset(
@@ -261,7 +256,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "201", description = "Created"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun postDataset(
@@ -307,7 +301,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "204", description = "No content"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun putDataset(
@@ -360,7 +353,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "204", description = "No content"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun patchDataset(
@@ -417,7 +409,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getRecord(
@@ -459,7 +450,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun getRecords(
@@ -570,7 +560,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation."),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun actionMoveRecords(
@@ -597,7 +586,6 @@ class OgcApiRecordsController(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation."),
             ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "Not found"),
         ],
     )
     fun recordSchema(

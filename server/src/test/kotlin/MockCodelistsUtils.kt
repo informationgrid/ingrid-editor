@@ -31,7 +31,7 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
             .find { it.id == firstArg() }
             ?.entries
             ?.find { it.id == secondArg() }
-            ?.getField("de")
+            ?.fields?.get("de")
     }
 
     every { codelistHandler.getCodelistValue(any(), any(), any()) } answers {
@@ -39,7 +39,7 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
             .find { it.id == firstArg() }
             ?.entries
             ?.find { it.id == secondArg() }
-            ?.getField(thirdArg())
+            ?.fields?.get(thirdArg())
     }
 
     every { codelistHandler.getCodelists(any()) } answers {
@@ -49,7 +49,7 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
     every { codelistHandler.getCodeListEntryId(any(), any(), any()) } answers {
         codelists.find { it.id == firstArg() }
             ?.entries
-            ?.find { it.getField(thirdArg()) == secondArg() }
+            ?.find { it.fields?.get(thirdArg()) == secondArg() }
             ?.id
     }
 

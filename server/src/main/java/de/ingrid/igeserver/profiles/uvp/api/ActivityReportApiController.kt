@@ -42,6 +42,8 @@ class ActivityReportApiController(
         val catalogId = catalogService.getCatalogById(catalogIdentifier).id
 
         val nativeQuery = entityManager.createNativeQuery(getActivitySql(catalogIdentifier, activityQueryOptions, catalogId))
+
+        @Suppress("UNCHECKED_CAST")
         val resultList = nativeQuery.resultList as List<Array<out Any?>>
 
         return ResponseEntity.ok(

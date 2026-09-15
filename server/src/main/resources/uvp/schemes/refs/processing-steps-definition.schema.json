@@ -65,7 +65,7 @@
           }
         }
       },
-      "required": ["disclosureDate", "announcementDocs", "applicationDocs"]
+      "required": ["disclosureDate", "announcementDocs"]
     },
     "PublicHearing": {
       "additionalProperties": false,

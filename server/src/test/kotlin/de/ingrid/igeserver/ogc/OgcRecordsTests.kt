@@ -45,9 +45,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 import java.nio.charset.StandardCharsets
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.toJavaInstant
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 @Sql(scripts = ["/ogc/data.sql"], config = SqlConfig(encoding = "UTF-8"))
@@ -72,13 +69,11 @@ class OgcRecordsTests : IntegrationTest() {
     val wrongRecordId = "wrong3dc-f3cd-46ea-a12e-d7f79invalid"
     val formats = listOf(RecordFormat.JSON, RecordFormat.GEOJSON, RecordFormat.HTML) // , RecordFormat.INGRID_ISO)
 
-    @OptIn(ExperimentalTime::class)
     @BeforeEach
     fun beforeTest() {
         every {
             mockPrincipal.authorities
         }.returns(listOf(SimpleGrantedAuthority("cat-admin")))
-        val now = Clock.System.now().toJavaInstant()
         every {
             mockPrincipal.principal
         }.returns(mockJwt)
@@ -102,7 +97,7 @@ class OgcRecordsTests : IntegrationTest() {
     fun getCollectionByWrongCollectionId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId"))
             .andDo(print())
-            .andExpect(status().isNotFound)
+            .andExpect(status().isBadRequest)
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'collection' with id '$wrongCollectionId' is missing."))
     }
 
@@ -127,7 +122,7 @@ class OgcRecordsTests : IntegrationTest() {
     fun getRecordByWrongCollectionIdAndRightRecordId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId/items/$recordId"))
             .andDo(print())
-            .andExpect(status().isNotFound)
+            .andExpect(status().isBadRequest)
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
     }
 

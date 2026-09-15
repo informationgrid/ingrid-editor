@@ -64,10 +64,26 @@ import { ConfigService } from "../services/config/config.service";
 })
 export class SessionExpiredComponent {
   private configService = inject(ConfigService);
+  private route = inject(ActivatedRoute);
 
   login() {
-    // Simply go to server-side login; after successful login, the app will init and route appropriately
-    window.location.href =
-      this.configService.getConfiguration().contextPath + "auth/login";
+    const from = this.route.snapshot.queryParamMap.get("from");
+    const contextPath =
+      this.configService.getConfiguration()?.contextPath ?? "/";
+    const loginUrl =
+      (contextPath.endsWith("/") ? contextPath : contextPath + "/") +
+      "auth/login";
+    if (
+      from &&
+      !from.includes("/session-expired") &&
+      !from.includes("/auth/login") &&
+      !from.includes("/login-error") &&
+      !from.includes("/access-denied")
+    ) {
+      window.location.href =
+        loginUrl + "?redirect_uri=" + encodeURIComponent(from);
+    } else {
+      window.location.href = loginUrl;
+    }
   }
 }

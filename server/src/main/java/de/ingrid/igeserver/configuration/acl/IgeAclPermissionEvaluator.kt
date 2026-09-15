@@ -59,8 +59,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
 
     override fun hasPermission(
         authentication: Authentication,
-        targetId: Serializable?,
-        targetType: String?,
+        targetId: Serializable,
+        targetType: String,
         permission: Any,
 //        parentId: Serializable?
     ): Boolean {
@@ -184,7 +184,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
     private fun addWritePermissionInfo(
         domainObject: Any?,
         acl: Acl,
-        sids: List<Sid>?,
+        sids: List<Sid>,
     ) {
         if (domainObject is DocumentWrapper) {
             // check for simple write permission
@@ -194,12 +194,11 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
                 // in case parent has WRITE_ONLY_SUBTREE permission, children can still have write-permission
                 // so check parent ACL if it has the permission
                 try {
-                    acl.parentAcl != null &&
-                        acl.parentAcl.isGranted(
-                            listOf(CustomPermission.WRITE_ONLY_SUBTREE),
-                            sids,
-                            false,
-                        )
+                    acl.parentAcl?.isGranted(
+                        listOf(CustomPermission.WRITE_ONLY_SUBTREE),
+                        sids,
+                        false,
+                    ) == true
                 } catch (_: NotFoundException) {
                     false
                 }
@@ -223,7 +222,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         }
     }
 
-    fun resolvePermission(permission: Any): List<Permission?> {
+    fun resolvePermission(permission: Any): List<Permission> {
         if (permission is Int) {
             return listOf(permissionFactory.buildFromMask(permission))
         }

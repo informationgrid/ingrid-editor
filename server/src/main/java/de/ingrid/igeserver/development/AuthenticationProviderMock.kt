@@ -42,7 +42,7 @@ class AuthenticationProviderMock : AuthenticationProvider {
     @Autowired
     lateinit var userRepo: UserRepository
 
-    override fun authenticate(authentication: Authentication?): Authentication {
+    override fun authenticate(authentication: Authentication): Authentication {
         val userId = config.logins?.get(config.currentUser)
             ?: throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
 
@@ -59,5 +59,5 @@ class AuthenticationProviderMock : AuthenticationProvider {
         return UsernamePasswordAuthenticationToken(user, "", groups + roles)
     }
 
-    override fun supports(authentication: Class<*>?): Boolean = true
+    override fun supports(authentication: Class<*>): Boolean = true
 }

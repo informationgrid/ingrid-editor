@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bkg.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -30,6 +27,9 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseCo
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class BkgCommonTransformer(private val codelists: CodelistTransformer, private val doc: Document) {
 

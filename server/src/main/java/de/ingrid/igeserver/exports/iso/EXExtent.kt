@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement
+import tools.jackson.dataformat.xml.annotation.JacksonXmlText
 
 data class EXExtentOrig(
     @JacksonXmlProperty(localName = "EX_Extent") val extend: EXExtent?,

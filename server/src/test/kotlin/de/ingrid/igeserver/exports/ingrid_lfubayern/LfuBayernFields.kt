@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lfubayern
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -30,6 +28,8 @@ import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import io.mockk.every
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class LfuBayernFields : GeodatasetBase() {
 
@@ -153,7 +153,7 @@ class LfuBayernFields : GeodatasetBase() {
                             "resource": {
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 
@@ -175,7 +175,7 @@ class LfuBayernFields : GeodatasetBase() {
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 

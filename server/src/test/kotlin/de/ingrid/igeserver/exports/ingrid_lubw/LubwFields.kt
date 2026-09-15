@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lubw
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.IngridIdfExporterLubw
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class LubwFields : GeodatasetBase() {
 

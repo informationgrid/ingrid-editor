@@ -19,10 +19,8 @@
  */
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
@@ -34,6 +32,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DeleteOptions
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
@@ -45,6 +44,7 @@ import de.ingrid.igeserver.services.FIELD_MODIFIED_BY
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.runAsAdmin
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -57,6 +57,9 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.OffsetDateTime
@@ -120,7 +123,7 @@ class ImportService(
         if (fileContent[0] is ArrayNode) {
             val publishedVersion = fileContent[0][0]
             val draftVersion = fileContent[0][1]
-            val result = mutableListOf(
+            val result: MutableList<DocumentAnalysis?> = mutableListOf(
                 if (!publishedVersion.isNull) {
                     analyzeDoc(
                         catalogId,
@@ -154,7 +157,7 @@ class ImportService(
             }
             result
         } else {
-            fileContent.map { analyzeDoc(catalogId, it) }
+            fileContent.map<JsonNode, DocumentAnalysis?> { analyzeDoc(catalogId, it) }
         }
     } else {
         listOf(analyzeDoc(catalogId, fileContent))
@@ -260,7 +263,7 @@ class ImportService(
 
         if (pointOfContact?.size() == filteredContacts?.size) return analysis
 
-        analysis.document.data.set<JsonNode>(
+        analysis.document.data.set(
             "pointOfContact",
             jacksonObjectMapper().createArrayNode().apply {
                 filteredContacts?.map { add(it) }
@@ -315,6 +318,8 @@ class ImportService(
         isDraftAndPublished: Boolean = false,
     ): DocumentAnalysis {
         val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
+        val isAddress = documentService.isAddress(document.type)
+
         document.state = if (forcePublish) {
             DocumentState.PUBLISHED
         } else if (isDraftAndPublished) {
@@ -325,11 +330,26 @@ class ImportService(
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
+        // Check for duplicate UUIDs across categories
+        documentWrapper?.let { wrapper ->
+            if (wrapper.category == DocumentCategory.DATA.value && isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the address ${document.title} is already used as a data document.",
+                )
+            }
+
+            if (wrapper.category == DocumentCategory.ADDRESS.value && !isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the data document ${document.title} is already used as an address.",
+                )
+            }
+        }
+
         return DocumentAnalysis(
             document,
             documentWrapper?.id,
-            documentService.isAddress(document.type),
-            documentWrapper != null && documentWrapper.deleted == 0,
+            isAddress,
+            documentWrapper?.deleted == 0,
             documentWrapper?.deleted == 1,
             emptyList(),
             forcePublish,
@@ -449,9 +469,11 @@ class ImportService(
             )
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
-            // undelete first to completely delete afterwards
-            removeDeletedFlag(ref.wrapperId!!)
-            documentService.deleteDocument(principal, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            // undelete first to completely delete afterward
+            runAsAdmin("REAL_DELETE_IMPORT", "Import") { admin ->
+                removeDeletedFlag(ref.wrapperId!!)
+                documentService.deleteDocument(admin, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            }
             documentService.createDocument(
                 principal,
                 catalogId,
@@ -474,6 +496,8 @@ class ImportService(
                 setVersionInfo(catalogId, wrapperId, ref.document)
 
                 // run in parallel to greatly improve speed
+                // ATTENTION: remove parallel execution due to deadlock of multiple nested transactions in multiple threads
+                // in csw-t test this seemed to happen but could not be reproduced in production
                 val job = GlobalScope.async {
                     // set same principal in new context
                     val contextForThread = SecurityContextHolder.createEmptyContext()
@@ -509,9 +533,9 @@ class ImportService(
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
             ref.document.title = if (data.has("organization")) {
-                data.get("organization").asText()
+                data.get("organization").asString()
             } else {
-                "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
+                "${data.get("lastName").asString()}, ${data.get("firstName").asString()}"
             }
         }
     }

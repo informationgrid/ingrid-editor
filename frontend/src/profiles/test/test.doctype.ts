@@ -287,7 +287,7 @@ export class TestDoctype extends BaseDoctype {
         updateOn: "change",
       }),
       this.addGroupSimple(null, [
-        this.addTextAreaInline("description", "Beschreibung/Link", {
+        this.addTextAreaInline("description", "Beschreibung/Link", "", {
           wrappers: ["inline-help", "form-field"],
         }),
       ]),

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
@@ -31,6 +29,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Component
 class RemoveUnreferencedDocsTask(

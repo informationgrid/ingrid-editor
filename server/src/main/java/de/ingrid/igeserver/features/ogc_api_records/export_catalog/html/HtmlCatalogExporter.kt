@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.export_catalog.html
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.CatalogExportTypeInfo
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter
 import de.ingrid.igeserver.features.ogc_api_records.services.OgcHtmlConverterService
@@ -31,6 +30,7 @@ import org.keycloak.util.JsonSerialization.mapper
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class HtmlCatalogExporter(

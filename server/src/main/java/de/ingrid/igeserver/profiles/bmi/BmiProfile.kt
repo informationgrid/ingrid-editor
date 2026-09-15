@@ -20,8 +20,6 @@
 package de.ingrid.igeserver.profiles.bmi
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
@@ -36,6 +34,8 @@ import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class BmiProfile(
@@ -84,7 +84,7 @@ class BmiProfile(
 
     private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
         put("id", id)
-        set<JsonNode>(
+        set(
             "localisations",
             jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)

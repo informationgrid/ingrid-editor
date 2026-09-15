@@ -19,24 +19,16 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.networknt.schema.InputFormat
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.SpecVersion.VersionFlag
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.serialization.JsonNodeReader
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
-import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class IngridIndexExporter(
@@ -78,7 +70,7 @@ class IngridIndexExporter(
             }
             val docWithUpdatedTimestamp = idfExporter.updateDateStamp(idf, dateStampDate)
             val idfDoc = convertStringToDocument(docWithUpdatedTimestamp)
-            luceneJson.set<JsonNode>(
+            luceneJson.set(
                 "exports",
                 jacksonObjectMapper().createObjectNode().apply {
                     put("iso", XMLUtils.toString(transformIDFtoIso(idfDoc!!)))
@@ -86,35 +78,6 @@ class IngridIndexExporter(
             )
         }
 
-        val result = luceneJson.toPrettyString()
-        validateSchema(result)
-        return result
-    }
-
-    private fun validateSchema(json: String) {
-        val factory = JsonSchemaFactory.getInstance(
-            VersionFlag.V202012,
-        ) { builder: JsonSchemaFactory.Builder ->
-            builder.jsonNodeReader(JsonNodeReader.builder().locationAware().build())
-            builder.schemaMappers { schemaMappers ->
-                schemaMappers.mapPrefix(
-                    "https://wemove.com/schemas/",
-                    "classpath:/",
-                )
-            }
-        }
-//        val config = SchemaValidatorsConfig.builder().build()
-        val resource =
-            PreJsonSchemaValidator::class.java.getResource("/templates/export/ingrid/schemes/index-ingrid-portal.json")
-        val schema1: JsonSchema = factory.getSchema(resource.toURI())
-
-        val assertions: Set<ValidationMessage> = schema1.validate(json, InputFormat.JSON) { executionContext ->
-            // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
-            executionContext.executionConfig.formatAssertionsEnabled = true
-        }
-
-        if (assertions.isNotEmpty()) {
-            throw IllegalArgumentException("JSON schema validation failed: ${assertions.joinToString(", ")}")
-        }
+        return luceneJson.toPrettyString()
     }
 }

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -31,6 +29,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M065MigrateKeywords : MigrationBase("0.65") {
@@ -87,16 +87,16 @@ class M065MigrateKeywords : MigrationBase("0.65") {
                 simpleKeywords.forEach {
                     add(
                         jacksonObjectMapper().createObjectNode().apply {
-                            put("label", it.asText())
+                            put("label", it.asString())
                         },
                     )
                 }
             }
-            set<ArrayNode>("free", simpleConverted)
-            set<ArrayNode>("umthes", umthesKeywords)
+            set("free", simpleConverted)
+            set("umthes", umthesKeywords)
         }
 
-        doc.data.set<ArrayNode>("keywords", newStructure)
+        doc.data.set("keywords", newStructure)
         doc.data.remove("keywordsUmthes")
         return true
     }

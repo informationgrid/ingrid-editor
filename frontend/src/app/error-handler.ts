@@ -49,7 +49,6 @@ export class GlobalErrorHandler implements ErrorHandler {
           "Not logged in, redirecting to login page should be already initiated by bff-interceptor",
         );
         return;
-        // window.location.href = "/auth/logout";
       }
       if (error.error?.errorCode) {
         const e = new IgeError();
@@ -142,8 +141,26 @@ export class GlobalErrorHandler implements ErrorHandler {
         }
       case "USER_NOT_FOUND":
         return `Der Benutzer '${error.data.user}' wurde nicht gefunden.`;
+      case "PUBLISHED_VERSION_NOT_FOUND":
+        return "Es können nur veröffentlichte Versionen exportiert werden.";
+      case "NO_EXPORTER_ERROR":
+        return `Für den Dokumenttyp '${error.data.documentType}' ist kein Exporter im '${error.data.exporterClassName}' definiert.`;
+      case "INDEXING_ERROR":
+        return error.errorText === "RDF-Export not supported"
+          ? `Der RDF-Export für den Dokumenttyp von ${error.data?.uuid} wird nicht unterstützt.`
+          : error.errorText;
+      case "INTERNAL_ERROR":
+        if (
+          error.errorText.indexOf(
+            "Document was not exported since it might not have a published version",
+          ) !== -1
+        )
+          return `Es scheint keine veröffentlichte Version für ${error.data?.uuid} zu existieren.`;
+        if (error.errorText.indexOf("Document could not be exported") !== -1)
+          return "Der Datensatz konnte nicht exportiert werden";
+        else return error.errorText;
       default:
-        return null;
+        return error.errorText ?? null;
     }
   }
 }

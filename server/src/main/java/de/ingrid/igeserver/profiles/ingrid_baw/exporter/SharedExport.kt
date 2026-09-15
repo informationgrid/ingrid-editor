@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.model.Authority
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
@@ -45,6 +44,7 @@ import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.igeserver.utils.prefixIfNot
+import tools.jackson.databind.JsonNode
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -95,6 +95,7 @@ fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? {
 }
 
 fun getPlainBawKeywords(transformer: IngridModelTransformer): List<String> = transformer.doc.data.getPath("keywords.bawKeywords")
+    ?.values()
     ?.mapNotNull { it.mapToKeyValue() }
     ?.mapNotNull { transformer.codelists.getValue("3950005", it) }
     ?: emptyList()
@@ -105,6 +106,7 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
     showType = true,
     type = "discipline",
     keywords = transformer.doc.data.getPath("keywords.bawKeywords")
+        ?.values()
         ?.mapNotNull { it.mapToKeyValue() }
         ?.map {
             KeywordIso(
@@ -121,6 +123,7 @@ fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaur
     showType = true,
     type = "discipline",
     keywords = transformer.doc.data.getPath("keywords.subsoilKeywords")
+        ?.values()
         ?.mapNotNull { it.mapToKeyValue() }
         ?.map {
             KeywordIso(
@@ -142,7 +145,7 @@ fun getOrderTitle(transformer: IngridModelTransformer): String? {
     return orderInfoValue?.substringAfter(" - ")?.trim()
 }
 
-fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.mapNotNull {
+fun getLfsReferences(modelTransformer: IngridModelTransformer) = modelTransformer.doc.data.getPath("lfsReferences")?.values()?.mapNotNull {
     ServiceUrl(
         name = it.getString("title") ?: "???",
         url = modelTransformer.transformUrl(
@@ -169,7 +172,7 @@ data class BwastrInfo(
     val end: String,
 )
 
-fun getBwastrInfos(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
+fun getBwastrInfos(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("spatial.references")?.values()?.filter { it.getString("type") == "bwastr" }?.map {
     BwastrInfo(
         title = it.getString("title") ?: "",
         bwastrId = it.getString("bwastr.bwastrid") ?: "",
@@ -195,12 +198,13 @@ val abteilungsMap = mapOf(
 
 fun getAbteilung(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("pointOfContact")
     // Ansprechpartner
+    ?.values()
     ?.filter { it.getString("type.key") == "7" }
     // use first match only for now
     ?.firstNotNullOfOrNull { abteilungsMap[it.getString("ref")] } ?: Abteilung("", "")
 
 fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
-    transformer.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
+    transformer.doc.data.getPath("spatial.references")?.values()?.filter { it.getString("type") == "bwastr" }?.map {
         GeographicElement(
             type = GeoElementType.DESCRIPTION,
             geographicIdentifier = CharacterStringModel(getBwastrCode(it.get("bwastr")), null),
@@ -272,7 +276,7 @@ data class CitedResponsibleParty(
     val role: String,
 )
 
-fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.mapNotNull {
+fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.values()?.mapNotNull {
     val litDoc = transformer.addressExporter.getLastPublishedDocument(it.getString("uuid")!!) ?: return@mapNotNull null
     calcLiteratureAggregate(transformer, litDoc)
 } ?: emptyList()
@@ -281,11 +285,11 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     if (transformer.doc.type != "BawLaboratoryData") return null
     val data = transformer.doc.data
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.asString()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
-    val testProcedures = data.getPath("testProcedures")?.map { tp ->
+    val testProcedures = data.getPath("testProcedures")?.values()?.map { tp ->
         TestProcedure(
             testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
             instrument = tp.getString("instrument"),
@@ -308,10 +312,10 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
 
 fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
-    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
+    val data = transformer.doc.data.getPath("simulationPhases")?.values()?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.asString()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     val softwareNode = data.getPath("software")
@@ -338,9 +342,9 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     val matParamsNode = data.getPath("materialParameters")
     val materialParameters = if (matParamsNode != null) {
         MaterialParametersBaw(
-            reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
+            reinforcement = matParamsNode.getPath("reinforcement")?.values()?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            steel = matParamsNode.getPath("steel")?.values()?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.values()?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
         )
     } else {
         null
@@ -368,10 +372,10 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
 
 fun getCfdSimulation(transformer: IngridModelTransformer): CfdSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
-    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "cfdSimulation" } ?: return null
+    val data = transformer.doc.data.getPath("simulationPhases")?.values()?.find { it.getString("type") == "cfdSimulation" } ?: return null
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.asString()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     return CfdSimulationBaw(
@@ -487,7 +491,7 @@ private fun extractPublicationDate(data: JsonNode): String? = data.getString("te
 
 private fun extractIdentifiers(data: JsonNode): List<String> = listOfNotNull(
     data.getString("publication.doi")?.let { "https://doi.org/$it" },
-    data.getPath("publication.additionalIdentifiers")?.find {
+    data.getPath("publication.additionalIdentifiers")?.values()?.find {
         it.getString("type.key") == "1" // Handle
     }?.getString("value"),
 )
@@ -498,6 +502,7 @@ private val addressTypeMapping = mapOf(
 )
 
 private fun extractCitedParties(transformer: IngridModelTransformer, data: JsonNode): List<CitedResponsibleParty> = data.getPath("pointOfContact")
+    ?.values()
     ?.filter { addressTypeMapping.containsKey(it.getString("type.key")) }?.map {
         val party = transformer.documentService.getLastPublishedDocument(
             transformer.catalogIdentifier,

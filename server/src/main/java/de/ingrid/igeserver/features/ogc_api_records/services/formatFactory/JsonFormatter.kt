@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services.formatFactory
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
@@ -30,6 +28,8 @@ import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class JsonFormatter(

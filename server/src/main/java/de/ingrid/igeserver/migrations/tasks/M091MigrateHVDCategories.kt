@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -32,6 +29,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M091MigrateHVDCategories : MigrationBase("0.91") {
@@ -82,7 +82,7 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
         if (hvdCategories.isEmpty) return false
 
         hvdCategories.forEach {
-            (it as ObjectNode).put("key", it.get("key").asText().removePrefix("http://data.europa.eu/bna/"))
+            (it as ObjectNode).put("key", it.get("key").asString().removePrefix("http://data.europa.eu/bna/"))
         }
 
         return true

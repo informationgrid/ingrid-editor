@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.exports
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.ExportPostProcessors
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.JAXBException
 import jakarta.xml.bind.Marshaller
 import org.apache.logging.log4j.LogManager
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.dataformat.xml.XmlMapper
 import java.io.StringWriter
 import javax.script.ScriptContext
 import javax.script.ScriptEngineManager
@@ -57,7 +57,7 @@ class IsoXmlPostProcessor : ExportPostProcessors {
             xmlTree = xmlMapper.readTree(stringWriter.toString()) as ObjectNode
         } catch (e: JAXBException) {
             log.error(e)
-        } catch (e: JsonProcessingException) {
+        } catch (e: JacksonException) {
             log.error(e)
         }
 
@@ -74,7 +74,7 @@ class IsoXmlPostProcessor : ExportPostProcessors {
         }
         try {
             return xmlMapper.writeValueAsString(xmlTree)
-        } catch (e: JsonProcessingException) {
+        } catch (e: JacksonException) {
             // TODO Auto-generated catch block
             log.error(e)
         }

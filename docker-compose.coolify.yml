@@ -1,7 +1,7 @@
 services:
 
   editor:
-    image: docker-registry.wemove.com/ingrid-ige-ng
+    image: registry.opencode.de/informationgrid/ingrid-editor
     restart: unless-stopped
     depends_on:
       - db

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.bmi.exporter
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -38,6 +37,7 @@ import gg.jte.TemplateOutput
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class BmiExporter(

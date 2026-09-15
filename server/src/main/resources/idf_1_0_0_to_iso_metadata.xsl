@@ -92,6 +92,8 @@
     <xsl:template match="idf:mapUrl" />
     <!-- filter idf:treePath -->
     <xsl:template match="idf:treePath" />
+    <!-- filter idf:uuid -->
+    <xsl:template match="idf:uuid" />
 
     <!-- filter idf:keyword and transform them to gmd:keyword -->
     <xsl:template match="idf:keyword">
