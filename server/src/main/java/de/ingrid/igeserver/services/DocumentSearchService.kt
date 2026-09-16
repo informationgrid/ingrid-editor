@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
 /**
+ * Service for application-level document searches.
+ * 
  * Application searches use server-owned predicates and bound values.
  * Raw SQL supplied by clients belongs exclusively to the SQL research API.
  */
@@ -38,6 +40,22 @@ class DocumentSearchService(
     private val researchService: ResearchService,
     private val readableDocumentQueryService: ReadableDocumentQueryService,
 ) {
+    /**
+     * Finds documents matching the given title or UUID.
+     * 
+     * Searches for documents where either:
+     * - The title matches the search term (case-insensitive, with wildcards)
+     * - The UUID exactly matches the search term
+     * 
+     * Results are filtered by category and exclude archived documents.
+     * Only returns documents that the principal has read permission for.
+     * 
+     * @param catalogId The catalog identifier
+     * @param principal The authenticated user
+     * @param request The search request containing term, category, pagination, and filter options
+     * @return ResearchResponse with total hits and paginated results
+     * @throws IllegalArgumentException if pageSize is not positive or category is invalid
+     */
     fun findInTitleOrUuid(
         catalogId: String,
         principal: Principal,

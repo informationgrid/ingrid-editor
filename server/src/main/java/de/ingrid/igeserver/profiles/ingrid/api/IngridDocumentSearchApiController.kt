@@ -24,6 +24,16 @@ class IngridDocumentSearchApiController(
     private val catalogService: CatalogService,
     private val searchService: IngridDocumentSearchService,
 ) {
+    /**
+     * Checks if a document has a coupled service with GetCapabilities operation.
+     * 
+     * This endpoint verifies whether the document with the given UUID has a coupled resource
+     * that includes a GetCapabilities operation (operation name key = '1').
+     * 
+     * @param principal The authenticated user
+     * @param request The request containing the document UUID to check
+     * @return true if the document has a coupled service with GetCapabilities, false otherwise
+     */
     @PostMapping("/hasCoupledServiceWithGetCapabilities")
     fun hasCoupledServiceWithGetCapabilities(principal: Principal, @RequestBody request: CoupledServiceSearchRequest): Boolean = searchService.hasCoupledServiceWithGetCapabilities(catalogService.getCurrentCatalogForPrincipal(principal), principal, request.uuid)
 }

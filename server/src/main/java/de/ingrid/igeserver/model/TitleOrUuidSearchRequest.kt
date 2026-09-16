@@ -22,6 +22,14 @@ package de.ingrid.igeserver.model
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 
+/**
+ * Request data class for searching documents by title or UUID.
+ * 
+ * @property term The search term to match against document titles (case-insensitive) or UUIDs (exact match)
+ * @property category The document category to filter by (must be "data" or "address")
+ * @property excludeFolders If true, folders will be excluded from the search results
+ * @property pageSize The maximum number of results to return (must be positive, default: 10)
+ */
 data class TitleOrUuidSearchRequest(
     val term: String,
     @field:Pattern(regexp = "data|address")

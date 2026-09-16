@@ -18,6 +18,17 @@ import java.security.Principal
 @Profile("ingrid-hmdk")
 @Transactional(readOnly = true)
 class HmbtgDocumentSearchService(private val readableDocumentQueryService: ReadableDocumentQueryService) {
+    /**
+     * Retrieves document titles for the given UUIDs where publicationHmbTG is true.
+     * 
+     * Only returns documents that the principal has read permission for.
+     * The query filters by UUID list and the publicationHmbTG property in the document's properties.
+     * 
+     * @param catalogId The catalog identifier
+     * @param principal The authenticated user
+     * @param uuids List of document UUIDs to search for
+     * @return List of document titles for matching documents
+     */
     fun getDocumentTitles(catalogId: String, principal: Principal, uuids: List<String>): List<String> {
         if (uuids.isEmpty()) return emptyList()
         return readableDocumentQueryService.withReadableRows(
@@ -29,4 +40,9 @@ class HmbtgDocumentSearchService(private val readableDocumentQueryService: Reada
     }
 }
 
+/**
+ * Request data class for retrieving HMB-TG document titles.
+ * 
+ * @property uuids List of document UUIDs to retrieve titles for
+ */
 data class HmbtgDocumentTitlesRequest(val uuids: List<String>)

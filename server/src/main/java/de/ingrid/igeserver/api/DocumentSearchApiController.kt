@@ -39,6 +39,22 @@ class DocumentSearchApiController(
     private val searchService: DocumentSearchService,
     private val catalogService: CatalogService,
 ) {
+    /**
+     * Searches for documents by title or UUID.
+     * 
+     * This endpoint performs a case-insensitive search for documents matching either:
+     * - The title (using ILIKE for partial matches)
+     * - The exact UUID
+     * 
+     * Results are filtered by category (data or address) and exclude archived documents.
+     * Folders can optionally be excluded from the results.
+     * 
+     * Note: This endpoint is hidden from Swagger documentation.
+     * 
+     * @param principal The authenticated user
+     * @param request The search request containing term, category, and pagination options
+     * @return ResearchResponse containing the matching documents and total hit count
+     */
     @PostMapping("/titleOrUuid")
     fun titleOrUuid(principal: Principal, @Valid @RequestBody request: TitleOrUuidSearchRequest): ResearchResponse = searchService.findInTitleOrUuid(
         catalogService.getCurrentCatalogForPrincipal(principal),

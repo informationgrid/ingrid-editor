@@ -16,6 +16,15 @@ export class IngridDocumentSearchService {
   private http = inject(HttpClient);
   private configuration = inject(ConfigService).getConfiguration();
 
+  /**
+   * Checks if a document has a coupled service with GetCapabilities operation.
+   *
+   * Verifies whether the document with the given UUID has a coupled resource
+   * that includes a GetCapabilities operation.
+   *
+   * @param uuid The UUID of the document to check
+   * @returns Observable of boolean indicating if the document has a coupled service with GetCapabilities
+   */
   hasCoupledServiceWithGetCapabilities(uuid: string): Observable<boolean> {
     return this.http.post<boolean>(
       `${this.configuration.backendUrl}ingrid/search/hasCoupledServiceWithGetCapabilities`,

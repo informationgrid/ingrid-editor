@@ -24,6 +24,16 @@ class HmbtgDocumentSearchApiController(
     private val catalogService: CatalogService,
     private val searchService: HmbtgDocumentSearchService,
 ) {
+    /**
+     * Retrieves document titles for documents with the publicationHmbTG flag set to true.
+     * 
+     * This endpoint filters documents by their UUIDs and the publicationHmbTG property,
+     * returning only the titles of matching documents that the current user has permission to read.
+     * 
+     * @param principal The authenticated user
+     * @param request The request containing the list of UUIDs to search for
+     * @return List of document titles for the matching UUIDs
+     */
     @PostMapping("/hmbtgDocumentTitles")
     fun hmbtgDocumentTitles(principal: Principal, @RequestBody request: HmbtgDocumentTitlesRequest): List<String> = searchService.getDocumentTitles(catalogService.getCurrentCatalogForPrincipal(principal), principal, request.uuids)
 }
