@@ -77,8 +77,10 @@ class UploadApiController(
         flowTotalSize: Long,
         flowIdentifier: String,
         flowFilename: String,
+        chunkChecksum: String,
+        combinedChecksum: String,
     ): ResponseEntity<UploadResponse> {
-        log.info("Uploading file '$flowFilename' for document $docUuid")
+        log.info("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
