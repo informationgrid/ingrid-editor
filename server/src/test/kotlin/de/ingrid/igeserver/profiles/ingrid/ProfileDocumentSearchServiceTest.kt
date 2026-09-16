@@ -2,7 +2,8 @@ package de.ingrid.igeserver.profiles.ingrid
 
 import IntegrationTest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.profiles.ingrid_hmdk.HmbtgDocumentSearchService
+import de.ingrid.igeserver.profiles.ingrid.services.IngridDocumentSearchService
+import de.ingrid.igeserver.profiles.ingrid_hmdk.services.HmbtgDocumentSearchService
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired

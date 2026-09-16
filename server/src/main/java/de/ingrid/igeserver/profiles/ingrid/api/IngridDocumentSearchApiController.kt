@@ -8,8 +8,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.api
 
-import de.ingrid.igeserver.profiles.ingrid.CoupledServiceSearchRequest
-import de.ingrid.igeserver.profiles.ingrid.IngridDocumentSearchService
+import de.ingrid.igeserver.profiles.ingrid.services.CoupledServiceSearchRequest
+import de.ingrid.igeserver.profiles.ingrid.services.IngridDocumentSearchService
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
