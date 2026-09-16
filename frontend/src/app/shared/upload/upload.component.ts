@@ -108,7 +108,51 @@ export class UploadComponent implements AfterViewInit {
     testChunks: false,
     forceChunkSize: false,
     maxChunkRetries: 2,
+    // Flow.js calls this for each chunk before sending it. The callback resumes
+    // the upload explicitly through preprocessFinished()
+    preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
+
+  // Cache the promise so concurrent chunk callbacks share one calculation per
+  // file. WeakMap lets the entry be collected when the file is no longer used.
+  private checksumCache = new WeakMap<
+    FlowFile,
+    ReturnType<typeof this.calculateChecksums>
+  >();
+
+  private async prepareChecksums(chunk: FlowChunk) {
+    const file = chunk.fileObj;
+    const checksum = await this.calculateChecksum(chunk);
+    // TODO: check if we can optimize this
+    const combinedChecksum = await this.sha256(
+      new TextEncoder().encode(file.chunks.join("")),
+    );
+    // override getParams to add checkSums
+    const getParams = chunk.getParams.bind(chunk);
+    chunk.getParams = () => ({
+      ...getParams(),
+      chunkChecksum: checksum,
+      combinedChecksum: combinedChecksum,
+    });
+    // chunk.preprocessState = 2;
+    (
+      chunk as flowjs.FlowChunk & { preprocessFinished(): void }
+    ).preprocessFinished();
+  }
+  async calculateChecksum(chunk: FlowChunk): Promise<string> {
+    const uploadFile = chunk.fileObj.file;
+    const chunkBytes = await uploadFile
+      .slice(chunk.startByte, chunk.endByte)
+      .arrayBuffer();
+    return await this.sha256(chunkBytes);
+  }
+  async sha256(bytes: BufferSource): Promise<string> {
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest), (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    ).join("");
+  }
+
   _errors: { [x: string]: UploadError } = {};
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
