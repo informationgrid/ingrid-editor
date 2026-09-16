@@ -30,7 +30,3 @@ data class TitleOrUuidSearchRequest(
     @field:Positive
     val pageSize: Int = 10,
 )
-
-data class CoupledServiceSearchRequest(val uuid: String)
-
-data class HmbtgDocumentTitlesRequest(val uuids: List<String>)

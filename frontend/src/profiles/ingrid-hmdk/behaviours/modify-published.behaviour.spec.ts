@@ -21,7 +21,6 @@ import { TestBed } from "@angular/core/testing";
 import { MatDialog } from "@angular/material/dialog";
 import { of, Subject, throwError } from "rxjs";
 import { ModifyPublishedBehaviour } from "./modify-published.behaviour";
-import { ResearchService } from "../../../app/+research/research.service";
 import { DocumentDataService } from "../../../app/services/document/document-data.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
 import {
@@ -31,6 +30,7 @@ import {
 } from "../../../app/services/event/event.service";
 import { GeneralStore } from "../../../app/store/general.store";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
+import { HmdkDocumentSearchService } from "../hmdk-document-search.service";
 
 describe("HmbTG deletion check", () => {
   let behaviour: ModifyPublishedBehaviour;
@@ -44,7 +44,7 @@ describe("HmbTG deletion check", () => {
       providers: [
         ModifyPublishedBehaviour,
         {
-          provide: ResearchService,
+          provide: HmdkDocumentSearchService,
           useValue: { getHmbtgDocumentTitles: getTitles },
         },
         { provide: MatDialog, useValue: { open } },

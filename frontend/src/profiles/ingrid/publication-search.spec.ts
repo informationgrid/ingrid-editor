@@ -18,10 +18,10 @@
  * limitations under the Licence.
  */
 import { InGridComponent, InGridDoctype } from "../profile-ingrid";
-import { ResearchService } from "../../app/+research/research.service";
 import { MatDialog } from "@angular/material/dialog";
 import { Metadata } from "../../app/models/ige-document";
 import { of, throwError } from "rxjs";
+import { IngridDocumentSearchService } from "./ingrid-document-search.service";
 
 describe("Coupled service publication check", () => {
   const hasService = vi.fn();
@@ -38,9 +38,9 @@ describe("Coupled service publication check", () => {
     const component = Object.create(
       InGridComponent.prototype,
     ) as InGridComponent;
-    component.researchService = {
+    component.documentSearchService = {
       hasCoupledServiceWithGetCapabilities: hasService,
-    } as unknown as ResearchService;
+    } as unknown as IngridDocumentSearchService;
     component.dialog = { open } as unknown as MatDialog;
     check = component["getAdditionalPublicationCheck"]();
   });

@@ -23,7 +23,7 @@ import {
   ConfigService,
   Configuration,
 } from "../services/config/config.service";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
@@ -169,21 +169,6 @@ export class ResearchService {
         request,
       )
       .pipe(map((result) => this.mapDocumentIcons(result)));
-  }
-
-  hasCoupledServiceWithGetCapabilities(uuid: string): Observable<boolean> {
-    return this.http.post<boolean>(
-      `${this.configuration.backendUrl}search/hasCoupledServiceWithGetCapabilities`,
-      { uuid },
-    );
-  }
-
-  getHmbtgDocumentTitles(uuids: string[]): Observable<string[]> {
-    if (uuids.length === 0) return of([]);
-    return this.http.post<string[]>(
-      `${this.configuration.backendUrl}search/hmbtgDocumentTitles`,
-      { uuids: [...new Set(uuids)] },
-    );
   }
 
   /** Reserved for the SQL research tab. Use typed searches for application logic. */
