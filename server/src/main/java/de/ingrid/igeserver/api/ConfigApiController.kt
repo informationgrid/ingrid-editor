@@ -44,15 +44,8 @@ class ConfigApiController(
     @Value("\${frontend.support-email}")
     lateinit var supportEmail: String
 
-    @Value("\${frontend.keycloak.enable}")
-    var keycloakEnabled: Boolean = true
-
     override fun get(): ResponseEntity<FrontendConfiguration> = ResponseEntity.ok().body(
-        FrontendConfiguration(
-            keycloakEnabled = keycloakEnabled,
-            supportEmail = supportEmail,
-            sessionTimeout = generalProperties.sessionTimeout,
-        ),
+        FrontendConfiguration(supportEmail),
     )
 
     override fun getConnections(): ResponseEntity<ConnectionConfig> = ResponseEntity.ok().body(

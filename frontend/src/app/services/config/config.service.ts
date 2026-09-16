@@ -30,16 +30,11 @@ import { GeneralStore } from "../../store/general.store";
 
 export class Configuration {
   constructor(
-    public keycloakUrl: string,
-    public keycloakRealm: string,
-    public keycloakClientId: string,
-    public keycloakEnabled: boolean,
     public contextPath: string,
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public sessionTimeout: number,
     public mapTileUrl: string,
     public mapWMSUrl: string,
     public mapWMSLayers: string,
