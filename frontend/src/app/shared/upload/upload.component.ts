@@ -47,6 +47,7 @@ import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
 import { AsyncPipe } from "@angular/common";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FlowChunk, FlowFile } from "flowjs";
 
 @Component({
   selector: "ige-file-upload",
@@ -117,7 +118,7 @@ export class UploadComponent implements AfterViewInit {
   // file. WeakMap lets the entry be collected when the file is no longer used.
   private checksumCache = new WeakMap<
     FlowFile,
-    ReturnType<typeof this.calculateChecksums>
+    ReturnType<typeof this.calculateChecksum>
   >();
 
   private async prepareChecksums(chunk: FlowChunk) {
@@ -134,11 +135,11 @@ export class UploadComponent implements AfterViewInit {
       chunkChecksum: checksum,
       combinedChecksum: combinedChecksum,
     });
-    // chunk.preprocessState = 2;
     (
       chunk as flowjs.FlowChunk & { preprocessFinished(): void }
     ).preprocessFinished();
   }
+
   async calculateChecksum(chunk: FlowChunk): Promise<string> {
     const uploadFile = chunk.fileObj.file;
     const chunkBytes = await uploadFile
@@ -146,6 +147,7 @@ export class UploadComponent implements AfterViewInit {
       .arrayBuffer();
     return await this.sha256(chunkBytes);
   }
+
   async sha256(bytes: BufferSource): Promise<string> {
     const digest = await crypto.subtle.digest("SHA-256", bytes);
     return Array.from(new Uint8Array(digest), (byte) =>
