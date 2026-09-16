@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.research
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.TitleOrUuidSearchRequest
 import de.ingrid.igeserver.services.DocumentSearchService
 import io.kotest.matchers.shouldBe
@@ -42,7 +41,6 @@ class DocumentSearchTest : IntegrationTest() {
     private val reader = user("GROUP_READTREE")
     private val denied = user("GROUP_NO_ACCESS")
     private var nextId = 10000
-    private val mapper = jacksonObjectMapper()
 
     @Test
     fun `search values stay data and LIKE wildcards remain supported`() {
@@ -121,57 +119,13 @@ class DocumentSearchTest : IntegrationTest() {
         addVersion("c689240d-e7a9-45cc-b761-44eda0cda1f1", "Search A denied")
         addVersion("8f891e4e-161e-4d2c-6869-03f02ab352dc", "Search B allowed")
         addVersion("7289c68d-f036-4d61-932c-855ac408bde1", "Search C allowed")
-        val response = service.findInTitleOrUuid("test_catalog", reader, TitleOrUuidSearchRequest("Search", pageSize = 1))
+        val response =
+            service.findInTitleOrUuid("test_catalog", reader, TitleOrUuidSearchRequest("Search", pageSize = 1))
         response.totalHits shouldBe 2
         response.hits.map { it.title } shouldBe listOf("Search B allowed")
         response.hits.single().hasWritePermission shouldBe false
         response.hits.single().hasOnlySubtreeWritePermission shouldBe false
         service.findInTitleOrUuid("test_catalog", denied, TitleOrUuidSearchRequest("Search")).totalHits shouldBe 0
-    }
-
-    @Test
-    fun `coupled service needs resource and operation in the same latest document`() {
-        val uuid = "resource' OR 1=1 --"
-        addDocument("resources-only", "Search resource", data = serviceData(uuid, "2"))
-        addDocument("operations-only", "Search operation", data = serviceData("another"))
-        addDocument("missing", "Search missing")
-        addDocument("nulls", "Search nulls", data = """{"service":{"coupledResources":null,"operations":[]}}""")
-        addDocument("wrong-shape", "Search malformed", data = """{"service":{"coupledResources":{},"operations":false}}""")
-        addDocument("old", "Search new")
-        addVersion("old", "Search old", data = serviceData(uuid), latest = false)
-        addDocument("foreign-service", "Search foreign", data = serviceData(uuid), catalog = 101)
-        addDocument("deleted-service", "Search deleted", data = serviceData(uuid), deleted = true)
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", admin, uuid) shouldBe false
-
-        addDocument("match", "Search match", data = serviceData(uuid), archived = true)
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", admin, uuid) shouldBe true
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", admin, "' OR 1=1 --") shouldBe false
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", denied, uuid) shouldBe false
-    }
-
-    @Test
-    fun `existence search continues past an unreadable service`() {
-        addVersion("c689240d-e7a9-45cc-b761-44eda0cda1f1", "Search A denied", data = serviceData("target"))
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", reader, "target") shouldBe false
-        addVersion("8f891e4e-161e-4d2c-6869-03f02ab352dc", "Search B allowed", data = serviceData("target"))
-        service.hasCoupledServiceWithGetCapabilities("test_catalog", reader, "target") shouldBe true
-    }
-
-    @Test
-    fun `HmbTG uses latest properties keeps archived titles and deduplicates only UUIDs`() {
-        val published = """{"properties":{"publicationHmbTG":true}}"""
-        addDocument("one", "Same title", data = published)
-        addDocument("two", "Same title", data = published, archived = true)
-        addDocument("false", "False", data = """{"properties":{"publicationHmbTG":false}}""")
-        addDocument("missing", "Missing")
-        addDocument("old", "New", data = "{}")
-        addVersion("old", "Old published", data = published, latest = false)
-        addDocument("deleted", "Deleted", data = published, deleted = true)
-        addDocument("foreign", "Foreign", data = published, catalog = 101)
-        val uuids = listOf("one", "one", "two", "false", "missing", "old", "deleted", "foreign", "' OR 1=1 --")
-        service.getHmbtgDocumentTitles("test_catalog", admin, uuids) shouldBe listOf("Same title", "Same title")
-        service.getHmbtgDocumentTitles("test_catalog", denied, uuids) shouldBe emptyList()
-        service.getHmbtgDocumentTitles("test_catalog", admin, emptyList()) shouldBe emptyList()
     }
 
     @Test
@@ -185,28 +139,7 @@ class DocumentSearchTest : IntegrationTest() {
         response.hits.single().hasWritePermission shouldBe false
     }
 
-    @Test
-    fun `HmbTG only returns titles readable through the ACL`() {
-        val allowedUuid = "8f891e4e-161e-4d2c-6869-03f02ab352dc"
-        val deniedUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
-        val data = """{"properties":{"publicationHmbTG":true}}"""
-        addVersion(deniedUuid, "Search A denied", data)
-        addVersion(allowedUuid, "Search B allowed", data)
-        service.getHmbtgDocumentTitles("test_catalog", reader, listOf(deniedUuid, allowedUuid)) shouldBe listOf("Search B allowed")
-    }
-
-    @Test
-    fun `HmbTG list is bound without array literal parsing and has no implicit page limit`() {
-        val uuids = (1..12).map { "uuid,'{}\\$it" }
-        uuids.forEach { addDocument(it, "Same title", data = """{"properties":{"publicationHmbTG":true}}""") }
-        service.getHmbtgDocumentTitles("test_catalog", admin, uuids).size shouldBe 12
-    }
-
     private fun search(term: String) = service.findInTitleOrUuid("test_catalog", admin, TitleOrUuidSearchRequest(term))
-
-    private fun serviceData(uuid: String, operation: String = "1"): String = mapper.writeValueAsString(
-        mapOf("service" to mapOf("coupledResources" to listOf(mapOf("uuid" to uuid)), "operations" to listOf(mapOf("name" to mapOf("key" to operation))))),
-    )
 
     private fun addDocument(
         uuid: String,
@@ -222,7 +155,8 @@ class DocumentSearchTest : IntegrationTest() {
             """INSERT INTO document_wrapper (id, catalog_id, uuid, type, category, deleted, tags)
                VALUES (:id, :catalog, :uuid, :type, :category, :deleted, CAST(:tags AS text[]))""",
         ).setParameter("id", nextId++).setParameter("catalog", catalog).setParameter("uuid", uuid)
-            .setParameter("type", type).setParameter("category", category).setParameter("deleted", if (deleted) 1 else 0)
+            .setParameter("type", type).setParameter("category", category)
+            .setParameter("deleted", if (deleted) 1 else 0)
             .setParameter("tags", if (archived) "{archived}" else "{}").executeUpdate()
         addVersion(uuid, title, data, catalog, type = type)
     }
@@ -239,7 +173,8 @@ class DocumentSearchTest : IntegrationTest() {
             """INSERT INTO document (id, catalog_id, uuid, type, title, data, version, is_latest, state)
                VALUES (:id, :catalog, :uuid, :type, :title, CAST(:data AS jsonb), 0, :latest, 'DRAFT')""",
         ).setParameter("id", nextId++).setParameter("catalog", catalog).setParameter("uuid", uuid)
-            .setParameter("type", type).setParameter("title", title).setParameter("data", data).setParameter("latest", latest).executeUpdate()
+            .setParameter("type", type).setParameter("title", title).setParameter("data", data)
+            .setParameter("latest", latest).executeUpdate()
     }
 
     private fun user(vararg roles: String) = UsernamePasswordAuthenticationToken("test-user", "", roles.map(::SimpleGrantedAuthority))

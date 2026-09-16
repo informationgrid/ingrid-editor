@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.CoupledServiceSearchRequest
-import de.ingrid.igeserver.model.HmbtgDocumentTitlesRequest
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.TitleOrUuidSearchRequest
 import de.ingrid.igeserver.services.CatalogService
@@ -46,19 +44,5 @@ class DocumentSearchApiController(
         catalogService.getCurrentCatalogForPrincipal(principal),
         principal,
         request,
-    )
-
-    @PostMapping("/hasCoupledServiceWithGetCapabilities")
-    fun hasCoupledServiceWithGetCapabilities(principal: Principal, @RequestBody request: CoupledServiceSearchRequest): Boolean = searchService.hasCoupledServiceWithGetCapabilities(
-        catalogService.getCurrentCatalogForPrincipal(principal),
-        principal,
-        request.uuid,
-    )
-
-    @PostMapping("/hmbtgDocumentTitles")
-    fun hmbtgDocumentTitles(principal: Principal, @RequestBody request: HmbtgDocumentTitlesRequest): List<String> = searchService.getHmbtgDocumentTitles(
-        catalogService.getCurrentCatalogForPrincipal(principal),
-        principal,
-        request.uuids,
     )
 }

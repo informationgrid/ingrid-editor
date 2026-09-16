@@ -76,26 +76,12 @@ class DocumentSearchApiTest : AnnotationSpec() {
             """{}""",
             """{"term":null}""",
         ).forEach { body ->
-            mvc.perform(post("/api/search/titleOrUuid").principal(principal).contentType(MediaType.APPLICATION_JSON).content(body))
+            mvc.perform(
+                post("/api/search/titleOrUuid").principal(principal).contentType(MediaType.APPLICATION_JSON)
+                    .content(body),
+            )
                 .andExpect(status().isBadRequest)
         }
         verify(exactly = 0) { searchService.findInTitleOrUuid(any(), any(), any()) }
-    }
-
-    @Test
-    fun `profile endpoints return a boolean and a title list`() {
-        every { searchService.hasCoupledServiceWithGetCapabilities("current-catalog", principal, "uuid") } returns true
-        mvc.perform(
-            post("/api/search/hasCoupledServiceWithGetCapabilities").principal(principal)
-                .contentType(MediaType.APPLICATION_JSON).content("""{"uuid":"uuid"}"""),
-        )
-            .andExpect(status().isOk).andExpect(content().string("true"))
-
-        every { searchService.getHmbtgDocumentTitles("current-catalog", principal, listOf("one", "two")) } returns listOf("Same", "Same")
-        mvc.perform(
-            post("/api/search/hmbtgDocumentTitles").principal(principal)
-                .contentType(MediaType.APPLICATION_JSON).content("""{"uuids":["one","two"]}"""),
-        )
-            .andExpect(status().isOk).andExpect(content().json("""["Same","Same"]"""))
     }
 }

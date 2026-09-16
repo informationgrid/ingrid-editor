@@ -39,11 +39,11 @@ import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
-import { ResearchService } from "../app/+research/research.service";
 import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { DataformatPlugin } from "./ingrid/behaviours/dataformat.plugin";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { IngridDocumentSearchService } from "./ingrid/ingrid-document-search.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -82,7 +82,7 @@ export class InGridComponent implements OnInit {
   // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
   mobilithek = inject(MobilithekPlugin);
   dialog = inject(MatDialog);
-  researchService = inject(ResearchService);
+  documentSearchService = inject(IngridDocumentSearchService);
   pluginService = inject(PluginService);
   consolidateKeywordsPlugin = inject(ConsolidateKeywordsPlugin);
   behaviourService = inject(BehaviourService);
@@ -158,7 +158,7 @@ export class InGridComponent implements OnInit {
 
   private checkForCoupledServiceWithGetCapOperation(metadata: Metadata) {
     return firstValueFrom(
-      this.researchService
+      this.documentSearchService
         .hasCoupledServiceWithGetCapabilities(metadata.uuid)
         .pipe(
           switchMap((exists) => {

@@ -26,7 +26,6 @@ import {
   IgeEventResultType,
 } from "../../../app/services/event/event.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ResearchService } from "../../../app/+research/research.service";
 import { DocumentDataService } from "../../../app/services/document/document-data.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
@@ -37,6 +36,7 @@ import {
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { firstValueFrom } from "rxjs";
 import { GeneralStore } from "../../../app/store/general.store";
+import { HmdkDocumentSearchService } from "../hmdk-document-search.service";
 
 @Injectable({ providedIn: "root" })
 export class ModifyPublishedBehaviour extends Plugin {
@@ -49,7 +49,7 @@ export class ModifyPublishedBehaviour extends Plugin {
 
   eventService = inject(EventService);
   dialog = inject(MatDialog);
-  researchService = inject(ResearchService);
+  documentSearchService = inject(HmdkDocumentSearchService);
   documentDataService = inject(DocumentDataService);
   docEvents = inject(DocEventsService);
   generalStore = inject(GeneralStore);
@@ -133,7 +133,7 @@ export class ModifyPublishedBehaviour extends Plugin {
     publishedDocs: DocumentAbstract[],
   ): Promise<string[]> {
     return firstValueFrom(
-      this.researchService.getHmbtgDocumentTitles(
+      this.documentSearchService.getHmbtgDocumentTitles(
         publishedDocs.map((d) => d._uuid),
       ),
     );

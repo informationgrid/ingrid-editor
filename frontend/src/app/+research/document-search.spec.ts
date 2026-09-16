@@ -143,48 +143,4 @@ describe("Typed document searches", () => {
     request.flush({ totalHits: 0, hits: [] });
     await response;
   });
-
-  it.each([true, false])(
-    "returns the coupled service decision %s",
-    async (exists) => {
-      const uuid = "uuid'\\";
-      const response = firstValueFrom(
-        research.hasCoupledServiceWithGetCapabilities(uuid),
-      );
-      const request = http.expectOne(
-        "/api/search/hasCoupledServiceWithGetCapabilities",
-      );
-      expect(request.request.body).toEqual({ uuid });
-      request.flush(exists);
-      expect(await response).toBe(exists);
-    },
-  );
-
-  it("deduplicates HmbTG UUIDs while retaining equal titles", async () => {
-    const response = firstValueFrom(
-      research.getHmbtgDocumentTitles(["one", "one", "two,'{}"]),
-    );
-    const request = http.expectOne("/api/search/hmbtgDocumentTitles");
-    expect(request.request.body).toEqual({ uuids: ["one", "two,'{}"] });
-    request.flush(["Same title", "Same title"]);
-    expect(await response).toEqual(["Same title", "Same title"]);
-  });
-
-  it("does not request HmbTG titles for an empty selection", async () => {
-    expect(await firstValueFrom(research.getHmbtgDocumentTitles([]))).toEqual(
-      [],
-    );
-    http.expectNone("/api/search/hmbtgDocumentTitles");
-  });
-
-  it("propagates request failures to the existing error handling", async () => {
-    const response = firstValueFrom(
-      research.hasCoupledServiceWithGetCapabilities("uuid"),
-    );
-    const assertion = expect(response).rejects.toMatchObject({ status: 500 });
-    http
-      .expectOne("/api/search/hasCoupledServiceWithGetCapabilities")
-      .flush("error", { status: 500, statusText: "Error" });
-    await assertion;
-  });
 });
