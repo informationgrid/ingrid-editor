@@ -8,8 +8,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.api
 
-import de.ingrid.igeserver.profiles.ingrid_hmdk.HmbtgDocumentSearchService
-import de.ingrid.igeserver.profiles.ingrid_hmdk.HmbtgDocumentTitlesRequest
+import de.ingrid.igeserver.profiles.ingrid_hmdk.services.HmbtgDocumentSearchService
+import de.ingrid.igeserver.profiles.ingrid_hmdk.services.HmbtgDocumentTitlesRequest
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping

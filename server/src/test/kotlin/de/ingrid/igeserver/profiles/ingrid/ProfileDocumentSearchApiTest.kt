@@ -2,8 +2,9 @@ package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.ingrid.api.IngridDocumentSearchApiController
-import de.ingrid.igeserver.profiles.ingrid_hmdk.HmbtgDocumentSearchService
+import de.ingrid.igeserver.profiles.ingrid.services.IngridDocumentSearchService
 import de.ingrid.igeserver.profiles.ingrid_hmdk.api.HmbtgDocumentSearchApiController
+import de.ingrid.igeserver.profiles.ingrid_hmdk.services.HmbtgDocumentSearchService
 import de.ingrid.igeserver.services.CatalogService
 import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every

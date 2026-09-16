@@ -6,14 +6,16 @@
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
  */
-package de.ingrid.igeserver.profiles.ingrid
+package de.ingrid.igeserver.profiles.ingrid.services
 
 import de.ingrid.igeserver.services.ReadableDocumentQueryService
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
 @Service
+@Profile("ingrid")
 @Transactional(readOnly = true)
 class IngridDocumentSearchService(private val readableDocumentQueryService: ReadableDocumentQueryService) {
     fun hasCoupledServiceWithGetCapabilities(catalogId: String, principal: Principal, uuid: String): Boolean = readableDocumentQueryService.withReadableRows(

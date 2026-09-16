@@ -6,14 +6,16 @@
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk
+package de.ingrid.igeserver.profiles.ingrid_hmdk.services
 
 import de.ingrid.igeserver.services.ReadableDocumentQueryService
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
 @Service
+@Profile("ingrid-hmdk")
 @Transactional(readOnly = true)
 class HmbtgDocumentSearchService(private val readableDocumentQueryService: ReadableDocumentQueryService) {
     fun getDocumentTitles(catalogId: String, principal: Principal, uuids: List<String>): List<String> {
