@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
@@ -60,6 +57,9 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.OffsetDateTime
@@ -123,7 +123,7 @@ class ImportService(
         if (fileContent[0] is ArrayNode) {
             val publishedVersion = fileContent[0][0]
             val draftVersion = fileContent[0][1]
-            val result = mutableListOf(
+            val result: MutableList<DocumentAnalysis?> = mutableListOf(
                 if (!publishedVersion.isNull) {
                     analyzeDoc(
                         catalogId,
@@ -157,7 +157,7 @@ class ImportService(
             }
             result
         } else {
-            fileContent.map { analyzeDoc(catalogId, it) }
+            fileContent.map<JsonNode, DocumentAnalysis?> { analyzeDoc(catalogId, it) }
         }
     } else {
         listOf(analyzeDoc(catalogId, fileContent))
@@ -263,7 +263,7 @@ class ImportService(
 
         if (pointOfContact?.size() == filteredContacts?.size) return analysis
 
-        analysis.document.data.set<JsonNode>(
+        analysis.document.data.set(
             "pointOfContact",
             jacksonObjectMapper().createArrayNode().apply {
                 filteredContacts?.map { add(it) }
@@ -533,9 +533,9 @@ class ImportService(
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
             ref.document.title = if (data.has("organization")) {
-                data.get("organization").asText()
+                data.get("organization").asString()
             } else {
-                "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
+                "${data.get("lastName").asString()}, ${data.get("firstName").asString()}"
             }
         }
     }

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -32,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Profile("ingrid")
 @Service
@@ -71,11 +71,11 @@ class M079MigrateDigitalTransferOptions : MigrationBase("0.79") {
                                 val transferSize = options?.get("transferSize")
                                 if (transferSize != null && !transferSize.isNull) {
                                     changed = true
-                                    options.set<ObjectNode>(
+                                    options.set(
                                         "transferSize",
                                         jacksonObjectMapper().createObjectNode().apply {
                                             put("value", transferSize.asDouble())
-                                            set<ObjectNode>(
+                                            set(
                                                 "unit",
                                                 jacksonObjectMapper().createObjectNode().apply {
                                                     put("key", "MB")

@@ -87,7 +87,7 @@ class UVPPublishExport(
 
         // use GlobalScope only for indexing, not for determining which documents to index
         GlobalScope.launch {
-            docsWithReferences.forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
+            docsWithReferences.filterNotNull().forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
         }
     }
 

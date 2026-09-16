@@ -57,6 +57,7 @@
     "@angular/build": "^21.2.3",
     "@angular/cli": "^21.2.3",
     "@angular/compiler-cli": "^21.2.5",
+    "@cyclonedx/yarn-plugin-cyclonedx": "^3.4.0",
     "@ngneat/spectator": "^22.1.0",
     "@types/file-saver-es": "~2.0.3",
     "@types/flowjs": "~2.13.14",

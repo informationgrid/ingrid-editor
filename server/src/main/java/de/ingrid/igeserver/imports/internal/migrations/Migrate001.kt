@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_UUID
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
 
 class Migrate001 {
 
@@ -30,11 +30,11 @@ class Migrate001 {
         fun migrate(documents: ArrayNode): ArrayNode {
             documents.forEach { document ->
                 document as ObjectNode
-                document.put(FIELD_UUID, document.get(FIELD_ID).asText())
+                document.put(FIELD_UUID, document.get(FIELD_ID).asString())
                 val addresses = document.get("addresses") as ArrayNode
                 addresses.forEach { address ->
                     val ref = (address as ObjectNode).get("ref") as ObjectNode
-                    ref.put(FIELD_UUID, ref.get(FIELD_ID).asText())
+                    ref.put(FIELD_UUID, ref.get(FIELD_ID).asString())
                 }
             }
 

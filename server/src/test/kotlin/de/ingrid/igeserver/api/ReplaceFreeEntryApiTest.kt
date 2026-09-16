@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.springframework.http.MediaType
@@ -33,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Sql(scripts = ["/test_data-free-entries.sql"], config = SqlConfig(encoding = "UTF-8"))
 class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() {
@@ -76,7 +76,7 @@ class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() 
         val json = mapper.readTree(result.response.contentAsString)
         json.get("occurrences").asInt() shouldBe 2
         json.get("documentsUpdated").asInt() shouldBe 2
-        val uuids = json.get("uuids").map { it.asText() }
+        val uuids = json.get("uuids").values().map { it.asString() }
         uuids.shouldContainExactlyInAnyOrder(listOf("free-uuid-1", "free-uuid-2"))
 
         // After replacement, counts should only contain Free B (1)
@@ -89,8 +89,8 @@ class ReplaceFreeEntryApiTest(private val mockMvc: MockMvc) : IntegrationTest() 
             .andReturn()
 
         val array = mapper.readTree(countsAfter.response.contentAsString)
-        val map = array.associate { node ->
-            node.get("value").asText() to node.get("count").asInt()
+        val map = array.values().associate { node ->
+            node.get("value").asString() to node.get("count").asInt()
         }
         map.size shouldBe 1
         map["Free B"] shouldBe 1

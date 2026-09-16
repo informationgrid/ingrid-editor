@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
@@ -41,6 +40,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -382,7 +382,7 @@ class CatalogService(
 
         val isFolder = entry["isFolder"]?.asBoolean() ?: false
         val hasAnyWritePermission =
-            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
+            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asString())
 
         isFolder && hasAnyWritePermission
     }

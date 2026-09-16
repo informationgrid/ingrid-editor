@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import IntegrationTest
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -34,6 +33,7 @@ import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import tools.jackson.databind.JsonNode
 
 @Sql(scripts = ["/test_data-codelistWithIds.sql"], config = SqlConfig(encoding = "UTF-8"))
 class CodelistSyncTaskTest : IntegrationTest() {

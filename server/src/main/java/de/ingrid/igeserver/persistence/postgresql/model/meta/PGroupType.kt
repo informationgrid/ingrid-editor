@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.persistence.postgresql.model.meta
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
 
 @Component
 @JsonIgnoreProperties(ignoreUnknown = true)

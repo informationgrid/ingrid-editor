@@ -76,7 +76,7 @@ class OpenDataPublishExport(
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexDoc(context, it) }
+        docsWithReferences.filterNotNull().forEach { indexDoc(context, it) }
     }
 
     private fun indexDoc(context: Context, docId: String) {

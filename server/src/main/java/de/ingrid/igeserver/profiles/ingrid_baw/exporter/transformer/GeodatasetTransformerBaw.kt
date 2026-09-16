@@ -90,6 +90,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val orderNumber = if (forRepository()) null else getOrderNumber(this)
 
     val simulationParameters = doc.data.getPath("simulationParameter")
+        ?.values()
         ?.map {
             SimParameter(
                 name = it.getString("name") ?: "",
@@ -99,8 +100,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
             )
         } ?: emptyList()
 
-    val simulationVersion = doc.data.getPath("version")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
-    val simulationExtension = doc.data.getPath("extension")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
+    val simulationVersion = doc.data.getPath("version")?.values()?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
+    val simulationExtension = doc.data.getPath("extension")?.values()?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList()
 
     fun getSimulationKeywordThesauri(): List<Thesaurus> = listOf(
         dimensionalityThesaurus,
@@ -126,7 +127,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     )
 
     val process = doc.data.getPath("process")?.mapToKeyValue()?.let { codelists.getValue("3950001", it) ?: it.value }
-    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.mapNotNull { it.mapToKeyValue() }
+    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.values()?.mapNotNull { it.mapToKeyValue() }
         ?.mapNotNull { codelists.getValue("3950011", it) ?: it.value } ?: emptyList()
 
     // measurementMethod for Messdaten and process for Simulationen
@@ -145,7 +146,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         },
     )
 
-    val modelType = doc.data.getPath("simulationModelType")?.mapNotNull { codelists.getValue("3950003", it.mapToKeyValue()) } ?: emptyList()
+    val modelType = doc.data.getPath("simulationModelType")?.values()?.mapNotNull { codelists.getValue("3950003", it.mapToKeyValue()) } ?: emptyList()
 
     val modelTypeThesaurus = Thesaurus(
         "de.baw.codelist.model.type",
@@ -161,7 +162,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     )
 
     // Wasserbau Messdaten
-    val waterMeasurements = doc.data.getPath("measurementPhases")?.find { it.getString("type") == "waterMeasurement" }
+    val waterMeasurements = doc.data.getPath("measurementPhases")?.values()?.find { it.getString("type") == "waterMeasurement" }
 
     // different place in measurement and simulation doctypes
     val timestep = waterMeasurements?.getDouble("timestep") ?: doc.data.getDouble("timestep")
@@ -173,7 +174,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
             crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
         )
     }
-    val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.map { level ->
+    val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.values()?.map { level ->
         ZeroLevel(
             value = level.getString("value"),
             crs = level.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let { codelists.getValue("verticalSpatialSystems", it) },
@@ -182,7 +183,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         )
     } ?: emptyList()
 
-    val averageWaterLevel = waterMeasurements?.getPath("averageWaterLevel")?.map { level ->
+    val averageWaterLevel = waterMeasurements?.getPath("averageWaterLevel")?.values()?.map { level ->
         AverageWaterLevel(
             value = level.getString("value"),
             unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
@@ -192,7 +193,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val maxDrain = waterMeasurements?.getString("drain.max")
     val minDrain = waterMeasurements?.getString("drain.min")
 
-    val measurementDevices = doc.data.getPath("gauge")?.map { device ->
+    val measurementDevices = doc.data.getPath("gauge")?.values()?.map { device ->
         MeasurementDevice(
             name = device.getString("name"),
             id = device.getString("id"),
@@ -201,7 +202,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         )
     } ?: emptyList()
 
-    val targetParameters = doc.data.getPath("targetParameters")?.map { param ->
+    val targetParameters = doc.data.getPath("targetParameters")?.values()?.map { param ->
         TargetParameter(
             name = param.getPath("name")?.mapToKeyValue()?.let { codelists.getValue("3950021", it) },
             type = param.getPath("type")?.mapToKeyValue()?.let { codelists.getValue("3950014", it) },

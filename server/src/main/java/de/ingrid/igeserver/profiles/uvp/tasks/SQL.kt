@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.utils.UploadInfo
+import tools.jackson.databind.JsonNode
 import java.time.OffsetDateTime
 
 val sqlStepsPublished = """
@@ -201,6 +201,6 @@ fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
     val expiredDate =
-        if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-    return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
+        if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
+    return UploadInfo("", it.get("downloadURL").get("uri").stringValue(), expiredDate)
 }

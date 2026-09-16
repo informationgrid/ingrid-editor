@@ -19,9 +19,9 @@
  */
 package de.ingrid.igeserver
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.commons.text.StringSubstitutor
 import org.springframework.http.HttpStatus
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.util.*
 
 /**

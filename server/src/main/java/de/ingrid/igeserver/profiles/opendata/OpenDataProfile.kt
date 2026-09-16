@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.opendata
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
@@ -35,6 +34,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class OpenDataProfile(

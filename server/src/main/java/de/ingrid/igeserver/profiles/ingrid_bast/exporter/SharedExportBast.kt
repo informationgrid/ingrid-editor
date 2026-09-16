@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.utils.getString
+import tools.jackson.databind.node.ObjectNode
 
 fun getBastKeywords(docData: ObjectNode): Thesaurus = Thesaurus(
     "BASt Keywords",

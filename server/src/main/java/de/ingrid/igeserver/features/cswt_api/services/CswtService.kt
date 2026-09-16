@@ -95,7 +95,7 @@ class CswtService(
             val item: Element = insertDocs.item(i) as Element
             // separate importAnalyse and import
             val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
-            resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
+            resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString").trim())
             val docData = xmlNodeToString(metadataDoc) // convert Node to String
             importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
         }

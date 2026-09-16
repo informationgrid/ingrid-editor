@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
@@ -97,6 +98,7 @@ enum class DocumentTag(val value: String) {
     AMTSINTERN("amtsintern"),
 }
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class DocumentInfo(
     val id: Number,
     val title: String,
