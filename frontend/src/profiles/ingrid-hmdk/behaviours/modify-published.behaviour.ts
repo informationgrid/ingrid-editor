@@ -69,6 +69,13 @@ export class ModifyPublishedBehaviour extends Plugin {
     );
   }
 
+  /**
+   * Handles the update event for published documents.
+   *
+   * Shows an information dialog when a published document with HmbTG publication
+   * is being updated, informing the user that changes will create a new version
+   * in the transparency portal while the old version remains published.
+   */
   private handleUpdate() {
     // ignore addresses
     if (this.forAddress()) return;
@@ -93,6 +100,15 @@ export class ModifyPublishedBehaviour extends Plugin {
       });
   }
 
+  /**
+   * Handles the delete event for published documents.
+   *
+   * When documents are being deleted, checks if any are published with HmbTG publication.
+   * If so, shows a confirmation dialog informing the user that these documents will remain
+   * published in the transparency portal for 10 years even after deletion from HMDK.
+   *
+   * @param eventResponder The event responder containing the documents to delete
+   */
   private async handleDeleteEvent(eventResponder: EventResponder) {
     let success = false;
     const docs = eventResponder.data as DocumentAbstract[];
@@ -122,6 +138,12 @@ export class ModifyPublishedBehaviour extends Plugin {
     }
   }
 
+  /**
+   * Builds the response data for the event.
+   *
+   * @param isSuccess Whether the operation was successful
+   * @returns EventData with the appropriate result type
+   */
   private buildResponse(isSuccess: boolean): EventData {
     return {
       result: isSuccess ? IgeEventResultType.SUCCESS : IgeEventResultType.FAIL,
@@ -129,6 +151,12 @@ export class ModifyPublishedBehaviour extends Plugin {
     };
   }
 
+  /**
+   * Retrieves titles of documents that have HmbTG publication.
+   *
+   * @param publishedDocs Array of published documents
+   * @returns Promise resolving to array of document titles
+   */
   private async getHmbTGDocTitles(
     publishedDocs: DocumentAbstract[],
   ): Promise<string[]> {

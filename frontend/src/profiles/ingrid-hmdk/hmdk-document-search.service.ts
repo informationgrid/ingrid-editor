@@ -16,6 +16,15 @@ export class HmdkDocumentSearchService {
   private http = inject(HttpClient);
   private configuration = inject(ConfigService).getConfiguration();
 
+  /**
+   * Retrieves document titles for HMB-TG documents.
+   *
+   * Fetches titles for documents with publicationHmbTG flag set to true,
+   * filtered by the provided UUIDs. Returns an empty array if no UUIDs are provided.
+   *
+   * @param uuids Array of document UUIDs to retrieve titles for
+   * @returns Observable of string array containing the document titles
+   */
   getHmbtgDocumentTitles(uuids: string[]): Observable<string[]> {
     if (uuids.length === 0) return of([]);
     return this.http.post<string[]>(

@@ -156,6 +156,16 @@ export class InGridComponent implements OnInit {
     };
   }
 
+  /**
+   * Checks if the document has a coupled service with GetCapabilities operation.
+   *
+   * For GeoDataset documents, this performs an additional check to see if the document
+   * is a coupled resource from a service with GetCapabilities URL. If so, shows a
+   * publication check dialog before allowing publication.
+   *
+   * @param metadata The document metadata
+   * @returns Promise resolving to true if publication can proceed, or the dialog result
+   */
   private checkForCoupledServiceWithGetCapOperation(metadata: Metadata) {
     return firstValueFrom(
       this.documentSearchService

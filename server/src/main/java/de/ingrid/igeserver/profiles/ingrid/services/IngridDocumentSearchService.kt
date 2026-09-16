@@ -18,6 +18,20 @@ import java.security.Principal
 @Profile("ingrid")
 @Transactional(readOnly = true)
 class IngridDocumentSearchService(private val readableDocumentQueryService: ReadableDocumentQueryService) {
+    /**
+     * Checks if a document has a coupled service with GetCapabilities operation.
+     * 
+     * Searches for documents that have:
+     * 1. A coupled resource with the specified UUID in their service.coupledResources array
+     * 2. An operation with name.key = '1' (GetCapabilities) in their service.operations array
+     * 
+     * Only considers documents that the principal has read permission for.
+     * 
+     * @param catalogId The catalog identifier
+     * @param principal The authenticated user
+     * @param uuid The UUID of the coupled resource to search for
+     * @return true if a matching document exists, false otherwise
+     */
     fun hasCoupledServiceWithGetCapabilities(catalogId: String, principal: Principal, uuid: String): Boolean = readableDocumentQueryService.withReadableRows(
         catalogId,
         principal,
@@ -39,4 +53,9 @@ class IngridDocumentSearchService(private val readableDocumentQueryService: Read
     ) { it.any() }
 }
 
+/**
+ * Request data class for checking coupled services.
+ * 
+ * @property uuid The UUID of the coupled resource to check
+ */
 data class CoupledServiceSearchRequest(val uuid: String)

@@ -160,6 +160,15 @@ export class ResearchService {
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
 
+  /**
+   * Searches for documents by title or UUID.
+   *
+   * Performs a server-side search for documents matching either the title (case-insensitive)
+   * or the exact UUID. Results are filtered by category and exclude archived documents.
+   *
+   * @param request The search request containing term, category, and pagination options
+   * @returns Observable of ResearchResponse with matching documents and total hit count
+   */
   searchByTitleOrUuid(
     request: TitleOrUuidSearchRequest,
   ): Observable<ResearchResponse> {

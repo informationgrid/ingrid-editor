@@ -35,6 +35,25 @@ class ReadableDocumentQueryService(
     private val authUtils: AuthUtils,
     private val researchService: ResearchService,
 ) {
+    /**
+     * Executes a query and returns only rows that the principal has read permission for.
+     * 
+     * This service handles the common pattern of:
+     * 1. Building a SQL query with the provided predicate and parameters
+     * 2. Executing the query with cursor-based pagination (fetchSize hint)
+     * 3. Filtering results based on ACL permissions
+     * 4. Processing the filtered results with the provided consumer function
+     * 
+     * The query joins document_wrapper with document and catalog tables, filtering for
+     * non-deleted documents and latest versions only.
+     * 
+     * @param catalogId The catalog identifier to filter by
+     * @param principal The authenticated user
+     * @param predicate The SQL predicate to apply (will be inserted into the WHERE clause)
+     * @param parameters The query parameters for the predicate
+     * @param consume Function to process the filtered result sequence
+     * @return The result of the consume function
+     */
     fun <T> withReadableRows(
         catalogId: String,
         principal: Principal,
