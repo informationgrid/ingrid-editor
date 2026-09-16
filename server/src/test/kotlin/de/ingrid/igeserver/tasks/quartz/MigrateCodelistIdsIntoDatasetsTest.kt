@@ -139,8 +139,8 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("featureCatalogueDescription.featureTypes")!!.get(0).getString("_codelistId") shouldBe null
                 it.getPath("qualities")!!.get(0).getString("measureType._codelistId") shouldBe "7109"
                 it.getPath("qualities")!!.get(1).getString("measureType._codelistId") shouldBe "7127"
-                it.getString("vectorSpatialRepresentation.topologyLevel._codelistId") shouldBe "528"
-                it.getString("vectorSpatialRepresentation.geometricObjectType._codelistId") shouldBe "515"
+                it.getPath("vectorSpatialRepresentation")!!.get(0).getString("topologyLevel._codelistId") shouldBe "528"
+                it.getPath("vectorSpatialRepresentation")!!.get(0).getString("geometricObjectType._codelistId") shouldBe "515"
                 it.getPath("gridSpatialRepresentation.axesDimensionProperties")!!.get(0)
                     .getString("name._codelistId") shouldBe "514"
                 it.getString("gridSpatialRepresentation.cellGeometry._codelistId") shouldBe "509"
