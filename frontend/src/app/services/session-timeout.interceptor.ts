@@ -43,6 +43,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   timer$: Subscription;
   private oneSecondInMilliseconds = 1000;
   private lastReset = 0;
+  private refreshSequence = 0;
 
   constructor(private modalService: ModalService) {
     window.addEventListener("storage", (event) => {
@@ -50,10 +51,13 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         const lastReset = parseInt(event.newValue, 10);
         if (lastReset > this.lastReset) {
           this.lastReset = lastReset;
-          this.calculateDuration().then((duration) => {
-            this.startTimer(duration);
-          });
+          this.refreshTimer();
         }
+      }
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        this.refreshTimer();
       }
     });
   }
@@ -63,7 +67,9 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     const isApiCall =
-      request.url.includes("/api/") && !request.url.includes("/api/config");
+      request.url.includes("/api/") &&
+      !request.url.includes("/api/config") &&
+      !request.url.includes("/api/info/refreshSession");
 
     if (isApiCall) {
       this.resetSessionTimeout();
@@ -78,8 +84,19 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.lastReset = now;
     localStorage.setItem("ige-session-last-reset", now.toString());
 
+    this.refreshTimer();
+  }
+
+  refreshSession() {
+    this.refreshTimer();
+  }
+
+  private refreshTimer() {
+    const sequence = ++this.refreshSequence;
     this.calculateDuration().then((duration) => {
-      this.startTimer(duration);
+      if (sequence === this.refreshSequence) {
+        this.startTimer(duration);
+      }
     });
   }
 
@@ -99,13 +116,28 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         takeWhile((x) => x >= -10),
       )
       .subscribe((time) => {
-        this.updateStore(time);
+        if (time <= 0) {
+          this.refreshTimer();
+        } else {
+          this.updateStore(time);
+        }
       });
   }
 
   private async calculateDuration(): Promise<number> {
     const config = this.configService.getConfiguration();
-    return config?.sessionTimeout ?? 1800;
+    if (!config) return -1;
+
+    try {
+      const response = await firstValueFrom(
+        this.http.get<{ remaining: number }>(
+          config.backendUrl + "info/refreshSession",
+        ),
+      );
+      return response.remaining;
+    } catch {
+      return -1;
+    }
   }
 
   private updateStore(time: number) {

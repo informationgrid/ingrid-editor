@@ -24,8 +24,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
 
 import { TimePipe } from "../../directives/time.pipe";
-import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "../../services/config/config.service";
+import { SessionTimeoutInterceptor } from "../../services/session-timeout.interceptor";
 
 @Component({
   selector: "ige-session-timeout-info",
@@ -40,8 +39,7 @@ import { ConfigService } from "../../services/config/config.service";
   ],
 })
 export class SessionTimeoutInfoComponent implements OnInit {
-  private http = inject(HttpClient);
-  private configService = inject(ConfigService);
+  private sessionTimeoutInterceptor = inject(SessionTimeoutInterceptor);
 
   timeout = input.required<number>();
   readonly autoHide = input<boolean>(true);
@@ -49,11 +47,6 @@ export class SessionTimeoutInfoComponent implements OnInit {
   ngOnInit(): void {}
 
   refreshSession() {
-    this.http
-      .get(
-        this.configService.getConfiguration().backendUrl +
-          "info/refreshSession",
-      )
-      .subscribe();
+    this.sessionTimeoutInterceptor.refreshSession();
   }
 }
