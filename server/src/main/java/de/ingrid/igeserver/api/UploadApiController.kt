@@ -116,17 +116,20 @@ class UploadApiController(
         synchronized(this) {
             var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
             if (fileInfo == null) {
-                fileInfo = FileInfo()
+                fileInfo = FileInfo(flowTotalChunks, combinedChecksum) // accept values from upload params (same for every chunk)
                 this.fileInfos[flowIdentifier] = fileInfo
             }
 
-            require(fileInfo.sha256(file.inputStream) == chunkChecksum)
+            val checkSum = fileInfo.sha256(file.inputStream)
+            require(checkSum == chunkChecksum) { "Checksum mismatch" }
 
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
             fileInfo.addUploadedChunk(flowChunkNumber)
 
-            if (fileInfo.isUploadFinished(flowTotalChunks)) {
+            if (fileInfo.isUploadFinished()) {
+//                val combinedChecksum = fileInfo.sha256(file.inputStream)
+//                require(fileInfo.combinedChecksum == combinedChecksum)
                 log.info("Merging parts of uploaded file: $flowFilename")
                 // store file
                 try {

@@ -19,16 +19,36 @@
  */
 package de.ingrid.igeserver.model
 
+import java.io.InputStream
+import java.security.MessageDigest
 import java.util.*
 
-class FileInfo {
+class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
     private val uploadedChunks: MutableSet<Int> = Collections.synchronizedSet(HashSet())
 
-    fun isUploadFinished(flowTotalChunks: Int): Boolean = uploadedChunks.size == flowTotalChunks
+    fun isUploadFinished(): Boolean = uploadedChunks.size == flowTotalChunks
 
     fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunks.contains(flowChunkNumber)
 
     fun addUploadedChunk(flowChunkNumber: Int) {
         uploadedChunks.add(flowChunkNumber)
+    }
+
+//    fun validateCombinedChecksum() {
+//    require(combinedChecksum == this.sha256(uploadedChunks.))
+//    }
+
+    // TODO: move to utils?
+    fun sha256(input: InputStream): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        input.use {
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            var count = it.read(buffer)
+            while (count != -1) {
+                digest.update(buffer, 0, count)
+                count = it.read(buffer)
+            }
+        }
+        return HexFormat.of().formatHex(digest.digest())
     }
 }
