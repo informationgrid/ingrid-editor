@@ -120,6 +120,8 @@ class UploadApiController(
                 this.fileInfos[flowIdentifier] = fileInfo
             }
 
+            require(fileInfo.sha256(file.inputStream) == chunkChecksum)
+
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
             fileInfo.addUploadedChunk(flowChunkNumber)
