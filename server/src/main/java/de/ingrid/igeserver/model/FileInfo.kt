@@ -35,8 +35,9 @@ class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
     }
 
     fun validateCombinedChecksum() {
+        // ensure the checksums are in correct oder
         val combinedChecksums = (1..flowTotalChunks).joinToString("") { uploadedChunks.getValue(it) }
-        require(combinedChecksums == combinedChecksum) { "Combined checksum mismatch" }
+        require(combinedChecksums == combinedChecksum) { "Combined checksum mismatch: chunk order or content is incorrect" }
     }
 
     // TODO: move to utils?
