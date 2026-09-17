@@ -170,27 +170,57 @@ export class UvpArchiveBehaviour extends Plugin {
 
   private setPluginConfig() {
     this.fields.push({
-      key: "uvpArchiveType",
-      type: "radio",
-      defaultValue: "showAll",
-      wrappers: ["form-field"],
-      props: {
-        labelProp: "label",
-        valueProp: "value",
-        appearance: "outline",
-        options: [
-          { value: "hideAll", label: "Alle Dokumente im Portal ausblenden" },
-          {
-            value: "showAll",
-            label: "Alle Dokumente im Portal sichtbar belassen",
+      fieldGroupClassName: "flex-col",
+      fieldGroup: [
+        {
+          key: "uvpArchiveType",
+          type: "radio",
+          defaultValue: "showAll",
+          wrappers: ["form-field"],
+          props: {
+            labelProp: "label",
+            valueProp: "value",
+            appearance: "outline",
+            options: [
+              {
+                value: "hideAll",
+                label: "Alle Dokumente im Portal ausblenden",
+              },
+              {
+                value: "showAll",
+                label: "Alle Dokumente im Portal sichtbar belassen",
+              },
+              {
+                value: "showOnlyDecision",
+                label: "Nur Dokumente der Entscheidung sichtbar belassen",
+              },
+            ],
+            required: true,
           },
-          {
-            value: "showOnlyDecision",
-            label: "Nur Dokumente der Entscheidung sichtbar belassen",
+        },
+        {
+          key: "automaticArchiveEnabled",
+          type: "checkbox",
+          wrappers: [],
+          props: {
+            label: "Automatische Archivierung aktivieren",
+            appearance: "outline",
           },
-        ],
-        required: true,
-      },
+        },
+        {
+          key: "archiveAfterMonths",
+          type: "number",
+          wrappers: ["form-field"],
+          expressions: {
+            hide: (field) => !field.model?.automaticArchiveEnabled,
+          },
+          props: {
+            label: "Entscheidungsdatum älter als (Monate)",
+            appearance: "outline",
+            min: 1,
+          },
+        },
+      ],
     });
   }
 
