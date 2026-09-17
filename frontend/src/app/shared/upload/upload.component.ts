@@ -115,27 +115,37 @@ export class UploadComponent implements AfterViewInit {
   }));
 
   // Cache the promise so concurrent chunk callbacks share one calculation per
-  // file. WeakMap lets the entry be collected when the file is no longer used.
+  // file. WeakMap lets the entry be garbage collected when the file is no longer used.
   private checksumCache = new WeakMap<
     FlowFile,
-    ReturnType<typeof this.calculateChecksum>
+    Promise<{ checksums: string[]; combinedChecksum: string }>
   >();
 
   private async prepareChecksums(chunk: FlowChunk) {
     const file = chunk.fileObj;
-    const checksum = await this.calculateChecksum(chunk);
-    // TODO: optimize this, are checksums calculated chunk^chunk times?
-    const checksums = await Promise.all(
-      file.chunks.map((chunk) => this.calculateChecksum(chunk)),
-    );
-    const combinedChecksum = await this.sha256(
-      new TextEncoder().encode(checksums.join("")),
-    );
+    let pendingChecksums = this.checksumCache.get(file);
+    if (!pendingChecksums) {
+      pendingChecksums = Promise.all(
+        file.chunks.map((chunk) => this.calculateChecksum(chunk)),
+      )
+        .then(async (checksums) => ({
+          checksums,
+          combinedChecksum: await this.sha256(
+            new TextEncoder().encode(checksums.join("")),
+          ),
+        }))
+        .catch((error) => {
+          this.checksumCache.delete(file);
+          throw error;
+        });
+      this.checksumCache.set(file, pendingChecksums);
+    }
+    const { checksums, combinedChecksum } = await pendingChecksums;
     // override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
       ...getParams(),
-      chunkChecksum: checksum,
+      chunkChecksum: checksums[chunk.offset],
       combinedChecksum: combinedChecksum,
     });
     (
