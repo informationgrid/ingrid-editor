@@ -133,8 +133,8 @@ export class UploadComponent implements AfterViewInit {
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
       ...getParams(),
-      chunkChecksum: result.chunks[chunk.offset],
-      combinedChecksum: result.combined,
+      chunkChecksum: result.checksums[chunk.offset],
+      combinedChecksum: result.combinedChecksum,
     });
     (
       chunk as flowjs.FlowChunk & { preprocessFinished(): void }
@@ -349,7 +349,6 @@ export async function calculateChecksums(file: FlowFile): Promise<{
       return sha256(chunkBytes);
     }),
   );
-
   const combinedChecksum = await sha256(
     new TextEncoder().encode(checksums.join("")),
   );
