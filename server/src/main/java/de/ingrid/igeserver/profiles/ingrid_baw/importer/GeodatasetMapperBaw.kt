@@ -19,12 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.importer
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.exports.iso.BawExtension
 import de.ingrid.igeserver.exports.iso.BawHydraulicEngineeringMeasurement
 import de.ingrid.igeserver.exports.iso.BawMetadata
@@ -35,24 +29,32 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.utils.getPath
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.MapperFeature
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val bawMetadata: BawMetadata?
 
     init {
-        val xmlDeserializer: ObjectMapper = XmlMapper(
-            JacksonXmlModule().apply {
-                setDefaultUseWrapper(false)
-                setXMLTextElementName("innerText")
-            },
-        ).registerKotlinModule()
+        val xmlDeserializer = XmlMapper.builder()
+            .defaultUseWrapper(false)
+            .nameForTextElement("innerText")
+            .addModule(kotlinModule())
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            .build()
 
-        val supplementalInformation = xmlDeserializer.readTree(isoData.rawData as String).getPath("identificationInfo.MD_DataIdentification.supplementalInformation")
-        bawMetadata = xmlDeserializer.treeToValue(supplementalInformation, BawExtension::class.java)?.bawMetadata
+        val supplementalInformation = xmlDeserializer
+            .readTree(isoData.rawData as String)
+            ?.getPath("identificationInfo.MD_DataIdentification.supplementalInformation")
+
+        bawMetadata = supplementalInformation?.let {
+            xmlDeserializer.treeToValue(it, BawExtension::class.java)
+        }?.bawMetadata
     }
 
     override val splitSpatialSystems = true

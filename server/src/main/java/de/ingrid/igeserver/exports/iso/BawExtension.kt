@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.exports.iso
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 /**
  * BAW-specific XML extension that lives inside `gmd:supplementalInformation`.
