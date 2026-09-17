@@ -128,7 +128,7 @@ class UploadApiController(
             fileInfo.addUploadedChunk(flowChunkNumber, checkSum)
 
             if (fileInfo.isUploadFinished()) {
-                fileInfo.validateCombinedChecksum();
+                fileInfo.validateCombinedChecksum()
                 log.info("Merging parts of uploaded file: $flowFilename")
                 // store file
                 try {
