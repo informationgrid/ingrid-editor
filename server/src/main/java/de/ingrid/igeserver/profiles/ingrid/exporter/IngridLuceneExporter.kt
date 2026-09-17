@@ -312,7 +312,7 @@ fun IngridModelTransformer.toLuceneDocument(
         },
         parentIdentifier = getParentIdentifier(),
         datasourceIdentifier = resourceIdentifier,
-        spatialRepresentation = emptyList(),
+        spatialRepresentation = getSpatialRepresentation(),
         specificUsage = specificUsage,
         purpose = purpose,
         conformanceResult = data.conformanceResult?.map { conf ->

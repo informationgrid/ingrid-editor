@@ -152,7 +152,7 @@ data class LuceneIngrid(
     @JsonProperty("datasource_identifier")
     val datasourceIdentifier: String? = null,
     @JsonProperty("spatial_representation")
-    val spatialRepresentation: List<Any> = emptyList(),
+    val spatialRepresentation: List<SpatialRepresentation> = emptyList(),
     @JsonProperty("specific_usage")
     val specificUsage: String? = null,
     val purpose: String? = null,
@@ -163,6 +163,72 @@ data class LuceneIngrid(
     @JsonProperty("data_quality")
     val dataQuality: Map<String, Any?> = emptyMap(),
 )
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentation(
+    val type: SpatialRepresentationType,
+    val vector: List<SpatialRepresentationVector> = emptyList(),
+    val grid: SpatialRepresentationGrid? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentationGrid(
+    val axes: List<SpatialRepresentationAxis> = emptyList(),
+    val availableParameters: Boolean = false,
+    val numberDimensions: Int? = null,
+    val cellGeometry: String? = null,
+    val rectified: SpatialRepresentationGridRectified? = null,
+    val referenced: SpatialRepresentationGridReferenced? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentationGridRectified(
+    val checkPointAvailability: Boolean,
+    val checkPointDescription: String?,
+    val cornerPoints: String?,
+    val pointInPixel: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentationGridReferenced(
+    val orientationParameterAvailability: Boolean,
+    val controlPointAvaliability: Boolean,
+    val parameters: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentationAxis(
+    val label: String? = null,
+    val number: Int? = null,
+    val resolution: Double? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class SpatialRepresentationVector(
+    val topology: String? = null,
+    val geometryType: String? = null,
+    val number: Int? = null,
+)
+
+enum class SpatialRepresentationType {
+    @JsonProperty("text")
+    TEXT,
+
+    @JsonProperty("vector")
+    VECTOR,
+
+    @JsonProperty("tin")
+    TIN,
+
+    @JsonProperty("video")
+    VIDEO,
+
+    @JsonProperty("stereomodel")
+    STEREOMODEL,
+
+    @JsonProperty("grid")
+    GRID,
+}
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneReference(

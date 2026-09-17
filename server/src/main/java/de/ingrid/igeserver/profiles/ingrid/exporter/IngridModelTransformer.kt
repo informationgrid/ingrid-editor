@@ -48,6 +48,13 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentation
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationAxis
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGrid
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridRectified
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridReferenced
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationType
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationVector
 import de.ingrid.igeserver.profiles.ingrid.getLanguageISO639v2Value
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
@@ -120,16 +127,17 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions: List<DigitalTransferOption> = doc.data.get("digitalTransferOptions")?.values()?.map {
-        DigitalTransferOption(
-            createSimpleKeyValueFromJsonNode(it.get("name")),
-            UnitField(
-                it.getString("transferSize.value"),
-                createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit")),
-            ),
-            it.getString("mediumNote"),
-        )
-    } ?: emptyList()
+    open val digitalTransferOptions: List<DigitalTransferOption> =
+        doc.data.get("digitalTransferOptions")?.values()?.map {
+            DigitalTransferOption(
+                createSimpleKeyValueFromJsonNode(it.get("name")),
+                UnitField(
+                    it.getString("transferSize.value"),
+                    createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit")),
+                ),
+                it.getString("mediumNote"),
+            )
+        } ?: emptyList()
 
     fun getTemporal(): List<TemporalItem> {
         val event = data.temporal.event
@@ -1452,8 +1460,11 @@ open class IngridModelTransformer(
     }
 
     fun getAllLicenses(): List<License> {
-        val accessConstraintItems = data.resource?.accessConstraints?.map { LicenseItem(it.key, it.value) }?.ifEmpty { null }
-        val useConstraintItems = data.resource?.useConstraints?.map { LicenseItem(it.title?.key, it.title?.value, it.source) }?.ifEmpty { null }
+        val accessConstraintItems =
+            data.resource?.accessConstraints?.map { LicenseItem(it.key, it.value) }?.ifEmpty { null }
+        val useConstraintItems =
+            data.resource?.useConstraints?.map { LicenseItem(it.title?.key, it.title?.value, it.source) }
+                ?.ifEmpty { null }
         val useLimitationItem = data.resource?.useLimitation?.let { LicenseItem(null, it) }
         return listOfNotNull(
             accessConstraintItems?.let { License("accessConstraints", accessConstraintItems) },
@@ -1461,6 +1472,56 @@ open class IngridModelTransformer(
             useLimitationItem?.let { License("useLimitations", listOf(useLimitationItem)) },
         )
     }
+
+    fun getSpatialRepresentation(): List<SpatialRepresentation> = data.spatialRepresentationType?.map { type ->
+        when (type.key) {
+            "1" -> SpatialRepresentation(
+                SpatialRepresentationType.VECTOR,
+                vectorSpatialRepresentation.map {
+                    SpatialRepresentationVector(
+                        codelists.getValue("528", it.topologyLevel),
+                        codelists.getValue("515", it.geometricObjectType),
+                        it.geometricObjectCount,
+                    )
+                },
+            )
+
+            "2" -> SpatialRepresentation(
+                SpatialRepresentationType.GRID,
+                grid = SpatialRepresentationGrid(
+                    gridSpatialRepresentation?.axesDimensionProperties?.map {
+                        SpatialRepresentationAxis(codelists.getValue("514", it.name), it.size, it.resolution)
+                    } ?: emptyList(),
+                    gridSpatialRepresentation?.transformationParameterAvailability ?: false,
+                    gridSpatialRepresentation?.numberOfDimensions,
+                    codelists.getValue("509", gridSpatialRepresentation?.cellGeometry),
+                    gridSpatialRepresentation?.georectified?.let {
+                        SpatialRepresentationGridRectified(
+                            it.checkPointAvailability ?: false,
+                            it.checkPointDescription,
+                            it.cornerPoints,
+                            codelists.getValue("2100", it.pointInPixel),
+                        )
+                    },
+                    SpatialRepresentationGridReferenced(
+                        gridSpatialRepresentation?.georeferenceable?.orientationParameterAvailability ?: false,
+                        gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
+                        gridSpatialRepresentation?.georeferenceable?.parameters,
+                    ),
+                ),
+            )
+
+            "3" -> SpatialRepresentation(SpatialRepresentationType.TEXT)
+
+            "4" -> SpatialRepresentation(SpatialRepresentationType.TIN)
+
+            "5" -> SpatialRepresentation(SpatialRepresentationType.STEREOMODEL)
+
+            "6" -> SpatialRepresentation(SpatialRepresentationType.VIDEO)
+
+            else -> throw ServerException.withReason("Unsupported spatial representation type: ${type.key}")
+        }
+    } ?: emptyList()
 }
 
 data class License(val type: String, val items: List<LicenseItem>)
