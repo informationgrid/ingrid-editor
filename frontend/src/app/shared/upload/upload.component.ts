@@ -124,9 +124,12 @@ export class UploadComponent implements AfterViewInit {
   private async prepareChecksums(chunk: FlowChunk) {
     const file = chunk.fileObj;
     const checksum = await this.calculateChecksum(chunk);
-    // TODO: check if we can optimize this
+    // TODO: optimize this, are checksums calculated chunk^chunk times?
+    const checksums = await Promise.all(
+      file.chunks.map((chunk) => this.calculateChecksum(chunk)),
+    );
     const combinedChecksum = await this.sha256(
-      new TextEncoder().encode(file.chunks.join("")),
+      new TextEncoder().encode(checksums.join("")),
     );
     // override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
