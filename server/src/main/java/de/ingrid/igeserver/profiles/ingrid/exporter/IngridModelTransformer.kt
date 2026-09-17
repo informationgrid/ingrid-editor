@@ -1453,11 +1453,11 @@ open class IngridModelTransformer(
 
     fun getAllLicenses(): List<License> {
         val accessConstraintItems = data.resource?.accessConstraints?.map { LicenseItem(it.key, it.value) }?.ifEmpty { null }
-        val useConstraintItems = data.resource?.useConstraints?.map { LicenseItem(it.title?.key, it.title?.value, it.source )}?.ifEmpty { null }
+        val useConstraintItems = data.resource?.useConstraints?.map { LicenseItem(it.title?.key, it.title?.value, it.source) }?.ifEmpty { null }
         val useLimitationItem = data.resource?.useLimitation?.let { LicenseItem(null, it) }
         return listOfNotNull(
-            accessConstraintItems?.let { License("accessConstraints", accessConstraintItems)},
-            useConstraintItems?.let { License("useConstraints", useConstraintItems)},
+            accessConstraintItems?.let { License("accessConstraints", accessConstraintItems) },
+            useConstraintItems?.let { License("useConstraints", useConstraintItems) },
             useLimitationItem?.let { License("useLimitations", listOf(useLimitationItem)) },
         )
     }
