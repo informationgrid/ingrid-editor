@@ -125,11 +125,10 @@ class UploadApiController(
 
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
-            fileInfo.addUploadedChunk(flowChunkNumber)
+            fileInfo.addUploadedChunk(flowChunkNumber, checkSum)
 
             if (fileInfo.isUploadFinished()) {
-//                val combinedChecksum = fileInfo.sha256(file.inputStream)
-//                require(fileInfo.combinedChecksum == combinedChecksum)
+                fileInfo.validateCombinedChecksum();
                 log.info("Merging parts of uploaded file: $flowFilename")
                 // store file
                 try {

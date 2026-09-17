@@ -24,19 +24,20 @@ import java.security.MessageDigest
 import java.util.*
 
 class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
-    private val uploadedChunks: MutableSet<Int> = Collections.synchronizedSet(HashSet())
+    private val uploadedChunks = mutableMapOf<Int, String>()
 
     fun isUploadFinished(): Boolean = uploadedChunks.size == flowTotalChunks
 
     fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunks.contains(flowChunkNumber)
 
-    fun addUploadedChunk(flowChunkNumber: Int) {
-        uploadedChunks.add(flowChunkNumber)
+    fun addUploadedChunk(flowChunkNumber: Int, checksum: String) {
+        uploadedChunks[flowChunkNumber] = checksum
     }
 
-//    fun validateCombinedChecksum() {
-//    require(combinedChecksum == this.sha256(uploadedChunks.))
-//    }
+    fun validateCombinedChecksum() {
+        val combinedChecksums = (1..flowTotalChunks).joinToString("") { uploadedChunks.getValue(it) }
+        require(combinedChecksums == combinedChecksum) { "Combined checksum mismatch" }
+    }
 
     // TODO: move to utils?
     fun sha256(input: InputStream): String {
