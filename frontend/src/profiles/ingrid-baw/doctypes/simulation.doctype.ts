@@ -130,7 +130,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
               wrappers: ["form-field"],
             }),
           ]),
-          this.addRepeatList("object", "Objekt", {
+          this.addRepeatList("object", "Objektart", {
             required: true,
             options: this.getCodelistForSelect("BAW_simulationObject", "null"),
           }),
