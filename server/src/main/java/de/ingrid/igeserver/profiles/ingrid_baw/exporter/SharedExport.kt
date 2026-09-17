@@ -288,7 +288,7 @@ fun getLiteratureAggregates(transformer: IngridModelTransformer): List<Literatur
 
 fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
-    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" }
+    val data = transformer.doc.data.getPath("simulationPhases")?.values()?.find { it.getString("type") == "bautechnikSimulation" }
         ?: return null
 
     fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
@@ -319,16 +319,16 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     val matParamsNode = data.getPath("materialParameters")
     val materialParameters = if (matParamsNode != null) {
         MaterialParametersBaw(
-            reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) }
+            reinforcement = matParamsNode.getPath("reinforcement")?.values()?.map { ReinforcementBaw(it.getDouble("yieldLimit")) }
                 ?: emptyList(),
-            steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            concrete = matParamsNode.getPath("concrete")?.map {
+            steel = matParamsNode.getPath("steel")?.values()?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.values()?.map {
                 ConcreteBaw(
                     it.getDouble("compressiveStrength"),
                     it.getPath("unitOfMeasure")?.mapToKeyValue()
                         ?.let { e -> transformer.codelists.getValue("BAW_simulationConcreteUnit", e) },
                 )
-            } ?: emptyList(),
+            } ?: emptyList<ConcreteBaw>(),
         )
     } else {
         null
@@ -356,11 +356,11 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
 
 fun getCfdSimulation(transformer: IngridModelTransformer): CfdSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
-    val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "cfdSimulation" }
+    val data = transformer.doc.data.getPath("simulationPhases")?.values()?.find { it.getString("type") == "cfdSimulation" }
         ?: return null
 
     return CfdSimulationBaw(
-        shipNames = data.getPath("shipName")?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList(),
+        shipNames = data.getPath("shipName")?.values()?.mapNotNull { it.mapToKeyValue()?.value } ?: emptyList(),
         physics = data.getPath("physics")?.mapToKeyValue()?.value,
         constantCrossSection = data.getBoolean("properties.constantCrossSection"),
         propulsion = data.getBoolean("properties.propulsion"),
