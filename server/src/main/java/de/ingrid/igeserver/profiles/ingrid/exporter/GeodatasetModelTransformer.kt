@@ -19,8 +19,25 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.TransformationTools
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCatalogueReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataQuality
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLineage
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePositionalAccuracy
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneQuality
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneSpatialResolutionScale
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentation
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationAxis
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGrid
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridRectified
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridReferenced
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationType
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationVector
 import de.ingrid.igeserver.utils.getString
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
@@ -280,4 +297,120 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                lineage = data.lineage?.statement?.let {
+                    LuceneLineage(statement = it)
+                },
+                datasourceIdentifier = resourceIdentifier,
+                spatialRepresentation = getSpatialRepresentation(),
+                spatialResolutionScale = (data.resolution?.firstOrNull() ?: data.service.resolution?.firstOrNull())?.let {
+                    LuceneSpatialResolutionScale(
+                        scale = it.denominator,
+                        resolutionGround = it.distanceMeter?.toDouble(),
+                        resolutionScan = it.distanceDPI?.toDouble(),
+                    )
+                },
+                // TODO: darstellender dienst
+                processStepDescription = data.dataQualityInfo?.lineage?.source?.processStep?.description?.mapNotNull {
+                    it.value ?: it.key
+                } ?: emptyList(),
+                symbolCatalogue = data.portrayalCatalogueInfo?.citation?.map {
+                    LuceneCatalogueReference(
+                        title = it.title?.value ?: it.title?.key,
+                        date = formatDate(formatterISO, it.date),
+                        version = it.edition,
+                    )
+                } ?: emptyList(),
+                codelistReference = data.featureCatalogueDescription?.citation?.map {
+                    LuceneCatalogueReference(
+                        title = it.title?.value ?: it.title?.key,
+                        date = formatDate(formatterISO, it.date),
+                        version = it.edition,
+                    )
+                } ?: emptyList(),
+                attributeDescription = data.databaseContent?.mapNotNull {
+                    it.parameter ?: it.moreInfo
+                } ?: emptyList(),
+                dataQuality = LuceneDataQuality(
+                    completenessOmission = data.dataQuality?.completenessOmission?.measResult?.toDouble(),
+                    positionalAccuracy = data.absoluteExternalPositionalAccuracy?.let {
+                        LucenePositionalAccuracy(
+                            horizontal = it.horizontal?.toDouble(),
+                            vertical = it.vertical?.toDouble(),
+                        )
+                    },
+                    qualities = data.qualities?.map {
+                        LuceneQuality(
+                            type = it._type,
+                            measureType = it.measureType?.let { m -> LuceneKeyValue(m.key, m.value) },
+                            value = it.value.toDouble(),
+                            parameter = it.parameter,
+                        )
+                    } ?: emptyList(),
+                ),
+            ),
+        )
+    }
+
+    fun getSpatialRepresentation(): List<SpatialRepresentation> = data.spatialRepresentationType?.map { type ->
+        when (type.key) {
+            "1" -> SpatialRepresentation(
+                SpatialRepresentationType.VECTOR,
+                vectorSpatialRepresentation.map {
+                    SpatialRepresentationVector(
+                        codelists.getValue("528", it.topologyLevel),
+                        codelists.getValue("515", it.geometricObjectType),
+                        it.geometricObjectCount,
+                    )
+                },
+            )
+
+            "2" -> SpatialRepresentation(
+                SpatialRepresentationType.GRID,
+                grid = SpatialRepresentationGrid(
+                    gridSpatialRepresentation?.axesDimensionProperties?.map {
+                        SpatialRepresentationAxis(codelists.getValue("514", it.name), it.size, it.resolution)
+                    } ?: emptyList(),
+                    gridSpatialRepresentation?.transformationParameterAvailability ?: false,
+                    gridSpatialRepresentation?.numberOfDimensions,
+                    gridSpatialRepresentation?.cellGeometry?.let {
+                        LuceneKeyValue(it.key, codelists.getValue("509", it))
+                    },
+                    gridSpatialRepresentation?.georectified?.let {
+                        SpatialRepresentationGridRectified(
+                            it.checkPointAvailability ?: false,
+                            it.checkPointDescription,
+                            it.cornerPoints,
+                            it.pointInPixel?.let { pointInPixel ->
+                                LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
+                            },
+                        )
+                    },
+                    SpatialRepresentationGridReferenced(
+                        gridSpatialRepresentation?.georeferenceable?.orientationParameterAvailability ?: false,
+                        gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
+                        gridSpatialRepresentation?.georeferenceable?.parameters,
+                    ),
+                ),
+            )
+
+            "3" -> SpatialRepresentation(SpatialRepresentationType.TEXT)
+
+            "4" -> SpatialRepresentation(SpatialRepresentationType.TIN)
+
+            "5" -> SpatialRepresentation(SpatialRepresentationType.STEREOMODEL)
+
+            "6" -> SpatialRepresentation(SpatialRepresentationType.VIDEO)
+
+            else -> throw ServerException.withReason("Unsupported spatial representation type: ${type.key}")
+        }
+    } ?: emptyList()
 }

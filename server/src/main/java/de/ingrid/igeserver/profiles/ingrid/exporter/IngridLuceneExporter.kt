@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.jacksonObjectMapper
+import kotlin.reflect.KClass
 
 @Service
 class IngridLuceneExporter(
@@ -62,15 +63,38 @@ class IngridLuceneExporter(
         if (templateData.first == "export/ingrid/lucene/template-lucene.jte") {
             @Suppress("UNCHECKED_CAST")
             val map = templateData.second["map"] as Map<String, Any>
-            val transformer = map["model"] as IngridModelTransformer
+//            val transformer = map["model"] as IngridModelTransformer
             val partner = map["partner"] as String
             val provider = map["provider"] as String
-            val luceneDoc = transformer.toLuceneDocument(catalog, partner, provider)
+            val transformer = getModelTransformerClass(doc.type)!!
+            val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier, catalog.settings.config.language ?: "de")
+            val data = TransformerData(IngridDocType.DOCUMENT, catalog.identifier, codelistTransformer, doc, options.tags)
+            val luceneDoc = transformer.constructors.first().call(getTransformerConfig(data)).toLuceneDocument(catalog, partner, provider)
             return objectMapper.writeValueAsString(luceneDoc)
         }
         val output: TemplateOutput = JsonStringOutput()
         templateEngine.render(templateData.first, templateData.second, output)
         return output.toString()
+    }
+
+    fun getModelTransformerClass(docType: String): KClass<out IngridModelTransformer>? = when (docType) {
+        "InGridSpecialisedTask" -> IngridModelTransformer::class
+
+        "InGridGeoDataset" -> GeodatasetModelTransformer::class
+
+        "InGridPublication" -> PublicationModelTransformer::class
+
+        "InGridGeoService" -> GeodataserviceModelTransformer::class
+
+        "InGridProject" -> ProjectModelTransformer::class
+
+        "InGridDataCollection" -> DataCollectionModelTransformer::class
+
+        "InGridInformationSystem" -> InformationSystemModelTransformer::class
+
+        //        "InGridOrganisationDoc" -> AddressModelTransformer::class
+//        "InGridPersonDoc" -> AddressModelTransformer::class
+        else -> null
     }
 
     private fun handleFoldersWithoutPublishedChildren(doc: Document) {
@@ -169,17 +193,7 @@ class IngridLuceneExporter(
 
         IngridDocType.DOCUMENT -> {
             IngridModelTransformer(
-                TransformerConfig(
-                    data.mapper.convertValue(data.doc, IngridModel::class.java),
-                    data.catalogIdentifier,
-                    data.codelistTransformer,
-                    uploadConfig,
-                    catalogService,
-                    TransformerCache(),
-                    data.doc,
-                    documentService,
-                    data.tags,
-                ),
+                getTransformerConfig(data),
             )
         }
 
@@ -191,6 +205,18 @@ class IngridLuceneExporter(
             )
         }
     }
+
+    private fun getTransformerConfig(data: TransformerData): TransformerConfig = TransformerConfig(
+        data.mapper.convertValue(data.doc, IngridModel::class.java),
+        data.catalogIdentifier,
+        data.codelistTransformer,
+        uploadConfig,
+        catalogService,
+        TransformerCache(),
+        data.doc,
+        documentService,
+        data.tags,
+    )
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
 
@@ -208,217 +234,4 @@ data class TransformerData(
     val doc: Document,
     val tags: List<String>,
     val mapper: ObjectMapper = jacksonObjectMapper(),
-)
-
-fun IngridModelTransformer.toLuceneDocument(
-    catalog: Catalog,
-    partner: String,
-    provider: String,
-): LuceneDocument = LuceneDocument(
-    id = model.uuid,
-    schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
-    metadata = LuceneMetadata(
-        dataType = "INGRID",
-        created = formatDate(formatterISO, model._created),
-        modified = formatDate(formatterISO, model._contentModified),
-        issued = null,
-        partner = partner,
-        provider = provider,
-        language = metadataLanguage,
-        datasource = LuceneDatasource(
-            id = catalog.identifier,
-            name = catalog.name,
-        ),
-    ),
-    title = model.title,
-    description = data.description,
-    spatials = getSpatials().map { entry ->
-        LuceneSpatial(
-            name = entry.title,
-            bbox = entry.bbox?.let { listOf(it.lon1, it.lat1, it.lon2, it.lat2) },
-            wkt = entry.wkt,
-            toponym = entry.toponym?.let { listOf(it) },
-            administrative = entry.administrativeArea?.let { LuceneAdministrative(it) },
-            geometry = entry.geoJson,
-        )
-    },
-    temporal = LuceneTemporal(
-        dataTemporal = getTemporal().map { entry ->
-            LuceneDataTemporal(
-                dateType = entry.type.type,
-                date = entry.date?.let { formatDate(formatterUTC, it) },
-                dateText = entry.dateText,
-                dateRange = entry.dateRange?.let { range ->
-                    LuceneDateRange(
-                        start = range.start?.let { formatDate(formatterUTC, it) },
-                        end = range.end?.let { formatDate(formatterUTC, it) },
-                    )
-                },
-            )
-        },
-        status = data.temporal.status?.let { LuceneKeyValue(it.key, it.value) },
-        maintenanceFrequency = data.maintenanceInformation?.maintenanceAndUpdateFrequency?.let { LuceneKeyValue(it.key, it.value) },
-        userDefinedMaintenanceFrequencyInSec = data.maintenanceInformation?.userDefinedMaintenanceFrequency?.number?.toString(),
-    ),
-    keywords = getAllKeywords().flatMap { category ->
-        category.keywords.map { keyword ->
-            LuceneKeyword(
-                term = keyword.label,
-                id = keyword.id,
-                source = category.type,
-            )
-        }
-    },
-    sortUuid = "",
-    contacts = contacts.map { contact ->
-        LuceneContact(
-            role = contact.relationType?.value,
-            name = contact.title,
-            communications = contact.allCommunications.map {
-                LuceneCommunication(type = it.key, value = it.value)
-            },
-            street = contact.street,
-            code = contact.zipCode,
-            pocode = contact.zipPoBox,
-            locality = contact.city,
-            country = contact.countryIso3166,
-            administrativeArea = contact.administrativeArea,
-        )
-    },
-    exports = emptyMap(),
-    ingrid = LuceneIngrid(
-        alternateTitle = alternateTitle,
-        references = getAllReferences().map { ref ->
-            LuceneReference(
-                internal = "url" != ref.referenceType,
-                url = ref.url,
-                uuidRef = ref.uuidRef,
-                type = LuceneKeyValue(ref.type.key, ref.type.value),
-                title = ref.title,
-                explanation = ref.explanation,
-            )
-        },
-        licenses = getAllLicenses().map { lic ->
-            LuceneLicense(
-                type = lic.type,
-                items = lic.items.map { item ->
-                    LuceneLicenseItem(
-                        key = item.key,
-                        value = item.value,
-                        source = item.source,
-                    )
-                },
-            )
-        },
-        parentIdentifier = getParentIdentifier(),
-        datasourceIdentifier = resourceIdentifier,
-        spatialRepresentation = getSpatialRepresentation(),
-        specificUsage = specificUsage,
-        purpose = purpose,
-        conformanceResult = data.conformanceResult?.map { conf ->
-            LuceneConformanceResult(
-                pass = getConformancePass(conf),
-                specification = conf.specification?.let { LuceneKeyValue(it.key, it.value) },
-                publicationDate = conf.publicationDate,
-                explanation = conf.explanation,
-            )
-        } ?: emptyList(),
-        orderInfo = data.orderInfo,
-        dataQuality = LuceneDataQuality(
-            completenessOmission = data.dataQuality?.completenessOmission?.measResult?.toDouble(),
-            positionalAccuracy = data.absoluteExternalPositionalAccuracy?.let {
-                LucenePositionalAccuracy(
-                    horizontal = it.horizontal?.toDouble(),
-                    vertical = it.vertical?.toDouble(),
-                )
-            },
-            qualities = data.qualities?.map {
-                LuceneQuality(
-                    type = it._type,
-                    measureType = it.measureType?.let { m -> LuceneKeyValue(m.key, m.value) },
-                    value = it.value.toDouble(),
-                    parameter = it.parameter,
-                )
-            } ?: emptyList(),
-        ),
-        spatialResolutionScale = (data.resolution?.firstOrNull() ?: data.service.resolution?.firstOrNull())?.let {
-            LuceneSpatialResolutionScale(
-                scale = it.denominator,
-                resolutionGround = it.distanceMeter?.toDouble(),
-                resolutionScan = it.distanceDPI?.toDouble(),
-            )
-        },
-        crossReferences = getCrossReferences().map {
-            LuceneCrossReference(
-                uuid = it.uuid,
-                name = it.objectName,
-                documentType = it.objectType,
-                description = it.description,
-                referenceType = it.refType.value,
-                direction = it.direction,
-            )
-        },
-        lineage = data.lineage?.statement?.let {
-            LuceneLineage(statement = it)
-        },
-        processStepDescription = data.dataQualityInfo?.lineage?.source?.processStep?.description?.mapNotNull {
-            it.value ?: it.key
-        } ?: emptyList(),
-        symbolCatalogue = data.portrayalCatalogueInfo?.citation?.map {
-            LuceneCatalogueReference(
-                title = it.title?.value ?: it.title?.key,
-                date = formatDate(formatterISO, it.date),
-                version = it.edition,
-            )
-        } ?: emptyList(),
-        codelistReference = data.featureCatalogueDescription?.citation?.map {
-            LuceneCatalogueReference(
-                title = it.title?.value ?: it.title?.key,
-                date = formatDate(formatterISO, it.date),
-                version = it.edition,
-            )
-        } ?: emptyList(),
-        attributeDescription = data.databaseContent?.mapNotNull {
-            it.parameter ?: it.moreInfo
-        } ?: emptyList(),
-        spatial = LuceneIngridSpatial(
-            description = data.spatial.description,
-            verticalExtent = data.spatial.verticalExtent?.let {
-                LuceneVerticalExtent(
-                    minimum = it.minimumValue?.toDouble(),
-                    maximum = it.maximumValue?.toDouble(),
-                    unit = it.unitOfMeasure?.let { u -> LuceneKeyValue(u.key, u.value) },
-                    vdatum = it.spatialSystem?.let { s -> LuceneKeyValue(s.key, s.value) },
-                )
-            },
-        ),
-        characterSet = data.metadata?.characterSet?.let {
-            LuceneKeyValue(it.key, it.value)
-        },
-        service = LuceneService(
-            type = data.service.type?.value ?: data.service.type?.key,
-            classifications = data.service.classification?.mapNotNull { it.value ?: it.key } ?: emptyList(),
-            versions = data.service.version?.mapNotNull { it.value ?: it.key } ?: emptyList(),
-            operations = data.service.operations?.map {
-                LuceneServiceOperation(
-                    name = it.name?.value ?: it.name?.key,
-                    description = it.description,
-                    accessUrl = it.methodCall,
-                )
-            } ?: emptyList(),
-            environmentDescription = data.service.systemEnvironment,
-            serviceHistory = data.service.implementationHistory,
-            additionalInformation = data.service.explanation,
-            hasAccessConstraints = data.service.hasAccessConstraints,
-            doi = if (doi != null || generalResourceType != null || resourceType != null) {
-                LuceneDoi(
-                    identifier = doi,
-                    generalResourceType = generalResourceType,
-                    resourceType = resourceType,
-                )
-            } else {
-                null
-            },
-        ),
-    ),
 )

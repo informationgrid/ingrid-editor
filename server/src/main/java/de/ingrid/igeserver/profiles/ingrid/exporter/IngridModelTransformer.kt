@@ -48,14 +48,26 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneAdministrative
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCommunication
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneConformanceResult
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneContact
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCrossReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataTemporal
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngrid
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngridSpatial
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentation
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationAxis
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGrid
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridRectified
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGridReferenced
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationType
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationVector
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyword
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLicense
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLicenseItem
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneMetadata
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneSpatial
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneTemporal
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneVerticalExtent
 import de.ingrid.igeserver.profiles.ingrid.getLanguageISO639v2Value
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
@@ -82,8 +94,6 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
-import kotlin.collections.filter
-import kotlin.collections.firstOrNull
 
 class TransformerCache {
     val documents = mutableMapOf<String, Document>()
@@ -1474,59 +1484,149 @@ open class IngridModelTransformer(
         )
     }
 
-    fun getSpatialRepresentation(): List<SpatialRepresentation> = data.spatialRepresentationType?.map { type ->
-        when (type.key) {
-            "1" -> SpatialRepresentation(
-                SpatialRepresentationType.VECTOR,
-                vectorSpatialRepresentation.map {
-                    SpatialRepresentationVector(
-                        codelists.getValue("528", it.topologyLevel),
-                        codelists.getValue("515", it.geometricObjectType),
-                        it.geometricObjectCount,
-                    )
-                },
+    open fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument = LuceneDocument(
+        id = model.uuid,
+        schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+        metadata = LuceneMetadata(
+            dataType = "INGRID",
+            created = formatDate(formatterISO, model._created),
+            modified = formatDate(formatterISO, model._contentModified),
+            issued = null,
+            partner = partner,
+            provider = provider,
+            language = metadataLanguage,
+            datasource = LuceneDatasource(
+                id = catalog.identifier,
+                name = catalog.name,
+            ),
+        ),
+        title = model.title,
+        description = data.description,
+        spatials = getSpatials().map { entry ->
+            LuceneSpatial(
+                name = entry.title,
+                bbox = entry.bbox?.let { listOf(it.lon1, it.lat1, it.lon2, it.lat2) },
+                wkt = entry.wkt,
+                toponym = entry.toponym?.let { listOf(it) },
+                administrative = entry.administrativeArea?.let { LuceneAdministrative(it) },
+                geometry = entry.geoJson,
             )
-
-            "2" -> SpatialRepresentation(
-                SpatialRepresentationType.GRID,
-                grid = SpatialRepresentationGrid(
-                    gridSpatialRepresentation?.axesDimensionProperties?.map {
-                        SpatialRepresentationAxis(codelists.getValue("514", it.name), it.size, it.resolution)
-                    } ?: emptyList(),
-                    gridSpatialRepresentation?.transformationParameterAvailability ?: false,
-                    gridSpatialRepresentation?.numberOfDimensions,
-                    gridSpatialRepresentation?.cellGeometry?.let {
-                        LuceneKeyValue(it.key, codelists.getValue("509", it))
-                    },
-                    gridSpatialRepresentation?.georectified?.let {
-                        SpatialRepresentationGridRectified(
-                            it.checkPointAvailability ?: false,
-                            it.checkPointDescription,
-                            it.cornerPoints,
-                            it.pointInPixel?.let { pointInPixel ->
-                                LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
-                            },
+        },
+        temporal = LuceneTemporal(
+            dataTemporal = getTemporal().map { entry ->
+                LuceneDataTemporal(
+                    dateType = entry.type.type,
+                    date = entry.date?.let { formatDate(formatterUTC, it) },
+                    dateText = entry.dateText,
+                    dateRange = entry.dateRange?.let { range ->
+                        LuceneDateRange(
+                            start = range.start?.let { formatDate(formatterUTC, it) },
+                            end = range.end?.let { formatDate(formatterUTC, it) },
                         )
                     },
-                    SpatialRepresentationGridReferenced(
-                        gridSpatialRepresentation?.georeferenceable?.orientationParameterAvailability ?: false,
-                        gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
-                        gridSpatialRepresentation?.georeferenceable?.parameters,
-                    ),
-                ),
+                )
+            },
+            status = data.temporal.status?.let { LuceneKeyValue(it.key, it.value) },
+            maintenanceFrequency = data.maintenanceInformation?.maintenanceAndUpdateFrequency?.let {
+                LuceneKeyValue(
+                    it.key,
+                    it.value,
+                )
+            },
+            userDefinedMaintenanceFrequencyInSec = data.maintenanceInformation?.userDefinedMaintenanceFrequency?.number?.toString(),
+        ),
+        keywords = getAllKeywords().flatMap { category ->
+            category.keywords.map { keyword ->
+                LuceneKeyword(
+                    term = keyword.label,
+                    id = keyword.id,
+                    source = category.type,
+                )
+            }
+        },
+        sortUuid = "",
+        contacts = contacts.map { contact ->
+            LuceneContact(
+                role = contact.relationType?.value,
+                name = contact.title,
+                communications = contact.allCommunications.map {
+                    LuceneCommunication(type = it.key, value = it.value)
+                },
+                street = contact.street,
+                code = contact.zipCode,
+                pocode = contact.zipPoBox,
+                locality = contact.city,
+                country = contact.countryIso3166,
+                administrativeArea = contact.administrativeArea,
             )
-
-            "3" -> SpatialRepresentation(SpatialRepresentationType.TEXT)
-
-            "4" -> SpatialRepresentation(SpatialRepresentationType.TIN)
-
-            "5" -> SpatialRepresentation(SpatialRepresentationType.STEREOMODEL)
-
-            "6" -> SpatialRepresentation(SpatialRepresentationType.VIDEO)
-
-            else -> throw ServerException.withReason("Unsupported spatial representation type: ${type.key}")
-        }
-    } ?: emptyList()
+        },
+        exports = emptyMap(),
+        ingrid = LuceneIngrid(
+            alternateTitle = alternateTitle,
+            references = getAllReferences().map { ref ->
+                LuceneReference(
+                    internal = "url" != ref.referenceType,
+                    url = ref.url,
+                    uuidRef = ref.uuidRef,
+                    type = LuceneKeyValue(ref.type.key, ref.type.value),
+                    title = ref.title,
+                    explanation = ref.explanation,
+                )
+            },
+            licenses = getAllLicenses().map { lic ->
+                LuceneLicense(
+                    type = lic.type,
+                    items = lic.items.map { item ->
+                        LuceneLicenseItem(
+                            key = item.key,
+                            value = item.value,
+                            source = item.source,
+                        )
+                    },
+                )
+            },
+            parentIdentifier = getParentIdentifier(),
+            specificUsage = specificUsage,
+            purpose = purpose,
+            conformanceResult = data.conformanceResult?.map { conf ->
+                LuceneConformanceResult(
+                    pass = getConformancePass(conf),
+                    specification = conf.specification?.let { LuceneKeyValue(it.key, it.value) },
+                    publicationDate = conf.publicationDate,
+                    explanation = conf.explanation,
+                )
+            } ?: emptyList(),
+            orderInfo = data.orderInfo,
+            crossReferences = getCrossReferences().map {
+                LuceneCrossReference(
+                    uuid = it.uuid,
+                    name = it.objectName,
+                    documentType = it.objectType,
+                    description = it.description,
+                    referenceType = it.refType.value,
+                    direction = it.direction,
+                )
+            },
+            spatial = LuceneIngridSpatial(
+                description = data.spatial.description,
+                verticalExtent = data.spatial.verticalExtent?.let {
+                    LuceneVerticalExtent(
+                        minimum = it.minimumValue?.toDouble(),
+                        maximum = it.maximumValue?.toDouble(),
+                        unit = it.unitOfMeasure?.let { u -> LuceneKeyValue(u.key, u.value) },
+                        vdatum = it.spatialSystem?.let { s -> LuceneKeyValue(s.key, s.value) },
+                    )
+                },
+            ),
+            characterSet = data.metadata?.characterSet?.let {
+                LuceneKeyValue(it.key, it.value)
+            },
+        ),
+    )
 }
 
 data class License(val type: String, val items: List<LicenseItem>)

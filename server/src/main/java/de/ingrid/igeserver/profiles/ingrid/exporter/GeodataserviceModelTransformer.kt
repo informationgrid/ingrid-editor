@@ -19,6 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDoi
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneService
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneServiceOperation
+
 open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "service"
@@ -50,4 +56,41 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
     val abstractText = this.description
     val history = data.service.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                service = LuceneService(
+                    type = data.service.type?.value ?: data.service.type?.key,
+                    classifications = data.service.classification?.mapNotNull { it.value ?: it.key } ?: emptyList(),
+                    versions = data.service.version?.mapNotNull { it.value ?: it.key } ?: emptyList(),
+                    operations = data.service.operations?.map {
+                        LuceneServiceOperation(
+                            name = it.name?.value ?: it.name?.key,
+                            description = it.description,
+                            accessUrl = it.methodCall,
+                        )
+                    } ?: emptyList(),
+                    environmentDescription = data.service.systemEnvironment,
+                    serviceHistory = data.service.implementationHistory,
+                    additionalInformation = data.service.explanation,
+                    hasAccessConstraints = data.service.hasAccessConstraints,
+                    doi = if (doi != null || generalResourceType != null || resourceType != null) {
+                        LuceneDoi(
+                            identifier = doi,
+                            generalResourceType = generalResourceType,
+                            resourceType = resourceType,
+                        )
+                    } else {
+                        null
+                    },
+                ),
+            ),
+        )
+    }
 }
