@@ -71,7 +71,7 @@
     "source-map-explorer": "^2.5.3",
     "stop-only": "^3.4.3",
     "typescript": "~6.0.3",
-    "vitest": "^4.0.14"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "npm": "please-use-yarn",
