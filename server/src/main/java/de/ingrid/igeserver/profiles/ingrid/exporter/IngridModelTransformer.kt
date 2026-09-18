@@ -48,6 +48,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.TypedDateEvent
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentation
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationAxis
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.SpatialRepresentationGrid
@@ -1494,13 +1495,17 @@ open class IngridModelTransformer(
                     } ?: emptyList(),
                     gridSpatialRepresentation?.transformationParameterAvailability ?: false,
                     gridSpatialRepresentation?.numberOfDimensions,
-                    codelists.getValue("509", gridSpatialRepresentation?.cellGeometry),
+                    gridSpatialRepresentation?.cellGeometry?.let {
+                        LuceneKeyValue(it.key, codelists.getValue("509", it))
+                    },
                     gridSpatialRepresentation?.georectified?.let {
                         SpatialRepresentationGridRectified(
                             it.checkPointAvailability ?: false,
                             it.checkPointDescription,
                             it.cornerPoints,
-                            codelists.getValue("2100", it.pointInPixel),
+                            it.pointInPixel?.let { pointInPixel ->
+                                LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
+                            },
                         )
                     },
                     SpatialRepresentationGridReferenced(

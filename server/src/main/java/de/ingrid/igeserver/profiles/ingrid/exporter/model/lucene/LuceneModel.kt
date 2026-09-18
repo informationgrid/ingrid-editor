@@ -48,6 +48,8 @@ data class LuceneMetadata(
     val created: String?,
     val modified: String?,
     val issued: String? = null,
+    @JsonProperty("document_type")
+    val documentType: String? = null,
     val partner: String?,
     val provider: String?,
     val language: String?,
@@ -58,6 +60,7 @@ data class LuceneMetadata(
 data class LuceneDatasource(
     val id: String?,
     val name: String?,
+    val type: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -161,7 +164,133 @@ data class LuceneIngrid(
     @JsonProperty("order_info")
     val orderInfo: String? = null,
     @JsonProperty("data_quality")
-    val dataQuality: Map<String, Any?> = emptyMap(),
+    val dataQuality: LuceneDataQuality? = null,
+    @JsonProperty("spatial_resolution_scale")
+    val spatialResolutionScale: LuceneSpatialResolutionScale? = null,
+    @JsonProperty("cross_references")
+    val crossReferences: List<LuceneCrossReference> = emptyList(),
+    val lineage: LuceneLineage? = null,
+    @JsonProperty("process_step_description")
+    val processStepDescription: List<String> = emptyList(),
+    @JsonProperty("symbol_catalogue")
+    val symbolCatalogue: List<LuceneCatalogueReference> = emptyList(),
+    @JsonProperty("codelist_reference")
+    val codelistReference: List<LuceneCatalogueReference> = emptyList(),
+    @JsonProperty("attribute_description")
+    val attributeDescription: List<String> = emptyList(),
+    val spatial: LuceneIngridSpatial? = null,
+    @JsonProperty("character_set")
+    val characterSet: LuceneKeyValue? = null,
+    val service: LuceneService? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneSpatialResolutionScale(
+    val scale: Int? = null,
+    @JsonProperty("resolution_ground")
+    val resolutionGround: Double? = null,
+    @JsonProperty("resolution_scan")
+    val resolutionScan: Double? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneCrossReference(
+    val uuid: String? = null,
+    val name: String? = null,
+    @JsonProperty("document_type")
+    val documentType: String? = null,
+    val description: String? = null,
+    @JsonProperty("reference_type")
+    val referenceType: String? = null,
+    val direction: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneLineage(
+    val statement: String? = null,
+    val source: String? = null,
+    @JsonProperty("process_step")
+    val processStep: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneCatalogueReference(
+    val title: String? = null,
+    val date: String? = null,
+    val version: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneIngridSpatial(
+    val description: String? = null,
+    @JsonProperty("vertical_extent")
+    val verticalExtent: LuceneVerticalExtent? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneVerticalExtent(
+    val minimum: Double? = null,
+    val maximum: Double? = null,
+    val unit: LuceneKeyValue? = null,
+    val vdatum: LuceneKeyValue? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDataQuality(
+    @JsonProperty("completeness_omission")
+    val completenessOmission: Double? = null,
+    @JsonProperty("positional_accuracy")
+    val positionalAccuracy: LucenePositionalAccuracy? = null,
+    val qualities: List<LuceneQuality> = emptyList(),
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LucenePositionalAccuracy(
+    val horizontal: Double? = null,
+    val vertical: Double? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneQuality(
+    val type: String? = null,
+    @JsonProperty("measure_type")
+    val measureType: LuceneKeyValue? = null,
+    val value: Double? = null,
+    val parameter: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneService(
+    val type: String? = null,
+    val classifications: List<String> = emptyList(),
+    val versions: List<String> = emptyList(),
+    val operations: List<LuceneServiceOperation> = emptyList(),
+    @JsonProperty("environment_description")
+    val environmentDescription: String? = null,
+    @JsonProperty("service_history")
+    val serviceHistory: String? = null,
+    @JsonProperty("additional_information")
+    val additionalInformation: String? = null,
+    @JsonProperty("has_access_constraints")
+    val hasAccessConstraints: Boolean? = null,
+    val doi: LuceneDoi? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneServiceOperation(
+    val name: String? = null,
+    val description: String? = null,
+    @JsonProperty("access_url")
+    val accessUrl: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDoi(
+    val identifier: String? = null,
+    @JsonProperty("general_resource_type")
+    val generalResourceType: String? = null,
+    @JsonProperty("resource_type")
+    val resourceType: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -174,9 +303,12 @@ data class SpatialRepresentation(
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentationGrid(
     val axes: List<SpatialRepresentationAxis> = emptyList(),
+    @JsonProperty("available_parameters")
     val availableParameters: Boolean = false,
+    @JsonProperty("number_dimensions")
     val numberDimensions: Int? = null,
-    val cellGeometry: String? = null,
+    @JsonProperty("cell_geometry")
+    val cellGeometry: LuceneKeyValue? = null,
     val rectified: SpatialRepresentationGridRectified? = null,
     val referenced: SpatialRepresentationGridReferenced? = null,
 )
@@ -186,7 +318,7 @@ data class SpatialRepresentationGridRectified(
     val checkPointAvailability: Boolean,
     val checkPointDescription: String?,
     val cornerPoints: String?,
-    val pointInPixel: String?,
+    val pointInPixel: LuceneKeyValue?,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -206,6 +338,7 @@ data class SpatialRepresentationAxis(
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentationVector(
     val topology: String? = null,
+    @JsonProperty("geometry_type")
     val geometryType: String? = null,
     val number: Int? = null,
 )

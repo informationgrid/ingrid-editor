@@ -324,6 +324,101 @@ fun IngridModelTransformer.toLuceneDocument(
             )
         } ?: emptyList(),
         orderInfo = data.orderInfo,
-        dataQuality = emptyMap(),
+        dataQuality = LuceneDataQuality(
+            completenessOmission = data.dataQuality?.completenessOmission?.measResult?.toDouble(),
+            positionalAccuracy = data.absoluteExternalPositionalAccuracy?.let {
+                LucenePositionalAccuracy(
+                    horizontal = it.horizontal?.toDouble(),
+                    vertical = it.vertical?.toDouble(),
+                )
+            },
+            qualities = data.qualities?.map {
+                LuceneQuality(
+                    type = it._type,
+                    measureType = it.measureType?.let { m -> LuceneKeyValue(m.key, m.value) },
+                    value = it.value.toDouble(),
+                    parameter = it.parameter,
+                )
+            } ?: emptyList(),
+        ),
+        spatialResolutionScale = (data.resolution?.firstOrNull() ?: data.service.resolution?.firstOrNull())?.let {
+            LuceneSpatialResolutionScale(
+                scale = it.denominator,
+                resolutionGround = it.distanceMeter?.toDouble(),
+                resolutionScan = it.distanceDPI?.toDouble(),
+            )
+        },
+        crossReferences = getCrossReferences().map {
+            LuceneCrossReference(
+                uuid = it.uuid,
+                name = it.objectName,
+                documentType = it.objectType,
+                description = it.description,
+                referenceType = it.refType.value,
+                direction = it.direction,
+            )
+        },
+        lineage = data.lineage?.statement?.let {
+            LuceneLineage(statement = it)
+        },
+        processStepDescription = data.dataQualityInfo?.lineage?.source?.processStep?.description?.mapNotNull {
+            it.value ?: it.key
+        } ?: emptyList(),
+        symbolCatalogue = data.portrayalCatalogueInfo?.citation?.map {
+            LuceneCatalogueReference(
+                title = it.title?.value ?: it.title?.key,
+                date = formatDate(formatterISO, it.date),
+                version = it.edition,
+            )
+        } ?: emptyList(),
+        codelistReference = data.featureCatalogueDescription?.citation?.map {
+            LuceneCatalogueReference(
+                title = it.title?.value ?: it.title?.key,
+                date = formatDate(formatterISO, it.date),
+                version = it.edition,
+            )
+        } ?: emptyList(),
+        attributeDescription = data.databaseContent?.mapNotNull {
+            it.parameter ?: it.moreInfo
+        } ?: emptyList(),
+        spatial = LuceneIngridSpatial(
+            description = data.spatial.description,
+            verticalExtent = data.spatial.verticalExtent?.let {
+                LuceneVerticalExtent(
+                    minimum = it.minimumValue?.toDouble(),
+                    maximum = it.maximumValue?.toDouble(),
+                    unit = it.unitOfMeasure?.let { u -> LuceneKeyValue(u.key, u.value) },
+                    vdatum = it.spatialSystem?.let { s -> LuceneKeyValue(s.key, s.value) },
+                )
+            },
+        ),
+        characterSet = data.metadata?.characterSet?.let {
+            LuceneKeyValue(it.key, it.value)
+        },
+        service = LuceneService(
+            type = data.service.type?.value ?: data.service.type?.key,
+            classifications = data.service.classification?.mapNotNull { it.value ?: it.key } ?: emptyList(),
+            versions = data.service.version?.mapNotNull { it.value ?: it.key } ?: emptyList(),
+            operations = data.service.operations?.map {
+                LuceneServiceOperation(
+                    name = it.name?.value ?: it.name?.key,
+                    description = it.description,
+                    accessUrl = it.methodCall,
+                )
+            } ?: emptyList(),
+            environmentDescription = data.service.systemEnvironment,
+            serviceHistory = data.service.implementationHistory,
+            additionalInformation = data.service.explanation,
+            hasAccessConstraints = data.service.hasAccessConstraints,
+            doi = if (doi != null || generalResourceType != null || resourceType != null) {
+                LuceneDoi(
+                    identifier = doi,
+                    generalResourceType = generalResourceType,
+                    resourceType = resourceType,
+                )
+            } else {
+                null
+            },
+        ),
     ),
 )
