@@ -22,7 +22,7 @@ pipeline {
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build cyclonedxBom -x test -x check'
+                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
             }
         }
 
@@ -48,7 +48,16 @@ pipeline {
             }
         }
 
+        stage ('Create SBOMs') {
+            when { not { buildingTag() } }
+            steps {
+                sh "./gradlew cyclonedxBom"
+                sh "./gradlew cyclonedxBom -PdevSBOM"
+            }
+        }
+
         stage ('Merge SBOMs') {
+            when { not { buildingTag() } }
             agent {
                 docker {
                     image 'cyclonedx/cyclonedx-cli:latest'
@@ -61,17 +70,20 @@ pipeline {
                 script {
                     sh """
                         mkdir -p build/reports
-                        cyclonedx merge --input-files server/build/reports/bom.json frontend/build/reports/bom.json --output-file build/reports/bom.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                        cyclonedx merge --input-files server/build/reports/sbom-prod.json frontend/build/reports/sbom.json --output-file build/reports/sbom.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                        cyclonedx merge --input-files server/build/reports/sbom-dev.json frontend/build/reports/sbom-dev.json --output-file build/reports/sbom-dev.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
                     """
                 }
             }
         }
 
         stage ('Upload SBOM') {
+            when { not { buildingTag() } }
             steps {
                 script {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
-                        dependencyTrackPublisher artifact: 'build/reports/bom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid']
+                        dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332']
+                        dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332']
                     }
                 }
             }
@@ -119,11 +131,11 @@ pipeline {
             steps {
                 script {
                     def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
-                    sh "mv build/reports/bom.json build/reports/ingrid-editor-${determineRpmVersion()}.bom.json"
+                    sh "mv build/reports/sbom.json build/reports/ingrid-editor-${determineRpmVersion()}.sbom.json"
                     withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''
                             curl -f --user $USERNAME:$PASSWORD --upload-file build/rpms/ingrid/*.rpm https://nexus.informationgrid.eu/repository/''' + repoType + '''/
-                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.bom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
+                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.sbom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
                         '''
                     }
                 }
