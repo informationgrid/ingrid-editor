@@ -73,12 +73,6 @@ pipeline {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
                         dependencyTrackPublisher artifact: 'build/reports/bom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid']
                     }
-                    def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
-                    withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh '''
-                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/bom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/ingrid-editor-${determineRpmVersion()}.bom.json
-                        '''
-                    }
                 }
             }
         }
@@ -125,10 +119,11 @@ pipeline {
             steps {
                 script {
                     def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
-
+                    sh "mv build/reports/bom.json build/reports/ingrid-editor-${determineRpmVersion()}.bom.json"
                     withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''
                             curl -f --user $USERNAME:$PASSWORD --upload-file build/rpms/ingrid/*.rpm https://nexus.informationgrid.eu/repository/''' + repoType + '''/
+                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.bom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
                         '''
                     }
                 }
