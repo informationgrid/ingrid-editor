@@ -25,6 +25,7 @@ import com.networknt.schema.SchemaRegistry
 import com.networknt.schema.SchemaRegistryConfig
 import com.networknt.schema.dialect.Dialects
 import com.networknt.schema.path.PathType
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -112,7 +113,7 @@ class IngridIndexExporter(
         val assertions = schema1.validate(json, InputFormat.JSON)
 
         if (assertions.isNotEmpty()) {
-            throw IllegalArgumentException("JSON schema validation failed: ${assertions.joinToString(", ")}")
+            throw ValidationException.withReason("JSON schema validation failed: ${assertions.joinToString(", ")}")
         }
     }
 }

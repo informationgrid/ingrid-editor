@@ -632,8 +632,7 @@
               }
             },
             "required": [
-              "term",
-              "source"
+              "term"
             ]
           }
         },
@@ -1565,11 +1564,12 @@
               ]
             },
             "spatial_representation": {
-              "type": "array",
+              "type": "object",
               "title": "Digitale Repräsentation",
-              "items": {
-                "properties": {
-                  "type": {
+              "properties": {
+                "types": {
+                  "type": "array",
+                  "items": {
                     "type": "string",
                     "title": "Typ",
                     "description": "Beschreibt den Typ der Repräsentation",
@@ -1581,126 +1581,126 @@
                       "stereomodel",
                       "grid"
                     ]
-                  },
-                  "vector": {
-                    "type": "array",
-                    "title": "Vector",
-                    "description": "Beschreibt die digitale Repräsentation als eine Liste von Vektor-Daten.",
-                    "items": {
-                      "properties": {
-                        "topology": {
-                          "type": "string",
-                          "description": "Beschreibt die Topologie des Vektor-Datensatzes"
-                        },
-                        "geometry_type": {
-                          "type": "string",
-                          "description": "Beschreibt den Typ der Geometrie"
-                        },
-                        "number": {
-                          "type": "integer",
-                          "description": "Beschreibt die Anzahl der Punkt- oder Vektortypelemente im Datensatz"
-                        }
+                  }
+                },
+                "vector": {
+                  "type": "array",
+                  "title": "Vector",
+                  "description": "Beschreibt die digitale Repräsentation als eine Liste von Vektor-Daten.",
+                  "items": {
+                    "properties": {
+                      "topology": {
+                        "type": "string",
+                        "description": "Beschreibt die Topologie des Vektor-Datensatzes"
+                      },
+                      "geometry_type": {
+                        "type": "string",
+                        "description": "Beschreibt den Typ der Geometrie"
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Beschreibt die Anzahl der Punkt- oder Vektortypelemente im Datensatz"
                       }
                     }
-                  },
-                  "grid": {
-                    "title": "Raster/Gitter",
-                    "description": "Enthält die Information über die Strukturelemente der Rasterdaten. Aktuell nicht im Portal angezeigt?",
-                    "properties": {
-                      "axes": {
-                        "type": "array",
-                        "items": {
+                  }
+                },
+                "grid": {
+                  "title": "Raster/Gitter",
+                  "description": "Enthält die Information über die Strukturelemente der Rasterdaten. Aktuell nicht im Portal angezeigt?",
+                  "properties": {
+                    "axes": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Beschreibt den Namen der Achse"
+                          },
+                          "number": {
+                            "type": "integer",
+                            "description": "Beschreibt die Anzahl der Achsen im Raster"
+                          },
+                          "resolution": {
+                            "type": "number",
+                            "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
+                          }
+                        }
+                      }
+                    },
+                    "available_parameters": {
+                      "type": "boolean",
+                      "description": "Beschreibt, ob Parameter für das Raster verfügbar sind"
+                    },
+                    "number_dimensions": {
+                      "type": "integer",
+                      "description": "Beschreibt die Anzahl der unabhängigen räumlich-zeitlichen Achsen"
+                    },
+                    "cell_geometry": {
+                      "description": "Angabe, ob die Rasterdatenzelle einen Punkt oder eine Fläche beschreibt. Hier wird die Codeliste 509 verwendet.",
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "rectified": {
+                      "title": "Georektifiziertes Raster",
+                      "properties": {
+                        "checkPointAvailability": {
+                          "type": "boolean",
+                          "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
+                        },
+                        "checkPointDescription": {
+                          "type": "string",
+                          "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
+                        },
+                        "cornerPoints": {
+                          "type": "string"
+                        },
+                        "pointInPixel": {
+                          "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
+                          "additionalProperties": false,
                           "properties": {
-                            "label": {
-                              "type": "string",
-                              "description": "Beschreibt den Namen der Achse"
+                            "key": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             },
-                            "number": {
-                              "type": "integer",
-                              "description": "Beschreibt die Anzahl der Achsen im Raster"
-                            },
-                            "resolution": {
-                              "type": "integer",
-                              "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
+                            "value": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         }
-                      },
-                      "available_parameters": {
-                        "type": "boolean",
-                        "description": "Beschreibt, ob Parameter für das Raster verfügbar sind"
-                      },
-                      "number_dimensions": {
-                        "type": "integer",
-                        "description": "Beschreibt die Anzahl der unabhängigen räumlich-zeitlichen Achsen"
-                      },
-                      "cell_geometry": {
-                        "description": "Angabe, ob die Rasterdatenzelle einen Punkt oder eine Fläche beschreibt. Hier wird die Codeliste 509 verwendet.",
-                        "additionalProperties": false,
-                        "properties": {
-                          "key": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "value": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          }
-                        }
-                      },
-                      "rectified": {
-                        "title": "Georektifiziertes Raster",
-                        "properties": {
-                          "checkPointAvailability": {
-                            "type": "boolean",
-                            "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
-                          },
-                          "checkPointDescription": {
-                            "type": "string",
-                            "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
-                          },
-                          "cornerPoints": {
-                            "type": "string"
-                          },
-                          "pointInPixel": {
-                            "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
-                            "additionalProperties": false,
-                            "properties": {
-                              "key": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "value": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "referenced": {
-                        "title": "Georeferenzierbares Raster",
-                        "properties": {
-                          "orientationParameterAvailability": {
-                            "type": "boolean",
-                            "description": "Angabe, ob Orientierungsparameter verfügbar sind."
-                          },
-                          "controlPointAvaliability": {
-                            "type": "boolean",
-                            "description": "Angabe, ob Passpunkte existieren."
-                          },
-                          "parameters": {
-                            "type": "string",
-                            "description": "Parameter, die die Georeferenzierung der Rasterdaten ermöglichen"
-                          }
+                      }
+                    },
+                    "referenced": {
+                      "title": "Georeferenzierbares Raster",
+                      "properties": {
+                        "orientationParameterAvailability": {
+                          "type": "boolean",
+                          "description": "Angabe, ob Orientierungsparameter verfügbar sind."
+                        },
+                        "controlPointAvaliability": {
+                          "type": "boolean",
+                          "description": "Angabe, ob Passpunkte existieren."
+                        },
+                        "parameters": {
+                          "type": "string",
+                          "description": "Parameter, die die Georeferenzierung der Rasterdaten ermöglichen"
                         }
                       }
                     }
@@ -1708,7 +1708,7 @@
                 }
               }
             },
-            "spatialResolutionScale": {
+            "spatial_resolution_scale": {
               "type": "object",
               "properties": {
                 "scale": {
@@ -1777,14 +1777,14 @@
                 }
               }
             },
-            "processStepDescription": {
+            "process_step_description": {
               "type": "array",
               "description": "Angabe der Methode, die zur Erstellung des Datenobjektes geführt hat.",
               "items": {
                 "type": "string"
               }
             },
-            "symbolCatalogue": {
+            "symbol_catalogue": {
               "type": "array",
               "description": "Für die Präsentation genormter Objekte und Sachverhalte können für die Nutzer der Daten zur Herstellung von Karten abgestimmte Symbole vorgegeben werden",
               "items": {
@@ -1805,7 +1805,7 @@
                 }
               }
             },
-            "codeListReference": {
+            "codelist_reference": {
               "type": "array",
               "description": "An dieser Stelle besteht die Möglichkeit, den Daten zugrunde liegende Klassifizierungsschlüssel zu benennen.",
               "items": {
@@ -1826,7 +1826,7 @@
                 }
               }
             },
-            "attributeDescription": {
+            "attribute_description": {
               "type": "array",
               "description": "Angabe der mit der Geo-Information/Karte verbundenen Sachdaten.",
               "items": {
@@ -1946,10 +1946,10 @@
             },
             "data_quality": {
               "properties": {
-                "completenessOmission": {
+                "completeness_omission": {
                   "type": "number"
                 },
-                "positionalAccuracy": {
+                "positional_accuracy": {
                   "properties": {
                     "horizontal": {
                       "type": "number"
@@ -2072,19 +2072,19 @@
                     }
                   }
                 },
-                "environmentDescription": {
+                "environment_description": {
                   "type": "string",
                   "description": "Angaben zum Betriebssystem und der Software, ggf. auch Hardware, die zur Implementierung des Dienstes eingesetzt wird."
                 },
-                "serviceHistory": {
+                "service_history": {
                   "type": "string",
                   "description": "Angaben zur Implementierungsgeschichte des Dienstes."
                 },
-                "additionalInformation": {
+                "additional_information": {
                   "type": "string",
                   "description": "Zusätzliche Informationen zum Dienst"
                 },
-                "hasAccessConstraints": {
+                "has_access_constraints": {
                   "type": "boolean",
                   "description": "Ist der Zugriff auf den Dienst eingeschränkt?"
                 },
@@ -2095,11 +2095,11 @@
                       "type": "string",
                       "description": "Angabe des DOI (Digital Object Identifier) des Dokumentes"
                     },
-                    "generalResourceType": {
+                    "general_resource_type": {
                       "type": "string",
                       "description": "Angabe der übergeordneten Art des Dokumentes"
                     },
-                    "resourceType": {
+                    "resource_type": {
                       "type": "string",
                       "description": "Angabe der Art des Dokumentes"
                     }
@@ -2510,11 +2510,12 @@
               ]
             },
             "spatial_representation": {
-              "type": "array",
+              "type": "object",
               "title": "Digitale Repräsentation",
-              "items": {
-                "properties": {
-                  "type": {
+              "properties": {
+                "types": {
+                  "type": "array",
+                  "items": {
                     "type": "string",
                     "title": "Typ",
                     "description": "Beschreibt den Typ der Repräsentation",
@@ -2526,126 +2527,126 @@
                       "stereomodel",
                       "grid"
                     ]
-                  },
-                  "vector": {
-                    "type": "array",
-                    "title": "Vector",
-                    "description": "Beschreibt die digitale Repräsentation als eine Liste von Vektor-Daten.",
-                    "items": {
-                      "properties": {
-                        "topology": {
-                          "type": "string",
-                          "description": "Beschreibt die Topologie des Vektor-Datensatzes"
-                        },
-                        "geometry_type": {
-                          "type": "string",
-                          "description": "Beschreibt den Typ der Geometrie"
-                        },
-                        "number": {
-                          "type": "integer",
-                          "description": "Beschreibt die Anzahl der Punkt- oder Vektortypelemente im Datensatz"
-                        }
+                  }
+                },
+                "vector": {
+                  "type": "array",
+                  "title": "Vector",
+                  "description": "Beschreibt die digitale Repräsentation als eine Liste von Vektor-Daten.",
+                  "items": {
+                    "properties": {
+                      "topology": {
+                        "type": "string",
+                        "description": "Beschreibt die Topologie des Vektor-Datensatzes"
+                      },
+                      "geometry_type": {
+                        "type": "string",
+                        "description": "Beschreibt den Typ der Geometrie"
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Beschreibt die Anzahl der Punkt- oder Vektortypelemente im Datensatz"
                       }
                     }
-                  },
-                  "grid": {
-                    "title": "Raster/Gitter",
-                    "description": "Enthält die Information über die Strukturelemente der Rasterdaten. Aktuell nicht im Portal angezeigt?",
-                    "properties": {
-                      "axes": {
-                        "type": "array",
-                        "items": {
+                  }
+                },
+                "grid": {
+                  "title": "Raster/Gitter",
+                  "description": "Enthält die Information über die Strukturelemente der Rasterdaten. Aktuell nicht im Portal angezeigt?",
+                  "properties": {
+                    "axes": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Beschreibt den Namen der Achse"
+                          },
+                          "number": {
+                            "type": "integer",
+                            "description": "Beschreibt die Anzahl der Achsen im Raster"
+                          },
+                          "resolution": {
+                            "type": "number",
+                            "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
+                          }
+                        }
+                      }
+                    },
+                    "available_parameters": {
+                      "type": "boolean",
+                      "description": "Beschreibt, ob Parameter für das Raster verfügbar sind"
+                    },
+                    "number_dimensions": {
+                      "type": "integer",
+                      "description": "Beschreibt die Anzahl der unabhängigen räumlich-zeitlichen Achsen"
+                    },
+                    "cell_geometry": {
+                      "description": "Angabe, ob die Rasterdatenzelle einen Punkt oder eine Fläche beschreibt. Hier wird die Codeliste 509 verwendet.",
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "rectified": {
+                      "title": "Georektifiziertes Raster",
+                      "properties": {
+                        "checkPointAvailability": {
+                          "type": "boolean",
+                          "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
+                        },
+                        "checkPointDescription": {
+                          "type": "string",
+                          "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
+                        },
+                        "cornerPoints": {
+                          "type": "string"
+                        },
+                        "pointInPixel": {
+                          "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
+                          "additionalProperties": false,
                           "properties": {
-                            "label": {
-                              "type": "string",
-                              "description": "Beschreibt den Namen der Achse"
+                            "key": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             },
-                            "number": {
-                              "type": "integer",
-                              "description": "Beschreibt die Anzahl der Achsen im Raster"
-                            },
-                            "resolution": {
-                              "type": "integer",
-                              "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
+                            "value": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           }
                         }
-                      },
-                      "available_parameters": {
-                        "type": "boolean",
-                        "description": "Beschreibt, ob Parameter für das Raster verfügbar sind"
-                      },
-                      "number_dimensions": {
-                        "type": "integer",
-                        "description": "Beschreibt die Anzahl der unabhängigen räumlich-zeitlichen Achsen"
-                      },
-                      "cell_geometry": {
-                        "description": "Angabe, ob die Rasterdatenzelle einen Punkt oder eine Fläche beschreibt. Hier wird die Codeliste 509 verwendet.",
-                        "additionalProperties": false,
-                        "properties": {
-                          "key": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "value": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          }
-                        }
-                      },
-                      "rectified": {
-                        "title": "Georektifiziertes Raster",
-                        "properties": {
-                          "checkPointAvailability": {
-                            "type": "boolean",
-                            "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
-                          },
-                          "checkPointDescription": {
-                            "type": "string",
-                            "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
-                          },
-                          "cornerPoints": {
-                            "type": "string"
-                          },
-                          "pointInPixel": {
-                            "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
-                            "additionalProperties": false,
-                            "properties": {
-                              "key": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "value": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "referenced": {
-                        "title": "Georeferenzierbares Raster",
-                        "properties": {
-                          "orientationParameterAvailability": {
-                            "type": "boolean",
-                            "description": "Angabe, ob Orientierungsparameter verfügbar sind."
-                          },
-                          "controlPointAvaliability": {
-                            "type": "boolean",
-                            "description": "Angabe, ob Passpunkte existieren."
-                          },
-                          "parameters": {
-                            "type": "string",
-                            "description": "Parameter, die die Georeferenzierung der Rasterdaten ermöglichen"
-                          }
+                      }
+                    },
+                    "referenced": {
+                      "title": "Georeferenzierbares Raster",
+                      "properties": {
+                        "orientationParameterAvailability": {
+                          "type": "boolean",
+                          "description": "Angabe, ob Orientierungsparameter verfügbar sind."
+                        },
+                        "controlPointAvaliability": {
+                          "type": "boolean",
+                          "description": "Angabe, ob Passpunkte existieren."
+                        },
+                        "parameters": {
+                          "type": "string",
+                          "description": "Parameter, die die Georeferenzierung der Rasterdaten ermöglichen"
                         }
                       }
                     }
@@ -2653,7 +2654,7 @@
                 }
               }
             },
-            "spatialResolutionScale": {
+            "spatial_resolution_scale": {
               "type": "object",
               "properties": {
                 "scale": {
@@ -2722,14 +2723,14 @@
                 }
               }
             },
-            "processStepDescription": {
+            "process_step_description": {
               "type": "array",
               "description": "Angabe der Methode, die zur Erstellung des Datenobjektes geführt hat.",
               "items": {
                 "type": "string"
               }
             },
-            "symbolCatalogue": {
+            "symbol_catalogue": {
               "type": "array",
               "description": "Für die Präsentation genormter Objekte und Sachverhalte können für die Nutzer der Daten zur Herstellung von Karten abgestimmte Symbole vorgegeben werden",
               "items": {
@@ -2750,7 +2751,7 @@
                 }
               }
             },
-            "codeListReference": {
+            "codelist_reference": {
               "type": "array",
               "description": "An dieser Stelle besteht die Möglichkeit, den Daten zugrunde liegende Klassifizierungsschlüssel zu benennen.",
               "items": {
@@ -2771,7 +2772,7 @@
                 }
               }
             },
-            "attributeDescription": {
+            "attribute_description": {
               "type": "array",
               "description": "Angabe der mit der Geo-Information/Karte verbundenen Sachdaten.",
               "items": {
@@ -2891,10 +2892,10 @@
             },
             "data_quality": {
               "properties": {
-                "completenessOmission": {
+                "completeness_omission": {
                   "type": "number"
                 },
-                "positionalAccuracy": {
+                "positional_accuracy": {
                   "properties": {
                     "horizontal": {
                       "type": "number"
@@ -3017,19 +3018,19 @@
                     }
                   }
                 },
-                "environmentDescription": {
+                "environment_description": {
                   "type": "string",
                   "description": "Angaben zum Betriebssystem und der Software, ggf. auch Hardware, die zur Implementierung des Dienstes eingesetzt wird."
                 },
-                "serviceHistory": {
+                "service_history": {
                   "type": "string",
                   "description": "Angaben zur Implementierungsgeschichte des Dienstes."
                 },
-                "additionalInformation": {
+                "additional_information": {
                   "type": "string",
                   "description": "Zusätzliche Informationen zum Dienst"
                 },
-                "hasAccessConstraints": {
+                "has_access_constraints": {
                   "type": "boolean",
                   "description": "Ist der Zugriff auf den Dienst eingeschränkt?"
                 },
@@ -3040,11 +3041,11 @@
                       "type": "string",
                       "description": "Angabe des DOI (Digital Object Identifier) des Dokumentes"
                     },
-                    "generalResourceType": {
+                    "general_resource_type": {
                       "type": "string",
                       "description": "Angabe der übergeordneten Art des Dokumentes"
                     },
-                    "resourceType": {
+                    "resource_type": {
                       "type": "string",
                       "description": "Angabe der Art des Dokumentes"
                     }

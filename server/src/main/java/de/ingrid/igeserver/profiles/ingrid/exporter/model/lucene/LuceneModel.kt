@@ -155,7 +155,7 @@ data class LuceneIngrid(
     @JsonProperty("datasource_identifier")
     val datasourceIdentifier: String? = null,
     @JsonProperty("spatial_representation")
-    val spatialRepresentation: List<SpatialRepresentation> = emptyList(),
+    val spatialRepresentation: SpatialRepresentation? = null,
     @JsonProperty("specific_usage")
     val specificUsage: String? = null,
     val purpose: String? = null,
@@ -295,7 +295,7 @@ data class LuceneDoi(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentation(
-    val type: SpatialRepresentationType,
+    val types: List<SpatialRepresentationType>,
     val vector: List<SpatialRepresentationVector> = emptyList(),
     val grid: SpatialRepresentationGrid? = null,
 )

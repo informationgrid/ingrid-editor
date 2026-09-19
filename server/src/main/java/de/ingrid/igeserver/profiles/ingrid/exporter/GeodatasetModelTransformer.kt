@@ -360,57 +360,53 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         )
     }
 
-    fun getSpatialRepresentation(): List<SpatialRepresentation> = data.spatialRepresentationType?.map { type ->
-        when (type.key) {
-            "1" -> SpatialRepresentation(
-                SpatialRepresentationType.VECTOR,
-                vectorSpatialRepresentation.map {
-                    SpatialRepresentationVector(
-                        codelists.getValue("528", it.topologyLevel),
-                        codelists.getValue("515", it.geometricObjectType),
-                        it.geometricObjectCount,
+    fun getSpatialRepresentation(): SpatialRepresentation {
+        val types = data.spatialRepresentationType?.map { type ->
+            when (type.key) {
+                "1" -> SpatialRepresentationType.VECTOR
+                "2" -> SpatialRepresentationType.GRID
+                "3" -> SpatialRepresentationType.TEXT
+                "4" -> SpatialRepresentationType.TIN
+                "5" -> SpatialRepresentationType.STEREOMODEL
+                "6" -> SpatialRepresentationType.VIDEO
+                else -> throw ServerException.withReason("Unsupported spatial representation type: ${type.key}")
+            }
+        } ?: emptyList()
+
+        return SpatialRepresentation(
+            types,
+            vectorSpatialRepresentation.map {
+                SpatialRepresentationVector(
+                    codelists.getValue("528", it.topologyLevel),
+                    codelists.getValue("515", it.geometricObjectType),
+                    it.geometricObjectCount,
+                )
+            },
+            SpatialRepresentationGrid(
+                gridSpatialRepresentation?.axesDimensionProperties?.map {
+                    SpatialRepresentationAxis(codelists.getValue("514", it.name), it.size, it.resolution)
+                } ?: emptyList(),
+                gridSpatialRepresentation?.transformationParameterAvailability ?: false,
+                gridSpatialRepresentation?.numberOfDimensions,
+                gridSpatialRepresentation?.cellGeometry?.let {
+                    LuceneKeyValue(it.key, codelists.getValue("509", it))
+                },
+                gridSpatialRepresentation?.georectified?.let {
+                    SpatialRepresentationGridRectified(
+                        it.checkPointAvailability ?: false,
+                        it.checkPointDescription,
+                        it.cornerPoints,
+                        it.pointInPixel?.let { pointInPixel ->
+                            LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
+                        },
                     )
                 },
-            )
-
-            "2" -> SpatialRepresentation(
-                SpatialRepresentationType.GRID,
-                grid = SpatialRepresentationGrid(
-                    gridSpatialRepresentation?.axesDimensionProperties?.map {
-                        SpatialRepresentationAxis(codelists.getValue("514", it.name), it.size, it.resolution)
-                    } ?: emptyList(),
-                    gridSpatialRepresentation?.transformationParameterAvailability ?: false,
-                    gridSpatialRepresentation?.numberOfDimensions,
-                    gridSpatialRepresentation?.cellGeometry?.let {
-                        LuceneKeyValue(it.key, codelists.getValue("509", it))
-                    },
-                    gridSpatialRepresentation?.georectified?.let {
-                        SpatialRepresentationGridRectified(
-                            it.checkPointAvailability ?: false,
-                            it.checkPointDescription,
-                            it.cornerPoints,
-                            it.pointInPixel?.let { pointInPixel ->
-                                LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
-                            },
-                        )
-                    },
-                    SpatialRepresentationGridReferenced(
-                        gridSpatialRepresentation?.georeferenceable?.orientationParameterAvailability ?: false,
-                        gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
-                        gridSpatialRepresentation?.georeferenceable?.parameters,
-                    ),
+                SpatialRepresentationGridReferenced(
+                    gridSpatialRepresentation?.georeferenceable?.orientationParameterAvailability ?: false,
+                    gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
+                    gridSpatialRepresentation?.georeferenceable?.parameters,
                 ),
-            )
-
-            "3" -> SpatialRepresentation(SpatialRepresentationType.TEXT)
-
-            "4" -> SpatialRepresentation(SpatialRepresentationType.TIN)
-
-            "5" -> SpatialRepresentation(SpatialRepresentationType.STEREOMODEL)
-
-            "6" -> SpatialRepresentation(SpatialRepresentationType.VIDEO)
-
-            else -> throw ServerException.withReason("Unsupported spatial representation type: ${type.key}")
-        }
-    } ?: emptyList()
+            ),
+        )
+    }
 }
