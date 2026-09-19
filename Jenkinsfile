@@ -22,7 +22,7 @@ pipeline {
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check -x cyclonedxBom'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
             }
         }
 
@@ -31,12 +31,12 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck -x cyclonedxBom'
+                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck'
                     } catch(error) {
                         currentBuild.result = 'UNSTABLE'
                     }
 
-                    sh './gradlew :server:test -x cyclonedxBom'
+                    sh './gradlew :server:test'
                 }
             }
         }
@@ -44,7 +44,7 @@ pipeline {
         stage ('Base-Image Update') {
             when { buildingTag() }
             steps {
-                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check -x cyclonedxBom'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
             }
         }
 

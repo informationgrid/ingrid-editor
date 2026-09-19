@@ -28,7 +28,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.5.4'
     id "com.gorylenko.gradle-git-properties" version "4.0.1"
     id 'io.kotest' version "$kotest_version"
-    id "com.github.ben-manes.versions" version "0.64.0"
+    id "io.github.ben-manes.versions" version "0.64.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
@@ -342,6 +342,34 @@ gitProperties {
 
 tasks.named('generateJte') {
     mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+}
+
+tasks.named('processResources') {
+    exclude('META-INF/sbom/**')
+}
+
+afterEvaluate {
+    tasks.named('processResources', ProcessResources).configure {
+        def defaultCopySpecClass = Class.forName("org.gradle.api.internal.file.copy.DefaultCopySpec")
+        def childSpecsField = defaultCopySpecClass.getDeclaredField("childSpecs")
+        childSpecsField.setAccessible(true)
+        def sourcePathsField = defaultCopySpecClass.getDeclaredField("sourcePaths")
+        sourcePathsField.setAccessible(true)
+
+        def children = (Collection) childSpecsField.get(mainSpec)
+        children?.removeIf { child ->
+            def sp = sourcePathsField.get(child)
+            if (sp instanceof ConfigurableFileCollection) {
+                sp.setFrom([])
+            }
+            true
+        }
+        def additionOrderField = defaultCopySpecClass.getDeclaredField("childSpecsInAdditionOrder")
+        additionOrderField.setAccessible(true)
+        ((Collection) additionOrderField.get(mainSpec))?.clear()
+
+        dependsOn.removeIf { it.toString().contains('cyclonedxBom') }
+    }
 }
 
 tasks.named('compileKotlin') {
