@@ -47,6 +47,7 @@ import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
 import { AsyncPipe } from "@angular/common";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FlowChunk, FlowFile } from "flowjs";
 
 @Component({
   selector: "ige-file-upload",
@@ -108,7 +109,38 @@ export class UploadComponent implements AfterViewInit {
     testChunks: false,
     forceChunkSize: false,
     maxChunkRetries: 2,
+    // Flow.js calls this for each chunk before sending it. The callback resumes
+    // the upload explicitly through preprocessFinished()
+    preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
+
+  // Cache the promise so concurrent chunk callbacks share one calculation per
+  // file. WeakMap lets the entry be garbage collected when the file is no longer used.
+  private checksumCache = new WeakMap<
+    FlowFile,
+    Promise<{ checksums: string[]; combinedChecksum: string }>
+  >();
+
+  private async prepareChecksums(chunk: FlowChunk) {
+    const file: FlowFile = chunk.fileObj;
+    let checksums = this.checksumCache.get(file);
+    if (!checksums) {
+      checksums = calculateChecksums(file);
+      this.checksumCache.set(file, checksums);
+    }
+    const result = await checksums;
+    // override getParams to add checkSums
+    const getParams = chunk.getParams.bind(chunk);
+    chunk.getParams = () => ({
+      ...getParams(),
+      chunkChecksum: result.checksums[chunk.offset],
+      combinedChecksum: result.combinedChecksum,
+    });
+    (
+      chunk as flowjs.FlowChunk & { preprocessFinished(): void }
+    ).preprocessFinished();
+  }
+
   _errors: { [x: string]: UploadError } = {};
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
@@ -298,4 +330,46 @@ export class UploadComponent implements AfterViewInit {
     }
     flowFile.retry();
   }
+}
+
+/**
+ * Calculate the checksums of each chunk of a FlowFile and the combined checkSum
+ * @param file
+ */
+export async function calculateChecksums(file: FlowFile): Promise<{
+  checksums: string[];
+  combinedChecksum: string;
+}> {
+  const checksums: string[] = await Promise.all(
+    file.chunks.map(async (chunk) => {
+      const chunkBytes = await file.file
+        .slice(chunk.startByte, chunk.endByte)
+        .arrayBuffer();
+
+      return sha256(chunkBytes);
+    }),
+  );
+  const combinedChecksum = await sha256(
+    new TextEncoder().encode(checksums.join("")),
+  );
+
+  return {
+    checksums,
+    combinedChecksum,
+  };
+}
+
+export async function calculateChecksum(chunk: FlowChunk): Promise<string> {
+  const uploadFile = chunk.fileObj.file;
+  const chunkBytes = await uploadFile
+    .slice(chunk.startByte, chunk.endByte)
+    .arrayBuffer();
+  return await sha256(chunkBytes);
+}
+
+export async function sha256(bytes: BufferSource): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
 }
