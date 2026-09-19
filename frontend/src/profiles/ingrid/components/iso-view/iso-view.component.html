@@ -27,7 +27,10 @@
                     [value]="selectedFormat()"
                     (selectionChange)="onFormatChange($event.value)"
                 >
-                    @for (format of exportFormats(); track format.type) {
+                    @for (
+                        format of exportFormats();
+                        track format.type + format.category
+                    ) {
                         <mat-option [value]="format">{{
                             format.name
                         }}</mat-option>
@@ -45,6 +48,11 @@
             <div class="flex-row justify-content-center gap-8 error-box">
                 <mat-icon>error</mat-icon>
                 <span>Export nicht unterstützt</span>
+            </div>
+        } @else if (validationError()) {
+            <div class="flex-row justify-content-center gap-8 error-box">
+                <mat-icon class="">error</mat-icon>
+                <span>{{ validationError() }}</span>
             </div>
         }
         <pre [hidden]="compareView()">{{ exportedText() }}</pre>
