@@ -22,7 +22,7 @@ pipeline {
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check -x cyclonedxBom'
             }
         }
 
@@ -31,12 +31,12 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck'
+                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck -x cyclonedxBom'
                     } catch(error) {
                         currentBuild.result = 'UNSTABLE'
                     }
 
-                    sh './gradlew :server:test'
+                    sh './gradlew :server:test -x cyclonedxBom'
                 }
             }
         }
@@ -44,12 +44,17 @@ pipeline {
         stage ('Base-Image Update') {
             when { buildingTag() }
             steps {
-                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check -x cyclonedxBom'
             }
         }
 
         stage ('Create SBOMs') {
-            when { not { buildingTag() } }
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
             steps {
                 sh "./gradlew cyclonedxBom"
                 sh "./gradlew cyclonedxBom -PdevSBOM"
@@ -57,7 +62,12 @@ pipeline {
         }
 
         stage ('Merge SBOMs') {
-            when { not { buildingTag() } }
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
             agent {
                 docker {
                     image 'cyclonedx/cyclonedx-cli:latest'
@@ -78,7 +88,12 @@ pipeline {
         }
 
         stage ('Upload SBOM') {
-            when { not { buildingTag() } }
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
             steps {
                 script {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
