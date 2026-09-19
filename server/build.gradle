@@ -127,6 +127,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.keycloak:keycloak-admin-client:26.0.12'
 
+    // make sure ktor-libs are all same version
+    implementation platform("io.ktor:ktor-bom:$ktor_client")
+
     // OpenAI
     // import Kotlin API client BOM
     implementation platform('com.aallam.openai:openai-client-bom:4.1.0')
@@ -206,7 +209,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.9.0")
+    implementation("com.jillesvangurp:search-client:2.8.7")
     implementation("io.ktor:ktor-client-core:$ktor_client")
     implementation("io.ktor:ktor-client-auth:$ktor_client")
     implementation("io.ktor:ktor-client-logging:$ktor_client")
