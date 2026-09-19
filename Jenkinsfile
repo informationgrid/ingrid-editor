@@ -97,8 +97,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
-                        dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332']
-                        dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332']
+                        dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_prod']]
+                        dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_dev']]
                     }
                 }
             }
