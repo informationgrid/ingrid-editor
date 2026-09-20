@@ -100,6 +100,13 @@ pipeline {
                         dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_prod']]
                         dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_dev']]
                     }
+                    def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
+                    sh "mv build/reports/sbom.json build/reports/ingrid-editor-${determineRpmVersion()}.sbom.json"
+                    withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh '''
+                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.sbom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
+                        '''
+                    }
                 }
             }
         }
@@ -146,11 +153,9 @@ pipeline {
             steps {
                 script {
                     def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
-                    sh "mv build/reports/sbom.json build/reports/ingrid-editor-${determineRpmVersion()}.sbom.json"
                     withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''
                             curl -f --user $USERNAME:$PASSWORD --upload-file build/rpms/ingrid/*.rpm https://nexus.informationgrid.eu/repository/''' + repoType + '''/
-                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.sbom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
                         '''
                     }
                 }
