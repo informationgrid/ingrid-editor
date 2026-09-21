@@ -117,7 +117,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
             elastic.bulkProcessor.index(
                 jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(),
                 indexinfo.getRealIndexName(),
-                doc[indexinfo.docIdField].toString(),
+                doc["id"]?.toString() ?: doc[indexinfo.docIdField]?.toString() ?: throw ServerException.withReason("Could not find id field in document"),
             )
         }
     }
