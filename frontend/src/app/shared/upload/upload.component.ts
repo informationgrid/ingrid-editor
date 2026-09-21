@@ -121,6 +121,14 @@ export class UploadComponent implements AfterViewInit {
     Promise<{ checksums: string[]; combinedChecksum: string }>
   >();
 
+  /**
+   * Prepare checksum parameters for a chunk upload.
+   *
+   * Calculate the file's chunk checksums once, caches the result, and adds
+   * the chunk checksum and combined checksum to the request parameters.
+   *
+   * @param chunk The chunk being prepared for upload.
+   */
   private async prepareChecksums(chunk: FlowChunk) {
     const file: FlowFile = chunk.fileObj;
     let checksums = this.checksumCache.get(file);
@@ -239,6 +247,15 @@ export class UploadComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Configures the upload query parameters for the submitted files.
+   *
+   * Rebuilds the Flow.js query parameters from the current
+   * {@link additionalParameters} and applies them to the upload requests.
+   * Any previously configured query parameters are "reset".
+   *
+   * @param flowFiles The submitted Flow.js files.
+   */
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
     const options = this.additionalParameters();
     const params: any = {};
