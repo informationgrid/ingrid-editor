@@ -120,7 +120,7 @@ class UploadApiController(
                 this.fileInfos[flowIdentifier] = fileInfo
             }
 
-            val checkSum = fileInfo.sha256(file.inputStream)
+            val checkSum = FileInfo.sha256(file.inputStream)
             require(checkSum == chunkChecksum) { "Checksum mismatch" }
 
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)

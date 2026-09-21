@@ -35,23 +35,27 @@ class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
     }
 
     fun validateCombinedChecksum() {
-        // ensure the chunk checksums are concatenated in the correct order
-        val checksums = (1..flowTotalChunks).joinToString("") { uploadedChunks.getValue(it) }
+        // Build the combined checksum from the individual chunk checksums
+        // in their original file order.
+        val orderedChunkChecksums = (1..flowTotalChunks)
+            .map { chunkNumber -> uploadedChunks.getValue(chunkNumber) }
+        val combinedChecksumInput = orderedChunkChecksums.joinToString("")
         // compare checksum over ordered checksums
-        require(this.sha256(checksums.byteInputStream()) == combinedChecksum) { "Combined checksum mismatch: chunk order or content is incorrect" }
+        require(sha256(combinedChecksumInput.byteInputStream()) == combinedChecksum) { "Combined checksum mismatch: chunk order or content is incorrect" }
     }
 
-    // TODO: move to utils?
-    fun sha256(input: InputStream): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        input.use {
-            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-            var count = it.read(buffer)
-            while (count != -1) {
-                digest.update(buffer, 0, count)
-                count = it.read(buffer)
+    companion object {
+        fun sha256(input: InputStream): String {
+            val digest = MessageDigest.getInstance("SHA-256")
+            input.use {
+                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                var count = it.read(buffer)
+                while (count != -1) {
+                    digest.update(buffer, 0, count)
+                    count = it.read(buffer)
+                }
             }
+            return HexFormat.of().formatHex(digest.digest())
         }
-        return HexFormat.of().formatHex(digest.digest())
     }
 }
