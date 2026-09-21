@@ -31,8 +31,11 @@ import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatListModule } from "@angular/material/list";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
+import { Router } from "@angular/router";
 import { switchMap } from "rxjs";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { filter, map, tap } from "rxjs/operators";
@@ -42,6 +45,18 @@ import { DatePipe } from "@angular/common";
 import { TranslocoService } from "@jsverse/transloco";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
+export interface ArchivedDataset {
+  id: number;
+  docId?: number;
+  uuid?: string;
+  title?: string;
+  type?: string;
+}
+
+export interface AutoArchiveLogResult extends BaseLogResult {
+  report?: ArchivedDataset[];
+}
+
 @Component({
   selector: "ige-uvp-archive",
   imports: [
@@ -50,6 +65,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     MatDatepickerModule,
     ReactiveFormsModule,
     MatButton,
+    MatDividerModule,
+    MatListModule,
     PageTemplateNoHeaderComponent,
     DatePipe,
   ],
@@ -63,6 +80,7 @@ export class UvpArchiveComponent implements OnInit {
   private rxStompService = inject(RxStompService);
   private transloco = inject(TranslocoService);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   active = computed<boolean>(() => {
     const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
@@ -71,6 +89,7 @@ export class UvpArchiveComponent implements OnInit {
   dateControl = new FormControl<Date>(null, Validators.required);
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
+  autoArchiveStatus = signal<AutoArchiveLogResult>(null);
   explanation = computed<string>(() => {
     const type =
       this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
@@ -94,17 +113,53 @@ export class UvpArchiveComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.uvpArchiveService
+      .getAutomaticArchiveInfo()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map((res: any) => {
+          if (!res?.info) return null;
+          return {
+            startTime: res.info.startTime,
+            endTime: res.info.endTime,
+            progress:
+              res.info.progress ??
+              (Array.isArray(res.info.report) ? res.info.report.length : 0),
+            errors: res.info.errors ?? [],
+            infos: res.info.infos ?? [],
+            report: res.info.report ?? [],
+          } as AutoArchiveLogResult;
+        }),
+        tap((data) => this.autoArchiveStatus.set(data)),
+      )
+      .subscribe();
+
     this.rxStompService
       .watch(`/topic/uvp/archiveStatus/${ConfigService.catalogId}`)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => this.status.set(data)),
+        tap((data) => {
+          if (data?.automatic) {
+            this.autoArchiveStatus.set(data);
+          } else {
+            this.status.set(data);
+          }
+        }),
       )
       .subscribe();
   }
 
   archiveNow() {
     this.uvpArchiveService.archive(this.dateControl.value).subscribe();
+  }
+
+  openDataset(dataset: ArchivedDataset) {
+    if (dataset.uuid) {
+      this.router.navigate([
+        ConfigService.catalogId + "/form",
+        { id: dataset.uuid },
+      ]);
+    }
   }
 }

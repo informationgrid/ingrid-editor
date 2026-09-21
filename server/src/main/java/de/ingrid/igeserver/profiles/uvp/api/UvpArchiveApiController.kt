@@ -20,8 +20,10 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.model.JobCommand
+import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
 import de.ingrid.igeserver.profiles.uvp.tasks.UvpArchiveTask
+import de.ingrid.igeserver.profiles.uvp.tasks.UvpAutomaticArchiveTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
 import io.swagger.v3.oas.annotations.Operation
@@ -30,10 +32,12 @@ import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.Principal
 import java.time.OffsetDateTime
 
@@ -70,6 +74,34 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val result = uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
         return ResponseEntity.ok(result.size)
+    }
+
+    @Operation
+    @GetMapping(value = ["/automatic/info"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAutomaticArchiveInfo(
+        principal: Principal,
+    ): ResponseEntity<JobInfo> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, catalogId)
+        val isRunning = scheduler.isRunning(jobKey)
+        val jobDetail = scheduler.getJobInfo(jobKey)
+        val jobDataMap = jobDetail?.jobDataMap?.let { map ->
+            val mapper = jacksonObjectMapper()
+            val resultDataMap = JobDataMap()
+
+            resultDataMap["startTime"] = map["startTime"]
+            resultDataMap["endTime"] = map["endTime"]
+            resultDataMap["progress"] = map["progress"]
+            map.getString("report")?.let {
+                resultDataMap.put("report", mapper.readValue(it, Any::class.java))
+            }
+            map.getString("errors")?.let {
+                resultDataMap.put("errors", mapper.readValue(it, List::class.java))
+            }
+
+            resultDataMap
+        }
+        return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
     }
 }
 

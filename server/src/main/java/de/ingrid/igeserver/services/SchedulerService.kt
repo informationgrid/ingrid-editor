@@ -65,7 +65,11 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    fun getJobInfo(jobKey: JobKey): JobDetail = scheduler.getJobDetail(jobKey)
+    fun getJobInfo(jobKey: JobKey): JobDetail? = try {
+        scheduler.getJobDetail(jobKey)
+    } catch (_: Exception) {
+        null
+    }
 
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
         val detail = JobBuilder.newJob().ofType(jobClass)
@@ -110,6 +114,8 @@ class SchedulerService(factory: SchedulerFactoryBean) {
 //            deleteJob(jobKey)
         }
     }
+
+    fun isRunning(jobKey: JobKey): Boolean = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
 
     fun isRunning(id: String, catalogId: String): Boolean {
         val jobKey = JobKey.jobKey(id, catalogId)

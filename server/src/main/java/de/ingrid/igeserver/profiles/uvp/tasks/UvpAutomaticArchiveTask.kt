@@ -23,23 +23,19 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
 import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveMessage
 import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveNotifier
+import de.ingrid.igeserver.profiles.uvp.messaging.ArchivedDatasetInfo
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.runAsAdmin
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
-import org.quartz.JobKey
 import org.quartz.PersistJobDataAfterExecution
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import java.time.OffsetDateTime
-import java.util.Date
+import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
@@ -55,7 +51,6 @@ class UvpAutomaticArchiveTask(
 
     companion object {
         const val JOB_KEY = "uvp-automatic-archive"
-        const val JOB_GROUP = "uvp"
     }
 
     override fun run(context: JobExecutionContext) {
@@ -73,7 +68,7 @@ class UvpAutomaticArchiveTask(
     }
 
     private fun archiveCatalog(context: JobExecutionContext, catalogId: String, date: OffsetDateTime) {
-        val message = ArchiveMessage(catalogId)
+        val message = ArchiveMessage(catalogId, automatic = true)
         notify.sendMessage(message.apply { this.message = "Start automatic archiving for catalog: $catalogId" })
         val datasets = try {
             uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
@@ -85,16 +80,22 @@ class UvpAutomaticArchiveTask(
             return
         }
 
-        val archivedDatasetIds = mutableListOf<Int>()
-        message.report = archivedDatasetIds
+        val archivedDatasets = mutableListOf<ArchivedDatasetInfo>()
+        message.report = archivedDatasets
         runAsAdmin("UVPAutoArchive", "Task") { principal ->
             datasets.forEach { dataset ->
                 try {
-                    ClosableTransaction(transactionManager).use {
+                    val docData = ClosableTransaction(transactionManager).use {
                         documentService.archiveDocument(principal, catalogId, dataset.wrapperId)
                     }
                     message.progress++
-                    archivedDatasetIds += dataset.wrapperId
+                    archivedDatasets += ArchivedDatasetInfo(
+                        id = dataset.wrapperId,
+                        docId = docData.document.id,
+                        uuid = docData.document.uuid,
+                        title = docData.document.title,
+                        type = docData.document.type,
+                    )
                     notify.sendMessage(message)
                 } catch (exception: Exception) {
                     message.errors += "Could not archive dataset ${dataset.wrapperId}: ${exception.message}"
@@ -107,21 +108,5 @@ class UvpAutomaticArchiveTask(
         message.endTime = Date()
         finishJob(context, message)
         notify.sendMessage(message)
-    }
-}
-
-@Component
-class UvpAutomaticArchiveScheduler(
-    private val scheduler: SchedulerService,
-    @Value("\${uvp.archive.schedule}") private val schedule: String,
-) {
-    @EventListener(ApplicationReadyEvent::class)
-    fun schedule() {
-        scheduler.scheduleByCron(
-            JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, UvpAutomaticArchiveTask.JOB_GROUP),
-            UvpAutomaticArchiveTask::class.java,
-            "",
-            schedule,
-        )
     }
 }

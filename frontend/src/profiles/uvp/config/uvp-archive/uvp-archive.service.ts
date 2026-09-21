@@ -39,4 +39,10 @@ export class UvpArchiveService {
       date,
     );
   }
+
+  getAutomaticArchiveInfo(): Observable<any> {
+    return this.http.get(
+      `${this.configuration.backendUrl}uvp/archive/automatic/info`,
+    );
+  }
 }

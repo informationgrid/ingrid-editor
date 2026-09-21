@@ -6,3 +6,38 @@
   margin-bottom: 10px;
   padding: 10px;
 }
+
+.my-24 {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.archive-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.archived-datasets {
+  margin-top: 12px;
+
+  .report-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .dataset-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .dataset-title {
+      font-weight: 500;
+    }
+
+    .dataset-meta {
+      color: gray;
+      font-size: 0.9em;
+    }
+  }
+}
