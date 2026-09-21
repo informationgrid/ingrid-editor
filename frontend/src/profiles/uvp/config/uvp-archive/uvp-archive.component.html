@@ -95,7 +95,16 @@
             <mat-divider class="my-24" aria-hidden="true"></mat-divider>
 
             <div class="archive-section">
-                <h3>Automatische Archivierung</h3>
+                <div class="flex-row justify-content-space-between align-items-center">
+                    <h3>Automatische Archivierung</h3>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="archiveAutomaticNow()"
+                    >
+                        Jetzt ausführen
+                    </button>
+                </div>
                 <p class="comment-field">
                     Informationen zum letzten Durchlauf der automatischen
                     Archivierung

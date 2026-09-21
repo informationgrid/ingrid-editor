@@ -154,6 +154,10 @@ export class UvpArchiveComponent implements OnInit {
     this.uvpArchiveService.archive(this.dateControl.value).subscribe();
   }
 
+  archiveAutomaticNow() {
+    this.uvpArchiveService.runAutomaticArchive().subscribe();
+  }
+
   openDataset(dataset: ArchivedDataset) {
     if (dataset.uuid) {
       this.router.navigate([

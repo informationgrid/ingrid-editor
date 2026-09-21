@@ -45,4 +45,11 @@ export class UvpArchiveService {
       `${this.configuration.backendUrl}uvp/archive/automatic/info`,
     );
   }
+
+  runAutomaticArchive(): Observable<any> {
+    return this.http.post(
+      `${this.configuration.backendUrl}uvp/archive/automatic`,
+      {},
+    );
+  }
 }

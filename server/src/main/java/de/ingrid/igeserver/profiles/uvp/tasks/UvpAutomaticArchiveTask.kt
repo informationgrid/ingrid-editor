@@ -55,14 +55,25 @@ class UvpAutomaticArchiveTask(
 
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: UVP-Automatic-Archive")
-        catalogService.getCatalogs().forEach { catalog ->
-            val config = behaviourService.getData(catalog.identifier, "plugin.uvp.archive")
-                ?: return@forEach
-            val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
+        val catalogId = context.mergedJobDataMap?.getString("catalogId")
+            ?: context.jobDetail?.key?.group?.takeIf { it != "DEFAULT" && it.isNotBlank() }
+        if (catalogId != null) {
+            val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
+                ?: return
             val months = (config["archiveAfterMonths"] as? Number)?.toLong()
-            if (!automaticArchiveEnabled || months == null || months < 1) return@forEach
+            if (months == null || months < 1) return
 
-            archiveCatalog(context, catalog.identifier, OffsetDateTime.now().minusMonths(months))
+            archiveCatalog(context, catalogId, OffsetDateTime.now().minusMonths(months))
+        } else {
+            catalogService.getCatalogs().forEach { catalog ->
+                val config = behaviourService.getData(catalog.identifier, "plugin.uvp.archive")
+                    ?: return@forEach
+                val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
+                val months = (config["archiveAfterMonths"] as? Number)?.toLong()
+                if (!automaticArchiveEnabled || months == null || months < 1) return@forEach
+
+                archiveCatalog(context, catalog.identifier, OffsetDateTime.now().minusMonths(months))
+            }
         }
         log.info("Task finished: UVP-Automatic-Archive")
     }

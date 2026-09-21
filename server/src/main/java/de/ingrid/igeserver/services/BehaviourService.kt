@@ -22,12 +22,16 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.repository.BehaviourRepository
 import de.ingrid.igeserver.repository.CatalogRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+
+data class BehavioursUpdatedEvent(val catalogId: String, val behaviours: List<Behaviour>)
 
 @Service
 class BehaviourService(
     private val behaviourRepo: BehaviourRepository,
     private val catalogRepo: CatalogRepository,
+    private val eventPublisher: ApplicationEventPublisher? = null,
 ) {
 
     fun get(catalogId: String): List<Behaviour> = behaviourRepo.findAllByCatalog_Identifier(catalogId)
@@ -49,6 +53,7 @@ class BehaviourService(
                 behaviour.catalog = catalog
             }
         }
-        behaviourRepo.saveAll(behaviours)
+        val saved = behaviourRepo.saveAll(behaviours)
+        eventPublisher?.publishEvent(BehavioursUpdatedEvent(catalogId, saved))
     }
 }

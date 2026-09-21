@@ -77,6 +77,22 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
     }
 
     @Operation
+    @PostMapping(value = ["/automatic"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun runAutomaticArchive(
+        principal: Principal,
+    ): ResponseEntity<Boolean> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, catalogId)
+
+        val jobDataMap = JobDataMap().apply {
+            put("catalogId", catalogId)
+        }
+        scheduler.handleJobWithCommand(JobCommand.start, UvpAutomaticArchiveTask::class.java, jobKey, jobDataMap)
+
+        return ResponseEntity.ok(true)
+    }
+
+    @Operation
     @GetMapping(value = ["/automatic/info"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getAutomaticArchiveInfo(
         principal: Principal,
