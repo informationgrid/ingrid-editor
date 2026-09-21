@@ -123,17 +123,20 @@ export class UploadComponent implements AfterViewInit {
 
   /**
    * Prepare checksum parameters for a chunk upload.
-   * Read the chunk checksum and combined checksum from cache that was prepared inside filesSubmitted hook
+   *
+   * Calculate the file's chunk checksums once, caches the result, and adds
+   * the chunk checksum and combined checksum to the request parameters.
    *
    * @param chunk The chunk being prepared for upload.
    */
   private async prepareChecksums(chunk: FlowChunk) {
-    const checksums = await this.checksumCache.get(chunk.fileObj);
+    const file: FlowFile = chunk.fileObj;
+    let checksums = this.checksumCache.get(file);
     if (!checksums) {
-      throw new Error("Checksums were not prepared before upload");
+      checksums = calculateChecksums(file);
+      this.checksumCache.set(file, checksums);
     }
-
-    const result = checksums;
+    const result = await checksums;
     // override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
@@ -184,10 +187,6 @@ export class UploadComponent implements AfterViewInit {
         try {
           if (this.autoupload() && event.type === "filesSubmitted") {
             const flowFiles = <flowjs.FlowFile[]>event.event[0];
-            for (const file of flowFiles) {
-              const checksums = await calculateChecksums(file);
-              this.checksumCache.set(file, Promise.resolve(checksums));
-            }
             this.resetParametersForSubmittedFiles(flowFiles);
             this.flow().upload();
           } else if (event.type === "fileError") {
