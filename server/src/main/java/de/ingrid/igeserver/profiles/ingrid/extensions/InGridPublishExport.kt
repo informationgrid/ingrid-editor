@@ -91,7 +91,7 @@ class InGridPublishExport(
                 )
             }
         } catch (ex: Exception) {
-            throw ClientException.withReason("Problem with indexing to Elasticsearch: ${ex.cause?.message}", ex)
+            throw ClientException.withReason("Problem during indexing to Elasticsearch: ${ex.cause?.message}", ex)
         }
 
         return payload
