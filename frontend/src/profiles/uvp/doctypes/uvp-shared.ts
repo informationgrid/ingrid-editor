@@ -157,7 +157,7 @@ export class UvpShared extends BaseDoctype {
           }),
           this.addToggle("publishDuringDisclosure", null, {
             fieldLabel:
-              "Untenstehende, weitere Unterlagen zur Auslegung erst mit Beginn des Auslegungszeitraumes veröffentlichen",
+              'Untenstehende Unterlagen zur Auslegung ("UVP Bericht/Antragsunterlagen", "Berichte und Empfehlungen" sowie "Weitere Unterlagen") erst mit Beginn des Auslegungszeitraumes veröffentlichen.',
             className: "space-bottom-field negative-space-top-field",
           }),
           this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {

@@ -333,7 +333,6 @@ open class IngridModelTransformer(
             geoElements.add(
                 GeographicElement(
                     type = GeoElementType.DESCRIPTION,
-                    hasExtentTypeCode = false,
                     geographicIdentifier = CharacterStringModel(
                         padARS(ref.ars),
                         "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}",

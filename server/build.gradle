@@ -7,7 +7,7 @@ import java.nio.file.Paths
 buildscript {
     ext.kotlin_version = '2.4.0'
     ext.spring_boot_version = '4.1.1'
-    ext.kotest_version = '6.2.4'
+    ext.kotest_version = '6.2.5'
     ext.jte_version = '3.2.4'
     ext.geotools_version = '35.1'
     ext.ktor_client = '3.4.1'
@@ -26,9 +26,9 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.5.4'
-    id "com.gorylenko.gradle-git-properties" version "2.5.4"
+    id "com.gorylenko.gradle-git-properties" version "4.0.1"
     id 'io.kotest' version "$kotest_version"
-    id "com.github.ben-manes.versions" version "0.53.0"
+    id "io.github.ben-manes.versions" version "0.64.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
@@ -83,7 +83,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
     implementation 'org.apache.tika:tika-core:3.2.3'
-    implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.1'
+    implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.2'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -119,13 +119,16 @@ dependencies {
     implementation "com.gravity9:json-patch-path:2.0.2"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:3.0.6'
+    implementation 'com.networknt:json-schema-validator:3.0.7'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.keycloak:keycloak-admin-client:26.0.12'
+
+    // make sure ktor-libs are all same version
+    implementation platform("io.ktor:ktor-bom:$ktor_client")
 
     // OpenAI
     // import Kotlin API client BOM
@@ -136,15 +139,15 @@ dependencies {
     runtimeOnly 'io.ktor:ktor-client-okhttp'
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.27.1"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.27.1"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.27.1"
+    implementation "org.commonmark:commonmark:0.30.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.30.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.30.0"
 
 //    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
     implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-api:4.0.0'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.11'
+    implementation 'org.postgresql:postgresql:42.7.13'
     implementation "org.hibernate.orm:hibernate-core"
 
     implementation "de.ingrid:ingrid-codelist-service:8.5.0-SNAPSHOT"
@@ -206,7 +209,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.8.4")
+    implementation("com.jillesvangurp:search-client:2.8.7")
     implementation("io.ktor:ktor-client-core:$ktor_client")
     implementation("io.ktor:ktor-client-auth:$ktor_client")
     implementation("io.ktor:ktor-client-logging:$ktor_client")
@@ -301,7 +304,7 @@ tasks.register('updateGitHooks', Copy) {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -339,6 +342,34 @@ gitProperties {
 
 tasks.named('generateJte') {
     mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+}
+
+tasks.named('processResources') {
+    exclude('META-INF/sbom/**')
+}
+
+afterEvaluate {
+    tasks.named('processResources', ProcessResources).configure {
+        def defaultCopySpecClass = Class.forName("org.gradle.api.internal.file.copy.DefaultCopySpec")
+        def childSpecsField = defaultCopySpecClass.getDeclaredField("childSpecs")
+        childSpecsField.setAccessible(true)
+        def sourcePathsField = defaultCopySpecClass.getDeclaredField("sourcePaths")
+        sourcePathsField.setAccessible(true)
+
+        def children = (Collection) childSpecsField.get(mainSpec)
+        children?.removeIf { child ->
+            def sp = sourcePathsField.get(child)
+            if (sp instanceof ConfigurableFileCollection) {
+                sp.setFrom([])
+            }
+            true
+        }
+        def additionOrderField = defaultCopySpecClass.getDeclaredField("childSpecsInAdditionOrder")
+        additionOrderField.setAccessible(true)
+        ((Collection) additionOrderField.get(mainSpec))?.clear()
+
+        dependsOn.removeIf { it.toString().contains('cyclonedxBom') }
+    }
 }
 
 tasks.named('compileKotlin') {
@@ -486,21 +517,28 @@ ktlint {
     version.set("1.8.0")
 }
 
-cyclonedxDirectBom {
-    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
-    includeConfigs = ["runtimeClasspath"]
-    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
-    skipConfigs = ["compileClasspath", "testCompileClasspath"]
+
+tasks.cyclonedxDirectBom {
+    if (project.hasProperty('devSBOM')) {
+        jsonOutput = layout.buildDirectory.file('reports/sbom-dev.json')
+    } else {
+        jsonOutput = layout.buildDirectory.file('reports/sbom-prod.json')
+        // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
+        includeConfigs = ["runtimeClasspath"]
+        // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
+        skipConfigs = ["compileClasspath", "testCompileClasspath"]
+    }
     // Specified the type of project being built. Defaults to 'library'
     projectType = Type.APPLICATION
-    // Specified the version of the CycloneDX specification to use. Defaults to '1.5'
-    schemaVersion = Version.VERSION_15
+    // Specified the version of the CycloneDX specification to use
+    schemaVersion = Version.VERSION_16
 
     componentVersion = rootProject.version
 }
 
+
 detekt {
-    toolVersion = "2.0.0-alpha.5"
+    toolVersion = "2.0.0-alpha.6"
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
@@ -514,13 +552,3 @@ tasks.named("detektMain").configure {
     }
 }
 
-tasks.cyclonedxBom {
-    // includeConfigs is the list of configuration names to include when generating the BOM (leave empty to include every configuration), regex is supported
-    // setIncludeConfigs(listOf("runtimeClasspath"))
-    // skipConfigs is a list of configuration names to exclude when generating the BOM, regex is supported
-    // setSkipConfigs(listOf("compileClasspath", "testCompileClasspath"))
-    projectType = Type.APPLICATION
-    schemaVersion = Version.VERSION_15
-    jsonOutput = file("build/reports/bom.json")
-    componentVersion = rootProject.version.toString()
-}
