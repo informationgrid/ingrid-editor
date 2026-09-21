@@ -34,6 +34,7 @@ data class LuceneDocument(
     val spatials: List<LuceneSpatial> = emptyList(),
     val temporal: LuceneTemporal,
     val keywords: List<LuceneKeyword> = emptyList(),
+    val references: List<LuceneReference> = emptyList(),
     @JsonProperty("sort_uuid")
     val sortUuid: String = "",
     val contacts: List<LuceneContact> = emptyList(),
@@ -148,7 +149,6 @@ data class LuceneKeyValue(
 data class LuceneIngrid(
     @JsonProperty("alternate_title")
     val alternateTitle: String? = null,
-    val references: List<LuceneReference> = emptyList(),
     val licenses: List<LuceneLicense> = emptyList(),
     @JsonProperty("parent_identifier")
     val parentIdentifier: String? = null,

@@ -1503,6 +1503,7 @@
           }
         },
         "ingrid": {
+          "unevaluatedProperties": false,
           "properties": {
             "alternate_title": {
               "type": "string",
@@ -1567,21 +1568,18 @@
               "type": "object",
               "title": "Digitale Repräsentation",
               "properties": {
-                "types": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "title": "Typ",
-                    "description": "Beschreibt den Typ der Repräsentation",
-                    "enum": [
-                      "text",
-                      "vector",
-                      "tin",
-                      "video",
-                      "stereomodel",
-                      "grid"
-                    ]
-                  }
+                "type": {
+                  "type": "string",
+                  "title": "Typ",
+                  "description": "Beschreibt den Typ der Repräsentation",
+                  "enum": [
+                    "text",
+                    "vector",
+                    "tin",
+                    "video",
+                    "stereomodel",
+                    "grid"
+                  ]
                 },
                 "vector": {
                   "type": "array",
@@ -1621,7 +1619,7 @@
                             "description": "Beschreibt die Anzahl der Achsen im Raster"
                           },
                           "resolution": {
-                            "type": "number",
+                            "type": "integer",
                             "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
                           }
                         }
@@ -2449,6 +2447,7 @@
           }
         },
         "ingrid": {
+          "unevaluatedProperties": false,
           "properties": {
             "alternate_title": {
               "type": "string",
@@ -2513,21 +2512,18 @@
               "type": "object",
               "title": "Digitale Repräsentation",
               "properties": {
-                "types": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "title": "Typ",
-                    "description": "Beschreibt den Typ der Repräsentation",
-                    "enum": [
-                      "text",
-                      "vector",
-                      "tin",
-                      "video",
-                      "stereomodel",
-                      "grid"
-                    ]
-                  }
+                "type": {
+                  "type": "string",
+                  "title": "Typ",
+                  "description": "Beschreibt den Typ der Repräsentation",
+                  "enum": [
+                    "text",
+                    "vector",
+                    "tin",
+                    "video",
+                    "stereomodel",
+                    "grid"
+                  ]
                 },
                 "vector": {
                   "type": "array",
@@ -2567,7 +2563,7 @@
                             "description": "Beschreibt die Anzahl der Achsen im Raster"
                           },
                           "resolution": {
-                            "type": "number",
+                            "type": "integer",
                             "description": "Beschreibt die Auflösung der Achsen im Raster in Metern"
                           }
                         }

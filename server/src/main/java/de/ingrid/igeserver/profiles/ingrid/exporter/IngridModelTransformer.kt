@@ -1548,6 +1548,16 @@ open class IngridModelTransformer(
                 )
             }
         },
+        references = getAllReferences().map { ref ->
+            LuceneReference(
+                internal = "url" != ref.referenceType,
+                url = ref.url,
+                uuidRef = ref.uuidRef,
+                type = LuceneKeyValue(ref.type.key, ref.type.value),
+                title = ref.title,
+                explanation = ref.explanation,
+            )
+        },
         sortUuid = "",
         contacts = contacts.map { contact ->
             LuceneContact(
@@ -1567,16 +1577,6 @@ open class IngridModelTransformer(
         exports = emptyMap(),
         ingrid = LuceneIngrid(
             alternateTitle = alternateTitle,
-            references = getAllReferences().map { ref ->
-                LuceneReference(
-                    internal = "url" != ref.referenceType,
-                    url = ref.url,
-                    uuidRef = ref.uuidRef,
-                    type = LuceneKeyValue(ref.type.key, ref.type.value),
-                    title = ref.title,
-                    explanation = ref.explanation,
-                )
-            },
             licenses = getAllLicenses().map { lic ->
                 LuceneLicense(
                     type = lic.type,
