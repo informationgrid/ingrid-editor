@@ -24,21 +24,25 @@ import java.security.MessageDigest
 import java.util.*
 
 class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
-    private val uploadedChunks = mutableMapOf<Int, String>()
+    private val uploadedChunkChecksums = mutableMapOf<Int, String>()
 
-    fun isUploadFinished(): Boolean = uploadedChunks.size == flowTotalChunks
+    fun isUploadFinished(): Boolean = uploadedChunkChecksums.size == flowTotalChunks
 
-    fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunks.contains(flowChunkNumber)
+    fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunkChecksums.contains(flowChunkNumber)
 
-    fun addUploadedChunk(flowChunkNumber: Int, checksum: String) {
-        uploadedChunks[flowChunkNumber] = checksum
+    fun addUploadedChunkChecksum(flowChunkNumber: Int, checksum: String) {
+        uploadedChunkChecksums[flowChunkNumber] = checksum
     }
 
+    /**
+     * Creates a checksum out of all chunk checksums in order and compares
+     * it to the one provided by the frontend
+     */
     fun validateCombinedChecksum() {
         // Build the combined checksum from the individual chunk checksums
         // in their original file order.
         val orderedChunkChecksums = (1..flowTotalChunks)
-            .map { chunkNumber -> uploadedChunks.getValue(chunkNumber) }
+            .map { chunkNumber -> uploadedChunkChecksums.getValue(chunkNumber) }
         val combinedChecksumInput = orderedChunkChecksums.joinToString("")
         // compare checksum over ordered checksums
         require(sha256(combinedChecksumInput.byteInputStream()) == combinedChecksum) { "Combined checksum mismatch: chunk order or content is incorrect" }

@@ -125,7 +125,7 @@ class UploadApiController(
 
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
-            fileInfo.addUploadedChunk(flowChunkNumber, checkSum)
+            fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
 
             if (fileInfo.isUploadFinished()) {
                 fileInfo.validateCombinedChecksum()
