@@ -54,10 +54,10 @@
     </xsl:template>
 
 	<xsl:template
-		match="@*|*[(namespace-uri() = 'https://www.ingrid-oss.eu/schemas/igctx' or namespace-uri() = 'http://www.isotc211.org/2005/gmd' or namespace-uri() = 'http://www.isotc211.org/2005/gco' or namespace-uri() = 'http://www.opengis.net/gml/3.2' or namespace-uri() = 'http://www.isotc211.org/2005/gmx' or namespace-uri() = 'http://www.isotc211.org/2005/gts' or namespace-uri() = 'http://www.isotc211.org/2005/srv') and namespace-uri() != 'http://www.portalu.de/IDF/1.0']">
+		match="@*|*[(namespace-uri() = 'https://www.ingrid-oss.eu/schemas/igctx' or namespace-uri() = 'http://www.isotc211.org/2005/gmd' or namespace-uri() = 'http://www.isotc211.org/2005/gco' or namespace-uri() = 'http://www.opengis.net/gml/3.2' or namespace-uri() = 'http://www.isotc211.org/2005/gmx' or namespace-uri() = 'http://www.isotc211.org/2005/gts' or namespace-uri() = 'http://www.isotc211.org/2005/srv' or namespace-uri() = 'https://dl.datenrepository.baw.de/schemas/bawmd') and namespace-uri() != 'http://www.portalu.de/IDF/1.0']">
 		<xsl:element name="{name(.)}" namespace="{namespace-uri(.)}">
 			<xsl:copy-of
-				select="namespace::*[name(.)!='idf' and name(.)!='srv' and name(.)!='ms' and name(.)!='csw' and name(.)!='xlink' and name(.)!='xsi' and name(.)!='xs' and name(.)!='']" />
+				select="namespace::*[name(.)!='idf' and name(.)!='srv' and name(.)!='baw' and name(.)!='ms' and name(.)!='csw' and name(.)!='xlink' and name(.)!='xsi' and name(.)!='xs' and name(.)!='']" />
 			<xsl:copy-of select="@*" />
 			<xsl:apply-templates />
 		</xsl:element>

@@ -49,12 +49,16 @@ tasks.register('cyclonedxBom', YarnTask) {
   dependsOn 'yarnInstall'
   inputs.files('package.json', 'yarn.lock', '.yarnrc.yml')
   inputs.dir(fileTree("node_modules").exclude(".cache"))
-  outputs.file('build/reports/bom.json')
-  args = ['cyclonedx-yarn', '--output-file', 'build/reports/bom.json']
+  outputs.file('build/reports/sbom.json')
+  if (project.hasProperty('devSBOM')) {
+    args = ['cyclonedx-yarn', '--output-file', 'build/reports/sbom-dev.json']
+  } else {
+    args = ['cyclonedx-yarn', '--prod', '--output-file', 'build/reports/sbom.json']
+  }
 }
 
 tasks.register('bundle', YarnTask) {
-  dependsOn 'yarnInstall', 'cyclonedxBom'
+  dependsOn 'yarnInstall'
   inputs.property('buildArgs', buildArgs)
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
