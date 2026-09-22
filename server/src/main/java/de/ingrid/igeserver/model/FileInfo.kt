@@ -44,7 +44,7 @@ class FileInfo(val flowTotalChunks: Int) {
      * it to the one provided by the frontend
      */
     fun validateCombinedChecksum() {
-        require(combinedChecksum != null) {"Combined checksum is null"}
+        require(combinedChecksum != null) { "Combined checksum is null" }
         // Build the combined checksum from the individual chunk checksums
         // in their original file order.
         val orderedChunkChecksums = (1..flowTotalChunks)
