@@ -120,13 +120,6 @@ export class UploadComponent implements AfterViewInit {
    * Prepare checksum parameters for a chunk upload.
    */
   private async prepareChecksums(chunk: FlowChunk) {
-    const file: FlowFile = chunk.fileObj;
-    let checksums = this.checksumCache.get(file);
-    if (!checksums) {
-      checksums = calculateChecksums(file);
-      this.checksumCache.set(file, checksums);
-    }
-    const result = await checksums;
     const file = chunk.fileObj;
     const checksum = await calculateChecksum(chunk);
     let combinedChecksum: string;
@@ -152,6 +145,9 @@ export class UploadComponent implements AfterViewInit {
         return checksum;
       });
 
+      // One important distinction: if each string in orderedChecksums is a
+      // hex-encoded SHA-256 checksum, e.g. "a3f2...", you may actually want to concatenate the
+      // underlying checksum bytes, rather than the ASCII characters representing the hex
       combinedChecksum = await sha256(
         new TextEncoder().encode(orderedChecksums.join("")),
       );
