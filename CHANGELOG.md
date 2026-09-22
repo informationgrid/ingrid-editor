@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.4.1.1 (22.09.2026)
+
+### Features
+
+* Portal LUBW: Sachattribute mit Übermittlungsstufen 0 und 1 sollen im Portal angezeigt werden. (#9003)
+
+    
 ## 8.4.1 (04.09.2026)
 
 ### Features
