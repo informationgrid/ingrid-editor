@@ -114,20 +114,10 @@ export class UploadComponent implements AfterViewInit {
     preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
 
-  // Cache the promise so concurrent chunk callbacks share one calculation per
-  // file. WeakMap lets the entry be garbage collected when the file is no longer used.
-  private checksumCache = new WeakMap<
-    FlowFile,
-    Promise<{ checksums: string[]; combinedChecksum: string }>
-  >();
+  private checksumMap = new Map<number, string>();
 
   /**
    * Prepare checksum parameters for a chunk upload.
-   *
-   * Calculate the file's chunk checksums once, caches the result, and adds
-   * the chunk checksum and combined checksum to the request parameters.
-   *
-   * @param chunk The chunk being prepared for upload.
    */
   private async prepareChecksums(chunk: FlowChunk) {
     const file: FlowFile = chunk.fileObj;
@@ -137,6 +127,36 @@ export class UploadComponent implements AfterViewInit {
       this.checksumCache.set(file, checksums);
     }
     const result = await checksums;
+    const file = chunk.fileObj;
+    const checksum = await calculateChecksum(chunk);
+    let combinedChecksum: string;
+    // let fileCache = this.checksumCache.get(file);
+    //
+    // if (!fileCache) {
+    //   fileCache = {
+    //     checksums: new Map<number, string>(),
+    //   };
+    //   fileCache.checksums.set(chunk.offset, checksum);
+    //   this.checksumCache.set(file, fileCache);
+    // }
+    this.checksumMap.set(chunk.offset, checksum);
+
+    if (this.checksumMap.size === file.chunks.length) {
+      const orderedChecksums = file.chunks.map((chunk) => {
+        const checksum = this.checksumMap.get(chunk.offset);
+
+        if (checksum === undefined) {
+          throw new Error(`Missing checksum for chunk ${chunk.offset}`);
+        }
+
+        return checksum;
+      });
+
+      combinedChecksum = await sha256(
+        new TextEncoder().encode(orderedChecksums.join("")),
+      );
+    }
+
     // override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({

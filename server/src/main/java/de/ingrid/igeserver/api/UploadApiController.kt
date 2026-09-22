@@ -78,7 +78,7 @@ class UploadApiController(
         flowIdentifier: String,
         flowFilename: String,
         chunkChecksum: String,
-        combinedChecksum: String,
+        combinedChecksum: String?,
     ): ResponseEntity<UploadResponse> {
         log.info("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -116,7 +116,7 @@ class UploadApiController(
         synchronized(this) {
             var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
             if (fileInfo == null) {
-                fileInfo = FileInfo(flowTotalChunks, combinedChecksum) // accept values from upload params (same for every chunk)
+                fileInfo = FileInfo(flowTotalChunks)
                 this.fileInfos[flowIdentifier] = fileInfo
             }
 
@@ -126,6 +126,11 @@ class UploadApiController(
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
             fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
+
+            // TODO: Fix this, send null instead of "null"
+            if (combinedChecksum != "null") {
+                fileInfo.setCombinedChecksum(combinedChecksum)
+            }
 
             if (fileInfo.isUploadFinished()) {
                 fileInfo.validateCombinedChecksum()

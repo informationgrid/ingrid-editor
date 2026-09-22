@@ -23,8 +23,13 @@ import java.io.InputStream
 import java.security.MessageDigest
 import java.util.*
 
-class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
+class FileInfo(val flowTotalChunks: Int) {
     private val uploadedChunkChecksums = mutableMapOf<Int, String>()
+    private var combinedChecksum: String? = null
+
+    fun setCombinedChecksum(combinedChecksum: String?) {
+        this.combinedChecksum = combinedChecksum
+    }
 
     fun isUploadFinished(): Boolean = uploadedChunkChecksums.size == flowTotalChunks
 
@@ -39,6 +44,7 @@ class FileInfo(val flowTotalChunks: Int, val combinedChecksum: String) {
      * it to the one provided by the frontend
      */
     fun validateCombinedChecksum() {
+        require(combinedChecksum != null) {"Combined checksum is null"}
         // Build the combined checksum from the individual chunk checksums
         // in their original file order.
         val orderedChunkChecksums = (1..flowTotalChunks)
