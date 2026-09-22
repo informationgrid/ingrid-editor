@@ -126,7 +126,6 @@ class UploadApiController(
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
             fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
-
             if (combinedChecksum != null) {
                 fileInfo.setCombinedChecksum(combinedChecksum)
             }

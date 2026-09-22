@@ -114,7 +114,7 @@ export class UploadComponent implements AfterViewInit {
     preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
 
-  private checksumMap = new Map<number, string>();
+  private checksumCache = new WeakMap<FlowFile, Map<number, string>>();
 
   /**
    * Prepare checksum parameters for a chunk upload.
@@ -122,29 +122,33 @@ export class UploadComponent implements AfterViewInit {
   private async prepareChecksums(chunk: FlowChunk) {
     const file = chunk.fileObj;
     const checksum = await calculateChecksum(chunk);
-    let combinedChecksum: string;
-    // let fileCache = this.checksumCache.get(file);
-    //
-    // if (!fileCache) {
-    //   fileCache = {
-    //     checksums: new Map<number, string>(),
-    //   };
-    //   fileCache.checksums.set(chunk.offset, checksum);
-    //   this.checksumCache.set(file, fileCache);
-    // }
-    this.checksumMap.set(chunk.offset, checksum);
 
-    if (this.checksumMap.size === file.chunks.length) {
-      const orderedChecksums = file.chunks.map((chunk) => {
-        const checksum = this.checksumMap.get(chunk.offset);
+    // support uploading multiple files
+    let fileCache = this.checksumCache.get(file);
+    if (!fileCache) {
+      fileCache = new Map<number, string>();
+      this.checksumCache.set(file, fileCache);
+    }
+
+    fileCache.set(chunk.offset, checksum);
+
+    if (fileCache.size > file.chunks.length) {
+      throw new Error("More checksums than chunks");
+    }
+
+    let combinedChecksum: string;
+
+    // when all checksums are ready, concatenate and create combined checksum
+    if (fileCache.size === file.chunks.length) {
+      const orderedChecksums = file.chunks.map((fileChunk) => {
+        const checksum = fileCache.get(fileChunk.offset);
 
         if (checksum === undefined) {
-          throw new Error(`Missing checksum for chunk ${chunk.offset}`);
+          throw new Error(`Missing checksum for chunk ${fileChunk.offset}`);
         }
 
         return checksum;
       });
-
       combinedChecksum = await sha256(
         new TextEncoder().encode(orderedChecksums.join("")),
       );
