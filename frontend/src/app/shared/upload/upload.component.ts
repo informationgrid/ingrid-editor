@@ -157,8 +157,8 @@ export class UploadComponent implements AfterViewInit {
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
       ...getParams(),
-      chunkChecksum: result.checksums[chunk.offset],
-      combinedChecksum: result.combinedChecksum,
+      chunkChecksum: checksum,
+      combinedChecksum: combinedChecksum || null,
     });
     (
       chunk as flowjs.FlowChunk & { preprocessFinished(): void }
