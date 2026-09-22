@@ -105,6 +105,20 @@
                         Jetzt ausführen
                     </button>
                 </div>
+                <div>
+                    <div>
+                        Nächste geplante Ausführung:
+                        {{
+                            (nextExecution() | date: "dd.LL.yyyy HH:mm:ss") ||
+                                "Keine geplante Ausführung"
+                        }}
+                    </div>
+                    <div>
+                        Entscheidungsdatum älter als:
+                        {{ archiveAfterMonths() }}
+                        {{ archiveAfterMonths() === 1 ? "Monat" : "Monate" }}
+                    </div>
+                </div>
                 <p class="comment-field">
                     Informationen zum letzten Durchlauf der automatischen
                     Archivierung

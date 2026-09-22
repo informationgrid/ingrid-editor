@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.uvp
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.uvp.tasks.UvpAutomaticArchiveTask
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.BehaviourService
@@ -54,7 +55,14 @@ class UvpArchiveSchedulerService(
 
     @EventListener
     fun onBehavioursUpdated(event: BehavioursUpdatedEvent) {
-        updateSchedule(event.catalogId)
+        try {
+            val catalog: Catalog = catalogRepo.findByIdentifier(event.catalogId)
+            if (catalog.type == "uvp") {
+                updateSchedule(event.catalogId)
+            }
+        } catch (e: Exception) {
+            log.error("Failed to update UVP automatic archive schedule for catalog '${event.catalogId}'", e)
+        }
     }
 
     fun updateSchedule(catalogId: String) {

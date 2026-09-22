@@ -170,6 +170,17 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
         uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent(catalogId, updatedBehaviours))
         schedulerFactoryBean.scheduler.checkExists(triggerKey) shouldBe true
 
+        // Updating again while already scheduled (tests rescheduleJob)
+        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent(catalogId, updatedBehaviours))
+        schedulerFactoryBean.scheduler.checkExists(triggerKey) shouldBe true
+
+        val infoResponse = uvpArchiveApiController.getAutomaticArchiveInfo(mockPrincipal)
+        infoResponse.body.shouldNotBeNull()
+        infoResponse.body?.info?.get("nextExecution").shouldNotBeNull()
+
+        // Test non-UVP catalog event ignores scheduling
+        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent("non_uvp_catalog", updatedBehaviours))
+
         every { behaviourService.getData(catalogId, "plugin.uvp.archive") } returns mapOf(
             "automaticArchiveEnabled" to false,
             "archiveAfterMonths" to 1,

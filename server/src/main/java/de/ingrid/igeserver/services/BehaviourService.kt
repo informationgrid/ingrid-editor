@@ -24,6 +24,7 @@ import de.ingrid.igeserver.repository.BehaviourRepository
 import de.ingrid.igeserver.repository.CatalogRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 data class BehavioursUpdatedEvent(val catalogId: String, val behaviours: List<Behaviour>)
 
@@ -43,6 +44,7 @@ class BehaviourService(
         return behavior?.data?.takeIf { behavior.active == true }
     }
 
+    @Transactional
     fun save(catalogId: String, behaviours: List<Behaviour>) {
         val allBehaviours = get(catalogId)
         val catalog = catalogRepo.findByIdentifier(catalogId)

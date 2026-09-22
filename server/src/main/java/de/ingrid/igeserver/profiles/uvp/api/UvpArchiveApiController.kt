@@ -101,9 +101,11 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, catalogId)
         val isRunning = scheduler.isRunning(jobKey)
         val jobDetail = scheduler.getJobInfo(jobKey)
-        val jobDataMap = jobDetail?.jobDataMap?.let { map ->
+        val nextFireTime = scheduler.getNextFireTime(jobKey)
+        val resultDataMap = JobDataMap()
+
+        jobDetail?.jobDataMap?.let { map ->
             val mapper = jacksonObjectMapper()
-            val resultDataMap = JobDataMap()
 
             resultDataMap["startTime"] = map["startTime"]
             resultDataMap["endTime"] = map["endTime"]
@@ -114,10 +116,14 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
             map.getString("errors")?.let {
                 resultDataMap.put("errors", mapper.readValue(it, List::class.java))
             }
-
-            resultDataMap
         }
-        return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))
+
+        if (nextFireTime != null) {
+            resultDataMap["nextExecution"] = nextFireTime
+        }
+
+        val info = if (resultDataMap.isEmpty()) null else resultDataMap
+        return ResponseEntity.ok(JobInfo(isRunning, info))
     }
 }
 

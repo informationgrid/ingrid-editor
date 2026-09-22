@@ -25,7 +25,6 @@ import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveMessage
 import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveNotifier
 import de.ingrid.igeserver.profiles.uvp.messaging.ArchivedDatasetInfo
 import de.ingrid.igeserver.services.BehaviourService
-import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.runAsAdmin
@@ -34,7 +33,9 @@ import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.util.*
 
 @Component
@@ -43,11 +44,11 @@ class UvpAutomaticArchiveTask(
     private val transactionManager: PlatformTransactionManager,
     private val uvpArchiveService: UvpArchiveService,
     private val documentService: DocumentService,
-    private val catalogService: CatalogService,
     private val behaviourService: BehaviourService,
     private val notify: ArchiveNotifier,
 ) : IgeJob() {
     override val log = logger()
+    private val berlinZone = ZoneId.of("Europe/Berlin")
 
     companion object {
         const val JOB_KEY = "uvp-automatic-archive"
@@ -56,25 +57,15 @@ class UvpAutomaticArchiveTask(
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: UVP-Automatic-Archive")
         val catalogId = context.mergedJobDataMap?.getString("catalogId")
-            ?: context.jobDetail?.key?.group?.takeIf { it != "DEFAULT" && it.isNotBlank() }
-        if (catalogId != null) {
-            val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
-                ?: return
-            val months = (config["archiveAfterMonths"] as? Number)?.toLong()
-            if (months == null || months < 1) return
+            ?: context.jobDetail?.key?.group?.takeIf { it != "DEFAULT" && it.isNotBlank() }!!
+        val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
+            ?: return
+        val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
+        val months = (config["archiveAfterMonths"] as? Number)?.toLong() ?: 2
+        if (!automaticArchiveEnabled || months < 1) return
 
-            archiveCatalog(context, catalogId, OffsetDateTime.now().minusMonths(months))
-        } else {
-            catalogService.getCatalogs().forEach { catalog ->
-                val config = behaviourService.getData(catalog.identifier, "plugin.uvp.archive")
-                    ?: return@forEach
-                val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
-                val months = (config["archiveAfterMonths"] as? Number)?.toLong()
-                if (!automaticArchiveEnabled || months == null || months < 1) return@forEach
-
-                archiveCatalog(context, catalog.identifier, OffsetDateTime.now().minusMonths(months))
-            }
-        }
+        val today = LocalDate.now(berlinZone).atStartOfDay(berlinZone).toOffsetDateTime()
+        archiveCatalog(context, catalogId, today.minusMonths(months))
         log.info("Task finished: UVP-Automatic-Archive")
     }
 

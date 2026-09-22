@@ -33,6 +33,7 @@ import org.quartz.TriggerBuilder
 import org.quartz.TriggerKey
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class SchedulerService(factory: SchedulerFactoryBean) {
@@ -67,6 +68,14 @@ class SchedulerService(factory: SchedulerFactoryBean) {
 
     fun getJobInfo(jobKey: JobKey): JobDetail? = try {
         scheduler.getJobDetail(jobKey)
+    } catch (_: Exception) {
+        null
+    }
+
+    fun getNextFireTime(jobKey: JobKey): Date? = try {
+        val triggerKey = TriggerKey(jobKey.name + "_cron", jobKey.group)
+        scheduler.getTrigger(triggerKey)?.nextFireTime
+            ?: scheduler.getTriggersOfJob(jobKey).mapNotNull { it.nextFireTime }.minOrNull()
     } catch (_: Exception) {
         null
     }
@@ -129,11 +138,14 @@ class SchedulerService(factory: SchedulerFactoryBean) {
 
     fun scheduleByCron(jobKey: JobKey, jobClass: Class<out Job>, catalogId: String, cron: String) {
         val triggerKey = TriggerKey(jobKey.name + "_cron", jobKey.group)
-        if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
-
-        if (cron.isEmpty()) return
+        if (cron.isEmpty()) {
+            if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
+            return
+        }
 
         val cronSchedule = getCronSchedule(cron)
+        createJob(jobClass, jobKey)
+
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(
                 JobDataMap().apply {
@@ -144,9 +156,11 @@ class SchedulerService(factory: SchedulerFactoryBean) {
             .withIdentity(triggerKey)
             .build()
 
-        if (!scheduler.checkExists(jobKey)) createJob(jobClass, jobKey)
-
-        scheduler.scheduleJob(trigger)
+        if (scheduler.checkExists(triggerKey)) {
+            scheduler.rescheduleJob(triggerKey, trigger)
+        } else {
+            scheduler.scheduleJob(trigger)
+        }
     }
 
     private fun getCronSchedule(cron: String): CronScheduleBuilder = try {

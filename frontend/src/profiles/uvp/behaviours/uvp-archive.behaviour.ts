@@ -199,26 +199,38 @@ export class UvpArchiveBehaviour extends Plugin {
           },
         },
         {
-          key: "automaticArchiveEnabled",
-          type: "checkbox",
-          wrappers: [],
-          props: {
-            label: "Automatische Archivierung aktivieren",
-            appearance: "outline",
-          },
-        },
-        {
-          key: "archiveAfterMonths",
-          type: "number",
-          wrappers: ["form-field"],
-          expressions: {
-            hide: (field) => !field.model?.automaticArchiveEnabled,
-          },
-          props: {
-            label: "Entscheidungsdatum älter als (Monate)",
-            appearance: "outline",
-            min: 1,
-          },
+          fieldGroupClassName: "flex-row gap-6",
+          fieldGroup: [
+            {
+              key: "automaticArchiveEnabled",
+              type: "checkbox",
+              wrappers: [],
+              defaultValue: false,
+              props: {
+                label:
+                  "Automatische Archivierung aktivieren für Verfahren, deren Entscheidungsdatum älter ist als",
+                appearance: "outline",
+              },
+            },
+            {
+              key: "archiveAfterMonths",
+              type: "number",
+              wrappers: ["form-field", "addons"],
+              defaultValue: 2,
+              className: "right-align width-date-small",
+              expressions: {
+                hide: (field) => !field.model?.automaticArchiveEnabled,
+              },
+              props: {
+                // label: "Entscheidungsdatum älter",
+                addonRight: {
+                  text: "Monat(e)",
+                },
+                appearance: "outline",
+                min: 1,
+              },
+            },
+          ],
         },
       ],
     });

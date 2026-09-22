@@ -55,6 +55,7 @@ export interface ArchivedDataset {
 
 export interface AutoArchiveLogResult extends BaseLogResult {
   report?: ArchivedDataset[];
+  nextExecution?: Date;
 }
 
 @Component({
@@ -90,6 +91,14 @@ export class UvpArchiveComponent implements OnInit {
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
   autoArchiveStatus = signal<AutoArchiveLogResult>(null);
+  nextExecution = signal<Date>(null);
+  archiveAfterMonths = computed<number>(() => {
+    return (
+      this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
+        "archiveAfterMonths"
+      ] ?? 2
+    );
+  });
   explanation = computed<string>(() => {
     const type =
       this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
@@ -117,11 +126,17 @@ export class UvpArchiveComponent implements OnInit {
       .getAutomaticArchiveInfo()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
+        tap((res: any) => {
+          if (res?.info?.nextExecution) {
+            this.nextExecution.set(res.info.nextExecution);
+          }
+        }),
         map((res: any) => {
-          if (!res?.info) return null;
+          if (!res?.info || !res.info.startTime) return null;
           return {
             startTime: res.info.startTime,
             endTime: res.info.endTime,
+            nextExecution: res.info.nextExecution,
             progress:
               res.info.progress ??
               (Array.isArray(res.info.report) ? res.info.report.length : 0),
@@ -142,6 +157,15 @@ export class UvpArchiveComponent implements OnInit {
         tap((data) => {
           if (data?.automatic) {
             this.autoArchiveStatus.set(data);
+            if (data?.endTime) {
+              this.uvpArchiveService
+                .getAutomaticArchiveInfo()
+                .subscribe((res: any) => {
+                  if (res?.info?.nextExecution) {
+                    this.nextExecution.set(res.info.nextExecution);
+                  }
+                });
+            }
           } else {
             this.status.set(data);
           }
