@@ -145,9 +145,6 @@ export class UploadComponent implements AfterViewInit {
         return checksum;
       });
 
-      // One important distinction: if each string in orderedChecksums is a
-      // hex-encoded SHA-256 checksum, e.g. "a3f2...", you may actually want to concatenate the
-      // underlying checksum bytes, rather than the ASCII characters representing the hex
       combinedChecksum = await sha256(
         new TextEncoder().encode(orderedChecksums.join("")),
       );
@@ -155,11 +152,22 @@ export class UploadComponent implements AfterViewInit {
 
     // override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
-    chunk.getParams = () => ({
-      ...getParams(),
-      chunkChecksum: checksum,
-      combinedChecksum: combinedChecksum || null,
-    });
+    chunk.getParams = () => {
+      const params = {
+        ...getParams(),
+        chunkChecksum: checksum,
+      };
+
+      if (combinedChecksum !== undefined) {
+        return {
+          ...params,
+          combinedChecksum,
+        };
+      }
+
+      return params;
+    };
+
     (
       chunk as flowjs.FlowChunk & { preprocessFinished(): void }
     ).preprocessFinished();

@@ -127,8 +127,7 @@ class UploadApiController(
 
             fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
 
-            // TODO: Fix this, send null instead of "null"
-            if (combinedChecksum != "null") {
+            if (combinedChecksum != null) {
                 fileInfo.setCombinedChecksum(combinedChecksum)
             }
 
