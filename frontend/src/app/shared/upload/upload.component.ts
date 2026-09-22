@@ -114,33 +114,43 @@ export class UploadComponent implements AfterViewInit {
     preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
 
-  private checksumCache = new WeakMap<FlowFile, Map<number, string>>();
+  private checksumCache = new WeakMap<
+    readonly FlowChunk[],
+    Map<number, string>
+  >();
 
   /**
    * Prepare checksum parameters for a chunk upload.
    */
   private async prepareChecksums(chunk: FlowChunk) {
     const file = chunk.fileObj;
+    const chunks = file.chunks;
     const checksum = await calculateChecksum(chunk);
 
-    // support uploading multiple files
-    let fileCache = this.checksumCache.get(file);
+    // retry() rebuilds a FlowFile's chunks. A checksum calculation from the
+    // previous upload may still finish afterwards and must not be mixed into
+    // the new upload or resume its detached chunk.
+    if (file.chunks !== chunks || !chunks.includes(chunk)) return;
+
+    // Cache checksums for this particular generation of chunks. This also
+    // supports multiple files being uploaded at the same time.
+    let fileCache = this.checksumCache.get(chunks);
     if (!fileCache) {
       fileCache = new Map<number, string>();
-      this.checksumCache.set(file, fileCache);
+      this.checksumCache.set(chunks, fileCache);
     }
 
     fileCache.set(chunk.offset, checksum);
 
-    if (fileCache.size > file.chunks.length) {
+    if (fileCache.size > chunks.length) {
       throw new Error("More checksums than chunks");
     }
 
     let combinedChecksum: string;
 
     // when all checksums are ready, concatenate and create combined checksum
-    if (fileCache.size === file.chunks.length) {
-      const orderedChecksums = file.chunks.map((fileChunk) => {
+    if (fileCache.size === chunks.length) {
+      const orderedChecksums = chunks.map((fileChunk) => {
         const checksum = fileCache.get(fileChunk.offset);
 
         if (checksum === undefined) {
