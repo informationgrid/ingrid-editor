@@ -6,6 +6,14 @@
 
 * Portal LUBW: Sachattribute mit Übermittlungsstufen 0 und 1 sollen im Portal angezeigt werden. (#9003)
 
+### Bugfixes
+
+* Fehlende CodelistId Info in LUBW-spezifischen Feldern (#9503)
+    
+## Features
+
+* Portal LUBW: Sachattribute mit Übermittlungsstufen 0 und 1 sollen im Portal angezeigt werden. (#9003)
+
     
 ## 8.4.1 (04.09.2026)
 
