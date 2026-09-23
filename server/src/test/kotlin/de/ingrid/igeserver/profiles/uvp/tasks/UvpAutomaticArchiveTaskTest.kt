@@ -45,10 +45,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Sql(scripts = ["/test_data_uvp_archive.sql"], config = SqlConfig(encoding = "UTF-8"))
-class UvpArchiveTaskTest : IntegrationTest() {
+class UvpAutomaticArchiveTaskTest : IntegrationTest() {
 
     @Autowired
-    private lateinit var uvpArchiveTask: UvpArchiveTask
+    private lateinit var uvpAutomaticArchiveTask: UvpAutomaticArchiveTask
 
     @Autowired
     private lateinit var entityManager: EntityManager
@@ -251,7 +251,7 @@ class UvpArchiveTaskTest : IntegrationTest() {
         every { behaviourService.get("uvp_catalog", "plugin.archive")?.data?.get("showInPortal") } returns true
         every { behaviourService.get("uvp_catalog", "plugin.uvp.archive")?.data?.get("uvpArchiveType") } returns mapArchiveType(option)
 
-        uvpArchiveTask.run(jobExecutionContext)
+        uvpAutomaticArchiveTask.run(jobExecutionContext)
     }
 
     private fun mapArchiveType(option: ArchiveType): String = when (option) {

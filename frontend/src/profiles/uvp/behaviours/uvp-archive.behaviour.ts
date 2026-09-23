@@ -170,27 +170,69 @@ export class UvpArchiveBehaviour extends Plugin {
 
   private setPluginConfig() {
     this.fields.push({
-      key: "uvpArchiveType",
-      type: "radio",
-      defaultValue: "showAll",
-      wrappers: ["form-field"],
-      props: {
-        labelProp: "label",
-        valueProp: "value",
-        appearance: "outline",
-        options: [
-          { value: "hideAll", label: "Alle Dokumente im Portal ausblenden" },
-          {
-            value: "showAll",
-            label: "Alle Dokumente im Portal sichtbar belassen",
+      fieldGroupClassName: "flex-col",
+      fieldGroup: [
+        {
+          key: "uvpArchiveType",
+          type: "radio",
+          defaultValue: "showAll",
+          wrappers: ["form-field"],
+          props: {
+            labelProp: "label",
+            valueProp: "value",
+            appearance: "outline",
+            options: [
+              {
+                value: "hideAll",
+                label: "Alle Dokumente im Portal ausblenden",
+              },
+              {
+                value: "showAll",
+                label: "Alle Dokumente im Portal sichtbar belassen",
+              },
+              {
+                value: "showOnlyDecision",
+                label: "Nur Dokumente der Entscheidung sichtbar belassen",
+              },
+            ],
+            required: true,
           },
-          {
-            value: "showOnlyDecision",
-            label: "Nur Dokumente der Entscheidung sichtbar belassen",
-          },
-        ],
-        required: true,
-      },
+        },
+        {
+          fieldGroupClassName: "flex-row gap-6",
+          fieldGroup: [
+            {
+              key: "automaticArchiveEnabled",
+              type: "checkbox",
+              wrappers: [],
+              defaultValue: false,
+              props: {
+                label:
+                  "Automatische Archivierung aktivieren für Verfahren, deren Entscheidungsdatum älter ist als",
+                appearance: "outline",
+              },
+            },
+            {
+              key: "archiveAfterMonths",
+              type: "number",
+              wrappers: ["form-field", "addons"],
+              defaultValue: 2,
+              className: "right-align width-date-small",
+              expressions: {
+                hide: (field) => !field.model?.automaticArchiveEnabled,
+              },
+              props: {
+                // label: "Entscheidungsdatum älter",
+                addonRight: {
+                  text: "Monat(e)",
+                },
+                appearance: "outline",
+                min: 1,
+              },
+            },
+          ],
+        },
+      ],
     });
   }
 

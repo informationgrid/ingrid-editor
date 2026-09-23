@@ -31,16 +31,42 @@ import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatListModule } from "@angular/material/list";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
+import { Router } from "@angular/router";
 import { switchMap } from "rxjs";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { filter, map, tap } from "rxjs/operators";
 import { RxStompService } from "../../../../app/rx-stomp.service";
 import { BaseLogResult } from "../../../../app/shared/base-log-result";
-import { DatePipe } from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { TranslocoService } from "@jsverse/transloco";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
+export interface ArchivedDataset {
+  id: number;
+  docId?: number;
+  uuid?: string;
+  title?: string;
+  type?: string;
+}
+
+export interface AutoArchiveLogResult extends BaseLogResult {
+  report?: ArchivedDataset[];
+  nextExecution?: Date;
+}
+
+export interface ArchiveHistoryEntry {
+  startTime: Date | null;
+  endTime: Date | null;
+  archivedCount: number;
+  archiveAfterMonths: number | null;
+  errors: string[];
+  report: ArchivedDataset[] | null;
+  isManual: boolean;
+}
 
 @Component({
   selector: "ige-uvp-archive",
@@ -50,8 +76,11 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     MatDatepickerModule,
     ReactiveFormsModule,
     MatButton,
+    MatDividerModule,
+    MatListModule,
     PageTemplateNoHeaderComponent,
     DatePipe,
+    NgTemplateOutlet,
   ],
   templateUrl: "./uvp-archive.component.html",
   styleUrl: "./uvp-archive.component.scss",
@@ -63,6 +92,7 @@ export class UvpArchiveComponent implements OnInit {
   private rxStompService = inject(RxStompService);
   private transloco = inject(TranslocoService);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   active = computed<boolean>(() => {
     const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
@@ -71,6 +101,18 @@ export class UvpArchiveComponent implements OnInit {
   dateControl = new FormControl<Date>(null, Validators.required);
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
+  autoArchiveStatus = signal<AutoArchiveLogResult>(null);
+  nextExecution = signal<Date>(null);
+  archiveHistory = signal<ArchiveHistoryEntry[]>([]);
+  showHistory = signal<boolean>(false);
+  expandedHistoryIndex = signal<number | null>(null);
+  archiveAfterMonths = computed<number>(() => {
+    return (
+      this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
+        "archiveAfterMonths"
+      ] ?? 2
+    );
+  });
   explanation = computed<string>(() => {
     const type =
       this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
@@ -94,17 +136,143 @@ export class UvpArchiveComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Fetch current automatic archive info
+    this.uvpArchiveService
+      .getAutomaticArchiveInfo()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap((res: any) => {
+          if (res?.info?.nextExecution) {
+            this.nextExecution.set(res.info.nextExecution);
+          }
+        }),
+        map((res: any) => {
+          if (!res?.info || !res.info.startTime) return null;
+          return {
+            startTime: res.info.startTime,
+            endTime: res.info.endTime,
+            nextExecution: res.info.nextExecution,
+            progress:
+              res.info.progress ??
+              (Array.isArray(res.info.report) ? res.info.report.length : 0),
+            errors: res.info.errors ?? [],
+            infos: res.info.infos ?? [],
+            report: res.info.report ?? [],
+          } as AutoArchiveLogResult;
+        }),
+        tap((data) => this.autoArchiveStatus.set(data)),
+      )
+      .subscribe();
+
+    // Fetch archive history for the last 30 days
+    this.uvpArchiveService
+      .getAutomaticArchiveHistory()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap((history: ArchiveHistoryEntry[]) => {
+          this.archiveHistory.set(history);
+        }),
+      )
+      .subscribe();
+
     this.rxStompService
       .watch(`/topic/uvp/archiveStatus/${ConfigService.catalogId}`)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => this.status.set(data)),
+        tap((data) => {
+          if (data?.automatic) {
+            this.autoArchiveStatus.set(data);
+            if (data?.endTime) {
+              this.uvpArchiveService
+                .getAutomaticArchiveInfo()
+                .subscribe((res: any) => {
+                  if (res?.info?.nextExecution) {
+                    this.nextExecution.set(res.info.nextExecution);
+                  }
+                });
+              // Refresh archive history after job completion
+              this.uvpArchiveService
+                .getAutomaticArchiveHistory()
+                .subscribe((history: ArchiveHistoryEntry[]) => {
+                  this.archiveHistory.set(history);
+                });
+            }
+          } else {
+            this.status.set(data);
+            // Refresh archive history for manual archive as well
+            if (data?.endTime) {
+              this.uvpArchiveService
+                .getAutomaticArchiveHistory()
+                .subscribe((history: ArchiveHistoryEntry[]) => {
+                  this.archiveHistory.set(history);
+                });
+            }
+          }
+        }),
       )
       .subscribe();
   }
 
   archiveNow() {
     this.uvpArchiveService.archive(this.dateControl.value).subscribe();
+  }
+
+  archiveAutomaticNow() {
+    this.uvpArchiveService.runAutomaticArchive().subscribe();
+  }
+
+  openDataset(dataset: ArchivedDataset) {
+    if (dataset.uuid) {
+      this.router.navigate([
+        ConfigService.catalogId + "/form",
+        { id: dataset.uuid },
+      ]);
+    }
+  }
+
+  toggleHistory() {
+    this.showHistory.update((value) => !value);
+  }
+
+  toggleHistoryEntry(index: number) {
+    this.expandedHistoryIndex.update((current) =>
+      current === index ? null : index,
+    );
+  }
+
+  isHistoryEntryExpanded(index: number): boolean {
+    return this.expandedHistoryIndex() === index;
+  }
+
+  calculateDuration(startTime: Date | null, endTime: Date | null): string {
+    if (!startTime || !endTime) return "-";
+
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+    const durationMs = end - start;
+
+    if (durationMs < 60000) {
+      return "< 1 Min";
+    }
+
+    const minutes = Math.floor(durationMs / 60000);
+    if (minutes < 60) {
+      return `${minutes} Min`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours < 24) {
+      return remainingMinutes > 0
+        ? `${hours}h ${remainingMinutes}min`
+        : `${hours}h`;
+    }
+
+    const days = Math.floor(hours / 24);
+    const remainingHours = hours % 24;
+
+    return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
   }
 }
