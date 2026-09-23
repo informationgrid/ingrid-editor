@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.uvp.api
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
-import de.ingrid.igeserver.profiles.uvp.tasks.UvpArchiveTask
 import de.ingrid.igeserver.profiles.uvp.tasks.UvpAutomaticArchiveTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
@@ -54,14 +53,14 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         @RequestBody body: ArchiveParameter,
     ): ResponseEntity<Boolean> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val jobKey = JobKey.jobKey(UvpArchiveTask.JOB_KEY, catalogId)
+        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)
             put("date", body.date.toString())
             put("report", null)
         }
-        scheduler.handleJobWithCommand(JobCommand.start, UvpArchiveTask::class.java, jobKey, jobDataMap)
+        scheduler.handleJobWithCommand(JobCommand.start, UvpAutomaticArchiveTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok(true)
     }
@@ -150,6 +149,7 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
             val archivedCount = entry["archivedCount"]
             val archiveAfterMonths = entry["archiveAfterMonths"]
             val errors = entry["errors"]
+            val isManual = entry["isManual"]
             ArchiveHistoryDto(
                 startTime = (timestamp as? Number)?.toLong()?.let { Date(it) },
                 endTime = (endTimestamp as? Number)?.toLong()?.let { Date(it) },
@@ -157,6 +157,7 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
                 archiveAfterMonths = (archiveAfterMonths as? Number)?.toInt(),
                 errors = (errors as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
                 report = entry["report"],
+                isManual = (isManual as? Boolean) ?: false,
             )
         }
 
@@ -173,4 +174,5 @@ data class ArchiveHistoryDto(
     val archiveAfterMonths: Int?,
     val errors: List<String>,
     val report: Any?,
+    val isManual: Boolean,
 )

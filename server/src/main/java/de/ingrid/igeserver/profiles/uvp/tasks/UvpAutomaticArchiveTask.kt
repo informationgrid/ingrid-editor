@@ -56,24 +56,45 @@ class UvpAutomaticArchiveTask(
     }
 
     override fun run(context: JobExecutionContext) {
-        log.info("Starting Task: UVP-Automatic-Archive")
+        log.info("Starting Task: UVP-Archive")
         val catalogId = context.mergedJobDataMap?.getString("catalogId")
             ?: context.jobDetail?.key?.group?.takeIf { it != "DEFAULT" && it.isNotBlank() }!!
-        val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
-            ?: return
-        val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
-        val months = (config["archiveAfterMonths"] as? Number)?.toLong() ?: 2
-        if (!automaticArchiveEnabled || months < 1) return
 
-        val today = LocalDate.now(berlinZone).atStartOfDay(berlinZone).toOffsetDateTime()
-        archiveCatalog(context, catalogId, today.minusMonths(months), months.toInt())
-        log.info("Task finished: UVP-Automatic-Archive")
+        val dateString = context.mergedJobDataMap?.getString("date")
+        val isManualMode = dateString != null
+
+        val archiveDate = if (isManualMode) {
+            OffsetDateTime.parse(dateString)
+        } else {
+            val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
+                ?: return
+            val automaticArchiveEnabled = config["automaticArchiveEnabled"] as? Boolean ?: false
+            val months = (config["archiveAfterMonths"] as? Number)?.toLong() ?: 2
+            if (!automaticArchiveEnabled || months < 1) return
+            val today = LocalDate.now(berlinZone).atStartOfDay(berlinZone).toOffsetDateTime()
+            today.minusMonths(months)
+        }
+
+        val archiveAfterMonths = if (isManualMode) {
+            null
+        } else {
+            val config = behaviourService.getData(catalogId, "plugin.uvp.archive")
+                ?: return
+            (config["archiveAfterMonths"] as? Number)?.toInt()
+        }
+
+        archiveCatalog(context, catalogId, archiveDate, archiveAfterMonths, isManualMode)
+        log.info("Task finished: UVP-Archive")
     }
 
-    private fun archiveCatalog(context: JobExecutionContext, catalogId: String, date: OffsetDateTime, archiveAfterMonths: Int) {
+    private fun archiveCatalog(context: JobExecutionContext, catalogId: String, date: OffsetDateTime, archiveAfterMonths: Int?, isManualMode: Boolean = false) {
         val startTime = Date()
-        val message = ArchiveMessage(catalogId, automatic = true)
-        notify.sendMessage(message.apply { this.message = "Start automatic archiving for catalog: $catalogId" })
+        val message = ArchiveMessage(catalogId, automatic = !isManualMode)
+        notify.sendMessage(
+            message.apply {
+                this.message = if (isManualMode) "Start archiving for catalog: $catalogId" else "Start automatic archiving for catalog: $catalogId"
+            },
+        )
 
         val datasets = try {
             uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
@@ -118,7 +139,7 @@ class UvpAutomaticArchiveTask(
         finishJob(context, message)
         notify.sendMessage(message)
 
-        storeExecutionHistory(context, startTime, endTime, message.progress, message.errors, message.report, archiveAfterMonths)
+        storeExecutionHistory(context, startTime, endTime, message.progress, message.errors, message.report, archiveAfterMonths, isManualMode)
     }
 
     private fun storeExecutionHistory(
@@ -128,7 +149,8 @@ class UvpAutomaticArchiveTask(
         archivedCount: Int,
         errors: MutableList<String>,
         report: Any?,
-        archiveAfterMonths: Int,
+        archiveAfterMonths: Int?,
+        isManualMode: Boolean = false,
     ) {
         val jobDataMap = context.jobDetail?.jobDataMap ?: return
         val mapper = jacksonObjectMapper()
@@ -141,15 +163,18 @@ class UvpAutomaticArchiveTask(
         } ?: mutableListOf()
 
         // Add current execution to history (limit to 30 entries)
-        val executionRecord = mapOf(
+        val executionRecord = mutableMapOf(
             "timestamp" to startTime.time,
             "endTimestamp" to endTime.time,
             "archivedCount" to archivedCount,
             "errors" to errors.toList(),
-
             "report" to report,
-            "archiveAfterMonths" to archiveAfterMonths,
+            "isManual" to isManualMode,
         )
+
+        if (!isManualMode) {
+            executionRecord["archiveAfterMonths"] = archiveAfterMonths
+        }
 
         historyList.add(0, executionRecord) // Add to beginning (most recent first)
         if (historyList.size > 30) {
@@ -158,8 +183,8 @@ class UvpAutomaticArchiveTask(
 
         // Store updated history back to JobDataMap
         jobDataMap.put("executionHistory", mapper.writeValueAsString(historyList))
-        jobDataMap.put("startTime", startTime)
-        jobDataMap.put("endTime", endTime)
+        jobDataMap["startTime"] = startTime
+        jobDataMap["endTime"] = endTime
         jobDataMap.put("progress", archivedCount)
         jobDataMap.put("errors", mapper.writeValueAsString(errors))
     }

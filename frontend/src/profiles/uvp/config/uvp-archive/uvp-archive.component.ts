@@ -65,6 +65,7 @@ export interface ArchiveHistoryEntry {
   archiveAfterMonths: number | null;
   errors: string[];
   report: ArchivedDataset[] | null;
+  isManual: boolean;
 }
 
 @Component({
@@ -199,6 +200,14 @@ export class UvpArchiveComponent implements OnInit {
             }
           } else {
             this.status.set(data);
+            // Refresh archive history for manual archive as well
+            if (data?.endTime) {
+              this.uvpArchiveService
+                .getAutomaticArchiveHistory()
+                .subscribe((history: ArchiveHistoryEntry[]) => {
+                  this.archiveHistory.set(history);
+                });
+            }
           }
         }),
       )

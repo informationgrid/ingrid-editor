@@ -187,6 +187,11 @@
                                             }}</span
                                         >
                                     }
+                                    @if (archiveHistory()[0].isManual) {
+                                        <span class="manual-badge"
+                                            >Manuell</span
+                                        >
+                                    }
                                 </div>
                                 <div class="run-stats">
                                     <span class="stat-badge success">
@@ -238,6 +243,11 @@
                                                 archiveHistory()[0].endTime
                                                     | date: "HH:mm:ss"
                                             }}</span
+                                        >
+                                    }
+                                    @if (archiveHistory()[0].isManual) {
+                                        <span class="manual-badge"
+                                            >Manuell</span
                                         >
                                     }
                                 </div>
@@ -369,6 +379,12 @@
                                                     entry.startTime
                                                         | date: "HH:mm:ss"
                                                 }}</small>
+                                                @if (entry.isManual) {
+                                                    <br /><small
+                                                        class="manual-badge"
+                                                        >Manuell</small
+                                                    >
+                                                }
                                             </td>
                                             <td class="count-success">
                                                 {{ entry.archivedCount }}

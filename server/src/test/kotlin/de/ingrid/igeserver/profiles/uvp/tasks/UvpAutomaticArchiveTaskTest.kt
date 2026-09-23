@@ -21,29 +21,28 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import IntegrationTest
 import com.ninjasquad.springmockk.MockkBean
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
-import de.ingrid.igeserver.profiles.uvp.UvpArchiveSchedulerService
-import de.ingrid.igeserver.profiles.uvp.api.UvpArchiveApiController
-import de.ingrid.igeserver.profiles.uvp.messaging.ArchiveNotifier
-import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.BehaviourService
-import de.ingrid.igeserver.services.SchedulerService
-import io.kotest.matchers.nulls.shouldNotBeNull
+import de.ingrid.igeserver.utils.getString
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import jakarta.persistence.EntityManager
 import org.quartz.JobDataMap
-import org.quartz.JobDetail
 import org.quartz.JobExecutionContext
-import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Sql(scripts = ["/test_data_uvp_archive.sql"], config = SqlConfig(encoding = "UTF-8"))
 class UvpAutomaticArchiveTaskTest : IntegrationTest() {
@@ -52,141 +51,243 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
     private lateinit var uvpAutomaticArchiveTask: UvpAutomaticArchiveTask
 
     @Autowired
-    private lateinit var uvpArchiveApiController: UvpArchiveApiController
+    private lateinit var entityManager: EntityManager
 
     @Autowired
-    private lateinit var schedulerService: SchedulerService
-
-    @Autowired
-    private lateinit var schedulerFactoryBean: org.springframework.scheduling.quartz.SchedulerFactoryBean
-
-    @Autowired
-    private lateinit var catalogRepository: CatalogRepository
+    private lateinit var transactionManager: PlatformTransactionManager
 
     @MockkBean
     private lateinit var behaviourService: BehaviourService
 
-    @MockkBean
-    private lateinit var archiveNotifier: ArchiveNotifier
-
-    private lateinit var uvpArchiveSchedulerService: UvpArchiveSchedulerService
     private lateinit var jobExecutionContext: JobExecutionContext
-    private lateinit var jobDetail: JobDetail
-    private lateinit var jobDataMap: JobDataMap
-    private val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+
+    private val expectedDate = getYesterdayDate()
 
     @BeforeEach
     fun setUp() {
-        uvpArchiveSchedulerService = UvpArchiveSchedulerService(
-            schedulerService = schedulerService,
-            behaviourService = behaviourService,
-            catalogRepo = catalogRepository,
-            cronPattern = "0 0 2 * * ?",
-        )
-        jobDataMap = JobDataMap()
-        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, "uvp_catalog")
-        jobDetail = mockk<JobDetail>(relaxed = true)
-        every { jobDetail.key } returns jobKey
-        every { jobDetail.jobDataMap } returns jobDataMap
-        jobExecutionContext = mockk<JobExecutionContext>(relaxed = true)
-        every { jobExecutionContext.jobDetail } returns jobDetail
-        every { jobExecutionContext.mergedJobDataMap } returns jobDataMap
-        every { archiveNotifier.sendMessage(any()) } returns Unit
-
-        every { mockPrincipal.authorities } returns listOf(SimpleGrantedAuthority("cat-admin"))
-        every { mockPrincipal.principal } returns "user1"
+        jobExecutionContext = mockk<JobExecutionContext>()
     }
 
     @Test
-    fun `automatic archive executes and records archived datasets report`() {
-        val archiveBehaviour = Behaviour().apply {
-            name = "plugin.archive"
-            active = true
-            data = mapOf("showInPortal" to true)
+    fun `archive datasets with option HIDE_ALL`() {
+        runWithOption(ArchiveType.HIDE_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(2)
+    }
+
+    @Test
+    fun `archive datasets with option SHOW_ONLY_DECISION`() {
+        runWithOption(ArchiveType.SHOW_ONLY_DECISION)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(2)
+    }
+
+    @Test
+    fun `archive datasets with option SHOW_ALL`() {
+        runWithOption(ArchiveType.SHOW_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        checkIfArchived(2)
+    }
+
+    @Test
+    fun `archive datasets with option HIDE_ALL with some empty tables`() {
+        // manually empty one of the tables
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                        data,
+                        '{processingSteps}',
+                        (SELECT jsonb_agg(
+                                        jsonb_set(
+                                                step,
+                                                '{reportsRecommendationDocs}',
+                                                '[]'::jsonb,
+                                                TRUE
+                                        )
+                                )
+                         FROM jsonb_array_elements(data -> 'processingSteps') step),
+                        TRUE
+                           )
+                WHERE id = 1001;
+                """.trimIndent(),
+                JsonNode::class.java,
+            ).executeUpdate()
         }
-        val uvpArchiveBehaviour = Behaviour().apply {
-            name = "plugin.uvp.archive"
-            active = true
-            data = mapOf(
-                "automaticArchiveEnabled" to true,
-                "archiveAfterMonths" to 1,
-                "uvpArchiveType" to "showAll",
-            )
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                                    data,
+                                    '{uvpNegativeDecisionDocs}',
+                                    '[]'::jsonb,
+                                    TRUE
+                            )
+                WHERE id = 1002;
+                """.trimIndent(),
+                JsonNode::class.java,
+            ).executeUpdate()
         }
-        every { behaviourService.get("uvp_catalog", "plugin.archive") } returns archiveBehaviour
-        every { behaviourService.get("uvp_catalog", "plugin.uvp.archive") } returns uvpArchiveBehaviour
-        every { behaviourService.getData("uvp_catalog", "plugin.uvp.archive") } returns uvpArchiveBehaviour.data
+
+        runWithOption(ArchiveType.HIDE_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "reportsRecommendationDocs").size() shouldBe 0
+        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.getString("description") shouldBe "test"
+        data.get("uvpNegativeDecisionDocs").size() shouldBe 0
+
+        checkIfArchived(2)
+    }
+
+    @Test @Ignore
+    fun `do not set valid date for those already in the past`() {
+        // TODO: set past date to a table entry
+
+        runWithOption(ArchiveType.HIDE_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+    }
+
+    @Test @Ignore
+    fun `set valid date for those in the future`() {
+        // TODO: set future date to a table entry
+
+        runWithOption(ArchiveType.HIDE_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+    }
+
+    private fun getTableRows(steps: ArrayNode, section: Int, tableId: String): ArrayNode = steps.get(section).get(tableId) as ArrayNode
+
+    private fun getYesterdayDate(): String {
+        return ZonedDateTime.now(ZoneId.of("Europe/Berlin"))
+            .with(LocalTime.MIN) // Sets the time to the start of the day
+            .minusDays(1)
+            .withZoneSameInstant(ZoneOffset.UTC) // Adjusts the offset to UTC
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")) // Formats with milliseconds
+    }
+
+    private fun runWithOption(option: ArchiveType) {
+        val jobDataMap = JobDataMap().apply {
+            put("date", OffsetDateTime.now().toString())
+            put("catalogId", "uvp_catalog")
+        }
+        every { jobExecutionContext.mergedJobDataMap } returns jobDataMap
+
+        every { behaviourService.get("uvp_catalog", "plugin.archive")?.data?.get("showInPortal") } returns true
+        every { behaviourService.get("uvp_catalog", "plugin.uvp.archive")?.data?.get("uvpArchiveType") } returns mapArchiveType(option)
 
         uvpAutomaticArchiveTask.run(jobExecutionContext)
-
-        jobDataMap.containsKey("report") shouldBe true
-        val reportJson = jobDataMap.getString("report")
-        reportJson.shouldNotBeNull()
-
-        // Store job in scheduler
-        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, "uvp_catalog")
-        val jobDetail = org.quartz.JobBuilder.newJob(UvpAutomaticArchiveTask::class.java)
-            .withIdentity(jobKey)
-            .usingJobData(jobDataMap)
-            .storeDurably()
-            .build()
-        schedulerFactoryBean.scheduler.addJob(jobDetail, true)
-
-        val response = uvpArchiveApiController.getAutomaticArchiveInfo(mockPrincipal)
-        response.body.shouldNotBeNull()
-        val infoData = response.body?.info
-        infoData.shouldNotBeNull()
-        val report = infoData["report"] as? List<*>
-        report.shouldNotBeNull()
-        report.size shouldBe 2
     }
 
-    @Test
-    fun `manual run automatic archive endpoint triggers job`() {
-        val runResponse = uvpArchiveApiController.runAutomaticArchive(mockPrincipal)
-        runResponse.body shouldBe true
+    private fun mapArchiveType(option: ArchiveType): String = when (option) {
+        ArchiveType.HIDE_ALL -> "hideAll"
+        ArchiveType.SHOW_ALL -> "showAll"
+        ArchiveType.SHOW_ONLY_DECISION -> "showOnlyDecision"
     }
 
-    @Test
-    fun `event-driven behaviour update triggers scheduler update`() {
-        val catalogId = "uvp_catalog"
-        val triggerKey = TriggerKey("${UvpAutomaticArchiveTask.JOB_KEY}_cron", catalogId)
+    @Suppress("UNCHECKED_CAST")
+    private fun getProcessingStepsFrom(id: Int): ArrayNode {
+        val steps: List<ArrayNode> =
+            entityManager.createNativeQuery(
+                "SELECT data->'processingSteps' FROM document WHERE id=$id",
+                JsonNode::class.java,
+            ).resultList as List<ArrayNode>
+        return steps[0]
+    }
 
-        val updatedBehaviours = listOf(
-            Behaviour().apply {
-                name = "plugin.uvp.archive"
-                active = true
-                data = mapOf(
-                    "automaticArchiveEnabled" to true,
-                    "archiveAfterMonths" to 1,
-                )
-            },
-        )
-        every { behaviourService.getData(catalogId, "plugin.uvp.archive") } returns mapOf(
-            "automaticArchiveEnabled" to true,
-            "archiveAfterMonths" to 1,
-        )
+    @Suppress("UNCHECKED_CAST")
+    private fun getDataFrom(id: Int): ObjectNode {
+        val data: List<ObjectNode> =
+            entityManager.createNativeQuery(
+                "SELECT data FROM document WHERE id=$id",
+                JsonNode::class.java,
+            ).resultList as List<ObjectNode>
+        return data[0]
+    }
 
-        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent(catalogId, updatedBehaviours))
-        schedulerFactoryBean.scheduler.checkExists(triggerKey) shouldBe true
+    @Suppress("UNCHECKED_CAST")
+    private fun checkIfArchived(id: Int) {
+        val entry = entityManager.createNativeQuery(
+            "SELECT tags FROM document_wrapper WHERE id=$id",
+            List::class.java,
+        ).singleResult as List<String>
 
-        // Updating again while already scheduled (tests rescheduleJob)
-        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent(catalogId, updatedBehaviours))
-        schedulerFactoryBean.scheduler.checkExists(triggerKey) shouldBe true
-
-        val infoResponse = uvpArchiveApiController.getAutomaticArchiveInfo(mockPrincipal)
-        infoResponse.body.shouldNotBeNull()
-        infoResponse.body?.info?.get("nextExecution").shouldNotBeNull()
-
-        // Test non-UVP catalog event ignores scheduling
-        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent("non_uvp_catalog", updatedBehaviours))
-
-        every { behaviourService.getData(catalogId, "plugin.uvp.archive") } returns mapOf(
-            "automaticArchiveEnabled" to false,
-            "archiveAfterMonths" to 1,
-        )
-
-        uvpArchiveSchedulerService.onBehavioursUpdated(de.ingrid.igeserver.services.BehavioursUpdatedEvent(catalogId, updatedBehaviours))
-        schedulerFactoryBean.scheduler.checkExists(triggerKey) shouldBe false
+        entry.size shouldBe 1
+        entry[0] shouldBe listOf("archived")
     }
 }
