@@ -66,6 +66,7 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
     @BeforeEach
     fun setUp() {
         jobExecutionContext = mockk<JobExecutionContext>()
+        every { jobExecutionContext.jobDetail.jobDataMap } returns JobDataMap()
     }
 
     @Test
@@ -209,26 +210,65 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
         checkIfArchived(2)
     }
 
-    @Test @Ignore
+    @Test
     fun `do not set valid date for those already in the past`() {
-        // TODO: set past date to a table entry
+        // Set a past validUntil date (e.g., 2020-01-01) on announcementDocs
+        val pastDate = "2020-01-01T00:00:00.000Z"
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                        data,
+                        '{processingSteps,0,announcementDocs,0,validUntil}',
+                        to_jsonb('$pastDate'::text)
+                )
+                WHERE id = 1001
+                """.trimIndent(),
+            ).executeUpdate()
+        }
 
         runWithOption(ArchiveType.HIDE_ALL)
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+        // Documents with past validUntil should not be updated
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe pastDate }
+        // Documents with null validUntil should be updated to yesterday
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
     }
 
-    @Test @Ignore
+    @Test
     fun `set valid date for those in the future`() {
-        // TODO: set future date to a table entry
+        // Set a future validUntil date (e.g., 10 days from now) on announcementDocs
+        val futureDate = ZonedDateTime.now(ZoneId.of("Europe/Berlin"))
+            .with(LocalTime.MIN)
+            .plusDays(10)
+            .withZoneSameInstant(ZoneOffset.UTC)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
+
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                        data,
+                        '{processingSteps,0,announcementDocs,0,validUntil}',
+                        to_jsonb('$futureDate'::text)
+                )
+                WHERE id = 1001
+                """.trimIndent(),
+            ).executeUpdate()
+        }
 
         runWithOption(ArchiveType.HIDE_ALL)
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+        // Documents with future validUntil should be updated to yesterday
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        // Documents with null validUntil should also be updated to yesterday
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
     }
 
     private fun getTableRows(steps: ArrayNode, section: Int, tableId: String): ArrayNode = steps.get(section).get(tableId) as ArrayNode
