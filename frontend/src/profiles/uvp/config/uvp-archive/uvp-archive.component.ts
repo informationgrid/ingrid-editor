@@ -218,10 +218,6 @@ export class UvpArchiveComponent implements OnInit {
     this.uvpArchiveService.archive(this.dateControl.value).subscribe();
   }
 
-  archiveAutomaticNow() {
-    this.uvpArchiveService.runAutomaticArchive().subscribe();
-  }
-
   openDataset(dataset: ArchivedDataset) {
     if (dataset.uuid) {
       this.router.navigate([
@@ -243,36 +239,5 @@ export class UvpArchiveComponent implements OnInit {
 
   isHistoryEntryExpanded(index: number): boolean {
     return this.expandedHistoryIndex() === index;
-  }
-
-  calculateDuration(startTime: Date | null, endTime: Date | null): string {
-    if (!startTime || !endTime) return "-";
-
-    const start = new Date(startTime).getTime();
-    const end = new Date(endTime).getTime();
-    const durationMs = end - start;
-
-    if (durationMs < 60000) {
-      return "< 1 Min";
-    }
-
-    const minutes = Math.floor(durationMs / 60000);
-    if (minutes < 60) {
-      return `${minutes} Min`;
-    }
-
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-
-    if (hours < 24) {
-      return remainingMinutes > 0
-        ? `${hours}h ${remainingMinutes}min`
-        : `${hours}h`;
-    }
-
-    const days = Math.floor(hours / 24);
-    const remainingHours = hours % 24;
-
-    return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
   }
 }
