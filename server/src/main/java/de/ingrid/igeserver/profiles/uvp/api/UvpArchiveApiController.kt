@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.Principal
 import java.time.OffsetDateTime
+import java.util.*
 
 @Tag(name = "UVP Archive")
 @RestController
@@ -125,6 +126,51 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         val info = if (resultDataMap.isEmpty()) null else resultDataMap
         return ResponseEntity.ok(JobInfo(isRunning, info))
     }
+
+    @Operation(summary = "Get archive execution history from Quartz JobDataMap")
+    @GetMapping(value = ["/automatic/history"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAutomaticArchiveHistory(
+        principal: Principal,
+    ): ResponseEntity<List<ArchiveHistoryDto>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey(UvpAutomaticArchiveTask.JOB_KEY, catalogId)
+        val jobDetail = scheduler.getJobInfo(jobKey) ?: return ResponseEntity.ok(emptyList())
+
+        val historyString = jobDetail.jobDataMap.getString("executionHistory")
+            ?: return ResponseEntity.ok(emptyList())
+
+        val mapper = jacksonObjectMapper()
+        val typeRef = mapper.typeFactory.constructCollectionType(List::class.java, Map::class.java)
+        val historyList = mapper.readValue(historyString, typeRef) as? List<Map<String, Any>>
+            ?: return ResponseEntity.ok(emptyList())
+
+        val dtos = historyList.map { entry ->
+            val timestamp = entry["timestamp"]
+            val endTimestamp = entry["endTimestamp"]
+            val archivedCount = entry["archivedCount"]
+            val archiveAfterMonths = entry["archiveAfterMonths"]
+            val errors = entry["errors"]
+            ArchiveHistoryDto(
+                startTime = (timestamp as? Number)?.toLong()?.let { Date(it) },
+                endTime = (endTimestamp as? Number)?.toLong()?.let { Date(it) },
+                archivedCount = (archivedCount as? Number)?.toInt() ?: 0,
+                archiveAfterMonths = (archiveAfterMonths as? Number)?.toInt(),
+                errors = (errors as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                report = entry["report"],
+            )
+        }
+
+        return ResponseEntity.ok(dtos)
+    }
 }
 
 data class ArchiveParameter(val date: OffsetDateTime?)
+
+data class ArchiveHistoryDto(
+    val startTime: Date?,
+    val endTime: Date?,
+    val archivedCount: Int,
+    val archiveAfterMonths: Int?,
+    val errors: List<String>,
+    val report: Any?,
+)

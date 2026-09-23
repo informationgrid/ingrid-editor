@@ -144,7 +144,9 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         }
 
         val cronSchedule = getCronSchedule(cron)
-        createJob(jobClass, jobKey)
+        if (scheduler.checkExists(jobKey).not()) {
+            createJob(jobClass, jobKey)
+        }
 
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(

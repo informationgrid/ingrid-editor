@@ -1,6 +1,6 @@
 /*
  * ==================================================
- * Copyright (C) 2025-2026 wemove digital solutions GmbH
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,6 +33,7 @@ import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -65,20 +66,23 @@ class UvpAutomaticArchiveTask(
         if (!automaticArchiveEnabled || months < 1) return
 
         val today = LocalDate.now(berlinZone).atStartOfDay(berlinZone).toOffsetDateTime()
-        archiveCatalog(context, catalogId, today.minusMonths(months))
+        archiveCatalog(context, catalogId, today.minusMonths(months), months.toInt())
         log.info("Task finished: UVP-Automatic-Archive")
     }
 
-    private fun archiveCatalog(context: JobExecutionContext, catalogId: String, date: OffsetDateTime) {
+    private fun archiveCatalog(context: JobExecutionContext, catalogId: String, date: OffsetDateTime, archiveAfterMonths: Int) {
+        val startTime = Date()
         val message = ArchiveMessage(catalogId, automatic = true)
         notify.sendMessage(message.apply { this.message = "Start automatic archiving for catalog: $catalogId" })
+
         val datasets = try {
             uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
         } catch (exception: Exception) {
-            message.errors += "Could not find datasets: ${exception.message}"
+            message.errors.add("Could not find datasets: ${exception.message}")
             message.endTime = Date()
             finishJob(context, message)
             notify.sendMessage(message)
+            storeExecutionHistory(context, startTime, Date(), 0, message.errors, null, archiveAfterMonths)
             return
         }
 
@@ -91,24 +95,72 @@ class UvpAutomaticArchiveTask(
                         documentService.archiveDocument(principal, catalogId, dataset.wrapperId)
                     }
                     message.progress++
-                    archivedDatasets += ArchivedDatasetInfo(
-                        id = dataset.wrapperId,
-                        docId = docData.document.id,
-                        uuid = docData.document.uuid,
-                        title = docData.document.title,
-                        type = docData.document.type,
+                    archivedDatasets.add(
+                        ArchivedDatasetInfo(
+                            id = dataset.wrapperId,
+                            docId = docData.document.id,
+                            uuid = docData.document.uuid,
+                            title = docData.document.title,
+                            type = docData.document.type,
+                        ),
                     )
                     notify.sendMessage(message)
                 } catch (exception: Exception) {
-                    message.errors += "Could not archive dataset ${dataset.wrapperId}: ${exception.message}"
+                    message.errors.add("Could not archive dataset ${dataset.wrapperId}: ${exception.message}")
                     log.error("Could not archive dataset ${dataset.wrapperId} in catalog $catalogId", exception)
                     notify.sendMessage(message)
                 }
             }
         }
 
-        message.endTime = Date()
+        val endTime = Date()
+        message.endTime = endTime
         finishJob(context, message)
         notify.sendMessage(message)
+
+        storeExecutionHistory(context, startTime, endTime, message.progress, message.errors, message.report, archiveAfterMonths)
+    }
+
+    private fun storeExecutionHistory(
+        context: JobExecutionContext,
+        startTime: Date,
+        endTime: Date,
+        archivedCount: Int,
+        errors: MutableList<String>,
+        report: Any?,
+        archiveAfterMonths: Int,
+    ) {
+        val jobDataMap = context.jobDetail?.jobDataMap ?: return
+        val mapper = jacksonObjectMapper()
+
+        // Get existing history or create new list
+        val historyString = jobDataMap.getString("executionHistory")
+        val typeRef = mapper.typeFactory.constructCollectionType(MutableList::class.java, Map::class.java)
+        val historyList: MutableList<Map<String, Any?>> = historyString?.let {
+            mapper.readValue(it, typeRef) as? MutableList<Map<String, Any?>>
+        } ?: mutableListOf()
+
+        // Add current execution to history (limit to 30 entries)
+        val executionRecord = mapOf(
+            "timestamp" to startTime.time,
+            "endTimestamp" to endTime.time,
+            "archivedCount" to archivedCount,
+            "errors" to errors.toList(),
+
+            "report" to report,
+            "archiveAfterMonths" to archiveAfterMonths,
+        )
+
+        historyList.add(0, executionRecord) // Add to beginning (most recent first)
+        if (historyList.size > 30) {
+            historyList.removeAt(historyList.size - 1) // Remove oldest if > 30
+        }
+
+        // Store updated history back to JobDataMap
+        jobDataMap.put("executionHistory", mapper.writeValueAsString(historyList))
+        jobDataMap.put("startTime", startTime)
+        jobDataMap.put("endTime", endTime)
+        jobDataMap.put("progress", archivedCount)
+        jobDataMap.put("errors", mapper.writeValueAsString(errors))
     }
 }

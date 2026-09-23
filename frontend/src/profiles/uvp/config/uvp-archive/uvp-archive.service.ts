@@ -46,6 +46,12 @@ export class UvpArchiveService {
     );
   }
 
+  getAutomaticArchiveHistory(): Observable<any> {
+    return this.http.get(
+      `${this.configuration.backendUrl}uvp/archive/automatic/history`,
+    );
+  }
+
   runAutomaticArchive(): Observable<any> {
     return this.http.post(
       `${this.configuration.backendUrl}uvp/archive/automatic`,
