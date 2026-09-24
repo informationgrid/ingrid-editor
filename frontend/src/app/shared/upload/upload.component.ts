@@ -387,33 +387,6 @@ export class UploadComponent implements AfterViewInit {
   }
 }
 
-/**
- * Calculate the checksums of each chunk of a FlowFile and the combined checkSum
- * @param file
- */
-export async function calculateChecksums(file: FlowFile): Promise<{
-  checksums: string[];
-  combinedChecksum: string;
-}> {
-  const checksums: string[] = await Promise.all(
-    file.chunks.map(async (chunk) => {
-      const chunkBytes = await file.file
-        .slice(chunk.startByte, chunk.endByte)
-        .arrayBuffer();
-
-      return sha256(chunkBytes);
-    }),
-  );
-  const combinedChecksum = await sha256(
-    new TextEncoder().encode(checksums.join("")),
-  );
-
-  return {
-    checksums,
-    combinedChecksum,
-  };
-}
-
 export async function calculateChecksum(chunk: FlowChunk): Promise<string> {
   const uploadFile = chunk.fileObj.file;
   const chunkBytes = await uploadFile
