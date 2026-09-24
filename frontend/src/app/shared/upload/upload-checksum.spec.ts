@@ -17,85 +17,84 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { calculateChecksums } from "./upload.component";
+import { calculateChecksum, UploadComponent } from "./upload.component";
 
-/**
- * Mock file content and chunk boundaries
- * @param content
- * @param boundaries
- */
 function file(content: string, boundaries: number[]) {
   const bytes = new TextEncoder().encode(content);
-  return {
+
+  const flowFile = {
     file: {
       slice: (startByte: number, endByte: number) => ({
         arrayBuffer: async () => bytes.slice(startByte, endByte).buffer,
       }),
     },
-    chunks: boundaries
-      .slice(0, -1)
-      .map((startByte, i) => ({ startByte, endByte: boundaries[i + 1] })),
+    chunks: [],
   } as unknown as flowjs.FlowFile;
+
+  flowFile.chunks = boundaries.slice(0, -1).map((startByte, i) => ({
+    fileObj: flowFile,
+    startByte,
+    endByte: boundaries[i + 1],
+  })) as flowjs.FlowChunk[];
+
+  return flowFile;
 }
 
 describe("Checksum Calculation (SHA-256)", () => {
   // https://emn178.github.io/online-tools/sha256.html for comparison
 
   it("should generate hashes that are exactly 64 characters long", async () => {
-    const result = await calculateChecksums(file("abcdef", [0, 3, 6]));
-
-    result.checksums.forEach((hash) => {
-      expect(hash).toHaveLength(64);
-      expect(hash).toMatch(/^[a-f0-9]{64}$/); // check if hexadecimal
-    });
-
-    expect(result.combinedChecksum).toHaveLength(64);
-    expect(result.combinedChecksum).toMatch(/^[a-f0-9]{64}$/);
-  });
-
-  it("should calculate a combined checksum from a single chunk checksum", async () => {
-    const result = await calculateChecksums(file("abcdef", [0, 6]));
-
-    expect(result.checksums).toHaveLength(1);
-    expect(result.checksums[0]).toBe(
-      "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
-    );
-
-    // The combined checksum hashes the concatenated chunk checksums,
-    // when there is only one checksum, it can not be equal to the combined checksum
-    expect(result.checksums[0]).not.toBe(result.combinedChecksum);
-    expect(result.combinedChecksum).toBe(
-      "1c3951fc51112a02ae7a82720fbed831a07bcde22bdaffefdea17392b6687620",
-    );
-  });
-
-  it("hashes chunks and combines their hexadecimal hashes in file order", async () => {
-    const result = await calculateChecksums(file("abcdef", [0, 3, 6]));
-    expect(result.checksums).toHaveLength(2);
-    expect(result.checksums[0]).toBe(
-      "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
-    );
-    expect(result.combinedChecksum).toBe(
-      "c4e66df524678be2ce0ac784f9cd63c1f9f888f802808b4881114855783812a5",
-    );
-
-    const reversed = await calculateChecksums(file("defabc", [0, 3, 6]));
-    expect(reversed.checksums).toHaveLength(2);
-    expect(result.combinedChecksum).not.toBe(reversed.combinedChecksum);
-
-    const random = await calculateChecksums(file("fdacbe", [0, 3, 6]));
-    expect(random.checksums).toHaveLength(2);
-    expect(result.combinedChecksum).not.toBe(random.combinedChecksum);
-
-    const different = await calculateChecksums(file("abcdeg", [0, 3, 6]));
-    expect(different.checksums).toHaveLength(2);
-    expect(result.combinedChecksum).not.toBe(different.combinedChecksum);
+    const checksum = await calculateChecksum(file("abcdef", [0, 6]).chunks[0]);
+    expect(checksum).toHaveLength(64);
+    expect(checksum).toMatch(/^[a-f0-9]{64}$/); // check if hexadecimal
   });
 
   it("handles a single empty chunk", async () => {
-    const result = await calculateChecksums(file("", [0, 0]));
-    expect(result.checksums[0]).toBe(
+    const emptyFlowFile = file("", [0, 0]);
+    const checksum = await calculateChecksum(emptyFlowFile.chunks[0]);
+    expect(checksum).toBe(
       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     );
+  });
+});
+
+describe("Upload checksum preprocessing", () => {
+  it("ignores a checksum that finishes after retry rebuilt the chunks", async () => {
+    let finishReading: (bytes: ArrayBuffer) => void;
+    const bytesRead = new Promise<ArrayBuffer>((resolve) => {
+      finishReading = resolve;
+    });
+
+    const file = {
+      file: {
+        slice: () => ({ arrayBuffer: () => bytesRead }),
+      },
+      chunks: [],
+    } as unknown as flowjs.FlowFile;
+
+    const staleChunk = {
+      fileObj: file,
+      offset: 1,
+      startByte: 0,
+      endByte: 3,
+      getParams: () => ({}),
+      preprocessFinished: vi.fn(),
+    } as unknown as flowjs.FlowChunk;
+    file.chunks = [staleChunk];
+
+    const component = Object.create(
+      UploadComponent.prototype,
+    ) as UploadComponent;
+    (component as any).checksumCache = new WeakMap();
+    const preprocessing = (component as any).prepareChecksums(staleChunk);
+
+    // FlowFile.retry() replaces the chunks array while preprocessing can still
+    // be awaiting the file read.
+    file.chunks = [{} as flowjs.FlowChunk];
+    finishReading!(new TextEncoder().encode("abc").buffer);
+    await preprocessing;
+
+    expect((staleChunk as any).preprocessFinished).not.toHaveBeenCalled();
+    expect((component as any).checksumCache.get(file.chunks)).toBeUndefined();
   });
 });
