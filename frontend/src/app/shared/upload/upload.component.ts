@@ -47,7 +47,7 @@ import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
 import { AsyncPipe } from "@angular/common";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { FlowChunk, FlowFile } from "flowjs";
+import { FlowChunk } from "flowjs";
 
 @Component({
   selector: "ige-file-upload",
@@ -121,37 +121,68 @@ export class UploadComponent implements AfterViewInit {
     Map<number, string> // <chunkOrder, checksum>
   >();
 
-  /**
-   * Prepare checksum parameters for a chunk upload.
-   * The combined checksum is only sent by the last chunk
-   */
-  private async prepareChecksums(chunk: FlowChunk) {
-    const file: FlowFile = chunk.fileObj;
-    const chunks: readonly FlowChunk[] = file.chunks;
-    const checksum = await calculateChecksum(chunk);
+  private getChecksumCache(chunks: readonly FlowChunk[]) {
+    let cache = this.checksumCache.get(chunks);
 
-    if (file.chunks !== chunks || !chunks.includes(chunk))
-      throw new Error("Stale chunks");
-
-    // Cache checksums for this particular generation of chunks
-    let fileCache = this.checksumCache.get(chunks);
-    if (!fileCache) {
-      fileCache = new Map<number, string>();
-      this.checksumCache.set(chunks, fileCache);
+    if (!cache) {
+      cache = new Map<number, string>();
+      this.checksumCache.set(chunks, cache);
     }
 
-    fileCache.set(chunk.offset, checksum);
+    return cache;
+  }
 
-    if (fileCache.size > chunks.length) {
+  /**
+   * Extend chunk.getParams function by adding the chunkChecksum and combinedChecksum if present.
+   * @param chunk
+   * @param chunkChecksum
+   * @param combinedChecksum
+   * @private
+   */
+  private addChecksumParams(
+    chunk: FlowChunk,
+    chunkChecksum: string,
+    combinedChecksum?: string,
+  ) {
+    const getParams = chunk.getParams.bind(chunk);
+    chunk.getParams = () => ({
+      ...getParams(),
+      chunkChecksum,
+      ...(combinedChecksum !== undefined && { combinedChecksum }), // add combinedChecksum only if present
+    });
+  }
+
+  // preprocessFinished() is available at runtime, but missing from Flow.js typings.
+  private finishPreprocessing(chunk: FlowChunk) {
+    (chunk as FlowChunk & { preprocessFinished(): void }).preprocessFinished();
+  }
+
+  /**
+   * Prepare checksum parameters for a chunk upload.
+   * The combined checksum is only sent by the last chunk.
+   */
+  private async prepareChecksums(chunk: FlowChunk) {
+    const file = chunk.fileObj;
+    const chunks = file.chunks;
+
+    const checksum = await calculateChecksum(chunk);
+
+    if (file.chunks !== chunks || !chunks.includes(chunk)) {
+      throw new Error("Stale chunks");
+    }
+
+    const cache = this.getChecksumCache(chunks);
+    cache.set(chunk.offset, checksum);
+
+    if (cache.size > chunks.length) {
       throw new Error("More checksums than chunks");
     }
 
     let combinedChecksum: string;
 
-    // When all checksums are ready, concatenate and create combined checksum
-    if (fileCache.size === chunks.length) {
+    if (cache.size === chunks.length) {
       const orderedChecksums = chunks.map((fileChunk) => {
-        const checksum = fileCache.get(fileChunk.offset);
+        const checksum = cache.get(fileChunk.offset);
 
         if (checksum === undefined) {
           throw new Error(`Missing checksum for chunk ${fileChunk.offset}`);
@@ -159,33 +190,14 @@ export class UploadComponent implements AfterViewInit {
 
         return checksum;
       });
+
       combinedChecksum = await sha256(
         new TextEncoder().encode(orderedChecksums.join("")),
       );
     }
 
-    // Override getParams to add checkSums
-    const getParams = chunk.getParams.bind(chunk);
-    chunk.getParams = () => {
-      const params = {
-        ...getParams(),
-        chunkChecksum: checksum,
-      };
-
-      if (combinedChecksum !== undefined) {
-        return {
-          ...params,
-          combinedChecksum,
-        };
-      }
-
-      return params;
-    };
-
-    // preprocessFinished() is available at runtime, but its TypeScript definition is missing
-    (
-      chunk as flowjs.FlowChunk & { preprocessFinished(): void }
-    ).preprocessFinished();
+    this.addChecksumParams(chunk, checksum, combinedChecksum);
+    this.finishPreprocessing(chunk);
   }
 
   _errors: { [x: string]: UploadError } = {};
