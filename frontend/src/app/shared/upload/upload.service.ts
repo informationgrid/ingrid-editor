@@ -42,7 +42,15 @@ export class UploadError {
       case 401:
         return "Sie haben keine Berechtigung, die Datei hochzuladen.";
     }
-
+    if (message === "Chunk checksum mismatch") {
+      ("Die Prüfsumme eines Chunks stimmt nicht überein. Bitte laden Sie die Datei erneut hoch.");
+    }
+    if (
+      message ===
+      "Combined checksum mismatch: chunk order or content is incorrect"
+    ) {
+      return "Die Reihenfolge der Chunk Prüfsummen ist inkorrekt. Bitte laden Sie die Datei erneut hoch.";
+    }
     if (message === "The file already exists.") {
       return "Die Datei existiert bereits. Ein Speichern des Dokuments ist evtl. hilfreich, um verwaiste Dateien endgültig zu löschen. Alternative stehen folgende Optionen zur Verfügung:";
     } else if (message.includes("In order to update the catalog")) {

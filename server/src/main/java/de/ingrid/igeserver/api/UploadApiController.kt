@@ -77,8 +77,10 @@ class UploadApiController(
         flowTotalSize: Long,
         flowIdentifier: String,
         flowFilename: String,
+        chunkChecksum: String,
+        combinedChecksum: String?,
     ): ResponseEntity<UploadResponse> {
-        log.info("Uploading file '$flowFilename' for document $docUuid")
+        log.info("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
@@ -114,15 +116,22 @@ class UploadApiController(
         synchronized(this) {
             var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
             if (fileInfo == null) {
-                fileInfo = FileInfo()
+                fileInfo = FileInfo(flowTotalChunks)
                 this.fileInfos[flowIdentifier] = fileInfo
             }
 
+            val checkSum = FileInfo.sha256(file.inputStream)
+            require(checkSum == chunkChecksum) { "Checksum mismatch" }
+
             storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
-            fileInfo.addUploadedChunk(flowChunkNumber)
+            fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
+            if (combinedChecksum != null) {
+                fileInfo.setCombinedChecksum(combinedChecksum)
+            }
 
-            if (fileInfo.isUploadFinished(flowTotalChunks)) {
+            if (fileInfo.isUploadFinished()) {
+                fileInfo.validateCombinedChecksum()
                 log.info("Merging parts of uploaded file: $flowFilename")
                 // store file
                 try {
