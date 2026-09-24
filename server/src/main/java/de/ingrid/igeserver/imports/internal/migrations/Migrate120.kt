@@ -60,10 +60,10 @@ class Migrate120 {
             val hvd = doc.remove("hvd")
             val publicationHmbTG = doc.remove("publicationHmbTG")
 
-            if (publicationHmbTG?.booleanValue() == true) set("publicationHmbTG", publicationHmbTG)
-            if (isOpenData?.booleanValue() == true) set("isOpenData", isOpenData)
-            if (isAdVCompatible?.booleanValue() == true) set("isAdVCompatible", isAdVCompatible)
-            if (isInspireIdentified?.booleanValue() == true) {
+            if (publicationHmbTG != null && !publicationHmbTG.isNull && publicationHmbTG.booleanValue()) set("publicationHmbTG", publicationHmbTG)
+            if (isOpenData != null && !isOpenData.isNull && isOpenData.booleanValue()) set("isOpenData", isOpenData)
+            if (isAdVCompatible != null && !isAdVCompatible.isNull && isAdVCompatible.booleanValue()) set("isAdVCompatible", isAdVCompatible)
+            if (isInspireIdentified != null && !isInspireIdentified.isNull && isInspireIdentified.booleanValue()) {
                 if (docType == "InGridGeoDataset") {
                     if (isInspireConform == null || isInspireConform.isNull || !isInspireConform.booleanValue()) {
                         put("isInspireIdentified", "notConform")
