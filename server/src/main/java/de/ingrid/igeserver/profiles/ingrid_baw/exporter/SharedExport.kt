@@ -296,9 +296,10 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     val softwareNode = data.getPath("software")
-    val software = if (softwareNode != null) {
+    val software = if (softwareNode?.getPath("name") != null) {
         SoftwareBaw(
-            name = softwareNode.getString("name"),
+            name = softwareNode.getPath("name")?.mapToKeyValue()
+                ?.let { e -> transformer.codelists.getValue("BAW_simulationSoftware", e) },
             version = softwareNode.getString("version"),
         )
     } else {
