@@ -114,26 +114,26 @@ export class UploadComponent implements AfterViewInit {
     preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
 
+  // Use the chunks as identifier because they are rebuilt on flowFile.retry().
+  // The FlowFile itself can cause stale chunks
   private checksumCache = new WeakMap<
     readonly FlowChunk[],
-    Map<number, string>
+    Map<number, string> // <chunkOrder, checksum>
   >();
 
   /**
    * Prepare checksum parameters for a chunk upload.
+   * The combined checksum is only sent by the last chunk
    */
   private async prepareChecksums(chunk: FlowChunk) {
-    const file = chunk.fileObj;
-    const chunks = file.chunks;
+    const file: FlowFile = chunk.fileObj;
+    const chunks: readonly FlowChunk[] = file.chunks;
     const checksum = await calculateChecksum(chunk);
 
-    // retry() rebuilds a FlowFile's chunks. A checksum calculation from the
-    // previous upload may still finish afterwards and must not be mixed into
-    // the new upload or resume its detached chunk.
-    if (file.chunks !== chunks || !chunks.includes(chunk)) return;
+    if (file.chunks !== chunks || !chunks.includes(chunk))
+      throw new Error("Stale chunks");
 
-    // Cache checksums for this particular generation of chunks. This also
-    // supports multiple files being uploaded at the same time.
+    // Cache checksums for this particular generation of chunks
     let fileCache = this.checksumCache.get(chunks);
     if (!fileCache) {
       fileCache = new Map<number, string>();
@@ -148,7 +148,7 @@ export class UploadComponent implements AfterViewInit {
 
     let combinedChecksum: string;
 
-    // when all checksums are ready, concatenate and create combined checksum
+    // When all checksums are ready, concatenate and create combined checksum
     if (fileCache.size === chunks.length) {
       const orderedChecksums = chunks.map((fileChunk) => {
         const checksum = fileCache.get(fileChunk.offset);
@@ -164,7 +164,7 @@ export class UploadComponent implements AfterViewInit {
       );
     }
 
-    // override getParams to add checkSums
+    // Override getParams to add checkSums
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => {
       const params = {
@@ -182,6 +182,7 @@ export class UploadComponent implements AfterViewInit {
       return params;
     };
 
+    // preprocessFinished() is available at runtime, but its TypeScript definition is missing
     (
       chunk as flowjs.FlowChunk & { preprocessFinished(): void }
     ).preprocessFinished();
