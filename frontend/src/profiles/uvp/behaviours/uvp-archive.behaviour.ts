@@ -77,7 +77,18 @@ export class UvpArchiveBehaviour extends Plugin {
     super();
 
     effect(() => {
-      if (!DocumentService.archivePluginActive()) return;
+      if (!DocumentService.archivePluginActive()) {
+        this.formToolbarService.setToolbarButtonEnabledFn(
+          "toolBtnRemove",
+          undefined,
+        );
+        this.formToolbarService.setToolbarButtonEnabledFn(
+          "toolBtnCopy.copy",
+          undefined,
+        );
+        this.fields = [];
+        return;
+      }
 
       this.formToolbarService.setToolbarButtonEnabledFn(
         "toolBtnRemove",
@@ -88,7 +99,9 @@ export class UvpArchiveBehaviour extends Plugin {
         this.disableForAuthorsAndArchivedDocument(),
       );
       this.setPluginConfig();
+    });
 
+    effect(() => {
       if (!this.isActive() || !this.formRegistered()) return;
       this.toggleUpdateArchiveButton();
     });
