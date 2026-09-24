@@ -80,25 +80,21 @@ describe("Upload checksum preprocessing", () => {
       getParams: () => ({}),
       preprocessFinished: vi.fn(),
     } as unknown as flowjs.FlowChunk;
-
     file.chunks = [staleChunk];
 
     const component = Object.create(
       UploadComponent.prototype,
     ) as UploadComponent;
     (component as any).checksumCache = new WeakMap();
-
     const preprocessing = (component as any).prepareChecksums(staleChunk);
-    const rejection = expect(preprocessing).rejects.toThrow("Stale chunks");
 
     // FlowFile.retry() replaces the chunks array while preprocessing can still
     // be awaiting the file read.
     file.chunks = [{} as flowjs.FlowChunk];
-
     finishReading!(new TextEncoder().encode("abc").buffer);
+    await preprocessing;
 
-    await rejection;
-
+    expect((staleChunk as any).preprocessFinished).not.toHaveBeenCalled();
     expect((component as any).checksumCache.get(file.chunks)).toBeUndefined();
   });
 });

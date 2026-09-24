@@ -168,7 +168,8 @@ export class UploadComponent implements AfterViewInit {
     const checksum = await calculateChecksum(chunk);
 
     if (file.chunks !== chunks || !chunks.includes(chunk)) {
-      throw new Error("Stale chunks");
+      console.warn(`Stale chunks detected. Retry uploading ${file.name}`);
+      return;
     }
 
     const cache = this.getChecksumCache(chunks);
