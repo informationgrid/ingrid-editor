@@ -47,6 +47,7 @@ import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";
 import { AsyncPipe } from "@angular/common";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FlowChunk } from "flowjs";
 
 @Component({
   selector: "ige-file-upload",
@@ -108,7 +109,98 @@ export class UploadComponent implements AfterViewInit {
     testChunks: false,
     forceChunkSize: false,
     maxChunkRetries: 2,
+    // Flow.js calls this for each chunk before sending it. The callback resumes
+    // the upload explicitly through preprocessFinished()
+    preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
   }));
+
+  // Use the chunks as identifier because they are rebuilt on flowFile.retry().
+  // The FlowFile itself can cause stale chunks
+  private checksumCache = new WeakMap<
+    readonly FlowChunk[],
+    Map<number, string> // <chunkOrder, checksum>
+  >();
+
+  private getChecksumCache(chunks: readonly FlowChunk[]) {
+    let cache = this.checksumCache.get(chunks);
+
+    if (!cache) {
+      cache = new Map<number, string>();
+      this.checksumCache.set(chunks, cache);
+    }
+
+    return cache;
+  }
+
+  /**
+   * Extend chunk.getParams function by adding the chunkChecksum and combinedChecksum if present.
+   * @param chunk
+   * @param chunkChecksum
+   * @param combinedChecksum
+   * @private
+   */
+  private addChecksumParams(
+    chunk: FlowChunk,
+    chunkChecksum: string,
+    combinedChecksum?: string,
+  ) {
+    const getParams = chunk.getParams.bind(chunk);
+    chunk.getParams = () => ({
+      ...getParams(),
+      chunkChecksum,
+      ...(combinedChecksum !== undefined && { combinedChecksum }), // add combinedChecksum only if present
+    });
+  }
+
+  // preprocessFinished() is available at runtime, but missing from Flow.js typings.
+  private finishPreprocessing(chunk: FlowChunk) {
+    (chunk as FlowChunk & { preprocessFinished(): void }).preprocessFinished();
+  }
+
+  /**
+   * Prepare checksum parameters for a chunk upload.
+   * The combined checksum is only sent by the last chunk.
+   */
+  private async prepareChecksums(chunk: FlowChunk) {
+    const file = chunk.fileObj;
+    const chunks = file.chunks;
+
+    const checksum = await calculateChecksum(chunk);
+
+    if (file.chunks !== chunks || !chunks.includes(chunk)) {
+      console.warn(`Stale chunks detected. Retry uploading ${file.name}`);
+      return;
+    }
+
+    const cache = this.getChecksumCache(chunks);
+    cache.set(chunk.offset, checksum);
+
+    if (cache.size > chunks.length) {
+      throw new Error("More checksums than chunks");
+    }
+
+    let combinedChecksum: string;
+
+    if (cache.size === chunks.length) {
+      const orderedChecksums = chunks.map((fileChunk) => {
+        const checksum = cache.get(fileChunk.offset);
+
+        if (checksum === undefined) {
+          throw new Error(`Missing checksum for chunk ${fileChunk.offset}`);
+        }
+
+        return checksum;
+      });
+
+      combinedChecksum = await sha256(
+        new TextEncoder().encode(orderedChecksums.join("")),
+      );
+    }
+
+    this.addChecksumParams(chunk, checksum, combinedChecksum);
+    this.finishPreprocessing(chunk);
+  }
+
   _errors: { [x: string]: UploadError } = {};
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
@@ -207,6 +299,15 @@ export class UploadComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Configures the upload query parameters for the submitted files.
+   *
+   * Rebuilds the Flow.js query parameters from the current
+   * {@link additionalParameters} and applies them to the upload requests.
+   * Any previously configured query parameters are "reset".
+   *
+   * @param flowFiles The submitted Flow.js files.
+   */
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
     const options = this.additionalParameters();
     const params: any = {};
@@ -298,4 +399,19 @@ export class UploadComponent implements AfterViewInit {
     }
     flowFile.retry();
   }
+}
+
+export async function calculateChecksum(chunk: FlowChunk): Promise<string> {
+  const uploadFile = chunk.fileObj.file;
+  const chunkBytes = await uploadFile
+    .slice(chunk.startByte, chunk.endByte)
+    .arrayBuffer();
+  return await sha256(chunkBytes);
+}
+
+export async function sha256(bytes: BufferSource): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
 }

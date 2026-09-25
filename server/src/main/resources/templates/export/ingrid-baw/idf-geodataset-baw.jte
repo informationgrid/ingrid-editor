@@ -198,6 +198,16 @@ additionalIdentification = @`
                             @if(bautechnikS != null)
                                 <baw:structuralEngineeringSimulation>
                                     <baw:StructuralEngineeringSimulation>
+                                        @if(bautechnikS.getSoftware() != null)
+                                            <baw:software>
+                                                <baw:softwareName>
+                                                    <gco:CharacterString>${bautechnikS.getSoftware().getName()}</gco:CharacterString>
+                                                </baw:softwareName>
+                                                <baw:softwareVersion>
+                                                    <gco:CharacterString>${bautechnikS.getSoftware().getVersion()}</gco:CharacterString>
+                                                </baw:softwareVersion>
+                                            </baw:software>
+                                        @endif
                                         @for(String obj : bautechnikS.getObjects())
                                             <baw:object>
                                                 <gco:CharacterString>${obj}</gco:CharacterString>
