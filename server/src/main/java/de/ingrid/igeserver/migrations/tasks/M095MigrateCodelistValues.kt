@@ -53,7 +53,7 @@ class M095MigrateCodelistValues(val scheduler: SchedulerService, val catalogServ
             )
 
             // make sure the job is running before waiting for it to finish
-            while (!scheduler.isRunning(jobKey)) {
+            while (scheduler.getNextFireTime(jobKey) != null) {
                 Thread.sleep(1000)
             }
             while (scheduler.isRunning(jobKey)) {
