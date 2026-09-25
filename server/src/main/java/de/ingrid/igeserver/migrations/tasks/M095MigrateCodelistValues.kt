@@ -51,9 +51,16 @@ class M095MigrateCodelistValues(val scheduler: SchedulerService, val catalogServ
                 jobKey,
                 jobDataMap,
             )
-            Thread.sleep(3000)
+
+            // make sure the job is running before waiting for it to finish
+            while (!scheduler.isRunning(jobKey)) {
+                Thread.sleep(1000)
+            }
+            while (scheduler.isRunning(jobKey)) {
+                Thread.sleep(1000)
+            }
             val codelistSyncTask = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalog.identifier)
-            while (scheduler.isRunning(jobKey) || scheduler.isRunning(codelistSyncTask)) {
+            while (scheduler.isRunning(codelistSyncTask)) {
                 Thread.sleep(1000)
             }
         }
