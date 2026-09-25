@@ -97,8 +97,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
-                        dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_prod']]
-                        dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '05026a23-b94a-4f54-9f56-750039ed8332',tags: ['ingrid', 'deps_dev']]
+                        dependencyTrackPublisher artifact: 'build/reports/sbom.json', projectName: 'ingrid-editor', projectVersion: determineVersion(), synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '76a51c03-ab22-42ca-acf7-d51ac0361f0e',tags: ['ingrid', 'deps_prod']]
+                        dependencyTrackPublisher artifact: 'build/reports/sbom-dev.json', projectName: 'ingrid-editor', projectVersion: determineVersion() + '-dev', synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: [group: 'InGrid', parentId: '76a51c03-ab22-42ca-acf7-d51ac0361f0e',tags: ['ingrid', 'deps_dev']]
                     }
                     def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
                     sh "mv build/reports/sbom.json build/reports/ingrid-editor-${determineRpmVersion()}.sbom.json"
