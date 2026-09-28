@@ -50,6 +50,7 @@ type GeneralState = {
   serverValidationErrors: ValidationError[];
   oldestExpiredDocuments: DocumentAbstract[];
   sessionTimeoutIn: number;
+  sessionDuration: number;
   catalogLanguage: string;
   allowDragNDropInTree: boolean;
 };
@@ -77,6 +78,7 @@ const initialState: GeneralState = {
   serverValidationErrors: [],
   oldestExpiredDocuments: [],
   sessionTimeoutIn: -1,
+  sessionDuration: -1,
   catalogLanguage: "de",
   allowDragNDropInTree: true,
 };
@@ -155,6 +157,9 @@ export const GeneralStore = signalStore(
     },
     setSessionTimeout(value: number): void {
       patchState(store, { sessionTimeoutIn: value });
+    },
+    setSessionDuration(value: number): void {
+      patchState(store, { sessionDuration: value });
     },
     setCatalogLanguage(value: string): void {
       patchState(store, { catalogLanguage: value });
