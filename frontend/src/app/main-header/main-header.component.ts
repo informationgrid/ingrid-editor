@@ -135,13 +135,7 @@ export class MainHeaderComponent implements OnInit {
       return;
     }
 
-    // TODO: The 'emit' function requires a mandatory void argument
     this.onLogout.emit();
-
-    setTimeout(() => {
-      // TODO: ADAPT
-      // this.authFactory.logout();
-    }, 1000);
   }
 
   getInitials(user: UserInfo) {
