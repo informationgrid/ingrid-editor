@@ -128,10 +128,13 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
     try {
       const response = await firstValueFrom(
-        this.http.get<{ remaining: number }>(
+        this.http.get<{ remaining: number; total?: number }>(
           config.backendUrl + "info/refreshSession",
         ),
       );
+      if (response.total !== undefined) {
+        this.generalStore.setSessionDuration(response.total);
+      }
       return response.remaining;
     } catch {
       return -1;

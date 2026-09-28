@@ -50,6 +50,7 @@ import { SectionSkipperComponent } from "./section-skipper/section-skipper.compo
 import { UiStore } from "./store/ui.store";
 import { SessionService } from "./services/session.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { SessionTimeoutInterceptor } from "./services/session-timeout.interceptor";
 
 @Component({
   selector: "ige-root",
@@ -67,6 +68,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class AppComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private sessionTimeoutInterceptor = inject(SessionTimeoutInterceptor);
 
   sessionRefresher$ = new Subject<void>();
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
@@ -170,13 +172,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // TODO: ADAPT
     this.sessionRefresher$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         throttleTime(10000), // allow token refresh only every 10s once
       )
-      .subscribe(/*() => this.authFactory.refreshToken()*/);
+      .subscribe(() => this.sessionTimeoutInterceptor.refreshSession());
 
     combineLatest([
       this.transloco.selectTranslation(),
