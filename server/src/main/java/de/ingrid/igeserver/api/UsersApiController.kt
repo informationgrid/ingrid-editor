@@ -546,25 +546,36 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         var expiration = authorizedClient?.refreshToken?.expiresAt?.epochSecond
+        var issuedAt = authorizedClient?.refreshToken?.issuedAt?.epochSecond
 
-        // Fallback: Try to decode the refresh token as JWT to get 'exp' claim if not already provided
-        if (expiration == null && authorizedClient?.refreshToken != null) {
+        // Fallback: Try to decode the refresh token as JWT to get 'exp' and 'iat' claims if not already provided
+        if ((expiration == null || issuedAt == null) && authorizedClient?.refreshToken != null) {
             try {
                 val signedJWT = SignedJWT.parse(authorizedClient.refreshToken!!.tokenValue)
-                expiration = signedJWT.jwtClaimsSet.expirationTime?.toInstant()?.epochSecond
+                if (expiration == null) {
+                    expiration = signedJWT.jwtClaimsSet.expirationTime?.toInstant()?.epochSecond
+                }
+                if (issuedAt == null) {
+                    issuedAt = signedJWT.jwtClaimsSet.issueTime?.toInstant()?.epochSecond
+                }
             } catch (e: Exception) {
                 logger.debug("Could not parse refresh token as JWT: ${e.message}")
             }
         }
 
+        val oidcUser = auth?.principal as? OidcUser
         if (expiration == null) {
-            expiration = (auth?.principal as? OidcUser)?.expiresAt?.epochSecond
+            expiration = oidcUser?.expiresAt?.epochSecond
+        }
+        if (issuedAt == null) {
+            issuedAt = oidcUser?.issuedAt?.epochSecond
         }
 
         val now = Instant.now().epochSecond
         val remaining = if (expiration != null) expiration - now else -1L
+        val total = if (expiration != null && issuedAt != null) expiration - issuedAt else -1L
 
-        return ResponseEntity.ok(mapOf("remaining" to remaining))
+        return ResponseEntity.ok(mapOf("remaining" to remaining, "total" to total))
     }
 
     @PreAuthorize("hasPermission(null,'manage_users')")
