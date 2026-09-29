@@ -47,7 +47,7 @@
         } @else if (exportNotSupported()) {
             <div class="flex-row justify-content-center gap-8 error-box">
                 <mat-icon>error</mat-icon>
-                <span>Export nicht unterstützt</span>
+                <span>Export nicht unterstützt: {{ errorMessage() }}</span>
             </div>
         } @else if (validationError()) {
             <div class="flex-row justify-content-center gap-8 error-box">

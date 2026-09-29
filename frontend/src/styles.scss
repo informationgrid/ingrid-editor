@@ -459,6 +459,10 @@ form-toolbar + div {
   letter-spacing: 0.4px;
   font-weight: 400;
   background-color: vars.$error-background;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
 }
 
 @keyframes slideIn {
