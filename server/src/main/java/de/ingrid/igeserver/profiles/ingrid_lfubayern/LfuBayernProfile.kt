@@ -62,6 +62,9 @@ class LfuBayernProfile(
         isoImport.profileMapper[ID] = isoImportLfUBayern
     }
 
+    override val excludeExportProfiles: List<String>
+        get() = listOf("ingridISO")
+
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         super.initCatalogCodelists(catalogId, codelistId)
 

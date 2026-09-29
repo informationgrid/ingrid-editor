@@ -62,7 +62,8 @@ class ExportService(val exporterFactory: ExporterFactory) {
                     profileId in it.profiles ||
                     it.profiles.any(profile.linkedProfiles::contains)
             }
-            .filter { if (onlyPublic) it.isPublic else true }
+            .filter { !onlyPublic || it.isPublic }
+            .filter { !profile.excludeExportProfiles.contains(it.type) }
     }
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {
