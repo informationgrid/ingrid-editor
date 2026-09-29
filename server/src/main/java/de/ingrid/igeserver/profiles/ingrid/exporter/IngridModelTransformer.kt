@@ -240,7 +240,7 @@ open class IngridModelTransformer(
         UseConstraintTemplate(
             CharacterStringModel(
                 codelists.getValue("6500", constraint.title)
-                    ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
+                    ?: constraint.title?.value ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
                 link,
             ),
             constraint.source,
