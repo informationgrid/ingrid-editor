@@ -67,7 +67,12 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
         }
     }
 
-    fun getIBus(id: String): IBus = iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
+    fun getIBus(id: String): IBus {
+        // if initial connection is not established yet, try to establish it again
+        if (iBusClient == null) setupConnections()
+        return iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)
+            ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
+    }
 
     override fun isConnected(id: String): Boolean = try {
         iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
