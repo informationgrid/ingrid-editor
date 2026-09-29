@@ -8,6 +8,7 @@ docType:
   - InGridSpecialisedTask
   - InGridInformationSystem
   - InGridProject
+  - InGridAlgorithm
 profile: ingrid
 
 # title, used as window title

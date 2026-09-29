@@ -9,6 +9,7 @@ docType:
   - InGridInformationSystem
   - InGridPublication
   - InGridProject
+  - InGridAlgorithm
  profile: ingrid
 
 
