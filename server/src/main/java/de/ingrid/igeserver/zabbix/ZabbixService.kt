@@ -504,7 +504,7 @@ class ZabbixService(
         )
         val params = ZabbixModel.TriggerParams(
             description = "Dokument: $docNameShort",
-            expression = "min(/$uuid/web.test.fail[$\"$docNameTriggerExpression\"],#$checkCount)>0 and count(/$uuid/web.test.fail[\"$docNameTriggerExpression\"],#$checkCount)>=$checkCount",
+            expression = "min(/$uuid/web.test.fail[\"$docNameTriggerExpression\"],#$checkCount)>0 and count(/$uuid/web.test.fail[\"$docNameTriggerExpression\"],#$checkCount)>=$checkCount",
             priority = 4,
             status = 0,
             tags = tags,
