@@ -71,6 +71,7 @@ export class IsoViewComponent {
   isLoading = signal<boolean>(true);
   compareView = signal<boolean>(false);
   exportNotSupported = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
   validationError = signal<string | null>(null);
 
   private exchangeService: ExchangeService = inject(ExchangeService);
@@ -112,6 +113,7 @@ export class IsoViewComponent {
     this.exportedText.set(undefined);
     this.isoTextPublished.set(undefined);
     this.exportNotSupported.set(false);
+    this.errorMessage.set(null);
     this.validationError.set(null);
     const diffView = document.getElementById("diffView");
     if (diffView) {
@@ -147,6 +149,7 @@ export class IsoViewComponent {
               this.validationError.set(error?.data?.error);
             } else {
               this.exportNotSupported.set(true);
+              this.errorMessage.set(error?.errorText ?? null);
             }
           });
           return of([null, null]);

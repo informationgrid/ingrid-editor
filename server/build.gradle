@@ -11,6 +11,9 @@ buildscript {
     ext.jte_version = '3.2.4'
     ext.geotools_version = '35.1'
     ext.ktor_client = '3.4.1'
+    ext['jackson-2-bom.version'] = '2.21.7'
+    ext['jackson-bom.version'] = '3.1.7'
+    ext['tomcat.version'] = '11.0.26'
 }
 
 plugins {
@@ -200,13 +203,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation("org.springframework.boot:spring-boot-testcontainers") {
-        exclude group: "org.testcontainers"
-    }
-//    testImplementation 'org.testcontainers:postgresql'
-    // Use testcontainers 2.0.5 to support Docker version 29.x
-    testImplementation 'org.testcontainers:testcontainers:2.0.5'
-    testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
 
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.8.7")
@@ -225,20 +223,6 @@ dependencies {
     // template engine jte
     implementation "gg.jte:jte-spring-boot-starter-3:$jte_version"
     implementation "gg.jte:jte:$jte_version"
-}
-
-dependencyManagement {
-    dependencies {
-        dependency "org.yaml:snakeyaml:2.0"
-        dependency "commons-collections:commons-collections:3.2.2"
-
-        // conflict with kotest and search-client -> kotlinx-serialization
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0"
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0"
-
-        // quartz bug in 2.5.1
-        dependency "org.quartz-scheduler:quartz:2.5.2"
-    }
 }
 
 group = 'de.ingrid'
@@ -348,6 +332,7 @@ tasks.named('processResources') {
     exclude('META-INF/sbom/**')
 }
 
+// remove cyclonedx task from standard task processResources
 afterEvaluate {
     tasks.named('processResources', ProcessResources).configure {
         def defaultCopySpecClass = Class.forName("org.gradle.api.internal.file.copy.DefaultCopySpec")
