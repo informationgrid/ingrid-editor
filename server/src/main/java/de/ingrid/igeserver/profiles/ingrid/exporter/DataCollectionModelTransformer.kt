@@ -19,6 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCatalogCategory
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatabaseCollection
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatabaseContent
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+
 open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevelName = "database"
@@ -28,5 +34,43 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
         data.databaseContent?.map { content -> content.parameter + content.moreInfo?.let { " ($it)" } } ?: emptyList()
     val categoryCatalog = data.categoryCatalog ?: emptyList()
     val methodText = data.methodText
+    val explanation = data.explanation
     fun hasContentInfo() = databaseContent.isNotEmpty() || categoryCatalog.isNotEmpty()
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        val cat = data.categoryCatalog?.firstOrNull()
+        val dbContent = data.databaseContent?.firstOrNull()
+        val hasDatabaseCollection = cat != null || dbContent != null || methodText != null || explanation != null
+
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                databaseCollection = if (hasDatabaseCollection) {
+                    LuceneDatabaseCollection(
+                        catalogCategories = cat?.let {
+                            LuceneCatalogCategory(
+                                title = codelists.getCatalogCodelistValue("3535", it.title) ?: it.title?.value ?: it.title?.key,
+                                date = it.date?.let { d -> formatDate(formatterISO, d) },
+                                edition = it.edition,
+                            )
+                        },
+                        databaseContent = dbContent?.let {
+                            LuceneDatabaseContent(
+                                parameter = it.parameter,
+                                moreInfo = it.moreInfo,
+                            )
+                        },
+                        method = methodText,
+                        explanation = explanation,
+                    )
+                } else {
+                    null
+                },
+            ),
+        )
+    }
 }

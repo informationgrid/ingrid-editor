@@ -19,10 +19,36 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneProject
+
 open class ProjectModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevelName = "project"
 
     val manager = data.manager
     val participants = data.participants
+    val explanation = data.explanation
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                project = if (participants != null || manager != null || explanation != null) {
+                    LuceneProject(
+                        participants = participants,
+                        manager = manager,
+                        explanation = explanation,
+                    )
+                } else {
+                    null
+                },
+            ),
+        )
+    }
 }

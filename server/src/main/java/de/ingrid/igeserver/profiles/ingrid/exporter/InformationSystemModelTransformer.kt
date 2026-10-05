@@ -19,6 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneInformationSystem
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneServiceUrl
+
 open class InformationSystemModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "application"
@@ -26,6 +31,54 @@ open class InformationSystemModelTransformer(transformerConfig: TransformerConfi
 
     val baseDataText = data.baseDataText
     val implementationHistory = data.implementationHistory
+    val explanation = data.explanation
+    val serviceType = data.serviceType
+    val serviceVersion = data.serviceVersion ?: emptyList()
 
     fun hasDataQualityInfo() = (baseDataText.isNullOrEmpty() && implementationHistory.isNullOrEmpty()).not()
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        val st = data.serviceType?.let { codelists.getCatalogCodelistValue("5300", it) ?: it.value ?: it.key }
+        val versions = data.serviceVersion?.mapNotNull { it.value ?: it.key } ?: emptyList()
+        val sUrls = data.serviceUrls?.map {
+            LuceneServiceUrl(
+                name = it.name,
+                url = it.url,
+                explanation = it.description,
+            )
+        } ?: emptyList()
+
+        val hasInformationSystem = st != null ||
+            versions.isNotEmpty() ||
+            data.informationSystem != null ||
+            data.systemEnvironment != null ||
+            data.implementationHistory != null ||
+            data.baseDataText != null ||
+            data.explanation != null ||
+            sUrls.isNotEmpty()
+
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                informationSystem = if (hasInformationSystem) {
+                    LuceneInformationSystem(
+                        serviceType = st,
+                        version = versions,
+                        informationSystem = data.informationSystem,
+                        systemEnvironment = data.systemEnvironment,
+                        history = data.implementationHistory,
+                        basisData = data.baseDataText,
+                        explanation = data.explanation,
+                        serviceUrls = sUrls,
+                    )
+                } else {
+                    null
+                },
+            ),
+        )
+    }
 }

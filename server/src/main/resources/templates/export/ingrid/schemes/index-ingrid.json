@@ -1503,7 +1503,6 @@
           }
         },
         "ingrid": {
-          "unevaluatedProperties": false,
           "properties": {
             "alternate_title": {
               "type": "string",
@@ -2174,7 +2173,125 @@
                   "description": "Bibliographische Daten des Dokumentes"
                 },
                 "explanation": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "participants": {
+                  "type": "string",
+                  "description": "Namen der Beteiligten"
+                },
+                "manager": {
+                  "type": "string",
+                  "description": "Name des Projektleiters"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "database_collection": {
+              "type": "object",
+              "properties": {
+                "catalog_categories": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Titel der Kategorie"
+                    },
+                    "date": {
+                      "type": "string",
+                      "description": "Datum der Kategorie"
+                    },
+                    "edition": {
+                      "type": "string",
+                      "description": "Ausgabe der Kategorie"
+                    }
+                  }
+                },
+                "database_content": {
+                  "type": "object",
+                  "properties": {
+                    "parameter": {
+                      "type": "string",
+                      "description": "Parameter der Datenbank"
+                    },
+                    "more_info": {
+                      "type": "string",
+                      "description": "Weitere Informationen zur Datenbank"
+                    }
+                  }
+                },
+                "method": {
+                  "type": "string",
+                  "description": "Beschreibung der Methode/Datengrundlage"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "information_system": {
+              "type": "object",
+              "properties": {
+                "service_type": {
+                  "type": "string",
+                  "description": "Typ des Informations-Systems"
+                },
+                "version": {
+                  "type": "array",
+                  "description": "Versionen des Informations-Systems",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "information_system": {
+                  "type": "string",
+                  "description": "Informations-System"
+                },
+                "system_environment": {
+                  "type": "string",
+                  "description": "Umgebung des Informations-Systems"
+                },
+                "history": {
+                  "type": "string",
+                  "description": "Historie des Informations-Systems"
+                },
+                "basis_data": {
+                  "type": "string",
+                  "description": "Basisdaten des Informations-Systems"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                },
+                "service_urls": {
+                  "type": "array",
+                  "description": "URLs des Informations-Systems",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name der URL"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "URL des Informations-Systems"
+                      },
+                      "explanation": {
+                        "type": "string",
+                        "description": "Erläuterungen der URL"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2520,7 +2637,6 @@
           }
         },
         "ingrid": {
-          "unevaluatedProperties": false,
           "properties": {
             "alternate_title": {
               "type": "string",
@@ -3191,7 +3307,125 @@
                   "description": "Bibliographische Daten des Dokumentes"
                 },
                 "explanation": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "participants": {
+                  "type": "string",
+                  "description": "Namen der Beteiligten"
+                },
+                "manager": {
+                  "type": "string",
+                  "description": "Name des Projektleiters"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "database_collection": {
+              "type": "object",
+              "properties": {
+                "catalog_categories": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Titel der Kategorie"
+                    },
+                    "date": {
+                      "type": "string",
+                      "description": "Datum der Kategorie"
+                    },
+                    "edition": {
+                      "type": "string",
+                      "description": "Ausgabe der Kategorie"
+                    }
+                  }
+                },
+                "database_content": {
+                  "type": "object",
+                  "properties": {
+                    "parameter": {
+                      "type": "string",
+                      "description": "Parameter der Datenbank"
+                    },
+                    "more_info": {
+                      "type": "string",
+                      "description": "Weitere Informationen zur Datenbank"
+                    }
+                  }
+                },
+                "method": {
+                  "type": "string",
+                  "description": "Beschreibung der Methode/Datengrundlage"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                }
+              }
+            },
+            "information_system": {
+              "type": "object",
+              "properties": {
+                "service_type": {
+                  "type": "string",
+                  "description": "Typ des Informations-Systems"
+                },
+                "version": {
+                  "type": "array",
+                  "description": "Versionen des Informations-Systems",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "information_system": {
+                  "type": "string",
+                  "description": "Informations-System"
+                },
+                "system_environment": {
+                  "type": "string",
+                  "description": "Umgebung des Informations-Systems"
+                },
+                "history": {
+                  "type": "string",
+                  "description": "Historie des Informations-Systems"
+                },
+                "basis_data": {
+                  "type": "string",
+                  "description": "Basisdaten des Informations-Systems"
+                },
+                "explanation": {
+                  "type": "string",
+                  "description": "Erläuterungen"
+                },
+                "service_urls": {
+                  "type": "array",
+                  "description": "URLs des Informations-Systems",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name der URL"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "URL des Informations-Systems"
+                      },
+                      "explanation": {
+                        "type": "string",
+                        "description": "Erläuterungen der URL"
+                      }
+                    }
+                  }
                 }
               }
             }

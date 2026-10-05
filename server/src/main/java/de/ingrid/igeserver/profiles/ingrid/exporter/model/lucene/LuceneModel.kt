@@ -183,6 +183,11 @@ data class LuceneIngrid(
     val characterSet: LuceneKeyValue? = null,
     val service: LuceneService? = null,
     val publication: LucenePublication? = null,
+    val project: LuceneProject? = null,
+    @JsonProperty("database_collection")
+    val databaseCollection: LuceneDatabaseCollection? = null,
+    @JsonProperty("information_system")
+    val informationSystem: LuceneInformationSystem? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -418,5 +423,60 @@ data class LucenePublication(
     val baseDataText: String? = null,
     @JsonProperty("bibliographic_data")
     val bibliographicData: String? = null,
+    val explanation: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneProject(
+    val participants: String? = null,
+    val manager: String? = null,
+    val explanation: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDatabaseCollection(
+    @JsonProperty("catalog_categories")
+    val catalogCategories: LuceneCatalogCategory? = null,
+    @JsonProperty("database_content")
+    val databaseContent: LuceneDatabaseContent? = null,
+    val method: String? = null,
+    val explanation: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneCatalogCategory(
+    val title: String? = null,
+    val date: String? = null,
+    val edition: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDatabaseContent(
+    val parameter: String? = null,
+    @JsonProperty("more_info")
+    val moreInfo: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneInformationSystem(
+    @JsonProperty("service_type")
+    val serviceType: String? = null,
+    val version: List<String> = emptyList(),
+    @JsonProperty("information_system")
+    val informationSystem: String? = null,
+    @JsonProperty("system_environment")
+    val systemEnvironment: String? = null,
+    val history: String? = null,
+    @JsonProperty("basis_data")
+    val basisData: String? = null,
+    val explanation: String? = null,
+    @JsonProperty("service_urls")
+    val serviceUrls: List<LuceneServiceUrl> = emptyList(),
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneServiceUrl(
+    val name: String? = null,
+    val url: String? = null,
     val explanation: String? = null,
 )

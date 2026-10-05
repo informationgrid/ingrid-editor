@@ -153,5 +153,58 @@ class LuceneModelTest : GeodatasetBase() {
             result shouldContain """"bibliographic_data":"Weitere bibliographische Angaben""""
             result shouldContain """"explanation":"Erläuterungen""""
         }
+
+        should("export project using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/project.sample.maximal.json")
+            val doc = convertToDocument(input)
+            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            result shouldContain """"project""""
+            result shouldContain """"participants":"BfN, BMU""""
+            result shouldContain """"manager":"Dr. Antje Robbe""""
+            result shouldContain """"explanation":"Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.""""
+        }
+
+        should("export data-collection using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.sample.maximal.json")
+            val doc = convertToDocument(input)
+            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            result shouldContain """"database_collection""""
+            result shouldContain """"catalog_categories""""
+            result shouldContain """"title":"Biotoptypenschlüssel, Datum 01.01.1998, Version 1.1""""
+            result shouldContain """"edition":"1""""
+            result shouldContain """"database_content""""
+            result shouldContain """"parameter":"10 ppb Cadmium""""
+            result shouldContain """"more_info":"Blei / in Trinkwasser, Nachweisgrenze""""
+            result shouldContain """"method":"Ionenchromatographie nach DIN 38405-D20 (Sept. 91)""""
+            result shouldContain """"explanation":"Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.""""
+        }
+
+        should("export information-system using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.sample.json")
+            val doc = convertToDocument(input)
+            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            result shouldContain """"information_system""""
+            result shouldContain """"service_type":"5300_1""""
+            result shouldContain """"version":["1"]"""
+            result shouldContain """"system_environment":"Systemumgebung""""
+            result shouldContain """"history":"Historie""""
+            result shouldContain """"basis_data":"Basisdaten""""
+            result shouldContain """"explanation":"Erläuterungen""""
+            result shouldContain """"service_urls""""
+            result shouldContain """"name":"Service-URLs""""
+            result shouldContain """"url":"https://urls.com""""
+        }
     }
 }
