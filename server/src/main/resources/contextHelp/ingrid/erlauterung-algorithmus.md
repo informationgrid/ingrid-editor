@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: explanation
+id: erlauterung-algorithmus
 docType:
   - InGridAlgorithm
 profile: ingrid

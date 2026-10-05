@@ -84,6 +84,7 @@ export class AlgorithmDoctype extends IngridShared {
 
         this.addTextArea("explanation", "Erklärung", "", {
           required: true,
+          contextHelpId: "erlauterung-algorithmus",
         }),
         this.addRepeatList("methods", "Methoden und Modelle"),
         this.addTextArea("errorBias", "Fehler/Bias"),
