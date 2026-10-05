@@ -1654,18 +1654,18 @@
                     "rectified": {
                       "title": "Georektifiziertes Raster",
                       "properties": {
-                        "checkPointAvailability": {
+                        "checkpoint_availability": {
                           "type": "boolean",
                           "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
                         },
-                        "checkPointDescription": {
+                        "checkpoint_description": {
                           "type": "string",
                           "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
                         },
-                        "cornerPoints": {
+                        "corner_points": {
                           "type": "string"
                         },
-                        "pointInPixel": {
+                        "point_in_pixel": {
                           "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
                           "additionalProperties": false,
                           "properties": {
@@ -1688,11 +1688,11 @@
                     "referenced": {
                       "title": "Georeferenzierbares Raster",
                       "properties": {
-                        "orientationParameterAvailability": {
+                        "orientation_parameter_availability": {
                           "type": "boolean",
                           "description": "Angabe, ob Orientierungsparameter verfügbar sind."
                         },
-                        "controlPointAvaliability": {
+                        "control_point_availability": {
                           "type": "boolean",
                           "description": "Angabe, ob Passpunkte existieren."
                         },
@@ -1930,7 +1930,7 @@
                       }
                     }
                   },
-                  "publicationDate": {
+                  "publication_date": {
                     "type": "string"
                   },
                   "explanation": {
@@ -2102,6 +2102,79 @@
                       "description": "Angabe der Art des Dokumentes"
                     }
                   }
+                }
+              }
+            },
+            "publication": {
+              "type": "object",
+              "properties": {
+                "author": {
+                  "type": "string",
+                  "description": "Name des Autors"
+                },
+                "publisher": {
+                  "type": "string",
+                  "description": "Name des Verlage"
+                },
+                "published_in": {
+                  "type": "string",
+                  "description": "Name des Verlags"
+                },
+                "place_of_publication": {
+                  "type": "string",
+                  "description": "Ort des Verlags"
+                },
+                "volume": {
+                  "type": "string",
+                  "description": "Name des Volumens"
+                },
+                "pages": {
+                  "type": "string",
+                  "description": "Seitennummern"
+                },
+                "publication_date": {
+                  "type": "string",
+                  "description": "Datum der Veröffentlichung"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "isbn": {
+                  "type": "string",
+                  "description": "ISBN des Dokumentes"
+                },
+                "publishing_house": {
+                  "type": "string",
+                  "description": "Name des Verlagsgesellschaften"
+                },
+                "document_type": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "base_data_text": {
+                  "type": "string",
+                  "description": "Basisdaten des Dokumentes"
+                },
+                "bibliographic_data": {
+                  "type": "string",
+                  "description": "Bibliographische Daten des Dokumentes"
+                },
+                "explanation": {
+                  "type": "string"
                 }
               }
             }
@@ -2598,18 +2671,18 @@
                     "rectified": {
                       "title": "Georektifiziertes Raster",
                       "properties": {
-                        "checkPointAvailability": {
+                        "checkpoint_availability": {
                           "type": "boolean",
                           "description": "Beschreibt, ob die Punkte für die Rasterdatenzelle geprüft werden."
                         },
-                        "checkPointDescription": {
+                        "checkpoint_description": {
                           "type": "string",
                           "description": "Beschreibt die Beschreibung der Punkte, die für die Rasterdatenzelle verwendet werden. Hier wird die Codeliste 510 verwendet."
                         },
-                        "cornerPoints": {
+                        "corner_points": {
                           "type": "string"
                         },
-                        "pointInPixel": {
+                        "point_in_pixel": {
                           "description": "Enthält den Punkt im Pixel, an welchem der Bezug zur Erde besteht. Hier wird die Codeliste 2100 verwendet.",
                           "additionalProperties": false,
                           "properties": {
@@ -2632,11 +2705,11 @@
                     "referenced": {
                       "title": "Georeferenzierbares Raster",
                       "properties": {
-                        "orientationParameterAvailability": {
+                        "orientation_parameter_availability": {
                           "type": "boolean",
                           "description": "Angabe, ob Orientierungsparameter verfügbar sind."
                         },
-                        "controlPointAvaliability": {
+                        "control_point_availability": {
                           "type": "boolean",
                           "description": "Angabe, ob Passpunkte existieren."
                         },
@@ -2874,7 +2947,7 @@
                       }
                     }
                   },
-                  "publicationDate": {
+                  "publication_date": {
                     "type": "string"
                   },
                   "explanation": {
@@ -3046,6 +3119,79 @@
                       "description": "Angabe der Art des Dokumentes"
                     }
                   }
+                }
+              }
+            },
+            "publication": {
+              "type": "object",
+              "properties": {
+                "author": {
+                  "type": "string",
+                  "description": "Name des Autors"
+                },
+                "publisher": {
+                  "type": "string",
+                  "description": "Name des Verlage"
+                },
+                "published_in": {
+                  "type": "string",
+                  "description": "Name des Verlags"
+                },
+                "place_of_publication": {
+                  "type": "string",
+                  "description": "Ort des Verlags"
+                },
+                "volume": {
+                  "type": "string",
+                  "description": "Name des Volumens"
+                },
+                "pages": {
+                  "type": "string",
+                  "description": "Seitennummern"
+                },
+                "publication_date": {
+                  "type": "string",
+                  "description": "Datum der Veröffentlichung"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "isbn": {
+                  "type": "string",
+                  "description": "ISBN des Dokumentes"
+                },
+                "publishing_house": {
+                  "type": "string",
+                  "description": "Name des Verlagsgesellschaften"
+                },
+                "document_type": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "base_data_text": {
+                  "type": "string",
+                  "description": "Basisdaten des Dokumentes"
+                },
+                "bibliographic_data": {
+                  "type": "string",
+                  "description": "Bibliographische Daten des Dokumentes"
+                },
+                "explanation": {
+                  "type": "string"
                 }
               }
             }

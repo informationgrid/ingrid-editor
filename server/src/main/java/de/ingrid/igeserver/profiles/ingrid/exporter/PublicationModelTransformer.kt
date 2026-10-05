@@ -19,7 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-open class PublicationModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePublication
+
+open class PublicationModelTransformer(transformerConfig: TransformerConfig) :
+    IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevelName = "document"
 
@@ -27,4 +33,36 @@ open class PublicationModelTransformer(transformerConfig: TransformerConfig) : I
     val baseDataText = data.publication?.baseDataText
     val publisherOrPlaceholder =
         if (publication?.publisher.isNullOrEmpty()) "Location of the editor" else publication?.publisher
+
+    override fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument {
+        val doc = super.toLuceneDocument(catalog, partner, provider)
+        return doc.copy(
+            ingrid = doc.ingrid.copy(
+                publication = data.publication?.let {
+                    LucenePublication(
+                        author = it.author,
+                        publisher = it.publisher,
+                        publishedIn = it.publishedIn,
+                        placeOfPublication = it.placeOfPublication,
+                        volume = it.volume,
+                        pages = it.pages,
+                        publicationDate = it.publicationDate,
+                        location = it.location,
+                        isbn = it.isbn,
+                        publishingHouse = it.publishingHouse,
+                        documentType = it.documentType?.let { dt ->
+                            LuceneKeyValue(dt.key, dt.value)
+                        },
+                        baseDataText = it.baseDataText,
+                        bibliographicData = it.bibliographicData,
+                        explanation = it.explanation,
+                    )
+                },
+            ),
+        )
+    }
 }

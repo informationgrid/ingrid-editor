@@ -182,6 +182,7 @@ data class LuceneIngrid(
     @JsonProperty("character_set")
     val characterSet: LuceneKeyValue? = null,
     val service: LuceneService? = null,
+    val publication: LucenePublication? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -393,4 +394,29 @@ data class LuceneConformanceResult(
     val specification: LuceneKeyValue?,
     val publicationDate: String?,
     val explanation: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LucenePublication(
+    val author: String? = null,
+    val publisher: String? = null,
+    @JsonProperty("published_in")
+    val publishedIn: String? = null,
+    @JsonProperty("place_of_publication")
+    val placeOfPublication: String? = null,
+    val volume: String? = null,
+    val pages: String? = null,
+    @JsonProperty("publication_date")
+    val publicationDate: String? = null,
+    val location: String? = null,
+    val isbn: String? = null,
+    @JsonProperty("publishing_house")
+    val publishingHouse: String? = null,
+    @JsonProperty("document_type")
+    val documentType: LuceneKeyValue? = null,
+    @JsonProperty("base_data_text")
+    val baseDataText: String? = null,
+    @JsonProperty("bibliographic_data")
+    val bibliographicData: String? = null,
+    val explanation: String? = null,
 )

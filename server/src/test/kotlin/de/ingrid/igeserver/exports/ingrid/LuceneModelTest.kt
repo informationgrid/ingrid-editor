@@ -99,7 +99,6 @@ class LuceneModelTest : GeodatasetBase() {
                 ),
                 ingrid = LuceneIngrid(
                     alternateTitle = "Alt Title",
-                    references = emptyList(),
                     licenses = emptyList(),
                     parentIdentifier = null,
                     datasourceIdentifier = "https://example.com/dataset/123",
@@ -128,6 +127,31 @@ class LuceneModelTest : GeodatasetBase() {
             result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
             result shouldContain """"data_type":"INGRID""""
             result shouldContain """"title":"Test-Datensatz Minimal""""
+        }
+
+        should("export publication using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/publication.sample.maximal.json")
+            val doc = convertToDocument(input)
+            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            result shouldContain """"publication""""
+            result shouldContain """"author":"Autor/Verfasser""""
+            result shouldContain """"publisher":"Herausgeber""""
+            result shouldContain """"published_in":"Erscheinung""""
+            result shouldContain """"place_of_publication":"Erscheinungsort""""
+            result shouldContain """"volume":"1""""
+            result shouldContain """"pages":"1""""
+            result shouldContain """"publication_date":"2023""""
+            result shouldContain """"location":"Standort""""
+            result shouldContain """"isbn":"3-456-7889-X""""
+            result shouldContain """"publishing_house":"Verlag""""
+            result shouldContain """"document_type":{"key":"1"}"""
+            result shouldContain """"base_data_text":"Basisdaten""""
+            result shouldContain """"bibliographic_data":"Weitere bibliographische Angaben""""
+            result shouldContain """"explanation":"Erläuterungen""""
         }
     }
 }

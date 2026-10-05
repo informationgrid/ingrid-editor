@@ -115,7 +115,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
         runBlocking {
             val doc = convertToElasticDocument(docAny)
             elastic.bulkProcessor.index(
-                jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(),
+                docAny.toString().replace("\n", ""),
                 indexinfo.getRealIndexName(),
                 doc["id"]?.toString() ?: doc[indexinfo.docIdField]?.toString() ?: throw ServerException.withReason("Could not find id field in document"),
             )
