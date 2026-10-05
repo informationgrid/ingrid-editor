@@ -9,8 +9,7 @@ docType:
   - InGridInformationSystem
   - InGridPublication
   - InGridProject
-  - InGridAlgorithm
- profile: ingrid
+profile: ingrid
 
 
 # title, used as window title

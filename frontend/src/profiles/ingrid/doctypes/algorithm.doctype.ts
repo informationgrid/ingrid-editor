@@ -33,8 +33,6 @@ export class AlgorithmDoctype extends IngridShared {
   iconClass = "algorithm";
 
   hasOptionalFields = true;
-  showAdVCompatible = true;
-  showAdVProductGroup = true;
 
   documentFields = () => {
     this.handleDoiBehaviour();

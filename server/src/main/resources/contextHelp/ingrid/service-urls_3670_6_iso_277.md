@@ -3,7 +3,6 @@
 id: serviceUrls
 docType:
   - InGridInformationSystem
-  - InGridAlgorithm
 profile: ingrid
 
 # title, used as window title
