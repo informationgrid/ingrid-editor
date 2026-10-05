@@ -27,7 +27,7 @@ import {
   output,
 } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
-import { delay, filter } from "rxjs/operators";
+import { debounceTime, delay, filter } from "rxjs/operators";
 import {
   MatCard,
   MatCardContent,
@@ -70,7 +70,7 @@ export class BehaviourItemComponent implements OnInit {
     form.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        delay(0), // add tiny delay to get updated form state
+        debounceTime(100),
         filter(() => form.dirty && form.valid),
       )
       .subscribe(() => this.update.emit());

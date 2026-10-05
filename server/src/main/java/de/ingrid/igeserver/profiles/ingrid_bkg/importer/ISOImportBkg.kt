@@ -21,9 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bkg.importer
 
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
-import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportSettings
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
@@ -36,43 +34,25 @@ class ISOImportBkg(
     val codelistHandler: CodelistHandler,
     @Lazy val documentService: DocumentService,
     @Lazy val researchService: ResearchService,
-    @Lazy val bwastrLocatorService: BwastrLocatorService,
     val config: UploadConfig,
 ) : ISOImportProfile {
     override fun handle(
         isoData: IsoImportData,
-    ): ImportProfileData? {
-        val catalogLanguage =
-            documentService.catalogService.getCatalogById(isoData.catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(
-            isoData.data,
-            codelistHandler,
-            isoData.catalogId,
-            documentService,
-            isoData.addressMaps,
-            researchService,
-            bwastrLocatorService,
-            config,
-            catalogLanguage,
-            ImportSettings(importGeometryContext = false),
-        )
-
-        return when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
-            "dataset", "series" -> {
-                ImportProfileData(
-                    "imports/ingrid-bkg/geodataset.jte",
-                    GeodatasetMapperBkg(isoData),
-                )
-            }
-
-            "service" -> {
-                ImportProfileData(
-                    "imports/ingrid-bkg/geoservice.jte",
-                    GeoserviceMapperBkg(isoData),
-                )
-            }
-
-            else -> null
+    ): ImportProfileData? = when (isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        "dataset", "series" -> {
+            ImportProfileData(
+                "imports/ingrid-bkg/geodataset.jte",
+                GeodatasetMapperBkg(isoData),
+            )
         }
+
+        "service" -> {
+            ImportProfileData(
+                "imports/ingrid-bkg/geoservice.jte",
+                GeoserviceMapperBkg(isoData),
+            )
+        }
+
+        else -> null
     }
 }

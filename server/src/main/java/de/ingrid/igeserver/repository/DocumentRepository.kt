@@ -62,7 +62,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteAllByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String)
 
-    @PreAuthorize("#document.id == null || hasPermission(#document.wrapperId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
+    @PreAuthorize("#document.id == null || hasPermission(#document.wrapperId ?: 'null', 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun save(@Param("document") document: Document): Document
 
     /**

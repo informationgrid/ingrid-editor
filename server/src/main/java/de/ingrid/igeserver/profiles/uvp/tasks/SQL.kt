@@ -112,6 +112,7 @@ fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
       AND dw.category = 'data'
       AND dw.uuid = doc.uuid
       AND doc.state = 'PUBLISHED'
+      AND (dw.tags IS NULL OR NOT ('{archived}' && dw.tags))
       AND ((doc.data->>'decisionDate')::timestamptz <= '$date' AND doc.type='UvpNegativePreliminaryAssessmentDoc' OR elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date')
 """.trimIndent()
 

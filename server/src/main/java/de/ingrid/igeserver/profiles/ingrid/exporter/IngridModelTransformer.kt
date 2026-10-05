@@ -293,7 +293,7 @@ open class IngridModelTransformer(
         UseConstraintTemplate(
             CharacterStringModel(
                 codelists.getValue("6500", constraint.title)
-                    ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
+                    ?: constraint.title?.value ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
                 link,
             ),
             constraint.source,
@@ -386,7 +386,6 @@ open class IngridModelTransformer(
             geoElements.add(
                 GeographicElement(
                     type = GeoElementType.DESCRIPTION,
-                    hasExtentTypeCode = false,
                     geographicIdentifier = CharacterStringModel(
                         padARS(ref.ars),
                         "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}",

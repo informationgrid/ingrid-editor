@@ -20,38 +20,23 @@ The server uses several spring profiles to be configured for different environme
 - mcloud, ... => profile for customer implementation (import, export, fields, ...)
 
 The profiles can be set in the startup configuration or in the application.properties under `server/src/main/resources`.
-We suggest to use the startup configuration to prevent accidentally commit of development changes.
+We suggest using the startup configuration to prevent accidental commit of development changes.
 
-When using Keycloak then some properties must be configured. Please also check `application.properties`:
+When using Keycloak please have a look at the documentation: https://ingrid-oss.eu/latest/components/keycloak/
 
-- spring.security.oauth2.client.provider.keycloak.issuer-uri
-- spring.security.oauth2.resourceserver.jwt.issuer-uri
-- keycloak.auth-server-url
-
-You also need to configure a user with privileged rights in Keycloak, which is needed for the user management. This can be done by setting
-
-- keycloak.backend-user
-- keycloak.backend-user-password
-
-You can also configure it by these environment variables respectively:
-
-- KEYCLOAK_BACKEND_USER
-- KEYCLOAK_BACKEND_USER_PASSWORD
 
 #### Database
 
 The application requires a PostgreSQL database instance which is configured in application.properties.
 
-A Docker container to be used in development can be created by running the following command in the `postgres`
-directory:
+A Docker container to be used in development can be created by running the following command in the `postgres` directory:
 
 > docker-compose up -d
 
 See also `postgres/.env` for further configuration.
 
-You need to manually create an empty database with the name 'ige' .
-The database gets initialized on startup. Afterward you can map your db data directory in the docker-compose file to
-make it persistent.
+You need to manually create an empty database with the name 'ige'.
+The database gets initialized on startup. Afterward you can map your db data directory in the docker-compose file to make it persistent.
 
 ### Start the client and server
 
@@ -61,7 +46,7 @@ For IntelliJ configuration see the section below.
 
 You can also run the server from command line:
 
-> ./gradlew bootRun --args='--spring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch'
+> ./gradlew bootRun --args='--spring.profiles.active=dev,uvp,ingrid'
 
 With the following command a jar is generated, which contains the whole server including
 optimized frontend application:
@@ -72,8 +57,7 @@ optimized frontend application:
 
 Install dependencies: `yarn`
 
-For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please
-run `npm run start-ie11`.
+For the client just run `npm start` in the frontend directory.
 
 ### Setup IntelliJ IDEA
 
@@ -83,21 +67,21 @@ run `npm run start-ie11`.
   - _Else_ File > New > Project from Existing Sources... > Select `build.gradle` > OK
 - Create **server run configuration**
 
-  - **Java 17 SDK** is required
+  - **Java 21+ SDK** is required
   - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
     - Name: IgeServerKt
-    - VM options: `-Dspring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch`
+    - VM options: `-Dspring.profiles.active=dev,uvp,ingrid`
     - Use classpath of module: `ige-ng.server.main`
     - Main class: `de.ingrid.igeserver.IgeServerKt`  
       (The file should automatically appear in the search dialog. When not, choose manually _
       server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
-    - JRE: `path/to/java-17-jdk`
+    - JRE: `path/to/java-21-jdk`
     - Shorten command line: `JAR manifest`
 
 - Install **frontend packages**
   - Open a shell in root directory of the project
   - Install _yarn_ if not installed yet: `sudo npm -g i yarn`
-  - Install packages: `yarn --cwd ./frontend`
+  - Install packages: `cd frontend && yarn`
 - Create **frontend run configuration**
   - Run > Edit Configurations > + (new configuration) >
     - _community edition_ Shell Script
@@ -108,8 +92,7 @@ run `npm run start-ie11`.
     - _ultimate edition_ npm
       - It just works (Andre)
 - Choose an active profile  
-  The profile `mcloud` might be active by default when starting the frontend interface. Choose your target profile for
-  development through the following steps:
+  The profile `mcloud` might be active by default when starting the frontend interface. Choose your target profile for development through the following steps:
   - Start backend and frontend and navigate to frontend home page
   - Click on the three-dots icon in the top right corner and choose `Allgemein`
   - Navigate to `Katalogverwaltung` and add a new catalog with the target profile
@@ -119,7 +102,7 @@ You are all set. Run server and frontend with the appropriate run configuration.
 
 ### Update dependencies
 
-To get a list of new versions of our dependencies you can run the following command:
+To get a list for new versions of our dependencies, you can run the following command:
 
 For the server:
 
@@ -127,7 +110,7 @@ For the server:
 ./gradlew :server:dependencyUpdates
 ```
 
-Do not forget to update the lock file for the dependencies. This can be done with the following command:
+Remember to update the lock file for the dependencies. This can be done with the following command:
 
 ```shell
 ./gradlew -PbuildProfile=prod -Plock :server:dependencies --write-locks
@@ -153,8 +136,7 @@ location /ige-server/ {
 }
 ```
 
-To get the swagger-api json documentation go to http://localhost:8550/v3/api-docs. The UI version can be accessed
-with http://localhost:8550/swagger-ui.html, where you also can test the API.
+To get the swagger-api JSON documentation, go to http://localhost:8550/v3/api-docs. The UI version can be accessed with http://localhost:8550/swagger-ui.html, where you also can test the API.
 
 # Tests
 

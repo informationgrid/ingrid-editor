@@ -79,6 +79,7 @@ class IngridIdfExporterExternalLfub(
         "text/xml",
         "xml",
         listOf("ingrid-lfubayern"),
+        isPublic = false,
     )
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)

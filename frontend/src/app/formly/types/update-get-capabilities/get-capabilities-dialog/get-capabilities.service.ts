@@ -48,12 +48,14 @@ import { CodelistStore } from "../../../../store/codelist/codelist.store";
 import { GeoServiceDoctype } from "../../../../../profiles/ingrid/doctypes/geo-service.doctype";
 import { GeoDatasetDoctype } from "../../../../../profiles/ingrid/doctypes/geo-dataset.doctype";
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
   private codelistStore = inject(CodelistStore);
+  private snack = inject(MatSnackBar);
 
   private backendUrl: string;
 
@@ -157,22 +159,31 @@ export class GetCapabilitiesService {
   ) {
     // new documents do not have form yet, so we create a minimal form from the model for isEnabled validation
     const analysisForm = form ?? this.createFormFromModel(model);
-    const response = await this.keywordAnalysis.analyzeKeywords(
-      value,
-      keywordTheasuri,
-      analysisForm,
-    );
-    response.forEach((item) => {
-      const keys = item.thesaurus.modelPath.split(".");
-      let target = model;
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!target[keys[i]]) target[keys[i]] = {};
-        target = target[keys[i]];
-      }
-      const lastKey = keys[keys.length - 1];
-      if (!target[lastKey]) target[lastKey] = [];
-      target[lastKey].push(item.value);
-    });
+    try {
+      const response = await this.keywordAnalysis.analyzeKeywords(
+        value,
+        keywordTheasuri,
+        analysisForm,
+      );
+      response.forEach((item) => {
+        const keys = item.thesaurus.modelPath.split(".");
+        let target = model;
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!target[keys[i]]) target[keys[i]] = {};
+          target = target[keys[i]];
+        }
+        const lastKey = keys[keys.length - 1];
+        if (!target[lastKey]) target[lastKey] = [];
+        target[lastKey].push(item.value);
+      });
+    } catch (error) {
+      console.error(
+        "Error analyzing keywords. Adding keywords to free:",
+        error,
+      );
+      this.snack.open("Fehler bei der Verbindung zum Thesaurus");
+      value.forEach((val) => model.keywords.free.push({ label: val }));
+    }
   }
 
   /**

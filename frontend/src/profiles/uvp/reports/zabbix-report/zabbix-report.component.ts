@@ -34,6 +34,7 @@ import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.compo
 import { MatTooltip } from "@angular/material/tooltip";
 import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
 import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
 
 @Component({
   selector: "zabbix-report",
@@ -51,6 +52,7 @@ import { MatIcon } from "@angular/material/icon";
     MatTooltip,
     DateAgoPipe,
     MatIcon,
+    MatIconButton,
   ],
 })
 export class ZabbixReportComponent implements AfterViewInit {

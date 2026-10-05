@@ -573,11 +573,9 @@
             <gmd:geographicElement>
                 @if(ref.getType() == GeoElementType.DESCRIPTION)
                     <gmd:EX_GeographicDescription>
-                        @if(ref.getHasExtentTypeCode())
                             <gmd:extentTypeCode>
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
-                        @endif
                             <gmd:geographicIdentifier>
                                 <gmd:MD_Identifier>
                                 @if(ref.getAuthority() != null)
@@ -607,11 +605,9 @@
                         </gmd:EX_GeographicDescription>
                 @elseif(ref.getType() == GeoElementType.BOUNDINGBOX)
                     <gmd:EX_GeographicBoundingBox>
-                        @if(ref.getHasExtentTypeCode())
                             <gmd:extentTypeCode>
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
-                        @endif
                         <gmd:westBoundLongitude>
                             <gco:Decimal>${ref.getBoundingBox().getLon1()}</gco:Decimal>
                         </gmd:westBoundLongitude>
@@ -627,11 +623,9 @@
                     </gmd:EX_GeographicBoundingBox>
                 @elseif(ref.getType() == GeoElementType.BOUNDINGPOLYGON)
                     <gmd:EX_BoundingPolygon>
-                        @if(ref.getHasExtentTypeCode())
                             <gmd:extentTypeCode>
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
-                        @endif
                         <gmd:polygon>
                             $unsafe{ref.getPolygon()}
                         </gmd:polygon>

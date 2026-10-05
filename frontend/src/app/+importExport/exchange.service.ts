@@ -91,6 +91,7 @@ export interface ExportFormOptions {
 }
 
 export interface ExportTypeInfo {
+  category?: string;
   type: string;
   name: string;
   description: string;

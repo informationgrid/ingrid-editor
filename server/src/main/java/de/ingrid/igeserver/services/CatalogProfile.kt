@@ -35,6 +35,12 @@ interface CatalogProfile {
     val linkedProfiles: List<String>
         get() = emptyList()
 
+    /*
+        Definition of profiles that should be excluded from export and not appear in the export list
+     */
+    val excludeExportProfiles: List<String>
+        get() = emptyList()
+
     @get:JsonIgnore
     val indexIdField: IndexIdFieldConfig
 

@@ -49,16 +49,11 @@ describe("CatalogService", () => {
       mockProvider(ConfigService, {
         getConfiguration: () =>
           new Configuration(
-            "/keycloak",
-            "Test",
-            "Client",
-            false,
             "/",
             "/api",
             null,
             null,
             null,
-            1800,
             "",
             "",
             "",

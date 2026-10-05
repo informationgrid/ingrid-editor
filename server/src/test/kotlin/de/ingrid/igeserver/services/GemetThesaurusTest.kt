@@ -26,12 +26,18 @@ import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.spyk
 
 class GemetThesaurusTest :
     ShouldSpec({
         val searchOptions = ThesaurusSearchOptions(ThesaurusSearchType.CONTAINS)
         val searchOptionsExact = ThesaurusSearchOptions(ThesaurusSearchType.EXACT)
-        val thesaurus = SNSGemetThesaurus()
+        val thesaurus = spyk(SNSGemetThesaurus())
+
+        every {
+            thesaurus.sendRequest(any(), match { it.contains("language=en") })
+        } returns """{"preferredLabel": {"string": "wood"}}"""
 
         should("return an empty list when search with empty string") {
             thesaurus.search("", searchOptions) shouldBe emptyList()

@@ -55,20 +55,20 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
                     group = codelist.codelistHandler.getCatalogCodelistValue(
                         transformerConfig.catalogIdentifier,
                         "30002",
-                        it.getString("group.key")!!,
-                    )!!,
+                        it.getStringOrEmpty("group.key"),
+                    ) ?: it.getString("group.value")!!,
                     category = codelist.codelistHandler.getCatalogCodelistValue(
                         transformerConfig.catalogIdentifier,
                         "30003",
-                        it.getString("category.key")!!,
-                    )!!,
+                        it.getStringOrEmpty("category.key"),
+                    ) ?: it.getString("category.value")!!,
                     description = it.getStringOrEmpty("description"),
                     designation = it.getStringOrEmpty("designation"),
                     transmissionLevel = codelist.codelistHandler.getCatalogCodelistValue(
                         transformerConfig.catalogIdentifier,
                         "30004",
-                        it.getString("transmissionLevel.key")!!,
-                    )!!,
+                        it.getStringOrEmpty("transmissionLevel.key"),
+                    ) ?: it.getString("transmissionLevel.value")!!,
                 )
             } ?: emptyList()
     }

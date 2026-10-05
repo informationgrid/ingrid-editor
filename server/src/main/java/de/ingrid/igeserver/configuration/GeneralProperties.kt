@@ -38,6 +38,5 @@ data class GeneralProperties(
     val openAIToken: String? = null,
     val openAIModel: String,
     val actuatorPermitAll: Boolean = false,
-    val sessionTimeout: Int = 1800,
     val indexPrefix: String? = null,
 )

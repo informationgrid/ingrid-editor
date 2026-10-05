@@ -114,7 +114,6 @@ enum class GeoElementType {
 
 data class GeographicElement(
     val type: GeoElementType,
-    val hasExtentTypeCode: Boolean = true,
     val geographicIdentifier: CharacterStringModel? = null,
     val authority: Authority? = null,
     val boundingBox: BoundingBoxModel? = null,

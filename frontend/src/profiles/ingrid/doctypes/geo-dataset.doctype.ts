@@ -526,9 +526,11 @@ export class GeoDatasetDoctype extends IngridShared {
               this.addGroupSimple("source", [
                 dataOrigin(this, this.documentService),
                 this.addGroupSimple("processStep", [
-                  this.addRepeatList("description", "Herstellungsprozess", {
+                  this.addRepeat("description", "Herstellungsprozess", {
                     className: "optional flex-1",
-                    asAutocomplete: true,
+                    fields: [
+                      this.addTextAreaInline("value", null, "processStep"),
+                    ],
                     contextHelpId: "processStep",
                   }),
                 ]),

@@ -24,8 +24,17 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
+data class ArchivedDatasetInfo(
+    val id: Int,
+    val docId: Int? = null,
+    val uuid: String? = null,
+    val title: String? = null,
+    val type: String? = null,
+)
+
 data class ArchiveMessage(
     var catalogId: String,
+    var automatic: Boolean = false,
 ) : Message()
 
 @Service

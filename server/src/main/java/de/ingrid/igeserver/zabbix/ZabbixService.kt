@@ -42,8 +42,6 @@ import tools.jackson.databind.node.ArrayNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.MessageDigest
 import java.time.LocalDateTime
-import kotlin.collections.plus
-import kotlin.text.contains
 
 const val JSONRPC = "2.0"
 
@@ -506,7 +504,7 @@ class ZabbixService(
         )
         val params = ZabbixModel.TriggerParams(
             description = "Dokument: $docNameShort",
-            expression = "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
+            expression = "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0 and count(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>=$checkCount",
             priority = 4,
             status = 0,
             tags = tags,

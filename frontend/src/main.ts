@@ -444,7 +444,7 @@ bootstrapApplication(AppComponent, {
     // handle session timeouts
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: SessionTimeoutInterceptor,
+      useExisting: SessionTimeoutInterceptor,
       multi: true,
     },
     // overwrite global error handler

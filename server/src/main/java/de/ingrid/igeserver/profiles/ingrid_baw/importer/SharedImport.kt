@@ -42,6 +42,7 @@ fun hierarchyLevelNameToDocumentType(hierarchyLevelName: String?): String = when
     "Simulationsmodell",
     "Simulationslauf",
     "Simulationsdatei",
+    "Simulationsdaten",
     -> "BawSimulation"
 
     "measurement",

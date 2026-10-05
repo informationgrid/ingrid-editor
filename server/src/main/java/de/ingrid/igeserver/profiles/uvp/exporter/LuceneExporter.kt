@@ -30,7 +30,9 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import org.springframework.stereotype.Service
-import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 @Service
 class LuceneExporter(
@@ -50,7 +52,10 @@ class LuceneExporter(
     }
 
     private fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
-        val mapper = jacksonObjectMapper()
+        val mapper = JsonMapper.builder()
+            .addModule(kotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },
