@@ -33,7 +33,6 @@ export class AlgorithmDoctype extends IngridShared {
   iconClass = "algorithm";
 
   hasOptionalFields = true;
-  showInspireRelevant = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
 
