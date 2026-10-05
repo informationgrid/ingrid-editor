@@ -54,22 +54,6 @@ export class AlgorithmDoctype extends IngridShared {
           this.addRepeat("outputData", "Output-Daten", {
             fields: this.getInputOutputFields(),
           }),
-          this.addRepeat("serviceUrls", "Service-Urls", {
-            className: "optional",
-            fields: [
-              this.addInputInline("name", "Name", { required: true }),
-              this.addInputInline("url", "URL", {
-                required: true,
-                validators: {
-                  validation: ["url"],
-                },
-              }),
-              this.addInputInline("description", "Erläuterung"),
-            ],
-          }),
-          this.showDoiFields
-            ? this.addGroupSimple("publication", [this.addDoiFields()])
-            : null,
         ].filter(Boolean),
       ),
       this.addSection("Algorithmus", [
@@ -103,6 +87,48 @@ export class AlgorithmDoctype extends IngridShared {
           ],
         }),
       ]),
+      this.addSection("Verweise", [
+        this.addInput("publiccodeUrl", "URL zu publiccode.yml", {
+          contextHelpId: "publiccodeUrl",
+          validators: {
+            validation: ["url"],
+          },
+          wrappers: ["panel", "form-field"],
+        }),
+        this.addInput("sourceCodeUrl", "Quellcode URL", {
+          contextHelpId: "sourceCodeUrl",
+          validators: {
+            validation: ["url"],
+          },
+          wrappers: ["panel", "form-field"],
+        }),
+        this.addInput("websiteUrl", "Webseite", {
+          contextHelpId: "websiteUrl",
+          validators: {
+            validation: ["url"],
+          },
+          wrappers: ["panel", "form-field"],
+        }),
+        this.addInput("exampleUrl", "Link zur Beispielanwendung", {
+          contextHelpId: "exampleUrl",
+          validators: {
+            validation: ["url"],
+          },
+          wrappers: ["panel", "form-field"],
+        }),
+        this.addRepeat("serviceUrls", "Service-Urls", {
+          className: "optional",
+          fields: [
+            this.addInputInline("name", "Name", { required: true }),
+            this.addInputInline("url", "URL", {
+              required: true,
+              validators: {
+                validation: ["url"],
+              },
+            }),
+          ],
+        }),
+      ]),
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({
@@ -110,7 +136,6 @@ export class AlgorithmDoctype extends IngridShared {
         optionalSection: this.options.optional.additionalInformationSection,
       }),
       this.addAvailabilitySection(),
-      this.addLinksSection(IngridClass.InGridAlgorithm),
       this.addFileReferences(),
     ].filter(Boolean);
 
