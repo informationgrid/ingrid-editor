@@ -77,9 +77,11 @@
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
-        [showTitle]="groupedFieldsKeys().length == 0"
+        [showTitle]="groupedFieldsKeys().length == 0 || !!props.addButtonTitle"
         [matTooltip]="
-            groupedFieldsKeys().length == 0 ? undefined : 'Hinzufügen'
+            groupedFieldsKeys().length == 0 || !!props.addButtonTitle
+                ? undefined
+                : 'Hinzufügen'
         "
     ></ige-add-button>
 }
