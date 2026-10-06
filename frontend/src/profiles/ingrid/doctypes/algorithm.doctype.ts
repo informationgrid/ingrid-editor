@@ -49,9 +49,17 @@ export class AlgorithmDoctype extends IngridShared {
           }),
           this.addTextArea("dataBias", "Daten-Bias"),
           this.addRepeat("inputData", "Input-Daten", {
+            fieldGroupClassName: "flex-col",
+            hasExtendedGap: true,
+            showBorder: true,
+            addButtonTitle: "Datensatz hinzufügen",
             fields: this.getInputOutputFields(),
           }),
           this.addRepeat("outputData", "Output-Daten", {
+            fieldGroupClassName: "flex-col",
+            hasExtendedGap: true,
+            showBorder: true,
+            addButtonTitle: "Datensatz hinzufügen",
             fields: this.getInputOutputFields(),
           }),
         ].filter(Boolean),
@@ -142,13 +150,37 @@ export class AlgorithmDoctype extends IngridShared {
     return this.manipulateDocumentFields(fields);
   };
 
+  /**
+   * Fields for one dataset entry: dataset name and URL on the top level,
+   * optional attributes (name, unit, spatial and temporal resolution) below.
+   */
   private getInputOutputFields() {
     return [
-      this.addInputInline("name", "Name", { required: true }),
-      this.addInputInline("unit", "Einheit"),
-      this.addInputInline("spatialResolution", "Räumliche Auflösung"),
-      this.addInputInline("temporalResolution", "Zeitliche Auflösung"),
-      this.addInputInline("url", "URL"),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("name", "Datensatzname", { required: true }),
+          this.addInputInline("url", "URL", {
+            validators: {
+              validation: ["url"],
+            },
+          }),
+        ],
+        { fieldGroupClassName: "flex-row" },
+      ),
+      this.addRepeat("attributes", null, {
+        wrappers: [],
+        addButtonTitle: "Attribut hinzufügen",
+        fields: [
+          this.addInputInline("name", "Attributname", {
+            required: true,
+            className: "flex-2",
+          }),
+          this.addInputInline("unit", "Einheit"),
+          this.addInputInline("spatialResolution", "Räumliche Auflösung"),
+          this.addInputInline("temporalResolution", "Zeitliche Auflösung"),
+        ],
+      }),
     ];
   }
 }
