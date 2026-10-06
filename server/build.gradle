@@ -153,7 +153,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.13'
     implementation "org.hibernate.orm:hibernate-core"
 
-    implementation "de.ingrid:ingrid-codelist-service:8.5.0-SNAPSHOT"
+    implementation "de.ingrid:ingrid-codelist-service:8.5.0"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.15.0'
@@ -184,7 +184,7 @@ dependencies {
 //    implementation "org.apache.jena:apache-jena-libs:5.6.0"
 
     // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
-    implementation("de.ingrid:dcat-parser:8.1.1-SNAPSHOT")
+    implementation("de.ingrid:dcat-parser:8.5.0")
 
     // Test
     testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
