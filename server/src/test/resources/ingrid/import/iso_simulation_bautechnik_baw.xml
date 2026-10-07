@@ -355,13 +355,13 @@
                             <baw:structuralEngineeringSimulation>
                                 <baw:StructuralEngineeringSimulation>
                                     <baw:object>
-                                        <gco:CharacterString>Brücken</gco:CharacterString>
+                                        <gco:CharacterString>Überführungsanlage (Brücke)</gco:CharacterString>
                                     </baw:object>
                                     <baw:object>
                                         <gco:CharacterString>customObject</gco:CharacterString>
                                     </baw:object>
                                     <baw:objectPart>
-                                        <gco:CharacterString>Dammbalken</gco:CharacterString>
+                                        <gco:CharacterString>Revisionsverschluss</gco:CharacterString>
                                     </baw:objectPart>
                                     <baw:objectPart>
                                         <gco:CharacterString>customTeil</gco:CharacterString>
