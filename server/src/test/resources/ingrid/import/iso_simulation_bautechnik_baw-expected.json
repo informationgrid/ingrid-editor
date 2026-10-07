@@ -209,8 +209,8 @@
         "type": "bautechnikSimulation",
         "object": [
           {
-            "key": "7",
-            "value": "Brücken",
+            "key": "10",
+            "value": "Überführungsanlage (Brücke)",
             "_codelistId": "BAW_simulationObject"
           },
           {
@@ -221,8 +221,8 @@
         ],
         "objectPart": [
           {
-            "key": "2",
-            "value": "Dammbalken",
+            "key": "10",
+            "value": "Revisionsverschluss",
             "_codelistId": "BAW_simulationObjectPart"
           },
           {
