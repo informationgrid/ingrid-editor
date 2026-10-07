@@ -166,9 +166,10 @@ export class AlgorithmDoctype extends IngridShared {
             },
           }),
         ],
-        { fieldGroupClassName: "flex-row" },
+        { fieldGroupClassName: "flex-row flex-wrap" },
       ),
       this.addRepeat("attributes", null, {
+        fieldGroupClassName: "flex-row flex-wrap",
         wrappers: [],
         addButtonTitle: "Attribut hinzufügen",
         fields: [
