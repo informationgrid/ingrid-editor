@@ -100,7 +100,9 @@ import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
 import {
   BackendOption,
+  CodelistId,
   PagedSearchResult,
+  resolveCodelistId,
 } from "../../../store/codelist/codelist.model";
 import { ExternalResultsCache } from "./external-result-cache";
 import { OptionsScrollDirective } from "./options-scroll.directive";
@@ -132,7 +134,7 @@ export interface RepeatListProps extends FormlyFieldProps {
   elementIcon: string;
   selectionEmptyNotice: string;
   suffix: TemplateRef<any>;
-  codelistId: string | BehaviorSubject<string>;
+  codelistId: CodelistId;
   view: "chip";
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
@@ -759,8 +761,6 @@ export class RepeatListComponent
   }
 
   private getCodelistId(): string {
-    return this.props.codelistId instanceof BehaviorSubject
-      ? this.props.codelistId.value
-      : this.props.codelistId;
+    return resolveCodelistId(this.props.codelistId);
   }
 }

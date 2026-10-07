@@ -19,12 +19,16 @@
  */
 import { inject, Pipe, PipeTransform } from "@angular/core";
 import { CodelistService } from "../services/codelist/codelist.service";
-import { BackendOption, Codelist } from "../store/codelist/codelist.model";
+import {
+  BackendOption,
+  Codelist,
+  CodelistId,
+  resolveCodelistId,
+} from "../store/codelist/codelist.model";
 import { filter, map, take } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { CodelistStore } from "../store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { CatalogService } from "../+catalog/services/catalog.service";
 import { GeneralStore } from "../store/general.store";
 
 @Pipe({
@@ -39,29 +43,32 @@ export class CodelistPipe implements PipeTransform {
 
   transform(
     value: string | BackendOption | null,
-    id: string,
+    id: CodelistId,
   ): Observable<string> {
     if (!id) return of(value as string);
     if (value === null || value === undefined) return of(null);
     if (value instanceof Object && value.key === null) return of(value.value);
 
-    const codelist = this.codelistStore.entityMap()[id];
+    // resolve dynamic codelist ids to their current value
+    const codelistId = resolveCodelistId(id);
+
+    const codelist = this.codelistStore.entityMap()[codelistId];
     const lang = this.generalStore.catalogLanguage();
 
     if (!codelist) {
-      this.codelistService.byId(id);
+      this.codelistService.byId(codelistId);
       return this.codelistStore$.pipe(
-        map((item) => item[id]),
+        map((item) => item[codelistId]),
         filter((cl) => cl !== undefined),
         take(1),
         map(
           (lazyCodelist: Codelist) =>
-            this.getEntryFromCodelist(lazyCodelist, value, id)[lang],
+            this.getEntryFromCodelist(lazyCodelist, value, codelistId)[lang],
         ),
       );
     }
 
-    const result = this.getEntryFromCodelist(codelist, value, id);
+    const result = this.getEntryFromCodelist(codelist, value, codelistId);
     return of(result[lang]);
   }
 
