@@ -17,6 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
+import { BehaviorSubject } from "rxjs";
+
+export type CodelistId = string | BehaviorSubject<string>;
+
+export function resolveCodelistId(id: CodelistId): string {
+  return id instanceof BehaviorSubject ? id.value : id;
+}
+
 export interface Codelist {
   id: string;
   name: string;

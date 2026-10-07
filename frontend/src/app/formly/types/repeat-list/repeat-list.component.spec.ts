@@ -28,7 +28,10 @@ import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { of } from "rxjs";
-import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatSelectModule } from "@angular/material/select";
@@ -43,6 +46,7 @@ import { delay } from "rxjs/operators";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
+import { By } from "@angular/platform-browser";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 import { RepeatListComponent } from "./repeat-list.component";
 import { provideZonelessChangeDetection } from "@angular/core";
@@ -443,6 +447,106 @@ describe("RepeatListComponent", () => {
       removeChip(0);
       await waitSomeTime();
       checkItemCount(0);
+    });
+  });
+
+  describe("External Options", () => {
+    let fieldConfig: FormlyFieldConfig[];
+    let auto: MatAutocompleteHarness = null;
+    let fetchCount = 0;
+
+    beforeEach(async () => {
+      fetchCount = 0;
+      fieldConfig = [
+        {
+          key: "repeatListExternal",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            options: of([{ label: "EPSG:31467", value: "31467" }]),
+            externalOptions: {
+              fetchCodelist: (query: string, page: number) => {
+                fetchCount++;
+                return of({
+                  page: 0,
+                  totalPages: 1,
+                  results: ["EPSG:4326", "EPSG:3857"],
+                });
+              },
+              deduplicate: (
+                options: SelectOption[],
+                externalOptions: SelectOption[],
+              ) => {
+                const existingLabels = (options || []).map((o) => o.label);
+                return [
+                  ...(options || []),
+                  ...(externalOptions || []).filter(
+                    (ext) => !existingLabels.includes(ext.label),
+                  ),
+                ];
+              },
+              threshold: 3,
+            },
+          },
+        },
+      ];
+      form = new FormGroup({});
+
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: fieldConfig,
+          },
+        },
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
+    });
+
+    it("should debounce external requests during rapid input", async () => {
+      await spectator.fixture.whenStable();
+      await auto.focus();
+      await auto.enterText("EPS");
+      await waitSomeTime(100);
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      expect(fetchCount).toBe(1);
+    });
+
+    it("should immediately re-enable an external option when removed", async () => {
+      await spectator.fixture.whenStable();
+      await auto.focus();
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      const component = spectator.debugElement.query(
+        By.directive(RepeatListComponent),
+      ).componentInstance as RepeatListComponent;
+      expect(component.filteredOptions().length).toBe(3);
+
+      await auto.selectOption({ text: "EPSG:4326" });
+      await waitSomeTime(10);
+      checkItemCount(1);
+
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      expect(
+        component.filteredOptions().find((opt) => opt.label === "EPSG:4326")
+          ?.disabled,
+      ).toBe(true);
+
+      removeItem(0);
+      await waitSomeTime(10);
+      checkItemCount(0);
+
+      expect(
+        component.filteredOptions().find((opt) => opt.label === "EPSG:4326")
+          ?.disabled,
+      ).toBe(false);
     });
   });
 

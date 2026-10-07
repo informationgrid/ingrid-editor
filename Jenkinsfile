@@ -239,6 +239,6 @@ def determineRpmReleasePart() {
         }
         return '1'
     } else {
-        return 'dev'
+        return 'SNAPSHOT'
     }
 }
