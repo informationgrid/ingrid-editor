@@ -43,27 +43,27 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
         provider: String,
     ): LuceneDocument {
         val doc = super.toLuceneDocument(catalog, partner, provider)
-        val cat = data.categoryCatalog?.firstOrNull()
-        val dbContent = data.databaseContent?.firstOrNull()
-        val hasDatabaseCollection = cat != null || dbContent != null || methodText != null || explanation != null
+        val cats = data.categoryCatalog?.map {
+            LuceneCatalogCategory(
+                title = codelists.getCatalogCodelistValue("3535", it.title) ?: it.title?.value ?: it.title?.key,
+                date = it.date?.let { d -> formatDate(formatterISO, d) },
+                edition = it.edition,
+            )
+        } ?: emptyList()
+        val dbContent = data.databaseContent?.map {
+            LuceneDatabaseContent(
+                parameter = it.parameter,
+                moreInfo = it.moreInfo,
+            )
+        } ?: emptyList()
+        val hasDatabaseCollection = cats.isNotEmpty() || dbContent.isNotEmpty() || methodText != null || explanation != null
 
         return doc.copy(
             ingrid = doc.ingrid.copy(
                 databaseCollection = if (hasDatabaseCollection) {
                     LuceneDatabaseCollection(
-                        catalogCategories = cat?.let {
-                            LuceneCatalogCategory(
-                                title = codelists.getCatalogCodelistValue("3535", it.title) ?: it.title?.value ?: it.title?.key,
-                                date = it.date?.let { d -> formatDate(formatterISO, d) },
-                                edition = it.edition,
-                            )
-                        },
-                        databaseContent = dbContent?.let {
-                            LuceneDatabaseContent(
-                                parameter = it.parameter,
-                                moreInfo = it.moreInfo,
-                            )
-                        },
+                        catalogCategories = cats,
+                        databaseContent = dbContent,
                         method = methodText,
                         explanation = explanation,
                     )

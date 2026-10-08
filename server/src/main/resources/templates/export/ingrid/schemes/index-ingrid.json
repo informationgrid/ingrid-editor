@@ -1729,24 +1729,32 @@
               "type": "array",
               "items": {
                 "type": "object",
+                "title": "Verknüpfung",
+                "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
                 "properties": {
                   "uuid": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "UUID des verknüpften Dokuments."
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Titel des verknüpften Dokuments."
                   },
                   "document_type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "`metadata.document_type` des verknüpften Dokuments."
                   },
                   "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Beschreibung des verknüpften Dokuments."
                   },
                   "reference_type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Art der Verknüpfung."
                   },
                   "direction": {
                     "type": "string",
+                    "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
                     "enum": [
                       "IN",
                       "OUT"
@@ -2199,32 +2207,38 @@
               "type": "object",
               "properties": {
                 "catalog_categories": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "description": "Titel der Kategorie"
-                    },
-                    "date": {
-                      "type": "string",
-                      "description": "Datum der Kategorie"
-                    },
-                    "edition": {
-                      "type": "string",
-                      "description": "Ausgabe der Kategorie"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Titel der Kategorie"
+                      },
+                      "date": {
+                        "type": "string",
+                        "description": "Datum der Kategorie"
+                      },
+                      "edition": {
+                        "type": "string",
+                        "description": "Ausgabe der Kategorie"
+                      }
                     }
                   }
                 },
                 "database_content": {
-                  "type": "object",
-                  "properties": {
-                    "parameter": {
-                      "type": "string",
-                      "description": "Parameter der Datenbank"
-                    },
-                    "more_info": {
-                      "type": "string",
-                      "description": "Weitere Informationen zur Datenbank"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "parameter": {
+                        "type": "string",
+                        "description": "Parameter der Datenbank"
+                      },
+                      "more_info": {
+                        "type": "string",
+                        "description": "Weitere Informationen zur Datenbank"
+                      }
                     }
                   }
                 },
@@ -2863,24 +2877,32 @@
               "type": "array",
               "items": {
                 "type": "object",
+                "title": "Verknüpfung",
+                "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
                 "properties": {
                   "uuid": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "UUID des verknüpften Dokuments."
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Titel des verknüpften Dokuments."
                   },
                   "document_type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "`metadata.document_type` des verknüpften Dokuments."
                   },
                   "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Beschreibung des verknüpften Dokuments."
                   },
                   "reference_type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Art der Verknüpfung."
                   },
                   "direction": {
                     "type": "string",
+                    "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
                     "enum": [
                       "IN",
                       "OUT"
@@ -3333,32 +3355,38 @@
               "type": "object",
               "properties": {
                 "catalog_categories": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "description": "Titel der Kategorie"
-                    },
-                    "date": {
-                      "type": "string",
-                      "description": "Datum der Kategorie"
-                    },
-                    "edition": {
-                      "type": "string",
-                      "description": "Ausgabe der Kategorie"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Titel der Kategorie"
+                      },
+                      "date": {
+                        "type": "string",
+                        "description": "Datum der Kategorie"
+                      },
+                      "edition": {
+                        "type": "string",
+                        "description": "Ausgabe der Kategorie"
+                      }
                     }
                   }
                 },
                 "database_content": {
-                  "type": "object",
-                  "properties": {
-                    "parameter": {
-                      "type": "string",
-                      "description": "Parameter der Datenbank"
-                    },
-                    "more_info": {
-                      "type": "string",
-                      "description": "Weitere Informationen zur Datenbank"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "parameter": {
+                        "type": "string",
+                        "description": "Parameter der Datenbank"
+                      },
+                      "more_info": {
+                        "type": "string",
+                        "description": "Weitere Informationen zur Datenbank"
+                      }
                     }
                   }
                 },

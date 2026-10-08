@@ -436,9 +436,9 @@ data class LuceneProject(
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneDatabaseCollection(
     @JsonProperty("catalog_categories")
-    val catalogCategories: LuceneCatalogCategory? = null,
+    val catalogCategories: List<LuceneCatalogCategory> = emptyList(),
     @JsonProperty("database_content")
-    val databaseContent: LuceneDatabaseContent? = null,
+    val databaseContent: List<LuceneDatabaseContent> = emptyList(),
     val method: String? = null,
     val explanation: String? = null,
 )
