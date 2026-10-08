@@ -116,7 +116,7 @@ pipeline {
                             string(credentialsId: 'cosign-key-password', variable: 'COSIGN_PASSWORD'),
                             usernamePassword(credentialsId: 'registry-opencode', usernameVariable: 'REG_USER', passwordVariable: 'REG_PASS')
                         ]) {
-                        def imageDigest = readFile('build/jib-image.digest').trim()
+                        def imageDigest = readFile('server/build/jib-image.digest').trim()
                         def imageToScan = "registry.opencode.de/informationgrid/${componentName}@${imageDigest}"
                         sh """
                             docker run -u 0:0 --rm \
