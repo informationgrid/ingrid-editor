@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.research
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.DocumentSearchApiController
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.TitleOrUuidSearchRequest
@@ -30,13 +29,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.http.MediaType
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class DocumentSearchApiTest : AnnotationSpec() {
     private lateinit var searchService: DocumentSearchService
@@ -51,7 +50,6 @@ class DocumentSearchApiTest : AnnotationSpec() {
         every { catalogService.getCurrentCatalogForPrincipal(principal) } returns "current-catalog"
         every { searchService.findInTitleOrUuid(any(), any(), any()) } returns ResearchResponse(0, emptyList())
         mvc = MockMvcBuilders.standaloneSetup(DocumentSearchApiController(searchService, catalogService))
-            .setMessageConverters(MappingJackson2HttpMessageConverter(mapper))
             .build()
     }
 

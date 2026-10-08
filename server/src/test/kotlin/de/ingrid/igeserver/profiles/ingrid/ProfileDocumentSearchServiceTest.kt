@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.ingrid.services.IngridDocumentSearchService
 import de.ingrid.igeserver.profiles.ingrid_hmdk.services.HmbtgDocumentSearchService
 import io.kotest.matchers.shouldBe
@@ -29,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Transactional
 class ProfileDocumentSearchServiceTest : IntegrationTest() {
