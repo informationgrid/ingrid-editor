@@ -19,13 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.networknt.schema.InputFormat
-import com.networknt.schema.SchemaLocation
-import com.networknt.schema.SchemaRegistry
-import com.networknt.schema.SchemaRegistryConfig
-import com.networknt.schema.dialect.Dialects
-import com.networknt.schema.path.PathType
-import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -111,34 +104,6 @@ class IngridIndexExporter(
             previousFingerprintInfo.date
         }
         return dateStampDate
-    }
-
-    private fun validateSchema(json: String) {
-        val schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft202012()) { builder ->
-            builder.schemaIdResolvers { resolvers ->
-                resolvers.mapPrefix("https://wemove.com/schemas/", "classpath:/")
-            }
-            builder.schemaRegistryConfig(
-                SchemaRegistryConfig.builder().pathType(PathType.JSON_PATH).build(),
-            )
-            builder
-                .nodeReader { reader -> reader.locationAware() }
-                // Allow classpath and wemove schema prefix patterns through the library sandbox
-                .schemaLoader { loader ->
-                    loader.allow { iri ->
-                        iri.toString().startsWith("classpath:") || iri.toString()
-                            .startsWith("https://wemove.com/schemas/")
-                    }
-                }
-        }
-
-        val schemaLocation = SchemaLocation.of("classpath:/templates/export/ingrid/schemes/index-ingrid.json")
-        val schema1 = schemaRegistry.getSchema(schemaLocation)
-        val assertions = schema1.validate(json, InputFormat.JSON)
-
-        if (assertions.isNotEmpty()) {
-            throw ValidationException.withReason("JSON schema validation failed: ${assertions.joinToString(", ")}")
-        }
     }
 
     /**

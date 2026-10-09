@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -62,7 +63,7 @@ class SpecialisedTask : ShouldSpec() {
         this.exporter =
             IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
         luceneExporter = IngridIndexExporter(
-            exporter,
+            IngridISOExporter(exporter),
             IngridLuceneExporter(codelistHandler, uploadConfig, catalogService, documentService),
         )
 

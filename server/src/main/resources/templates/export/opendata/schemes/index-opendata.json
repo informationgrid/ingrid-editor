@@ -1,0 +1,1244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.ingrid-oss.eu/index/draft/schema/index-opendata.json",
+  "title": "InGrid Index - OpenData",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "title": "Root fields",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Die ID des Datensatzes. Die ID **muss** eindeutig im Index sein.",
+          "examples": [
+            "Für UMWELTNAVI <oid>-<part> i.e. 'nlwkn-dsk-4922-21000-0'",
+            "For InGrid Editor i.e. 'd43dad1f-a19f-4043-bca4-447cf5e7cabb'"
+          ]
+        },
+        "$schema": {
+          "type": "string",
+          "description": "Enthält die URL des JSON-Schemas, das für die Validierung verwendet wird.",
+          "examples": [
+            "https://example.com/schemas/order/v2.1.0/schema.json"
+          ]
+        },
+        "metadata": {
+          "description": "Enthält Metadaten über den Datensatz. Dies kann das Erstellungs- oder Änderungsdatum sein, oder aus welcher Quelle der Datensatz stammt.",
+          "type": "object",
+          "properties": {
+            "data_type": {
+              "type": "string",
+              "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+              "examples": [
+                "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                "InGrid Datensatz ['INGRID']",
+                "UVP Datensatz ['UVP']"
+              ]
+            },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
+              ]
+            },
+            "created": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "modified": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "issued": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+            },
+            "partner": {
+              "type": "string",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
+              "examples": [
+                "bb",
+                "st"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "description": "Der Anbieter der Datenquelle.",
+              "examples": [
+                "ni_gll",
+                "bw_mj"
+              ]
+            },
+            "language": {
+              "title": "language",
+              "description": "Enthält die Sprache des Metadatensatzes.",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "datasource": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Die ID der Datenquelle."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Der Name der Datenquelle."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Der Typ der Datenquelle.",
+                  "$comment": "Anforderung kommt aus Harvester.",
+                  "examples": [
+                    "csw",
+                    "wfs",
+                    "ckan",
+                    "json",
+                    "dcat",
+                    "dcatapplu",
+                    "GENESIS",
+                    "sparql",
+                    "oai_iso19139"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "data_type",
+            "created",
+            "modified"
+          ]
+        },
+        "sort_uuid": {
+          "description": "Sortier-UUID für die Sortierung von Datensätzen, die bei einer leeren Suche durchmischt angezeigt werden sollen. Außerdem wird hiermit gewährt, dass die Reihenfolge der Datensätze beim Paging erhalten bleibt. Hier wird eine UUID verwendet, die über alle Indizes einmalig sein sollte.",
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "description": "Der Titel des Datensatzes.\n"
+        },
+        "description": {
+          "description": "Die Beschreibung des Datensatzes.\n",
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "description": "Welches Format hat die Sprache, wo wird es verwendet."
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "role": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "communications": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "email",
+                        "phone",
+                        "fax",
+                        "website",
+                        "social",
+                        "other"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "street": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "pocode": {
+                "type": "string"
+              },
+              "pobox": {
+                "type": "string"
+              },
+              "locality": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "administrative_area": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "spatials": {
+          "type": "array",
+          "description": "Dieser Bereich enthält Informationen über den Raumbezug.",
+          "items": {
+            "type": "object",
+            "title": "Spatial Core",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Kann einen Namen oder eine ID gür eine Geometrie enthalten.",
+                "examples": [
+                  "<oid>-<geometrie-id> (für UMWELTNAVI)"
+                ]
+              },
+              "geometry": {
+                "type": "object",
+                "description": "Enthält die GeoJSON-Repräsentation, die für eine optimierte Suche benötigt wird. Siehe auch https://de.wikipedia.org/wiki/GeoJSON",
+                "oneOf": [
+                  {
+                    "title": "GeoJSON Point",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Point"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON LineString",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "LineString"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON Polygon",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Polygon"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 4,
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiPoint",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiPoint"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiLineString",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiLineString"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiPolygon",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiPolygon"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 4,
+                            "items": {
+                              "type": "array",
+                              "minItems": 2,
+                              "items": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "bbox": {
+                "type": "array",
+                "title": "Bounding Box",
+                "description": "Umschließende BBOX der Geometrie. Die Reihenfolge der Koordinaten ist `[min Longitude west, min Latitude south, max Longitude east, max Latitude north]`.",
+                "items": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180,
+                  "minItems": 4,
+                  "maxItems": 4
+                }
+              },
+              "wkt": {
+                "type": "string",
+                "title": "Well-known text",
+                "description": "Angabe eines Well-known text-Formats."
+              },
+              "toponym": {
+                "type": "array",
+                "title": "Toponym",
+                "items": {
+                  "type": "string",
+                  "description": "Textueller Raumbezug (wie Stadtnamen oder Flussnamen)",
+                  "examples": [
+                    "Frankfurt am Main",
+                    "Hamburg"
+                  ]
+                },
+                "minItems": 0
+              },
+              "administrative": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Land (z.B. ni, sh, rp)"
+                    },
+                    "minItems": 0
+                  },
+                  "regional_key": {
+                    "type": "string"
+                  }
+                },
+                "description": "Administrative Zuordnung"
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "bbox"
+                ]
+              },
+              {
+                "required": [
+                  "wkt"
+                ]
+              },
+              {
+                "required": [
+                  "toponym"
+                ]
+              },
+              {
+                "required": [
+                  "administrative"
+                ]
+              }
+            ]
+          },
+          "$comment": "Ehemaliges Indexfeld: layer"
+        },
+        "crs": {
+          "type": "array",
+          "title": "Referenzsystem",
+          "description": "Koordinatenreferenzsystem(e) des Datensatzes.",
+          "items": {
+            "type": "string",
+            "examples": [
+              "EPSG:25832"
+            ]
+          }
+        },
+        "temporal": {
+          "description": "Gültigkeitsdatumsbereich der beschriebenen Daten",
+          "$comment": "Ehemaliges Indexfeld: object_date",
+          "type": "object",
+          "properties": {
+            "data_temporal": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Datum des Ereignisses"
+                  },
+                  "date_range": {
+                    "type": "object",
+                    "title": "Zeitabschnitt",
+                    "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
+                    "properties": {
+                      "gte": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Startdatum der Zeitangabe"
+                      },
+                      "lte": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Enddatum der Zeitangabe"
+                      }
+                    }
+                  },
+                  "date_text": {
+                    "type": "string",
+                    "description": "Wird verwendet, wenn der Wert nicht in eine gültige DateRange Übertragbar ist",
+                    "examples": [
+                      "Sommer 2010"
+                    ]
+                  },
+                  "date_type": {
+                    "type": "string",
+                    "description": "Typ der Zeitangabe",
+                    "enum": [
+                      "created",
+                      "last_updated",
+                      "first_published"
+                    ]
+                  }
+                },
+                "oneOf": [
+                  {
+                    "required": [
+                      "date"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "date_range"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "date_text"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "item",
+            "properties": {
+              "term": {
+                "type": "string",
+                "description": "Name des Keywords"
+              },
+              "id": {
+                "type": "string",
+                "description": "Eindeutiger Identifier des Keywords bezüglich der Quelle oder auch  URL-freundliche Form des Keywords (Slug)",
+                "examples": [
+                  "wk000680"
+                ]
+              },
+              "source": {
+                "type": "string",
+                "description": "Quelle des Keywords",
+                "examples": [
+                  "gemet",
+                  "umthes",
+                  "iso_topic"
+                ]
+              }
+            },
+            "required": [
+              "term"
+            ]
+          }
+        },
+        "references": {
+          "type": "array",
+          "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind. Hier können auch URLs zu getCapabilities-Anfragen angegeben werden.",
+          "items": {
+            "type": "object",
+            "title": "item",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "Die URL zur externen Ressource oder Download."
+              },
+              "type": {
+                "type": "object",
+                "title": "type",
+                "description": "Gibt den Typ der externen Ressource oder Download an.",
+                "examples": [
+                  "3600 - Gekoppelte Daten",
+                  "5304 - Bestellung",
+                  "3535 - Schlüsselkatalog"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "title": {
+                "type": "string",
+                "description": "Ein Titel der externen Ressource oder Download."
+              },
+              "explanation": {
+                "type": "string",
+                "description": "Eine Beschreibung der externen Ressource oder Download."
+              }
+            }
+          }
+        },
+        "fulltext": {
+          "type": "array",
+          "description": "Für Full Text Suche. Signifikanz von genauen Treffern kann hier geboostet werden. Entsprechende Felder sollten mit copy_to-Operation in Elasticsearch kopiert werden.",
+          "$comment": "Früher content-Feld",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exports": {
+          "type": "object",
+          "description": "Hier werden die zusätzlichen Export-Formate gehalten, die mit dem Datensatz ausgeliefert werden. Die Export-Formate können z.B. CSV, JSON oder andere Formate sein."
+        }
+      },
+      "required": [
+        "id",
+        "$schema",
+        "metadata",
+        "title"
+      ],
+      "$defs": {
+        "SpatialItem": {
+          "title": "Spatial Core",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Kann einen Namen oder eine ID gür eine Geometrie enthalten.",
+              "examples": [
+                "<oid>-<geometrie-id> (für UMWELTNAVI)"
+              ]
+            },
+            "geometry": {
+              "type": "object",
+              "description": "Enthält die GeoJSON-Repräsentation, die für eine optimierte Suche benötigt wird. Siehe auch https://de.wikipedia.org/wiki/GeoJSON",
+              "oneOf": [
+                {
+                  "title": "GeoJSON Point",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Point"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON LineString",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "LineString"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON Polygon",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Polygon"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiPoint",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiPoint"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiLineString",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiLineString"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiPolygon",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiPolygon"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 4,
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "bbox": {
+              "type": "array",
+              "title": "Bounding Box",
+              "description": "Umschließende BBOX der Geometrie. Die Reihenfolge der Koordinaten ist `[min Longitude west, min Latitude south, max Longitude east, max Latitude north]`.",
+              "items": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180,
+                "minItems": 4,
+                "maxItems": 4
+              }
+            },
+            "wkt": {
+              "type": "string",
+              "title": "Well-known text",
+              "description": "Angabe eines Well-known text-Formats."
+            },
+            "toponym": {
+              "type": "array",
+              "title": "Toponym",
+              "items": {
+                "type": "string",
+                "description": "Textueller Raumbezug (wie Stadtnamen oder Flussnamen)",
+                "examples": [
+                  "Frankfurt am Main",
+                  "Hamburg"
+                ]
+              },
+              "minItems": 0
+            },
+            "administrative": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "Land (z.B. ni, sh, rp)"
+                  },
+                  "minItems": 0
+                },
+                "regional_key": {
+                  "type": "string"
+                }
+              },
+              "description": "Administrative Zuordnung"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "bbox"
+              ]
+            },
+            {
+              "required": [
+                "wkt"
+              ]
+            },
+            {
+              "required": [
+                "toponym"
+              ]
+            },
+            {
+              "required": [
+                "administrative"
+              ]
+            }
+          ]
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "data_type": {
+              "type": "string",
+              "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+              "examples": [
+                "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                "InGrid Datensatz ['INGRID']",
+                "UVP Datensatz ['UVP']"
+              ]
+            },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
+              ]
+            },
+            "created": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "modified": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "issued": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+            },
+            "partner": {
+              "type": "string",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
+              "examples": [
+                "bb",
+                "st"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "description": "Der Anbieter der Datenquelle.",
+              "examples": [
+                "ni_gll",
+                "bw_mj"
+              ]
+            },
+            "language": {
+              "title": "language",
+              "description": "Enthält die Sprache des Metadatensatzes.",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "datasource": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Die ID der Datenquelle."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Der Name der Datenquelle."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Der Typ der Datenquelle.",
+                  "$comment": "Anforderung kommt aus Harvester.",
+                  "examples": [
+                    "csw",
+                    "wfs",
+                    "ckan",
+                    "json",
+                    "dcat",
+                    "dcatapplu",
+                    "GENESIS",
+                    "sparql",
+                    "oai_iso19139"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "data_type",
+            "created",
+            "modified"
+          ]
+        },
+        "ReferenceItem": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Die URL zur externen Ressource oder Download."
+            },
+            "type": {
+              "type": "object",
+              "title": "type",
+              "description": "Gibt den Typ der externen Ressource oder Download an.",
+              "examples": [
+                "3600 - Gekoppelte Daten",
+                "5304 - Bestellung",
+                "3535 - Schlüsselkatalog"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "title": {
+              "type": "string",
+              "description": "Ein Titel der externen Ressource oder Download."
+            },
+            "explanation": {
+              "type": "string",
+              "description": "Eine Beschreibung der externen Ressource oder Download."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "title": "OpenData",
+      "properties": {
+        "exports": {
+          "unevaluatedProperties": false,
+          "properties": {
+            "rdf": {
+              "type": "string",
+              "description": "Enthält das vollständige RDF-Dokument im XML-Format."
+            }
+          }
+        },
+        "dcat": {
+          "type": "object",
+          "properties": {
+            "landing_page": {
+              "type": "string"
+            }
+          }
+        },
+        "legal_basis": {
+          "type": "string"
+        },
+        "distributions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "type": "string"
+              },
+              "access_url": {
+                "type": "string"
+              },
+              "modified": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "license": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "attribution_by_text": {
+                    "type": "string"
+                  },
+                  "languages": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "availability": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "political_geocoding_level_uri": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}

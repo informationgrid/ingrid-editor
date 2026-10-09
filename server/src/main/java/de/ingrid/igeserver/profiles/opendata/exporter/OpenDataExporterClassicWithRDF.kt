@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.opendata.exporter
 
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -70,11 +69,8 @@ class OpenDataExporterClassicWithRDF(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        if (doc.type == "FOLDER") {
-//            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
-//            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-//            return luceneJson.toPrettyString()
-        }
+//        if (doc.type == "FOLDER") {
+//        }
 
         val indexDocument = createIndexDocument(doc, catalogId, options)
 

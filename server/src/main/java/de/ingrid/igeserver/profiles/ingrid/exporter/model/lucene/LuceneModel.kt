@@ -89,7 +89,7 @@ data class LuceneDocumentOpenData(
     @JsonProperty("sort_uuid")
     override val sortUuid: String = "",
     override val contacts: List<LuceneContact> = emptyList(),
-    override val exports: Map<String, Any?> = emptyMap(),
+    override val exports: MutableMap<String, Any?> = mutableMapOf(),
     val opendata: LuceneOpenData,
 ) : LuceneDocument(
     id = id,

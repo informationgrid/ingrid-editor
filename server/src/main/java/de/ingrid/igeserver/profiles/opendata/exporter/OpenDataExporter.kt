@@ -19,17 +19,14 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.jillesvangurp.serializationext.toJsonElement
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
-import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -38,12 +35,10 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
-import gg.jte.TemplateOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import tools.jackson.databind.ObjectMapper
 import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
@@ -107,8 +102,13 @@ class OpenDataExporter(
             mapCodelistValue("110", catalog.settings.config.partner),
             mapCodelistValue("111", catalog.settings.config.provider),
         )
-        // TODO: "rdf" to openDataRDFExporter.run(doc, catalogId, options),
-        return jacksonObjectMapper().valueToTree(luceneDoc)
+
+        luceneDoc.exports["rdf"] = openDataRDFExporter.run(doc, catalogId, options)
+        val luceneDocument = jacksonObjectMapper().valueToTree<ObjectNode>(luceneDoc)
+
+        val result = luceneDocument.toPrettyString()
+        if (!options.skipValidation) validateSchema(result, "/templates/export/opendata/schemes/index-opendata.json")
+        return result
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""

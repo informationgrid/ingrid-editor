@@ -76,12 +76,12 @@ class OpenDataRDFExporter(
             )
         }
 
-        val indexDocument = createIndexDocument(doc, catalogId, options)
+        val indexDocument = createIndexDocument(doc, catalogId, options.tags)
 
         return indexDocument.toString()
     }
 
-    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = StringOutput().apply {
+    private fun createIndexDocument(doc: Document, catalogId: String, tags: List<String>): TemplateOutput = StringOutput().apply {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
         val config = OpenDataTransformerConfig(
@@ -92,7 +92,7 @@ class OpenDataRDFExporter(
             TransformerCache(),
             doc,
             documentService,
-            options.tags,
+            tags,
         )
 
         templateEngine.render(

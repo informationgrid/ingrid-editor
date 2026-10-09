@@ -24,7 +24,19 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneAdministrative
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCommunication
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneContact
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataTemporal
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentOpenData
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyword
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneMetadata
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneOpenData
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneSpatial
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneTemporal
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -97,6 +109,7 @@ class OpenDataModelTransformer(
             emptyList()
         }
     }
+
     fun getAddresses() = doc.data.get("addresses")?.values()?.mapNotNull {
         addressExporter.toAddressModelTransformer(
             AddressRefModel(
@@ -139,12 +152,15 @@ class OpenDataModelTransformer(
         node.get("lat2").asDouble(),
         node.get("lon2").asDouble(),
     )
+
     fun getSpatialTitles(): List<String> = doc.data.get("spatial")?.values()?.map { it.getStringOrEmpty("title") } ?: emptyList()
+
     fun getArs(): List<String> = doc.data.get("spatial")?.values()?.map { it.getStringOrEmpty("ars") } ?: emptyList()
     fun getLegalBasis() = doc.data.getStringOrEmpty("legalBasis")
     fun getQualityProcessURI() = doc.data.getStringOrEmpty("qualityProcessURI")
     fun getPoliticalGeocodingLevel() = doc.data.getString("politicalGeocodingLevel.key")
         ?.let { codelistTransformer.getCatalogCodelistValue("20006", KeyValue(it)) }
+
     private val resourceDateRange = doc.data.getPath("temporal.data.resourceRange")
     private val resourceDate = doc.data.getString("temporal.data.resourceDate")
     fun getTemporalStart(): String? = if (resourceDateRange != null) {
@@ -235,7 +251,14 @@ class OpenDataModelTransformer(
             } else {
                 emptyList()
             },
-            maintenanceFrequency = if (periodicityKey != null) LuceneKeyValue(periodicityKey, getPeriodicity()) else null,
+            maintenanceFrequency = if (periodicityKey != null) {
+                LuceneKeyValue(
+                    periodicityKey,
+                    getPeriodicity(),
+                )
+            } else {
+                null
+            },
         ),
         keywords = getKeywords().map { keyword ->
             LuceneKeyword(
@@ -251,7 +274,7 @@ class OpenDataModelTransformer(
                 role = address.relationType?.value ?: address.relationType?.key,
                 name = address.title,
                 communications = address.allCommunications.map {
-                    LuceneCommunication(type = mapCommunicationTyp(it.key), value = it.value)
+                    LuceneCommunication(type = it.key, value = it.value)
                 },
                 street = address.street,
                 code = address.zipCode,
@@ -261,7 +284,6 @@ class OpenDataModelTransformer(
                 administrativeArea = address.administrativeArea,
             )
         },
-        exports = emptyMap(),
         opendata = LuceneOpenData(
             distributions = getDistributions(),
             landingPage = getLandingPage(),

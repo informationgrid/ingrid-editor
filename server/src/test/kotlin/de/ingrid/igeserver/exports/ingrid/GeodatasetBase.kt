@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -70,7 +71,7 @@ open class GeodatasetBase : ShouldSpec() {
             this.catalogService,
             this.documentService,
         )
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
+        this.indexExporter = IngridIndexExporter(IngridISOExporter(this.exporter), this.luceneExporter)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
