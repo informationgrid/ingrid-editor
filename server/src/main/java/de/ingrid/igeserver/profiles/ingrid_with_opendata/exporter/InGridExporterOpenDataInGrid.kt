@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class InGridExporterOpenDataInGrid(
-    @Qualifier("ingridIndexExporterClassic") val ingridExporter: IngridIndexExporterClassic,
+    @Qualifier("ingridIndexExporter") val ingridExporter: IngridIndexExporter,
     val openDataExporter: OpenDataExporter,
 ) : IgeExporter {
 
@@ -40,8 +40,8 @@ class InGridExporterOpenDataInGrid(
         ExportTypeInfo(
             DocumentCategory.DATA,
             "indexInGridIDFOpenInGrid",
-            "InGrid IDF OpenData + InGrid (Elasticsearch)",
-            "Export von InGrid und OpenData Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
+            "Index OpenData + InGrid (Elasticsearch)",
+            "Export von InGrid und OpenData Dokumenten ins Index Format für die Anzeige im Portal nach Elasticsearch.",
             "application/json",
             "json",
             listOf("ingrid-with-opendata"),
