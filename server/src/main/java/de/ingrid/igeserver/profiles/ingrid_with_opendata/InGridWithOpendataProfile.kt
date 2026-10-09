@@ -60,6 +60,7 @@ class InGridWithOpendataProfile(
         try {
             // first try opendata-codelists
             opendataProfile.initCatalogCodelists(catalogId, codelistId)
+            if (codelistId == null) super.initCatalogCodelists(catalogId, codelistId)
         } catch (_: Exception) {
             // otherwise try ingrid-codelists
             super.initCatalogCodelists(catalogId, codelistId)

@@ -41,23 +41,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import tools.jackson.databind.ObjectMapper
-import tools.jackson.module.kotlin.jacksonObjectMapper
-
-data class OpenDataTransformerConfig(
-    override val catalogIdentifier: String,
-    override val codelists: CodelistTransformer,
-    override val uploadConfig: UploadConfig,
-    override val catalogService: CatalogService,
-    override val cache: TransformerCache,
-    override val doc: Document,
-    override val documentService: DocumentService,
-    override val tags: List<String>,
-    val flexOpenData: Boolean = false,
-) : GeneralTransformerConfig
 
 @Service
-class OpenDataExporter(
+class OpenDataExporterClassicWithRDF(
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
@@ -84,9 +70,18 @@ class OpenDataExporter(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-//        if (doc.type == "FOLDER") {
-//        }
+        if (doc.type == "FOLDER") {
+//            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
+//            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
+//            return luceneJson.toPrettyString()
+        }
 
+        val indexDocument = createIndexDocument(doc, catalogId, options)
+
+        return indexDocument.toString()
+    }
+
+    private fun createIndexDocument(doc: Document, catalogId: String, options: ExportOptions): TemplateOutput = JsonStringOutput().apply {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
         val flexOpenData = behaviourService.get(catalogId, "plugin.opendata.flexibleDoctype")?.active ?: false
@@ -102,13 +97,20 @@ class OpenDataExporter(
             flexOpenData,
         )
         val catalog = catalogService.getCatalogById(catalogId)
-        val luceneDoc = OpenDataModelTransformer(config).toLuceneDocument(
-            catalog,
-            mapCodelistValue("110", catalog.settings.config.partner),
-            mapCodelistValue("111", catalog.settings.config.provider),
+
+        templateEngine.render(
+            "export/opendata/lucene-export.jte",
+            mapOf(
+                "map" to mapOf(
+                    "model" to OpenDataModelTransformer(config),
+                    "rdf" to openDataRDFExporter.run(doc, catalogId, options),
+                    "catalog" to catalogService.getCatalogById(catalogId),
+                    "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                    "provider" to mapCodelistValue("111", catalog.settings.config.provider),
+                ),
+            ),
+            this,
         )
-        // TODO: "rdf" to openDataRDFExporter.run(doc, catalogId, options),
-        return jacksonObjectMapper().writeValueAsString(luceneDoc)
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""

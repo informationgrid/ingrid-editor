@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -144,7 +145,7 @@ class OpenDataRDFTransformer(
     val legalBasis = doc.data.getStringOrEmpty("legalBasis")
     var politicalGeocodingLevelKey: String? = doc.data.getString("politicalGeocodingLevel.key")
 
-    val publisher = mapAddress("10")
+    val publisher = mapAddress("10") ?: throw IndexException.withReason("Publisher address not found")
     val creator = mapAddress("11")
     val pointOfContact = mapAddress("7")
     val originator = mapAddress("6")

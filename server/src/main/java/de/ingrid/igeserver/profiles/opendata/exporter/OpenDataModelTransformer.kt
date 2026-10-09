@@ -23,6 +23,8 @@ import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -189,4 +191,10 @@ class OpenDataModelTransformer(
     }
 
     private fun mapLanguage(it: JsonNode): String? = codelistTransformer.getCatalogCodelistValue("20007", KeyValue(it.getString("key")!!))
+
+    fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocument = LuceneDocument()
 }
