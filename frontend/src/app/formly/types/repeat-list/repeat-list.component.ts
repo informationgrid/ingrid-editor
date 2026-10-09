@@ -100,7 +100,9 @@ import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
 import { CodelistStore } from "../../../store/codelist/codelist.store";
 import {
   BackendOption,
+  CodelistId,
   PagedSearchResult,
+  resolveCodelistId,
 } from "../../../store/codelist/codelist.model";
 import { ExternalResultsCache } from "./external-result-cache";
 import { OptionsScrollDirective } from "./options-scroll.directive";
@@ -132,7 +134,7 @@ export interface RepeatListProps extends FormlyFieldProps {
   elementIcon: string;
   selectionEmptyNotice: string;
   suffix: TemplateRef<any>;
-  codelistId: string | BehaviorSubject<string>;
+  codelistId: CodelistId;
   view: "chip";
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
@@ -197,12 +199,14 @@ export class RepeatListComponent
   private externalResultsCache: ExternalResultsCache;
   readonly selector = viewChild(MatSelect);
 
-  paginationState = {
+  paginationState = signal<PaginationState>({
     page: 0,
     totalPages: 1,
     isLoading: false,
-  };
-  private loadMore = new BehaviorSubject<PaginationState>(this.paginationState);
+  });
+  private loadMore = new BehaviorSubject<PaginationState>(
+    this.paginationState(),
+  );
 
   onItemClick: (id: string) => void = () => {};
 
@@ -264,6 +268,7 @@ export class RepeatListComponent
         this.props.selectLabelField = this.props.labelField;
     } else if (
       this.props.asAutocomplete ||
+      this.props.externalOptions ||
       (this.props.options && !this.props.asSelect && !this.props.restCall)
     ) {
       this.type.set("autocomplete");
@@ -344,6 +349,8 @@ export class RepeatListComponent
     const query$ = this.inputControl.valueChanges.pipe(
       startWith(this.inputControl.value),
       map((value) => (typeof value === "string" ? value : "")),
+      debounceTime(300),
+      distinctUntilChanged(),
       tap(() => this.formControl.updateValueAndValidity()),
       tap(() =>
         this.loadMore.next({ page: 0, totalPages: 1, isLoading: false }),
@@ -361,11 +368,11 @@ export class RepeatListComponent
           }) => {
             if (result.options) return result.options;
 
-            this.paginationState = {
+            this.paginationState.set({
               page: result.remoteResults.page,
               totalPages: result.remoteResults.totalPages,
               isLoading: false,
-            };
+            });
 
             return this.mapExternalCodelistsToOptions(result);
           },
@@ -374,6 +381,18 @@ export class RepeatListComponent
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((value) => this.filteredOptions.set(value));
+
+    // Re-evaluate and re-enable options when items are added or removed from the selection
+    // without requiring another roundtrip or manual input in the search field.
+    merge(this.formControl.valueChanges, this.manualUpdate.asObservable())
+      .pipe(debounceTime(0), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const currentOptions = this.filteredOptions();
+        if (currentOptions?.length) {
+          this._markSelected(currentOptions);
+          this.filteredOptions.set([...currentOptions]);
+        }
+      });
   }
 
   private mapExternalCodelistsToOptions(result: {
@@ -398,7 +417,6 @@ export class RepeatListComponent
     event: [string, PaginationState],
   ): Observable<{ options: any; query: string; remoteResults: any }> {
     const [query, pagination] = event;
-    this.paginationState.isLoading = false;
     const localResults = this._filter(query);
     const cachedFilteredResults = this.externalResultsCache.filter(query);
     const immediateResults = this.props.externalOptions.deduplicate(
@@ -406,12 +424,13 @@ export class RepeatListComponent
       cachedFilteredResults,
     );
     if (query?.length < (this.props.externalOptions.threshold ?? 3)) {
+      this.paginationState.update((state) => ({ ...state, isLoading: false }));
       return of({ options: immediateResults, query, remoteResults: null });
     }
 
     this.filteredOptions.set(immediateResults);
 
-    this.paginationState.isLoading = true;
+    this.paginationState.update((state) => ({ ...state, isLoading: true }));
     return this.props.externalOptions
       .fetchCodelist(query, pagination.page)
       .pipe(
@@ -523,6 +542,10 @@ export class RepeatListComponent
   }
 
   private _filter(option: SelectOptionUi | string): SelectOptionUi[] {
+    if (!this.parameterOptions) {
+      return [];
+    }
+
     if (!option) {
       return this.parameterOptions;
     }
@@ -553,18 +576,20 @@ export class RepeatListComponent
 
   private _markSelected(value: SelectOptionUi[]): void {
     value?.forEach((option) => {
-      const disabledByDefault = this.initialParameterOptions.find(
+      const disabledByDefault = this.initialParameterOptions?.find(
         (item) => item.value === option.value,
       )?.disabled;
-      const optionAlreadySelected = this.model?.[
-        this.field.key as string
-      ]?.some(
+      const currentSelected =
+        this.formControl?.value || this.model?.[this.field.key as string];
+      const optionAlreadySelected = currentSelected?.some(
         (modelOption: any) =>
           modelOption &&
           ((modelOption.key ?? modelOption) === option.value ||
-            modelOption.value === option.label),
+            modelOption.value === option.label ||
+            modelOption.label === option.label ||
+            (typeof modelOption === "string" && modelOption === option.value)),
       );
-      option.disabled = disabledByDefault || optionAlreadySelected;
+      option.disabled = Boolean(disabledByDefault || optionAlreadySelected);
     });
   }
 
@@ -749,18 +774,18 @@ export class RepeatListComponent
 
   onScroll() {
     console.log(".");
-    if (
-      !this.paginationState.isLoading &&
-      this.paginationState.page < this.paginationState.totalPages - 1
-    ) {
-      this.paginationState.page = this.paginationState.page + 1;
-      this.loadMore.next(this.paginationState);
+    const current = this.paginationState();
+    if (!current.isLoading && current.page < current.totalPages - 1) {
+      const nextState = {
+        ...current,
+        page: current.page + 1,
+      };
+      this.paginationState.set(nextState);
+      this.loadMore.next(nextState);
     }
   }
 
   private getCodelistId(): string {
-    return this.props.codelistId instanceof BehaviorSubject
-      ? this.props.codelistId.value
-      : this.props.codelistId;
+    return resolveCodelistId(this.props.codelistId);
   }
 }

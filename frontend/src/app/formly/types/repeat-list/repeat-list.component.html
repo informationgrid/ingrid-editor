@@ -206,7 +206,7 @@
                     </mat-option>
                 }
             }
-            @if (paginationState.isLoading) {
+            @if (paginationState().isLoading) {
                 <mat-option [disabled]="true" class="loading-spinner-option">
                     <div class="spinner-container">
                         <mat-progress-spinner

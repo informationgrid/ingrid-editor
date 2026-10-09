@@ -39,11 +39,11 @@ import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
-import { ResearchService } from "../app/+research/research.service";
 import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { DataformatPlugin } from "./ingrid/behaviours/dataformat.plugin";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { IngridDocumentSearchService } from "./ingrid/ingrid-document-search.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -82,7 +82,7 @@ export class InGridComponent implements OnInit {
   // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
   mobilithek = inject(MobilithekPlugin);
   dialog = inject(MatDialog);
-  researchService = inject(ResearchService);
+  documentSearchService = inject(IngridDocumentSearchService);
   pluginService = inject(PluginService);
   consolidateKeywordsPlugin = inject(ConsolidateKeywordsPlugin);
   behaviourService = inject(BehaviourService);
@@ -156,16 +156,28 @@ export class InGridComponent implements OnInit {
     };
   }
 
+  /**
+   * Checks if the document has a coupled service with GetCapabilities operation.
+   *
+   * For GeoDataset documents, this performs an additional check to see if the document
+   * is a coupled resource from a service with GetCapabilities URL. If so, shows a
+   * publication check dialog before allowing publication.
+   *
+   * @param metadata The document metadata
+   * @returns Promise resolving to true if publication can proceed, or the dialog result
+   */
   private checkForCoupledServiceWithGetCapOperation(metadata: Metadata) {
     return firstValueFrom(
-      this.checkForCoupledServiceWithGetCap(metadata.uuid).pipe(
-        switchMap((result) => {
-          if (result.totalHits === 0) return of(true);
-          return this.dialog
-            .open(PublicationCheckDialogComponent)
-            .afterClosed();
-        }),
-      ),
+      this.documentSearchService
+        .hasCoupledServiceWithGetCapabilities(metadata.uuid)
+        .pipe(
+          switchMap((exists) => {
+            if (!exists) return of(true);
+            return this.dialog
+              .open(PublicationCheckDialogComponent)
+              .afterClosed();
+          }),
+        ),
     );
   }
 
@@ -187,26 +199,6 @@ export class InGridComponent implements OnInit {
         ? data.serviceUrls?.length > 0
         : false,
     ];
-  }
-
-  private checkForCoupledServiceWithGetCap(uuid: string) {
-    const sql = `WITH filtered_documents AS (SELECT document1.*, document1.data, document_wrapper.category
-                                             FROM document_wrapper
-                                                    JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                                             WHERE document1.is_latest = true
-                                               AND document_wrapper.deleted = 0
-                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
-                                                                     '$.service.coupledResources')
-                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
-                                                                     '$.service.operations'))
-                 SELECT DISTINCT fd.*
-                 FROM filtered_documents fd
-                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'coupledResources') AS cr(s) ON true
-                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'operations') AS o ON true
-                 WHERE cr.s ->> 'uuid' = '${uuid}'
-                   AND o -> 'name' ->> 'key' = '1'
-    `;
-    return this.researchService.searchBySQL(sql);
   }
 }
 
