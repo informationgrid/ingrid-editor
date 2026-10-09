@@ -59,8 +59,7 @@ pipeline {
                 sh "./gradlew cyclonedxBom"
                 sh "./gradlew cyclonedxBom -PdevSBOM"
                 script {
-                    def imageVersion = determineVersion() == 'main' ? 'latest' : determineVersion()
-                    def imageToScan = "registry.opencode.de/informationgrid/ingrid-editor:${imageVersion}"
+                    def imageToScan = "bellsoft/liberica-openjre-alpine:25"
 
                     docker.withRegistry('https://registry.opencode.de', 'registry-opencode') {
                         sh """
