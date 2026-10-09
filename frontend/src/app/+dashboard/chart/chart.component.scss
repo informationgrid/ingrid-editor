@@ -8,17 +8,30 @@
   position: relative;
 }
 
+.chart-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.labels {
+  flex: 1 1 0;
+  max-width: 260px;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .circular-chart {
   display: block;
-  margin: 20px auto 0;
-  max-height: 200px;
+  margin-top: 20px;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: 200px;
+  height: 200px;
   animation: fadein 1s;
-
-  .circle-bg {
-    fill: none;
-    stroke: vars.$ige-background;
-    stroke-width: 2;
-  }
 
   .circle {
     fill: none;
@@ -39,7 +52,7 @@
 
   @keyframes progress {
     0% {
-      stroke-dasharray: 0 100;
+      stroke-dasharray: 0, 0, 0, 100;
       transform: rotate(330deg); // starting angle of animation
     }
   }
@@ -53,17 +66,33 @@
     }
   }
 
-  .circle-1 {
+  .circle.color-dark {
     stroke: vars.$ige-icon-color;
   }
 
-  .circle-2 {
+  .circle.color-orange {
     stroke: vars.$state-working-color;
   }
 
+  // matches the tag dot colors on the document icons
+  .circle.color-blue {
+    stroke: vars.$tag-intranet-color;
+  }
+
+  .circle.color-red {
+    stroke: vars.$tag-amtsintern-color;
+  }
+
+  // white notch at 12 o'clock separating the first and the last segment;
+  // overridden with the page background where the chart is not on white ground
   .circle-3 {
     stroke: #fff;
     stroke-width: 5;
+  }
+
+  .hatch-line {
+    stroke: vars.$ige-icon-color;
+    stroke-width: 0.4;
   }
 
   .text {
@@ -76,21 +105,25 @@
 .box {
   text-align: center;
   color: vars.$ige-icon-color;
-  font-size: 24px;
-  font-weight: 500;
+  // label: same size/weight as the document titles in the lists below
+  font-size: 16px;
+  font-weight: 400;
 
-  &.working {
+  &.color-orange {
     color: vars.$state-working-color;
   }
 
-  .count {
-    font-weight: 500;
-    font-size: 24px;
+  &.color-blue {
+    color: vars.$tag-intranet-color;
   }
-}
 
-.wrapper {
-  position: absolute;
-  width: 100%;
-  padding: 0 calc((100% - 400px) / 2 - 100px);
+  &.color-red {
+    color: vars.$tag-amtsintern-color;
+  }
+
+  .count,
+  .percent {
+    font-weight: 500;
+    font-size: 16px;
+  }
 }

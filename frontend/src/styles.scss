@@ -813,11 +813,11 @@ ige-root .mat-drawer-container {
     border: 1px solid vars.$ige-background;
 
     &.intranet {
-      background-color: vars.$ige-primary;
+      background-color: vars.$tag-intranet-color;
     }
 
     &.amtsintern {
-      background-color: vars.$error-color;
+      background-color: vars.$tag-amtsintern-color;
     }
 
     &.archived {

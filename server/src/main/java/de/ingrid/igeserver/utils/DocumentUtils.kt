@@ -33,7 +33,12 @@ import java.time.format.DateTimeFormatter
 
 fun documentInPublishedState(document: Document) = document.state == DocumentState.PUBLISHED || document.state == DocumentState.DRAFT_AND_PUBLISHED || document.state == DocumentState.PENDING
 
-fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document = Document().apply {
+fun convertToDocument(
+    docJson: JsonNode,
+    docType: String? = null,
+    docVersion: Int? = null,
+    docUuid: String? = null,
+): Document = Document().apply {
     title = docJson.getStringOrEmpty("title")
     if (docType != null) type = docType
     if (docVersion != null) version = docVersion
@@ -80,6 +85,23 @@ fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean
         put(FIELD_UUID, document.uuid)
         put(FIELD_DOCUMENT_TYPE, document.type)
     }
+}
+
+fun getPublicationRight(tags: List<String>): PublicationRight = when {
+    tags.contains("amtsintern") -> PublicationRight.AMTSINTERN
+    tags.contains("intranet") -> PublicationRight.INTRANET
+    else -> PublicationRight.INTERNET
+}
+
+/**
+ * Publication right of a document, derived from its wrapper tags.
+ * A document with both tags counts as amtsintern (same precedence as checkPublicationTags),
+ * a document without any of these tags is public (internet).
+ */
+enum class PublicationRight(val value: String) {
+    INTERNET("internet"),
+    INTRANET("intranet"),
+    AMTSINTERN("amtsintern"),
 }
 
 fun checkPublicationTags(
