@@ -33,8 +33,10 @@ class IsReferencedException(
     companion object {
         private const val ERROR_CODE = "IS_REFERENCED_ERROR"
         private const val ERROR_CODE_ADDRESS_UNPUBLISH = "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH"
+        private const val ERROR_CODE_LITERATURE = "IS_REFERENCED_ERROR_LITERATURE"
         private const val ERROR_TEXT = "The document is referenced and cannot be deleted"
         private const val ERROR_TEXT_ADDRESS = "The address is referenced by published dataset"
+        private const val ERROR_TEXT_LITERATURE = "The literature is referenced by at least one dataset"
 
         /**
          * Factory method for an arbitrary reason
@@ -42,5 +44,7 @@ class IsReferencedException(
         fun byUuids(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
 
         fun addressByPublishedDatasets(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE_ADDRESS_UNPUBLISH, ERROR_TEXT_ADDRESS, mapOf("uuids" to uuids))
+
+        fun literatureByDatasets(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE_LITERATURE, ERROR_TEXT_LITERATURE, mapOf("uuids" to uuids))
     }
 }
