@@ -179,8 +179,8 @@ data class Distribution(
     val description: String,
     val license: License?,
     @JsonProperty("by_clause")
-    val byClause: String,
-    val languages: List<String>,
+    val byClause: String? = null,
+    val languages: List<String> = emptyList(),
     val availability: String,
 )
 
@@ -188,6 +188,9 @@ data class Distribution(
 data class License(
     val url: String,
     val name: String,
+    @JsonProperty("attribution_by_text")
+    val attributionByText: String? = null,
+    val languages: List<String> = emptyList(),
 )
 
 data class AddressInfo(

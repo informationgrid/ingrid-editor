@@ -30,11 +30,11 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneContact
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataTemporal
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDcat
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentOpenData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyword
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneMetadata
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneOpenData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneSpatial
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneTemporal
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
@@ -64,16 +64,17 @@ class OpenDataModelTransformer(
     val contentField: MutableList<String> = mutableListOf()
 
     fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.values()?.map { dist ->
+        val licenseKey = dist.getString("license.key")
+        val byClause = dist.getStringOrEmpty("byClause")
+        val languages = dist.get("languages")?.values()?.mapNotNull { mapLanguage(it) } ?: emptyList()
         Distribution(
-            dist.getStringOrEmpty("format.key"),
-            getDownloadLink(dist, doc.uuid),
-            dist.getString("modified"),
-            dist.getStringOrEmpty("title"),
-            dist.getStringOrEmpty("description"),
-            mapLicense(dist.getString("license.key")),
-            dist.getStringOrEmpty("byClause"),
-            dist.get("languages")?.values()?.mapNotNull { mapLanguage(it) } ?: emptyList(),
-            mapAvailability(dist.getStringOrEmpty("availability.key")),
+            format = dist.getStringOrEmpty("format.key"),
+            accessURL = getDownloadLink(dist, doc.uuid),
+            modified = dist.getString("modified"),
+            title = dist.getStringOrEmpty("title"),
+            description = dist.getStringOrEmpty("description"),
+            license = mapLicense(licenseKey, byClause, languages),
+            availability = mapAvailability(dist.getStringOrEmpty("availability.key")),
         )
     } ?: emptyList()
 
@@ -136,14 +137,35 @@ class OpenDataModelTransformer(
         else -> "???"
     }
 
-    fun getSpatials(): List<String> = doc.data.get("spatial")?.values()?.mapNotNull { spatial ->
+    fun getSpatials(): List<LuceneSpatial> = doc.data.get("spatial")?.values()?.mapNotNull { spatial ->
         val type = spatial.getString("type")
-        when (type) {
-            "free" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
-            "wkt" -> convertWktToGeoJson(spatial.getString("wkt")!!)
-            "wfsgnde" -> convertBoundingBoxToGeoJson(getBoundingBox(spatial.get("value")))
+        val title = spatial.getString("title")?.takeIf { it.isNotBlank() }
+        val ars = spatial.getString("ars")?.takeIf { it.isNotBlank() }
+        val administrative = ars?.let { LuceneAdministrative(it) }
+        val valueNode = spatial.get("value")
+        val bboxModel = if (valueNode != null && valueNode.has("lat1") && valueNode.has("lon1") && valueNode.has("lat2") && valueNode.has("lon2")) {
+            getBoundingBox(valueNode)
+        } else {
+            null
+        }
+        val bboxList = bboxModel?.let { listOf(it.lon1, it.lat1, it.lon2, it.lat2) }
+        val wktStr = spatial.getString("wkt")?.takeIf { it.isNotBlank() }
+
+        val geoJson = when (type) {
+            "free" -> bboxModel?.let { convertBoundingBoxToGeoJson(it) }
+            "wkt" -> wktStr?.let { convertWktToGeoJson(it) }
+            "wfsgnde" -> bboxModel?.let { convertBoundingBoxToGeoJson(it) }
             else -> null
         }
+
+        LuceneSpatial(
+            name = title,
+            bbox = bboxList,
+            wkt = wktStr,
+            toponym = null,
+            administrative = administrative,
+            geometry = geoJson,
+        )
     } ?: emptyList()
 
     private fun getBoundingBox(node: JsonNode) = SpatialModel.BoundingBoxModel(
@@ -200,10 +222,15 @@ class OpenDataModelTransformer(
         return codelistTransformer.getCatalogCodelistValue("20005", KeyValue(key)) ?: ""
     }
 
-    private fun mapLicense(licenseKey: String?): License? {
+    private fun mapLicense(licenseKey: String?, byClause: String = "", languages: List<String> = emptyList()): License? {
         if (licenseKey.isNullOrEmpty()) return null
         val value = codelistTransformer.getCatalogCodelistValue("20004", KeyValue(licenseKey))
-        return License(licenseKey, value!!)
+        return License(
+            url = licenseKey,
+            name = value ?: "",
+            attributionByText = byClause.takeIf { it.isNotBlank() },
+            languages = languages,
+        )
     }
 
     private fun mapLanguage(it: JsonNode): String? = codelistTransformer.getCatalogCodelistValue("20007", KeyValue(it.getString("key")!!))
@@ -212,88 +239,76 @@ class OpenDataModelTransformer(
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocumentOpenData = LuceneDocumentOpenData(
-        id = handleContent(getUuid()),
-        schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
-        metadata = LuceneMetadata(
-            dataType = "OPENDATA",
-            created = getCreated(),
-            modified = getModified(),
-            issued = null,
-            partner = partner,
-            provider = provider,
-            language = catalog.settings.config.language,
-            datasource = LuceneDatasource(
-                id = catalog.identifier,
-                name = catalog.name,
+    ): LuceneDocumentOpenData {
+        val langKey = catalog.settings.config.language
+        val langValue = langKey?.let { codelistTransformer.getCatalogCodelistValue("20007", KeyValue(it)) } ?: langKey
+        val metadataLanguage = langKey?.let { LuceneKeyValue(it, langValue) }
+        val temporalStart = getTemporalStart()
+        val temporalEnd = getTemporalEnd()
+
+        return LuceneDocumentOpenData(
+            id = handleContent(getUuid()),
+            schema = "https://schema.ingrid-oss.eu/index/draft/schema/index-opendata.json",
+            metadata = LuceneMetadata(
+                dataType = "OPENDATA",
+                created = getCreated(),
+                modified = getModified(),
+                issued = null,
+                partner = partner,
+                provider = provider,
+                language = metadataLanguage,
+                datasource = LuceneDatasource(
+                    id = catalog.identifier,
+                    name = catalog.name,
+                ),
             ),
-        ),
-        title = getTitle(),
-        description = getDescription(),
-        spatials = getSpatials().mapIndexed { index, geom ->
-            LuceneSpatial(
-                name = getSpatialTitles().getOrNull(index),
-                administrative = getArs().getOrNull(index)?.let { LuceneAdministrative(it) },
-                geometry = geom,
-            )
-        },
-        temporal = LuceneTemporal(
-            dataTemporal = if (getTemporalStart() != null || getTemporalEnd() != null) {
-                listOf(
-                    LuceneDataTemporal(
-                        dateType = "range",
-                        dateRange = LuceneDateRange(
-                            start = getTemporalStart(),
-                            end = getTemporalEnd(),
+            title = getTitle(),
+            description = getDescription(),
+            spatials = getSpatials(),
+            temporal = LuceneTemporal(
+                dataTemporal = if (temporalStart != null || temporalEnd != null) {
+                    listOf(
+                        LuceneDataTemporal(
+//                            dateType = "created",
+                            dateRange = LuceneDateRange(
+                                gte = temporalStart,
+                                lte = temporalEnd,
+                            ),
                         ),
-                    ),
-                )
-            } else {
-                emptyList()
-            },
-            maintenanceFrequency = if (periodicityKey != null) {
-                LuceneKeyValue(
-                    periodicityKey,
-                    getPeriodicity(),
-                )
-            } else {
-                null
-            },
-        ),
-        keywords = getKeywords().map { keyword ->
-            LuceneKeyword(
-                term = keyword.term,
-                id = keyword.id,
-                source = keyword.source,
-            )
-        },
-        references = emptyList(),
-        sortUuid = "",
-        contacts = getAddresses().map { address ->
-            LuceneContact(
-                role = address.relationType?.value ?: address.relationType?.key,
-                name = address.title,
-                communications = address.allCommunications.map {
-                    LuceneCommunication(type = it.key, value = it.value)
+                    )
+                } else {
+                    emptyList()
                 },
-                street = address.street,
-                code = address.zipCode,
-                pocode = address.zipPoBox,
-                locality = address.city,
-                country = address.countryIso3166 ?: address.countryKey,
-                administrativeArea = address.administrativeArea,
-            )
-        },
-        opendata = LuceneOpenData(
+            ),
+            keywords = getKeywords().map { keyword ->
+                LuceneKeyword(
+                    term = keyword.term,
+                    id = keyword.id,
+                    source = keyword.source,
+                )
+            },
+            references = emptyList(),
+            sortUuid = "",
+            contacts = getAddresses().map { address ->
+                LuceneContact(
+                    role = address.relationType?.value ?: address.relationType?.key,
+                    name = address.title,
+                    communications = address.allCommunications.map {
+                        LuceneCommunication(type = it.key, value = it.value)
+                    },
+                    street = address.street,
+                    code = address.zipCode,
+                    pocode = address.zipPoBox,
+                    locality = address.city,
+                    country = address.countryIso3166 ?: address.countryKey,
+                    administrativeArea = address.administrativeArea,
+                )
+            },
             distributions = getDistributions(),
-            landingPage = getLandingPage(),
-            parentIdentifier = getHierarchyParent(),
-            legalBasis = getLegalBasis(),
-            qualityProcessURI = getQualityProcessURI(),
+            dcat = getLandingPage().takeIf { it.isNotBlank() }?.let { LuceneDcat(it) },
+            legalBasis = getLegalBasis().takeIf { it.isNotBlank() },
             politicalGeocodingLevelURI = getPoliticalGeocodingLevel(),
-            accrualPeriodicity = getPeriodicity(),
-            accrualPeriodicityKey = periodicityKey,
-            content = contentField,
-        ),
-    )
+            fulltext = contentField,
+        )
+    }
 }

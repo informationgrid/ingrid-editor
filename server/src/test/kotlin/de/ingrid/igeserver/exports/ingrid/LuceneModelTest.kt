@@ -127,7 +127,7 @@ class LuceneModelTest : GeodatasetBase() {
                     modified = "2026-09-15T12:00:00.000Z",
                     partner = "hh",
                     provider = "opendata_provider",
-                    language = "ger",
+                    language = LuceneKeyValue("de", "Deutsch"),
                     datasource = LuceneDatasource(
                         id = "opendata-catalog",
                         name = "OpenData Catalog",
@@ -136,20 +136,16 @@ class LuceneModelTest : GeodatasetBase() {
                 title = "Open Data Dataset Title",
                 description = "Open Data dataset description",
                 temporal = LuceneTemporal(),
-                opendata = LuceneOpenData(
-                    landingPage = "https://example.com/opendata",
-                    legalBasis = "Open Data Law",
-                    accrualPeriodicity = "daily",
-                    content = listOf("opendata-uuid-5678"),
-                ),
+                dcat = LuceneDcat("https://example.com/opendata"),
+                legalBasis = "Open Data Law",
+                fulltext = listOf("opendata-uuid-5678"),
             )
 
             val mapper = jacksonObjectMapper()
             val json = mapper.writeValueAsString(doc)
 
-            json shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            json shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/schema/index-opendata.json\""
             json shouldContain """"data_type":"OPENDATA""""
-            json shouldContain """"opendata""""
             json shouldContain """"landing_page":"https://example.com/opendata""""
             json shouldContain """"legal_basis":"Open Data Law""""
         }
@@ -157,7 +153,7 @@ class LuceneModelTest : GeodatasetBase() {
         should("export geo-dataset using Jackson-based IngridLuceneExporter") {
             val input = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json")
             val doc = convertToDocument(input)
-            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
@@ -169,7 +165,7 @@ class LuceneModelTest : GeodatasetBase() {
         should("export publication using Jackson-based IngridLuceneExporter") {
             val input = SchemaUtils.getJsonFileContent("/export/ingrid/publication.sample.maximal.json")
             val doc = convertToDocument(input)
-            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
@@ -194,7 +190,7 @@ class LuceneModelTest : GeodatasetBase() {
         should("export project using Jackson-based IngridLuceneExporter") {
             val input = SchemaUtils.getJsonFileContent("/export/ingrid/project.sample.maximal.json")
             val doc = convertToDocument(input)
-            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
@@ -208,7 +204,7 @@ class LuceneModelTest : GeodatasetBase() {
         should("export data-collection using Jackson-based IngridLuceneExporter") {
             val input = SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.sample.maximal.json")
             val doc = convertToDocument(input)
-            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
@@ -227,7 +223,7 @@ class LuceneModelTest : GeodatasetBase() {
         should("export information-system using Jackson-based IngridLuceneExporter") {
             val input = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.sample.json")
             val doc = convertToDocument(input)
-            val result = (luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)) as String)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null

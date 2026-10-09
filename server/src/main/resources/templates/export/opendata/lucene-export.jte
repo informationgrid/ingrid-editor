@@ -76,7 +76,7 @@
         ],
         "geometries": [
             @for(var entry : ForSupport.of(model.getSpatials()))
-                $unsafe{entry.get()}@if (!entry.isLast()),@endif
+                $unsafe{entry.get().getGeometry() != null ? entry.get().getGeometry() : ""}@if (!entry.isLast()),@endif
             @endfor
         ],
         "administrative": {

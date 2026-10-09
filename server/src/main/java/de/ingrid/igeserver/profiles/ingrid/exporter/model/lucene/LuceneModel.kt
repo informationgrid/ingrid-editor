@@ -75,10 +75,16 @@ data class LuceneDocumentInGrid(
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDcat(
+    @JsonProperty("landing_page")
+    val landingPage: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneDocumentOpenData(
     override val id: String?,
     @JsonProperty("\$schema")
-    override val schema: String = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+    override val schema: String = "https://schema.ingrid-oss.eu/index/draft/schema/index-opendata.json",
     override val metadata: LuceneMetadata,
     override val title: String?,
     override val description: String?,
@@ -90,7 +96,14 @@ data class LuceneDocumentOpenData(
     override val sortUuid: String = "",
     override val contacts: List<LuceneContact> = emptyList(),
     override val exports: MutableMap<String, Any?> = mutableMapOf(),
-    val opendata: LuceneOpenData,
+    val distributions: List<Distribution> = emptyList(),
+    val dcat: LuceneDcat? = null,
+    @JsonProperty("legal_basis")
+    val legalBasis: String? = null,
+    @JsonProperty("political_geocoding_level_uri")
+    val politicalGeocodingLevelURI: String? = null,
+    val fulltext: List<String> = emptyList(),
+    val opendata: LuceneOpenData? = null,
 ) : LuceneDocument(
     id = id,
     schema = schema,
@@ -137,7 +150,7 @@ data class LuceneMetadata(
     val documentType: String? = null,
     val partner: String?,
     val provider: String?,
-    val language: String?,
+    val language: Any?,
     val datasource: LuceneDatasource?,
 )
 
@@ -182,7 +195,7 @@ data class LuceneTemporal(
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneDataTemporal(
     @JsonProperty("date_type")
-    val dateType: String,
+    val dateType: String? = null,
     val date: String? = null,
     @JsonProperty("date_text")
     val dateText: String? = null,
@@ -192,8 +205,10 @@ data class LuceneDataTemporal(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneDateRange(
-    val start: String?,
-    val end: String?,
+    val gte: String? = null,
+    val lte: String? = null,
+    val start: String? = null,
+    val end: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
