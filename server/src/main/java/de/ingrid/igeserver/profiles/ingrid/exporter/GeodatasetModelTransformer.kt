@@ -25,7 +25,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCatalogueReference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataQuality
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLineage
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePositionalAccuracy
@@ -302,7 +302,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument {
+    ): LuceneDocumentInGrid {
         val doc = super.toLuceneDocument(catalog, partner, provider)
         return doc.copy(
             ingrid = doc.ingrid.copy(

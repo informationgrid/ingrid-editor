@@ -45,8 +45,8 @@ class LuceneModelTest : GeodatasetBase() {
     }
 
     init {
-        should("serialize LuceneDocument to valid JSON with Jackson") {
-            val doc = LuceneDocument(
+        should("serialize LuceneDocumentInGrid to valid JSON with Jackson") {
+            val doc = LuceneDocumentInGrid(
                 id = "test-uuid-1234",
                 metadata = LuceneMetadata(
                     dataType = "INGRID",
@@ -115,6 +115,43 @@ class LuceneModelTest : GeodatasetBase() {
             json shouldContain """"data_type":"INGRID""""
             json shouldContain """"type":"Polygon""""
             json shouldContain """"term":"Umwelt""""
+            json shouldContain """"ingrid""""
+        }
+
+        should("serialize LuceneDocumentOpenData to valid JSON with Jackson") {
+            val doc = LuceneDocumentOpenData(
+                id = "opendata-uuid-5678",
+                metadata = LuceneMetadata(
+                    dataType = "OPENDATA",
+                    created = "2026-09-15T12:00:00.000Z",
+                    modified = "2026-09-15T12:00:00.000Z",
+                    partner = "hh",
+                    provider = "opendata_provider",
+                    language = "ger",
+                    datasource = LuceneDatasource(
+                        id = "opendata-catalog",
+                        name = "OpenData Catalog",
+                    ),
+                ),
+                title = "Open Data Dataset Title",
+                description = "Open Data dataset description",
+                temporal = LuceneTemporal(),
+                opendata = LuceneOpenData(
+                    landingPage = "https://example.com/opendata",
+                    legalBasis = "Open Data Law",
+                    accrualPeriodicity = "daily",
+                    content = listOf("opendata-uuid-5678"),
+                ),
+            )
+
+            val mapper = jacksonObjectMapper()
+            val json = mapper.writeValueAsString(doc)
+
+            json shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
+            json shouldContain """"data_type":"OPENDATA""""
+            json shouldContain """"opendata""""
+            json shouldContain """"landing_page":"https://example.com/opendata""""
+            json shouldContain """"legal_basis":"Open Data Law""""
         }
 
         should("export geo-dataset using Jackson-based IngridLuceneExporter") {

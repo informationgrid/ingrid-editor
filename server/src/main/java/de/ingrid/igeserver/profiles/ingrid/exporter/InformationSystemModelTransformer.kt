@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneInformationSystem
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneServiceUrl
 
@@ -41,7 +41,7 @@ open class InformationSystemModelTransformer(transformerConfig: TransformerConfi
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument {
+    ): LuceneDocumentInGrid {
         val doc = super.toLuceneDocument(catalog, partner, provider)
         val st = data.serviceType?.let { codelists.getCatalogCodelistValue("5300", it) ?: it.value ?: it.key }
         val versions = data.serviceVersion?.mapNotNull { it.value ?: it.key } ?: emptyList()

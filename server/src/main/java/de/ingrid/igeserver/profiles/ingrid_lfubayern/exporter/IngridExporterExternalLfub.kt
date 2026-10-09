@@ -22,16 +22,20 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridDocType
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.DataModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
+import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel.Companion.catalogService
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -46,7 +50,7 @@ import kotlin.reflect.KClass
 class IngridExporterExternalLfub(
     idfExporter: IngridIdfExporterExternalLfub,
     luceneExporter: IngridLuceneExporterExternalLfub,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -99,7 +103,7 @@ class IngridLuceneExporterExternalLfub(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridLuceneExporter(
+) : IngridLuceneExporterClassic(
     codelistHandler,
     uploadConfig,
     catalogService,

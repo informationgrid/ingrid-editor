@@ -43,6 +43,7 @@ class IngridISOExporter(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
+        // TODO: Implement direct ISO export logic without IDF conversion
         val idf = idfExporter.run(doc, catalogId, options)
         return getISOFromIdfString(idf)
     }

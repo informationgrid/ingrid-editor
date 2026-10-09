@@ -22,24 +22,108 @@ package de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonRawValue
+import de.ingrid.igeserver.profiles.opendata.exporter.Distribution
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class LuceneDocument(
-    val id: String?,
+open class LuceneDocument(
+    open val id: String?,
     @JsonProperty("\$schema")
-    val schema: String = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
-    val metadata: LuceneMetadata,
-    val title: String?,
-    val description: String?,
-    val spatials: List<LuceneSpatial> = emptyList(),
-    val temporal: LuceneTemporal,
-    val keywords: List<LuceneKeyword> = emptyList(),
-    val references: List<LuceneReference> = emptyList(),
+    open val schema: String = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+    open val metadata: LuceneMetadata,
+    open val title: String?,
+    open val description: String?,
+    open val spatials: List<LuceneSpatial> = emptyList(),
+    open val temporal: LuceneTemporal,
+    open val keywords: List<LuceneKeyword> = emptyList(),
+    open val references: List<LuceneReference> = emptyList(),
     @JsonProperty("sort_uuid")
-    val sortUuid: String = "",
-    val contacts: List<LuceneContact> = emptyList(),
-    val exports: Map<String, Any?> = emptyMap(),
+    open val sortUuid: String = "",
+    open val contacts: List<LuceneContact> = emptyList(),
+    open val exports: Map<String, Any?> = emptyMap(),
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDocumentInGrid(
+    override val id: String?,
+    @JsonProperty("\$schema")
+    override val schema: String = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+    override val metadata: LuceneMetadata,
+    override val title: String?,
+    override val description: String?,
+    override val spatials: List<LuceneSpatial> = emptyList(),
+    override val temporal: LuceneTemporal,
+    override val keywords: List<LuceneKeyword> = emptyList(),
+    override val references: List<LuceneReference> = emptyList(),
+    @JsonProperty("sort_uuid")
+    override val sortUuid: String = "",
+    override val contacts: List<LuceneContact> = emptyList(),
+    override val exports: Map<String, Any?> = emptyMap(),
     val ingrid: LuceneIngrid,
+) : LuceneDocument(
+    id = id,
+    schema = schema,
+    metadata = metadata,
+    title = title,
+    description = description,
+    spatials = spatials,
+    temporal = temporal,
+    keywords = keywords,
+    references = references,
+    sortUuid = sortUuid,
+    contacts = contacts,
+    exports = exports,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDocumentOpenData(
+    override val id: String?,
+    @JsonProperty("\$schema")
+    override val schema: String = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+    override val metadata: LuceneMetadata,
+    override val title: String?,
+    override val description: String?,
+    override val spatials: List<LuceneSpatial> = emptyList(),
+    override val temporal: LuceneTemporal,
+    override val keywords: List<LuceneKeyword> = emptyList(),
+    override val references: List<LuceneReference> = emptyList(),
+    @JsonProperty("sort_uuid")
+    override val sortUuid: String = "",
+    override val contacts: List<LuceneContact> = emptyList(),
+    override val exports: Map<String, Any?> = emptyMap(),
+    val opendata: LuceneOpenData,
+) : LuceneDocument(
+    id = id,
+    schema = schema,
+    metadata = metadata,
+    title = title,
+    description = description,
+    spatials = spatials,
+    temporal = temporal,
+    keywords = keywords,
+    references = references,
+    sortUuid = sortUuid,
+    contacts = contacts,
+    exports = exports,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneOpenData(
+    val distributions: List<Distribution> = emptyList(),
+    @JsonProperty("landing_page")
+    val landingPage: String? = null,
+    @JsonProperty("parent_identifier")
+    val parentIdentifier: String? = null,
+    @JsonProperty("legal_basis")
+    val legalBasis: String? = null,
+    @JsonProperty("quality_process_uri")
+    val qualityProcessURI: String? = null,
+    @JsonProperty("political_geocoding_level_uri")
+    val politicalGeocodingLevelURI: String? = null,
+    @JsonProperty("accrual_periodicity")
+    val accrualPeriodicity: String? = null,
+    @JsonProperty("accrual_periodicity_key")
+    val accrualPeriodicityKey: String? = null,
+    val content: List<String> = emptyList(),
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

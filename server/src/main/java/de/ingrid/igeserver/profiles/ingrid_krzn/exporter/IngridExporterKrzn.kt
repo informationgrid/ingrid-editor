@@ -20,10 +20,13 @@
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridDocType
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
@@ -45,7 +48,7 @@ class IngridExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
     openDataExporter: OpenDataExporter,
-) : InGridExporterOpenDataInGrid(IngridIndexExporter(idfExporter, luceneExporter), openDataExporter) {
+) : InGridExporterOpenDataInGrid(IngridIndexExporterClassic(idfExporter, luceneExporter), openDataExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -81,7 +84,7 @@ class IngridLuceneExporterKrzn(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridLuceneExporter(
+) : IngridLuceneExporterClassic(
     codelistHandler,
     uploadConfig,
     catalogService,

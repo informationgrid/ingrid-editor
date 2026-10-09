@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -167,18 +169,22 @@ class OpenDataModelTransformerAdditional(
     private fun mapLanguage(it: JsonNode): String? = codelistHandler.getCatalogCodelistValue(catalogId, "20007", it.getString("key")!!)
 }
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class Distribution(
     val format: String,
+    @JsonProperty("access_url")
     val accessURL: String,
     val modified: String?,
     val title: String,
     val description: String,
     val license: License?,
+    @JsonProperty("by_clause")
     val byClause: String,
     val languages: List<String>,
     val availability: String,
 )
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class License(
     val url: String,
     val name: String,

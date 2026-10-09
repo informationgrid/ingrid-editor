@@ -56,7 +56,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCrossRefe
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataTemporal
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngridSpatial
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
@@ -420,6 +420,14 @@ open class IngridModelTransformer(
     }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
+
+    fun getGeometries(): List<String> = spatialReferences.mapNotNull { spatial ->
+        when {
+            spatial.value != null -> convertBoundingBoxToGeoJson(spatial.value)
+            spatial.wkt != null -> convertWktToGeoJson(spatial.wkt)
+            else -> null
+        }
+    }
 
     fun getSpatials(): List<Spatial> = spatialReferences.map { spatial ->
         val geoJson = when {
@@ -1487,7 +1495,7 @@ open class IngridModelTransformer(
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument = LuceneDocument(
+    ): LuceneDocumentInGrid = LuceneDocumentInGrid(
         id = model.uuid,
         schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
         metadata = LuceneMetadata(

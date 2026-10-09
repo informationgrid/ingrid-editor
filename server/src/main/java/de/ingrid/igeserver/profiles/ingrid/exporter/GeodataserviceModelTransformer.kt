@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDoi
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneService
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneServiceOperation
@@ -61,7 +61,7 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument {
+    ): LuceneDocumentInGrid {
         val doc = super.toLuceneDocument(catalog, partner, provider)
         return doc.copy(
             ingrid = doc.ingrid.copy(

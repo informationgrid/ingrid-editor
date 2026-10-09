@@ -27,6 +27,7 @@ import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
 import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.exports.ExportOptions
+import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
@@ -36,15 +37,15 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
+import gg.jte.TemplateOutput
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
-import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 
 @Service
-class IngridLuceneExporter(
+class IngridLuceneExporterClassic(
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
@@ -53,24 +54,13 @@ class IngridLuceneExporter(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
     val objectMapper: ObjectMapper = jacksonObjectMapper()
 
-    fun run(doc: Document, catalogId: String, options: ExportOptions): ObjectNode {
+    fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        val output: TemplateOutput = JsonStringOutput()
         handleFoldersWithoutPublishedChildren(doc)
         val catalog = catalogService.getCatalogById(catalogId)
         val templateData = getTemplateForDoctype(doc, catalog, options)
-
-        @Suppress("UNCHECKED_CAST")
-        val map = templateData.second["map"] as Map<String, Any>
-//            val transformer = map["model"] as IngridModelTransformer
-        val partner = map["partner"] as String
-        val provider = map["provider"] as String
-        val transformer = getModelTransformerClass(doc.type)!!
-        val codelistTransformer =
-            CodelistTransformer(codelistHandler, catalog.identifier, catalog.settings.config.language ?: "de")
-        val data =
-            TransformerData(IngridDocType.DOCUMENT, catalog.identifier, codelistTransformer, doc, options.tags)
-        val luceneDoc = transformer.constructors.first().call(getTransformerConfig(data))
-            .toLuceneDocument(catalog, partner, provider)
-        return objectMapper.valueToTree(luceneDoc)
+        templateEngine.render(templateData.first, templateData.second, output)
+        return output.toString()
     }
 
     fun getModelTransformerClass(docType: String): KClass<out IngridModelTransformer>? = when (docType) {
@@ -217,18 +207,3 @@ class IngridLuceneExporter(
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
 }
-
-enum class IngridDocType {
-    ADDRESS,
-    DOCUMENT,
-    FOLDER,
-}
-
-data class TransformerData(
-    val type: IngridDocType,
-    val catalogIdentifier: String,
-    val codelistTransformer: CodelistTransformer,
-    val doc: Document,
-    val tags: List<String>,
-    val mapper: ObjectMapper = jacksonObjectMapper(),
-)

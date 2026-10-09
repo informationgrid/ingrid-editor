@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneProject
 
 open class ProjectModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
@@ -35,7 +35,7 @@ open class ProjectModelTransformer(transformerConfig: TransformerConfig) : Ingri
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument {
+    ): LuceneDocumentInGrid {
         val doc = super.toLuceneDocument(catalog, partner, provider)
         return doc.copy(
             ingrid = doc.ingrid.copy(

@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataExporter
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class InGridExporterOpenDataInGrid(
-    @Qualifier("ingridIndexExporter") val ingridExporter: IngridIndexExporter,
+    @Qualifier("ingridIndexExporterClassic") val ingridExporter: IngridIndexExporterClassic,
     val openDataExporter: OpenDataExporter,
 ) : IgeExporter {
 

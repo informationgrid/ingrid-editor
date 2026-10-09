@@ -22,7 +22,9 @@ package de.ingrid.igeserver.profiles.ingrid_kommunal_st.exporter
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.profiles.ingrid_with_opendata.exporter.InGridExporterOpenDataInGrid
 import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataExporter
 import de.ingrid.igeserver.services.DocumentCategory
@@ -32,9 +34,9 @@ import org.springframework.stereotype.Service
 @Service
 class IngridExporterKommunalSt(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
+    @Qualifier("ingridLuceneExporterClassic") luceneExporter: IngridLuceneExporterClassic,
     openDataExporter: OpenDataExporter,
-) : InGridExporterOpenDataInGrid(IngridIndexExporter(idfExporter, luceneExporter), openDataExporter) {
+) : InGridExporterOpenDataInGrid(IngridIndexExporterClassic(idfExporter, luceneExporter), openDataExporter) {
 
     override val typeInfo =
         ExportTypeInfo(

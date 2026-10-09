@@ -24,7 +24,7 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.*
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -106,7 +106,7 @@ class OpenDataModelTransformer(
         )
     } ?: emptyList()
 
-    fun mapAddressType(typeKey: String): String = when (typeKey) {
+    fun mapAddressType(typeKey: String?): String = when (typeKey) {
         "2" -> "maintainer"
         "6" -> "originator"
         "7" -> "contactPoint"
@@ -115,7 +115,7 @@ class OpenDataModelTransformer(
         else -> "???"
     }
 
-    fun mapCommunicationTyp(type: String): String = when (type) {
+    fun mapCommunicationTyp(type: String?): String = when (type) {
         "1" -> "tel"
         "2" -> "fax"
         "3" -> "email"
@@ -196,5 +196,82 @@ class OpenDataModelTransformer(
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument = LuceneDocument()
+    ): LuceneDocumentOpenData = LuceneDocumentOpenData(
+        id = handleContent(getUuid()),
+        schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
+        metadata = LuceneMetadata(
+            dataType = "OPENDATA",
+            created = getCreated(),
+            modified = getModified(),
+            issued = null,
+            partner = partner,
+            provider = provider,
+            language = catalog.settings.config.language,
+            datasource = LuceneDatasource(
+                id = catalog.identifier,
+                name = catalog.name,
+            ),
+        ),
+        title = getTitle(),
+        description = getDescription(),
+        spatials = getSpatials().mapIndexed { index, geom ->
+            LuceneSpatial(
+                name = getSpatialTitles().getOrNull(index),
+                administrative = getArs().getOrNull(index)?.let { LuceneAdministrative(it) },
+                geometry = geom,
+            )
+        },
+        temporal = LuceneTemporal(
+            dataTemporal = if (getTemporalStart() != null || getTemporalEnd() != null) {
+                listOf(
+                    LuceneDataTemporal(
+                        dateType = "range",
+                        dateRange = LuceneDateRange(
+                            start = getTemporalStart(),
+                            end = getTemporalEnd(),
+                        ),
+                    ),
+                )
+            } else {
+                emptyList()
+            },
+            maintenanceFrequency = if (periodicityKey != null) LuceneKeyValue(periodicityKey, getPeriodicity()) else null,
+        ),
+        keywords = getKeywords().map { keyword ->
+            LuceneKeyword(
+                term = keyword.term,
+                id = keyword.id,
+                source = keyword.source,
+            )
+        },
+        references = emptyList(),
+        sortUuid = "",
+        contacts = getAddresses().map { address ->
+            LuceneContact(
+                role = address.relationType?.value ?: address.relationType?.key,
+                name = address.title,
+                communications = address.allCommunications.map {
+                    LuceneCommunication(type = mapCommunicationTyp(it.key), value = it.value)
+                },
+                street = address.street,
+                code = address.zipCode,
+                pocode = address.zipPoBox,
+                locality = address.city,
+                country = address.countryIso3166 ?: address.countryKey,
+                administrativeArea = address.administrativeArea,
+            )
+        },
+        exports = emptyMap(),
+        opendata = LuceneOpenData(
+            distributions = getDistributions(),
+            landingPage = getLandingPage(),
+            parentIdentifier = getHierarchyParent(),
+            legalBasis = getLegalBasis(),
+            qualityProcessURI = getQualityProcessURI(),
+            politicalGeocodingLevelURI = getPoliticalGeocodingLevel(),
+            accrualPeriodicity = getPeriodicity(),
+            accrualPeriodicityKey = periodicityKey,
+            content = contentField,
+        ),
+    )
 }

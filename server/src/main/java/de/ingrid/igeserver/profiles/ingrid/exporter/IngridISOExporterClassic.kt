@@ -17,29 +17,33 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
+package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
+import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
-class IngridExporterAddressKrzn(
-    idfExporter: IngridIdfExporterKrzn,
-    luceneExporter: IngridLuceneExporterKrzn,
-) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
+class IngridISOExporterClassic(
+    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+) : IgeExporter {
 
-    override val typeInfo =
-        ExportTypeInfo(
-            DocumentCategory.ADDRESS,
-            "indexInGridIDFKrzn",
-            "Ingrid IDF Address KRZN (Elasticsearch)",
-            "Export von Ingrid Adressen ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
-            "application/json",
-            "json",
-            listOf("ingrid-krzn"),
-            false,
-        )
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridISOClassic",
+        "ISO 19139",
+        "Export von Ingrid Dokumenten ins ISO Format (über IDF) für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid"),
+    )
+
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
+        val idf = idfExporter.run(doc, catalogId, options)
+        return getISOFromIdfString(idf)
+    }
 }

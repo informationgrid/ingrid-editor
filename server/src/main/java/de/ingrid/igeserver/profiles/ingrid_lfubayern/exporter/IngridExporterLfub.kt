@@ -23,10 +23,13 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridDocType
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
@@ -45,7 +48,7 @@ import kotlin.reflect.KClass
 class IngridExporterLfub(
     idfExporter: IngridIdfExporterLfub,
     luceneExporter: IngridLuceneExporterLfub,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -81,7 +84,7 @@ class IngridLuceneExporterLfub(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridLuceneExporter(
+) : IngridLuceneExporterClassic(
     codelistHandler,
     uploadConfig,
     catalogService,

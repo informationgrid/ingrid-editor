@@ -59,8 +59,8 @@ class OpenDataExporterClassicWithRDF(
 
     override val typeInfo: ExportTypeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexOpenData",
-        "Open-Data Index",
+        "indexOpenDataClassicRDF",
+        "Open-Data Index (Classic mit RDF)",
         "Export der Datensätze für die weitere Verwendung im InGrid-System.",
         MediaType.APPLICATION_JSON_VALUE,
         "json",

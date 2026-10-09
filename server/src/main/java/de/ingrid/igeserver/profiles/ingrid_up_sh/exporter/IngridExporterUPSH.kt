@@ -22,7 +22,9 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -36,8 +38,8 @@ import org.springframework.stereotype.Service
 @Service
 class IngridExporterUPSH(
     idfExporter: IngridIdfExporterUPSH,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+    @Qualifier("ingridLuceneExporterClassic") luceneExporter: IngridLuceneExporterClassic,
+) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(

@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
+import com.jillesvangurp.serializationext.toJsonElement
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.GeneralTransformerConfig
@@ -28,6 +29,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.output.JsonStringOutput
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -42,6 +44,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.node.ObjectNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 data class OpenDataTransformerConfig(
@@ -84,9 +87,6 @@ class OpenDataExporter(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-//        if (doc.type == "FOLDER") {
-//        }
-
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
         val flexOpenData = behaviourService.get(catalogId, "plugin.opendata.flexibleDoctype")?.active ?: false
@@ -108,7 +108,7 @@ class OpenDataExporter(
             mapCodelistValue("111", catalog.settings.config.provider),
         )
         // TODO: "rdf" to openDataRDFExporter.run(doc, catalogId, options),
-        return jacksonObjectMapper().writeValueAsString(luceneDoc)
+        return jacksonObjectMapper().valueToTree(luceneDoc)
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""

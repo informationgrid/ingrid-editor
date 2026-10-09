@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service
 @Service
 class IngridIndexExporterAddress(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+    @Qualifier("ingridLuceneExporterClassic") luceneExporter: IngridLuceneExporterClassic,
+) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,

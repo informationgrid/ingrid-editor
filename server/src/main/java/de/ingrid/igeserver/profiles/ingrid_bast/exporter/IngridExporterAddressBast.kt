@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Service
 class IngridExporterAddressBast(
     idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporterBast,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridIndexExporterClassic(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(

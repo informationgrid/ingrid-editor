@@ -23,7 +23,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCatalogCategory
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatabaseCollection
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatabaseContent
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 
 open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
@@ -41,7 +41,7 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
         catalog: Catalog,
         partner: String,
         provider: String,
-    ): LuceneDocument {
+    ): LuceneDocumentInGrid {
         val doc = super.toLuceneDocument(catalog, partner, provider)
         val cats = data.categoryCatalog?.map {
             LuceneCatalogCategory(
