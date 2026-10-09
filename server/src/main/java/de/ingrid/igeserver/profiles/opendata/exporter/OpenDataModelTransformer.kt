@@ -30,11 +30,11 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneContact
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataTemporal
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDcat
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentOpenData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyword
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneMetadata
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneOpenData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneSpatial
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneTemporal
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
@@ -304,11 +304,17 @@ class OpenDataModelTransformer(
                     administrativeArea = address.administrativeArea,
                 )
             },
-            distributions = getDistributions(),
-            dcat = getLandingPage().takeIf { it.isNotBlank() }?.let { LuceneDcat(it) },
-            legalBasis = getLegalBasis().takeIf { it.isNotBlank() },
-            politicalGeocodingLevelURI = getPoliticalGeocodingLevel(),
             fulltext = contentField,
+            opendata = LuceneOpenData(
+                distributions = getDistributions(),
+                landingPage = getLandingPage().takeIf { it.isNotBlank() },
+                parentIdentifier = getHierarchyParent().takeIf { it.isNotBlank() },
+                legalBasis = getLegalBasis().takeIf { it.isNotBlank() },
+                qualityProcessURI = getQualityProcessURI().takeIf { it.isNotBlank() },
+                politicalGeocodingLevelURI = getPoliticalGeocodingLevel()?.takeIf { it.isNotBlank() },
+                accrualPeriodicity = getPeriodicity().takeIf { it.isNotBlank() },
+                accrualPeriodicityKey = periodicityKey?.takeIf { it.isNotBlank() },
+            ),
         )
     }
 }

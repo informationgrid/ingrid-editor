@@ -136,9 +136,11 @@ class LuceneModelTest : GeodatasetBase() {
                 title = "Open Data Dataset Title",
                 description = "Open Data dataset description",
                 temporal = LuceneTemporal(),
-                dcat = LuceneDcat("https://example.com/opendata"),
-                legalBasis = "Open Data Law",
                 fulltext = listOf("opendata-uuid-5678"),
+                opendata = LuceneOpenData(
+                    landingPage = "https://example.com/opendata",
+                    legalBasis = "Open Data Law",
+                ),
             )
 
             val mapper = jacksonObjectMapper()
@@ -146,6 +148,7 @@ class LuceneModelTest : GeodatasetBase() {
 
             json shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/schema/index-opendata.json\""
             json shouldContain """"data_type":"OPENDATA""""
+            json shouldContain """"opendata""""
             json shouldContain """"landing_page":"https://example.com/opendata""""
             json shouldContain """"legal_basis":"Open Data Law""""
         }

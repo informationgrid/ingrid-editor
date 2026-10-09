@@ -1178,65 +1178,65 @@
             }
           }
         },
-        "dcat": {
+        "opendata": {
           "type": "object",
           "properties": {
             "landing_page": {
               "type": "string"
-            }
-          }
-        },
-        "legal_basis": {
-          "type": "string"
-        },
-        "distributions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "format": {
-                "type": "string"
-              },
-              "access_url": {
-                "type": "string"
-              },
-              "modified": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "license": {
+            },
+            "legal_basis": {
+              "type": "string"
+            },
+            "distributions": {
+              "type": "array",
+              "items": {
                 "type": "object",
                 "properties": {
-                  "url": {
+                  "format": {
                     "type": "string"
                   },
-                  "name": {
+                  "access_url": {
                     "type": "string"
                   },
-                  "attribution_by_text": {
+                  "modified": {
                     "type": "string"
                   },
-                  "languages": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "license": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "attribution_by_text": {
+                        "type": "string"
+                      },
+                      "languages": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
                     }
+                  },
+                  "availability": {
+                    "type": "string"
                   }
                 }
-              },
-              "availability": {
-                "type": "string"
               }
+            },
+            "political_geocoding_level_uri": {
+              "type": "string"
             }
           }
-        },
-        "political_geocoding_level_uri": {
-          "type": "string"
         }
       }
     }

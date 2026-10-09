@@ -75,12 +75,6 @@ data class LuceneDocumentInGrid(
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class LuceneDcat(
-    @JsonProperty("landing_page")
-    val landingPage: String? = null,
-)
-
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneDocumentOpenData(
     override val id: String?,
     @JsonProperty("\$schema")
@@ -96,12 +90,6 @@ data class LuceneDocumentOpenData(
     override val sortUuid: String = "",
     override val contacts: List<LuceneContact> = emptyList(),
     override val exports: MutableMap<String, Any?> = mutableMapOf(),
-    val distributions: List<Distribution> = emptyList(),
-    val dcat: LuceneDcat? = null,
-    @JsonProperty("legal_basis")
-    val legalBasis: String? = null,
-    @JsonProperty("political_geocoding_level_uri")
-    val politicalGeocodingLevelURI: String? = null,
     val fulltext: List<String> = emptyList(),
     val opendata: LuceneOpenData? = null,
 ) : LuceneDocument(
