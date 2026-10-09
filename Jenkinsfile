@@ -135,9 +135,9 @@ pipeline {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
                         def baseVersion = determineVersion()
                         def sbomConfigs = [
-                            [artifact: 'build/reports/sbom.json',        suffix: '',              tag: 'deps_prod'],
-                            [artifact: 'build/reports/sbom-dev.json',    suffix: '-dev',          tag: 'deps_dev'],
-                            [artifact: 'build/reports/sbom-docker.json', suffix: '-docker-image', tag: 'deps_docker']
+                            [artifact: 'build/reports/sbom.json',        suffix: '',              tag: 'ingrid_deps_prod'],
+                            [artifact: 'build/reports/sbom-dev.json',    suffix: '-dev',          tag: 'ingrid_deps_dev'],
+                            [artifact: 'build/reports/sbom-docker.json', suffix: '-docker-image', tag: 'ingrid_deps_docker']
                         ]
 
                         sbomConfigs.each { cfg ->
