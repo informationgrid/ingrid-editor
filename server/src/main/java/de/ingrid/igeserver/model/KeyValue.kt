@@ -19,8 +19,11 @@
  */
 package de.ingrid.igeserver.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class KeyValue(
     val key: String? = null,
     val value: String? = null,
+    @JsonProperty("_codelistId")
     val _codelistId: String? = null,
 )

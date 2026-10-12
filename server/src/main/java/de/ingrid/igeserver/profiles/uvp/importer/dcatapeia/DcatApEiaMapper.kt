@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.dcatparser.dcatapde.model.vcard.Kind
 import de.ingrid.dcatparser.dcatapeia.model.dcat.Dataset
 import de.ingrid.dcatparser.dcatapeia.model.dct.Location
@@ -38,10 +39,12 @@ import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import tools.jackson.databind.node.ArrayNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
-import java.util.*
+import java.util.UUID
 
 data class DcatApEiaDto(
+    @JsonProperty("_type")
     val _type: String,
+    @JsonProperty("_uuid")
     val _uuid: String,
     val title: String?,
     val description: String?,
