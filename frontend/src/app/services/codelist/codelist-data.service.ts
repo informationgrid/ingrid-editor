@@ -86,9 +86,12 @@ export class CodelistDataService {
 
   getExternalCodelist(id: string, filter: string, page: number = 0) {
     return this.http.get<PagedSearchResult>(
-      this.configuration.backendUrl + "codelist/external/" + id + "/" + filter,
+      this.configuration.backendUrl + "codelist/external/" + id,
       {
-        params: { page: page },
+        params: {
+          filter: filter,
+          page: page,
+        },
       },
     );
   }
