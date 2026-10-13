@@ -90,9 +90,9 @@
     </defs>
     <g fill="none" fill-rule="evenodd">
       <path d="M0 0h24v24H0z"/>
-      <!-- Material Design icon "functions" (Apache 2.0), scaled to match the other glyphs -->
+      <!-- Material Design icon "code" (Apache 2.0), scaled to match the other glyphs -->
       <path class="coloring" fill="#000" fill-rule="nonzero"
-            d="M18.75 3H5.25v2.25l7.3125 6.75L5.25 18.75V21h13.5v-3.375h-7.875l5.625-5.625-5.625-5.625h7.875z"/>
+            d="M9.66 16.14L5.52 12l4.14-4.14L8.4 6.6l-5.4 5.4 5.4 5.4 1.26-1.26zm4.68 0 4.14-4.14-4.14-4.14L15.6 6.6l5.4 5.4-5.4 5.4-1.26-1.26z"/>
     </g>
   </symbol>
 </svg>

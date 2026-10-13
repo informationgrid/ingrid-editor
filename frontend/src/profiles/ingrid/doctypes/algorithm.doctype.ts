@@ -96,8 +96,8 @@ export class AlgorithmDoctype extends IngridShared {
         }),
       ]),
       this.addSection("Verweise", [
-        this.addInput("publiccodeUrl", "URL zu publiccode.yml", {
-          contextHelpId: "publiccodeUrl",
+        this.addInput("apiUrl", "Link zur API", {
+          contextHelpId: "apiUrl",
           validators: {
             validation: ["url"],
           },
@@ -124,7 +124,14 @@ export class AlgorithmDoctype extends IngridShared {
           },
           wrappers: ["panel", "form-field"],
         }),
-        this.addRepeat("serviceUrls", "Service-Urls", {
+        this.addInput("publiccodeUrl", "URL zu publiccode.yml", {
+          contextHelpId: "publiccodeUrl",
+          validators: {
+            validation: ["url"],
+          },
+          wrappers: ["panel", "form-field"],
+        }),
+        this.addRepeat("additionalUrls", "weitere URLs", {
           className: "optional",
           fields: [
             this.addInputInline("name", "Name", { required: true }),

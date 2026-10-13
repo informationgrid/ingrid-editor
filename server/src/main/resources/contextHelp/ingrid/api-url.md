@@ -1,12 +1,12 @@
 ---
 # ID des GUI Elements
-id: serviceUrls
+id: apiUrl
 docType:
   - InGridAlgorithm
 profile: ingrid
 
 # title, used as window title
-title: Service-URL
+title: Link zur API
 ---
 
 # Service-URL
