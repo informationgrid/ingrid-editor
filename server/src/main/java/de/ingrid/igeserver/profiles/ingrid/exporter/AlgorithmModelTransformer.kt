@@ -22,5 +22,5 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 open class AlgorithmModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "application"
-    override val hierarchyLevelName = "application"
+    override val hierarchyLevelName = "algorithm"
 }
