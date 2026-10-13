@@ -75,6 +75,16 @@ export class ChartComponent {
     ),
   );
 
+  /** abbreviated total for the center text, e.g. "14 Tsd." for large numbers */
+  readonly abbreviatedTotal = computed(() => {
+    const total = this.total();
+    if (total < 10000) return String(total);
+    return `${Math.round(total / 1000)} Tsd.`;
+  });
+
+  /** font tier of the center text, by digit count */
+  readonly centerDigits = computed(() => String(this.total()).length);
+
   /** segments prepared for rendering, in the order they are drawn (clockwise, starting at 12 o'clock) */
   readonly segmentViews = computed(() => this.prepare(this.segments() ?? []));
 

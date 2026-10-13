@@ -99,6 +99,16 @@
     fill: vars.$ige-icon-color;
     font-size: 0.8em;
     text-anchor: middle;
+
+    // 4-digit totals (1000-9999) stay exact, abbreviated totals ("14 Tsd.")
+    // need an even smaller font to fit inside the ring
+    &.compact {
+      font-size: 0.55em;
+    }
+
+    &.compact-abbrev {
+      font-size: 0.375em;
+    }
   }
 }
 

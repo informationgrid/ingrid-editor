@@ -82,12 +82,15 @@
                 ></path>
                 <text
                     class="text"
+                    [class.compact]="centerDigits() === 4"
+                    [class.compact-abbrev]="centerDigits() > 4"
                     x="18.5"
                     y="19"
                     dominant-baseline="middle"
                     text-anchor="middle"
                 >
-                    {{ total() }}
+                    {{ abbreviatedTotal() }}
+                    <title>{{ total() }}</title>
                 </text>
             </svg>
             <div class="labels">

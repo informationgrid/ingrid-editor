@@ -77,6 +77,44 @@ describe("ChartComponent", () => {
       expect(spectator.query(".text")).toHaveText("100");
     });
 
+    it("should abbreviate large totals and show the exact count on hover", () => {
+      spectator.setInput({
+        segments: [
+          { value: 6600, label: "Veröffentlicht", color: "dark" },
+          { value: 7700, label: "In Bearbeitung", color: "orange" },
+        ],
+      });
+      spectator.detectChanges();
+
+      const center = spectator.query(".text");
+      expect(center.textContent).toContain("14 Tsd.");
+      expect(center.querySelector("title").textContent).toBe("14300");
+      expect(center).toHaveClass("compact-abbrev");
+
+      // 4-digit totals stay exact, in a smaller font
+      spectator.setInput({
+        segments: [{ value: 1234, label: "Veröffentlicht", color: "dark" }],
+      });
+      spectator.detectChanges();
+      const fourDigits = spectator.query(".text");
+      expect(fourDigits.textContent).toContain("1234");
+      expect(fourDigits).toHaveClass("compact");
+      expect(fourDigits).not.toHaveClass("compact-abbrev");
+
+      // small totals stay exact and unabbreviated
+      spectator.setInput({
+        segments: [
+          { value: 70, label: "Veröffentlicht", color: "dark" },
+          { value: 30, label: "In Bearbeitung", color: "orange" },
+        ],
+      });
+      spectator.detectChanges();
+      const small = spectator.query(".text");
+      expect(small.textContent).toContain("100");
+      expect(small).not.toHaveClass("compact");
+      expect(small).not.toHaveClass("compact-abbrev");
+    });
+
     it("should place the labels left and right of the chart, ordered from top to bottom", () => {
       const columns = spectator.queryAll(".labels");
       expect(columns.length).toBe(2);
