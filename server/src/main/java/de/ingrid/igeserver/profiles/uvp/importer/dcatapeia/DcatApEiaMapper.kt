@@ -59,7 +59,6 @@ data class Spatial(
     val type: String?,
     val title: String?,
     val value: Bbox?,
-    val wkt: String?,
 )
 
 data class Bbox(
@@ -189,14 +188,10 @@ class DcatApEiaMapper(
     val spatial: List<Spatial> by lazy {
         val location = dataset.spatial.firstOrNull() as? Location
         val wktBbox = location?.bbox.toString()
-//        val wktGeometry = location?.geometry.toString()
-//        val wktCentroid = location?.centroid.toString()
         val spatial = Spatial(
             title = location?.geographicName as String,
             type = "free",
             value = polygonToBbox(wktBbox),
-            wkt = wktBbox,
-//            ars = null,
         )
         listOf(spatial)
     }
