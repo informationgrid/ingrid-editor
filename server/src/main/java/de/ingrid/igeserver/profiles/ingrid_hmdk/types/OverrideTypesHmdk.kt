@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.types
 
+import de.ingrid.igeserver.profiles.ingrid.types.InGridAlgorithmType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDataCollectionType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
@@ -71,5 +72,11 @@ class InGridProjectTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbc
 @Component
 class InGridSpecialisedTaskTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/hmdk/specialised-task_hmdk.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class InGridAlgorithmTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridAlgorithmType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/algorithm_hmdk.schema.json"
     override val profiles = arrayOf(PROFILE_ID)
 }

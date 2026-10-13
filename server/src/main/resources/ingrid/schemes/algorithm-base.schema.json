@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/algorithmBase",
+  "type": "object",
+  "definitions": {
+    "propertiesAlgorithm": {
+      "type": "object",
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        }
+      }
+    },
+    "inputOutputData": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "unevaluatedProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": ["null", "string"]
+          },
+          "attributes": {
+            "type": ["null", "array"],
+            "items": {
+              "type": "object",
+              "unevaluatedProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": ["null", "string"]
+                },
+                "spatialResolution": {
+                  "type": ["null", "string"]
+                },
+                "temporalResolution": {
+                  "type": ["null", "string"]
+                }
+              }
+            }
+          }
+        },
+        "required": ["name"]
+      }
+    },
+    "additionalUrls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "unevaluatedProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": ["null", "string"]
+          }
+        },
+        "required": ["name", "url"]
+      }
+    }
+  },
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesAlgorithm"
+    },
+    "_uuid": {
+      "type": "string"
+    },
+    "_type": {
+      "const": "InGridAlgorithm"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "alternateTitle": {
+      "type": ["null", "string"]
+    },
+    "parentIdentifier": {
+      "type": ["null", "string"]
+    },
+    "pointOfContact": {
+      "type": "array",
+      "items": {
+        "$ref": "../../general.schema.json#/definitions/PointOfContact"
+      },
+      "minItems": 1
+    },
+    "trainingData": {
+      "type": ["null", "string"]
+    },
+    "dataBias": {
+      "type": ["null", "string"]
+    },
+    "inputData": {
+      "$ref": "#/definitions/inputOutputData"
+    },
+    "outputData": {
+      "$ref": "#/definitions/inputOutputData"
+    },
+    "algorithmType": {
+      "type": ["null", "string"]
+    },
+    "explanation": {
+      "type": ["null", "string"]
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "errorBias": {
+      "type": ["null", "string"]
+    },
+    "monitoring": {
+      "type": ["null", "string"]
+    },
+    "typeOfUse": {
+      "type": ["null", "string"]
+    },
+    "apiUrl": {
+      "type": ["null", "string"]
+    },
+    "sourceCodeUrl": {
+      "type": ["null", "string"]
+    },
+    "websiteUrl": {
+      "type": ["null", "string"]
+    },
+    "exampleUrl": {
+      "type": ["null", "string"]
+    },
+    "publiccodeUrl": {
+      "type": ["null", "string"]
+    },
+    "additionalUrls": {
+      "$ref": "#/definitions/additionalUrls"
+    },
+    "themes": {
+      "$ref": "refs/general.schema.json#/definitions/themes"
+    },
+    "keywords": {
+      "$ref": "refs/general.schema.json#/definitions/keywords"
+    },
+    "spatial": {
+      "$ref": "refs/general.schema.json#/definitions/Spatial"
+    },
+    "temporal": {
+      "$ref": "refs/general.schema.json#/definitions/temporal"
+    },
+    "dataset": {
+      "$ref": "refs/general.schema.json#/definitions/dataset"
+    },
+    "extraInfo": {
+      "$ref": "refs/general.schema.json#/definitions/extraInfo"
+    },
+    "metadata": {
+      "$ref": "refs/general.schema.json#/definitions/metadata"
+    },
+    "resource": {
+      "$ref": "refs/general.schema.json#/definitions/resource"
+    },
+    "maintenanceInformation": {
+      "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
+    },
+    "orderInfo": {
+      "$ref": "refs/general.schema.json#/definitions/orderInfo"
+    },
+    "distribution": {
+      "$ref": "refs/general.schema.json#/definitions/distribution"
+    },
+    "digitalTransferOptions": {
+      "$ref": "refs/general.schema.json#/definitions/digitalTransferOptions"
+    },
+    "openDataCategories": {
+      "type": "array",
+      "items": {
+        "$ref": "../../general.schema.json#/definitions/KeyValue"
+      }
+    },
+    "fileReferences": {
+      "type": "array",
+      "items": {
+        "$ref": "../../general.schema.json#/definitions/FileReference"
+      }
+    }
+  },
+  "required": [
+    "_uuid",
+    "_type",
+    "title",
+    "description",
+    "pointOfContact",
+    "spatial",
+    "temporal",
+    "metadata",
+    "dataset"
+  ],
+  "title": "Algorithm"
+}
