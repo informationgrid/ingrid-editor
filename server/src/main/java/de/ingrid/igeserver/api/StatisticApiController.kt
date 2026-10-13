@@ -31,6 +31,8 @@ import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.tasks.ExpiredDataset
 import de.ingrid.igeserver.tasks.ExpiredDatasetsTask
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.PublicationRight
+import de.ingrid.igeserver.utils.getPublicationRight
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.http.MediaType
@@ -113,7 +115,10 @@ class StatisticApiController(
         val allData = queryResult.totalHits.toLong()
         var allDataDrafts: Long = 0
         var allDataPublished: Long = 0
-        var allDataWithDraft: Long = 0
+        var allDataPublishedWithDraft: Long = 0
+        var allDataInternet: Long = 0
+        var allDataIntranet: Long = 0
+        var allDataAmtsintern: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
             if (hit.type != null) {
@@ -123,7 +128,10 @@ class StatisticApiController(
                         totalNum = 0,
                         numDrafts = 0,
                         numPublished = 0,
-                        numAllDrafts = 0,
+                        numPublishedWithDraft = 0,
+                        numInternet = 0,
+                        numIntranet = 0,
+                        numAmtsintern = 0,
                         statsPerType = null,
                     ),
                 )
@@ -134,8 +142,8 @@ class StatisticApiController(
                     "PW" -> {
                         allDataPublished++
                         statsType.numPublished++
-                        allDataWithDraft++
-                        statsType.numAllDrafts++
+                        allDataPublishedWithDraft++
+                        statsType.numPublishedWithDraft++
                     }
 
                     "P" -> {
@@ -146,8 +154,25 @@ class StatisticApiController(
                     "W" -> {
                         allDataDrafts++
                         statsType.numDrafts++
-                        allDataWithDraft++
-                        statsType.numAllDrafts++
+                    }
+                }
+
+                // publication right: amtsintern > intranet > internet (no tag),
+                // see getPublicationRight
+                when (getPublicationRight(hit.tags)) {
+                    PublicationRight.AMTSINTERN -> {
+                        allDataAmtsintern++
+                        statsType.numAmtsintern++
+                    }
+
+                    PublicationRight.INTRANET -> {
+                        allDataIntranet++
+                        statsType.numIntranet++
+                    }
+
+                    PublicationRight.INTERNET -> {
+                        allDataInternet++
+                        statsType.numInternet++
                     }
                 }
             }
@@ -157,7 +182,10 @@ class StatisticApiController(
             totalNum = allData,
             numDrafts = allDataDrafts,
             numPublished = allDataPublished,
-            numAllDrafts = allDataWithDraft,
+            numPublishedWithDraft = allDataPublishedWithDraft,
+            numInternet = allDataInternet,
+            numIntranet = allDataIntranet,
+            numAmtsintern = allDataAmtsintern,
             statsPerType = statsPerType,
         )
         return result

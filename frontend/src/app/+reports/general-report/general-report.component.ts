@@ -18,7 +18,9 @@
  * limitations under the Licence.
  */
 import {
+  AfterViewInit,
   Component,
+  computed,
   DestroyRef,
   EventEmitter,
   inject,
@@ -58,6 +60,13 @@ import {
 } from "@angular/material/button-toggle";
 import { FacetsComponent } from "../../+research/+facets/facets.component";
 import { ChartComponent } from "../../+dashboard/chart/chart.component";
+import {
+  ChartSegment,
+  createChartSegments,
+  createRightsChartSegments,
+  DocumentStateCounts,
+  PublicationRightCounts,
+} from "../../+dashboard/chart/chart-segments";
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { MatIcon } from "@angular/material/icon";
 import { CdkMonitorFocus } from "@angular/cdk/a11y";
@@ -92,25 +101,73 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     CdkMonitorFocus,
   ],
 })
-export class GeneralReportComponent implements OnInit {
+export class GeneralReportComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private translocoService = inject(TranslocoService);
 
   readonly sort = viewChild(MatSort);
-  chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
-  displayedColumns = signal<string[]>([
-    "icon",
-    "title",
-    "percentage",
-    "count",
-    "published",
-    "working",
-    "allWorking",
-  ]);
+
+  /** the statistic the table analyses: document state or publication right */
+  analysis = signal<"status" | "rights">("status");
+  displayedColumns = computed(() =>
+    this.analysis() === "rights"
+      ? [
+          "icon",
+          "title",
+          "percentage",
+          "count",
+          "internet",
+          "intranet",
+          "amtsintern",
+        ]
+      : [
+          "icon",
+          "title",
+          "percentage",
+          "count",
+          "working",
+          "published",
+          "publishedWithDraft",
+        ],
+  );
+
+  private statusCounts = signal<DocumentStateCounts | null>(null);
+  private rightCounts = signal<PublicationRightCounts | null>(null);
+
+  /** donut follows the active analysis: document states or publication rights */
+  chartSegments = computed<ChartSegment[] | null>(() => {
+    const translate = (key: string) => this.translocoService.translate(key);
+    if (this.analysis() === "rights") {
+      const rights = this.rightCounts();
+      return rights ? createRightsChartSegments(rights, translate) : null;
+    }
+    const status = this.statusCounts();
+    return status ? createChartSegments(status, translate) : null;
+  });
 
   facetViewRefresher = new EventEmitter<void>();
   dataSource = new MatTableDataSource([]);
+
+  /** table headers for the document state columns, same wording as the chart labels */
+  get docStateLabels() {
+    const translate = (key: string) => this.translocoService.translate(key);
+    return {
+      W: translate("docState.W"),
+      P: translate("docState.P"),
+      PW: translate("docState.PW"),
+    };
+  }
+
+  /** table headers for the publication right columns, same wording as the chart labels */
+  get tagLabels() {
+    const translate = (key: string) => this.translocoService.translate(key);
+    return {
+      internet: translate("tags.internet"),
+      intranet: translate("tags.intranet"),
+      amtsintern: translate("tags.amtsintern"),
+    };
+  }
 
   form = new UntypedFormGroup({
     type: new UntypedFormControl("selectDocuments"),
@@ -134,6 +191,10 @@ export class GeneralReportComponent implements OnInit {
       .subscribe(() => this.updateFilter());
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort();
+  }
+
   updateFilter() {
     return this.researchService
       .searchStatistic({
@@ -144,40 +205,62 @@ export class GeneralReportComponent implements OnInit {
   }
 
   prepareTableData(response: StatisticResponse) {
-    var data = [];
-    var filteredTotal = 0;
-    var filteredDrafts = 0;
-    var filteredPublished = 0;
-    var filteredAllDraft = 0;
-    Object.keys(response.statsPerType).forEach((type) => {
-      if (!this.ignoredTypes.includes(type)) {
-        filteredTotal += response.statsPerType[type].totalNum;
-        filteredDrafts += response.statsPerType[type].numPublished;
-        filteredPublished += response.statsPerType[type].numDrafts;
-        filteredAllDraft += response.statsPerType[type].numAllDrafts;
-      }
-    });
-    Object.keys(response.statsPerType).forEach((type) => {
+    if (!response?.statsPerType) {
+      this.dataSource.data = [];
+      this.statusCounts.set(null);
+      this.rightCounts.set(null);
+      return;
+    }
+    const types = Object.keys(response.statsPerType);
+    const data = [];
+    let total = 0;
+    let drafts = 0;
+    let published = 0;
+    let publishedWithDraft = 0;
+    let internet = 0;
+    let intranet = 0;
+    let amtsintern = 0;
+    types.forEach((type) => {
       if (this.ignoredTypes.includes(type)) return;
       const stats = response.statsPerType[type];
-      let entry: any = {
+      total += stats.totalNum;
+      drafts += stats.numDrafts;
+      published += stats.numPublished;
+      publishedWithDraft += stats.numPublishedWithDraft ?? 0;
+      internet += stats.numInternet ?? 0;
+      intranet += stats.numIntranet ?? 0;
+      amtsintern += stats.numAmtsintern ?? 0;
+    });
+    types.forEach((type) => {
+      if (this.ignoredTypes.includes(type)) return;
+      const stats = response.statsPerType[type];
+      data.push({
         icon: this.getIcon(type) ?? type,
         title: type,
-        percentage:
-          filteredTotal > 0
-            ? Math.round((stats.totalNum / filteredTotal) * 100)
-            : 0,
+        percentage: total > 0 ? Math.round((stats.totalNum / total) * 100) : 0,
         count: stats.totalNum,
-        published: stats.numPublished,
+        // document states (3-way split, consistent with the chart)
         working: stats.numDrafts,
-        allWorking: stats.numAllDrafts,
-      };
-      entry = { ...entry, ariaLabel: this.getAriaLabelForRow(entry) };
-      data.push(entry);
+        published: stats.numPublished - (stats.numPublishedWithDraft ?? 0),
+        publishedWithDraft: stats.numPublishedWithDraft ?? 0,
+        // publication rights
+        internet: stats.numInternet ?? 0,
+        intranet: stats.numIntranet ?? 0,
+        amtsintern: stats.numAmtsintern ?? 0,
+      });
     });
 
     this.dataSource.data = data;
-    this.chartDataPublished.set([filteredPublished, filteredDrafts]);
+    this.statusCounts.set({
+      numDrafts: drafts,
+      numPublished: published,
+      numPublishedWithDraft: publishedWithDraft,
+    });
+    this.rightCounts.set({
+      numInternet: internet,
+      numIntranet: intranet,
+      numAmtsintern: amtsintern,
+    });
   }
 
   getIcon(type: string): string {
@@ -200,11 +283,21 @@ export class GeneralReportComponent implements OnInit {
     );
   }
 
-  getAriaLabelForRow(entry) {
-    return `Typ: ${this.getTitle(entry.title)}, Prozent: ${
-      entry.percentage
-    }%, Anzahl: ${entry.count}, davon veröffentlicht: ${
-      entry.published
-    }, unveröffentlicht: ${entry.working}`;
+  /** called by the analysis button toggle; also resets table sorting, since the
+   *  sorted column might not exist in the other view */
+  setAnalysis(value: "status" | "rights") {
+    if (value === this.analysis()) return;
+    this.analysis.set(value);
+    this.sort()?.sort({ id: "", start: "asc", disableClear: true });
+  }
+
+  getAriaLabel(entry) {
+    const base = `Typ: ${this.getTitle(entry.title)}, Prozent: ${entry.percentage}%, Anzahl: ${entry.count}`;
+    if (this.analysis() === "rights") {
+      const labels = this.tagLabels;
+      return `${base}, davon ${labels.internet}: ${entry.internet}, ${labels.intranet}: ${entry.intranet}, ${labels.amtsintern}: ${entry.amtsintern}`;
+    }
+    const labels = this.docStateLabels;
+    return `${base}, davon ${labels.W}: ${entry.working}, ${labels.P}: ${entry.published}, ${labels.PW}: ${entry.publishedWithDraft}`;
   }
 }

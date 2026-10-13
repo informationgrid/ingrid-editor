@@ -38,11 +38,12 @@ import {
 } from "../+form/dialogs/create/create-node.component";
 import { MessageService } from "../services/messages/message.service";
 import { Message } from "../services/messages/message";
-import { TranslocoDirective } from "@jsverse/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
 import { ActionButtonComponent } from "../shared/action-button/action-button.component";
 import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { ChartComponent } from "./chart/chart.component";
+import { ChartSegment, createChartSegments } from "./chart/chart-segments";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
@@ -88,7 +89,7 @@ export class DashboardComponent implements OnInit {
   oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
     return this.generalStore.oldestExpiredDocuments().slice(0, 5);
   });
-  chartDataPublished = signal<number[]>(null);
+  chartSegments = signal<ChartSegment[] | null>(null);
   messages$: BehaviorSubject<Message[]>;
 
   constructor(
@@ -99,6 +100,7 @@ export class DashboardComponent implements OnInit {
     private messageService: MessageService,
     private dashboardService: DashboardService,
     private catalogService: CatalogService,
+    private translocoService: TranslocoService,
   ) {
     this.messages$ = this.messageService.messages$;
     this.canCreateAddress = configService.hasPermission("can_create_address");
@@ -123,7 +125,11 @@ export class DashboardComponent implements OnInit {
 
   fetchStatistic() {
     this.docService.getStatistic().subscribe((response) => {
-      this.chartDataPublished.set([response.numDrafts, response.numPublished]);
+      this.chartSegments.set(
+        createChartSegments(response, (key) =>
+          this.translocoService.translate(key),
+        ),
+      );
     });
   }
 
