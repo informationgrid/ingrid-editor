@@ -91,7 +91,7 @@ export class AlgorithmDoctype extends IngridShared {
             { value: "descriptive", label: "Beschreibend" },
             { value: "diagnostic", label: "Diagnostisch" },
             { value: "predictive", label: "Prädiktiv" },
-            { value: "prescriptive", label: "Prescriptive" },
+            { value: "prescriptive", label: "Präskriptiv" },
           ],
         }),
       ]),

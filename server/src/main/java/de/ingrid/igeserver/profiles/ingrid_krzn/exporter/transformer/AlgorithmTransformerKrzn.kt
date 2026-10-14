@@ -19,11 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.AlgorithmModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
 
-class AlgorithmTransformerKrzn(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+class AlgorithmTransformerKrzn(transformerConfig: TransformerConfig) : AlgorithmModelTransformer(transformerConfig) {
 
     override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

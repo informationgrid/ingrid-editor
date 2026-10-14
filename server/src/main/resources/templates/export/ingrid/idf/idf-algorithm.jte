@@ -1,7 +1,5 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.AlgorithmModelTransformer
-@import de.ingrid.igeserver.profiles.ingrid.exporter.AlgorithmInputOutput
-@import de.ingrid.igeserver.profiles.ingrid.exporter.AlgorithmAttribute
 @import de.ingrid.igeserver.profiles.ingrid.exporter.AlgorithmAdditionalUrl
 @import gg.jte.Content
 @import java.util.Map
@@ -26,82 +24,8 @@
                                 <gco:CharacterString>${page.getDataBias()}</gco:CharacterString>
                             </alg:dataBias>
                         @endif
-                        @for(AlgorithmInputOutput input : page.getInputData())
-                            <alg:inputData>
-                                <alg:InputData>
-                                    <alg:name>
-                                        <gco:CharacterString>${input.getName()}</gco:CharacterString>
-                                    </alg:name>
-                                    @if(TransformationTools.hasValue(input.getUrl()))
-                                        <alg:url>
-                                            <gco:CharacterString>${input.getUrl()}</gco:CharacterString>
-                                        </alg:url>
-                                    @endif
-                                    @for(AlgorithmAttribute attribute : input.getAttributes())
-                                        <alg:attributes>
-                                            <alg:Attribute>
-                                                <alg:name>
-                                                    <gco:CharacterString>${attribute.getName()}</gco:CharacterString>
-                                                </alg:name>
-                                                @if(TransformationTools.hasValue(attribute.getUnit()))
-                                                    <alg:unit>
-                                                        <gco:CharacterString>${attribute.getUnit()}</gco:CharacterString>
-                                                    </alg:unit>
-                                                @endif
-                                                @if(TransformationTools.hasValue(attribute.getSpatialResolution()))
-                                                    <alg:spatialResolution>
-                                                        <gco:CharacterString>${attribute.getSpatialResolution()}</gco:CharacterString>
-                                                    </alg:spatialResolution>
-                                                @endif
-                                                @if(TransformationTools.hasValue(attribute.getTemporalResolution()))
-                                                    <alg:temporalResolution>
-                                                        <gco:CharacterString>${attribute.getTemporalResolution()}</gco:CharacterString>
-                                                    </alg:temporalResolution>
-                                                @endif
-                                            </alg:Attribute>
-                                        </alg:attributes>
-                                    @endfor
-                                </alg:InputData>
-                            </alg:inputData>
-                        @endfor
-                        @for(AlgorithmInputOutput output : page.getOutputData())
-                            <alg:outputData>
-                                <alg:InputData>
-                                    <alg:name>
-                                        <gco:CharacterString>${output.getName()}</gco:CharacterString>
-                                    </alg:name>
-                                    @if(TransformationTools.hasValue(output.getUrl()))
-                                        <alg:url>
-                                            <gco:CharacterString>${output.getUrl()}</gco:CharacterString>
-                                        </alg:url>
-                                    @endif
-                                    @for(AlgorithmAttribute attribute : output.getAttributes())
-                                        <alg:attributes>
-                                            <alg:Attribute>
-                                                <alg:name>
-                                                    <gco:CharacterString>${attribute.getName()}</gco:CharacterString>
-                                                </alg:name>
-                                                @if(TransformationTools.hasValue(attribute.getUnit()))
-                                                    <alg:unit>
-                                                        <gco:CharacterString>${attribute.getUnit()}</gco:CharacterString>
-                                                    </alg:unit>
-                                                @endif
-                                                @if(TransformationTools.hasValue(attribute.getSpatialResolution()))
-                                                    <alg:spatialResolution>
-                                                        <gco:CharacterString>${attribute.getSpatialResolution()}</gco:CharacterString>
-                                                    </alg:spatialResolution>
-                                                @endif
-                                                @if(TransformationTools.hasValue(attribute.getTemporalResolution()))
-                                                    <alg:temporalResolution>
-                                                        <gco:CharacterString>${attribute.getTemporalResolution()}</gco:CharacterString>
-                                                    </alg:temporalResolution>
-                                                @endif
-                                            </alg:Attribute>
-                                        </alg:attributes>
-                                    @endfor
-                                </alg:InputData>
-                            </alg:outputData>
-                        @endfor
+                        @template.export.ingrid.idf.algorithmInputOutput(items = page.getInputData(), wrapperElement = "inputData")
+                        @template.export.ingrid.idf.algorithmInputOutput(items = page.getOutputData(), wrapperElement = "outputData")
                         @if(TransformationTools.hasValue(page.getAlgorithmType()))
                             <alg:algorithmType>
                                 <gco:CharacterString>${page.getAlgorithmType()}</gco:CharacterString>
