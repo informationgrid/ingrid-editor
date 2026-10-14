@@ -33,7 +33,7 @@ export interface ChartSegment {
 export interface DocumentStateCounts {
   /** documents in state "W" (draft) */
   numDrafts: number;
-  /** documents in state "P" or "PW" */
+  /** documents in state "P" */
   numPublished: number;
   /** documents in state "PW" (published with working version) */
   numPublishedWithDraft?: number;
@@ -70,7 +70,7 @@ export function createChartSegments(
       cy: "editModeDocument",
     },
     {
-      value: (counts.numPublished ?? 0) - publishedWithDraft,
+      value: counts.numPublished ?? 0,
       label: translate("docState.P"),
       color: "dark",
       cy: "publishModeDocument",

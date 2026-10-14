@@ -241,7 +241,7 @@ export class GeneralReportComponent implements OnInit, AfterViewInit {
         count: stats.totalNum,
         // document states (3-way split, consistent with the chart)
         working: stats.numDrafts,
-        published: stats.numPublished - (stats.numPublishedWithDraft ?? 0),
+        published: stats.numPublished,
         publishedWithDraft: stats.numPublishedWithDraft ?? 0,
         // publication rights
         internet: stats.numInternet ?? 0,

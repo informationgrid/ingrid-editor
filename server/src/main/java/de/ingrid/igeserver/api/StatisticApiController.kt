@@ -140,8 +140,6 @@ class StatisticApiController(
                 statsType.totalNum = statsType.totalNum!! + 1
                 when (hit.state) {
                     "PW" -> {
-                        allDataPublished++
-                        statsType.numPublished++
                         allDataPublishedWithDraft++
                         statsType.numPublishedWithDraft++
                     }

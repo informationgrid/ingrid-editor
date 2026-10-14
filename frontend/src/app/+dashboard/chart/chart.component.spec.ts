@@ -50,7 +50,7 @@ describe("ChartComponent", () => {
           segments: createChartSegments(
             {
               numDrafts: 30,
-              numPublished: 70,
+              numPublished: 55,
               numPublishedWithDraft: 15,
             },
             translate,
@@ -243,7 +243,7 @@ describe("createChartSegments", () => {
     ).toEqual([
       [15, "In Bearbeitung mit Veröffentlichung", "hatched"],
       [30, "In Bearbeitung", "orange"],
-      [55, "Veröffentlicht", "dark"],
+      [70, "Veröffentlicht", "dark"],
     ]);
   });
 
@@ -263,7 +263,7 @@ describe("createChartSegments", () => {
     ]);
   });
 
-  it("should subtract the published-with-draft documents from the published count", () => {
+  it("should default the published-with-draft count to zero", () => {
     const segments = createChartSegments(
       { numDrafts: 30, numPublished: 70 },
       translate,

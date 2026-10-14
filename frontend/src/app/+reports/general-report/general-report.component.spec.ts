@@ -35,10 +35,12 @@ import { getTranslocoModule } from "../../transloco-testing.module";
  * GeoDataset: 1 published, 1 published with working version.
  * GeoService: 1 draft (intranet).
  * FOLDER: ignored by the report.
+ *
+ * numPublished counts only documents in state "P", not "PW".
  */
 const RESPONSE: StatisticResponse = {
   totalNum: 4,
-  numPublished: 3,
+  numPublished: 2,
   numDrafts: 1,
   numPublishedWithDraft: 1,
   numInternet: 2,
@@ -47,7 +49,7 @@ const RESPONSE: StatisticResponse = {
   statsPerType: {
     InGridGeoDataset: {
       totalNum: 2,
-      numPublished: 2,
+      numPublished: 1,
       numDrafts: 0,
       numPublishedWithDraft: 1,
       numInternet: 1,
