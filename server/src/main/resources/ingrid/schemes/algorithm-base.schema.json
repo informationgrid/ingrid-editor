@@ -151,6 +151,9 @@
     "additionalUrls": {
       "$ref": "#/definitions/additionalUrls"
     },
+    "graphicOverviews": {
+      "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
+    },
     "themes": {
       "$ref": "refs/general.schema.json#/definitions/themes"
     },

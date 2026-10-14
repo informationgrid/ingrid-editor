@@ -3,6 +3,15 @@
   "_type": "InGridAlgorithm",
   "title": "aba",
   "properties": { "isOpenData": null },
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "uri": "https://example.org/preview.png",
+        "value": "preview.png",
+        "asLink": true
+      }
+    }
+  ],
   "dataset": { "languages": ["142"] },
   "spatial": {
     "references": [
