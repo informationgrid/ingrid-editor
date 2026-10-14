@@ -21,19 +21,26 @@ package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.UploadConfig
 import initDocumentMocks
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import mockBehaviours
 import mockCatalog
 import mockCodelists
 import tools.jackson.databind.node.ObjectNode
@@ -42,6 +49,7 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 class Algorithm : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
+    private val behaviourService = mockk<BehaviourService>()
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
@@ -50,10 +58,25 @@ class Algorithm : ShouldSpec() {
     private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
+    private lateinit var luceneExporter: IngridLuceneExporter
+    private lateinit var indexExporter: IngridIndexExporter
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
         this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService, this.documentWrapperRepository)
+        this.luceneExporter = IngridLuceneExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
+
+        mockkObject(SpringContext)
+        every { SpringContext.getBean(DocumentService::class.java) } answers {
+            documentService
+        }
+        every { SpringContext.getBean(BehaviourService::class.java) } answers {
+            behaviourService
+        }
+        every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
+            documentWrapperRepository
+        }
 
         every { codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
             val codelistId = this.secondArg<String>()
@@ -68,6 +91,7 @@ class Algorithm : ShouldSpec() {
 
         mockCatalog(this.catalogService)
         mockCodelists(this.codelistHandler)
+        mockBehaviours(this.behaviourService, "plugin.ingrid.doi")
 
         val addresses = listOf(
             MockDocument(
@@ -97,6 +121,9 @@ class Algorithm : ShouldSpec() {
             ),
             MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1"),
         )
+
+        every { documentService.getParentWrapper(any()) } returns null
+        every { documentService.getIncomingReferenceUUIDs(any(), any(), any()) } answers { emptySet() }
 
         initDocumentMocks(addresses + datasets, this.documentService)
     }
@@ -171,6 +198,12 @@ class Algorithm : ShouldSpec() {
         should("not export algorithm metadata when no algorithm specific field has a value") {
             val result = exportJsonToXML(exporter, "/export/ingrid/algorithm.minimal.sample.json")
             result shouldNotContain ALGORITHM_METADATA_OPEN
+        }
+
+        should("completeLuceneExport") {
+            val result = exportJsonToJson(indexExporter, "/export/ingrid/algorithm.minimal.sample.json")
+            result shouldNotBe null
+            result shouldContain """"t01_object.obj_class" : "7""""
         }
     }
 

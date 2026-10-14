@@ -108,6 +108,7 @@ class IngridLuceneExporterLubw(
         "InGridProject",
         "InGridDataCollection",
         "InGridInformationSystem",
+        "InGridAlgorithm",
         -> Pair(
             "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
             getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
