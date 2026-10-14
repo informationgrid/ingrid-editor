@@ -31,6 +31,11 @@ export class GeoServiceDoctypeBaw extends GeoServiceDoctype {
   constructor() {
     super();
     this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
+    this.coupledResourcesDocTypeFilter = [
+      "InGridGeoDataset",
+      "BawSimulation",
+      "BawMeasurement",
+    ];
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
