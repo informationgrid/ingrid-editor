@@ -69,9 +69,9 @@ export class AlgorithmDoctype extends IngridShared {
           simple: true,
           required: true,
           options: [
-            { value: "self-learning", label: "Selbstlernalgorithmus" },
-            { value: "rule-based", label: "Regelbasiert" },
-            { value: "hybrid", label: "Hybrid" },
+            { value: "Selbstlernalgorithmus", label: "Selbstlernalgorithmus" },
+            { value: "Regelbasiert", label: "Regelbasiert" },
+            { value: "Hybrid", label: "Hybrid" },
           ],
         }),
 
@@ -90,10 +90,10 @@ export class AlgorithmDoctype extends IngridShared {
           simple: true,
           required: true,
           options: [
-            { value: "descriptive", label: "Beschreibend" },
-            { value: "diagnostic", label: "Diagnostisch" },
-            { value: "predictive", label: "Prädiktiv" },
-            { value: "prescriptive", label: "Präskriptiv" },
+            { value: "Beschreibend", label: "Beschreibend" },
+            { value: "Diagnostisch", label: "Diagnostisch" },
+            { value: "Prädiktiv", label: "Prädiktiv" },
+            { value: "Präskriptiv", label: "Präskriptiv" },
           ],
         }),
       ]),
