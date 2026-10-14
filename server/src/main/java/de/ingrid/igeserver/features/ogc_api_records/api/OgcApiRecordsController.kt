@@ -97,6 +97,7 @@ enum class DocTypeFormat(val docType: String) {
     InGridProject("InGridProject"),
     InGridDataCollection("InGridDataCollection"),
     InGridInformationSystem("InGridInformationSystem"),
+    InGridAlgorithm("InGridAlgorithm"),
     InGridOrganisationDoc("InGridOrganisationDoc"),
     InGridPersonDoc("InGridPersonDoc"),
     UvpApprovalProcedureDoc("UvpApprovalProcedureDoc"),

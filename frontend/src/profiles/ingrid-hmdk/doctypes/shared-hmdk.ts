@@ -70,14 +70,18 @@ export class SharedHmdk {
       atLeastOnePublisher: this.atLeastOnePublisher,
     };
 
-    // at least one "Datendownload" is required when HmbTG is activated
+    // at least one "Datendownload" is required when HmbTG is activated.
+    // not all doctypes have typed references (e.g. "Algorithmus"), so skip the
+    // validator if there is no references field
     const references = fieldConfig
       .find((field) => field.props.label === "Verweise")
-      .fieldGroup.find((field) => field.key === "references");
-    references.validators = {
-      ...references.validators,
-      downloadLinkWhenHmbtg: this.downloadLinkWhenHmbtg,
-    };
+      ?.fieldGroup.find((field) => field.key === "references");
+    if (references) {
+      references.validators = {
+        ...references.validators,
+        downloadLinkWhenHmbtg: this.downloadLinkWhenHmbtg,
+      };
+    }
 
     return fieldConfig;
   };
@@ -109,6 +113,26 @@ export class SharedHmdk {
       field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
     message:
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
+  };
+
+  // at least one link in "Verweise" (or a file in "Dateien") is required when HmbTG is
+  // activated. For doctypes without typed references (e.g. "Algorithmus") the links are
+  // plain URL fields, so the check looks at those fields instead. Since formly does not
+  // apply validators to keyless sections, this validator is attached to each of them.
+  urlOrFileWhenHmbtg = {
+    expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+      !field.model.properties?.publicationHmbTG ||
+      field.form.value.apiUrl?.length > 0 ||
+      field.form.value.sourceCodeUrl?.length > 0 ||
+      field.form.value.websiteUrl?.length > 0 ||
+      field.form.value.exampleUrl?.length > 0 ||
+      field.form.value.publiccodeUrl?.length > 0 ||
+      field.form.value.additionalUrls?.some(
+        (row: any) => row.url?.length > 0,
+      ) ||
+      field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
+    message:
+      "Bei aktivierter 'Veröffentlichung gemäß HmbTG'-Checkbox muss mindestens ein Link im Abschnitt 'Verweise' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
   };
 
   private getInformationHmbTGFieldConfig(doc: IngridShared) {

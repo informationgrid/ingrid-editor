@@ -1,0 +1,70 @@
+{
+  "title": "Test-Algorithmus Minimal",
+  "_id": 1664,
+  "_uuid": "d967e83f-5336-4207-960c-3a6a900d0211",
+  "_type": "InGridAlgorithm",
+  "_created": "2026-10-13T10:00:00.000Z",
+  "_createdBy": "Super User",
+  "_modified": "2026-10-13T10:00:00.000Z",
+  "_contentModified": "2026-10-13T10:00:00.000Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 1,
+  "_state": "P",
+  "data": {
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": false
+    },
+    "description": "Feld von Beschreibung",
+    "graphicOverviews": [],
+    "pointOfContact": [
+      {
+        "type": {
+          "key": "12"
+        },
+        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [],
+      "free": []
+    },
+    "trainingData": null,
+    "dataBias": null,
+    "inputData": [],
+    "outputData": [],
+    "algorithmType": null,
+    "explanation": null,
+    "methods": [],
+    "errorBias": null,
+    "monitoring": null,
+    "typeOfUse": null,
+    "apiUrl": null,
+    "sourceCodeUrl": null,
+    "websiteUrl": null,
+    "exampleUrl": null,
+    "publiccodeUrl": null,
+    "additionalUrls": [],
+    "spatial": {
+      "references": [],
+      "spatialSystems": [],
+      "verticalExtent": { "unitOfMeasure": null }
+    },
+    "temporal": {
+      "event": {
+        "created": "2020-12-11T23:00:00.000Z"
+      },
+      "status": null
+    },
+    "dataset": { "languages": ["142"] },
+    "metadata": { "language": { "key": "150" } },
+    "extraInfo": { "legalBasicsDescriptions": [] },
+    "resource": { "useConstraints": [], "accessConstraints": [] },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": { "unit": null }
+    },
+    "digitalTransferOptions": []
+  }
+}

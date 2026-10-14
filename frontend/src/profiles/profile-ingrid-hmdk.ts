@@ -19,6 +19,7 @@
  */
 import { Component, inject } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
+import { AlgorithmDoctypeHMDK } from "./ingrid-hmdk/doctypes/algorithm.doctype";
 import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
 import { SpecialisedTaskDoctypeHMDK } from "./ingrid-hmdk/doctypes/specialisedTask.doctype";
 import { GeoDatasetDoctypeHMDK } from "./ingrid-hmdk/doctypes/geo-dataset.doctype";
@@ -44,6 +45,7 @@ class InGridHMDKComponent extends InGridComponent {
   project = inject(ProjectDoctypeHMDK);
   dataCollection = inject(DataCollectionDoctypeHMDK);
   informationSystem = inject(InformationSystemDoctypeHMDK);
+  algorithm = inject(AlgorithmDoctypeHMDK);
   modifyPublishedBehaviour = inject(ModifyPublishedBehaviour);
 
   dialog = inject(MatDialog);
@@ -66,6 +68,7 @@ class InGridHMDKComponent extends InGridComponent {
       this.project,
       this.dataCollection,
       this.informationSystem,
+      this.algorithm,
     ].forEach((docType) => {
       // show open data for all types.
       docType.options.hide.openData = false;

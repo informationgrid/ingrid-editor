@@ -1,7 +1,9 @@
 ---
 # ID des GUI Elements
 id: distribution_title
-docType: InGridGeoDataset
+docType:
+  - InGridGeoDataset
+  - InGridAlgorithm
 profile: ingrid
 ---
 

@@ -1,0 +1,74 @@
+{
+  "_uuid": "d967e83f-5336-4207-960c-3a6a900d0211",
+  "_type": "InGridAlgorithm",
+  "title": "aba",
+  "properties": { "isOpenData": null },
+  "dataset": { "languages": ["142"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Auma, Auma-Weidatal, Greiz, Thüringen, 07955, Deutschland (town)",
+        "value": {
+          "lat1": 50.6587079,
+          "lat2": 50.7387079,
+          "lon1": 11.8593229,
+          "lon2": 11.9393229
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000001" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": { "free": [] },
+  "metadata": { "language": { "key": "150" } },
+  "resource": { "useConstraints": [], "accessConstraints": [] },
+  "temporal": {
+    "event": {
+      "created": "2020-12-11T23:00:00.000Z"
+    },
+    "status": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "description": "some description",
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } },
+    { "ref": "506677eb-9328-4484-9d30-2cecadba353c", "type": { "key": "10" } }
+  ],
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  },
+  "trainingData": "some training data",
+  "dataBias": null,
+  "inputData": [
+    {
+      "name": "some input dataset",
+      "url": "https://example.org/input",
+      "attributes": [
+        {
+          "name": "some attribute",
+          "unit": "m",
+          "spatialResolution": null,
+          "temporalResolution": null
+        }
+      ]
+    }
+  ],
+  "outputData": [
+    { "name": "some output dataset", "url": null, "attributes": [] }
+  ],
+  "algorithmType": "rule-based",
+  "explanation": "some explanation",
+  "methods": ["some method"],
+  "errorBias": null,
+  "monitoring": "some monitoring",
+  "typeOfUse": "descriptive",
+  "apiUrl": null,
+  "sourceCodeUrl": null,
+  "websiteUrl": null,
+  "exampleUrl": null,
+  "publiccodeUrl": null,
+  "additionalUrls": [{ "name": "example", "url": "https://example.org" }]
+}
