@@ -66,6 +66,7 @@ export class AlgorithmDoctype extends IngridShared {
       ),
       this.addSection("Algorithmus", [
         this.addSelect("algorithmType", "Art des Algorithmus", {
+          simple: true,
           required: true,
           options: [
             { value: "self-learning", label: "Selbstlernalgorithmus" },
@@ -86,6 +87,7 @@ export class AlgorithmDoctype extends IngridShared {
           required: true,
         }),
         this.addSelect("typeOfUse", "Art der Verwendung des Algorithmus", {
+          simple: true,
           required: true,
           options: [
             { value: "descriptive", label: "Beschreibend" },

@@ -21,3 +21,9 @@
   that actually re-orders rows, not just sort-state assertions.
 - `upload-checksum.spec.ts` is known-flaky under full-suite load and passes
   in isolation. Verify there before blaming your change.
+- Export/transformer fixtures must mirror what the frontend actually saves,
+  not the shape you assume: form, schema, exporter and test all written
+  from one unchecked assumption cross-check nothing. This shipped the
+  algorithm doctype export crash (real documents with the field set threw,
+  tests stayed green). Select shapes: see frontend-conventions.md. Derive
+  the fixture `data` section from a document saved in the dev instance.

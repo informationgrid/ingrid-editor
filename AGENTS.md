@@ -28,8 +28,8 @@ then ask before committing.
 - [Git workflow & collaboration](docs/agents/git-workflow.md) — commit policy,
   design-task process, other-branch WIP.
 - [Build, pre-commit hook & tests](docs/agents/build-and-tests.md) — the hooks
-  that fail most often, flaky specs, matSort testing.
+  that fail most often, flaky specs, matSort testing, test fixtures.
 - [Frontend conventions](docs/agents/frontend-conventions.md) — transloco,
-  colors, API-replacement policy.
+  colors, API-replacement policy, select field value shapes.
 - [Domain pointers](docs/agents/domain.md) — document states, publication
-  rights.
+  rights, document data shapes.
