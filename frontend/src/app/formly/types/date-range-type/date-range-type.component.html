@@ -13,6 +13,7 @@
                 placeholder="TT.MM.JJJJ"
                 formControlName="start"
                 aria-label="von"
+                [attr.data-cy]="key + '-start'"
                 (change)="updateFormControl()"
             />
             <input
@@ -20,6 +21,7 @@
                 placeholder="TT.MM.JJJJ"
                 formControlName="end"
                 aria-label="bis"
+                [attr.data-cy]="key + '-end'"
                 [errorStateMatcher]="errorStateMatcher"
                 (change)="updateFormControl()"
             />
@@ -56,6 +58,7 @@
                     matInput
                     [matTimepicker]="pickerStart"
                     formControlName="start"
+                    [attr.data-cy]="key + '-start-time'"
                     (change)="updateFormControl()"
                 />
                 <mat-timepicker-toggle matIconSuffix [for]="pickerStart" />
@@ -72,6 +75,7 @@
                     matInput
                     [matTimepicker]="pickerEnd"
                     formControlName="end"
+                    [attr.data-cy]="key + '-end-time'"
                     (change)="updateFormControl()"
                 />
                 <mat-timepicker-toggle matIconSuffix [for]="pickerEnd" />

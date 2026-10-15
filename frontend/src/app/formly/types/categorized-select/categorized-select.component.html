@@ -22,6 +22,7 @@
         [formControl]="formControl"
         [placeholder]="props.placeholder"
         [attr.aria-labelledby]="field | ariaLabel"
+        [attr.data-cy]="'categorized-' + key"
         [errorStateMatcher]="matcher"
     >
         <mat-option>
