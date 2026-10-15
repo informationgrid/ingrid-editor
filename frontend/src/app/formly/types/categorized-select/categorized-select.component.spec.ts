@@ -111,6 +111,7 @@ describe("CategorizedSelectComponent", () => {
           codelistId: "test-codelist",
           categories: mockCategories,
           showHeader: true,
+          restrictToSingleCategory: true,
         },
       },
     ];
@@ -185,5 +186,17 @@ describe("CategorizedSelectComponent", () => {
     const lineClamp = checkboxes[0].querySelector(".line-clamp-1");
     expect(lineClamp).toBeTruthy();
     expect(lineClamp?.textContent?.trim()).toBe("Option 1");
+  });
+
+  it("should show the category header when restricted to the selected option's category", () => {
+    const component = spectator.query(CategorizedSelectComponent);
+    expect(component.selectedCategory()).toBeNull();
+
+    // selecting an option restricts the categories to its category ...
+    component.onOptionToggled(mockCategories[0].options[0]);
+    spectator.detectChanges();
+
+    // ... so the header must not keep showing the "Alle Optionen" fallback
+    expect(component.selectedCategory()?.title).toBe("Category 1");
   });
 });

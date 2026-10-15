@@ -138,7 +138,9 @@ export abstract class IngridShared extends BaseDoctype {
     label: "Mobilithek-Themen",
     modelPath: this.mobilithekModelPath,
     type: "codelist",
-    isEnabled: (form) => form.get(this.mobilithekModelPath) != undefined,
+    isEnabled: (form) =>
+      this.isMobilithekBehaviourActive() &&
+      form.get(this.mobilithekModelPath) != undefined,
   };
 
   keywordThesauri: Thesaurus[] = [
@@ -885,12 +887,10 @@ export abstract class IngridShared extends BaseDoctype {
                   : item.label;
               },
             }),
-            options.mobilithekTopics &&
-            this.behaviourService
-              .getBehaviour("plugin.ingrid.mobilithek")
-              ?.isActive()
-              ? this.createMobilithekSelect()
-              : null,
+            // The field is always part of the form but only visible while the
+            // corresponding behaviour is active (see createMobilithekSelect).
+            // This way toggling the behaviour does not require a page reload.
+            options.mobilithekTopics ? this.createMobilithekSelect() : null,
             this.addRepeatList("free", "Freie Schlagworte", {
               view: "chip",
               required: this.options.required.freeKeywords,
@@ -935,17 +935,33 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private createMobilithekSelect() {
-    const required = this.behaviourService.getBehaviour(
-      "plugin.ingrid.mobilithek",
-    )?.data?.required;
     return this.addCategorizedSelect("mobilithek", "Mobilithek", {
-      required,
-      className: required ? "" : "optional",
       categories: this.getCodelistForCategorizedSelect("mobilithek"),
       codelistId: "mobilithek",
       showHeader: true,
       restrictToSingleCategory: true,
+      expressions: {
+        // keep the field in sync with the behaviour without requiring a reload
+        hide: () => !this.isMobilithekBehaviourActive(),
+        "props.required": () => this.isMobilithekBehaviourRequired(),
+        className: (field) => (field.props.required ? "" : "optional"),
+      },
     });
+  }
+
+  private isMobilithekBehaviourActive(): boolean {
+    return (
+      this.behaviourService
+        .getBehaviour("plugin.ingrid.mobilithek")
+        ?.isActive() ?? false
+    );
+  }
+
+  private isMobilithekBehaviourRequired(): boolean {
+    const behaviour = this.behaviourService.getBehaviour(
+      "plugin.ingrid.mobilithek",
+    );
+    return this.isMobilithekBehaviourActive() && !!behaviour?.data?.required;
   }
 
   private async analyzeKeywords(fieldConfig: FormlyFieldConfig) {

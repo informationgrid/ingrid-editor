@@ -159,16 +159,35 @@ export class CategorizedSelectComponent
     super();
     // Change the selected category when filtered categories change
     effect(() => {
-      if (this.filteredCategories().length > 0) {
-        untracked(() => {
-          const selectedCategory = this.filteredCategories().find(
-            (cat) => cat.title == this.selectedCategory()?.title,
-          );
-          this.selectedCategory.set(selectedCategory);
-        });
-      } else {
-        untracked(() => this.selectedCategory.set(null));
-      }
+      const filtered = this.filteredCategories();
+      untracked(() => {
+        if (filtered.length === 0) {
+          this.selectedCategory.set(null);
+          return;
+        }
+
+        // keep the currently selected category if it is still available
+        const current = filtered.find(
+          (cat) => cat.title === this.selectedCategory()?.title,
+        );
+        if (current) {
+          this.selectedCategory.set(current);
+          return;
+        }
+
+        // When the categories are restricted to a single one, because an
+        // option has been selected from it, select it automatically.
+        if (
+          this.props.restrictToSingleCategory &&
+          this.selectedOptions().length > 0 &&
+          filtered.length === 1
+        ) {
+          this.selectedCategory.set(filtered[0]);
+          return;
+        }
+
+        this.selectedCategory.set(null);
+      });
     });
   }
 
