@@ -4,7 +4,12 @@
         cdkDragHandle
         class="dialog-title-wrapper flex-row align-items-center gap-12"
     >
-        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <button
+            data-cy="dlg-close"
+            mat-icon-button
+            mat-dialog-close
+            aria-label="Dialog schließen"
+        >
             <mat-icon>close</mat-icon>
         </button>
         <h1 mat-dialog-title>Verantwortung übertragen</h1>
@@ -42,9 +47,12 @@
 
     <!-- dialog action buttons -->
     <mat-dialog-actions>
-        <button mat-flat-button mat-dialog-close>Schließen</button>
+        <button data-cy="cancel" mat-flat-button mat-dialog-close>
+            Schließen
+        </button>
         <div class="flex-1"></div>
         <button
+            data-cy="form-dialog-confirm"
             [disabled]="!selectedUser"
             mat-flat-button
             color="primary"

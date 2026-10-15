@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper error flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        data-cy="dlg-close"
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>Versionskonflikt</h1>
@@ -20,6 +25,7 @@
 <mat-dialog-actions>
     <div class="flex-1"></div>
     <button
+        data-cy="form-dialog-confirm"
         mat-flat-button
         color="primary"
         [disabled]="!choice"

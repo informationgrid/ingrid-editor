@@ -98,6 +98,7 @@
         </th>
         <td mat-cell class="thin-column" *matCellDef="let element">
             <button
+                data-cy="btn-more"
                 mat-icon-button
                 class="menu dark menu-button"
                 matTooltip="Bearbeiten"
@@ -133,7 +134,13 @@
 
 <div class="table-footer">
     @if (canExport() && dataSource.data?.length) {
-        <button mat-flat-button (click)="exportTable()">CSV</button>
+        <button
+            data-cy="btn-export-csv"
+            mat-flat-button
+            (click)="exportTable()"
+        >
+            CSV
+        </button>
     }
     <div class="flex-1"></div>
     @if (tableType() != "simple" || dataSource.data?.length > 10) {

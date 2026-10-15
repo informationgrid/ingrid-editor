@@ -192,6 +192,7 @@
                                         @if (props.allowDuplicate) {
                                             <button
                                                 type="button"
+                                                data-cy="action-duplicate"
                                                 mat-menu-item
                                                 (click)="duplicateRow(rowIndex)"
                                             >
@@ -200,6 +201,7 @@
                                         }
                                         <button
                                             type="button"
+                                            data-cy="action-edit"
                                             mat-menu-item
                                             (click)="editRow(rowIndex)"
                                         >
@@ -207,6 +209,7 @@
                                         </button>
                                         <button
                                             type="button"
+                                            data-cy="action-delete"
                                             mat-menu-item
                                             (click)="removeRow(rowIndex)"
                                         >

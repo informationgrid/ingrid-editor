@@ -55,6 +55,7 @@
                                 </button>
                                 <mat-menu #codelistMenu="matMenu">
                                     <button
+                                        data-cy="action-toggle-favorite"
                                         mat-menu-item
                                         (click)="asFavorite.emit(entry)"
                                     >
@@ -68,6 +69,7 @@
                                     </button>
                                     @if (codelist().isCatalog) {
                                         <button
+                                            data-cy="action-edit"
                                             mat-menu-item
                                             (click)="edit.emit(entry)"
                                         >
@@ -75,6 +77,7 @@
                                         </button>
                                         @if (codelist().default !== entry.id) {
                                             <button
+                                                data-cy="action-set-default"
                                                 mat-menu-item
                                                 (click)="setDefault.emit(entry)"
                                             >
@@ -83,6 +86,7 @@
                                         }
                                         @if (codelist().default === entry.id) {
                                             <button
+                                                data-cy="action-remove-default"
                                                 mat-menu-item
                                                 (click)="setDefault.emit(null)"
                                             >
@@ -91,6 +95,7 @@
                                         }
                                         <mat-divider></mat-divider>
                                         <button
+                                            data-cy="action-delete"
                                             mat-menu-item
                                             (click)="remove.emit(entry)"
                                         >

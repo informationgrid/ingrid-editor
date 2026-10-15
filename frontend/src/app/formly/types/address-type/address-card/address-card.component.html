@@ -63,6 +63,7 @@
 
 <ng-template #menuButton>
     <button
+        data-cy="btn-more"
         mat-icon-button
         type="button"
         class="menu-button"
@@ -78,10 +79,12 @@
                 mat-menu-item
                 (click)="showCopy ? copy.emit() : edit.emit()"
                 [disabled]="disabled()"
+                [attr.data-cy]="showCopy ? 'action-copy' : 'action-edit'"
             >
                 {{ showCopy ? "Kopieren" : "Bearbeiten" }}
             </button>
             <button
+                data-cy="action-jump-to"
                 mat-menu-item
                 (click)="gotoAddress.emit()"
                 [disabled]="address().address.metadata.wrapperId === undefined"
@@ -89,7 +92,12 @@
                 Hinspringen
             </button>
         }
-        <button mat-menu-item (click)="remove.emit()" [disabled]="disabled()">
+        <button
+            data-cy="action-remove"
+            mat-menu-item
+            (click)="remove.emit()"
+            [disabled]="disabled()"
+        >
             Entfernen
         </button>
     </mat-menu>

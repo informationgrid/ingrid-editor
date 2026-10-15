@@ -132,6 +132,7 @@
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                         <mat-menu #menu>
                                             <button
+                                                data-cy="action-edit"
                                                 mat-menu-item
                                                 (click)="
                                                     moreButton.focus();
@@ -141,6 +142,7 @@
                                                 Bearbeiten
                                             </button>
                                             <button
+                                                data-cy="action-remove"
                                                 mat-menu-item
                                                 (click)="
                                                     moreButton.focus();

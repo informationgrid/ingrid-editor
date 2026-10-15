@@ -14,6 +14,7 @@
     <div main-header class="flex-col gap-12 align-items-start">
         @if (expiryFunctionalityActive()) {
             <button
+                data-cy="btn-refresh"
                 mat-flat-button
                 color="primary"
                 (click)="onSearch.emit()"
@@ -23,6 +24,7 @@
                 Aktualisieren
             </button>
             <mat-checkbox
+                data-cy="filter-responsible"
                 [ngModel]="isFiltered()"
                 (click)="toggleFilter()"
                 (keyup.enter)="toggleFilter()"

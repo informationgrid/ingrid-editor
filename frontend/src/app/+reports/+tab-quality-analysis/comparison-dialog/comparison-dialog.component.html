@@ -2,7 +2,7 @@
     <mat-icon>auto_awesome</mat-icon>
     <h2>{{ result().title }}</h2>
     <div class="flex-1"></div>
-    <button matIconButton mat-dialog-close>
+    <button data-cy="dlg-close" matIconButton mat-dialog-close>
         <mat-icon>close</mat-icon>
     </button>
 </div>
@@ -96,10 +96,16 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button matButton mat-dialog-close>Schließen</button>
+    <button data-cy="cancel" matButton mat-dialog-close>Schließen</button>
     <div class="flex-1"></div>
 
     @if (result().totalSuggestionCount) {
-        <button matButton="filled" color="primary">Übernehmen</button>
+        <button
+            data-cy="form-dialog-confirm"
+            matButton="filled"
+            color="primary"
+        >
+            Übernehmen
+        </button>
     }
 </mat-dialog-actions>

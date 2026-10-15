@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, HostBinding, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import {
   MAT_SNACK_BAR_DATA,
@@ -37,6 +37,7 @@ import { SnackBarMessageService } from "./snackbar-message.service";
   template: `
     <span [innerHTML]="service.message()"></span>
     <button
+      data-cy="snackbar-dismiss"
       mat-button
       matSnackBarAction
       (click)="snackBarRef.dismissWithAction()"
@@ -57,6 +58,7 @@ import { SnackBarMessageService } from "./snackbar-message.service";
   ],
 })
 export class UpdatableMatSnackBar {
+  @HostBinding("attr.data-cy") readonly dataCy = "snackbar";
   public service = inject<SnackBarMessageService>(MAT_SNACK_BAR_DATA);
   public snackBarRef = inject(MatSnackBarRef<UpdatableMatSnackBar>);
 }

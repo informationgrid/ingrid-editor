@@ -41,6 +41,7 @@
                     ></formly-field>
                     @if (formControl.enabled) {
                         <button
+                            data-cy="btn-remove"
                             [disabled]="
                                 props.minLength &&
                                 groupedFields[key].length <= props.minLength

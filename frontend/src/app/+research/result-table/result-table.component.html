@@ -63,6 +63,7 @@
             </th>
             <td mat-cell *matCellDef="let element" class="settings">
                 <button
+                    data-cy="btn-more"
                     [disabled]="isLoading()"
                     mat-icon-button
                     class="table-options menu-button"
@@ -75,11 +76,19 @@
                 </button>
                 <mat-menu #moreResult>
                     <button mat-menu-item disabled>Vorschau</button>
-                    <button mat-menu-item (click)="openDataset(element)">
+                    <button
+                        data-cy="action-open"
+                        mat-menu-item
+                        (click)="openDataset(element)"
+                    >
                         Öffnen
                     </button>
                     <button mat-menu-item disabled>Exportieren</button>
-                    <button mat-menu-item (click)="removeDataset(element)">
+                    <button
+                        data-cy="action-delete"
+                        mat-menu-item
+                        (click)="removeDataset(element)"
+                    >
                         Löschen
                     </button>
                 </mat-menu>
