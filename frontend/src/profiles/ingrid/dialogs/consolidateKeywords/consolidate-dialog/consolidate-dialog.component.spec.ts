@@ -53,7 +53,7 @@ import { waitSomeTime } from "../../../utils/time";
 import { vi } from "vitest";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GeneralStore } from "../../../../../app/store/general.store";
-import { CommonFieldsBaw } from "../../../../../profiles/ingrid-baw/doctypes/common-fields";
+import { CommonFieldsBaw } from "../../../../ingrid-baw/doctypes/common-fields";
 
 const mockKeywordThesauri: Thesaurus[] = [
   {
@@ -75,6 +75,14 @@ const mockKeywordThesauri: Thesaurus[] = [
     type: "codelist",
     codelistId: "6100",
     isEnabled: (form) => form.value?.properties?.isInspireIdentified,
+  },
+  {
+    codelistId: "mobilithek",
+    id: "mobilithekTopics",
+    label: "Mobilithek-Themen",
+    modelPath: "keywords.mobilithek",
+    type: "codelist",
+    isEnabled: (form) => form.get("keywords.mobilithek") !== null,
   },
   CommonFieldsBaw.BawKeywordThesaurus,
   FREE_THESAURUS,
@@ -182,6 +190,41 @@ describe("ConsolidateDialogComponent", () => {
     expectKeywordCount("BAW-Schlagworte", 1, "Schlagwort1", "added");
     expectThesaurusNotExists("Gemet-Schlagworte");
     expectThesaurusNotExists("Umthes-Schlagworte");
+  });
+
+  it("should move a free keyword to the Mobilithek thesaurus", async () => {
+    initForm({
+      free: [{ label: "Straßenverkehr" }],
+      mobilithek: [],
+    });
+
+    mockCheckInCodelist({
+      description: "",
+      id: "road",
+      fields: { de: "Straßenverkehr" },
+    });
+    await mockHttp({});
+    await waitSomeTime();
+
+    expectKeywordCount("Freie Schlagworte", 1, "Straßenverkehr", "removed");
+    expectKeywordCount("Mobilithek-Themen", 1, "Straßenverkehr", "added");
+  });
+
+  it("should keep an existing Mobilithek keyword", async () => {
+    initForm({
+      mobilithek: [{ id: "road", label: "Straßenverkehr" }],
+    });
+
+    mockCheckInCodelist({
+      description: "",
+      id: "road",
+      fields: { de: "Straßenverkehr" },
+    });
+    await mockHttp({});
+    await waitSomeTime();
+
+    expectKeywordCount("Mobilithek-Themen", 1, "Straßenverkehr", "unchanged");
+    expectThesaurusNotExists("Freie Schlagworte");
   });
 
   it("should keep a free keyword and add synonym to gemet", async () => {
@@ -325,7 +368,10 @@ describe("ConsolidateDialogComponent", () => {
   }
 
   function initForm(
-    keywords: Keywords & { bawKeywords?: Keyword[] },
+    keywords: Keywords & {
+      bawKeywords?: Keyword[];
+      mobilithek?: Keyword[];
+    },
     themes: {
       key: string;
     }[] = [],
@@ -346,6 +392,12 @@ describe("ConsolidateDialogComponent", () => {
     if (keywords.bawKeywords) {
       (form.get("keywords") as FormGroup).addControl(
         "bawKeywords",
+        new FormArray([]),
+      );
+    }
+    if (keywords.mobilithek) {
+      (form.get("keywords") as FormGroup).addControl(
+        "mobilithek",
         new FormArray([]),
       );
     }
@@ -377,6 +429,17 @@ describe("ConsolidateDialogComponent", () => {
             key: keyword.id,
             value: keyword.label,
             _codelistId: "3950005",
+          }),
+        );
+      });
+    }
+    if (keywords.mobilithek?.length > 0) {
+      keywords.mobilithek.forEach((keyword: Keyword) => {
+        (form.get("keywords.mobilithek") as unknown as FormArray).push(
+          new FormControl({
+            key: keyword.id,
+            value: keyword.label,
+            _codelistId: "mobilithek",
           }),
         );
       });
