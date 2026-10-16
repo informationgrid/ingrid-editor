@@ -61,6 +61,7 @@
         @if (!disableUpload) {
             <button
                 type="button"
+                data-cy="btn-upload-files"
                 mat-stroked-button
                 color="primary"
                 (click)="showUploadFilesDialog()"
@@ -71,6 +72,7 @@
         }
         <button
             type="button"
+            data-cy="btn-add-link"
             mat-stroked-button
             color="primary"
             (click)="showAddLinkDialog()"
