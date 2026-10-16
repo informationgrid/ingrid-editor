@@ -225,7 +225,7 @@ class DatasetsApiController(
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
         val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
         // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
-        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources")))
+        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources"), literatureReferences = options.contains("literatureReferences")))
 
         if (refQuery.isEmpty()) {
             return ResponseEntity.ok(ResearchResponse(0, emptyList()))
