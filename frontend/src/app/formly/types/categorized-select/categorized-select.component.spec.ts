@@ -199,4 +199,24 @@ describe("CategorizedSelectComponent", () => {
     // ... so the header must not keep showing the "Alle Optionen" fallback
     expect(component.selectedCategory()?.title).toBe("Category 1");
   });
+
+  it("should keep the selected category when clicking it while restricted to it", () => {
+    const component = spectator.query(CategorizedSelectComponent);
+    component.onOptionToggled(mockCategories[0].options[0]);
+    spectator.detectChanges();
+    expect(component.selectedCategory()?.title).toBe("Category 1");
+
+    // clicking the already selected category must not fall back to the
+    // "Alle Optionen" view while options are selected
+    component.onSelectedCategoryToggled(mockCategories[0]);
+    spectator.detectChanges();
+    expect(component.selectedCategory()?.title).toBe("Category 1");
+
+    // without selected options the category can be toggled off again
+    component.onOptionRemoved(mockCategories[0].options[0]);
+    spectator.detectChanges();
+    component.onSelectedCategoryToggled(mockCategories[0]);
+    spectator.detectChanges();
+    expect(component.selectedCategory()).toBeNull();
+  });
 });
