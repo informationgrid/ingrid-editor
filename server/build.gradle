@@ -147,7 +147,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.30.0"
 
 //    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
-    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-api:4.0.0'
+    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-ui:4.0.0'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.13'
