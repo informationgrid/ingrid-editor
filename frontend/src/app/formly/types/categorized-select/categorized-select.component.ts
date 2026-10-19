@@ -225,6 +225,13 @@ export class CategorizedSelectComponent
 
   onSelectedCategoryToggled(cat: SelectCategory) {
     const isSame = this.selectedCategory()?.title === cat.title;
+
+    // When options are already selected, the list is restricted to a single
+    // category, so it must not be toggled off into the "Alle Optionen" view.
+    if (isSame && this.isRestrictedToSelectedCategory()) {
+      return;
+    }
+
     this.selectedCategory.set(isSame ? null : cat);
   }
 
@@ -255,11 +262,15 @@ export class CategorizedSelectComponent
     return values.has(option.value);
   }
 
-  private isCategoryAllowed(category: SelectCategory): boolean {
-    const restrictToSingleCategory = this.props.restrictToSingleCategory;
+  private isRestrictedToSelectedCategory(): boolean {
+    const singleCategoryOnly = this.props.restrictToSingleCategory ?? false;
+    const hasSelectedOptions = this.selectedOptions().length > 0;
+    return singleCategoryOnly && hasSelectedOptions;
+  }
 
+  private isCategoryAllowed(category: SelectCategory): boolean {
     // if not restricting to single category, or no selected options, allow all categories
-    if (!restrictToSingleCategory || !this.selectedOptions().length) {
+    if (!this.isRestrictedToSelectedCategory()) {
       return true;
     }
 
