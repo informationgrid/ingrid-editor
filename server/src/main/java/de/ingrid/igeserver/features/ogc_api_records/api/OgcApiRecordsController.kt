@@ -260,7 +260,7 @@ class OgcApiRecordsController(
     )
     fun postDataset(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
-        @RequestHeader("Content-Type") contentType: String,
+        @RequestHeader("Content-Type") rawContentType: String,
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Data of record to be stored\n\nFor records in DRAFT state, the request body must include at least the `_type` field (if using JSON) to identify the record type.", required = true) @RequestBody data: String,
@@ -276,6 +276,8 @@ class OgcApiRecordsController(
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId", "state"))
+        // normalize media type value (formatter/importer matching downstream is case-sensitive)
+        val contentType = rawContentType.substringBefore(';').trim().lowercase()
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val options = ImportOptions(
@@ -305,7 +307,7 @@ class OgcApiRecordsController(
     )
     fun putDataset(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
-        @RequestHeader allHeaders: Map<String, String>,
+        @RequestHeader("Content-Type") rawContentType: String,
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Identifier of record within a collection", required = true) @Valid @PathVariable("recordId") recordId: String,
@@ -321,9 +323,9 @@ class OgcApiRecordsController(
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("state"))
+        // normalize media type value (formatter/importer matching downstream is case-sensitive)
+        val contentType = rawContentType.substringBefore(';').trim().lowercase()
         val profile = catalogService.getProfileFromCatalog(collectionId)
-
-        val contentType = allHeaders["content-type"]!!
 
         val options = ImportOptions(
             publish = state == DocState.PUBLISHED,
@@ -357,7 +359,7 @@ class OgcApiRecordsController(
     )
     fun patchDataset(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
-        @RequestHeader allHeaders: Map<String, String>,
+        @RequestHeader("Content-Type") rawContentType: String,
         principal: Authentication,
         @PathVariable @Parameter(description = "Identifier of collection (catalog identifier)", required = true) collectionId: String,
         @PathVariable @Parameter(description = "Identifier of record within a collection", required = true) @Valid recordId: String,
@@ -376,9 +378,9 @@ class OgcApiRecordsController(
 
         if (state == DocState.PUBLISHED) apiValidationService.validateOnlyPublishedVersionExists(collectionId, recordId)
 
+        // normalize media type value (formatter/importer matching downstream is case-sensitive)
+        val contentType = rawContentType.substringBefore(';').trim().lowercase()
         val profile = catalogService.getProfileFromCatalog(collectionId)
-
-        val contentType = allHeaders["content-type"]!!
 
         val options = ImportOptions(
             publish = state == DocState.PUBLISHED,
