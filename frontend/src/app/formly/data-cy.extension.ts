@@ -89,6 +89,11 @@ export const dataCyExtension: FormlyExtension = {
     if (!value) {
       return;
     }
+    // props may be undefined (e.g. hidden internal fields like the repeat
+    // detail dialog's "_type" input declare no props/templateOptions)
+    if (!field.props) {
+      return;
+    }
     // never override an existing hook (e.g. "input-<key>" from addInput)
     if (field.props.attributes?.["data-cy"] != null) {
       return;

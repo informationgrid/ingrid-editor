@@ -230,6 +230,20 @@ describe("Formly data-cy hooks", () => {
     expect(spectator.query('input[data-cy="input-cd_title"]')).toBeTruthy();
   });
 
+  it("does not crash on a field without props (repeat detail dialog's hidden _type input)", () => {
+    expect(() =>
+      render([
+        {
+          key: "_type",
+          type: "input",
+          className: "hide",
+          defaultValue: "internalDataOrigin",
+        },
+      ]),
+    ).not.toThrow();
+    expect(spectator.query("input[data-cy]")).toBeFalsy();
+  });
+
   it("does not add a hook without key, contextHelpId or externalLabel", () => {
     render([
       {
