@@ -45,10 +45,11 @@ export class DocumentReferenceService {
     this.configuration = configService.getConfiguration();
   }
 
+  // Send the URL as JSON body: a plain text body is rejected by CRS
   analyzeGetRecordUrl(url: string): Observable<GetRecordAnalysis> {
     return this.http.post<GetRecordAnalysis>(
       `${this.configuration.backendUrl}getCapabilities/analyzeGetRecordUrl`,
-      url,
+      { url },
     );
   }
 }
