@@ -142,6 +142,14 @@ export class ConfigService {
 
   private config: Configuration;
 
+  get isRedirectingToLogin(): boolean {
+    return this._isRedirectingToLogin;
+  }
+
+  set isRedirectingToLogin(value: boolean) {
+    this._isRedirectingToLogin = value;
+  }
+
   defaultConfig: Partial<Configuration> = {
     contextPath: "/",
     featureFlags: {},
@@ -157,6 +165,7 @@ export class ConfigService {
   private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
   profileModule: Type<any>;
+  private _isRedirectingToLogin = false;
 
   constructor(
     private http: HttpClient,

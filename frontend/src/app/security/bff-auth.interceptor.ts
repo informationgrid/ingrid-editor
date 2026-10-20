@@ -24,7 +24,7 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from "@angular/common/http";
-import { Observable, throwError } from "rxjs";
+import { NEVER, Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ConfigService } from "../services/config/config.service";
 
@@ -52,6 +52,7 @@ export class BffAuthInterceptor implements HttpInterceptor {
         if (error?.status === 401) {
           if (!this.isRedirecting) {
             this.isRedirecting = true;
+            this.configService.isRedirectingToLogin = true;
             // Directly initiate login via the backend (full-page redirect)
             const contextPath =
               this.configService.getConfiguration()?.contextPath ?? "/";
@@ -66,6 +67,8 @@ export class BffAuthInterceptor implements HttpInterceptor {
               window.location.href = loginUrl;
             }
           }
+          // Suppress error propagation while redirect is pending
+          return NEVER;
         }
         return throwError(() => error);
       }),

@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ErrorHandler, Injectable } from "@angular/core";
+import { ErrorHandler, inject, Injectable } from "@angular/core";
 import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeException } from "./server-validation.util";
 import { TranslocoService } from "@jsverse/transloco";
+import { ConfigService } from "./services/config/config.service";
 
 export interface IgeValidationError {
   errorCode: string;
@@ -34,6 +35,7 @@ export interface IgeValidationError {
   providedIn: "root",
 })
 export class GlobalErrorHandler implements ErrorHandler {
+  private configService = inject(ConfigService);
   constructor(
     private modalService: ModalService,
     private translocoService: TranslocoService,
@@ -41,6 +43,9 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error) {
     console.debug("HANDLE ERROR", error);
+    // prevent showing error modal when redirecting to login page
+    if (this.configService.isRedirectingToLogin) return;
+
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
