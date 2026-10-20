@@ -125,6 +125,9 @@ export class CommonFieldsBaw extends FormFieldHelper {
     }
     field.expressions["props.disabled"] = (f: FormlyFieldConfig) =>
       field?.options?.formState?.disabled || this.isBawAdminLocked(f);
+    field.expressions["props.adminLocked"] = (f: FormlyFieldConfig) =>
+      !field?.options?.formState?.disabled && this.isBawAdminLocked(f);
+    field.props["adminLockTooltipKey"] = "form.adminLockTooltip";
   }
 
   applyBawAdminLocks(fieldConfig: FormlyFieldConfig[]) {

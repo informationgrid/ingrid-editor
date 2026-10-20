@@ -30,6 +30,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { getAriaLabelById } from "../../../directives/aria-label.pipe";
 import { UiStore } from "../../../store/ui.store";
+import { TranslocoService } from "@jsverse/transloco";
 
 @Component({
   selector: "ige-form-label",
@@ -44,10 +45,20 @@ export class FormLabelComponent {
   readonly fieldId = input<string>(undefined);
   readonly hasContextHelp = input(false);
   readonly ariaLabel = input<string>(undefined);
+  readonly fieldProps = input<{ [key: string]: any }>(() => {});
+
+  readonly adminLocked = computed(
+    () => this.fieldProps()?.["adminLocked"] === true,
+  );
+  readonly adminLockTooltip = computed(() => {
+    const key = this.fieldProps()?.["adminLockTooltipKey"];
+    return key ? this.transloco.translate(key) : "";
+  });
 
   readonly contextHelp = output<HTMLElement>();
 
   private uiStore = inject(UiStore);
+  private transloco = inject(TranslocoService);
   readonly alwaysShowContextHelp = this.uiStore.alwaysShowContextHelp;
 
   fieldLabel = computed(() => {

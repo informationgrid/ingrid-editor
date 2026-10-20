@@ -15,6 +15,26 @@
   padding-top: 10px;
 }
 
+.admin-lock-indicator {
+  position: absolute;
+  top: 7px;
+  left: -30px;
+  display: flex;
+  align-items: center;
+  cursor: help;
+
+  mat-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+    color: vars.$ige-primary;
+  }
+
+  ::ng-deep .mat-icon svg path {
+    fill: vars.$ige-secondary;
+  }
+}
+
 :host-context(.preview-dialog) .label-wrapper {
   width: 220px;
 }

@@ -1,1 +1,3 @@
-{}
+{
+  "admin_locked_tooltip": "This field is locked because the document has been published and your account does not have administrative privileges."
+}

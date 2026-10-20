@@ -1,4 +1,5 @@
 {
+  "admin_locked_tooltip": "Dieses Feld ist gesperrt, weil das Dokument bereits veröffentlicht wurde und Sie keine administrativen Berechtigungen haben.",
   "pageTitle": {
     "default": "Editor",
     "favIcon": "assets/icons/favicon.ico",
