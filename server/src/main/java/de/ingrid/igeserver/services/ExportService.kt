@@ -70,122 +70,129 @@ class ExportService(val exporterFactory: ExporterFactory) {
         val docs = options.ids.map { documentService.getDocumentFromCatalog(catalogId, it) }
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
         val isSingleNonFolderDocument = docs.size == 1 && docs[0].wrapper.type != "FOLDER"
+        val withAddressReferences = exporter is InternalExporter && options.addressReferences
 
-        return if (isSingleNonFolderDocument) {
-            val doc = docs[0]
-            val data = handleSingleDataset(options, doc.wrapper, catalogId)
-                ?: run {
-                    val message = if (!options.useDraft) {
-                        "Document was not exported since it might not have a published version: ${doc.wrapper.uuid}"
-                    } else {
-                        "Document could not be exported: ${doc.wrapper.uuid}"
-                    }
-                    throw ServerException.withReason(message, data = mapOf("uuid" to doc.wrapper.uuid))
+        // a dataset can be reached multiple times within one request (e.g. a folder and one of
+        // its children are selected, or several datasets reference the same address), so every
+        // uuid is only exported once
+        val visited = mutableSetOf<String>()
+        val results = docs
+            .flatMap { exportWithSubDocuments(it, options, catalogId, withAddressReferences, visited) }
+            .distinctBy { it.first }
+
+        return when {
+            results.isEmpty() && isSingleNonFolderDocument -> {
+                val doc = docs[0]
+                val message = if (!options.useDraft) {
+                    "Document was not exported since it might not have a published version: ${doc.wrapper.uuid}"
+                } else {
+                    "Document could not be exported: ${doc.wrapper.uuid}"
                 }
-
-            if (exporter is InternalExporter) {
-                return handleInternalExport(options, doc, catalogId, data, exporter)
+                throw ServerException.withReason(message, data = mapOf("uuid" to doc.wrapper.uuid))
             }
 
-            val fileName = "${doc.wrapper.uuid}.${exporter.typeInfo.fileExtension}"
-            val mediaType = MediaType.valueOf(exporter.typeInfo.dataType)
-            ExportResult(data.toByteArray(), fileName, mediaType)
-        } else {
-            val results = docs.flatMap { document ->
-                if (document.wrapper.type == "FOLDER") {
-                    handleWithSubDocuments(document.wrapper, options, catalogId)
-                } else {
-                    handleSingleDataset(options, document.wrapper, catalogId)
-                        ?.let { prepareDataForMultiExport(exporter, options, document, catalogId, it) }
-                        ?: emptyList()
-                }
-            }.toSet().toList() // remove duplicates
+            // keep the single-file response when the export consists of a single dataset
+            // and address references are not requested
+            results.size == 1 && !withAddressReferences -> {
+                val (uuid, data) = results[0]
+                ExportResult(
+                    data.toByteArray(),
+                    "$uuid.${exporter.typeInfo.fileExtension}",
+                    MediaType.valueOf(exporter.typeInfo.dataType),
+                )
+            }
 
-            ExportResult(
-                zipToFile(results, exporter.typeInfo.fileExtension),
-                "export.zip",
-                MediaType.valueOf("application/zip"),
-            )
+            else ->
+                ExportResult(
+                    zipToFile(results, exporter.typeInfo.fileExtension),
+                    "export.zip",
+                    MediaType.valueOf("application/zip"),
+                )
         }
     }
 
-    private fun prepareDataForMultiExport(
-        exporter: IgeExporter,
-        options: ExportRequestParameter,
+    /**
+     * Exports the given dataset including all of its sub-documents recursively.
+     * Folders have no exportable content themselves, but every other dataset can also
+     * have children, depending on the behavior set for the document type.
+     * Address references are additionally exported for the internal format, if requested.
+     * Each dataset is exported at most once per request, tracked by [visited].
+     */
+    private fun exportWithSubDocuments(
         document: DocumentData,
-        catalogId: String,
-        it: String,
-    ) = if (exporter is InternalExporter) {
-        if (options.addressReferences) {
-            val refData = getReferencedExportedDatasets(document, catalogId, options)
-            refData + Pair(document.wrapper.uuid, it)
-        } else {
-            listOf(Pair(document.wrapper.uuid, it))
-        }
-    } else {
-        listOf(Pair(document.wrapper.uuid, it))
-    }
-
-    private fun handleInternalExport(
         options: ExportRequestParameter,
-        doc: DocumentData,
         catalogId: String,
-        data: String,
-        exporter: IgeExporter,
-    ) = if (options.addressReferences) {
-        val refData = getReferencedExportedDatasets(doc, catalogId, options)
-        ExportResult(
-            zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
-            "export.zip",
-            MediaType.valueOf("application/zip"),
-        )
-    } else {
-        ExportResult(
-            data.toByteArray(),
-            doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
-            MediaType.valueOf(exporter.typeInfo.dataType),
-        )
-    }
-
-    private fun getReferencedExportedDatasets(
-        document: DocumentData,
-        catalogId: String,
-        options: ExportRequestParameter,
+        withAddressReferences: Boolean,
+        visited: MutableSet<String>,
     ): List<Pair<String, String>> {
-        val referencedUuids = documentService.getReferencedUuids(document.document)
-        val refData = referencedUuids.flatMap {
-            val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
-            handleSingleDataset(options, ref, catalogId)?.let {
-                listOf(Pair(ref.uuid, it))
-            } ?: emptyList()
-        }.toSet().toList()
-        return refData
+        if (!visited.add(document.wrapper.uuid)) return emptyList()
+
+        val children = documentService.findChildren(catalogId, document.wrapper.id).hits
+            .flatMap { exportWithSubDocuments(it, options, catalogId, withAddressReferences, visited) }
+
+        // folders have no exportable content themselves
+        if (document.wrapper.type == "FOLDER") return children
+
+        val exported = handleSingleDataset(options, document.wrapper, catalogId, withAddressReferences)
+            ?: return children
+        return if (withAddressReferences) {
+            children + getReferencedExportedDatasets(exported.referencedUuids, options, catalogId, visited) +
+                Pair(exported.uuid, exported.data)
+        } else {
+            children + Pair(exported.uuid, exported.data)
+        }
     }
+
+    /**
+     * Exports the datasets referenced by the given UUIDs (e.g. addresses of the internal format).
+     * A missing reference (e.g. deleted address) aborts the export, while a reference without
+     * a published version is skipped when drafts are not exported.
+     */
+    private fun getReferencedExportedDatasets(
+        referencedUuids: Set<String>,
+        options: ExportRequestParameter,
+        catalogId: String,
+        visited: MutableSet<String>,
+    ): List<Pair<String, String>> = referencedUuids
+        .mapNotNull { uuid ->
+            if (!visited.add(uuid)) return@mapNotNull null
+            val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+            handleSingleDataset(options, ref, catalogId, withReferences = false)?.let {
+                Pair(ref.uuid, it.data)
+            } ?: run {
+                log.debug("Referenced dataset '$uuid' has no published version and is skipped in export")
+                null
+            }
+        }
 
     private fun zipToFile(result: List<Pair<String, String>>, fileExtension: String): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
         ZipOutputStream(BufferedOutputStream(byteArrayOutputStream)).use { outZip ->
-            result
-                .associateBy { it.first }.values
-                .forEach { item ->
-                    item.second.byteInputStream().use { fi ->
-                        BufferedInputStream(fi).use { origin ->
-                            val entry = ZipEntry("${item.first}.$fileExtension")
-                            outZip.putNextEntry(entry)
-                            origin.copyTo(outZip, 1024)
-                        }
+            result.forEach { item ->
+                item.second.byteInputStream().use { fi ->
+                    BufferedInputStream(fi).use { origin ->
+                        val entry = ZipEntry("${item.first}.$fileExtension")
+                        outZip.putNextEntry(entry)
+                        origin.copyTo(outZip, 1024)
                     }
                 }
+            }
         }
 
         return byteArrayOutputStream.toByteArray()
     }
 
+    /**
+     * Exports a single dataset in the requested format. When [withReferences] is set, the UUIDs
+     * referenced by the exported version are extracted as well, so they always match the
+     * exported content (published or draft).
+     */
     private fun handleSingleDataset(
         options: ExportRequestParameter,
         doc: DocumentWrapper,
         catalogId: String,
-    ): String? {
+        withReferences: Boolean,
+    ): ExportedDataset? {
         val docVersion =
             if (!options.useDraft) {
                 try {
@@ -202,7 +209,9 @@ class ExportService(val exporterFactory: ExporterFactory) {
             }
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
         val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft, null, doc.tags))
-        return if (result is ObjectNode) result.toPrettyString() else result as String
+        val data = if (result is ObjectNode) result.toPrettyString() else result as String
+        val referencedUuids = if (withReferences) documentService.getReferencedUuids(docVersion) else emptySet()
+        return ExportedDataset(docVersion.uuid, data, referencedUuids)
     }
 
     private fun getPublishedVersion(
@@ -219,23 +228,6 @@ class ExportService(val exporterFactory: ExporterFactory) {
         throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
-    private fun handleWithSubDocuments(
-        doc: DocumentWrapper,
-        options: ExportRequestParameter,
-        catalogId: String,
-    ): List<Pair<String, String>> {
-        val isFolder = doc.type == "FOLDER"
-        val result = if (isFolder) null else handleSingleDataset(options, doc, catalogId)
-
-        val children = documentService.findChildren(catalogId, doc.id)
-        val resultList = children.hits.flatMap { handleWithSubDocuments(it.wrapper, options, catalogId) }
-        return if (result == null) {
-            resultList
-        } else {
-            resultList + Pair(doc.uuid, result)
-        }
-    }
-
     fun getNumExportedDatasets(ids: List<Int>): Int {
         val allIds = ids.flatMap {
             documentService.getAllDescendantIds("", it) + it
@@ -244,3 +236,9 @@ class ExportService(val exporterFactory: ExporterFactory) {
         return documentService.docWrapperRepo.findNonFolderWrapperByIds(allIds.map { it }).size
     }
 }
+
+/**
+ * The result of exporting a single dataset: the exported content plus the UUIDs referenced
+ * by exactly the version that was exported (published or draft).
+ */
+data class ExportedDataset(val uuid: String, val data: String, val referencedUuids: Set<String>)
