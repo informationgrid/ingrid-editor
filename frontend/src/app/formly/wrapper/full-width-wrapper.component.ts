@@ -22,6 +22,7 @@ import {
   Component,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
@@ -33,6 +34,7 @@ import { FormLabelComponent } from "./form-label/form-label.component";
   selector: "ige-full-width-wrapper",
   templateUrl: "./full-width-wrapper.component.html",
   styleUrls: ["./full-width-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormLabelComponent],
 })
 export class FullWidthWrapperComponent

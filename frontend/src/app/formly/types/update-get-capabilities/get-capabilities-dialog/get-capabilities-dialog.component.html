@@ -208,8 +208,16 @@
                 @if (report()?.timeSpan) {
                     <mat-list-option value="timeSpan">
                         <div matListItemTitle>Zeitspannen</div>
-                        Von: {{ report()?.timeSpan.from | date }} bis:
-                        {{ report()?.timeSpan.to | date }}
+                        Von:
+                        {{
+                            $safeNavigationMigration(report()?.timeSpan.from)
+                                | date
+                        }}
+                        bis:
+                        {{
+                            $safeNavigationMigration(report()?.timeSpan.to)
+                                | date
+                        }}
                     </mat-list-option>
                 }
                 @if (report()?.conformities.length > 0) {

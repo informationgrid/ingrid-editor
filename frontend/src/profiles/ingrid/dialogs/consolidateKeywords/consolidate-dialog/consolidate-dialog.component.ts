@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -71,6 +78,7 @@ export interface ThesaurusTypeInfo extends Array<any[] | ThesaurusResult[]> {
   selector: "consolidate-keywords-dialog",
   templateUrl: "./consolidate-dialog.component.html",
   styleUrls: ["./consolidate-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogModule,
     MatButtonModule,

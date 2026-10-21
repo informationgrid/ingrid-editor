@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { GetCapabilitiesDialogComponent } from "./get-capabilities-dialog/get-capabilities-dialog.component";
@@ -32,6 +32,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-update-get-capabilities",
   templateUrl: "./update-get-capabilities.component.html",
   styleUrls: ["./update-get-capabilities.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatButton],
 })
 export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {

@@ -24,6 +24,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FormGroup,
@@ -61,6 +62,7 @@ import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
   styleUrls: ["./tab-search.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

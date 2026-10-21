@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField, MatHint, MatLabel } from "@angular/material/form-field";
@@ -27,6 +27,7 @@ import { MatInput } from "@angular/material/input";
   selector: "general-settings",
   templateUrl: "./general-settings.component.html",
   styleUrls: ["./general-settings.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     MatCheckbox,

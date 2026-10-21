@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit, input } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import {
@@ -46,6 +53,7 @@ import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
   selector: "permission-add-dialog",
   templateUrl: "./permission-add-dialog.component.html",
   styleUrls: ["./permission-add-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

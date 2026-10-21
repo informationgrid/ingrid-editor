@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, input, output } from "@angular/core";
+import {
+  Component,
+  Input,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { LogResult } from "../../+catalog/indexing/index.service";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -29,6 +35,7 @@ import { DatePipe } from "@angular/common";
   selector: "ige-job-handler-header",
   templateUrl: "./job-handler-header.component.html",
   styleUrls: ["./job-handler-header.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIcon, MatTooltip, MatProgressSpinner, MatIconButton, DatePipe],
 })
 export class JobHandlerHeaderComponent {

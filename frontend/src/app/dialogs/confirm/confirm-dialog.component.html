@@ -14,7 +14,11 @@
 
 <mat-dialog-content>
     @if (!data.preformatted) {
-        <p [innerHTML]="data.message?.replace('\n', '<br />')"></p>
+        <p
+            [innerHTML]="
+                $safeNavigationMigration(data.message?.replace('\n', '<br />'))
+            "
+        ></p>
     }
     @if (data.preformatted) {
         <pre>{{ data.message }}</pre>

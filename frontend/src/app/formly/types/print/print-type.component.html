@@ -64,7 +64,7 @@
         @case ("unit-inputPrint") {
             {{ formControl.value?.[$any(field.fieldGroup[0].key)] }}
             {{
-                formControl.value?.unit?.key
+                $safeNavigationMigration(formControl.value?.unit?.key)
                     | codelist: field.props.codelistId
                     | async
             }}

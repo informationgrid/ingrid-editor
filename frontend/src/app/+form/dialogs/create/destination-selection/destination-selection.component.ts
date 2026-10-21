@@ -17,7 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, input, Input, OnInit, output } from "@angular/core";
+import {
+  Component,
+  inject,
+  input,
+  Input,
+  OnInit,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -32,6 +40,7 @@ import { DocumentTreeStore } from "../../../../store/tree/document-tree.store";
   selector: "ige-destination-selection",
   templateUrl: "./destination-selection.component.html",
   styleUrls: ["./destination-selection.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [TreeComponent, DocumentListItemComponent],
 })
 export class DestinationSelectionComponent implements OnInit {

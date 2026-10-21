@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -42,6 +49,7 @@ import { EvaluationResult } from "../../../services/ai/ai.service";
   selector: "ige-comparison-dialog",
   templateUrl: "./comparison-dialog.component.html",
   styleUrls: ["./comparison-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogTitle,
     MatDialogContent,

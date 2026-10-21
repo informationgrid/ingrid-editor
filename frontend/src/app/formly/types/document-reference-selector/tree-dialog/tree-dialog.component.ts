@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -54,6 +59,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./tree-dialog.component.html",
   styleUrl: "./tree-dialog.component.scss",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class TreeDialogComponent {

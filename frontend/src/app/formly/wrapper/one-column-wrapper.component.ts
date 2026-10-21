@@ -22,6 +22,7 @@ import {
   Component,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FieldTypeConfig,
@@ -45,6 +46,7 @@ interface OneColumnWrapperProps extends FormlyFieldProps {
   selector: "ige-one-column-wrapper",
   templateUrl: "./one-column-wrapper.component.html",
   styleUrls: ["./one-column-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormLabelComponent],
 })
 export class OneColumnWrapperComponent

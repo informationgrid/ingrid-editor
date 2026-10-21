@@ -24,7 +24,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { UntypedFormGroup } from "@angular/forms";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
@@ -34,6 +34,7 @@ import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 
 @Component({
   templateUrl: "lfs-selector-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogActions,
     MatButton,

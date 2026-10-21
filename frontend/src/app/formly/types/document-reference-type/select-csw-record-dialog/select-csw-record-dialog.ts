@@ -24,6 +24,7 @@ import {
   Inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FormControl,
@@ -66,6 +67,7 @@ export interface SelectCswRecordData {
   selector: "ige-select-csw-record-dialog",
   templateUrl: "./select-csw-record-dialog.html",
   styleUrls: ["./select-csw-record-dialog.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DialogTemplateComponent,
     MatFormField,

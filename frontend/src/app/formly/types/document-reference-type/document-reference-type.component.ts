@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -73,6 +80,7 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
   selector: "ige-document-reference-type",
   templateUrl: "./document-reference-type.component.html",
   styleUrls: ["./document-reference-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     MatIcon,

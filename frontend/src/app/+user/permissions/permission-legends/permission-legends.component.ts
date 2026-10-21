@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 
 interface Legend {
@@ -30,6 +35,7 @@ interface Legend {
   selector: "permission-legends",
   templateUrl: "./permission-legends.component.html",
   styleUrls: ["./permission-legends.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIconModule],
 })
 export class PermissionLegendsComponent implements OnInit {

@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatRadioModule } from "@angular/material/radio";
 
 import { MatDividerModule } from "@angular/material/divider";
@@ -32,6 +38,7 @@ export interface Option {
   selector: "ige-option-list",
   templateUrl: "./option-list.component.html",
   styleUrls: ["./option-list.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {

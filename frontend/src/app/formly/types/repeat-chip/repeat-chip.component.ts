@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -74,6 +80,7 @@ import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
   styleUrls: ["./repeat-chip.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     MatChipListbox,

@@ -25,6 +25,7 @@ import {
   OnInit,
   Signal,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
@@ -56,6 +57,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,

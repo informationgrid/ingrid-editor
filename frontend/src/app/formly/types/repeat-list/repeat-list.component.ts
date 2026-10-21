@@ -25,6 +25,7 @@ import {
   signal,
   TemplateRef,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FieldTypeConfig,
@@ -158,6 +159,7 @@ type PaginationState = { page: number; totalPages: number; isLoading: boolean };
   selector: "ige-repeat-list",
   templateUrl: "./repeat-list.component.html",
   styleUrls: ["./repeat-list.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     MatChipListbox,

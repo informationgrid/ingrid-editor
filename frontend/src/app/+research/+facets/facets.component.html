@@ -68,23 +68,27 @@
                                 <p>
                                     L1:
                                     {{
-                                        location()?.value?.lat1
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lat1
+                                        ) | number: ".6" : "en-US"
                                     }}° B1:
                                     {{
-                                        location()?.value?.lon1
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lon1
+                                        ) | number: ".6" : "en-US"
                                     }}°
                                 </p>
                                 <p>
                                     L2:
                                     {{
-                                        location()?.value?.lat2
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lat2
+                                        ) | number: ".6" : "en-US"
                                     }}° B2:
                                     {{
-                                        location()?.value?.lon2
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lon2
+                                        ) | number: ".6" : "en-US"
                                     }}°
                                 </p>
                             </div>

@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, viewChild } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -40,6 +45,7 @@ import { MatIconButton } from "@angular/material/button";
   selector: "zabbix-report",
   templateUrl: "./zabbix-report.component.html",
   styleUrls: ["./zabbix-report.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DatePipe,
     MatMenuModule,

@@ -27,6 +27,7 @@ import {
   OnInit,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
@@ -76,6 +77,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-general-report",
   templateUrl: "./general-report.component.html",
   styleUrls: ["./general-report.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     PageTemplateNoHeaderComponent,

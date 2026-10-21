@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Input, input } from "@angular/core";
+import {
+  Component,
+  inject,
+  Input,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { IgeDocument } from "../../../../models/ige-document";
 import { FormStateService } from "../../../form-state.service";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -32,6 +38,7 @@ import { UiStore } from "../../../../store/ui.store";
   selector: "ige-quick-navbar",
   templateUrl: "./quick-navbar.component.html",
   styleUrls: ["./quick-navbar.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DocumentIconComponent,
     HeaderNavigationComponent,

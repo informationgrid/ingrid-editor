@@ -47,6 +47,7 @@ import { FormlyForm } from "@ngx-formly/core";
   selector: "ige-ibus-management",
   templateUrl: "./connection-management.component.html",
   styleUrls: ["./connection-management.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButton,
     ConnectionStateComponent,

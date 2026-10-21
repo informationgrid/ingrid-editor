@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
@@ -25,6 +32,7 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-action-button",
   templateUrl: "./action-button.component.html",
   styleUrls: ["./action-button.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatButton, MatIcon],
 })
 export class ActionButtonComponent implements OnInit {

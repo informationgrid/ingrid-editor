@@ -17,11 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
   selector: "page-template",
   templateUrl: "./page-template.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./page-template.component.scss"],
 })
 export class PageTemplateComponent implements OnInit {

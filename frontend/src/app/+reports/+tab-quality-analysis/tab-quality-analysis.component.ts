@@ -23,6 +23,7 @@ import {
   OnInit,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
@@ -59,6 +60,7 @@ import { TranslocoDirective } from "@jsverse/transloco";
   selector: "ige-tab-quality-analysis",
   templateUrl: "./tab-quality-analysis.component.html",
   styleUrls: ["./tab-quality-analysis.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     MatButton,

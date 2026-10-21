@@ -78,7 +78,7 @@
     @if (dataSource.data?.length > 0) {
         <div main-content class="flex-col">
             <ige-result-table-header
-                [totalHits]="dataSource.data?.length"
+                [totalHits]="$safeNavigationMigration(dataSource.data?.length)"
                 (download)="downloadTable()"
             />
             <mat-divider aria-hidden="true"></mat-divider>

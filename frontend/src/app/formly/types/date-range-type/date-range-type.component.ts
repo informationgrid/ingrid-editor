@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import {
@@ -57,6 +63,7 @@ interface DateRangeProps extends FormlyFieldProps {
   selector: "ige-date-range-type",
   templateUrl: "./date-range-type.component.html",
   styleUrls: ["./date-range-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatFormField,
     MatLabel,

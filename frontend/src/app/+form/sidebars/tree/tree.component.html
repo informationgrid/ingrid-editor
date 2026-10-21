@@ -10,11 +10,17 @@
             [showMultiSelectButton]="hasData() && showMultiSelectButton()"
             [showSearch]="hasData()"
             [emptySearchResults]="emptySearchResults()"
-            [checkToggleAll]="selection?.allNodesSelected()"
-            [indeterminateToggleAll]="
-                selection?.atLeastOneButNotAllNodesSelected()
+            [checkToggleAll]="
+                $safeNavigationMigration(selection?.allNodesSelected())
             "
-            [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled()"
+            [indeterminateToggleAll]="
+                $safeNavigationMigration(
+                    selection?.atLeastOneButNotAllNodesSelected()
+                )
+            "
+            [multiSelectionModeEnabled]="
+                $safeNavigationMigration(selection?.multiSelectionModeEnabled())
+            "
             (toggleAllSelection)="selection?.toggleAllSelection($event)"
             (toggleWriteAccess)="toggleWriteAccess($event)"
             (edit)="toggleSelectionMode($event)"

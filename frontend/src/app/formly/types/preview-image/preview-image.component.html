@@ -8,14 +8,23 @@
         @for (field of field.fieldGroup; track field; let i = $index) {
             <mat-card
                 cdkDrag
-                (mousedown)="prepareForDrag(model[i]?.fileName, i)"
+                (mousedown)="
+                    prepareForDrag(
+                        $safeNavigationMigration(model[i]?.fileName),
+                        i
+                    )
+                "
             >
                 <!-- when switching between same datasets, the model might not be initialized for a short time -->
                 @if (model) {
                     <div class="content">
                         <img
                             [src]="imageLinks()[model[i]?.fileName?.uri]"
-                            [alt]="model[i]?.fileName?.uri"
+                            [alt]="
+                                $safeNavigationMigration(
+                                    model[i]?.fileName?.uri
+                                )
+                            "
                             [class]="'preview-image-' + i"
                         />
                         @if (!formControl.disabled) {

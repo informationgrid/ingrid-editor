@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { BehaviorSubject } from "rxjs";
@@ -31,6 +37,7 @@ import { CodelistPipe } from "../../../directives/codelist.pipe";
   selector: "ige-print-type",
   templateUrl: "./print-type.component.html",
   styleUrls: ["./print-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DatePipe, AsyncPipe, CodelistPipe],
 })
 export class PrintTypeComponent

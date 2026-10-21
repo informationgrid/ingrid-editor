@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -51,6 +57,7 @@ export interface PermissionDialogData {
   selector: "ige-access-dialog",
   templateUrl: "./permissions-dialog.component.html",
   styleUrls: ["./permissions-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     UserTableComponent,
     CdkDrag,

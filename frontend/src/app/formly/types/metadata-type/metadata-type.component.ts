@@ -24,6 +24,7 @@ import {
   OnDestroy,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
@@ -107,6 +108,7 @@ export interface MetadataOptionItem {
     NgTemplateOutlet,
   ],
   templateUrl: "./metadata-type.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./metadata-type.component.scss",
 })
 export class MetadataTypeComponent

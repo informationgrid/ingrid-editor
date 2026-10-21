@@ -25,7 +25,12 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { Component, Inject, Signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  Signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { IgeError } from "../../models/ige-error";
 import { ConfigService } from "../../services/config/config.service";
 import { MatIcon } from "@angular/material/icon";
@@ -38,6 +43,7 @@ import { MatAnchor, MatButton, MatIconButton } from "@angular/material/button";
   selector: "error-dialog",
   templateUrl: "error-dialog.component.html",
   styleUrls: ["error-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIcon,
     MatDialogContent,

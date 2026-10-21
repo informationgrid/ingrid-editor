@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FieldArrayType,
   FieldGroupTypeConfig,
@@ -61,6 +68,7 @@ export interface RepeatProps extends FormlyFieldProps {
   selector: "ige-repeat",
   templateUrl: "./repeat.component.html",
   styleUrls: ["./repeat.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     CdkDropList,

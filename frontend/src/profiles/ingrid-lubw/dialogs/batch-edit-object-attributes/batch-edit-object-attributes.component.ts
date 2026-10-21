@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
@@ -40,6 +40,7 @@ import { MatDialogRef } from "@angular/material/dialog";
     ReactiveFormsModule,
   ],
   templateUrl: "./batch-edit-object-attributes.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./batch-edit-object-attributes.component.scss",
 })
 export class BatchEditObjectAttributesComponent {

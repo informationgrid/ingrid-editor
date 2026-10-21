@@ -24,6 +24,7 @@ import {
   OnInit,
   output,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
@@ -45,6 +46,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-quick-search",
   templateUrl: "./quick-search.component.html",
   styleUrls: ["./quick-search.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     SearchInputComponent,
     MatAutocomplete,

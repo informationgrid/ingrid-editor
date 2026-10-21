@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, OnInit, output } from "@angular/core";
+import {
+  Component,
+  input,
+  OnInit,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FreeEntry } from "../../../store/codelist/codelist.model";
 import { MatDivider, MatList, MatListItem } from "@angular/material/list";
@@ -29,6 +35,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
   selector: "ige-free-entry-list",
   templateUrl: "./free-entry-list.component.html",
   styleUrls: ["./free-entry-list.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ReactiveFormsModule,
     MatList,

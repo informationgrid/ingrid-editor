@@ -24,6 +24,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
@@ -51,6 +52,7 @@ import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DialogTemplateComponent,
     ReactiveFormsModule,

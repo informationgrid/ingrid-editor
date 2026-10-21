@@ -22,7 +22,13 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { Component, effect, Inject, signal } from "@angular/core";
+import {
+  Component,
+  effect,
+  Inject,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { FormlyForm, FormlyFormOptions } from "@ngx-formly/core";
 import { MatIconModule } from "@angular/material/icon";
@@ -45,6 +51,7 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogModule,
     MatIconModule,

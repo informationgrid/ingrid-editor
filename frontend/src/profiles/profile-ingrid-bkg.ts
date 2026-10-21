@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
+import {
+  Component,
+  inject,
+  NgModule,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { FormFieldHelper } from "./form-field-helper";
@@ -29,6 +34,7 @@ import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridBkgComponent extends InGridComponent {

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { AlgorithmDoctypeHMDK } from "./ingrid-hmdk/doctypes/algorithm.doctype";
 import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
@@ -35,6 +35,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridHMDKComponent extends InGridComponent {

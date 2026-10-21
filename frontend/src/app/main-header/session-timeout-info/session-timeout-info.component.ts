@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, input, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -30,6 +36,7 @@ import { SessionTimeoutInterceptor } from "../../services/session-timeout.interc
   selector: "ige-session-timeout-info",
   templateUrl: "./session-timeout-info.component.html",
   styleUrls: ["./session-timeout-info.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     A11yModule,
     MatButtonModule,

@@ -4,7 +4,7 @@
     formControl.errors &&
     !formControl.hasError("required")
 ) {
-    <ige-form-error [ariaLabel]="props?.ariaLabel">
+    <ige-form-error [ariaLabel]="$safeNavigationMigration(props?.ariaLabel)">
         <formly-validation-message [field]="field"></formly-validation-message>
     </ige-form-error>
 }

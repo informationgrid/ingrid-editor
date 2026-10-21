@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -71,6 +78,7 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   selector: "ige-repeat-distribution-detail-list",
   templateUrl: "./repeat-distribution-detail-list.component.html",
   styleUrls: ["./repeat-distribution-detail-list.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     AsyncPipe,
     CdkDrag,

@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
 import { UntypedFormGroup } from "@angular/forms";
@@ -54,6 +59,7 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
   styleUrls: ["./messages-management.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     AddButtonComponent,

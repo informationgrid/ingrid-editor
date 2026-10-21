@@ -24,6 +24,7 @@ import {
   inject,
   Inject,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -54,6 +55,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 @Component({
   templateUrl: "./iso-view.component.html",
   styleUrls: ["./iso-view.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogModule,
     MatIconModule,

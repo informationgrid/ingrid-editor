@@ -26,6 +26,7 @@ import {
   OnInit,
   signal,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer, Title } from "@angular/platform-browser";
@@ -56,6 +57,7 @@ import { SessionTimeoutInterceptor } from "./services/session-timeout.intercepto
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDrawerContainer,
     SideMenuComponent,

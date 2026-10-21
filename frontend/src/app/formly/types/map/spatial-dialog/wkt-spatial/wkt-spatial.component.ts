@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -35,6 +42,7 @@ import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-er
   selector: "ige-wkt-spatial",
   templateUrl: "./wkt-spatial.component.html",
   styleUrls: ["./wkt-spatial.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     MatFormField,

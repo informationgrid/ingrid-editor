@@ -25,6 +25,7 @@ import {
   input,
   OnInit,
   output,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { debounceTime, delay, filter } from "rxjs/operators";
@@ -43,6 +44,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-behaviour-item",
   templateUrl: "./behaviour-item.component.html",
   styleUrls: ["./behaviour-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatCard,
     MatCardHeader,

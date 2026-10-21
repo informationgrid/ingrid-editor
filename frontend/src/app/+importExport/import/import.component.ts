@@ -24,6 +24,7 @@ import {
   OnInit,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   AbstractControl,
@@ -76,6 +77,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-import",
   templateUrl: "./import.component.html",
   styleUrls: ["./import.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     JobHandlerHeaderComponent,

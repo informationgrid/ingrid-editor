@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, signal } from "@angular/core";
+import {
+  Component,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { JsonNodeComponent } from "./json-node/json-node.component";
 import { JsonPipe } from "@angular/common";
 import { MatButton } from "@angular/material/button";
@@ -26,6 +31,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-json-view",
   imports: [JsonNodeComponent, JsonPipe, MatButton],
   templateUrl: "./json-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./json-view.component.scss",
 })
 export class JsonViewComponent {

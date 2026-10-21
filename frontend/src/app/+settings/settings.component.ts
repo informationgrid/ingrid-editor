@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ActivatedRoute,
   RouterLink,
@@ -34,6 +39,7 @@ import { ConfigService } from "../services/config/config.service";
   selector: "settings",
   templateUrl: "./settings.component.html",
   styleUrls: ["./settings.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTabNav,
     MatTabLink,

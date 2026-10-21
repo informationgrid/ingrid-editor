@@ -17,13 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 import { OpenDataComponent } from "./profile-opendata";
 
 @Component({
   template: "bmi",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgxFlowModule],
 })
 class BmiComponent extends OpenDataComponent {

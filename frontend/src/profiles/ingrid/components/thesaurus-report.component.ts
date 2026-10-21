@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_SNACK_BAR_DATA,
   MatSnackBarAction,
@@ -54,6 +59,7 @@ import { MatButton } from "@angular/material/button";
       </span>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction],
 })
 export class ThesaurusReportComponent implements OnInit {

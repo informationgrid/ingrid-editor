@@ -168,7 +168,9 @@
                                         Format:
                                         @if (item.format?.key) {
                                             {{
-                                                item.format?.key
+                                                $safeNavigationMigration(
+                                                    item.format?.key
+                                                )
                                                     | codelist
                                                         : props.codelistIdForFileReferenceFormats
                                                     | async
@@ -210,11 +212,17 @@
                                 @if (item.license?.key) {
                                     <a
                                         class="url no-text-transform icon-in-table"
-                                        [href]="item.license?.key"
+                                        [href]="
+                                            $safeNavigationMigration(
+                                                item.license?.key
+                                            )
+                                        "
                                         target="_blank"
                                     >
                                         {{
-                                            item.license?.key
+                                            $safeNavigationMigration(
+                                                item.license?.key
+                                            )
                                                 | codelist: "20004"
                                                 | async
                                         }}
@@ -228,7 +236,9 @@
                             @if (item.availability?.key) {
                                 <div>
                                     {{
-                                        item.availability?.key
+                                        $safeNavigationMigration(
+                                            item.availability?.key
+                                        )
                                             | codelist: "20005"
                                             | async
                                     }}

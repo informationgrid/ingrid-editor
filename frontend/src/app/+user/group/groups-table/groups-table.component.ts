@@ -27,6 +27,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {
@@ -62,6 +63,7 @@ import { MatButton } from "@angular/material/button";
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
   styleUrls: ["../../table.styles.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTable,
     MatSort,

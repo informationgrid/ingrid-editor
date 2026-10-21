@@ -26,6 +26,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FrontendUser,
@@ -61,6 +62,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
   selector: "user-table",
   templateUrl: "./user-table.component.html",
   styleUrls: ["../../table.styles.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTableModule,
     MatIconModule,

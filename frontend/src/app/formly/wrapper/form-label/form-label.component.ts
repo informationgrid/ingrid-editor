@@ -24,6 +24,7 @@ import {
   inject,
   input,
   output,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
@@ -36,6 +37,7 @@ import { UiStore } from "../../../store/ui.store";
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
   imports: [MatIconModule, MatTooltipModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     "[class.always-show-context-help]": "alwaysShowContextHelp()",
   },

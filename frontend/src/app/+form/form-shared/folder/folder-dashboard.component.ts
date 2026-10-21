@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, effect, inject, input, signal } from "@angular/core";
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
@@ -36,6 +43,7 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",
   styleUrls: ["./folder-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     ActionButtonComponent,

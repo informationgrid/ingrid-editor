@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -42,6 +42,7 @@ export interface ButtonToggle {
   selector: "ige-button-toggles-type",
   imports: [ReactiveFormsModule, MatButtonToggleGroup, MatButtonToggle],
   templateUrl: "./button-toggles-type.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./button-toggles-type.component.scss",
 })
 export class ButtonTogglesTypeComponent

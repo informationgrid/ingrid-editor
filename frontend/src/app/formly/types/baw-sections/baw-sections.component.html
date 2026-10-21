@@ -29,7 +29,11 @@
                         mat-menu-item
                         type="button"
                         (click)="removeSection(i)"
-                        [disabled]="currentField.form?.disabled"
+                        [disabled]="
+                            $safeNavigationMigration(
+                                currentField.form?.disabled
+                            )
+                        "
                     >
                         Löschen
                     </button>

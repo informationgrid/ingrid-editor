@@ -24,6 +24,7 @@ import {
   input,
   signal,
   untracked,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { AiService, EvaluationResult } from "../../../services/ai/ai.service";
 import {
@@ -41,6 +42,7 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-evaluation-panel",
   templateUrl: "./evaluation-panel.component.html",
   styleUrls: ["./evaluation-panel.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatExpansionPanel,
     MatExpansionPanelHeader,

@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostBinding, OnChanges, input } from "@angular/core";
+import {
+  Component,
+  HostBinding,
+  OnChanges,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { TranslocoService } from "@jsverse/transloco";
@@ -31,6 +37,7 @@ import { NgClass } from "@angular/common";
   selector: "ige-document-icon",
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatTooltip, MatIcon, NgClass],
 })
 export class DocumentIconComponent implements OnChanges {

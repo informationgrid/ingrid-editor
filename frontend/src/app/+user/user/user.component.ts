@@ -28,6 +28,7 @@ import {
   OnInit,
   Signal,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
@@ -91,6 +92,7 @@ import {
     FormlyForm,
     MatomoTrackClickDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [UserManagementService],
 })
 export class UserComponent implements OnInit, OnDestroy {

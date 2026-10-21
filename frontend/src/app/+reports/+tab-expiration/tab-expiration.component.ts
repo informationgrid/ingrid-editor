@@ -25,6 +25,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -48,6 +49,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-tab-expiration",
   templateUrl: "./tab-expiration.component.html",
   styleUrls: ["./tab-expiration.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatCheckboxModule,
     ExpirationTableComponent,

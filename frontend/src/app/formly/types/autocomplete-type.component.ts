@@ -26,6 +26,7 @@ import {
   Signal,
   signal,
   WritableSignal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { Observable, of } from "rxjs";
@@ -66,6 +67,7 @@ interface AutocompleteProps extends FormlyFieldProps {
   selector: "ige-formly-autocomplete-type",
   templateUrl: "./autocomplete-type.component.html",
   styleUrls: ["./autocomplete-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatInput,
     MatAutocompleteTrigger,

@@ -26,6 +26,7 @@ import {
   OnInit,
   signal,
   Signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
@@ -101,6 +102,7 @@ import { rxResource, takeUntilDestroyed } from "@angular/core/rxjs-interop";
     MatProgressSpinner,
     MATOMO_DIRECTIVES,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [UserManagementService],
 })
 export class GroupComponent implements OnInit {

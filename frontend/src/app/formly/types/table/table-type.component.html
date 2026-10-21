@@ -5,7 +5,9 @@
             [class.required]="props.required"
         >
             <ige-form-label
-                [hasContextHelp]="props?.hasContextHelp"
+                [hasContextHelp]="
+                    $safeNavigationMigration(props?.hasContextHelp)
+                "
                 (contextHelp)="showContextHelp($event)"
             >
                 {{ props?.externalLabel }}
@@ -286,7 +288,9 @@
                     [class.required]="props.required"
                 >
                     <ige-form-label
-                        [hasContextHelp]="props?.hasContextHelp"
+                        [hasContextHelp]="
+                            $safeNavigationMigration(props?.hasContextHelp)
+                        "
                         (contextHelp)="showContextHelp($event)"
                     >
                         @if (props?.required) {
