@@ -1,5 +1,13 @@
 # Changelog
 
+## 8.4.1.2 (21.10.2026)
+
+
+### Bugfixes
+
+* Hochgeladene Dateien werden gelöscht durch automatische Speicherung (Regression) (#9540)
+* IGE: automatisches Ausloggen funktioniert nicht (#9448)
+    
 ## 8.4.1.1 (22.09.2026)
 
 ### Features
