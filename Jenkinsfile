@@ -18,7 +18,6 @@ pipeline {
 
 
     stages {
-        // normal build if it's not the master branch and not the support branch, except if it's a SNAPSHOT-version
         stage('Build') {
             when { not { buildingTag() } }
             steps {
@@ -26,16 +25,26 @@ pipeline {
             }
         }
 
+        // license header, ktlint and prettier violations only warn (yellow) and do not fail the build
+        stage ('Code Style') {
+            when { not { buildingTag() } }
+            steps {
+                warnError('Code style violations found (license headers, ktlint, prettier)') {
+                    sh './gradlew --no-daemon :frontend:testFormatting :server:spotlessCheck'
+                }
+            }
+        }
+
+        // test failures only warn (yellow) and do not block later stages;
+        // separate warnError blocks so the server tests still run when the frontend tests fail
         stage ('Tests') {
             when { not { buildingTag() } }
             steps {
-                script {
-                    try {
-                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck'
-                    } catch(error) {
-                        currentBuild.result = 'UNSTABLE'
-                    }
+                warnError('Frontend tests failed') {
+                    sh './gradlew --no-daemon :frontend:test'
+                }
 
+                warnError('Server tests failed') {
                     sh './gradlew :server:test'
                 }
             }
