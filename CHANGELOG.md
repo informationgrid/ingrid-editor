@@ -1,5 +1,18 @@
 # Changelog
 
+## 8.4.2 (21.10.2026)
+
+### Features
+
+* Portal LUBW: Sachattribute mit Übermittlungsstufen 0 und 1 sollen im Portal angezeigt werden. (#9003)
+
+### Bugfixes
+
+* Hochgeladene Dateien werden gelöscht durch automatische Speicherung (Regression) (#9540)
+* Fehlende CodelistId Info in LUBW-spezifischen Feldern (#9503)
+* IGE: automatisches Ausloggen funktioniert nicht (#9448)
+* Code-Liste 2000 - Mapping für deutsche Verweis-Typen korrigieren (#8783)
+    
 ## 8.4.1 (04.09.2026)
 
 ### Features
