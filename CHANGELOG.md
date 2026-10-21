@@ -1,5 +1,15 @@
 # Changelog
 
+## 8.5.1 (21.10.2026)
+
+
+### Bugfixes
+
+* Swagger-Seite nicht aufrufbar (#9613)
+* Metadaten für Geodienst: Dargestellte Daten (#9588)
+* Kurzes Auftauchen eines Fehlerdialogs beim Anmelden mit Firefox (#9579)
+* OGC API setzt "type" von neuen Dokumenten nicht korrekt (#9530)
+    
 ## 8.5.0 (06.10.2026)
 
 ### Features
