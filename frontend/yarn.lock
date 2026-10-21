@@ -1578,42 +1578,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngrx/signals@npm:21.1.1":
-  version: 21.1.1
-  resolution: "@ngrx/signals@npm:21.1.1"
+"@ngrx/signals@npm:22.0.1":
+  version: 22.0.1
+  resolution: "@ngrx/signals@npm:22.0.1"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/core": ^21.0.0
+    "@angular/core": ^22.0.0
     rxjs: ^6.5.3 || ^7.4.0
   peerDependenciesMeta:
     rxjs:
       optional: true
-  checksum: 10c0/27f640bb610e7cdf2ebbf7350258a1fcf9a9aa6b381bb8b02bc057f40db091be66ac004f6a860be940b39a8b13e7172b88ce149e669041d15a71e0c2d1b35086
+  checksum: 10c0/fd8aaff9aa75844b06c707617512ded6f71b18e9a31c9a04f083e7e95e88e3dac8004f0c10b646b580af9de6001b34d427bc053167f6168aa6837269cf601fff
   languageName: node
   linkType: hard
 
-"@ngx-formly/core@npm:7.0.1":
-  version: 7.0.1
-  resolution: "@ngx-formly/core@npm:7.0.1"
+"@ngx-formly/core@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@ngx-formly/core@npm:7.1.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/forms": ">=13.2.0"
     rxjs: ^6.5.3 || ^7.0.0
-  checksum: 10c0/206f10300799e43b5bb22fbf69b282a0eca8e096184c40f55f91ba822bcc6e50b64aa23a7608a5f665cf9f733003340ce74f554691506bafba50d674bd973a67
+  checksum: 10c0/defe8d2628c9e7fc46794fc7564a1dc4d98796aa2116965a8b630ad4e627227bbdab0f339cd7d6e918e8ce1be413d3624ef7f85d42ecd94007bca1f86e341f84
   languageName: node
   linkType: hard
 
-"@ngx-formly/material@npm:7.0.1":
-  version: 7.0.1
-  resolution: "@ngx-formly/material@npm:7.0.1"
+"@ngx-formly/material@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@ngx-formly/material@npm:7.1.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/material": ">=16.0.0"
-    "@ngx-formly/core": 7.0.1
-  checksum: 10c0/813b9914f91a05d3bf29bddf239011ea16f845c19cfea90627c6988d9814b38dd6b0a5455e40b94bb6f492f2d724ad3c4d7cf994614162320214b5c6c2e9d955
+    "@ngx-formly/core": 7.1.0
+  checksum: 10c0/1fb11be5f0073d205ce16731990217f48c2bc10abcfbce13510af35bc7c17434c4e375210d5d25ec3371ccc5f5a5f9238d6fc1ed9c0cf0d0c2ac6aa87c3f35d9
   languageName: node
   linkType: hard
 
@@ -2153,7 +2153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.3.0":
+"@stomp/stompjs@npm:^7.5.0":
   version: 7.5.0
   resolution: "@stomp/stompjs@npm:7.5.0"
   checksum: 10c0/94b1c173ae35a7ebf0002e9b41fb2027b865813fad6bfacb038b2c3f60ffea48520bfe308b652399b0417988887e6b7b415ad8dc9f311341c26ca453fb38abd6
@@ -2453,7 +2453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:^1.9.20":
+"@types/leaflet@npm:^1.9.22":
   version: 1.9.22
   resolution: "@types/leaflet@npm:1.9.22"
   dependencies:
@@ -3030,7 +3030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cronstrue@npm:^3.27.0":
+"cronstrue@npm:^3.37.0":
   version: 3.37.0
   resolution: "cronstrue@npm:3.37.0"
   bin:
@@ -3697,36 +3697,36 @@ __metadata:
     "@jsverse/transloco": "npm:8.4.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
     "@ngneat/spectator": "npm:^22.1.0"
-    "@ngrx/signals": "npm:21.1.1"
-    "@ngx-formly/core": "npm:7.0.1"
-    "@ngx-formly/material": "npm:7.0.1"
+    "@ngrx/signals": "npm:22.0.1"
+    "@ngx-formly/core": "npm:7.1.0"
+    "@ngx-formly/material": "npm:7.1.0"
     "@stomp/rx-stomp": "npm:^2.4.0"
-    "@stomp/stompjs": "npm:^7.3.0"
+    "@stomp/stompjs": "npm:^7.5.0"
     "@terraformer/wkt": "npm:^2.2.2"
     "@types/file-saver-es": "npm:~2.0.3"
     "@types/flowjs": "npm:~2.13.14"
     "@types/jsdom": "npm:^27"
-    "@types/leaflet": "npm:^1.9.20"
+    "@types/leaflet": "npm:^1.9.22"
     "@types/node": "npm:^20.19.5"
     "@types/terraformer__wkt": "npm:^2.0.3"
     angular-split: "npm:^20.0.0"
-    cronstrue: "npm:^3.27.0"
+    cronstrue: "npm:^3.37.0"
     diff: "npm:^9.0.0"
     file-saver-es: "npm:^2.0.5"
     jsdom: "npm:^27.2.0"
     leaflet: "npm:^1.9.4"
     lint-staged: "npm:^16.1.2"
     material-design-icons-iconfont: "npm:^6.7.0"
-    ngx-mat-select-search: "npm:^8.0.6"
-    ngx-matomo-client: "npm:^9.0.1"
+    ngx-mat-select-search: "npm:^9.0.0"
+    ngx-matomo-client: "npm:^9.1.0"
     prettier: "npm:3.5.3"
-    rxjs: "npm:^7.8.1"
+    rxjs: "npm:^7.8.2"
     source-map-explorer: "npm:^2.5.3"
-    stop-only: "npm:^3.4.3"
-    tslib: "npm:^2.6.2"
+    stop-only: "npm:^3.4.4"
+    tslib: "npm:^2.8.1"
     typescript: "npm:~6.0.3"
-    uuid: "npm:^14.0.0"
-    vitest: "npm:^4.1.11"
+    uuid: "npm:^14.0.3"
+    vitest: "npm:^4.1.12"
   languageName: unknown
   linkType: soft
 
@@ -4425,18 +4425,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ngx-mat-select-search@npm:^8.0.6":
-  version: 8.0.6
-  resolution: "ngx-mat-select-search@npm:8.0.6"
+"ngx-mat-select-search@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "ngx-mat-select-search@npm:9.0.0"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
-    "@angular/material": ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
-  checksum: 10c0/c3a83282b056c83e3eb0b082d5db43f92d661028862101f704025a499b9976caedc11ad96661eb4d6937c71be0cda5c867c8b363e6ba46ce5ceec0319c654d91
+    "@angular/material": ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+  checksum: 10c0/a4e739ab6cd04a2fd07bdad84b7c068290ac40a3a81f68c30951c8057bb11236b4742e3de49e9e2e3d2e88a403a12ea75ef81d7972bc513c166445dbf43b456c
   languageName: node
   linkType: hard
 
-"ngx-matomo-client@npm:^9.0.1":
+"ngx-matomo-client@npm:^9.1.0":
   version: 9.1.0
   resolution: "ngx-matomo-client@npm:9.1.0"
   dependencies:
@@ -5124,7 +5124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:7.8.2, rxjs@npm:^7.4.0, rxjs@npm:^7.8.1":
+"rxjs@npm:7.8.2, rxjs@npm:^7.4.0, rxjs@npm:^7.8.2":
   version: 7.8.2
   resolution: "rxjs@npm:7.8.2"
   dependencies:
@@ -5542,7 +5542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stop-only@npm:^3.4.3":
+"stop-only@npm:^3.4.4":
   version: 3.4.4
   resolution: "stop-only@npm:3.4.4"
   dependencies:
@@ -5819,7 +5819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^14.0.0":
+"uuid@npm:^14.0.3":
   version: 14.0.3
   resolution: "uuid@npm:14.0.3"
   bin:
@@ -5970,7 +5970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^4.1.11":
+"vitest@npm:^4.1.12":
   version: 4.1.12
   resolution: "vitest@npm:4.1.12"
   dependencies:
