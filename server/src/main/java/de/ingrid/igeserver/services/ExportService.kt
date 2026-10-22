@@ -127,8 +127,12 @@ class ExportService(val exporterFactory: ExporterFactory) {
     ): List<Pair<String, String>> {
         if (!visited.add(document.wrapper.uuid)) return emptyList()
 
-        val children = documentService.findChildren(catalogId, document.wrapper.id).hits
-            .flatMap { exportWithSubDocuments(it, options, catalogId, withAddressReferences, visited) }
+        val children = if (options.includeSubDocuments) {
+            documentService.findChildren(catalogId, document.wrapper.id).hits
+                .flatMap { exportWithSubDocuments(it, options, catalogId, withAddressReferences, visited) }
+        } else {
+            emptyList()
+        }
 
         // folders have no exportable content themselves
         if (document.wrapper.type == "FOLDER") return children
