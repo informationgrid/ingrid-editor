@@ -872,7 +872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@geoman-io/leaflet-geoman-free@npm:^2.15.0":
+"@geoman-io/leaflet-geoman-free@npm:^2.20.3":
   version: 2.20.3
   resolution: "@geoman-io/leaflet-geoman-free@npm:2.20.3"
   dependencies:
@@ -3693,7 +3693,7 @@ __metadata:
     "@cyclonedx/yarn-plugin-cyclonedx": "npm:^3.4.0"
     "@flowjs/flow.js": "npm:^2.14.1"
     "@flowjs/ngx-flow": "npm:^21.0.0"
-    "@geoman-io/leaflet-geoman-free": "npm:^2.15.0"
+    "@geoman-io/leaflet-geoman-free": "npm:^2.20.3"
     "@jsverse/transloco": "npm:8.4.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
     "@ngneat/spectator": "npm:^22.1.0"

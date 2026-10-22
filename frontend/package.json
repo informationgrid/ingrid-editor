@@ -32,7 +32,7 @@
     "@angular/router": "^22.2.3",
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^21.0.0",
-    "@geoman-io/leaflet-geoman-free": "^2.15.0",
+    "@geoman-io/leaflet-geoman-free": "^2.20.3",
     "@jsverse/transloco": "8.4.0",
     "@ngneat/dirty-check-forms": "^3.0.3",
     "@ngrx/signals": "22.0.1",
