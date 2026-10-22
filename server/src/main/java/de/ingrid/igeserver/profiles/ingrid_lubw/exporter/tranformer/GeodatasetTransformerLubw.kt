@@ -56,7 +56,7 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
                         transformerConfig.catalogIdentifier,
                         "30002",
                         it.getStringOrEmpty("group.key"),
-                    ) ?: it.getString("group.value")!!,
+                    ) ?: it.getStringOrEmpty("group.value"),
                     category = codelist.codelistHandler.getCatalogCodelistValue(
                         transformerConfig.catalogIdentifier,
                         "30003",
