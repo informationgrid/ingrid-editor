@@ -125,11 +125,13 @@ export class IsoViewComponent {
       ids: [currentDocument.id as number],
       useDraft: true,
       exportFormat: format.type,
+      includeSubDocuments: false,
     };
     const optionsOnlyPublished = {
       ids: [currentDocument.id as number],
       useDraft: false,
       exportFormat: format.type,
+      includeSubDocuments: false,
     };
 
     combineLatest([
