@@ -150,7 +150,7 @@ pipeline {
                         ]
 
                         sbomConfigs.each { cfg ->
-                            def props = [group: 'InGrid', parentId: parentId, tags: ['ingrid', cfg.tag]]
+                            def props = [group: 'InGrid', parentId: parentId, tags: ['ingrid', cfg.tag], isLatest: cfg.suffix == '']
                             dependencyTrackPublisher(artifact: cfg.artifact, projectName: componentName, projectVersion: baseVersion + cfg.suffix, synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: props)
                         }
                     }
