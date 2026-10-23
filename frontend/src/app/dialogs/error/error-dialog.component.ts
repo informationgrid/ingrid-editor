@@ -30,9 +30,13 @@ import {
   Inject,
   Signal,
   ChangeDetectionStrategy,
+  computed,
 } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
+import { DocumentAbstract } from "../../store/document/document.model";
 import { ConfigService } from "../../services/config/config.service";
+import { Router } from "@angular/router";
+import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatCard, MatCardContent } from "@angular/material/card";
@@ -57,15 +61,29 @@ import { MatAnchor, MatButton, MatIconButton } from "@angular/material/button";
     MatAnchor,
     MatDialogClose,
     MatDialogTitle,
+    DocumentListItemComponent,
   ],
 })
 export class ErrorDialogComponent {
   errors: Signal<IgeError[]>;
   readonly generalErrorMessage = "Entschuldigung, etwas ist schiefgegangen!";
   public supportEmail: string;
+
+  /** referenced documents per error, so they can be shown as list items */
+  docsByError = computed(() => {
+    const docsByError = new Map<IgeError, DocumentAbstract[]>();
+    for (const error of this.errors()) {
+      if (error.links && error.links.length > 0) {
+        docsByError.set(error, error.links);
+      }
+    }
+    return docsByError;
+  });
+
   constructor(
     @Inject(MAT_DIALOG_DATA) data: Signal<IgeError[]>,
     private dlgRef: MatDialogRef<ErrorDialogComponent>,
+    private router: Router,
     configService: ConfigService,
   ) {
     this.supportEmail = configService.getConfiguration()?.supportEmail;
@@ -74,5 +92,13 @@ export class ErrorDialogComponent {
 
   close() {
     this.dlgRef.close();
+  }
+
+  openDocument(doc: DocumentAbstract) {
+    this.dlgRef.close();
+    this.router.navigate([
+      `${ConfigService.catalogId}/form`,
+      { id: doc._uuid },
+    ]);
   }
 }

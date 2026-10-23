@@ -222,23 +222,10 @@ class DatasetsApiController(
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
-        val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
-        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
         // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
-        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources")))
-
-        if (refQuery.isEmpty()) {
-            return ResponseEntity.ok(ResearchResponse(0, emptyList()))
-        }
-
-        val paging = if (page != null && pageSize != null) {
-            ResearchPaging(page, pageSize)
-        } else {
-            ResearchPaging()
-        }
-
-        val result = researchService.querySql(principal, catalogIdentifier, refQuery, paging)
-        return ResponseEntity.ok(result)
+        val refOptions = IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources"))
+        val paging = if (page != null && pageSize != null) ResearchPaging(page, pageSize) else ResearchPaging()
+        return ResponseEntity.ok(documentService.queryAccessibleReferences(principal, doc, refOptions, paging))
     }
 
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
@@ -381,7 +368,7 @@ class DatasetsApiController(
         }
 
         val childDocs = childrenInfo.hits
-            .map { mapToDocumentInfo(it, isAddress) }
+            .map { documentService.mapToDocumentInfo(it, isAddress) }
         return ResponseEntity.ok(childDocs)
     }
 
@@ -393,23 +380,6 @@ class DatasetsApiController(
     private fun hasRootWritePermission(principal: Principal): Boolean = checkForRootPermissions(
         sidRetrievalStrategy.getSids(principal as Authentication),
         listOf(BasePermission.WRITE),
-    )
-
-    private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo = DocumentInfo(
-        data.wrapper.id!!,
-        data.document.title ?: "???",
-        data.document.uuid,
-        data.document.state.getState(),
-        data.wrapper.countChildren > 0,
-        data.wrapper.parent?.id,
-        data.wrapper.type,
-        data.document.modified!!,
-        data.document.contentmodified!!,
-        data.wrapper.pending_date,
-        data.wrapper.tags,
-        data.wrapper.hasWritePermission,
-        data.wrapper.hasOnlySubtreeWritePermission,
-        isAddress,
     )
 
     private fun getRootDocsFromGroup(
