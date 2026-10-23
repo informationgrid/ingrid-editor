@@ -49,6 +49,7 @@ import {
   toObservable,
   toSignal,
 } from "@angular/core/rxjs-interop";
+import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
   selector: "ige-tab-sql",
@@ -69,6 +70,7 @@ export class TabSqlComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private researchService = inject(ResearchService);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
   private config = inject(ConfigService);
   private destroyRef = inject(DestroyRef);
 
@@ -94,7 +96,7 @@ export class TabSqlComponent implements OnInit {
     initialValue: this.sql.value,
   });
   isSqlQueryChanged = computed(
-    () => this.sqlValue() !== (<SqlQuery>this.activeQuery()).sql,
+    () => this.sqlValue() !== (<SqlQuery>this.activeQuery())?.sql,
   );
 
   ngOnInit(): void {
@@ -106,6 +108,18 @@ export class TabSqlComponent implements OnInit {
       .subscribe((entity: Query) => {
         this.sql.setValue((<SqlQuery>entity).sql);
         this.search((<SqlQuery>entity).sql);
+      });
+
+    // Clear sql input when navigating away from the SQL tab.
+    this.router.events
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter((event) => event instanceof NavigationEnd),
+      )
+      .subscribe((event) => {
+        if (event.url.includes("research/sql")) return;
+        if (this.isQueryEmpty) return;
+        this.clearQuery();
       });
   }
 
@@ -200,5 +214,9 @@ export class TabSqlComponent implements OnInit {
       "SELECT document1.* FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
       adaptedAnswer.replace(";", "")
     );
+  }
+
+  private get isQueryEmpty() {
+    return this.sqlValue() == "" && this.activeQuery() == null;
   }
 }
