@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-
 export type ChartSegmentColor = "dark" | "orange" | "blue" | "red" | "hatched";
 
 export interface ChartSegment {
