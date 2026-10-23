@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.exceptions
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.services.DocumentInfo
 import org.springframework.http.HttpStatus
 
 class IsReferencedException(
@@ -40,6 +41,20 @@ class IsReferencedException(
          * Factory method for an arbitrary reason
          */
         fun byUuids(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
+
+        /**
+         * Factory method that additionally provides the referencing documents
+         * as partial [DocumentInfo]s, so that clients can show them as links.
+         */
+        fun byDocuments(documents: List<DocumentInfo>): IsReferencedException = IsReferencedException(
+            STATUS_CODE,
+            ERROR_CODE,
+            ERROR_TEXT,
+            mapOf(
+                "uuids" to documents.map { it._uuid },
+                "documents" to documents,
+            ),
+        )
 
         fun addressByPublishedDatasets(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE_ADDRESS_UNPUBLISH, ERROR_TEXT_ADDRESS, mapOf("uuids" to uuids))
     }
