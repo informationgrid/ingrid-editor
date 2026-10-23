@@ -18,13 +18,13 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
   inject,
   OnInit,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
@@ -44,7 +44,12 @@ import { MatInput } from "@angular/material/input";
 import { MatFormField } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
 import { GeneralStore } from "../../store/general.store";
-import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal,
+} from "@angular/core/rxjs-interop";
+import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
   selector: "ige-tab-sql",
@@ -65,6 +70,7 @@ export class TabSqlComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private researchService = inject(ResearchService);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
   private config = inject(ConfigService);
   private destroyRef = inject(DestroyRef);
 
@@ -82,18 +88,38 @@ export class TabSqlComponent implements OnInit {
       (this.config.getConfiguration().featureFlags.openAISearch ?? false),
   );
 
-  private activeQuery = toObservable(this.generalStore.activeQuery);
+  activeQuery = this.generalStore.activeQuery;
+  private activeQuery$ = toObservable(this.activeQuery);
+
+  // Observe modifications of sql input from the active query.
+  private sqlValue = toSignal(this.sql.valueChanges, {
+    initialValue: this.sql.value,
+  });
+  isSqlQueryChanged = computed(
+    () => this.sqlValue() !== (<SqlQuery>this.activeQuery())?.sql,
+  );
 
   ngOnInit(): void {
-    this.activeQuery
+    this.activeQuery$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         filter((a) => a && a.type === "sql"),
       )
       .subscribe((entity: Query) => {
-        this.researchService.setActiveQuery(null);
         this.sql.setValue((<SqlQuery>entity).sql);
         this.search((<SqlQuery>entity).sql);
+      });
+
+    // Clear sql input when navigating away from the SQL tab.
+    this.router.events
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter((event) => event instanceof NavigationEnd),
+      )
+      .subscribe((event) => {
+        if (event.url.includes("research/sql")) return;
+        if (this.isQueryEmpty) return;
+        this.clearQuery();
       });
   }
 
@@ -118,23 +144,38 @@ export class TabSqlComponent implements OnInit {
       .open(SaveQueryDialogComponent, {
         hasBackdrop: true,
         maxWidth: 600,
+        data: this.activeQuery(),
       })
       .afterClosed()
       .subscribe((dialogOptions) => {
         if (dialogOptions) {
           this.researchService
             .saveQuery(this.sql.value, dialogOptions, true)
-            .subscribe(() =>
+            .subscribe((query) => {
+              // Switch the active query to the newly saved query.
+              this.researchService.setActiveQuery(query.id);
+
+              // Notify the user that the query was saved.
               this.snackBar.open(
                 `Suche '${dialogOptions.name}' gespeichert`,
                 "",
                 {
                   panelClass: "green",
                 },
-              ),
-            );
+              );
+            });
         }
       });
+  }
+
+  applyExampleQuery(value: string) {
+    this.researchService.setActiveQuery(null);
+    this.updateSqlControl(value);
+  }
+
+  clearQuery() {
+    this.researchService.setActiveQuery(null);
+    this.updateSqlControl("");
   }
 
   updateSqlControl(value: string) {
@@ -173,5 +214,9 @@ export class TabSqlComponent implements OnInit {
       "SELECT document1.* FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
       adaptedAnswer.replace(";", "")
     );
+  }
+
+  private get isQueryEmpty() {
+    return this.sqlValue() == "" && this.activeQuery() == null;
   }
 }

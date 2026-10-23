@@ -12,7 +12,7 @@
                     <button
                         mat-flat-button
                         class="chip-button"
-                        (click)="updateSqlControl(example.value)"
+                        (click)="applyExampleQuery(example.value)"
                     >
                         {{ example.label }}
                     </button>
@@ -41,6 +41,18 @@
             </div>
         }
 
+        @if (activeQuery()) {
+            <div class="active-query">
+                <div [class.has-changed]="isSqlQueryChanged()">
+                    {{ activeQuery().name }}
+                    <span>*</span>
+                </div>
+                <div class="text-hint text-sm">
+                    {{ activeQuery().description }}
+                </div>
+            </div>
+        }
+
         <mat-form-field appearance="outline" class="width-100">
             <textarea
                 matInput
@@ -57,9 +69,17 @@
                 mat-stroked-button
                 color="primary"
                 [disabled]="sql.value === ''"
-                (click)="updateSqlControl('')"
+                (click)="clearQuery()"
             >
                 Entfernen
+            </button>
+            <button
+                mat-flat-button
+                color="primary"
+                [disabled]="isSearching() || sql.value === ''"
+                (click)="saveQuery()"
+            >
+                Speichern
             </button>
             <button
                 mat-flat-button
@@ -68,12 +88,6 @@
                 (click)="updateSqlControl(sql.value)"
             >
                 Suchen
-            </button>
-        </div>
-
-        <div class="save-search-button">
-            <button mat-button color="primary" (click)="saveQuery()">
-                Suche Speichern
             </button>
         </div>
 
