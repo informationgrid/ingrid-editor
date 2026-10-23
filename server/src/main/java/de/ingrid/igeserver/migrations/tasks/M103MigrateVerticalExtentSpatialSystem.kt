@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -44,37 +44,26 @@ class M103MigrateVerticalExtentSpatialSystem : MigrationBase("0.103") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     override fun postExec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
-            do {
-                val documents =
-                    entityManager.createQuery("""SELECT doc FROM Document doc JOIN doc.catalog cat JOIN DocumentWrapper wrapper ON wrapper.uuid = doc.uuid AND wrapper.catalog.id = cat.id WHERE doc.state != "ARCHIVED" AND cat.type LIKE 'ingrid%' AND wrapper.category = 'data' ORDER BY doc.id""")
-                        .setFirstResult((page - 1) * pageSize)
-                        .setMaxResults(pageSize)
-                        .resultList
-
-                documents.forEach {
-                    it as Document
-
-                    try {
-                        val spatial = it.data.get("spatial")
-                        if (spatial != null && spatial.isObject) {
-                            val verticalExtent = spatial.get("verticalExtent")
-                            if (verticalExtent is ObjectNode && verticalExtent.has("Datum")) {
-                                verticalExtent.set("spatialSystem", verticalExtent.get("Datum"))
-                                verticalExtent.remove("Datum")
-                                log.info("Migrated doc with dbID ${it.id}")
-                            }
+            entityManager.forEachDocumentInBatches(
+                "doc.state != 'ARCHIVED' AND cat.type LIKE 'ingrid%' AND wrapper.category = 'data'",
+                joins = "JOIN doc.catalog cat JOIN DocumentWrapper wrapper ON wrapper.uuid = doc.uuid AND wrapper.catalog.id = cat.id",
+            ) {
+                try {
+                    val spatial = it.data.get("spatial")
+                    if (spatial != null && spatial.isObject) {
+                        val verticalExtent = spatial.get("verticalExtent")
+                        if (verticalExtent is ObjectNode && verticalExtent.has("Datum")) {
+                            verticalExtent.set("spatialSystem", verticalExtent.get("Datum"))
+                            verticalExtent.remove("Datum")
+                            log.info("Migrated doc with dbID ${it.id}")
                         }
-                    } catch (e: Exception) {
-                        log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")
                     }
+                } catch (e: Exception) {
+                    log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")
                 }
-                page++
-            } while (documents.size == pageSize)
+            }
         }
     }
 }
