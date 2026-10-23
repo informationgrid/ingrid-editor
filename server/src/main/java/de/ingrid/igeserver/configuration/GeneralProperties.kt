@@ -39,4 +39,6 @@ data class GeneralProperties(
     val actuatorPermitAll: Boolean = false,
     val sessionTimeout: Int = 1800,
     val indexPrefix: String? = null,
+    val editorMcpUrl: String? = null,
+    val editorMcpApiToken: String? = null,
 )

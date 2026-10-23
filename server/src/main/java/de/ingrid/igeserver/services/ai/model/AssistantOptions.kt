@@ -28,8 +28,6 @@ import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.service.AiServices
 import java.time.Duration
-import kotlin.collections.map
-import kotlin.collections.orEmpty
 
 data class AssistantOptions(
     val clientUrl: String,
@@ -37,40 +35,16 @@ data class AssistantOptions(
     val apiKey: String,
     val instruction: String?,
     val input: String,
-    val mcpServers: List<McpServer>?,
+    val mcpServer: McpServer,
 )
 
 fun AssistantOptions.buildAssistant(): ChatAssistant {
-    // Collect available mcp servers.
-    val mcpClients: List<McpClient> = mcpServers.orEmpty().map { mcpServer ->
-        val transport = StreamableHttpMcpTransport.builder()
-            .url(mcpServer.url)
-            .customHeaders(
-                buildMap {
-                    putAll(mcpServer.customHeaders.orEmpty())
-                    mcpServer.apiKey?.let {
-                        put("Authorization", "Bearer ${mcpServer.apiKey}")
-                    }
-                },
-            )
-            .timeout(Duration.ofSeconds(8))
-            .build()
-
-        DefaultMcpClient.builder()
-            .transport(transport)
-            .build()
-    }
-
-    // Create the tool provider.
-    val toolProvider = McpToolProvider.builder()
-        .mcpClients(mcpClients)
-        .build()
-
     // Create the chat client.
     val model = OpenAiChatModel.builder()
         .baseUrl(clientUrl)
         .apiKey(apiKey)
         .modelName(modelId)
+        .reasoningEffort("none")
         .build()
 
     // Create the chat assistant.
@@ -78,14 +52,34 @@ fun AssistantOptions.buildAssistant(): ChatAssistant {
         .chatModel(model)
         .userMessage(input)
 
+    // Add system message if available.
     if (instruction != null) {
         assistant.systemMessage(instruction)
     }
 
-    // Add tools if available.
-    if (mcpClients.isNotEmpty()) {
-        assistant.toolProvider(toolProvider)
-    }
+    // Create the mcp sever.
+    val transport = StreamableHttpMcpTransport.builder()
+        .url(mcpServer.url)
+        .customHeaders(
+            buildMap {
+                putAll(mcpServer.customHeaders.orEmpty())
+                mcpServer.apiKey?.let {
+                    put("Authorization", "Bearer $it")
+                }
+            },
+        )
+        .timeout(Duration.ofSeconds(8))
+        .build()
+
+    val mcpClient: McpClient = DefaultMcpClient.builder()
+        .transport(transport)
+        .build()
+
+    // Add the tools from the mcp server.
+    val toolProvider = McpToolProvider.builder()
+        .mcpClients(mcpClient)
+        .build()
+    assistant.toolProvider(toolProvider)
 
     return assistant.build()
 }

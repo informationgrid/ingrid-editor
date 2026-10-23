@@ -21,7 +21,9 @@ package de.ingrid.igeserver.services.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.AiSettings
+import de.ingrid.igeserver.model.McpServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.igeserver.services.DocumentService
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service
 class AiService(
     private val settingsRepo: SettingsRepository,
     private val documentService: DocumentService,
+    private val generalProperties: GeneralProperties,
 ) {
     // TODO: this is just a temporary way to store the evaluation results.
     var evaluateResults: String? = null
@@ -43,7 +46,6 @@ class AiService(
 
     fun updateSettings(newSettings: AiSettings): AiSettings {
         val currentSettings = getSettings() ?: newSettings
-        val currentMcpApiKeys = currentSettings.mcpServers?.associate { it.name to it.apiKey } ?: emptyMap()
 
         // Update the current settings.
         currentSettings.apply {
@@ -56,11 +58,8 @@ class AiService(
             }
             hostUrl = newSettings.hostUrl?.takeIf { it.isNotEmpty() }
             modelId = newSettings.modelId?.takeIf { it.isNotEmpty() }
+            roleDefinition = newSettings.roleDefinition?.takeIf { it.isNotEmpty() }
             instruction = newSettings.instruction?.takeIf { it.isNotEmpty() }
-            mcpServers = newSettings.mcpServers?.takeIf { it.isNotEmpty() }?.map { server ->
-                // Only update the api key if it is given.
-                if (server.apiKey.isNullOrEmpty()) server.copy(apiKey = currentMcpApiKeys[server.name]) else server
-            }
         }
 
         // Store the modified settings.
@@ -71,12 +70,7 @@ class AiService(
         return currentSettings
     }
 
-    fun getSettingsWithoutSecrets(): AiSettings? = getSettings()?.let { settings ->
-        settings.copy(
-            apiKey = null,
-            mcpServers = settings.mcpServers?.map { it.copy(apiKey = null) },
-        )
-    }
+    fun getSettingsWithoutSecrets(): AiSettings? = getSettings()?.copy(apiKey = null)
 
     // Evaluate the dataset by the given uuid.
     suspend fun evaluate(uuid: String): EvaluationResult? {
@@ -112,21 +106,35 @@ class AiService(
     }
 
     // Get AssistantOptions by the current settings.
+    // Mcp server setting in environment variables is required.
+    // Return null if any necessary values are not present.
     private fun getAssistantOptions(input: String): AssistantOptions? {
         val settings = getSettings() ?: return null
 
-        // Return null if any necessary values are not present.
         val clientUrl = settings.hostUrl?.takeIf { it.isNotEmpty() } ?: return null
         val modelId = settings.modelId?.takeIf { it.isNotEmpty() } ?: return null
         val apiKey = settings.apiKey?.takeIf { it.isNotEmpty() } ?: return null
+        val mcpServer = getEditorMcpServer() ?: return null
+        val instruction = AiPrompts.buildEvaluateInstruction(settings.roleDefinition, settings.instruction)
 
         return AssistantOptions(
             clientUrl = clientUrl,
             modelId = modelId,
             apiKey = apiKey,
-            mcpServers = settings.mcpServers,
-            instruction = settings.instruction,
+            mcpServer = mcpServer,
+            instruction = instruction,
             input = input,
+        )
+    }
+
+    // Get the mcp server data from the application configuration.
+    private fun getEditorMcpServer(): McpServer? {
+        val url = generalProperties.editorMcpUrl?.takeIf { it.isNotEmpty() } ?: return null
+
+        return McpServer(
+            url = url,
+            apiKey = generalProperties.editorMcpApiToken?.takeIf { it.isNotEmpty() },
+            customHeaders = null,
         )
     }
 }

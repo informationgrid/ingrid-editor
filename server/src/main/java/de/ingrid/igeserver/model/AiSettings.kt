@@ -23,12 +23,11 @@ data class AiSettings(
     var hostUrl: String?,
     var modelId: String?,
     var apiKey: String?,
+    var roleDefinition: String?,
     var instruction: String?,
-    var mcpServers: List<McpServer>?,
 )
 
 data class McpServer(
-    var name: String,
     var url: String,
     var apiKey: String?,
     var customHeaders: Map<String, String>?,

@@ -43,14 +43,6 @@ export interface AiSettings {
   modelId: string;
   apiKey: string;
   instruction?: string;
-  mcpServers?: McpServer[];
-}
-
-export interface McpServer {
-  name: string;
-  url: string;
-  apiKey?: string;
-  customHeaders?: { [key: string]: string };
 }
 
 @Injectable({
