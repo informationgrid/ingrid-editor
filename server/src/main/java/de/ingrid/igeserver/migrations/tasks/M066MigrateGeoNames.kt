@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -49,7 +50,6 @@ class M066MigrateGeoNames : MigrationBase("0.66") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
             val docTypesToMigrate = listOf(
                 "InGridGeoDataset",
                 "InGridDataCollection",
@@ -61,19 +61,16 @@ class M066MigrateGeoNames : MigrationBase("0.66") {
             )
             setAdminAuthentication("Migration", "Task")
 
-            docs
-                .map { it as Document }
-                .filter { docTypesToMigrate.contains(it.type) }
-                .forEach {
-                    try {
-                        if (migrateGeoName(it)) {
-                            log.info("Migrated doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    } catch (ex: Exception) {
-                        log.error("Error migrating document with dbID ${it.id}", ex)
+            entityManager.forEachDocumentInBatches("doc.type IN :types", parameters = mapOf("types" to docTypesToMigrate)) {
+                try {
+                    if (migrateGeoName(it)) {
+                        log.info("Migrated doc with dbID ${it.id}")
+                        docRepo.save(it)
                     }
+                } catch (ex: Exception) {
+                    log.error("Error migrating document with dbID ${it.id}", ex)
                 }
+            }
         }
     }
 

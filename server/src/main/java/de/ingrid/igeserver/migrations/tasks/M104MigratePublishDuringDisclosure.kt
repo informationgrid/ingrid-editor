@@ -21,8 +21,8 @@ package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.imports.internal.migrations.Migrate170
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
@@ -62,34 +62,22 @@ class M104MigratePublishDuringDisclosure : MigrationBase("0.104") {
     }
 
     private fun migrateDocuments(catalogId: String) {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
-            do {
-                val documents =
-                    entityManager.createQuery("""SELECT doc FROM Document doc JOIN doc.catalog cat WHERE doc.state != "ARCHIVED" AND cat.identifier = :catalogId ORDER BY doc.id""")
-                        .setParameter("catalogId", catalogId)
-                        .setFirstResult((page - 1) * pageSize)
-                        .setMaxResults(pageSize)
-                        .resultList
-
-                documents.forEach {
-                    it as Document
-
-                    try {
-                        val data = it.data
-                        Migrate170.getProcessingStepsOfDocument(data)?.let { processingSteps ->
-                            data.set("processingSteps", processingSteps)
-                            entityManager.merge(it)
-                        }
-                    } catch (e: Exception) {
-                        log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")
+            entityManager.forEachDocumentInBatches(
+                "doc.state != 'ARCHIVED' AND doc.catalog.identifier = :catalogId",
+                parameters = mapOf("catalogId" to catalogId),
+            ) {
+                try {
+                    val data = it.data
+                    Migrate170.getProcessingStepsOfDocument(data)?.let { processingSteps ->
+                        data.set("processingSteps", processingSteps)
+                        entityManager.merge(it)
                     }
+                } catch (e: Exception) {
+                    log.error("Error migrating doc with dbID ${it.id}, probably because it has no data: ${e.message}")
                 }
-                page++
-            } while (documents.size == pageSize)
+            }
         }
     }
 }

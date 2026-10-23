@@ -19,7 +19,9 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
+import de.ingrid.igeserver.migrations.DEFAULT_MIGRATION_BATCH_SIZE
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentBatch
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -31,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import tools.jackson.databind.node.ArrayNode
-import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M105RemoveADVCodelistEntry : MigrationBase("0.105") {
@@ -48,40 +49,35 @@ class M105RemoveADVCodelistEntry : MigrationBase("0.105") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
 
-            do {
-                val documents =
+            entityManager.forEachDocumentBatch(
+                DEFAULT_MIGRATION_BATCH_SIZE,
+                { lastId ->
+                    @Suppress("UNCHECKED_CAST")
                     entityManager.createNativeQuery(
-                        """SELECT * FROM Document doc WHERE doc.data -> 'advProductGroups' IS NOT NULL ORDER BY id""",
+                        """SELECT * FROM document doc
+                           WHERE doc.data -> 'advProductGroups' @> '[{"key": "24"}]'
+                             AND doc.id > :lastId
+                           ORDER BY doc.id""",
                         Document::class.java,
                     )
-                        .setFirstResult((page - 1) * pageSize)
-                        .setMaxResults(pageSize)
-                        .resultList
-                documents
-                    .forEach {
-                        (it as Document)
-                        val changed = removeADVKeyword(it)
-                        if (changed) {
-                            log.info("Removed ADV Category 'INSPIRE Boden' for doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    }
-                page++
-            } while (documents.size == pageSize)
+                        .setParameter("lastId", lastId)
+                        .setMaxResults(DEFAULT_MIGRATION_BATCH_SIZE)
+                        .resultList as List<Document>
+                },
+            ) {
+                if (removeADVKeyword(it)) {
+                    log.info("Removed ADV Category 'INSPIRE Boden' for doc with dbID ${it.id}")
+                    docRepo.save(it)
+                }
+            }
         }
     }
 
     private fun removeADVKeyword(doc: Document): Boolean {
-        val advGroups =
-            (doc.data.get("advProductGroups") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-
-        if (advGroups.isEmpty) return false
+        val advGroups = doc.data.get("advProductGroups") as? ArrayNode ?: return false
 
         val previousLength = advGroups.size()
         // Remove ADV keyword "INSPIRE Boden" with key "24"

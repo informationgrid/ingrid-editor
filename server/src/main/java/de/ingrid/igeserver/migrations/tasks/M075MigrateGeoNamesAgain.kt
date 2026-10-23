@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -50,9 +51,6 @@ class M075MigrateGeoNamesAgain : MigrationBase("0.75") {
     private lateinit var docRepo: DocumentRepository
 
     override fun postExec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             val docTypesToMigrate = listOf(
                 "InGridGeoDataset",
@@ -67,29 +65,16 @@ class M075MigrateGeoNamesAgain : MigrationBase("0.75") {
 
             log.info("Start migration of geo-name")
 
-            do {
-                log.info("Handling page $page")
-                val docs = entityManager.createQuery("SELECT doc FROM Document doc")
-                    .setFirstResult((page - 1) * pageSize)
-                    .setMaxResults(pageSize)
-                    .resultList
-
-                docs
-                    .map { it as Document }
-                    .filter { docTypesToMigrate.contains(it.type) }
-                    .forEach {
-                        try {
-                            if (migrateGeoName(it)) {
-                                log.info("Migrated doc with dbID ${it.id}")
-                                docRepo.save(it)
-                            }
-                        } catch (ex: Exception) {
-                            log.error("Error migrating document with dbID ${it.id}", ex)
-                        }
+            entityManager.forEachDocumentInBatches("doc.type IN :types", parameters = mapOf("types" to docTypesToMigrate)) {
+                try {
+                    if (migrateGeoName(it)) {
+                        log.info("Migrated doc with dbID ${it.id}")
+                        docRepo.save(it)
                     }
-
-                page++
-            } while (docs.size == pageSize)
+                } catch (ex: Exception) {
+                    log.error("Error migrating document with dbID ${it.id}", ex)
+                }
+            }
         }
     }
 
