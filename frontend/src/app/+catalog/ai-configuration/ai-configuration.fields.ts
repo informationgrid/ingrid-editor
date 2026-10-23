@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { McpServerEntryComponent } from "./mcp-server-entry/mcp-server-entry.component";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { FormFieldHelper } from "../../../profiles/form-field-helper";
 
@@ -26,36 +25,25 @@ export function aiConfigFields(): FormlyFieldConfig[] {
   return [
     fieldHelper.addInput("hostUrl", "Host URL", {
       wrappers: ["panel", "form-field"],
+      hintStart: "Das KI-API URL, z.B. https://api.anthropic.com/v1/",
     }),
     fieldHelper.addInput("modelId", "Model ID", {
       wrappers: ["panel", "form-field"],
+      hintStart: "Die ID des Modells, z.B. claude-opus-5-5.",
     }),
     fieldHelper.addInput("apiKey", "API Key", {
       wrappers: ["panel", "form-field"],
       hintStart: "Nur bei Eingabe wird der Key überschrieben.",
     }),
-    fieldHelper.addRepeatDetailList("mcpServers", "MCP Server", {
-      viewComponent: McpServerEntryComponent,
-      fields: [
-        fieldHelper.addInputInline("name", "Server Name", {
-          required: true,
-        }),
-        fieldHelper.addInputInline("url", "URL", {
-          required: true,
-        }),
-        fieldHelper.addInputInline("apiKey", "API Key", {
-          hintStart: "Nur bei Eingabe wird der Key überschrieben.",
-        }),
-        fieldHelper.addTextAreaInline("customHeaders", "Custom-Headers", "", {
-          rows: 3,
-          validators: {
-            validation: ["valid_json"],
-          },
-        }),
-      ],
+    fieldHelper.addTextArea("roleDefinition", "Rolle (optional)", "", {
+      rows: 4,
+      hintStart:
+        "Legen Sie fest, in welcher Rolle die KI antworten soll, z. B. Du bist ein Experte für die Qualitätsbewertung von Geodaten-Metadaten.",
     }),
-    fieldHelper.addTextArea("instruction", "Anweisung", "", {
+    fieldHelper.addTextArea("instruction", "Anweisung (optional)", "", {
       rows: 16,
+      hintStart:
+        "Legen Sie fest, nach welchen Regeln oder Schritten die KI mit der Bewertung der Datensätzen vorgehen soll. Diese Einstellung wirkt sich stark auf das Ergebnis aus. Ändern Sie es nur, wenn Sie mit Prompt-Formulierungen vertraut sind.",
     }),
   ];
 }
