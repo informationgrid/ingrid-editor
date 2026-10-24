@@ -129,7 +129,7 @@ class AiService(
 
     // Get the mcp server data from the application configuration.
     private fun getEditorMcpServer(): McpServer? {
-        val url = generalProperties.editorMcpUrl?.takeIf { it.isNotEmpty() } ?: return null
+        val url = generalProperties.editorMcpUrl?.trimEnd('/')?.takeIf { it.isNotEmpty() } ?: return null
 
         return McpServer(
             url = url,

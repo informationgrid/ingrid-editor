@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, OnInit, output, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  input,
+  OnInit,
+  output,
+  signal,
+} from "@angular/core";
 import { Evaluation } from "../../../../services/ai/ai.service";
 import { MatButton } from "@angular/material/button";
 import {
@@ -27,6 +34,8 @@ import {
 } from "@angular/material/list";
 import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { TextOptionComponent } from "./text-option/text-option.component";
+import { ListOptionComponent } from "./list-option/list-option.component";
 
 @Component({
   selector: "ige-evaluation-entry",
@@ -34,11 +43,13 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
   styleUrls: ["./evaluation-entry.component.scss"],
   imports: [
     MatButton,
+    ScoreIndicatorComponent,
+    MatDivider,
     MatListOption,
     MatSelectionList,
-    ScoreIndicatorComponent,
     ReactiveFormsModule,
-    MatDivider,
+    TextOptionComponent,
+    ListOptionComponent,
   ],
 })
 export class EvaluationEntryComponent implements OnInit {
@@ -49,12 +60,18 @@ export class EvaluationEntryComponent implements OnInit {
 
   formControl: FormControl;
   isExpanded = signal<boolean>(false);
+  selectedOption = signal<any>(null);
+
+  hasListOptions = computed(() =>
+    Array.isArray(this.evaluation().options?.at(0)),
+  );
 
   constructor() {}
 
   ngOnInit(): void {
     if (this.evaluation().options?.length > 0) {
-      this.formControl = new FormControl([this.evaluation().options.at(0)]);
+      this.selectedOption.set(this.evaluation().options.at(0));
+      this.formControl = new FormControl([this.selectedOption()]);
     }
   }
 

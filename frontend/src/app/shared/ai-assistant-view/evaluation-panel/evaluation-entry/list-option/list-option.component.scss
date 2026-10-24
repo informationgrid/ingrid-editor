@@ -1,0 +1,18 @@
+@use "src/variables" as vars;
+
+mat-chip {
+  height: auto;
+  min-height: 36px;
+
+  --mat-chip-container-shape-radius: 4px;
+  --mat-chip-elevated-container-color: #{vars.$ige-background};
+
+  outline: 1px solid rgb(0 0 0 / 10%);
+  outline-offset: -1px;
+
+  ::ng-deep .mdc-evolution-chip__text-label {
+    white-space: normal;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}

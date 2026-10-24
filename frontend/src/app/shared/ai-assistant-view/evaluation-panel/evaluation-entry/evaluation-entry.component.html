@@ -1,4 +1,4 @@
-<div class="flex-col gap-8">
+<div class="text-box">
     <div
         class="flex-row gap-8 align-items-center justify-content-space-between font-medium"
     >
@@ -9,24 +9,30 @@
     @if (evaluation().reason) {
         <div class="text-sm">{{ evaluation().reason }}</div>
     }
+</div>
 
-    @if (evaluation().options && evaluation().options.length) {
-        <mat-divider></mat-divider>
+@if (evaluation().options && evaluation().options.length) {
+    <mat-divider></mat-divider>
 
-        <mat-selection-list
-            #list
-            [multiple]="false"
-            [formControl]="formControl"
-        >
-            @for (option of evaluation().options; track option) {
-                @if (isExpanded() || option === list._value?.at(0)) {
-                    <mat-list-option class="no-wrap" [value]="option">
-                        {{ option }}
-                    </mat-list-option>
-                }
+    <mat-selection-list
+        [multiple]="false"
+        [formControl]="formControl"
+        (selectionChange)="selectedOption.set($event.options[0].value)"
+    >
+        @for (option of evaluation().options; track $index) {
+            @if (isExpanded() || option === selectedOption()) {
+                <mat-list-option class="no-wrap" [value]="option">
+                    @if (hasListOptions()) {
+                        <ige-list-option [option]="option" />
+                    } @else {
+                        <ige-text-option [option]="option" />
+                    }
+                </mat-list-option>
             }
-        </mat-selection-list>
+        }
+    </mat-selection-list>
 
+    <div class="action-box">
         @if (evaluation().options.length > 1) {
             <button matButton="outlined" (click)="toggleIsExpanded()">
                 {{ isExpanded() ? "Weniger" : "Mehr" }}
@@ -41,11 +47,11 @@
             <button
                 class="flex-1"
                 matButton="outlined"
-                [disabled]="!list._value"
-                (click)="apply(list._value.at(0))"
+                [disabled]="!selectedOption()"
+                (click)="apply(selectedOption())"
             >
                 Übernehmen
             </button>
         </div>
-    }
-</div>
+    </div>
+}
