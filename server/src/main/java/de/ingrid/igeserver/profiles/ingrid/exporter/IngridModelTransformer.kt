@@ -474,7 +474,7 @@ open class IngridModelTransformer(
         name = "GEMET - INSPIRE themes, version 1.0",
     )
 
-    private fun mapToInspireLink(key: String?): String? = when (key) {
+    protected open fun mapToInspireLink(key: String?): String? = when (key) {
         // land use
         "304" -> "http://inspire.ec.europa.eu/theme/lu"
 
