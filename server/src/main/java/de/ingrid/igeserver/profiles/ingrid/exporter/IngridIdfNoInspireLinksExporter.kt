@@ -65,7 +65,6 @@ class IngridIdfNoInspireLinksExporter(
         "InGridProject" -> ProjectModelNoInspireLinksTransformer::class
         "InGridDataCollection" -> DataCollectionModelNoInspireLinksTransformer::class
         "InGridInformationSystem" -> InformationSystemModelNoInspireLinksTransformer::class
-        "InGridAlgorithm" -> AlgorithmModelNoInspireLinksTransformer::class
         else -> null
     }
 }
@@ -95,9 +94,5 @@ open class DataCollectionModelNoInspireLinksTransformer(transformerConfig: Trans
 }
 
 open class InformationSystemModelNoInspireLinksTransformer(transformerConfig: TransformerConfig) : InformationSystemModelTransformer(transformerConfig) {
-    override fun mapToInspireLink(key: String?): String? = null
-}
-
-open class AlgorithmModelNoInspireLinksTransformer(transformerConfig: TransformerConfig) : AlgorithmModelTransformer(transformerConfig) {
     override fun mapToInspireLink(key: String?): String? = null
 }
