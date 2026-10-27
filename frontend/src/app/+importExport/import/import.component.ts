@@ -25,6 +25,7 @@ import {
   signal,
   viewChild,
   ChangeDetectionStrategy,
+  effect,
 } from "@angular/core";
 import {
   AbstractControl,
@@ -49,19 +50,18 @@ import {
   MatStepperNext,
   MatStepperPrevious,
 } from "@angular/material/stepper";
-import { filter, map, take, tap } from "rxjs/operators";
+import { catchError, filter, map, take, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
-import { merge, Observable } from "rxjs";
+import { forkJoin, merge, Observable, of, Subscription } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
 import { MatDialog } from "@angular/material/dialog";
 import {
   PasteDialogComponent,
   PasteDialogOptions,
 } from "../../+form/dialogs/copy-cut-paste/paste-dialog.component";
-import { IgeError } from "../../models/ige-error";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
 import { DatePipe, NgTemplateOutlet } from "@angular/common";
@@ -177,6 +177,9 @@ export class ImportComponent implements OnInit {
 
   lastLogReceived = signal<boolean>(false);
   websocketConnected = signal<boolean>(false);
+  currentStepIndex = signal<number>(0);
+
+  private checkPermissionsSub?: Subscription;
 
   protected readonly ConfigService = ConfigService;
 
@@ -187,7 +190,18 @@ export class ImportComponent implements OnInit {
     private rxStompService: RxStompService,
     private dialog: MatDialog,
     private configService: ConfigService,
-  ) {}
+  ) {
+    effect(() => {
+      const step = this.currentStepIndex();
+      const report = this.message()?.report;
+      if (step !== 1 || !report) {
+        this.checkPermissionsSub?.unsubscribe();
+        this.datasetsWithNoPermission.set([]);
+        return;
+      }
+      this.checkDatasetPermissions(report.existingDatasets);
+    });
+  }
 
   ngOnInit(): void {
     // wait for websocket connection to be ready to receive import state
@@ -218,7 +232,11 @@ export class ImportComponent implements OnInit {
   }
 
   cancel() {
-    this.stepper().selectedIndex = 0;
+    const stepper = this.stepper();
+    if (stepper) {
+      stepper.selectedIndex = 0;
+    }
+    this.currentStepIndex.set(0);
     this.step1Complete = false;
   }
 
@@ -229,13 +247,17 @@ export class ImportComponent implements OnInit {
   }
 
   openImportedDocument() {
-    this.router.navigate([
-      `${ConfigService.catalogId}/form`,
-      {
-        id: this.message().report.references.filter((ref) => !ref.isAddress)[0]
-          .document._uuid,
-      },
-    ]);
+    const docRef = this.message()?.report?.references?.find(
+      (ref) => !ref.isAddress,
+    );
+    if (docRef?.document?._uuid) {
+      this.router.navigate([
+        `${ConfigService.catalogId}/form`,
+        {
+          id: docRef.document._uuid,
+        },
+      ]);
+    }
   }
 
   abortImportJob() {
@@ -287,28 +309,40 @@ export class ImportComponent implements OnInit {
       });
   }
 
-  handleStepEvent(index: number, retries = 0) {
-    if (index !== 1) return;
-    this.datasetsWithNoPermission.set([]);
+  handleStepEvent(index: number) {
+    this.currentStepIndex.set(index);
+  }
 
-    const action = () =>
-      this.message().report.existingDatasets.map((dataset) =>
-        this.documentService
-          .uuidExists(dataset.uuid)
-          .pipe(filter((exists) => !exists))
-          .subscribe(() => {
-            console.error(`${dataset.uuid} cannot be accessed`);
-            this.datasetsWithNoPermission.update((arr) => [...arr, dataset]);
-          }),
-      );
+  private checkDatasetPermissions(existingDatasets?: DatasetInfo[]) {
+    this.checkPermissionsSub?.unsubscribe();
 
-    // in case the report has not been ready yet
-    // TODO: find a better solution
-    if (this.message()?.report) action();
-    else if (retries === 3) {
-      throw new IgeError("Report was not ready after 3 retries");
-    } else {
-      setTimeout(() => this.handleStepEvent(index, retries + 1), 500);
+    if (!existingDatasets || existingDatasets.length === 0) {
+      this.datasetsWithNoPermission.set([]);
+      return;
     }
+
+    this.checkPermissionsSub = forkJoin(
+      existingDatasets.map((dataset) =>
+        this.documentService.uuidExists(dataset.uuid).pipe(
+          tap((exists) => {
+            if (!exists) {
+              console.error(`${dataset.uuid} cannot be accessed`);
+            }
+          }),
+          map((exists) => (exists ? null : dataset)),
+          catchError((err) => {
+            console.error(`${dataset.uuid} cannot be accessed`, err);
+            return of(dataset);
+          }),
+        ),
+      ),
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((results) => {
+        const withoutPermission = results.filter(
+          (d): d is DatasetInfo => d !== null,
+        );
+        this.datasetsWithNoPermission.set(withoutPermission);
+      });
   }
 }
