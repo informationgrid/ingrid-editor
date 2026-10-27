@@ -179,9 +179,17 @@
                     }
                     <div (click)="$event.stopPropagation()" class="versioninfo">
                         <div>Version</div>
-                        <div>
+                        <div
+                            class="clickable"
+                            [matTooltip]="
+                                'Letzter Build: ' +
+                                (version().date | date: 'dd.LL.yyyy, HH:mm')
+                            "
+                        >
                             {{ version().version }},
-                            {{ version().date | date: "dd.LL.yyyy, HH:mm" }}
+                            {{
+                                version().commitTime | date: "dd.LL.yyyy, HH:mm"
+                            }}
                         </div>
                         <div>GIT Commit ID</div>
                         <div>{{ version().commitId }}</div>

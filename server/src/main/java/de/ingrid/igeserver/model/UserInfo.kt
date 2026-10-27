@@ -43,4 +43,9 @@ data class UserInfo(
     val fromLdap: Boolean,
 )
 
-data class Version(val version: String?, val date: Date?, val commitId: String?)
+data class Version(
+    val version: String?,
+    val date: Date?,
+    val commitId: String?,
+    val commitTime: Date? = null,
+)

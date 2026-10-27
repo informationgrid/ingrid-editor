@@ -55,6 +55,7 @@ export interface Version {
   version: string;
   date: string;
   commitId: string;
+  commitTime: string;
 }
 
 export interface UserInfo {
