@@ -48,6 +48,7 @@ export class Configuration {
     public matomoDisableCookies?: boolean,
     public lfsInterfaceUrl?: string,
     public lfsMoveResourcesUrl?: string,
+    public catalogThemes?: { [catalogId: string]: string },
   ) {}
 }
 

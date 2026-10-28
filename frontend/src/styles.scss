@@ -14,6 +14,24 @@ body {
   --mat-snack-bar-button-color: #398c32;
 }
 
+/* Per-catalog accent frame (see app/services/config/catalog-theme.ts): fixed
+   to the viewport so it stays visible in every view and scroll position. */
+body.catalog-accent::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  border: 6px solid var(--catalog-accent, transparent);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@media print {
+  body.catalog-accent::after {
+    display: none;
+  }
+}
+
 body {
   font-family:
     Roboto,

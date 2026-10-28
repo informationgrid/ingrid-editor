@@ -6,6 +6,11 @@
   align-items: center;
 }
 
+/* Per-catalog accent color (see app/services/config/catalog-theme.ts) */
+:host-context(body.catalog-accent) .title {
+  border-bottom: 3px solid var(--catalog-accent);
+}
+
 .label,
 mat-form-field {
   font-size: 30px;

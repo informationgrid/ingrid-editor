@@ -48,6 +48,7 @@ import { DatePipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { getCatalogAccent } from "../services/config/catalog-theme";
 
 @Component({
   selector: "ige-main-header",
@@ -95,6 +96,9 @@ export class MainHeaderComponent implements OnInit {
     this.getOtherAssignedCatalogs(this.userInfo()),
   );
   catalogId = computed(() => this.userInfo()?.currentCatalog.id);
+  currentCatalogAccent = computed(() =>
+    getCatalogAccent(this.configService.getConfiguration(), this.catalogId()),
+  );
   menuItems: Routes = settingsRoutes[0].children
     .filter((item) => item.path !== "")
     .filter((item) => this.configService.hasPermission(item.data?.permission));
@@ -149,5 +153,10 @@ export class MainHeaderComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id);
+  }
+
+  /** Accent color of a catalog from the config, null if it has no entry. */
+  catalogAccent(id: string): string | null {
+    return getCatalogAccent(this.configService.getConfiguration(), id);
   }
 }

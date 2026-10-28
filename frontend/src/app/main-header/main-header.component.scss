@@ -6,6 +6,23 @@
   position: relative;
 }
 
+/* Per-catalog accent color (see app/services/config/catalog-theme.ts): the
+   baw profile sets --catalog-accent + body.catalog-accent for catalogs that
+   have an entry in the "catalogThemes" config. */
+:host::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background-color: var(--catalog-accent, transparent);
+}
+
+:host-context(body.catalog-accent) .catalog-button {
+  font-weight: 600;
+}
+
 .header-row {
   color: vars.$ige-secondary;
 }

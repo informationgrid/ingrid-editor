@@ -14,6 +14,7 @@
   "matomoDisableCookies": null,
   "lfsInterfaceUrl": "http://192.168.0.227:3004/isibaw/api/archiv-combined/list",
   "lfsMoveResourcesUrl": "https://wemove.com",
+  "catalogThemes": {},
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,

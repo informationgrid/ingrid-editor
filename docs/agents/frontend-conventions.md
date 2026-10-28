@@ -4,6 +4,10 @@
   many keys are effectively German-only.
 - Colors: theme variables in `src/variables.scss` (e.g. `$tag-*-color`,
   shared by the icon tag dots and the statistics chart).
+- Per-catalog accent color: `app/services/config/catalog-theme.ts` —
+  `catalogThemes` config map (catalog id → color) applied per profile
+  (currently only baw); styling consumes `var(--catalog-accent)` /
+  `body.catalog-accent`, so catalogs without an entry keep the default look.
 - APIs: prefer clean replacement over compatibility shims (few call sites);
   put the rationale into the commit message or code comments.
 - Select fields (`ige-select`, `addSelect`): what gets saved depends on
