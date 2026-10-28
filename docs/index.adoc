@@ -7,39 +7,67 @@
 
 == Introduction
 
+IGE-NG is an open-source metadata editor built with an Angular 21 frontend and a Kotlin/Spring Boot server. This documentation describes the server architecture, extension points, configuration, and development workflows; the repository `README.md` contains the initial local setup and start commands.
+
+The main application code is in `frontend/` and `server/`. Project documentation and operational guides are in `docs/`, with the FAQ in `FAQ.adoc`. Before contributing, set up the database and development environment using the README, then review the testing and configuration sections below.
+
 == Architecture
 
 === Spring Boot
 
-==== Profiles
+==== Spring profiles
 
-Several profiles can be activated via Spring.
-With each activated profile a separate configuration file can be used, which has the format `application-<profile>.properties` The following list explains each profile:
+Spring profiles control which Spring beans and configuration classes are active. A profile-specific properties file can be supplied as `application-<profile>.properties`, but activating a Spring profile does not require such a file. For local development, pass the profiles at startup, for example:
 
-[cols="1,2"]
+[source,shell]
+----
+./gradlew bootRun --args='--spring.profiles.active=dev,uvp,ingrid'
+----
+
+The profile names below are the activation names used by the application. Catalog profiles determine the catalog type and its document types; Spring profiles determine which server-side beans are loaded. The catalog type and Spring profile commonly share an identifier, but these are separate mechanisms. `dev` enables mock development authentication and must not be enabled in production.
+
+[cols="1,3"]
 |===
-|Profile |Description
-| dev
-| Contains configuration used during development for correct setup.
-It also disables Keycloak.
+|Spring profile |Purpose
 
-| elasticsearch
-| Activate export to Elasticsearch during publishing and indexing
+|`dev`
+|Local development configuration, including mock authentication; also makes the test profile components available.
 
-| ibus | Use configuation for an iBus
+|`test`
+|Test profile configuration and document types.
 
-| mcloud | Activates importer, exporter and datatypes for the mCLOUD-Profile
+|`mcloud`
+|mCLOUD catalog implementation, including its document types and import/export services.
 
-| uvp | Support for management of UVP documents
+|`uvp`
+|UVP catalog implementation and related services.
 
-| ingrid | Support for management of Geo-Datasets and Services with export to ISO-19139 format
+|`ingrid`
+|Base InGrid catalog implementation, including geospatial metadata and ISO export.
 
-| ogc-api | Support for OGC API for Records
+|`ingrid-bast`, `ingrid-baw`, `ingrid-bkg`, `ingrid-hmdk`, `ingrid-kommunal-st`, `ingrid-krzn`, `ingrid-lfubayern`, `ingrid-lubw`, `ingrid-up-sh`, `ingrid-with-opendata`, `ingrid-wsv`
+|InGrid customer variants. These profiles add or customize the base InGrid implementation; some also include Open Data behavior.
 
-| ogc-distributions-api | Support for distribution handling in context of OGC API (upload & delete files)
+|`opendata`
+|Open Data catalog implementation. Open Data beans are also loaded by selected customer catalog profiles.
 
-| csw-t | Support for CSW Transactions
+|`bmi`
+|Federal Open Data catalog implementation.
 
+|`codelist-repo`
+|Synchronizes code lists from the configured central code-list repository.
+
+|`csw-t`
+|Enables CSW Transactions support.
+
+|`ogc-api`
+|Enables OGC API for Records.
+
+|`ogc-distributions-api`
+|Enables OGC API distribution upload and deletion support.
+
+|`zabbix`
+|Enables the Zabbix integration used by UVP document indexing and lifecycle operations.
 |===
 
 ==== Dependency Injection
@@ -48,18 +76,14 @@ The standard Spring Dependency Injection functionality is used.
 
 === Authentication
 
-The authentication is handled by Keycloak. It is the central management for users. A user needs to have the Realm role "ige-user" to be accepted as a user for the InGrid-Editor.
+Keycloak is the identity provider. In the browser, Spring Security handles the OpenID Connect login and the backend-for-frontend (BFF) keeps OAuth access and refresh tokens on the server. The browser uses a server session cookie (`httpOnly`, and `secure` according to configuration); the Angular application does not manage Keycloak tokens or attach a bearer token itself. Unauthenticated browser API requests receive `401` rather than an interactive redirect.
 
-The frontend checks if a user is already logged in by redirecting to the Keycloak-Login page. If the user is already logged in, then a cookie is set and the user is redirected again to the application. By default an iframe is being used to do the check for the logged-in state to avoid redirects. This however might not be allowed in highly secured environments.
-
-The frontend adds to each request to the backend a bearer-token, which contains the access-token, which the backend verifies. If no bearer-token was added or the access-token has been expired, a 401-error is being returned.
-
-The frontend gets a new access token in case it expires before a request to the backend is initiated. If the refresh token has expired, the frontend redirects to the login form in Keycloak.
+The backend also configures JWT resource-server authentication for bearer-token API clients. Keycloak users must have an accepted application role (typically `ige-user`); the backend also recognizes the configured administrator role names. API access is authorized using the roles and application permissions described below. In `dev`, Keycloak security is replaced with mock development authentication; never enable that Spring profile in a deployed environment.
 
 [IMPORTANT]
-.New authentication prozess
+.Browser authentication flow
 ====
-The authentication process is being refactored to be more secure and more performant. The new process is described below.
+Browser authentication uses the current BFF session flow described here; the earlier frontend-managed bearer-token flow is no longer the browser application's authentication mechanism.
 ====
 
 The InGrid-Editor is secured by the Backend-For-Frontend Pattern (BFF). Here the frontend does not know anything about the authentication. The backend is completely responsible to handle the access- and refresh-token, as well as the login- and logout-process.
@@ -428,57 +452,52 @@ The produced records look like the example mentioned in the audit log section.
 
 === Profiles
 
-A profile generally is created for every customer, who needs special requirements for entering and handling documents.
+A catalog profile defines the catalog type and the server behavior associated with it. The backend implements `CatalogProfile`, while the frontend maps the same profile identifier to a `ProfilePack` and registers the document types used by that catalog. A Spring profile activates the server-side components; it does not, by itself, create or select a catalog.
 
-For each profile a `profile definiton file` must be implemented, which is a class extending the `CatalogProfile`-interface.
+`CatalogProfile.identifier` is serialized as the catalog profile `id`. Keep this value consistent with the Spring activation name and the frontend mapper key. The current contract is:
 
-A profile definition file contains the configurations for a specific profile.
-This profile contains the following information:
-
-[cols="1,2"]
+[cols="1,3"]
 |===
-|Property |Description
+|Member |Purpose
 
-|identifier
-|unique identifier for a profile
+|`identifier`, `title`, `description`
+|Unique profile ID, display title, and optional description. `identifier`, `title`, and `description` are required members of the interface.
 
-|name
-|a proper name
+|`indexExportFormatID`, `indexIdField`
+|Default index export format and document/address identifier fields used for indexing.
 
-|description
-|describes the profiles
+|`linkedProfiles`
+|Other profile IDs linked to this profile, commonly used when a profile extends a parent profile. Defaults to an empty list.
 
-|facet definition for documents
-|definition of filters for documents used on research page
+|`excludeExportProfiles`
+|Profile IDs to omit from the export-format list. Defaults to an empty list.
 
-|facet definition for addresses
-|definition of filters for addresses used on research page
+|`getFacetDefinitionsForDocuments()`, `getFacetDefinitionsForAddresses()`
+|Research-page facet and quick-filter definitions for documents and addresses.
 
-|definiton of catalog codelists
-|additional codelists used in this profile
+|`initCatalogCodelists(catalogId, codelistId)`, `initCatalogQueries(catalogId)`
+|Optional initialization of catalog-specific code lists and research queries.
 
-|definiton of catalog queries
-|catalog queries for research page accessible by all users
+|`initIndices()`
+|Optional initialization of index resources.
 
-|definition of elasticsearch mappings and settings
-|used for index configuration
+|`getElasticsearchMapping(format)`, `getElasticsearchSetting(format)`
+|Mapping and setting JSON used to configure an Elasticsearch index for an export format.
+
+|`profileSpecificPermissions(permissions, principal)`
+|Optional customization of the permissions available to the current principal.
+
+|`additionalImportAnalysis(catalogId, report, message)`
+|Optional profile-specific contribution to import analysis and its report message.
 |===
 
-The definition information is also used in the frontend, when creating a new catalog (to choose from a profile) or the presentation of the research page (facets / quick filters).
-
-An example of how to add a new profile can be found in FAQ.md.
+Several members have default implementations in `CatalogProfile`; implement or override only the behavior needed by your profile. See `server/src/main/java/de/ingrid/igeserver/services/CatalogProfile.kt` and the existing profiles for concrete examples.
 
 ==== Document types
 
-A profile can contain one or more document/entity types.
-Each document type contains a definition of fields for the form in the frontend and a definition in the backend.
-The definition in the backend should contain information about how to resolve references to other addresses/documents.
+A profile can register one or more document types. Each type has a frontend form definition and a backend `EntityType`. The frontend form is built with [ngx-formly](https://formly.dev/); the backend type supplies a `className`, the catalog profiles that may use it, and optional JSON-schema validation and persistence hooks.
 
-Moreover each type can control its publication and do some validations by overriding the `onPublish`-function
-
-The form fields are defined in a JSON format and will be used by the [ngx-formly](https://formly.dev/) library.
-It's also possible to add most of the validation logic within that definition.
-See also FAQ.md
+The backend type can handle reference resolution (`getReferenceUUIDs`, `getIncomingReferenceUUIDs`, and related methods), collect referenced uploads, and react to create, update, publish, delete, or unpublish operations. Override only the hooks required by the type. In `EntityType`, an empty `profiles` array means the type is available to all profiles, while `null` means it is available to none. The frontend doctype `id` must match the backend type `className`.
 
 ==== Importer
 
@@ -538,133 +557,100 @@ This can be defined in the profile definition file.
 
 ==== Profile creation
 
+Follow these steps for a new profile. Use the same profile ID in the server configuration, the `CatalogProfile`, the frontend mapper, and the catalog type. For example, the ID `sample` is used below.
+
 *Backend*
 
-* implement a new class defining the new profile by implementing the interface `CatalogProfile`
-** add this file here: `server/src/main/java/de/ingrid/igeserver/profiles/<name>/<NAME>Profile.kt`
-** annotate it with `@Service`
-** implement at least the following members: `indentifier`, `title`
-* add all your document types under the `types`-folder and extend each type from `EntityType`. You can also override several functions to interact on different situations.
-
-[source, kotlin]
+. Create a package under `server/src/main/java/de/ingrid/igeserver/profiles/<package>/`. Use a valid Kotlin package name; existing customer profile packages use underscores where profile IDs contain hyphens.
+. Implement `CatalogProfile` in a `@Service` class in that package. Set `identifier = "sample"`, `title`, `description`, `indexExportFormatID`, and `indexIdField`; provide the required facet, mapping, and setting functions. Add optional code-list, query, index, permission, or import-analysis behavior only if needed.
+. Add an `EntityType` for each document type under the package's `types` directory. Annotate each type with `@Component`, set `className` to the document type ID, and set `profiles` to include `"sample"`. For schema validation, place a JSON schema at `server/src/main/resources/sample/schemes/sample.schema.json` and set `jsonSchema = "/sample/schemes/sample.schema.json"`:
++
+[source,kotlin]
 ----
 @Component
-class DocType : EntityType() {
-    override val className = "DocumentTypeName"
-    override val profiles = arrayOf("profile")
-    override val jsonSchema = "/[profile]/schemes/doctype.schema.json"
+class SampleDocumentType : EntityType() {
+    override val className = "SampleDoc"
+    override val profiles = arrayOf("sample")
+    override val jsonSchema = "/sample/schemes/sample.schema.json"
 }
 ----
 
-* add another file to initialize all services of the new profile when it's activated
-** add a file: `server/src/main/java/de/ingrid/igeserver/profiles/<Name>Config.ts` with the following content:
-
+. Add a configuration class under `server/src/main/java/de/ingrid/igeserver/profiles/` to activate and scan the package:
++
 [source,kotlin]
 ----
-@Profile("profile")
+@Profile("sample")
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.[profile]"])
-class ProfileConfig
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.sample"])
+class SampleConfig
 ----
 
-NOTE: This will tell `Spring` to look for services inside the specified profile-package and make them ready to be used.
+The `CatalogProfile` service is discovered by this scan. Do not put `@Profile` on the profile class as a replacement for the configuration class; the configuration is the activation point.
 
 *Frontend*
 
-* create a new profile here: `frontend/src/profiles/profile-ingrid-<name>.ts`
-** through the `ProfileService` register all your forms representing your document types
-
-[source, typescript]
-----
-@Component({template: ""})
-class ProfileComponent {
-  constructor(
-    service: ProfileService,
-    test: TestDoctype
-  ) {
-    service.registerProfiles([test]);
-  }
-}
-
-@NgModule({
-  declarations: [ProfileComponent],
-})
-export class ProfilePack {
-  static getMyComponent() {
-    return ProfileComponent;
-  }
-}
-----
-
-* update the file `profile.mapper.ts` in the same directory to map the profile-ID to the profile-module
-* update the following files to include the new profile for compilation
-** frontend/src/tsconfig.app.json -> add to "files"
-** frontend/src/tsconfig.spec.json -> add to "files"
-* implement your document types by extending from `BaseDoctype`
-** the `id` must match with the ID of the document type defined in the backend
-** the function `documentFields` contains the definition of the whole form-fields
-** several helper-functions coming from the `BaseDoctype` support writing your fields
-
+. Create `frontend/src/profiles/profile-sample.ts`. Define a standalone component that injects the doctypes and registers them with `ProfileService.registerDoctypes()`. Optionally choose the default address type using `setDefaultAddressType()`:
++
 [source,typescript]
 ----
-@Injectable({
-  providedIn: "root",
+@Component({
+  template: "",
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class TestDoctype extends BaseDoctype {
-  id = "TestDoc";
-  label = "Test-Document";
-  iconClass = "doc-icon";
-  documentFields = () => <FormlyFieldConfig[]>[...]
+class SampleProfileComponent {
+  constructor(
+    private profileService: ProfileService,
+    folder: FolderDoctype,
+    document: SampleDoctype,
+    address: SampleAddressDoctype,
+  ) {
+    this.profileService.setDefaultAddressType(address);
+    this.profileService.registerDoctypes([folder, document, address]);
+  }
+}
+
+export class ProfilePack {
+  static getMyComponent() {
+    return SampleProfileComponent;
+  }
 }
 ----
 
-NOTE: When extending a profile there are things to keep in mind. The IDs of the supported document types should not be changed, since they are probably used in other places, like for the export.
+. Create each frontend doctype under `frontend/src/profiles/`. Doctypes normally extend `BaseDoctype`; define `id`, `label`, `iconClass`, and `documentFields`. The `id` must match the backend `EntityType.className` exactly. Form fields are ngx-formly `FormlyFieldConfig` values; use the existing base doctype helpers and examples for validation, codelists, and field layout:
++
+[source,typescript]
+----
+@Injectable({ providedIn: "root" })
+export class SampleDoctype extends BaseDoctype {
+  id = "SampleDoc";
+  label = "Sample document";
+  iconClass = "doc-icon";
+  documentFields = () => <FormlyFieldConfig[]>[];
+}
+----
+
+. Add `case "sample": return from(import("./profile-sample"));` to `frontend/src/profiles/profile.mapper.ts` so the profile ID loads its `ProfilePack`.
+. Add `src/profiles/profile-sample.ts` to the `files` arrays in `frontend/tsconfig.app.json` and `frontend/tsconfig.spec.json`.
+. Add profile translations in `frontend/src/profiles/sample/i18n/` as needed. `ProfileService.registerDoctypes()` also requests context-help field IDs for registered doctypes, so provide matching help content when the profile uses contextual help.
+
+*Verify*
+
+. Start the server with both the development profile and the new Spring profile, for example `./gradlew bootRun --args='--spring.profiles.active=dev,sample'`.
+. Build the frontend with `yarn build` from `frontend/` and run the relevant tests with `yarn ng test`.
+. Create a catalog whose type is `sample`; verify the new type is available, its form saves and validates, and its address type and profile-specific translations/help behave as expected.
 
 ==== Profile inheritance
 
-Sometimes you may want to use a profile as a base and extend it with some other functionality, like adding additional fields, changing required fields, the validation or how documents are being exported.
+Use profile inheritance when a customer variant should reuse an existing profile but change document fields, validation, permissions, facets, or exports.
 
-To inherit from another profile you need to follow the steps:
+* In the child `CatalogProfile`, set a new `identifier`, a customer-specific `title`, and `linkedProfiles = listOf("parent")`. Override only the behavior that differs.
+* Create child `EntityType` implementations for types used by the child profile, even when their behavior is initially identical to the parent type. Keep each `className` stable if it is already used by stored data or exports; set the child type's `profiles` to the child profile ID. Override `jsonSchema` when validation differs.
+* Add a child config that scans its own package. Also include the child Spring profile name in the parent config's `@Profile` list when the child needs the parent package scanned. This is how the existing InGrid customer variants load the shared InGrid beans.
+* In the frontend, create a child standalone component that extends the parent profile component and overrides `getDocTypes()` to return the child doctypes. The child doctype classes can extend parent doctypes to customize fields and validation.
+* Add the child profile module to `ProfileMapper` and both frontend TypeScript `files` arrays, just as for a new profile.
 
-Backend:
-
-* Add a new class extending from the profile
-** annotate it with `@Service`
-** override at least the fields: `identifier`, `title` and `parentProfile`
-** when modifying the export you should override the field `indexExportFormatID`
-* Optional:
-* under `types`-directory create the inherited types you want to use
-** need to be created even if the same functionality as from the parent profile
-
-[source,kotlin]
-----
-@Component
-class ParentDocumentTypeProfile(jdbcTemplate: JdbcTemplate) : ParentDocumentType(jdbcTemplate) {
-    override val profiles = arrayOf("inheritedProfile")
-}
-----
-
-* document-types can be extended to use a different JSON-schema for validation for example
-* create a new config file for activating the profile in the `profiles`-directory
-
-[source,kotlin]
-----
-@Profile("inheritedProfile")
-@Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.inheritedProfile"])
-class InheritedProfileConfig
-----
-
-Frontend:
-
-* create new profile under `src/profiles` extending another profile
-[source,kotlin]
-----
-@Component({template: ""})
-class InheritedProfileComponent extends ParentProfileComponent {}
-----
-
-* add file to `tsconfig.app.json` und `tsconfig.spec.json`
+See `InGridBastConfig` and `profile-ingrid-bast.ts` for a concrete backend and frontend example.
 
 === Features
 A feature is a functionality that can be enabled or disabled on demand.
@@ -704,14 +690,14 @@ To create a new migration task you need to do the following:
 * set new version in `MigrationBase`-constructor
 * implement `exec()`-function to run migration for each database
 
-More information can be found in the FAQ.md.
+More information can be found in the link:../FAQ.adoc[FAQ].
 
 .Beispiel
 [%collapsible]
 ====
 [source,kotlin]
 ----
-include::../server/src/main/java/de/ingrid/igeserver/migrations/tasks/M020_AddCodelistTable.kt[lines=12..]
+include::../server/src/main/java/de/ingrid/igeserver/migrations/tasks/M020AddCodelistTable.kt[lines=12..]
 ----
 ====
 
