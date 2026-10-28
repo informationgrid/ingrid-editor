@@ -23,6 +23,7 @@ import {
   DestroyRef,
   inject,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
@@ -58,6 +59,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "activity-report",
   templateUrl: "./activity-report.component.html",
   styleUrls: ["./activity-report.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     SearchInputComponent,
     MatTableModule,

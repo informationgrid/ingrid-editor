@@ -51,6 +51,9 @@ export class GeoServiceDoctype extends IngridShared {
   showUpdateGetCapabilities = true;
   showHasAccessConstraints = true;
 
+  /** Doc types selectable as coupled resources ("Dargestellte Daten") */
+  coupledResourcesDocTypeFilter: string[] = ["InGridGeoDataset"];
+
   geoServiceOptions = {
     required: {
       classification: true,
@@ -257,6 +260,7 @@ export class GeoServiceDoctype extends IngridShared {
                     className: "flex-1",
                     props: {
                       label: "Dargestellte Daten",
+                      docTypeFilter: this.coupledResourcesDocTypeFilter,
                       showLayernames:
                         this.showLayernamesForCoupledResources === true,
                       change: (field) => {

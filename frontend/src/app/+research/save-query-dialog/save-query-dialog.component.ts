@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { SaveQueryDialogResponse } from "./save-query-dialog.response";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
@@ -32,6 +37,7 @@ import { DialogTemplateComponent } from "../../shared/dialog-template/dialog-tem
   selector: "ige-save-query-dialog",
   templateUrl: "./save-query-dialog.component.html",
   styleUrls: ["./save-query-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatFormField,
     MatLabel,

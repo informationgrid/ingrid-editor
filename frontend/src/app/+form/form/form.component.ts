@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { DynamicFormComponent } from "../form-shared/form/dynamic-form.component";
 import { FormDashboardComponent } from "../form-dashboard/form-dashboard.component";
 
@@ -25,6 +25,7 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class FormComponent {}

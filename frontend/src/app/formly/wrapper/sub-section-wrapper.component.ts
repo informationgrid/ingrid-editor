@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  ViewContainerRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FieldTypeConfig,
   FieldWrapper,
@@ -69,6 +74,7 @@ export interface SubSectionWrapperProps extends FormlyFieldProps {
     "[class.bordered]": "props.bordered",
   },
   styleUrls: ["./sub-section-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatDivider, FormErrorComponent, FormlyValidationMessage],
 })
 export class SubSectionWrapper extends FieldWrapper<

@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        data-cy="dlg-close"
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>Datensätze anzeigen</h1>
@@ -19,8 +24,12 @@
     </div>
     <mat-action-list>
         <mat-divider aria-hidden="true"></mat-divider>
-        @for (item of data.datasets; track item) {
-            <button mat-list-item (click)="close(item.uuid)">
+        @for (item of data.datasets; track item; let i = $index) {
+            <button
+                [attr.data-cy]="'list-item-' + i"
+                mat-list-item
+                (click)="close(item.uuid)"
+            >
                 {{ item.title }} ({{ item.field }})
             </button>
             <mat-divider aria-hidden="true"></mat-divider>

@@ -74,4 +74,16 @@ class CodelistApiControllerTest(private val mockMvc: MockMvc) : IntegrationTest(
         resultMap["Free A"] shouldBe 2
         resultMap["Free B"] shouldBe 1
     }
+
+    @Test
+    fun `should query external codelist with filter parameter containing slashes`() {
+        mockMvc.perform(
+            get("/api/codelist/external/EPSG")
+                .param("filter", "DE_42/83 / GK_3")
+                .param("page", "0")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal),
+        )
+            .andExpect(status().isOk)
+    }
 }

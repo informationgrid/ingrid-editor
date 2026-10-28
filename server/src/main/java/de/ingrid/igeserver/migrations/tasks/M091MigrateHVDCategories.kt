@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -48,30 +49,16 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
 
-            do {
-                log.info("Handling page $page, (migrate hvd categories)")
-                val documents =
-                    entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.type = 'InGridGeoDataset' ORDER BY id""")
-                        .setFirstResult((page - 1) * pageSize)
-                        .setMaxResults(pageSize)
-                        .resultList
-                documents
-                    .forEach {
-                        (it as Document)
-                        val changed = migrateHVDCategories(it)
-                        if (changed) {
-                            log.info("Migrated HVDs for doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    }
-                page++
-            } while (documents.size == pageSize)
+            entityManager.forEachDocumentInBatches("doc.type = 'InGridGeoDataset'") {
+                val changed = migrateHVDCategories(it)
+                if (changed) {
+                    log.info("Migrated HVDs for doc with dbID ${it.id}")
+                    docRepo.save(it)
+                }
+            }
         }
     }
 

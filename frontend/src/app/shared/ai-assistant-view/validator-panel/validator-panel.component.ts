@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
@@ -27,6 +27,7 @@ import {
   selector: "ige-validator-panel",
   templateUrl: "./validator-panel.component.html",
   styleUrls: ["./validator-panel.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatExpansionPanel, MatExpansionPanelHeader],
 })
 export class ValidatorPanelComponent {

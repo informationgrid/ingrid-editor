@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
@@ -48,54 +48,40 @@ class M079MigrateDigitalTransferOptions : MigrationBase("0.79") {
     private lateinit var docRepo: DocumentRepository
 
     override fun postExec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
             log.info("Start migration of DigitalTransferOptions")
-            do {
-                log.info("Handling page $page")
-                val documents = entityManager.createQuery("""SELECT doc FROM Document doc ORDER BY id""")
-                    .setFirstResult((page - 1) * pageSize)
-                    .setMaxResults(pageSize)
-                    .resultList
-
-                documents
-                    .forEach {
-                        it as Document
-                        try {
-                            var changed = false
-                            it.data.get("digitalTransferOptions")?.forEach { options ->
-                                options as ObjectNode?
-                                val transferSize = options?.get("transferSize")
-                                if (transferSize != null && !transferSize.isNull) {
-                                    changed = true
-                                    options.set(
-                                        "transferSize",
+            entityManager.forEachDocumentInBatches {
+                try {
+                    var changed = false
+                    it.data.get("digitalTransferOptions")?.forEach { options ->
+                        options as ObjectNode?
+                        val transferSize = options?.get("transferSize")
+                        if (transferSize != null && !transferSize.isNull) {
+                            changed = true
+                            options.set(
+                                "transferSize",
+                                jacksonObjectMapper().createObjectNode().apply {
+                                    put("value", transferSize.asDouble())
+                                    set(
+                                        "unit",
                                         jacksonObjectMapper().createObjectNode().apply {
-                                            put("value", transferSize.asDouble())
-                                            set(
-                                                "unit",
-                                                jacksonObjectMapper().createObjectNode().apply {
-                                                    put("key", "MB")
-                                                },
-                                            )
+                                            put("key", "MB")
                                         },
                                     )
-                                }
-                            }
-
-                            if (changed) {
-                                log.info("Migrated doc with dbID ${it.id}")
-                                docRepo.save(it)
-                            }
-                        } catch (ex: Exception) {
-                            log.error("Error migrating document with dbID ${it.id}", ex)
+                                },
+                            )
                         }
                     }
-                page++
-            } while (documents.size == pageSize)
+
+                    if (changed) {
+                        log.info("Migrated doc with dbID ${it.id}")
+                        docRepo.save(it)
+                    }
+                } catch (ex: Exception) {
+                    log.error("Error migrating document with dbID ${it.id}", ex)
+                }
+            }
         }
     }
 }

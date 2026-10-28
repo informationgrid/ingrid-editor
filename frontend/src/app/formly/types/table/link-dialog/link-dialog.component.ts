@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FormGroup,
   ReactiveFormsModule,
@@ -37,6 +43,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-link-dialog",
   templateUrl: "./link-dialog.component.html",
   styleUrls: ["./link-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyForm],
 })
 export class LinkDialogComponent implements OnInit {

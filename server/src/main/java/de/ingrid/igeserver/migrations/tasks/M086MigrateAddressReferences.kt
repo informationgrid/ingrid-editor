@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -54,31 +55,18 @@ class M086MigrateAddressReferences : MigrationBase("0.86") {
     }
 
     override fun postExec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
 
-            do {
-                log.info("Handling page $page")
-                val documents = entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.state != 'ARCHIVED' ORDER BY id""")
-                    .setFirstResult((page - 1) * pageSize)
-                    .setMaxResults(pageSize)
-                    .resultList
-
-                documents
-                    .forEach {
-                        val type = (it as Document).catalog!!.type
-                        val addressField = if (type == "uvp" || type.startsWith("ingrid")) "pointOfContact" else "addresses"
-                        val changed = migratePointOfContact(it, addressField)
-                        if (changed) {
-                            log.info("Migrated doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    }
-                page++
-            } while (documents.size == pageSize)
+            entityManager.forEachDocumentInBatches("doc.state != 'ARCHIVED'") {
+                val type = it.catalog!!.type
+                val addressField = if (type == "uvp" || type.startsWith("ingrid")) "pointOfContact" else "addresses"
+                val changed = migratePointOfContact(it, addressField)
+                if (changed) {
+                    log.info("Migrated doc with dbID ${it.id}")
+                    docRepo.save(it)
+                }
+            }
         }
     }
 

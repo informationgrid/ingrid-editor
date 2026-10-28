@@ -24,6 +24,7 @@ import {
   Inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -39,6 +40,7 @@ import { FormDialogData } from "../../../../app/formly/types/table/form-dialog/f
 
 @Component({
   templateUrl: "./geometry-context-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatCheckboxModule,
     MatInputModule,

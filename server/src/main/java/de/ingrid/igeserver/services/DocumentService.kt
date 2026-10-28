@@ -28,6 +28,8 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
+import de.ingrid.igeserver.model.ResearchPaging
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.PostArchivePayload
@@ -133,6 +135,7 @@ class DocumentService(
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
     val auditLog: AuditLogger,
+    val researchService: ResearchService,
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -782,9 +785,6 @@ class DocumentService(
             preDeletePipe.runFilters(preDeletePayload, filterContext)
         }
 
-        // TODO: check if document is referenced by another one and handle
-        //       it somehow
-
         val docCategory = if (isAddress(docData.wrapper)) DocumentCategory.ADDRESS else DocumentCategory.DATA
         findChildren(catalogId, id, docCategory).hits.forEach {
             deleteRecursively(catalogId, it.wrapper.id!!, filterContext, options)
@@ -1043,6 +1043,90 @@ class DocumentService(
         val profile = catalogService.getProfileFromCatalog(catalogId)
         val docType = getDocumentType(document.type, profile.identifier, profile.linkedProfiles)
         return docType.getIncomingReferenceUUIDs(document, options).toSet()
+    }
+
+    /**
+     * Fetch the documents which reference the given document, so that clients
+     * can show them as list items. Reuses the existing mapping of a document
+     * with its wrapper to the partial [DocumentInfo] representation.
+     */
+    fun getReferencedDocuments(doc: Document, uuids: List<String>): List<DocumentInfo> {
+        val catalogIdentifier = doc.catalog!!.identifier
+        return uuids.map { uuid ->
+            runCatching {
+                val wrapper = getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
+                val document = getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
+                mapToDocumentInfo(DocumentData(wrapper, document), isAddress = false)
+            }.getOrElse {
+                // fallback for inconsistent data: show at least the uuid of the referencing document
+                DocumentInfo(
+                    0,
+                    uuid,
+                    uuid,
+                    "W",
+                    false,
+                    null,
+                    "",
+                    OffsetDateTime.now(),
+                    OffsetDateTime.now(),
+                    null,
+                    emptyList(),
+                    false,
+                    false,
+                    false,
+                )
+            }
+        }
+    }
+
+    /**
+     * Map a document with its wrapper to the partial document representation
+     * used by the client.
+     */
+    fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo = DocumentInfo(
+        data.wrapper.id!!,
+        data.document.title ?: "???",
+        data.document.uuid,
+        data.document.state.getState(),
+        data.wrapper.countChildren > 0,
+        data.wrapper.parent?.id,
+        data.wrapper.type,
+        data.document.modified!!,
+        data.document.contentmodified!!,
+        data.wrapper.pending_date,
+        data.wrapper.tags,
+        data.wrapper.hasWritePermission,
+        data.wrapper.hasOnlySubtreeWritePermission,
+        isAddress,
+    )
+
+    /**
+     * Build the SQL query for all documents referencing the given document,
+     * depending on its document type.
+     */
+    private fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String {
+        val catalogIdentifier = doc.catalog!!.identifier
+        val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
+        val docType = getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
+        return docType.getIncomingReferenceQuery(doc, options)
+    }
+
+    /**
+     * Query all documents which reference the given document (restricted to
+     * those the given user is allowed to read), used by the
+     * "accessibleReferences" endpoint.
+     */
+    fun queryAccessibleReferences(
+        principal: Principal,
+        doc: Document,
+        options: IncomingReferenceOptions,
+        paging: ResearchPaging = ResearchPaging(),
+    ): ResearchResponse {
+        val refQuery = getIncomingReferenceQuery(doc, options)
+        if (refQuery.isEmpty()) {
+            return ResearchResponse(0, emptyList())
+        }
+        return researchService.querySql(principal, doc.catalog!!.identifier, refQuery, paging)
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {

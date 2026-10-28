@@ -35,7 +35,7 @@ ige-form-error {
   padding-bottom: 24px;
 }
 
-.show-border formly-field {
+.show-border > formly-field {
   border: 1px solid #00000012;
   border-radius: 5px;
   padding: 10px;

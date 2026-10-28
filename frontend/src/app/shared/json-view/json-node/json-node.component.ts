@@ -17,13 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { KeyValuePipe, NgClass } from "@angular/common";
 
 @Component({
   selector: "ige-json-node",
   imports: [KeyValuePipe, NgClass],
   templateUrl: "./json-node.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./json-node.component.scss",
 })
 export class JsonNodeComponent {

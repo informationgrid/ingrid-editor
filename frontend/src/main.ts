@@ -69,6 +69,7 @@ import { RxStompService } from "./app/rx-stomp.service";
 import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, provideFormlyCore } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
+import { dataCyExtension } from "./app/formly/data-cy.extension";
 import { pluginProvider } from "./app/plugin.provider";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -394,6 +395,7 @@ bootstrapApplication(AppComponent, {
         extras: {
           lazyRender: true,
         },
+        extensions: [{ name: "data-cy", extension: dataCyExtension }],
       },
       ...withFormlyMaterial(),
       withFormlyFieldToggle(),

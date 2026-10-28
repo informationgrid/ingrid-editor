@@ -132,6 +132,7 @@
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                         <mat-menu #menu>
                                             <button
+                                                data-cy="action-edit"
                                                 mat-menu-item
                                                 (click)="
                                                     moreButton.focus();
@@ -141,6 +142,7 @@
                                                 Bearbeiten
                                             </button>
                                             <button
+                                                data-cy="action-remove"
                                                 mat-menu-item
                                                 (click)="
                                                     moreButton.focus();
@@ -166,7 +168,9 @@
                                         Format:
                                         @if (item.format?.key) {
                                             {{
-                                                item.format?.key
+                                                $safeNavigationMigration(
+                                                    item.format?.key
+                                                )
                                                     | codelist
                                                         : props.codelistIdForFileReferenceFormats
                                                     | async
@@ -208,11 +212,17 @@
                                 @if (item.license?.key) {
                                     <a
                                         class="url no-text-transform icon-in-table"
-                                        [href]="item.license?.key"
+                                        [href]="
+                                            $safeNavigationMigration(
+                                                item.license?.key
+                                            )
+                                        "
                                         target="_blank"
                                     >
                                         {{
-                                            item.license?.key
+                                            $safeNavigationMigration(
+                                                item.license?.key
+                                            )
                                                 | codelist: "20004"
                                                 | async
                                         }}
@@ -226,7 +236,9 @@
                             @if (item.availability?.key) {
                                 <div>
                                     {{
-                                        item.availability?.key
+                                        $safeNavigationMigration(
+                                            item.availability?.key
+                                        )
                                             | codelist: "20005"
                                             | async
                                     }}
@@ -257,6 +269,7 @@
                     [attr.aria-label]="$any(props)?.ariaLabel"
                     aria-haspopup="dialog"
                     aria-description="Dateien hochladen"
+                    data-cy="btn-upload-files"
                 >
                     Dateien hochladen
                 </button>
@@ -278,6 +291,7 @@
                     [attr.aria-label]="$any(props)?.ariaLabel"
                     aria-haspopup="dialog"
                     aria-description="Link angeben"
+                    data-cy="btn-add-link"
                 >
                     Link angeben
                 </button>

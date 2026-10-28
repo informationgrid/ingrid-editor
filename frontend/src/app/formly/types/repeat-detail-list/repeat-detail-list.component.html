@@ -34,6 +34,7 @@
                     </div>
                     @if (formControl.enabled) {
                         <button
+                            data-cy="btn-more"
                             mat-icon-button
                             type="button"
                             class="menu-button"
@@ -44,10 +45,18 @@
                         </button>
                     }
                     <mat-menu #menu>
-                        <button mat-menu-item (click)="editItem(index)">
+                        <button
+                            data-cy="action-edit"
+                            mat-menu-item
+                            (click)="editItem(index)"
+                        >
                             Bearbeiten
                         </button>
-                        <button mat-menu-item (click)="removeItem(index)">
+                        <button
+                            data-cy="action-remove"
+                            mat-menu-item
+                            (click)="removeItem(index)"
+                        >
                             Entfernen
                         </button>
                     </mat-menu>

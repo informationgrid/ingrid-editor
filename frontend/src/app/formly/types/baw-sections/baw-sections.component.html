@@ -14,6 +14,7 @@
             @if (!isDisabled) {
                 <button
                     type="button"
+                    data-cy="btn-more"
                     class="menu dark menu-button"
                     [class.elevated]="markSection[i]"
                     mat-icon-button
@@ -24,10 +25,15 @@
                 </button>
                 <mat-menu #sectionMenu="matMenu">
                     <button
+                        data-cy="action-delete"
                         mat-menu-item
                         type="button"
                         (click)="removeSection(i)"
-                        [disabled]="currentField.form?.disabled"
+                        [disabled]="
+                            $safeNavigationMigration(
+                                currentField.form?.disabled
+                            )
+                        "
                     >
                         Löschen
                     </button>

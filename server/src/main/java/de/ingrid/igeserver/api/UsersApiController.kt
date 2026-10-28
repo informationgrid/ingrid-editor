@@ -460,6 +460,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         buildInfo?.version,
         if (buildInfo != null) Date.from(buildInfo?.time) else null,
         gitInfo?.commitId,
+        if (gitInfo != null) Date.from(gitInfo?.commitTime) else null,
     )
 
     override fun setCatalogAdmin(

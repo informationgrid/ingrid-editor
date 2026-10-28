@@ -24,6 +24,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { MatFormField } from "@angular/material/form-field";
@@ -84,6 +85,7 @@ export interface ArchiveHistoryEntry {
   ],
   templateUrl: "./uvp-archive.component.html",
   styleUrl: "./uvp-archive.component.scss",
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [UvpArchiveService],
 })
 export class UvpArchiveComponent implements OnInit {

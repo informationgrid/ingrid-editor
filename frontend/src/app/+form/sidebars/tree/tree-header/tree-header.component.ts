@@ -26,6 +26,7 @@ import {
   inject,
   DestroyRef,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
@@ -49,6 +50,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-tree-header",
   templateUrl: "./tree-header.component.html",
   styleUrls: ["./tree-header.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatCheckbox,
     MatTooltip,

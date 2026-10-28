@@ -81,7 +81,7 @@
                 class="clickable list-item"
                 data-cy="list-item"
                 tabindex="0"
-                (click)="this.onItemClick(item?.key)"
+                (click)="this.onItemClick($safeNavigationMigration(item?.key))"
                 (keyup.enter)="removeItem(i, $event)"
                 role="listitem"
                 [attr.aria-labelledby]="field | ariaLabel"

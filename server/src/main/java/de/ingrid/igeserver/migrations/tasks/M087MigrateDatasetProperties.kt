@@ -21,8 +21,8 @@ package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.imports.internal.migrations.Migrate120
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -49,29 +49,16 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
     }
 
     override fun postExec() {
-        val pageSize = 100
-        var page = 1
-
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
 
             val docTypesToMigrate = """("InGridGeoDataset","InGridDataCollection","InGridGeoService","InGridInformationSystem","InGridPublication","InGridProject","InGridSpecialisedTask")"""
 
-            do {
-                log.info("Handling page $page")
-                val documents = entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.type IN $docTypesToMigrate ORDER BY id""")
-                    .setFirstResult((page - 1) * pageSize)
-                    .setMaxResults(pageSize)
-                    .resultList
-
-                documents.forEach {
-                    it as Document
-                    val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
-                    it.data.set("properties", properties)
-                    log.info("Migrated doc with dbID ${it.id}")
-                }
-                page++
-            } while (documents.size == pageSize)
+            entityManager.forEachDocumentInBatches("doc.type IN $docTypesToMigrate") {
+                val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
+                it.data.set("properties", properties)
+                log.info("Migrated doc with dbID ${it.id}")
+            }
         }
     }
 }

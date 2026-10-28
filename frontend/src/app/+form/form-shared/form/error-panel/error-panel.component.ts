@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostListener, inject, OnInit, input } from "@angular/core";
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
@@ -37,6 +44,7 @@ import { forkJoin, timer } from "rxjs";
       ]),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIconModule, MatButtonModule],
 })
 export class ErrorPanelComponent implements OnInit {

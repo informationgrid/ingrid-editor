@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input } from "@angular/core";
+import {
+  Component,
+  computed,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { IgeError } from "../../../../models/ige-error";
 
@@ -25,6 +30,7 @@ import { IgeError } from "../../../../models/ige-error";
   selector: "ige-time-reference-explanation",
   imports: [],
   templateUrl: "./time-reference-explanation.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./time-reference-explanation.component.scss",
 })
 export class TimeReferenceExplanationComponent {

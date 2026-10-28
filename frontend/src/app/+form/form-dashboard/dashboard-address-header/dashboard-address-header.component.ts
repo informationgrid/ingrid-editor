@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
@@ -27,6 +32,7 @@ import { ActionButtonComponent } from "../../../shared/action-button/action-butt
   selector: "dashboard-address-header",
   templateUrl: "./dashboard-address-header.component.html",
   styleUrls: ["./dashboard-address-header.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ActionButtonComponent],
 })
 export class DashboardAddressHeaderComponent implements OnInit {

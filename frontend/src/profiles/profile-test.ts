@@ -20,7 +20,7 @@
 import { McloudDoctype } from "./mcloud/mcloud.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { TestDoctype } from "./test/test.doctype";
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { ContextHelpService } from "../app/services/context-help/context-help.service";
 import { TestAddressDoctype } from "./test/test-address.doctype";
@@ -28,6 +28,7 @@ import { TestOrganisationDoctype } from "./test/test-organisation.doctype";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class TestComponent {

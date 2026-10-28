@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ChangeDetectionStrategy } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { DialogTemplateComponent } from "../../../../../shared/dialog-template/dialog-template.component";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
@@ -35,6 +35,7 @@ export interface PublicationTypeDialogOptions {
   selector: "ige-publication-type.dialog",
   templateUrl: "./publication-type.dialog.html",
   styleUrls: ["./publication-type.dialog.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DialogTemplateComponent,
     MatRadioGroup,

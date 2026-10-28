@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostListener, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
@@ -30,6 +36,7 @@ import { TabContainerComponent } from "../../+research/tab-container.component";
   selector: "ige-user-management",
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTabNav,
     MatTabLink,

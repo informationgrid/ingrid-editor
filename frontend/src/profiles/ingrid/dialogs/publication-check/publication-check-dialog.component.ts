@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatDialogRef } from "@angular/material/dialog";
@@ -26,6 +26,7 @@ import { MatDialogRef } from "@angular/material/dialog";
   selector: "ige-publication-check",
   imports: [DialogTemplateComponent, MatCheckbox],
   templateUrl: "./publication-check-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./publication-check-dialog.component.scss",
 })
 export class PublicationCheckDialogComponent {

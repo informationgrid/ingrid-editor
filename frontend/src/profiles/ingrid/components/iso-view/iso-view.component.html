@@ -24,6 +24,7 @@
             <mat-form-field appearance="outline">
                 <mat-label>Format</mat-label>
                 <mat-select
+                    data-cy="export-format"
                     [value]="selectedFormat()"
                     (selectionChange)="onFormatChange($event.value)"
                 >

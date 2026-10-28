@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   BehaviourFormatBackend,
   BehaviourService,
@@ -35,6 +35,7 @@ import { KeyValuePipe } from "@angular/common";
   selector: "ige-behaviours",
   templateUrl: "./behaviours.component.html",
   styleUrls: ["./behaviours.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateNoHeaderComponent,
     BehaviourItemComponent,

@@ -4,7 +4,7 @@
         cdkDragHandle
         class="dialog-title-wrapper flex-row align-items-center gap-12"
     >
-        <button mat-icon-button mat-dialog-close>
+        <button data-cy="dlg-close" mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
         <h1 mat-dialog-title>
@@ -43,10 +43,13 @@
 
     <!-- dialog action buttons -->
     <mat-dialog-actions>
-        <button mat-flat-button mat-dialog-close="true">Schließen</button>
+        <button data-cy="cancel" mat-flat-button mat-dialog-close="true">
+            Schließen
+        </button>
         <div class="flex-1"></div>
         @if (forResponsibility()) {
             <button
+                data-cy="form-dialog-confirm"
                 color="primary"
                 mat-flat-button
                 [disabled]="!selectedUser()"
@@ -57,6 +60,7 @@
         }
         @if (!forResponsibility()) {
             <button
+                data-cy="form-dialog-confirm"
                 color="primary"
                 mat-flat-button
                 [disabled]="!selectedUser()"

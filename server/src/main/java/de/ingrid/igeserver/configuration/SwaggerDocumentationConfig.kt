@@ -70,11 +70,6 @@ class SwaggerDocumentationConfig(private val stringToCatalogImportOptionsConvert
          * This configuration is needed to map path correctly to angular application
          * Otherwise a reload will lead to a 404 - Not Found error
          */
-        val basePath = ""
-        registry.addResourceHandler("$basePath/swagger-ui.html**")
-            .addResourceLocations("classpath://")
-        registry.addResourceHandler("$basePath/swagger-ui*/**")
-            .addResourceLocations("classpath:/META-INF/resources/webjars/")
         registry.addResourceHandler("/**/*")
             .addResourceLocations("classpath:/static/")
 //            .setCachePeriod(3600)

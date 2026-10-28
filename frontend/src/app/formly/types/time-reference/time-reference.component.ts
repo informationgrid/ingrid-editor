@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -91,6 +98,7 @@ interface TimeReferenceProps extends FormlyFieldProps {
     FormErrorComponent,
   ],
   templateUrl: "./time-reference.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./time-reference.component.scss",
 })
 export class TimeReferenceComponent

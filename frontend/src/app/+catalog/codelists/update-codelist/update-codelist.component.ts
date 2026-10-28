@@ -23,6 +23,7 @@ import {
   Inject,
   OnInit,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -57,6 +58,7 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
   selector: "ige-update-codelist",
   templateUrl: "./update-codelist.component.html",
   styleUrls: ["./update-codelist.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

@@ -28,6 +28,7 @@
             >
                 Katalog:
                 <button
+                    data-cy="btn-catalog-select"
                     class="catalog-button"
                     mat-button
                     [matTooltip]="currentCatalog"
@@ -47,6 +48,7 @@
                 <mat-menu #catMenu="matMenu">
                     @for (catalog of otherAssignedCatalogs(); track catalog) {
                         <span
+                            data-cy="action-switch-catalog"
                             mat-menu-item
                             class="menu-item"
                             (click)="chooseCatalog(catalog.id)"
@@ -97,6 +99,7 @@
               <mat-icon>arrow_drop_down</mat-icon>
             </span>-->
                     <button
+                        data-cy="action-manage-profile"
                         mat-menu-item
                         [disableRipple]="true"
                         (click)="openProfileSettings()"
@@ -151,6 +154,7 @@
                         <mat-divider aria-hidden="true"></mat-divider>
                         @for (group of menuItems; track group) {
                             <button
+                                [attr.data-cy]="'admin-menu-' + group.path"
                                 mat-menu-item
                                 [routerLink]="[
                                     catalogId() + '/settings/' + group.path,
@@ -175,9 +179,17 @@
                     }
                     <div (click)="$event.stopPropagation()" class="versioninfo">
                         <div>Version</div>
-                        <div>
+                        <div
+                            class="clickable"
+                            [matTooltip]="
+                                'Letzter Build: ' +
+                                (version().date | date: 'dd.LL.yyyy, HH:mm')
+                            "
+                        >
                             {{ version().version }},
-                            {{ version().date | date: "dd.LL.yyyy, HH:mm" }}
+                            {{
+                                version().commitTime | date: "dd.LL.yyyy, HH:mm"
+                            }}
                         </div>
                         <div>GIT Commit ID</div>
                         <div>{{ version().commitId }}</div>

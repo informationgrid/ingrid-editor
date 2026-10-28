@@ -18,7 +18,6 @@ pipeline {
 
 
     stages {
-        // normal build if it's not the master branch and not the support branch, except if it's a SNAPSHOT-version
         stage('Build') {
             when { not { buildingTag() } }
             steps {
@@ -26,16 +25,26 @@ pipeline {
             }
         }
 
+        // license header, ktlint and prettier violations only warn (yellow) and do not fail the build
+        stage ('Code Style') {
+            when { not { buildingTag() } }
+            steps {
+                warnError('Code style violations found (license headers, ktlint, prettier)') {
+                    sh './gradlew --no-daemon :frontend:testFormatting :server:spotlessCheck'
+                }
+            }
+        }
+
+        // test failures only warn (yellow) and do not block later stages;
+        // separate warnError blocks so the server tests still run when the frontend tests fail
         stage ('Tests') {
             when { not { buildingTag() } }
             steps {
-                script {
-                    try {
-                        sh './gradlew --no-daemon :frontend:test :frontend:testFormatting :server:spotlessCheck'
-                    } catch(error) {
-                        currentBuild.result = 'UNSTABLE'
-                    }
+                warnError('Frontend tests failed') {
+                    sh './gradlew --no-daemon :frontend:test'
+                }
 
+                warnError('Server tests failed') {
                     sh './gradlew :server:test'
                 }
             }
@@ -59,8 +68,7 @@ pipeline {
                 sh "./gradlew cyclonedxBom"
                 sh "./gradlew cyclonedxBom -PdevSBOM"
                 script {
-                    def imageVersion = determineVersion() == 'main' ? 'latest' : determineVersion()
-                    def imageToScan = "registry.opencode.de/informationgrid/ingrid-editor:${imageVersion}"
+                    def imageToScan = "bellsoft/liberica-openjre-alpine:25"
 
                     docker.withRegistry('https://registry.opencode.de', 'registry-opencode') {
                         sh """
@@ -136,13 +144,13 @@ pipeline {
                     withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
                         def baseVersion = determineVersion()
                         def sbomConfigs = [
-                            [artifact: 'build/reports/sbom.json',        suffix: '',              tag: 'deps_prod'],
-                            [artifact: 'build/reports/sbom-dev.json',    suffix: '-dev',          tag: 'deps_dev'],
-                            [artifact: 'build/reports/sbom-docker.json', suffix: '-docker-image', tag: 'deps_docker']
+                            [artifact: 'build/reports/sbom.json',        suffix: '',              tag: 'ingrid_deps_prod'],
+                            [artifact: 'build/reports/sbom-dev.json',    suffix: '-dev',          tag: 'ingrid_deps_dev'],
+                            [artifact: 'build/reports/sbom-docker.json', suffix: '-docker-image', tag: 'ingrid_deps_docker']
                         ]
 
                         sbomConfigs.each { cfg ->
-                            def props = [group: 'InGrid', parentId: parentId, tags: ['ingrid', cfg.tag]]
+                            def props = [group: 'InGrid', parentId: parentId, tags: ['ingrid', cfg.tag], isLatest: cfg.suffix == '']
                             dependencyTrackPublisher(artifact: cfg.artifact, projectName: componentName, projectVersion: baseVersion + cfg.suffix, synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: props)
                         }
                     }

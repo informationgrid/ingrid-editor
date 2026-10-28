@@ -5,7 +5,9 @@
             [class.required]="props.required"
         >
             <ige-form-label
-                [hasContextHelp]="props?.hasContextHelp"
+                [hasContextHelp]="
+                    $safeNavigationMigration(props?.hasContextHelp)
+                "
                 (contextHelp)="showContextHelp($event)"
             >
                 {{ props?.externalLabel }}
@@ -192,6 +194,7 @@
                                         @if (props.allowDuplicate) {
                                             <button
                                                 type="button"
+                                                data-cy="action-duplicate"
                                                 mat-menu-item
                                                 (click)="duplicateRow(rowIndex)"
                                             >
@@ -200,6 +203,7 @@
                                         }
                                         <button
                                             type="button"
+                                            data-cy="action-edit"
                                             mat-menu-item
                                             (click)="editRow(rowIndex)"
                                         >
@@ -207,6 +211,7 @@
                                         </button>
                                         <button
                                             type="button"
+                                            data-cy="action-delete"
                                             mat-menu-item
                                             (click)="removeRow(rowIndex)"
                                         >
@@ -283,7 +288,9 @@
                     [class.required]="props.required"
                 >
                     <ige-form-label
-                        [hasContextHelp]="props?.hasContextHelp"
+                        [hasContextHelp]="
+                            $safeNavigationMigration(props?.hasContextHelp)
+                        "
                         (contextHelp)="showContextHelp($event)"
                     >
                         @if (props?.required) {
@@ -308,6 +315,7 @@
                     <div class="button-wrapper">
                         <button
                             type="button"
+                            data-cy="btn-upload-files"
                             mat-stroked-button
                             color="primary"
                             (click)="showUploadFilesDialog()"
@@ -317,6 +325,7 @@
                         oder
                         <button
                             type="button"
+                            data-cy="btn-add-link"
                             mat-stroked-button
                             color="primary"
                             (click)="showAddLinkDialog()"

@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, input } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
 import { AsyncPipe } from "@angular/common";
 import { ConfigService } from "../../../../app/services/config/config.service";
@@ -44,6 +50,7 @@ interface ReferenceItemInternal extends ReferenceItem {
   selector: "ige-reference-view",
   imports: [CodelistPipe, AsyncPipe, MatDivider],
   templateUrl: "./reference-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./reference-view.component.scss",
 })
 export class ReferenceViewComponent {

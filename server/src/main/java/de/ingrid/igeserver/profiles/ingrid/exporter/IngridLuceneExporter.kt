@@ -136,6 +136,11 @@ class IngridLuceneExporter(
             getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
         )
 
+        "InGridAlgorithm" -> Pair(
+            "export/ingrid/lucene/template-lucene.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+
         "InGridOrganisationDoc" -> Pair(
             "export/ingrid/lucene/template-lucene-address.jte",
             getMapper(IngridDocType.ADDRESS, doc, catalog, options),

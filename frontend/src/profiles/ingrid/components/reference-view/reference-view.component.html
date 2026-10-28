@@ -1,14 +1,19 @@
 <div class="type flex-row justify-content-space-between">
     <div>
         {{
-            (item().type?.key | codelist: "2000" | async) ?? item().type?.value
+            ($safeNavigationMigration(item().type?.key)
+                | codelist: "2000"
+                | async) ?? item().type?.value
         }}
     </div>
     @if (urlItem()?.urlDataType) {
         <div class="comment-field">
             {{
-                (urlItem().urlDataType?.key
-                    | codelist: urlItem().urlDataType?._codelistId
+                ($safeNavigationMigration(urlItem().urlDataType?.key)
+                    | codelist
+                        : $safeNavigationMigration(
+                              urlItem().urlDataType?._codelistId
+                          )
                     | async) ?? urlItem().urlDataType?.value
             }}
         </div>

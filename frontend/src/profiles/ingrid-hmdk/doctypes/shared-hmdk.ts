@@ -70,14 +70,18 @@ export class SharedHmdk {
       atLeastOnePublisher: this.atLeastOnePublisher,
     };
 
-    // at least one "Datendownload" is required when HmbTG is activated
+    // at least one "Datendownload" is required when HmbTG is activated.
+    // not all doctypes have typed references (e.g. "Algorithmus"), so skip the
+    // validator if there is no references field
     const references = fieldConfig
       .find((field) => field.props.label === "Verweise")
-      .fieldGroup.find((field) => field.key === "references");
-    references.validators = {
-      ...references.validators,
-      downloadLinkWhenHmbtg: this.downloadLinkWhenHmbtg,
-    };
+      ?.fieldGroup.find((field) => field.key === "references");
+    if (references) {
+      references.validators = {
+        ...references.validators,
+        downloadLinkWhenHmbtg: this.downloadLinkWhenHmbtg,
+      };
+    }
 
     return fieldConfig;
   };
@@ -86,8 +90,8 @@ export class SharedHmdk {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
       // equals "Herausgeber"
       !(
-        field.model.properties?.isOpenData ||
-        field.model.properties?.publicationHmbTG
+        this.getDocumentProperties(field)?.isOpenData ||
+        this.getDocumentProperties(field)?.publicationHmbTG
       ) ||
       (ctrl.value
         ? ctrl.value.some((address: any) => address.type?.key === "10")
@@ -104,26 +108,79 @@ export class SharedHmdk {
 
   downloadLinkWhenHmbtg = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-      !field.model.properties?.publicationHmbTG ||
+      !this.getDocumentProperties(field)?.publicationHmbTG ||
       ctrl.value?.some((row: any) => row.type?.key === "9990") || // Datendownload
       field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
     message:
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
   };
 
+  // at least one link in "Verweise" (or a file in "Dateien") is required when HmbTG is
+  // activated. For doctypes without typed references (e.g. "Algorithmus") the links are
+  // plain URL fields, so the check looks at those fields instead. Since formly does not
+  // apply validators to keyless sections, this validator is attached to each of them.
+  urlOrFileWhenHmbtg = {
+    expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+      !this.getDocumentProperties(field)?.publicationHmbTG ||
+      field.form.value.apiUrl?.length > 0 ||
+      field.form.value.sourceCodeUrl?.length > 0 ||
+      field.form.value.websiteUrl?.length > 0 ||
+      field.form.value.exampleUrl?.length > 0 ||
+      field.form.value.publiccodeUrl?.length > 0 ||
+      field.form.value.additionalUrls?.some(
+        (row: any) => row.url?.length > 0,
+      ) ||
+      field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
+    message:
+      "Bei aktivierter 'Veröffentlichung gemäß HmbTG'-Checkbox muss mindestens ein Link im Abschnitt 'Verweise' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
+  };
+
+  // The HmbTG flag is stored in the document properties. `field.model` cannot be used to
+  // read it, since it points to the model slice the field is bound to, which is the root
+  // model for leaf fields, but e.g. the (possibly null) array of a repeat field otherwise.
+  private getDocumentProperties(field: FormlyFieldConfig) {
+    let root = field;
+    while (root.parent) root = root.parent;
+    return root.model?.properties;
+  }
+
+  // The HmbTG validators do not depend on the value of the controls they are attached to,
+  // but on the 'Veröffentlichung gemäß HmbTG' checkbox. Angular does not re-run validators
+  // when unrelated controls change, so revalidation has to be triggered explicitly when
+  // the checkbox state changes.
+  private revalidateHmbtgFields(field: FormlyFieldConfig) {
+    const hmbtgValidators = [
+      "atLeastOnePublisher",
+      "downloadLinkWhenHmbtg",
+      "urlOrFileWhenHmbtg",
+    ];
+    let root = field;
+    while (root.parent) root = root.parent;
+    const walk = (field: FormlyFieldConfig) => {
+      if (
+        field.formControl &&
+        hmbtgValidators.some((key) => key in (field.validators ?? {}))
+      ) {
+        field.formControl.updateValueAndValidity();
+      }
+      field.fieldGroup?.forEach(walk);
+    };
+    walk(root);
+  }
+
   private getInformationHmbTGFieldConfig(doc: IngridShared) {
     return doc.addRepeatList("informationHmbTG", "Informationsgegenstand", {
       asSelect: true,
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          field.model.properties?.publicationHmbTG !== true &&
-          field.model.properties?.isOpenData !== true,
+          this.getDocumentProperties(field)?.publicationHmbTG !== true &&
+          this.getDocumentProperties(field)?.isOpenData !== true,
         "props.disabled": (field: FormlyFieldConfig) =>
-          (field.model.properties?.publicationHmbTG !== true &&
-            field.model.properties?.isOpenData === true) ||
+          (this.getDocumentProperties(field)?.publicationHmbTG !== true &&
+            this.getDocumentProperties(field)?.isOpenData === true) ||
           field.options.formState.disabled,
         "props.required": (field: FormlyFieldConfig) =>
-          field.model.properties?.publicationHmbTG === true,
+          this.getDocumentProperties(field)?.publicationHmbTG === true,
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",
@@ -138,6 +195,9 @@ export class SharedHmdk {
     doc: IngridShared,
     field: FormlyFieldConfig,
   ) {
+    // the form control was already updated by the checkbox click, so the validators can
+    // be re-run with the new state right away
+    this.revalidateHmbtgFields(field);
     const checked = field.formControl.value?.publicationHmbTG;
     if (checked) {
       this.handleActivateHmbTG(doc, field);
@@ -155,7 +215,9 @@ export class SharedHmdk {
       field.form
         .get("resource.accessConstraints")
         ?.setValue(
-          field.model.properties?.isInspireIdentified ? [{ key: "1" }] : [],
+          that.getDocumentProperties(field)?.isInspireIdentified
+            ? [{ key: "1" }]
+            : [],
         );
 
       // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
@@ -208,21 +270,24 @@ export class SharedHmdk {
                 executeAction(this);
               } else {
                 field.formControl.setValue(false);
+                this.revalidateHmbtgFields(field);
               }
             });
         } else {
           field.formControl.setValue(false);
+          this.revalidateHmbtgFields(field);
         }
       });
   }
 
   private handleDeactivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
+    const isOpenData = this.getDocumentProperties(field)?.isOpenData;
     function executeAction() {
       // remove all categories
       field.form.get("openDataCategories")?.setValue([]);
       // remove all "Informationsgegenstände" (set to "ohne Veröffentlichungspflicht" if open data)
       field.form.get("informationHmbTG")?.setValue(
-        field.model.properties?.isOpenData
+        isOpenData
           ? [
               {
                 key: "hmbtg_20_ohne_veroeffentlichungspflicht",
@@ -250,6 +315,7 @@ export class SharedHmdk {
             executeAction();
           } else {
             field.formControl.setValue(true);
+            this.revalidateHmbtgFields(field);
           }
         });
     } else {
@@ -266,6 +332,7 @@ export class SharedHmdk {
         ...field.formControl.value,
         publicationHmbTG: true,
       });
+      this.revalidateHmbtgFields(field);
       if (field.model.resource !== undefined) {
         field.model.resource.useConstraints = [
           {
@@ -280,7 +347,7 @@ export class SharedHmdk {
       }
 
       // if inspire set access constraint "keine"
-      if (field.model.properties?.isInspireIdentified)
+      if (this.getDocumentProperties(field)?.isInspireIdentified)
         field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
 
       this.tagsService
@@ -316,8 +383,8 @@ export class SharedHmdk {
     // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
     if (
       field.model.resource &&
-      (field.model.properties?.isOpenData ||
-        field.model.properties?.publicationHmbTG)
+      (this.getDocumentProperties(field)?.isOpenData ||
+        this.getDocumentProperties(field)?.publicationHmbTG)
     )
       field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
   }

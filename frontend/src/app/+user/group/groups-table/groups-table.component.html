@@ -67,7 +67,13 @@
 
 <div class="table-footer">
     @if (dataSource.data?.length) {
-        <button mat-flat-button (click)="exportTable()">CSV</button>
+        <button
+            data-cy="btn-export-csv"
+            mat-flat-button
+            (click)="exportTable()"
+        >
+            CSV
+        </button>
     }
     <mat-paginator
         [pageSize]="10"

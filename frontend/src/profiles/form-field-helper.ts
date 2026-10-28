@@ -1109,6 +1109,7 @@ export class FormFieldHelper {
       wrappers: ["panel"],
       defaultValue: options?.defaultValue ?? [],
       className: options?.className,
+      expressions: options?.expressions,
       props: {
         codelistId: options?.codelistId,
         externalLabel: label,

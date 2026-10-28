@@ -3,7 +3,12 @@
         cdkDragHandle
         class="dialog-title-wrapper flex-row align-items-center gap-12"
     >
-        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <button
+            data-cy="dlg-close"
+            mat-icon-button
+            mat-dialog-close
+            aria-label="Dialog schließen"
+        >
             <mat-icon>close</mat-icon>
         </button>
         <h1 mat-dialog-title>Neuen Katalog anlegen</h1>
@@ -15,6 +20,7 @@
                 <mat-label>Katalogname</mat-label>
                 <input
                     matInput
+                    data-cy="input-catalog-name"
                     autocomplete="off"
                     [igeFocus]="true"
                     [(ngModel)]="model.name"
@@ -37,6 +43,7 @@
     </mat-dialog-content>
     <mat-dialog-actions align="end">
         <button
+            data-cy="form-dialog-confirm"
             type="submit"
             color="primary"
             mat-flat-button

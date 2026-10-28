@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 
 interface LfsReferenceItem {
   type: any;
@@ -36,6 +36,7 @@ interface LfsSource {
   selector: "ige-reference-view",
   imports: [],
   templateUrl: "./lfs-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./lfs-view.component.scss",
 })
 export class LfsViewComponent {

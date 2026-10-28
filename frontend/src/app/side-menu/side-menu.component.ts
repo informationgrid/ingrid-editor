@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, Signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -55,6 +62,7 @@ import { UiStore } from "../store/ui.store";
       ]),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     MatNavList,

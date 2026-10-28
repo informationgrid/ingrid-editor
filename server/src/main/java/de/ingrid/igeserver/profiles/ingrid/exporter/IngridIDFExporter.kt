@@ -130,6 +130,7 @@ class IngridIDFExporter(
         "InGridProject" -> "export/ingrid/idf/idf-project.jte"
         "InGridDataCollection" -> "export/ingrid/idf/idf-dataCollection.jte"
         "InGridInformationSystem" -> "export/ingrid/idf/idf-informationSystem.jte"
+        "InGridAlgorithm" -> "export/ingrid/idf/idf-algorithm.jte"
         "InGridOrganisationDoc" -> "export/ingrid/idf/idf-address.jte"
         "InGridPersonDoc" -> "export/ingrid/idf/idf-address.jte"
         else -> throw NoExporterException.forExporter(this.javaClass.simpleName, type)
@@ -175,6 +176,7 @@ class IngridIDFExporter(
         "InGridProject" -> ProjectModelTransformer::class
         "InGridDataCollection" -> DataCollectionModelTransformer::class
         "InGridInformationSystem" -> InformationSystemModelTransformer::class
+        "InGridAlgorithm" -> AlgorithmModelTransformer::class
         "InGridOrganisationDoc" -> AddressModelTransformer::class
         "InGridPersonDoc" -> AddressModelTransformer::class
         else -> null

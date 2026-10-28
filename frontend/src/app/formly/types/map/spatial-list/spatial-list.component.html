@@ -115,6 +115,7 @@
                 <button
                     #menuButton
                     type="button"
+                    data-cy="btn-more"
                     mat-icon-button
                     class="menu-button"
                     [matMenuTriggerFor]="spatialRef"
@@ -125,12 +126,14 @@
                     <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
                     <mat-menu #spatialRef="matMenu">
                         <button
+                            data-cy="action-show"
                             mat-menu-item
                             (click)="selectLocation.emit(location.indexNumber)"
                         >
                             Anzeigen
                         </button>
                         <button
+                            data-cy="action-edit"
                             mat-menu-item
                             (click)="
                                 menuButton.focus();
@@ -140,6 +143,7 @@
                             Bearbeiten
                         </button>
                         <button
+                            data-cy="action-delete"
                             mat-menu-item
                             (click)="
                                 menuButton.focus(); confirmRemove(location)

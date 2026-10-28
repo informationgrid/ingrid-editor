@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        data-cy="dlg-close"
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>Berechtigungen</h1>
@@ -9,9 +14,10 @@
     <ige-permissions formControlName="permissions"></ige-permissions>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Abbrechen</button>
+    <button data-cy="cancel" mat-button mat-dialog-close>Abbrechen</button>
     <div class="flex-1"></div>
     <button
+        data-cy="form-dialog-confirm"
         mat-button
         color="primary"
         [mat-dialog-close]="form.value.permissions"

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -62,6 +62,7 @@ import { MatCardSubtitle } from "@angular/material/card";
   selector: "ige-new-message-dialog",
   templateUrl: "./new-message-dialog.component.html",
   styleUrls: ["./new-message-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

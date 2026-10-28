@@ -24,6 +24,7 @@ import {
   inject,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -44,6 +45,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
   styleUrls: ["./uvp-bericht.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTableModule,
     MatSortModule,

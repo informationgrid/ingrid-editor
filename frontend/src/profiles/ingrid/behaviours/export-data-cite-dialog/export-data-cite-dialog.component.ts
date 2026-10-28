@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, resource, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  resource,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { DataSiteService } from "./data-site.service";
@@ -48,6 +55,7 @@ import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-e
     FormErrorComponent,
   ],
   templateUrl: "./export-data-cite-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./export-data-cite-dialog.component.scss",
 })
 export class ExportDataCiteDialogComponent {

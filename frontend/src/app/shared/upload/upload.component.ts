@@ -27,6 +27,7 @@ import {
   output,
   Signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   animate,
@@ -59,6 +60,7 @@ import { FlowChunk } from "flowjs";
       transition("* => void", [animate(300, style({ opacity: 0 }))]),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
 })
 export class UploadComponent implements AfterViewInit {

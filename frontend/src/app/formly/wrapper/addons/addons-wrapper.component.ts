@@ -23,6 +23,7 @@ import {
   OnDestroy,
   TemplateRef,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { NgStyle, NgTemplateOutlet } from "@angular/common";
@@ -33,6 +34,7 @@ import { MatIconButton } from "@angular/material/button";
   selector: "ige-addons",
   templateUrl: "./addons-wrapper.component.html",
   styleUrls: ["./addons-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgStyle, MatIcon, NgTemplateOutlet, MatIconButton],
 })
 export class AddonsWrapperComponent

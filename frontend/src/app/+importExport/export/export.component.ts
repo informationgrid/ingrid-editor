@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal, viewChild } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -63,6 +70,7 @@ import { rxResource, toSignal } from "@angular/core/rxjs-interop";
   selector: "ige-export",
   templateUrl: "./export.component.html",
   styleUrls: ["./export.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

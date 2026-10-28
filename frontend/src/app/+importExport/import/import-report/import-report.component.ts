@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input } from "@angular/core";
+import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
 import { ImportLogReport } from "../../exchange.service";
 
 @Component({
   selector: "ige-import-report",
   templateUrl: "./import-report.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./import-report.component.scss"],
 })
 export class ImportReportComponent {

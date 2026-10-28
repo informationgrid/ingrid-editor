@@ -7,6 +7,7 @@ docType:
   - InGridGeoService
   - InGridInformationSystem
   - InGridPublication
+  - InGridAlgorithm
 profile: ingrid
 
 

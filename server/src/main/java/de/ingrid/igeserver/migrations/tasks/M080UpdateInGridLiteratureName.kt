@@ -75,7 +75,7 @@ class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
 
         do {
             log.info("Handling page $page")
-            val queries = entityManager.createQuery("SELECT savedQuery FROM Query savedQuery  ")
+            val queries = entityManager.createQuery("SELECT savedQuery FROM Query savedQuery ORDER BY savedQuery.id")
                 .setFirstResult((page - 1) * pageSize).setMaxResults(pageSize).resultList
 
             queries.map { it as Query }.forEach {
@@ -93,6 +93,9 @@ class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
                     log.error("Error migrating query with dbID ${it.id}", ex)
                 }
             }
+            // detach the processed page so memory stays constant
+            entityManager.flush()
+            entityManager.clear()
             page++
         } while (queries.size == pageSize)
     }

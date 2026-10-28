@@ -61,7 +61,7 @@ class IngridExporterBkg(
             "application/json",
             "json",
             listOf("ingrid-bkg"),
-            isPublic = true,
+            isPublic = false,
             useForPublish = true,
         )
 }
@@ -83,6 +83,7 @@ class IngridIdfExporterBkg(
         "text/xml",
         "xml",
         listOf("ingrid-bkg"),
+        isPublic = false,
     )
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBkgTransformer(docType) ?: super.getModelTransformerClass(docType)

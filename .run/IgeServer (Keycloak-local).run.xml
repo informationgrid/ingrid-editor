@@ -4,7 +4,7 @@
     <option name="ENABLE_JMX_AGENT" value="false" />
     <envs>
       <env name="APP_ACTUATOR_PERMIT_ALL" value="true" />
-      <env name="KEYCLOAK_CLIENT_SECRET" value="k2p2NL41ZdD9lq" />
+      <env name="KEYCLOAK_CLIENT_SECRET" value="" />
       <env name="KEYCLOAK_URL" value="http://localhost:8080" />
       <env name="KEYCLOAK_URL_INTERNAL" value="http://localhost:8080" />
       <env name="MAIL_HOST" value="localhost" />

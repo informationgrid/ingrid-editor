@@ -24,6 +24,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
@@ -49,6 +50,7 @@ import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
   styleUrls: ["./tab-sql.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     MatButton,

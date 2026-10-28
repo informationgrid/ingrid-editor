@@ -4,7 +4,7 @@
     formControl.errors &&
     !formControl.hasError("required")
 ) {
-    <ige-form-error [ariaLabel]="props?.ariaLabel">
+    <ige-form-error [ariaLabel]="$safeNavigationMigration(props?.ariaLabel)">
         <formly-validation-message [field]="field"></formly-validation-message>
     </ige-form-error>
 }
@@ -41,6 +41,7 @@
                     ></formly-field>
                     @if (formControl.enabled) {
                         <button
+                            data-cy="btn-remove"
                             [disabled]="
                                 props.minLength &&
                                 groupedFields[key].length <= props.minLength
@@ -77,9 +78,11 @@
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
-        [showTitle]="groupedFieldsKeys().length == 0"
+        [showTitle]="groupedFieldsKeys().length == 0 || !!props.addButtonTitle"
         [matTooltip]="
-            groupedFieldsKeys().length == 0 ? undefined : 'Hinzufügen'
+            groupedFieldsKeys().length == 0 || !!props.addButtonTitle
+                ? undefined
+                : 'Hinzufügen'
         "
     ></ige-add-button>
 }

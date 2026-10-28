@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        data-cy="dlg-close"
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>Gültig bis Datum setzen</h1>
@@ -29,11 +34,21 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button color="primary" [mat-dialog-close]="undefined">
+    <button
+        data-cy="cancel"
+        mat-button
+        color="primary"
+        [mat-dialog-close]="undefined"
+    >
         Abbrechen
     </button>
     <div class="flex-1"></div>
-    <button color="primary" mat-flat-button [mat-dialog-close]="getDate()">
+    <button
+        data-cy="form-dialog-confirm"
+        color="primary"
+        mat-flat-button
+        [mat-dialog-close]="getDate()"
+    >
         Setzen
     </button>
 </mat-dialog-actions>

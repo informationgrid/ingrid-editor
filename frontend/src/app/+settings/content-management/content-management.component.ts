@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { ConfigService } from "../../services/config/config.service";
@@ -30,6 +35,7 @@ import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-t
   selector: "ige-content-management",
   templateUrl: "./content-management.component.html",
   styleUrls: ["./content-management.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatInputModule,
     ReactiveFormsModule,

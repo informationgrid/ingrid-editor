@@ -17,11 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, input } from "@angular/core";
+import {
+  Component,
+  computed,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
   selector: "ige-score-indicator",
   templateUrl: "./score-indicator.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./score-indicator.component.scss"],
 })
 export class ScoreIndicatorComponent {

@@ -26,6 +26,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import {
@@ -70,6 +71,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-catalog-codelists",
   templateUrl: "./catalog-codelists.component.html",
   styleUrls: ["./catalog-codelists.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatFormField,
     MatSelect,

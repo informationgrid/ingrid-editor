@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -58,6 +64,7 @@ export interface CatalogDetailResponse {
   selector: "ige-catalog-detail",
   templateUrl: "./catalog-detail.component.html",
   styleUrls: ["./catalog-detail.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

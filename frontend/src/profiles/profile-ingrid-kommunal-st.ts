@@ -17,11 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { InGridWithOpendataComponent } from "./profile-ingrid-with-opendata";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridKommunalStComponent extends InGridWithOpendataComponent {

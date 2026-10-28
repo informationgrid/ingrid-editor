@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
   MatDialogActions,
@@ -43,6 +43,7 @@ import {
   selector: "ige-valid-until-dialog",
   templateUrl: "./valid-until-dialog.component.html",
   styleUrls: ["./valid-until-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

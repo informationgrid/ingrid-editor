@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { MatAccordion } from "@angular/material/expansion";
 import { MatDivider } from "@angular/material/list";
 import { MatIcon } from "@angular/material/icon";
@@ -29,6 +29,7 @@ import { ValidatorPanelComponent } from "./validator-panel/validator-panel.compo
   selector: "ige-ai-assistant-view",
   templateUrl: "./ai-assistant-view.component.html",
   styleUrls: ["./ai-assistant-view.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatAccordion,
     MatIcon,

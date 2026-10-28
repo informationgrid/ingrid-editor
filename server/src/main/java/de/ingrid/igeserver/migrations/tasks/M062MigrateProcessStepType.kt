@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -48,17 +49,13 @@ class M062MigrateProcessStepType : MigrationBase("0.62") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
-                doc as Document
+            entityManager.forEachDocumentInBatches("doc.type = 'InGridGeoDataset'") { doc ->
                 try {
-                    if (doc.type == "InGridGeoDataset") {
-                        if (migrateProcessStep(doc)) {
-                            log.info("Migrated doc with dbID ${doc.id}")
-                            docRepo.save(doc)
-                        }
+                    if (migrateProcessStep(doc)) {
+                        log.info("Migrated doc with dbID ${doc.id}")
+                        docRepo.save(doc)
                     }
                 } catch (ex: Exception) {
                     log.error("Error migrating document with dbID ${doc.id}", ex)

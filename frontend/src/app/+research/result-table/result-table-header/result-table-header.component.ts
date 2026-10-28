@@ -25,6 +25,7 @@ import {
   output,
   Output,
   EventEmitter,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
@@ -33,6 +34,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-result-table-header",
   templateUrl: "./result-table-header.component.html",
   styleUrls: ["./result-table-header.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatProgressSpinner, MatButton],
 })
 export class ResultTableHeaderComponent implements OnInit {

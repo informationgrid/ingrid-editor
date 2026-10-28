@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormControl,
@@ -41,6 +46,7 @@ import { MatInput } from "@angular/material/input";
 @Component({
   selector: "ige-change-name-dialog",
   templateUrl: "./change-name-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

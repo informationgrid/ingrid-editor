@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, signal, ViewChild } from "@angular/core";
+import {
+  Component,
+  inject,
+  signal,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
 import {
   MatCell,
@@ -64,6 +70,7 @@ import { AsyncPipe, DatePipe } from "@angular/common";
   selector: "ige-url-check",
   templateUrl: "./url-check.component.html",
   styleUrls: ["./url-check.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     JobHandlerHeaderComponent,

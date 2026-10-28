@@ -17,13 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, output } from "@angular/core";
+import { Component, output, ChangeDetectionStrategy } from "@angular/core";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 
 @Component({
   selector: "ige-indexing-explanation",
   imports: [MatChipListbox, MatChip],
   templateUrl: "./indexing-explanation.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./indexing-explanation.component.scss",
 })
 export class IndexingExplanationComponent {

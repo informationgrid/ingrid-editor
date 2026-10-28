@@ -7,14 +7,18 @@
     >
         <mat-icon>close</mat-icon>
     </button>
-    <h1 mat-dialog-title>
+    <h1 mat-dialog-title data-cy="confirm-dialog-title">
         {{ data.title }}
     </h1>
 </div>
 
 <mat-dialog-content>
     @if (!data.preformatted) {
-        <p [innerHTML]="data.message?.replace('\n', '<br />')"></p>
+        <p
+            [innerHTML]="
+                $safeNavigationMigration(data.message?.replace('\n', '<br />'))
+            "
+        ></p>
     }
     @if (data.preformatted) {
         <pre>{{ data.message }}</pre>

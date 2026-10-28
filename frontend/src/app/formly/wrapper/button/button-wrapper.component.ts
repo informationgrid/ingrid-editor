@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
 
@@ -25,6 +25,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-button",
   templateUrl: "./button-wrapper.component.html",
   styleUrls: ["./button-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatButton],
 })
 export class ButtonWrapperComponent extends FieldWrapper {

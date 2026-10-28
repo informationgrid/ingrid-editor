@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, effect, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  effect,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
@@ -44,6 +50,7 @@ import { PluginService } from "../app/services/plugin/plugin.service";
 import { DataformatPlugin } from "./ingrid/behaviours/dataformat.plugin";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { IngridDocumentSearchService } from "./ingrid/ingrid-document-search.service";
+import { AlgorithmDoctype } from "./ingrid/doctypes/algorithm.doctype";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -53,10 +60,12 @@ export enum InGridDoctype {
   InGridProject = "InGridProject",
   InGridDataCollection = "InGridDataCollection",
   InGridInformationSystem = "InGridInformationSystem",
+  InGridAlgorithm = "InGridAlgorithm",
 }
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class InGridComponent implements OnInit {
@@ -69,6 +78,7 @@ export class InGridComponent implements OnInit {
   project = inject(ProjectDoctype);
   dataCollection = inject(DataCollectionDoctype);
   informationSystem = inject(InformationSystemDoctype);
+  algorithm = inject(AlgorithmDoctype);
   person = inject(IngridPersonDoctype);
   organisation = inject(IngridOrganisationDoctype);
   // will be created and registered automatically, but needs to be injected!
@@ -103,6 +113,7 @@ export class InGridComponent implements OnInit {
       this.project,
       this.dataCollection,
       this.informationSystem,
+      this.algorithm,
       this.person,
       this.organisation,
     ];
