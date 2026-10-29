@@ -22,7 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.AiSettings
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ai.AiService
-import kotlinx.coroutines.launch
+import de.ingrid.igeserver.services.ai.model.EvaluationResult
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -39,36 +39,29 @@ class AiApiController(
     override fun evaluate(
         principal: Principal,
         body: String,
-    ): ResponseEntity<String> {
-        var response: String? = null
-        runBlocking {
-            launch {
-                response = aiService.evaluate(body)
-            }
-        }
+    ): ResponseEntity<EvaluationResult> {
+        val response = runBlocking { aiService.evaluate(body) }
         return ResponseEntity.ofNullable(response)
     }
 
     override fun evaluateAll(principal: Principal): ResponseEntity<String> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        var response: String? = null
-        runBlocking {
-            launch {
-                response = aiService.evaluateAll(catalogId)
-            }
-        }
+        val response = runBlocking { aiService.evaluateAll(catalogId) }
         return ResponseEntity.ofNullable(response)
     }
 
-    override fun getEvaluateAllReport(principal: Principal): ResponseEntity<String> = ResponseEntity.ofNullable(aiService.evaluateResults)
+    override fun getCachedEvaluations(principal: Principal): ResponseEntity<List<EvaluationResult>> {
+        val response = runBlocking { aiService.getCachedEvaluations() }
+        return ResponseEntity.ok(response)
+    }
 
     override fun getSettings(principal: Principal): ResponseEntity<AiSettings> {
-        val settings = aiService.getSettingsWithoutToken()
+        val settings = aiService.getSettingsWithoutSecrets()
         return ResponseEntity.ofNullable(settings)
     }
 
     override fun updateSettings(principal: Principal, settings: AiSettings): ResponseEntity<AiSettings> {
         val updatedSettings = aiService.updateSettings(settings)
-        return ResponseEntity.ofNullable(updatedSettings)
+        return ResponseEntity.ok(updatedSettings)
     }
 }

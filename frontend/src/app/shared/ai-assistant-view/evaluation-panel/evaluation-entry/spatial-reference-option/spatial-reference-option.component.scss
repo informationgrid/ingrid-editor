@@ -1,0 +1,35 @@
+.list-item-content {
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+  padding: 12px;
+  gap: 4px;
+  line-height: 1.36;
+
+  + .list-item-content {
+    margin-top: 8px;
+  }
+
+  &:first-child {
+    margin-top: 4px;
+  }
+
+  &:last-child {
+    margin-bottom: 4px;
+  }
+}
+
+.spatial-type {
+  font-size: 12px;
+}
+
+.spatial-title {
+  font-weight: 500;
+}
+
+.coordinates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  font-size: 14px;
+}
