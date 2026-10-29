@@ -33,6 +33,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.security.core.Authentication
+import org.springframework.transaction.PlatformTransactionManager
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class ImportServiceTest : ShouldSpec() {
@@ -40,6 +41,7 @@ class ImportServiceTest : ShouldSpec() {
     private val notifier = mockk<JobsNotifier>(relaxed = true)
     val factory = mockk<ImporterFactory>(relaxed = true)
     private val docService = mockk<DocumentService>(relaxed = true)
+    private val transactionManager = mockk<PlatformTransactionManager>(relaxed = true)
     private val principal = mockk<Authentication>(relaxed = true)
 
     private val docEntity = Document().apply {
@@ -48,7 +50,7 @@ class ImportServiceTest : ShouldSpec() {
         type = ""
     }
 
-    val service = ImportService(notifier, factory, docService)
+    val service = ImportService(notifier, factory, docService, transactionManager)
 
     override suspend fun beforeEach(testCase: TestCase) {
         clearAllMocks()
