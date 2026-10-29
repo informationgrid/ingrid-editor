@@ -1,0 +1,30 @@
+<ng-container *transloco="let t; read: 'spatial.types'">
+    @for (reference of option(); track $index) {
+        <mat-card appearance="outlined" class="list-item-content">
+            <div class="spatial-type">
+                <span>{{ t(reference.type) }}</span>
+            </div>
+            <div class="spatial-title">
+                <span>{{ reference.title }}</span>
+            </div>
+            @if (reference.value) {
+                <div class="coordinates">
+                    <span
+                        >SW Breite,Länge:
+                        {{ reference.value.lat1 | number: ".6" : "en-US" }}°,
+                        {{
+                            reference.value.lon1 | number: ".6" : "en-US"
+                        }}°</span
+                    >
+                    <span
+                        >NO Breite,Länge:
+                        {{ reference.value.lat2 | number: ".6" : "en-US" }}°,
+                        {{
+                            reference.value.lon2 | number: ".6" : "en-US"
+                        }}°</span
+                    >
+                </div>
+            }
+        </mat-card>
+    }
+</ng-container>
