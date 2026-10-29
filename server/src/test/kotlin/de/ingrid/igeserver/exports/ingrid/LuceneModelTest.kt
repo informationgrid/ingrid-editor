@@ -25,7 +25,6 @@ import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.*
 import de.ingrid.igeserver.schema.SchemaUtils
-import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import tools.jackson.module.kotlin.jacksonObjectMapper

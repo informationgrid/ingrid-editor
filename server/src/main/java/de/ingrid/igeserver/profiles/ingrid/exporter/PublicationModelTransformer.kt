@@ -24,8 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentI
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePublication
 
-open class PublicationModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class PublicationModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevelName = "document"
 

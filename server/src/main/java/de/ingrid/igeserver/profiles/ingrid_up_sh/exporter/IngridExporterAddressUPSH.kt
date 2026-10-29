@@ -20,9 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporterClassic
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier

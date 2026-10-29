@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterClassic
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service

@@ -38,7 +38,6 @@ import de.ingrid.igeserver.services.META_INDEX
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
-import tools.jackson.databind.JsonNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.IOException
 
