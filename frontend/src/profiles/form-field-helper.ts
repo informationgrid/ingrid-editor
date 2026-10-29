@@ -348,6 +348,7 @@ export class FormFieldHelper {
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        description: options?.hintStart,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",

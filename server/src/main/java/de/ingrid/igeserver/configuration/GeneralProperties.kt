@@ -34,9 +34,9 @@ data class GeneralProperties(
     val externalHelp: String?,
     val instanceId: String = "ige-ng",
     val indexPageSize: Int = 100,
-    val openAIHost: String,
     val openAIToken: String? = null,
-    val openAIModel: String,
     val actuatorPermitAll: Boolean = false,
     val indexPrefix: String? = null,
+    val editorMcpUrl: String? = null,
+    val editorMcpApiToken: String? = null,
 )

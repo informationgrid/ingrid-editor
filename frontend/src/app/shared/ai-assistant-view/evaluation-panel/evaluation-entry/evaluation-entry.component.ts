@@ -19,11 +19,11 @@
  */
 import {
   Component,
+  computed,
   input,
   OnInit,
   output,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import { Evaluation } from "../../../../services/ai/ai.service";
 import { MatButton } from "@angular/material/button";
@@ -34,19 +34,24 @@ import {
 } from "@angular/material/list";
 import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { TextOptionComponent } from "./text-option/text-option.component";
+import { ListOptionComponent } from "./list-option/list-option.component";
+import { SpatialReferenceOptionComponent } from "./spatial-reference-option/spatial-reference-option.component";
 
 @Component({
   selector: "ige-evaluation-entry",
   templateUrl: "./evaluation-entry.component.html",
   styleUrls: ["./evaluation-entry.component.scss"],
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButton,
+    ScoreIndicatorComponent,
+    MatDivider,
     MatListOption,
     MatSelectionList,
-    ScoreIndicatorComponent,
     ReactiveFormsModule,
-    MatDivider,
+    TextOptionComponent,
+    ListOptionComponent,
+    SpatialReferenceOptionComponent,
   ],
 })
 export class EvaluationEntryComponent implements OnInit {
@@ -57,12 +62,22 @@ export class EvaluationEntryComponent implements OnInit {
 
   formControl: FormControl;
   isExpanded = signal<boolean>(false);
+  selectedOption = signal<any>(null);
+
+  hasListOptions = computed(() =>
+    Array.isArray(this.evaluation().options?.at(0)),
+  );
+
+  hasSpatialReferenceOptions = computed(
+    () => this.evaluation().key === "spatial.references",
+  );
 
   constructor() {}
 
   ngOnInit(): void {
-    if (this.evaluation().suggestions?.length > 0) {
-      this.formControl = new FormControl([this.evaluation().suggestions.at(0)]);
+    if (this.evaluation().options?.length > 0) {
+      this.selectedOption.set(this.evaluation().options.at(0));
+      this.formControl = new FormControl([this.selectedOption()]);
     }
   }
 
