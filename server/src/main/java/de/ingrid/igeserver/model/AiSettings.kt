@@ -20,11 +20,11 @@
 package de.ingrid.igeserver.model
 
 data class AiSettings(
-    var hostUrl: String?,
-    var modelId: String?,
-    var apiKey: String?,
-    var roleDefinition: String?,
-    var instruction: String?,
+    var hostUrl: String? = null,
+    var modelId: String? = null,
+    var apiKey: String? = null,
+    var roleDefinition: String? = null,
+    var instruction: String? = null,
 )
 
 data class McpServer(

@@ -39,9 +39,10 @@ export interface Evaluation {
 }
 
 export interface AiSettings {
-  hostUrl: string;
-  modelId: string;
-  apiKey: string;
+  hostUrl?: string;
+  modelId?: string;
+  apiKey?: string;
+  roleDefinition?: string;
   instruction?: string;
 }
 

@@ -45,7 +45,7 @@ class AiService(
     private val cachedEvaluations = ConcurrentHashMap<String, EvaluationResult>()
 
     fun updateSettings(newSettings: AiSettings): AiSettings {
-        val currentSettings = getSettings() ?: newSettings
+        val currentSettings = getSettings()
 
         // Update the current settings.
         currentSettings.apply {
@@ -70,7 +70,7 @@ class AiService(
         return currentSettings
     }
 
-    fun getSettingsWithoutSecrets(): AiSettings? = getSettings()?.copy(apiKey = null)
+    fun getSettingsWithoutSecrets(): AiSettings = getSettings().copy(apiKey = null)
 
     // Evaluate the dataset by the given uuid.
     suspend fun evaluate(uuid: String): EvaluationResult? {
@@ -100,8 +100,8 @@ class AiService(
     suspend fun getCachedEvaluations(): List<EvaluationResult> = cachedEvaluations.values.toList()
 
     // Get current settings.
-    private fun getSettings(): AiSettings? {
-        val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return null
+    private fun getSettings(): AiSettings {
+        val jsonValue = settingsRepo.findByKey("aiSettings")?.value ?: return AiSettings()
         return jacksonObjectMapper().convertValue(jsonValue, object : TypeReference<AiSettings>() {})
     }
 
@@ -109,7 +109,7 @@ class AiService(
     // Mcp server setting in environment variables is required.
     // Return null if any necessary values are not present.
     private fun getAssistantOptions(input: String): AssistantOptions? {
-        val settings = getSettings() ?: return null
+        val settings = getSettings()
 
         val clientUrl = settings.hostUrl?.takeIf { it.isNotEmpty() } ?: return null
         val modelId = settings.modelId?.takeIf { it.isNotEmpty() } ?: return null
