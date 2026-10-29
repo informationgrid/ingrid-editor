@@ -36,6 +36,7 @@ import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicato
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { TextOptionComponent } from "./text-option/text-option.component";
 import { ListOptionComponent } from "./list-option/list-option.component";
+import { SpatialReferenceOptionComponent } from "./spatial-reference-option/spatial-reference-option.component";
 
 @Component({
   selector: "ige-evaluation-entry",
@@ -50,6 +51,7 @@ import { ListOptionComponent } from "./list-option/list-option.component";
     ReactiveFormsModule,
     TextOptionComponent,
     ListOptionComponent,
+    SpatialReferenceOptionComponent,
   ],
 })
 export class EvaluationEntryComponent implements OnInit {
@@ -64,6 +66,10 @@ export class EvaluationEntryComponent implements OnInit {
 
   hasListOptions = computed(() =>
     Array.isArray(this.evaluation().options?.at(0)),
+  );
+
+  hasSpatialReferenceOptions = computed(
+    () => this.evaluation().key === "spatial.references",
   );
 
   constructor() {}

@@ -22,7 +22,9 @@
         @for (option of evaluation().options; track $index) {
             @if (isExpanded() || option === selectedOption()) {
                 <mat-list-option class="no-wrap" [value]="option">
-                    @if (hasListOptions()) {
+                    @if (hasSpatialReferenceOptions()) {
+                        <ige-spatial-reference-option [option]="option" />
+                    } @else if (hasListOptions()) {
                         <ige-list-option [option]="option" />
                     } @else {
                         <ige-text-option [option]="option" />
