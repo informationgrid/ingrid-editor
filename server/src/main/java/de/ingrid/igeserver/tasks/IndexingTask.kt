@@ -35,6 +35,7 @@ import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DirectusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
@@ -241,12 +242,13 @@ class IndexingTask(
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
         val cswtConfig = settingsService.getCSWTConfig()
+        val directusConfig = settingsService.getDirectusConfig()
 
         var exportConfigs = catalog.settings.exports
         if (exportConfigs.isEmpty()) {
             val defaultExportFormatId = catalogProfile.indexExportFormatID
             exportConfigs =
-                getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig, cswtConfig)
+                getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig, cswtConfig, directusConfig)
         }
 
         return exportConfigs.flatMap { config ->
@@ -292,6 +294,7 @@ class IndexingTask(
         ibusConfigs: List<IBusConfig>,
         elasticConfig: List<ElasticConfig>,
         cswConfig: List<CSWConfig>,
+        directusConfig: List<DirectusConfig>,
     ): List<ExportConfig> {
         val iBusDefinitions = ibusConfigs.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
@@ -302,7 +305,10 @@ class IndexingTask(
         val cswtDefinitions = cswConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
-        return iBusDefinitions + elasticDefinitions + cswtDefinitions
+        val directusDefinitions = directusConfig.map {
+            ExportConfig(it.id!!, exportFormatId, listOf("internet"))
+        }
+        return iBusDefinitions + elasticDefinitions + cswtDefinitions + directusDefinitions
     }
 
     private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {

@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DirectusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
@@ -54,7 +55,16 @@ class SettingsService(
         return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWConfig>>() {})
     }
 
-    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id } ?: getCSWTConfig().find { it.id!! == id }
+    fun getDirectusConfig(): List<DirectusConfig> {
+        val directusJson = repoSettings.findByKey("directus")?.value ?: return emptyList()
+
+        return jacksonObjectMapper().convertValue(directusJson, object : TypeReference<List<DirectusConfig>>() {})
+    }
+
+    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id }
+        ?: getElasticConfig().find { it.id!! == id }
+        ?: getCSWTConfig().find { it.id!! == id }
+        ?: getDirectusConfig().find { it.id!! == id }
 
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)
@@ -86,6 +96,11 @@ class SettingsService(
     fun setCSWTConfig(config: List<CSWConfig>) {
         addIdIfNeeded(config)
         this.updateItem("cswt", config)
+    }
+
+    fun setDirectusConfig(config: List<DirectusConfig>) {
+        addIdIfNeeded(config)
+        this.updateItem("directus", config)
     }
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {

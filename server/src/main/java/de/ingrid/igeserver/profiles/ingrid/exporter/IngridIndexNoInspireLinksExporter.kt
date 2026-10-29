@@ -31,9 +31,9 @@ import org.springframework.stereotype.Service
  */
 @Service
 class IngridIndexNoInspireLinksExporter(
-    idfExporter: IngridIdfNoInspireLinksExporter,
+    @Qualifier("ingridISOExporter") override val isoExporter: IngridISOExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridIndexExporter(isoExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

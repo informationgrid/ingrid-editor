@@ -21,13 +21,16 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.index.CSWIndexer
+import de.ingrid.igeserver.index.DirectusIndexer
 import de.ingrid.igeserver.index.ElasticIndexer
 import de.ingrid.igeserver.index.IBusIndexer
 import de.ingrid.igeserver.index.IIndexManager
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DirectusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.services.connection.CSWService
+import de.ingrid.igeserver.services.connection.DirectusService
 import de.ingrid.igeserver.services.connection.ElasticsearchService
 import de.ingrid.igeserver.services.connection.IBusService
 import de.ingrid.igeserver.services.connection.IConnection
@@ -40,6 +43,7 @@ class ConnectionService(
     private val iBusService: IBusService,
     private val elasticsearchService: ElasticsearchService,
     private val cswService: CSWService,
+    private val directusService: DirectusService,
     private val settingsService: SettingsService,
 ) {
     private val log = logger()
@@ -54,6 +58,8 @@ class ConnectionService(
 
         is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
 
+        is DirectusConfig -> DirectusIndexer(connection.name, directusService.getClient(id))
+
         else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
     }
 
@@ -63,6 +69,8 @@ class ConnectionService(
         elasticsearchService
     } else if (cswService.containsId(id)) {
         cswService
+    } else if (directusService.containsId(id)) {
+        directusService
     } else {
         log.warn("Connection-ID not found: $id")
         InvalidConnectionService()
@@ -74,5 +82,6 @@ class ConnectionService(
         iBusService.setupConnections()
         elasticsearchService.setupConnections()
         cswService.setupConnections()
+        directusService.setupConnections()
     }
 }

@@ -53,6 +53,13 @@ export class ConnectionForm extends FormFieldHelper {
               fieldGroup: [...this.addFieldsForCSWT()],
             },
           },
+          {
+            key: "directus",
+            value: "Directus Push-Schnittstelle",
+            fields: {
+              fieldGroup: [...this.addFieldsForDirectus()],
+            },
+          },
         ],
       }),
     ];
@@ -193,6 +200,48 @@ export class ConnectionForm extends FormFieldHelper {
         ],
         {
           hideExpression: (field: FormlyFieldConfig) => !field.model.isSecure,
+          fieldGroupClassName: "flex-row gap-6",
+        },
+      ),
+    ];
+  }
+  private addFieldsForDirectus() {
+    return [
+      { key: "_type" },
+      { key: "id" },
+      this.addInputInline("name", "Name", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        validators: {
+          validation: ["valid_es_alias"],
+        },
+      }),
+      this.addInputInline("url", "URL", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+        placeholder: "https://<host>/ingest/v1",
+        validators: {
+          validation: ["urlAllowIpAlias"],
+        },
+      }),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("catalogId", "Katalog-ID", {
+            className: "flex-1 white-bg",
+            required: true,
+            updateOn: "change",
+          }),
+          this.addInputInline("apiKey", "API-Key", {
+            className: "flex-1 white-bg",
+            required: true,
+            updateOn: "change",
+            type: "password",
+          }),
+        ],
+        {
           fieldGroupClassName: "flex-row gap-6",
         },
       ),

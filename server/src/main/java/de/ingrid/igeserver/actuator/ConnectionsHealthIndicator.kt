@@ -59,6 +59,14 @@ class ConnectionsHealthIndicator(
             if (!connected) allUp = false
         }
 
+        val directusConfigs = settingsService.getDirectusConfig()
+        directusConfigs.forEach { config ->
+            val id = config.id ?: return@forEach
+            val connected = connectionService.isConnected(id)
+            details["Directus_${config.name}"] = if (connected) "UP" else "DOWN"
+            if (!connected) allUp = false
+        }
+
         return if (allUp) {
             Health.up().withDetails(details).build()
         } else {

@@ -93,12 +93,14 @@ export interface BackendConnections {
   ibus: ConnectionInfo[];
   elasticsearch: ConnectionInfoElastic[];
   cswt: ConnectionInfoCswt[];
+  directus: ConnectionInfoDirectus[];
 }
 
 export type GeneralConnectionInfo =
   | ConnectionInfo
   | ConnectionInfoElastic
-  | ConnectionInfoCswt;
+  | ConnectionInfoCswt
+  | ConnectionInfoDirectus;
 
 export interface ConnectionInfo {
   _type: "ibus";
@@ -116,6 +118,15 @@ export interface ConnectionInfoCswt {
   isSecure: boolean;
   username: string;
   password: string;
+}
+
+export interface ConnectionInfoDirectus {
+  _type: "directus";
+  id: number;
+  name: string;
+  url: string;
+  catalogId: string;
+  apiKey: string;
 }
 
 export interface ConnectionInfoElastic {
@@ -345,6 +356,9 @@ export class ConfigService {
       cswt: value.connections.filter(
         (item) => item._type === "cswt",
       ) as ConnectionInfoCswt[],
+      directus: value.connections.filter(
+        (item) => item._type === "directus",
+      ) as ConnectionInfoDirectus[],
     };
   }
 
@@ -372,11 +386,15 @@ export class ConfigService {
             return newConn;
           }),
         ),
+        ...this.addType("directus", value.directus),
       ],
     };
   }
 
-  private addType(type: "ibus" | "elastic" | "cswt", value: any[]) {
+  private addType(
+    type: "ibus" | "elastic" | "cswt" | "directus",
+    value: any[],
+  ) {
     return (value ?? []).map((item) => {
       item._type = type;
       return item;
@@ -385,6 +403,6 @@ export class ConfigService {
 
   private handleGetConnectionsError(err: any): Observable<BackendConnections> {
     console.error("Das Laden der Verbindungen ist fehlgeschlagen", err);
-    return of({ ibus: [], elasticsearch: [], cswt: [] });
+    return of({ ibus: [], elasticsearch: [], cswt: [], directus: [] });
   }
 }

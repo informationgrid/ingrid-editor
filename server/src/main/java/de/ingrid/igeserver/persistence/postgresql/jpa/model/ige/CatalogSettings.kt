@@ -65,6 +65,7 @@ data class ConnectionConfig(
     val ibus: List<IBusConfig>? = null,
     val elasticsearch: List<ElasticConfig>? = null,
     val cswt: List<CSWConfig>? = null,
+    val directus: List<DirectusConfig>? = null,
 )
 
 interface WithId {
@@ -96,4 +97,13 @@ data class CSWConfig(
     val url: String,
     val username: String? = null,
     val password: String? = null,
+) : WithId
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class DirectusConfig(
+    override var id: String? = null,
+    val name: String,
+    val url: String,
+    val catalogId: String,
+    val apiKey: String? = null,
 ) : WithId

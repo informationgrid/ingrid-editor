@@ -53,6 +53,7 @@ class ConfigApiController(
             settingsService.getIBusConfig(),
             settingsService.getElasticConfig(),
             settingsService.getCSWTConfig(),
+            settingsService.getDirectusConfig(),
         ),
     )
 
@@ -67,6 +68,9 @@ class ConfigApiController(
         }
         config.cswt?.let {
             settingsService.setCSWTConfig(it)
+        }
+        config.directus?.let {
+            settingsService.setDirectusConfig(it)
         }
         connectionService.setupConnections()
         return ResponseEntity.ok().body(config)
