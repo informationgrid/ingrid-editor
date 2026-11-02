@@ -70,6 +70,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isHvd = getHvdCategories().isNotEmpty()
     val isOpenData = containsKeyword("opendata")
+    val isIzg = containsKeyword("izg-relevant")
     val parentUuid = metadata.parentIdentifier?.value
 
     fun getDescription(): String {
@@ -432,7 +433,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "IACS data",
             "High-value dataset categories",
         ) + ignoreAdditional
-        val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
+        val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS", "izg-relevant")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
             ?.filter {

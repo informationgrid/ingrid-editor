@@ -6,6 +6,7 @@
     "_type": "InGridGeoDataset",
     "properties": {
       "isAdVCompatible": true,
+      "isIzg": false,
       "isOpenData": true,
       "isInspireIdentified": "notConform",
       "subType": {

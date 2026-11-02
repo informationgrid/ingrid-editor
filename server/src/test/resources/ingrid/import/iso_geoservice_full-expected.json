@@ -6,6 +6,7 @@
     "_type": "InGridGeoService",
     "properties": {
       "isAdVCompatible": false,
+      "isIzg": false,
       "isOpenData": true,
       "isInspireIdentified": "relevant"
     },

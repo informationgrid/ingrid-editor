@@ -13,6 +13,7 @@
 "_type": "${model.getType()}",
 "properties": {
     "isAdVCompatible": ${model.isAdVCompatible()},
+    "isIzg": ${model.isIzg()},
     "isOpenData": ${model.isOpenData()}${additionalProperties}
 },
 "description": "${model.getDescription()}",

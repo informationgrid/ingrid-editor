@@ -6,6 +6,7 @@
   "properties": {
     "isInspireIdentified": "notConform",
     "isAdVCompatible": true,
+    "isIzg": false,
     "isOpenData": true
   },
   "description": "siehe Originalplan",
