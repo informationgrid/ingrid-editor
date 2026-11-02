@@ -97,6 +97,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   documentFields = () => {
     this.handleDoiBehaviour();
+    this.handleIzgBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.showUpdateGetCapabilities

@@ -647,11 +647,18 @@ open class IngridModelTransformer(
         if (data.properties?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
+    val izgKeyword =
+        if (data.properties?.isIzg == true) {
+            Thesaurus(keywords = listOf(KeywordIso("izg-relevant")))
+        } else {
+            Thesaurus()
+        }
 
     open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOfNotNull(
             inspireRelevantKeyword,
             advCompatibleKeyword,
+            izgKeyword,
             opendataCategoryKeywords,
             getFreeKeywords(),
             invekosKeywords,
@@ -676,6 +683,7 @@ open class IngridModelTransformer(
         opendataCategoryKeywords,
         advCompatibleKeyword,
         inspireRelevantKeyword,
+        izgKeyword,
         furtherLegalBasisKeywords,
         umthesKeywords,
         gemetKeywords,

@@ -6,6 +6,7 @@
     "_type": "BawMeasurement",
     "properties": {
       "isAdVCompatible": false,
+      "isIzg": false,
       "isOpenData": false,
       "subType": {
         "key": "5",
