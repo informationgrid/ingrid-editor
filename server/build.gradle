@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.4.0'
-    ext.spring_boot_version = '4.1.1'
+    ext.spring_boot_version = '4.1.2'
     ext.kotest_version = '6.2.6'
     ext.jte_version = '3.2.5'
     ext.geotools_version = '35.2'
@@ -14,6 +14,8 @@ buildscript {
     ext['jackson-2-bom.version'] = '2.21.8'
     ext['jackson-bom.version'] = '3.1.8'
     ext['tomcat.version'] = '11.0.27'
+    // ktor 3.5.x / search-client require coroutines 1.11.x; Spring Boot BOM would downgrade it
+    ext['kotlin-coroutines.version'] = '1.11.0'
 }
 
 plugins {
@@ -150,8 +152,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.32.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.32.0"
 
-//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
-    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-ui:4.0.0'
+    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-ui:5.1.0'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.14'
@@ -211,7 +212,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-postgresql'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.8.7")
+    implementation("com.jillesvangurp:search-client:2.9.0")
     implementation("io.ktor:ktor-client-core:$ktor_client")
     implementation("io.ktor:ktor-client-auth:$ktor_client")
     implementation("io.ktor:ktor-client-logging:$ktor_client")

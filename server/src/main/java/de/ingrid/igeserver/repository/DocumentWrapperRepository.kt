@@ -67,9 +67,8 @@ interface DocumentWrapperRepository :
     fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DocumentState): Array<Any>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
+    fun findAllByCatalog_IdentifierAndParentIsNullAndCategory(
         catalog_identifier: String,
-        parentUuid: Int?,
         category: String,
     ): List<DocumentWrapper>
 

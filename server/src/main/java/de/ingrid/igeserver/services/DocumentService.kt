@@ -277,7 +277,7 @@ class DocumentService(
         onlyPublished: Boolean = false,
     ): FindAllResults<DocumentData> {
         val wrappers = if (parentId == null) {
-            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+            docWrapperRepo.findAllByCatalog_IdentifierAndParentIsNullAndCategory(catalogId, docCat.value)
         } else {
             docWrapperRepo.findByParent_id(parentId)
         }
@@ -309,7 +309,7 @@ class DocumentService(
         docCat: DocumentCategory = DocumentCategory.DATA,
     ): FindAllResults<DocumentWrapper> {
         val docs = if (parentId == null) {
-            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+            docWrapperRepo.findAllByCatalog_IdentifierAndParentIsNullAndCategory(catalogId, docCat.value)
         } else {
             docWrapperRepo.findByParent_id(parentId)
         }
