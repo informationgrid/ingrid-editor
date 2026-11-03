@@ -72,6 +72,7 @@ import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { MatIcon } from "@angular/material/icon";
 import { CdkMonitorFocus } from "@angular/cdk/a11y";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MatDivider } from "@angular/material/list";
 
 @Component({
   selector: "ige-general-report",
@@ -101,6 +102,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     MatRowDef,
     MatRow,
     CdkMonitorFocus,
+    MatDivider,
   ],
 })
 export class GeneralReportComponent implements OnInit, AfterViewInit {
