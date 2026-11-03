@@ -74,8 +74,6 @@ class OpenDataIDFExporter(
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
 
-        val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
-
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
@@ -113,7 +111,7 @@ class OpenDataIDFExporter(
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress) {
-            transformerClass.constructors.first().call(
+            AddressModelTransformer(
                 AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, options.tags),
             )
         } else {
