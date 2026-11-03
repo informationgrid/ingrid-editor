@@ -45,6 +45,7 @@ import org.quartz.JobKey
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.event.EventListener
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -215,7 +216,7 @@ class IndexService(
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
 
-        return result
+        val rows = result
             .map {
                 IndexDocumentResult(
                     it[0] as String,
@@ -225,26 +226,31 @@ class IndexService(
                     it[4] as Array<String>? ?: emptyArray(),
                 )
             }
-            .map {
-                // FOLDERS do not have a published version
-                val document =
-                    if (it.type == "FOLDER") {
-                        documentService.getDocumentByWrapperId(queryInfo.catalogId, it.wrapperId)
-                    } else {
-                        documentService.getLastPublishedDocument(queryInfo.catalogId, it.uuid)
+        return hydrateIndexDocuments(queryInfo.catalogId, rows)
+    }
+
+    internal fun hydrateIndexDocuments(catalogId: String, rows: List<IndexDocumentResult>): List<DocumentIndexInfo> {
+        val documents = documentService.getLastPublishedDocuments(catalogId, rows.filter { it.type != "FOLDER" }.map { it.uuid })
+        return rows.map {
+            // FOLDERS do not have a published version
+            val document =
+                if (it.type == "FOLDER") {
+                    documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
+                } else {
+                    documents[it.uuid] ?: throw EmptyResultDataAccessException("Resource with ${it.uuid} not found", 1)
+                }
+            DocumentIndexInfo(
+                document.apply {
+                    wrapperId = it.wrapperId
+                    if (it.parentId != null) {
+                        val parentWrapper = documentService.getWrapperById(it.parentId)
+                        // TODO AW: remove parent from data and make available for export in another way
+                        data.put(FIELD_PARENT, parentWrapper.uuid)
                     }
-                DocumentIndexInfo(
-                    document.apply {
-                        wrapperId = it.wrapperId
-                        if (it.parentId != null) {
-                            val parentWrapper = documentService.getWrapperById(it.parentId)
-                            // TODO AW: remove parent from data and make available for export in another way
-                            data.put(FIELD_PARENT, parentWrapper.uuid)
-                        }
-                    },
-                    it.tags.toList(),
-                )
-            }
+                },
+                it.tags.toList(),
+            )
+        }
     }
 
     private fun createSqlForPublishedDocuments(
