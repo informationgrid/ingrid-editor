@@ -38,7 +38,16 @@ fun JsonNode.getBoolean(path: String): Boolean? = path.split(".")
 fun JsonNode.getDouble(path: String): Double? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
         node?.get(fieldName)
-    }?.let { if (it.isNull) null else it.asDouble() }
+    }?.let {
+        when {
+            it.isNull -> null
+
+            // string values like "NaN" cannot be coerced by asDouble() and would abort the export
+            it.isString -> it.asString().trim().toDoubleOrNull()?.takeIf { d -> d.isFinite() }
+
+            else -> it.asDouble().takeIf { d -> d.isFinite() }
+        }
+    }
 
 fun JsonNode.getInteger(path: String): Int? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
