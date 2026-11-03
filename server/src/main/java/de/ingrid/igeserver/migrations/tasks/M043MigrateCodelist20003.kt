@@ -82,12 +82,12 @@ class M043MigrateCodelist20003 : MigrationBase("0.43") {
             val value = fieldElement.get("key")
             if (value.isNull) return
 
-            fieldElement.put("key", convertType(value.textValue()))
+            fieldElement.put("key", convertType(value.stringValue()))
         }
     }
 
     private fun convertType(value: String): String {
         val index = source.indexOf(value)
-        return target.get(index)
+        return target[index]
     }
 }

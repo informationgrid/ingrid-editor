@@ -207,7 +207,7 @@ class IzgExportImportTest : ShouldSpec() {
             importedDoc.get("properties").get("isIzg").asBoolean() shouldBe true
 
             val freeKeywords = importedDoc.get("keywords").get("free")
-            val freeKeywordLabels = (0 until freeKeywords.size()).map { freeKeywords[it].get("label").asText() }
+            val freeKeywordLabels = (0 until freeKeywords.size()).map { freeKeywords[it].get("label").stringValue() }
             freeKeywordLabels shouldContain "FreiesSchlagwort"
             freeKeywordLabels shouldNotContain "izg-relevant"
         }
@@ -234,7 +234,7 @@ class IzgExportImportTest : ShouldSpec() {
             importedDoc.get("properties").get("isIzg").asBoolean() shouldBe true
 
             val freeKeywords = importedDoc.get("keywords").get("free")
-            val freeKeywordLabels = (0 until freeKeywords.size()).map { freeKeywords[it].get("label").asText() }
+            val freeKeywordLabels = (0 until freeKeywords.size()).map { freeKeywords[it].get("label").stringValue() }
             freeKeywordLabels shouldContain "AppSchlagwort"
             freeKeywordLabels shouldNotContain "izg-relevant"
         }

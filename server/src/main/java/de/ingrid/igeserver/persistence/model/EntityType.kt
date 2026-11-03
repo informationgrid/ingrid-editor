@@ -121,6 +121,14 @@ abstract class EntityType {
     open fun getReferenceUUIDs(doc: Document): List<String> = emptyList()
 
     /**
+     * Create incoming reference options suitable for this entity type based on requested option names.
+     */
+    open fun createIncomingReferenceOptions(
+        options: List<String> = emptyList(),
+        docStateFilter: DocStateFilter = DocStateFilter.LATEST,
+    ): IncomingReferenceOptions = SimpleIncomingReferenceOptions(docStateFilter = docStateFilter)
+
+    /**
      * Get all document UUIDs which reference this document
      */
     open fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> = emptyList()
@@ -135,6 +143,6 @@ abstract class EntityType {
 
     protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> = fileList
         ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
-        ?.map { it.get(field).get("uri").textValue() }
+        ?.map { it.get(field).get("uri").stringValue() }
         ?: emptyList()
 }
