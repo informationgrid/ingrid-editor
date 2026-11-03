@@ -54,6 +54,7 @@ import org.w3c.dom.Node
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.OffsetDateTime
 import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 @Service
 class IngridIDFExporter(
@@ -95,8 +96,16 @@ class IngridIDFExporter(
 
     @Transactional
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
+        return runWithFingerprint(doc, catalogId, options).idf
+    }
+
+    data class Result(val idf: String, val fingerprint: String)
+
+    @Transactional
+    fun runWithFingerprint(doc: Document, catalogId: String, options: ExportOptions): Result {
+        require(doc.type != "FOLDER")
+        val output: TemplateOutput = XMLStringOutput()
 
         templateEngine.render(
             getTemplateForDoctype(doc.type),
@@ -119,7 +128,7 @@ class IngridIDFExporter(
         }
         idf = updateDateStamp(idf, dateStampDate)
 
-        return idf
+        return Result(idf, fingerprint)
     }
 
     fun getTemplateForDoctype(type: String): String = when (type) {
@@ -144,8 +153,9 @@ class IngridIDFExporter(
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress(json)) {
-            transformerClass.constructors.first().call(
-                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, exportOptions.tags),
+            val constructor = requireNotNull(transformerClass.primaryConstructor)
+            constructor.callBy(
+                mapOf(constructor.parameters.first() to AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, exportOptions.tags)),
             )
         } else {
             transformerClass.constructors.first().call(
