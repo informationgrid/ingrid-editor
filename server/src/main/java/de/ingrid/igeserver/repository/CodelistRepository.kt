@@ -30,6 +30,8 @@ interface CodelistRepository : JpaRepository<Codelist, Int> {
 
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<Codelist>
 
+    fun findAllByCatalog_IdentifierAndIdentifier(catalog_identifier: String, identifier: String): List<Codelist>
+
     @Modifying
     fun deleteByCatalog_IdentifierAndIdentifier(catalog_identifier: String, identifier: String)
 }

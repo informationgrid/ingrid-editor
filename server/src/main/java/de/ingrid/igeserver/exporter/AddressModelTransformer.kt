@@ -203,12 +203,14 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferenceUUIDs(
+        val uuids = documentService.getIncomingReferenceUUIDs(
             addressDoc,
             catalogIdentifier,
             SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
-        ).map { uuid ->
-            val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
+        )
+        val documents = documentService.getLastPublishedDocuments(catalogIdentifier, uuids)
+        return uuids.map { uuid ->
+            val doc = documents[uuid] ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 

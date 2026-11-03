@@ -42,6 +42,8 @@ class CodelistHandler(
     private val codeListService: CodeListService,
 ) {
     private val log = logger()
+    private val objectMapper = ObjectMapper()
+    private val fieldsType = jacksonTypeRef<Map<String, String>>()
 
     companion object {
         fun toCodelistEntry(
@@ -91,48 +93,51 @@ class CodelistHandler(
 
     fun getCatalogCodelists(catalogId: String): List<CodeList> = codelistRepo
         .findAllByCatalog_Identifier(catalogId)
-        .map {
-            CodeList().apply {
-                id = it.identifier
-                name = it.name
-                description = it.description
-                defaultEntry = it.defaultEntry
-                entries = it.data?.values()?.map { entry ->
-                    CodeListEntry().apply {
-                        id = entry.get("id")?.asString()
-                            ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
-                        description =
-                            if (entry.get("description") == null || entry.get("description").isNull) {
-                                null
-                            } else {
-                                entry.get(
-                                    "description",
-                                ).asString()
-                            }
-                        data =
-                            if (entry.get("data") == null || entry.get("data").isNull) {
-                                null
-                            } else {
-                                entry.get("data")
-                                    .asString()
-                            }
-                        fields = ObjectMapper().convertValue(
-                            entry.get("localisations"),
-                            jacksonTypeRef<Map<String, String>>(),
-                        )
-                    }
-                } ?: mutableListOf()
-            }
-        }
+        .map { toCodeList(it) }
 
-    fun getCatalogCodelistValue(catalogId: String, codelistId: String, key: String, language: String = "de"): String? = getCatalogCodelists(catalogId)
-        .find { it.id == codelistId }
+    fun getCatalogCodelist(catalogId: String, codelistId: String): CodeList? = codelistRepo
+        .findAllByCatalog_IdentifierAndIdentifier(catalogId, codelistId)
+        .firstOrNull()
+        ?.let { toCodeList(it) }
+
+    private fun toCodeList(it: Codelist): CodeList = CodeList().apply {
+        id = it.identifier
+        name = it.name
+        description = it.description
+        defaultEntry = it.defaultEntry
+        entries = it.data?.values()?.map { entry ->
+            CodeListEntry().apply {
+                id = entry.get("id")?.asString()
+                    ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
+                description =
+                    if (entry.get("description") == null || entry.get("description").isNull) {
+                        null
+                    } else {
+                        entry.get(
+                            "description",
+                        ).asString()
+                    }
+                data =
+                    if (entry.get("data") == null || entry.get("data").isNull) {
+                        null
+                    } else {
+                        entry.get("data")
+                            .asString()
+                    }
+                fields = objectMapper.convertValue(
+                    entry.get("localisations"),
+                    fieldsType,
+                )
+            }
+        } ?: mutableListOf()
+    }
+
+    fun getCatalogCodelistValue(catalogId: String, codelistId: String, key: String, language: String = "de"): String? = getCatalogCodelist(catalogId, codelistId)
         ?.entries
         ?.find { it.id == key }
         ?.fields?.get(language)
 
-    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String?, language: String = "de"): String? = getCatalogCodelists(catalogId)
-        .find { it.id == codelistId }
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String?, language: String = "de"): String? = getCatalogCodelist(catalogId, codelistId)
         ?.entries
         ?.find { value != null && it.getField(language) == value }
         ?.id
@@ -179,7 +184,7 @@ class CodelistHandler(
     }
 
     fun getDefaultCatalogCodelistEntry(catalogId: String, listId: String): CodeListEntry? {
-        val codelist = getCatalogCodelists(catalogId).find { it.id == listId }
+        val codelist = getCatalogCodelist(catalogId, listId)
         return codelist?.defaultEntry?.let { defaultKey -> codelist.entries?.find { it.id == defaultKey } }
     }
 
