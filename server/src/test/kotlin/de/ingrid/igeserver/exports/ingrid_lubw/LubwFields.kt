@@ -66,13 +66,6 @@ class LubwFields : GeodatasetBase() {
             }
 
             should("export environmentdescription to: $docType") {
-                every {
-                    super.codelistHandler.getCatalogCodelistValue(
-                        this.any(),
-                        "30001",
-                        "1",
-                    )
-                } returns "test_environmentDescription"
                 val context =
                     jacksonObjectMapper()
                         .readTree(
@@ -83,7 +76,7 @@ class LubwFields : GeodatasetBase() {
                                         "processStep": {
                                           "description": []
                                         },
-                                        "environmentDescription": { "key": "1", "value": "test_environmentDescription", "_codelistId": "30001"}
+                                        "environmentDescription": { "key": "1", "_codelistId": "30001"}
                                       }
                                     }
                                   }

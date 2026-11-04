@@ -516,10 +516,10 @@
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
-                                <gco:CharacterString>Baugesetzbuch (BauGB)</gco:CharacterString>
+                                <gco:CharacterString>Atomgesetz (AtG)</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:keyword>
-                                <gco:CharacterString>Atomgesetz (AtG)</gco:CharacterString>
+                                <gco:CharacterString>Baugesetzbuch (BauGB)</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:thesaurusName>
                                 <gmd:CI_Citation>

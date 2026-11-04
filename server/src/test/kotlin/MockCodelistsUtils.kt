@@ -20,8 +20,11 @@
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.codelists.model.CodeListEntry
+import de.ingrid.igeserver.profiles.ingrid.codelist1350
 import de.ingrid.igeserver.profiles.ingrid_lubw.codelist30001
+import de.ingrid.igeserver.profiles.opendata.codelist20001
 import de.ingrid.igeserver.services.CodelistHandler
+import io.mockk.MockKAdditionalAnswerScope
 import io.mockk.every
 
 private val catalogCodelists: Map<String, CodeList> by lazy {
@@ -141,74 +144,10 @@ private fun buildCatalogCodelists(): Map<String, CodeList> {
         )
     }
 
-    val entries1350 = listOf(
-        "1" to "Atomgesetz (AtG)",
-        "2" to "Baugesetzbuch (BauGB)",
-        "3" to "Bürgerl. Gesetzbuch (BGB)",
-        "4" to "Bodenschutzgesetz (BodSchG)",
-        "5" to "Bundesberggesetz (BBergG)",
-        "7" to "Bundesnaturschutzgesetz (BNatSchG)",
-        "8" to "Bundeswaldgesetz (BundeswaldG)",
-        "9" to "Chemikaliengesetz (ChemG)",
-        "10" to "Flurbereinigungsgesetz (FlurbG)",
-        "11" to "Gentechnikgesetz (GenTG)",
-        "13" to "Kreislaufwirtschafts- u. Abfallgesetz (KrW-/AbfG)",
-        "14" to "Landesabfallgesetz (LAbfG)",
-        "15" to "Landesabfallwirtschaftsgesetz (LAbfWG)",
-        "16" to "Landschaftsgesetz (LG)",
-        "17" to "Pflanzenschutzgesetz (PflSchG)",
-        "18" to "Raumordnungsgesetz (ROG)",
-        "19" to "Strahlenschutzvorsorgegesetz (StrVG)",
-        "20" to "Tierschutzgesetz (TierSchG)",
-        "21" to "Umwelthaftungsgesetz (UmweltHG)",
-        "22" to "Umweltinformationsgesetz (UIG)",
-        "23" to "Verwaltungsverfahrensgesetz (VwVfG)",
-        "24" to "Bundeswasserstraßengesetz (WaStrG)",
-        "25" to "Wasserhaushaltsgesetz (WHG)",
-        "26" to "Umweltstatistikgesetz (Fass. 21.06.1994)",
-        "27" to "Umweltstatistikgesetz (Fass. 14.03.1980)",
-        "29" to "Trinkwasserverordnung (TrinkwV)",
-        "30" to "TA Siedlungsabfall",
-        "31" to "TA Abfall",
-        "32" to "Strahlenschutzverordnung (StrlSchVO)",
-        "33" to "Richtl. Em.- u. Im.-Überwachung. kerntech. Anl.",
-        "34" to "RdErl. d. ML v. 16.1.1986, GültL 10/66",
-        "35" to "Nieders. Wassergesetz (NWG)",
-        "36" to "Nieders. Naturschutzgesetz (NNatG)",
-        "38" to "Nieders. Abfallgesetz (NAbfG)",
-        "39" to "Nieders. Deichgesetz (NDG)",
-        "40" to "Nieders. Abfallgesetz. 6. Teil \"Altlasten\"",
-        "41" to "Nieders. Abfallabgabengesetz",
-        "42" to "Landesraumordnungsprogramm LROP",
-        "43" to "KTA 1508",
-        "45" to "Gesetz über eine Holzstatistik",
-        "46" to "Ges. Statistik im Produzierenden Gewerbe",
-        "47" to "Gesetz ü. d. Umweltverträglichkeitsprüfung (UVPG)",
-        "48" to "Erlaß Nds. Umweltministerium vom 16.10.1992",
-        "49" to "Bundesimmissionsschutzgesetz (BImSchG)",
-        "50" to "BImSchG §47a",
-        "51" to "Arbeitsschutzgesetz",
-        "52" to "Anleitung zur Berechnung von Fluglärm",
-        "53" to "Agrarstatistikgesetz (AgrStatG)",
-        "54" to "Abfallklärschlammverordnung (AbfKlärV)",
-        "55" to "Bundesimmissionsschutzverordnung, 23.",
-        "56" to "Abwasserabgabengesetz (AbwAG)",
-        "57" to "Wasserhaushaltsgesetz (WHG) § 7a",
-        "58" to "§ 152 NWG (Abwasserbeseitigungspläne)",
-        "59" to "§ 52 Nieders. Wassergesetz (NWG)",
-        "60" to "§ 67 NWG",
-        "61" to "23. Bundesimmissionsschutzverordnung",
-        "62" to "Abfallgesetz (AbfG)",
-        "63" to "AdV-Plenumsbeschluß von 1994",
-        "64" to "AdV-Plenumsbeschluß von1994",
-        "65" to "Agrarstatistikgesetz AgrStatG",
-        "67" to "Betriebssatzung der LGN v. 7.7.1997",
-        "68" to "Bundesimmissionsschutzverordnung",
-    )
     map["1350"] = CodeList().apply {
         id = "1350"
         name = "Rechtliche Grundlagen"
-        entries = entries1350.map { (id, name) ->
+        entries = codelist1350.map { (id, name) ->
             CodeListEntry().apply {
                 this.id = id
                 this.fields = mutableMapOf("de" to name, "en" to name)
@@ -275,6 +214,15 @@ private fun buildCatalogCodelists(): Map<String, CodeList> {
     map["30001"] = CodeList().apply {
         id = "30001"
         entries = codelist30001.map { (id, value) ->
+            CodeListEntry().apply {
+                this.id = id
+                this.fields = mutableMapOf("de" to value, "en" to value)
+            }
+        }.toMutableList()
+    }
+    map["20001"] = CodeList().apply {
+        id = "20001"
+        entries = codelist20001.map { (id, value) ->
             CodeListEntry().apply {
                 this.id = id
                 this.fields = mutableMapOf("de" to value, "en" to value)
@@ -401,5 +349,18 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
                 null
             }
         }
+    }
+}
+
+fun createMockCatalogCodelist(codelistHandler: CodelistHandler, codelistId: String, data: Map<String, String>): MockKAdditionalAnswerScope<CodeList?, CodeList?> = every { codelistHandler.getCatalogCodelist(any(), codelistId) } answers {
+    val codelistId = secondArg<String>()
+    CodeList().apply {
+        id = codelistId
+        entries = data.map { (id, name) ->
+            CodeListEntry().apply {
+                this.id = id
+                this.fields = mutableMapOf("de" to name, "en" to name)
+            }
+        }.toMutableList()
     }
 }
