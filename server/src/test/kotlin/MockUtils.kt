@@ -100,6 +100,23 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             }
         }
     }
+    every { documentService.getLastPublishedDocuments(any(), any()) } answers {
+        val uuids = secondArg<Collection<String>>()
+        val result = mutableMapOf<String, de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document>()
+        for (uuid in uuids) {
+            val doc = documents.find { it.uuid == uuid }
+            if (doc?.template != null) {
+                result[uuid] = convertToDocument(SchemaUtils.getJsonFileContent(doc.template)).apply {
+                    wrapperId = doc.id
+                    this.uuid = doc.uuid
+                    data.put("_parent", doc.parent)
+                    if (doc.organization != null) data.put("organization", doc.organization)
+                    if (doc.personName != null) data.put("lastName", doc.personName)
+                }
+            }
+        }
+        result
+    }
     every { documentService.getIncomingReferenceUUIDs(any(), any(), any()) } answers { emptySet() }
     every { documentService.findChildren(any(), any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
