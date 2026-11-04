@@ -228,10 +228,7 @@ export class CatalogService {
     const config =
       this.configService.$userInfo.value?.currentCatalog?.settings?.config;
     if (config) config.theme = theme ?? undefined;
-    applyCatalogTheme(
-      theme,
-      this.configuration.featureFlags?.catalogPalette ?? false,
-    );
+    applyCatalogTheme(theme);
   }
 
   private prepareBody(value: any) {

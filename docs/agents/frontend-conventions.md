@@ -7,11 +7,11 @@
 - Per-catalog theme: preset key in the catalog settings (`config.theme`, set on
   the catalog configuration page; valid keys in `catalog-theme.ts` and the
   server's `CATALOG_THEMES`). `applyCatalogTheme` runs at startup
-  (`ConfigService`) and after saving; styling consumes `var(--catalog-accent)` /
-  `body.catalog-accent`, so catalogs without a theme keep the default look.
-  Feature flag `catalogPalette` additionally recolors the UI via `--ige-*`
+  (`ConfigService`) and after saving. It recolors the UI via `--ige-*`
   variables: the four blues in `src/variables.scss` are CSS variables, derive
-  shades with `vars.shift()` (not `color.adjust`).
+  shades with `vars.shift()` (not `color.adjust`). Catalogs without a theme
+  keep the default look. `var(--catalog-accent)` / `body.catalog-accent` only
+  color the catalog name in the main header.
 - APIs: prefer clean replacement over compatibility shims (few call sites);
   put the rationale into the commit message or code comments.
 - Select fields (`ige-select`, `addSelect`): what gets saved depends on

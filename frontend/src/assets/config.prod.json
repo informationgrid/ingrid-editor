@@ -16,7 +16,6 @@
   "lfsMoveResourcesUrl": null,
   "featureFlags": {
     "showTestBadge": false,
-    "catalogPalette": false,
     "AP3": true,
     "AP4": false,
     "NotForDemo": true,

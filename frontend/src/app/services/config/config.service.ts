@@ -199,10 +199,7 @@ export class ConfigService {
     this.generalStore.updateFavorites(
       userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
     );
-    applyCatalogTheme(
-      userInfo.currentCatalog.settings?.config?.theme,
-      this.config?.featureFlags?.catalogPalette ?? false,
-    );
+    applyCatalogTheme(userInfo.currentCatalog.settings?.config?.theme);
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";

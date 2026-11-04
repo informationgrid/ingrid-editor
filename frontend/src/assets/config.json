@@ -16,7 +16,6 @@
   "lfsMoveResourcesUrl": "https://wemove.com",
   "featureFlags": {
     "showTestBadge": false,
-    "catalogPalette": false,
     "AP3": true,
     "AP4": false,
     "NotForDemo": true,

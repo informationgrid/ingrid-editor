@@ -62,14 +62,8 @@ describe("catalogTheme", () => {
       );
     });
 
-    it("does not touch the palette without the palette flag", () => {
+    it("overrides the palette variables", () => {
       applyCatalogTheme("blue");
-
-      expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
-    });
-
-    it("overrides the palette variables with the palette flag", () => {
-      applyCatalogTheme("blue", true);
 
       const blue = CATALOG_THEME_PRESETS.find((p) => p.key === "blue");
       expect(rootStyle().getPropertyValue("--ige-primary")).toBe(blue.primary);
@@ -83,8 +77,8 @@ describe("catalogTheme", () => {
     });
 
     it("removes everything without theme", () => {
-      applyCatalogTheme("blue", true);
-      applyCatalogTheme(undefined, true);
+      applyCatalogTheme("blue");
+      applyCatalogTheme(undefined);
 
       expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).toBe("");
       expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
@@ -93,13 +87,16 @@ describe("catalogTheme", () => {
       );
     });
 
-    it("removes the palette when the flag is switched off again", () => {
-      applyCatalogTheme("teal", true);
-      applyCatalogTheme("teal", false);
+    it("switches the palette when the theme changes", () => {
+      applyCatalogTheme("teal");
+      applyCatalogTheme("violet");
 
-      expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
-      expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).not.toBe(
-        "",
+      const violet = CATALOG_THEME_PRESETS.find((p) => p.key === "violet");
+      expect(rootStyle().getPropertyValue("--ige-primary")).toBe(
+        violet.primary,
+      );
+      expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).toBe(
+        violet.accent,
       );
     });
   });

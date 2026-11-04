@@ -25,15 +25,13 @@
  * preset in the catalog settings (catalog configuration page, field "theme").
  * The preset colors are derived from the ingrid portal themes.
  *
- * Applying a theme publishes the accent color as CSS variable
- * `--catalog-accent` on :root and sets `catalog-accent` as body class. All
- * accent styling (viewport frame, header stripe, colored catalog name, form
- * title row) keys off those two hooks, so catalogs without a theme keep the
- * default look.
+ * Applying a theme recolors the UI palette: the `--ige-*` variables consumed
+ * by src/variables.scss are overridden on :root. Catalogs without a theme keep
+ * the default look.
  *
- * Optionally (feature flag `catalogPalette`) the theme also recolors the UI
- * palette: the `--ige-*` variables consumed by src/variables.scss are
- * overridden on :root.
+ * Additionally the accent color is published as CSS variable
+ * `--catalog-accent` on :root and `catalog-accent` is set as body class (used
+ * for the colored catalog name in the header).
  */
 export const CATALOG_ACCENT_VARIABLE = "--catalog-accent";
 export const CATALOG_ACCENT_BODY_CLASS = "catalog-accent";
@@ -42,7 +40,7 @@ export interface CatalogThemePreset {
   /** stored in the catalog settings, must match the server's CATALOG_THEMES */
   key: string;
   label: string;
-  /** frame, header stripe, catalog name; needs AA contrast on white */
+  /** catalog name in the header; needs AA contrast on white */
   accent: string;
   /** palette: titles, links (replaces $ige-primary) */
   primary: string;
@@ -131,10 +129,7 @@ export function getCatalogAccent(
   return getCatalogThemePreset(key)?.accent ?? null;
 }
 
-export function applyCatalogTheme(
-  key: string | undefined | null,
-  withPalette = false,
-): void {
+export function applyCatalogTheme(key: string | undefined | null): void {
   const preset = getCatalogThemePreset(key);
   const root = document.documentElement;
 
@@ -147,7 +142,7 @@ export function applyCatalogTheme(
   }
 
   Object.entries(PALETTE_VARIABLES).forEach(([variable, field]) => {
-    if (preset && withPalette) {
+    if (preset) {
       root.style.setProperty(variable, preset[field]);
     } else {
       root.style.removeProperty(variable);
