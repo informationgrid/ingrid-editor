@@ -44,18 +44,16 @@ export interface Profile {
 export class CatalogService {
   private catalogStore = inject(CatalogStore);
   private generalStore = inject(GeneralStore);
+  private configService = inject(ConfigService);
 
   private configuration: Configuration;
-  private configService: ConfigService;
 
   constructor(
     private dataService: CatalogDataService,
     private http: HttpClient,
     private snackbar: MatSnackBar,
-    configService: ConfigService,
   ) {
-    this.configService = configService;
-    this.configuration = configService.getConfiguration();
+    this.configuration = this.configService.getConfiguration();
   }
 
   getCatalogs(): Observable<Catalog[]> {
@@ -225,16 +223,29 @@ export class CatalogService {
 
   /** Applies a changed theme without reload and keeps the user info in sync. */
   private applyThemeLive(theme: string | null | undefined) {
-    const config =
-      this.configService.$userInfo.value?.currentCatalog?.settings?.config;
-    if (config) config.theme = theme ?? undefined;
+    const userInfo = this.configService.$userInfo.value;
+    const currentCatalog = userInfo?.currentCatalog;
+    const settings = currentCatalog?.settings;
+    const config = settings?.config;
+    if (userInfo && currentCatalog && settings && config) {
+      this.configService.$userInfo.next({
+        ...userInfo,
+        currentCatalog: {
+          ...currentCatalog,
+          settings: {
+            ...settings,
+            config: { ...config, theme: theme ?? undefined },
+          },
+        },
+      });
+    }
     applyCatalogTheme(theme);
   }
 
   private prepareBody(value: any) {
     const name = value.catalogName;
     const description = value.description;
-    delete value.name;
+    delete value.catalogName;
     delete value.description;
     return {
       name: name,
