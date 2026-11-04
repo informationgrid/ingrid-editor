@@ -35,7 +35,6 @@
                     [matMenuTriggerFor]="catMenu"
                     [tabindex]="otherAssignedCatalogs().length > 0 ? 0 : -1"
                     [disabled]="otherAssignedCatalogs().length == 0"
-                    [style.color]="currentCatalogAccent()"
                     aria-label="Menü zur Auswahl der Kataloge"
                     aria-describedby="catalog-label"
                 >
@@ -52,7 +51,7 @@
                             data-cy="action-switch-catalog"
                             mat-menu-item
                             class="menu-item"
-                            [style.color]="catalogAccent(catalog.id)"
+                            [style.color]="catalogAccent(catalog)"
                             (click)="chooseCatalog(catalog.id)"
                             matomoClickCategory="SwitchCatalog"
                             matomoClickAction="SwitchCatalog"

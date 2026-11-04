@@ -6,9 +6,8 @@
   position: relative;
 }
 
-/* Per-catalog accent color (see app/services/config/catalog-theme.ts): the
-   baw profile sets --catalog-accent + body.catalog-accent for catalogs that
-   have an entry in the "catalogThemes" config. */
+/* Per-catalog accent color (see app/services/config/catalog-theme.ts):
+   --catalog-accent + body.catalog-accent are set for catalogs with a theme. */
 :host::after {
   content: "";
   position: absolute;
@@ -21,6 +20,9 @@
 
 :host-context(body.catalog-accent) .catalog-button {
   font-weight: 600;
+  --mat-button-text-label-text-color: var(--catalog-accent);
+  --mat-button-text-disabled-label-text-color: var(--catalog-accent);
+  color: var(--catalog-accent);
 }
 
 .header-row {
@@ -142,7 +144,7 @@
     color: #ffffff;
 
     &:hover {
-      background-color: color.adjust(vars.$ige-primary, $lightness: 8%);
+      background-color: vars.shift(vars.$ige-primary, 8);
     }
 
     ::ng-deep path {

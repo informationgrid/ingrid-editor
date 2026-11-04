@@ -30,6 +30,7 @@ import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GeneralStore } from "../../store/general.store";
+import { applyCatalogTheme } from "../../services/config/catalog-theme";
 
 export interface Profile {
   id: string;
@@ -45,6 +46,7 @@ export class CatalogService {
   private generalStore = inject(GeneralStore);
 
   private configuration: Configuration;
+  private configService: ConfigService;
 
   constructor(
     private dataService: CatalogDataService,
@@ -52,6 +54,7 @@ export class CatalogService {
     private snackbar: MatSnackBar,
     configService: ConfigService,
   ) {
+    this.configService = configService;
     this.configuration = configService.getConfiguration();
   }
 
@@ -214,9 +217,21 @@ export class CatalogService {
       .put(this.configuration.backendUrl + "catalogConfig", body)
       .pipe(
         tap(() => this.generalStore.setCatalogLanguage(value.language ?? "de")),
+        tap(() => this.applyThemeLive(value.theme)),
         tap(() => this.snackbar.open("Konfiguration wurde gespeichert")),
       )
       .subscribe();
+  }
+
+  /** Applies a changed theme without reload and keeps the user info in sync. */
+  private applyThemeLive(theme: string | null | undefined) {
+    const config =
+      this.configService.$userInfo.value?.currentCatalog?.settings?.config;
+    if (config) config.theme = theme ?? undefined;
+    applyCatalogTheme(
+      theme,
+      this.configuration.featureFlags?.catalogPalette ?? false,
+    );
   }
 
   private prepareBody(value: any) {

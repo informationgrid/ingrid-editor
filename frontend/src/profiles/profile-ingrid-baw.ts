@@ -34,11 +34,6 @@ import { LaboratoryDataDoctypeBaw } from "./ingrid-baw/doctypes/laboratoryData.d
 import { DeleteReferenceHandlerService } from "../app/+catalog/+behaviours/system/DeleteReferenceHandler/delete-reference-handler.service";
 import { DocumentAbstract } from "../app/store/document/document.model";
 import { TreeNode } from "../app/store/tree/tree-node.model";
-import { ConfigService } from "../app/services/config/config.service";
-import {
-  applyCatalogAccent,
-  getCatalogAccent,
-} from "../app/services/config/catalog-theme";
 
 @Component({
   template: "",
@@ -61,7 +56,6 @@ class InGridBawComponent extends InGridComponent {
   docEvents = inject(DocEventsService);
   common = inject(CommonFieldsBaw);
   deleteReferenceHandlerService = inject(DeleteReferenceHandlerService);
-  configService = inject(ConfigService);
 
   protected getDocTypes = () => [
     this.folder,
@@ -85,20 +79,6 @@ class InGridBawComponent extends InGridComponent {
     this.modifyFormFieldConfiguration();
     this.deleteReferenceHandlerService.registerAdditionalDisabledCondition(
       this.disableConditionReplaceAddress,
-    );
-    this.applyCatalogTheme();
-  }
-
-  /**
-   * Color-codes the editor for the current catalog, so installations with
-   * multiple BAW catalogs can tell them apart (see catalog-theme.ts).
-   */
-  private applyCatalogTheme() {
-    applyCatalogAccent(
-      getCatalogAccent(
-        this.configService.getConfiguration(),
-        ConfigService.catalogId,
-      ),
     );
   }
 

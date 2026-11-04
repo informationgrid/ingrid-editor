@@ -27,6 +27,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { catchError, map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 import { GeneralStore } from "../../store/general.store";
+import { applyCatalogTheme } from "./catalog-theme";
 
 export class Configuration {
   constructor(
@@ -48,7 +49,6 @@ export class Configuration {
     public matomoDisableCookies?: boolean,
     public lfsInterfaceUrl?: string,
     public lfsMoveResourcesUrl?: string,
-    public catalogThemes?: { [catalogId: string]: string },
   ) {}
 }
 
@@ -198,6 +198,10 @@ export class ConfigService {
       userInfo.currentCatalog.settings?.config?.language ?? "de";
     this.generalStore.updateFavorites(
       userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
+    );
+    applyCatalogTheme(
+      userInfo.currentCatalog.settings?.config?.theme,
+      this.config?.featureFlags?.catalogPalette ?? false,
     );
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =

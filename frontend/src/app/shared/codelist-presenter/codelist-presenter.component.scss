@@ -46,10 +46,7 @@ mat-panel-description {
   background-color: vars.$ige-mark-color;
 
   &:hover {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 }
 

@@ -20,9 +20,12 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CATALOG_THEMES
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -486,6 +489,9 @@ class CatalogService(
         description: String? = null,
         config: CatalogConfig,
     ) {
+        if (config.theme != null && config.theme !in CATALOG_THEMES) {
+            throw ValidationException.withInvalidFields(listOf(InvalidField("theme", "INVALID_THEME")))
+        }
         val catalog = catalogRepo.findByIdentifier(identifier)
         catalog.apply {
             if (name != null) this.name = name

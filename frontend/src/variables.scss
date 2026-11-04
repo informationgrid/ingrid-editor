@@ -1,9 +1,23 @@
-$ige-primary: #196ea2; /* Middle blue, i.e. title */
-$ige-secondary: #28225b; /* Dark blue, i.e. button / link text */
-$ige-secondary-dark: #161243; /* Darkest blue, background sidebar menu */
+@use "sass:math";
+
+/* The four blues are CSS variables, so a catalog theme can recolor the UI at
+   runtime (see app/services/config/catalog-theme.ts). The fallback is the
+   default look. Derive shades with shift(), not with sass color functions. */
+$ige-primary: var(--ige-primary, #196ea2); /* Middle blue, i.e. title */
+$ige-secondary: var(
+  --ige-secondary,
+  #28225b
+); /* Dark blue, i.e. button / link text */
+$ige-secondary-dark: var(
+  --ige-secondary-dark,
+  #161243
+); /* Darkest blue, background sidebar menu */
 $ige-comment-color: #979797; /* Middle grey, i.e. input outlines, placeholder, icons */
 
-$ige-mark-color: #eef8ff; /* Light blue background of selected / highlighted */
+$ige-mark-color: var(
+  --ige-mark-color,
+  #eef8ff
+); /* Light blue background of selected / highlighted */
 
 $ige-background: #f3f3f3; /* Light grey background, i.e. toolbar */
 $ige-background-bar: #dfdfdf; /* Middle grey background, i.e. header data set */
@@ -31,3 +45,13 @@ $ige-hint-color: rgba(0, 0, 0, 0.6);
 
 /* placeholder, icons */
 $ige-placeholder-color: rgba(0, 0, 0, 0.6);
+
+/* Lightens (positive) or darkens (negative) a color, replacement for
+   color.adjust($color, $lightness) that also works for CSS variables. */
+@function shift($color, $lightness) {
+  $amount: math.abs($lightness) * 1.5;
+  @if $lightness >= 0 {
+    @return color-mix(in srgb, #{$color}, white #{$amount}#{"%"});
+  }
+  @return color-mix(in srgb, #{$color}, black #{$amount}#{"%"});
+}

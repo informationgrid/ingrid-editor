@@ -57,7 +57,7 @@ a {
 
   &:hover {
     text-decoration: none;
-    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
+    color: vars.shift(vars.$ige-secondary, 20);
   }
 }
 
@@ -155,7 +155,7 @@ button.button-next-to-input {
   border-top-left-radius: 0;
 
   &:hover {
-    background-color: color.adjust(vars.$ige-secondary, $lightness: 8%);
+    background-color: vars.shift(vars.$ige-secondary, 8);
   }
 }
 
@@ -286,7 +286,7 @@ h1 {
   //font-weight: 500;
 
   &:hover {
-    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
+    color: vars.shift(vars.$ige-secondary, 20);
   }
 }
 
@@ -412,10 +412,7 @@ mat-list-option.selected {
   background-color: vars.$ige-mark-color !important;
 
   &:hover {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 }
 
@@ -1036,7 +1033,7 @@ mat-icon.mark-color .coloring {
     height: 56px !important;
 
     &:hover {
-      background: color.adjust(vars.$ige-secondary, $lightness: -8%);
+      background: vars.shift(vars.$ige-secondary, -8);
     }
 
     .mdc-tab__text-label {
@@ -1220,10 +1217,7 @@ mat-icon.wide-icon-26px {
   background-color: color.adjust(#ffffff, $lightness: -5%) !important;
 
   &.selected {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 
   .menu-button {

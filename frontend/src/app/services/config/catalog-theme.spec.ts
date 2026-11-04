@@ -18,76 +18,88 @@
  * limitations under the Licence.
  */
 import {
-  applyCatalogAccent,
+  applyCatalogTheme,
   CATALOG_ACCENT_BODY_CLASS,
   CATALOG_ACCENT_VARIABLE,
+  CATALOG_THEME_PRESETS,
   getCatalogAccent,
 } from "./catalog-theme";
 
 describe("catalogTheme", () => {
-  const themes = {
-    "cat-finder": "#00838f",
-    "cat-repo": " #1a5a9e ",
-  };
+  const rootStyle = () => document.documentElement.style;
 
   describe("getCatalogAccent", () => {
-    it("returns the color of the given catalog", () => {
-      expect(getCatalogAccent({ catalogThemes: themes }, "cat-finder")).toBe(
-        "#00838f",
+    it("returns the accent color of a preset", () => {
+      expect(getCatalogAccent("teal")).toBe(
+        CATALOG_THEME_PRESETS.find((p) => p.key === "teal").accent,
       );
     });
 
-    it("trims the configured color", () => {
-      expect(getCatalogAccent({ catalogThemes: themes }, "cat-repo")).toBe(
-        "#1a5a9e",
-      );
+    it("returns null for unknown, empty or missing keys", () => {
+      expect(getCatalogAccent("unknown")).toBe(null);
+      expect(getCatalogAccent("")).toBe(null);
+      expect(getCatalogAccent(undefined)).toBe(null);
+      expect(getCatalogAccent(null)).toBe(null);
     });
 
-    it("returns null for a catalog without entry", () => {
-      expect(getCatalogAccent({ catalogThemes: themes }, "cat-other")).toBe(
-        null,
-      );
-    });
-
-    it("returns null for blank colors", () => {
-      expect(
-        getCatalogAccent({ catalogThemes: { "cat-x": "   " } }, "cat-x"),
-      ).toBe(null);
-    });
-
-    it("returns null without themes or catalog id", () => {
-      expect(getCatalogAccent(undefined, "cat-finder")).toBe(null);
-      expect(getCatalogAccent({ catalogThemes: themes }, undefined)).toBe(null);
+    it("has unique preset keys", () => {
+      const keys = CATALOG_THEME_PRESETS.map((p) => p.key);
+      expect(new Set(keys).size).toBe(keys.length);
     });
   });
 
-  describe("applyCatalogAccent", () => {
-    afterEach(() => applyCatalogAccent(null));
+  describe("applyCatalogTheme", () => {
+    afterEach(() => applyCatalogTheme(null));
 
-    it("sets the CSS variable and the body class", () => {
-      applyCatalogAccent("#00838f");
+    it("sets the accent variable and the body class", () => {
+      applyCatalogTheme("blue");
 
-      expect(
-        document.documentElement.style.getPropertyValue(
-          CATALOG_ACCENT_VARIABLE,
-        ),
-      ).toBe("#00838f");
+      expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).toBe(
+        getCatalogAccent("blue"),
+      );
       expect(document.body.classList.contains(CATALOG_ACCENT_BODY_CLASS)).toBe(
         true,
       );
     });
 
-    it("removes the CSS variable and the body class without color", () => {
-      applyCatalogAccent("#00838f");
-      applyCatalogAccent(null);
+    it("does not touch the palette without the palette flag", () => {
+      applyCatalogTheme("blue");
 
-      expect(
-        document.documentElement.style.getPropertyValue(
-          CATALOG_ACCENT_VARIABLE,
-        ),
-      ).toBe("");
+      expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
+    });
+
+    it("overrides the palette variables with the palette flag", () => {
+      applyCatalogTheme("blue", true);
+
+      const blue = CATALOG_THEME_PRESETS.find((p) => p.key === "blue");
+      expect(rootStyle().getPropertyValue("--ige-primary")).toBe(blue.primary);
+      expect(rootStyle().getPropertyValue("--ige-secondary")).toBe(
+        blue.secondary,
+      );
+      expect(rootStyle().getPropertyValue("--ige-secondary-dark")).toBe(
+        blue.secondaryDark,
+      );
+      expect(rootStyle().getPropertyValue("--ige-mark-color")).toBe(blue.mark);
+    });
+
+    it("removes everything without theme", () => {
+      applyCatalogTheme("blue", true);
+      applyCatalogTheme(undefined, true);
+
+      expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).toBe("");
+      expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
       expect(document.body.classList.contains(CATALOG_ACCENT_BODY_CLASS)).toBe(
         false,
+      );
+    });
+
+    it("removes the palette when the flag is switched off again", () => {
+      applyCatalogTheme("teal", true);
+      applyCatalogTheme("teal", false);
+
+      expect(rootStyle().getPropertyValue("--ige-primary")).toBe("");
+      expect(rootStyle().getPropertyValue(CATALOG_ACCENT_VARIABLE)).not.toBe(
+        "",
       );
     });
   });

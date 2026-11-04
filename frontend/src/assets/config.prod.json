@@ -14,9 +14,9 @@
   "matomoDisableCookies": null,
   "lfsInterfaceUrl": null,
   "lfsMoveResourcesUrl": null,
-  "catalogThemes": {},
   "featureFlags": {
     "showTestBadge": false,
+    "catalogPalette": false,
     "AP3": true,
     "AP4": false,
     "NotForDemo": true,
