@@ -48,6 +48,11 @@ export interface CatalogThemePreset {
   secondary: string;
   /** palette: sidebar background (replaces $ige-secondary-dark) */
   secondaryDark: string;
+  /**
+   * palette: active tab label on the secondaryDark tab bar (replaces
+   * $ige-primary-light); keep the contrast of the default (~6.4:1)
+   */
+  primaryLight: string;
   /** palette: selected / highlighted background (replaces $ige-mark-color) */
   mark: string;
 }
@@ -60,6 +65,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#007a89",
     secondary: "#0a4e5a",
     secondaryDark: "#073a43",
+    primaryLight: "#00cee7",
     mark: "#e6f6f8",
   },
   {
@@ -69,6 +75,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#2c63b1",
     secondary: "#1d4b7b",
     secondaryDark: "#143a60",
+    primaryLight: "#a9c3ea",
     mark: "#eaf1fa",
   },
   {
@@ -78,6 +85,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#0c6b80",
     secondary: "#0c505d",
     secondaryDark: "#083841",
+    primaryLight: "#2dc9eb",
     mark: "#e8f4f7",
   },
   {
@@ -87,6 +95,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#005ca9",
     secondary: "#003063",
     secondaryDark: "#002147",
+    primaryLight: "#46abff",
     mark: "#eaf6ff",
   },
   {
@@ -96,6 +105,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#3d7a14",
     secondary: "#285010",
     secondaryDark: "#1a380a",
+    primaryLight: "#68cf22",
     mark: "#eef7e6",
   },
   {
@@ -105,6 +115,7 @@ export const CATALOG_THEME_PRESETS: CatalogThemePreset[] = [
     primary: "#7a3f9d",
     secondary: "#4a2563",
     secondaryDark: "#331845",
+    primaryLight: "#c09ad6",
     mark: "#f4ecf8",
   },
 ];
@@ -113,6 +124,7 @@ const PALETTE_VARIABLES: { [variable: string]: keyof CatalogThemePreset } = {
   "--ige-primary": "primary",
   "--ige-secondary": "secondary",
   "--ige-secondary-dark": "secondaryDark",
+  "--ige-primary-light": "primaryLight",
   "--ige-mark-color": "mark",
 };
 

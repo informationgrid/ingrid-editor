@@ -73,6 +73,9 @@ describe("catalogTheme", () => {
       expect(rootStyle().getPropertyValue("--ige-secondary-dark")).toBe(
         blue.secondaryDark,
       );
+      expect(rootStyle().getPropertyValue("--ige-primary-light")).toBe(
+        blue.primaryLight,
+      );
       expect(rootStyle().getPropertyValue("--ige-mark-color")).toBe(blue.mark);
     });
 
