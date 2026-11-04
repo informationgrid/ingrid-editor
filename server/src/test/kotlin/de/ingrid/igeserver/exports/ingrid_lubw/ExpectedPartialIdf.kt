@@ -31,7 +31,7 @@ const val OAC_KEYWORD = """
 
 const val SYSTEM_ENVIRONMENT = """
                     <gmd:environmentDescription>
-                        <gco:CharacterString>test_environmentDescription</gco:CharacterString>
+                        <gco:CharacterString>Umweltinformationssystem Baden-Württemberg (UIS)</gco:CharacterString>
                     </gmd:environmentDescription>
 """
 

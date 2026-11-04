@@ -70,6 +70,9 @@ class BawFields : GeodatasetBase() {
 
         every { documentService.findChildren(any(), any(), any(), any()) } returns FindAllResults(0, emptyList())
         every { documentService.getLastPublishedDocument(any(), any(), any()) } returns Document()
+
+        every { codelistHandler.getCodelistValue("3950005", "Schlagwort1", any()) } returns "3950005_Schlagwort1"
+        every { codelistHandler.getCodelistValue("3950007", "Schlagwort2", any()) } returns "3950007_Schlagwort2"
     }
 
     init {
@@ -258,8 +261,7 @@ class BawFields : GeodatasetBase() {
                             .trimIndent(),
                     ) as ObjectNode
 
-            // Mock codelist for bawOrderInfo
-            every { codelistHandler.getCatalogCodelistValue(any(), "bawOrderInfo", any()) } returns "12345 - BAW Order Title"
+            every { codelistHandler.getCodelistValue("bawOrderInfo", "12345 - BAW Order Title", any()) } returns "12345 - BAW Order Title"
 
             val result =
                 exportJsonToXML(exporter, docSamples["GeoDataset"]!!, context)
