@@ -46,6 +46,21 @@ describe("catalogTheme", () => {
       const keys = CATALOG_THEME_PRESETS.map((p) => p.key);
       expect(new Set(keys).size).toBe(keys.length);
     });
+
+    it("keeps preset keys in sync with the server CATALOG_THEMES", () => {
+      // Mirror CATALOG_THEMES from CatalogSettings.kt.
+      const serverThemeKeys = [
+        "teal",
+        "blue",
+        "petrol",
+        "navy",
+        "green",
+        "violet",
+      ];
+      expect(CATALOG_THEME_PRESETS.map((preset) => preset.key)).toEqual(
+        serverThemeKeys,
+      );
+    });
   });
 
   describe("applyCatalogTheme", () => {
