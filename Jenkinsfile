@@ -103,6 +103,9 @@ pipeline {
                         cyclonedx merge --input-files server/build/reports/sbom-prod.json frontend/build/reports/sbom.json build/reports/sbom-docker-image.json --output-file build/reports/sbom-docker.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
                     """
                 }
+
+                // store all generated SBOMs (merged and partial ones) as build artifacts
+                archiveArtifacts artifacts: 'build/reports/sbom*.json, server/build/reports/sbom*.json, frontend/build/reports/sbom*.json', fingerprint: true, allowEmptyArchive: true
             }
         }
 

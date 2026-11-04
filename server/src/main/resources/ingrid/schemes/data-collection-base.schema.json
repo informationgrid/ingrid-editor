@@ -8,6 +8,9 @@
       "properties": {
         "isOpenData": {
           "type": ["null", "boolean"]
+        },
+        "isIzg": {
+          "type": ["null", "boolean"]
         }
       }
     }

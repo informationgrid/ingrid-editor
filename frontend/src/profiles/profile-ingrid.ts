@@ -39,6 +39,7 @@ import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/g
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
+import { IzgPlugin } from "./ingrid/behaviours/izg.plugin";
 import { DoiPlugin } from "./ingrid/behaviours/doi.plugin";
 import { MobilithekPlugin } from "./ingrid/behaviours/mobilithek.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
@@ -86,6 +87,7 @@ export class InGridComponent implements OnInit {
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
+  izg = inject(IzgPlugin);
   // noinspection JSUnusedGlobalSymbols (needed for plugin activation)
   dataformatPlugin = inject(DataformatPlugin);
   doi = inject(DoiPlugin);

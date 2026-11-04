@@ -55,8 +55,11 @@ import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -71,7 +74,7 @@ import tools.jackson.databind.JsonNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.Date
 
 class TransformerCache {
     val documents = mutableMapOf<String, Document>()
@@ -647,11 +650,18 @@ open class IngridModelTransformer(
         if (data.properties?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
+    val izgKeyword =
+        if (data.properties?.isIzg == true) {
+            Thesaurus(keywords = listOf(KeywordIso("izg-relevant")))
+        } else {
+            Thesaurus()
+        }
 
     open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOfNotNull(
             inspireRelevantKeyword,
             advCompatibleKeyword,
+            izgKeyword,
             opendataCategoryKeywords,
             getFreeKeywords(),
             invekosKeywords,
@@ -676,6 +686,7 @@ open class IngridModelTransformer(
         opendataCategoryKeywords,
         advCompatibleKeyword,
         inspireRelevantKeyword,
+        izgKeyword,
         furtherLegalBasisKeywords,
         umthesKeywords,
         gemetKeywords,
@@ -964,6 +975,26 @@ open class IngridModelTransformer(
     @Suppress("DEPRECATION") // use of parentIdentifier only allowed here
     open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
+
+    /**
+     * Get all published children (sub-datasets) of this document.
+     * The UUIDs are exported to the index field "children.object_node.obj_uuid" so that
+     * the catalog hierarchy in the portal knows that this dataset can be expanded.
+     * @return List of UUIDs of published children
+     */
+    fun getSubordinatedObjectUuids(): List<String> = getPublishedChildren(doc.wrapperId).map { it.wrapper.uuid }
+
+    private fun getPublishedChildren(parentWrapperId: Int?): List<DocumentData> {
+        if (parentWrapperId == null) return emptyList()
+        return documentService.findChildren(catalogIdentifier, parentWrapperId, DocumentCategory.DATA, true)
+            .hits
+            .filter { childData ->
+                kotlin.runCatching {
+                    checkPublicationTags(childData.wrapper.tags, tags)
+                    true
+                }.getOrElse { false }
+            }
+    }
 
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>

@@ -26,10 +26,10 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -42,7 +42,6 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.igeserver.services.PermissionInfo
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.convertToDocument
@@ -75,7 +74,6 @@ class DatasetsApiController(
     private val groupService: GroupService,
     private val aclService: IgeAclService,
     private val storage: Storage,
-    private val researchService: ResearchService,
     val auditLog: AuditLogger,
 ) : DatasetsApi {
 
@@ -222,10 +220,11 @@ class DatasetsApiController(
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
-        // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
-        val refOptions = IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources"))
+        val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
+        val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
+        val incomingReferenceOptions = docType.createIncomingReferenceOptions(options, DocStateFilter.LATEST)
         val paging = if (page != null && pageSize != null) ResearchPaging(page, pageSize) else ResearchPaging()
-        return ResponseEntity.ok(documentService.queryAccessibleReferences(principal, doc, refOptions, paging))
+        return ResponseEntity.ok(documentService.queryAccessibleReferences(principal, doc, incomingReferenceOptions, paging))
     }
 
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {

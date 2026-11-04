@@ -27,7 +27,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.storage.Storage
@@ -67,9 +66,6 @@ class DatasetsApiControllerTest : AnnotationSpec() {
     private lateinit var documentService: DocumentService
 
     @MockkBean(relaxed = true)
-    private lateinit var researchService: ResearchService
-
-    @MockkBean(relaxed = true)
     private lateinit var aclService: IgeAclService
 
     private lateinit var datasetsApiController: DatasetsApiController
@@ -85,7 +81,6 @@ class DatasetsApiControllerTest : AnnotationSpec() {
             groupService,
             aclService,
             storage,
-            researchService,
             auditLog,
         )
     }

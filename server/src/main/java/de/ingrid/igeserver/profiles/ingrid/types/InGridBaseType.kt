@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.types
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
+import de.ingrid.igeserver.persistence.model.document.StructuralChildrenOption
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -30,34 +31,37 @@ import org.springframework.stereotype.Component
  * Holds configuration options for retrieving incoming references.
  *
  * @property docStateFilter Specifies a filter to determine the document state to consider when retrieving references.
- * @property onlyInCoupledResources Indicates whether to restrict references to coupled resources only.
- * @property addStructuralChildren Determines whether structural child references should be included. Only works with [onlyInCoupledResources] set to false.
+ * @property addStructuralChildren Determines whether structural child references should be included.
  */
 data class IngridIncomingReferenceOptions(
     override val docStateFilter: DocStateFilter = DocStateFilter.LATEST,
-    val onlyInCoupledResources: Boolean = false,
-    val addStructuralChildren: Boolean = false,
-) : IncomingReferenceOptions
+    override val addStructuralChildren: Boolean = false,
+) : StructuralChildrenOption
 
 @Component
 abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val profiles = arrayOf("ingrid")
 
-    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("pointOfContact").values().mapNotNull { address ->
-        address.path("ref").asString()
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = IngridIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        addStructuralChildren = false,
+    )
+
+    override fun getReferenceUUIDs(doc: Document): List<String> = doc.data.path("pointOfContact").values().map { address ->
+        address.path("ref").stringValue()
     }
 
     override fun getIncomingReferenceUUIDs(doc: Document, options: IncomingReferenceOptions): List<String> {
-        val ingridOptions = options as? IngridIncomingReferenceOptions ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
-        val sqlQuery = getIncomingReferenceQuery(doc, ingridOptions)
+        val sqlQuery = getIncomingReferenceQuery(doc, options)
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }
     }
 
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String {
-        val ingridOptions = options as? IngridIncomingReferenceOptions ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
-        return """
+    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = """
             SELECT DISTINCT document1.uuid
             FROM document document1, document_wrapper
             WHERE (
@@ -65,11 +69,18 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND document_wrapper.catalog_id = ${doc.catalog!!.id}
                 AND document_wrapper.catalog_id = document1.catalog_id
                 AND document_wrapper.uuid = document1.uuid
-                AND ( ${ingridOptions.docStateFilter.toSql()} )
-                AND ( ${getIncomingRelationSubquery(doc, ingridOptions)} )
+                AND ( ${options.docStateFilter.toSql()} )
+                AND ( ${getIncomingRelationSubquery(doc, options)} )
             )
-        """.trimIndent()
-    }
+    """.trimIndent()
+
+    fun getCoupledResourceFilter(doc: Document): String = """ data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
+
+    fun getReferenceFilter(doc: Document): String = """ data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' """
+
+    fun getParentIdentifierFilter(doc: Document): String = """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
+
+    fun getStructuralParentFilter(doc: Document): String = """ ( document_wrapper.parent_id = ${doc.wrapperId} AND document_wrapper.type != 'FOLDER' ) """
 
     /**
      * Constructs a subquery to retrieve incoming relations for the specified document
@@ -81,22 +92,15 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
      * @return A SQL subquery string that can be used to identify documents linked
      *         to the specified document through various relation types.
      */
-    private fun getIncomingRelationSubquery(doc: Document, options: IngridIncomingReferenceOptions): String {
-        val coupledResourceFilter =
-            """ data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' """
-        val referenceFilter = """ data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' """
-        val parentIdentifierFilter = """ data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')) """
-        val structuralParentFilter =
-            """ ( document_wrapper.parent_id = ${doc.wrapperId} AND document_wrapper.type != 'FOLDER' ) """
+    fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String {
+        val useFilters = mutableListOf(
+            getCoupledResourceFilter(doc),
+            getReferenceFilter(doc),
+            getParentIdentifierFilter(doc),
+        )
 
-        val useFilters = mutableListOf(coupledResourceFilter)
-
-        if (!options.onlyInCoupledResources) {
-            useFilters.add(referenceFilter)
-            useFilters.add(parentIdentifierFilter)
-            if (options.addStructuralChildren) {
-                useFilters.add(structuralParentFilter)
-            }
+        if ((options as? StructuralChildrenOption)?.addStructuralChildren == true) {
+            useFilters.add(getStructuralParentFilter(doc))
         }
 
         return useFilters.joinToString(" OR ", "(", ")")

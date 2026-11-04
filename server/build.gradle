@@ -6,14 +6,16 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.4.0'
-    ext.spring_boot_version = '4.1.1'
-    ext.kotest_version = '6.2.5'
-    ext.jte_version = '3.2.4'
-    ext.geotools_version = '35.1'
-    ext.ktor_client = '3.4.1'
-    ext['jackson-2-bom.version'] = '2.21.7'
-    ext['jackson-bom.version'] = '3.1.7'
-    ext['tomcat.version'] = '11.0.26'
+    ext.spring_boot_version = '4.1.2'
+    ext.kotest_version = '6.2.6'
+    ext.jte_version = '3.2.5'
+    ext.geotools_version = '35.2'
+    ext.ktor_client = '3.4.3'
+    ext['jackson-2-bom.version'] = '2.21.8'
+    ext['jackson-bom.version'] = '3.1.8'
+    ext['tomcat.version'] = '11.0.27'
+    // ktor 3.5.x / search-client require coroutines 1.11.x; Spring Boot BOM would downgrade it
+    ext['kotlin-coroutines.version'] = '1.11.0'
 }
 
 plugins {
@@ -31,7 +33,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.5.4'
     id "com.gorylenko.gradle-git-properties" version "4.0.1"
     id 'io.kotest' version "$kotest_version"
-    id "io.github.ben-manes.versions" version "0.64.0"
+    id "io.github.ben-manes.versions" version "0.67.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.jlleitschuh.gradle.ktlint" version "14.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
@@ -85,7 +87,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
-    implementation 'org.apache.tika:tika-core:3.2.3'
+    implementation 'org.apache.tika:tika-core:3.3.3'
     implementation 'org.glassfish.jersey.media:jersey-media-multipart:4.0.2'
 
     // Spring
@@ -122,7 +124,7 @@ dependencies {
     implementation "com.gravity9:json-patch-path:2.0.2"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:3.0.7'
+    implementation 'com.networknt:json-schema-validator:3.0.8'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
@@ -135,22 +137,25 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
-    implementation platform('com.aallam.openai:openai-client-bom:4.1.0')
+    implementation 'dev.langchain4j:langchain4j:1.19.4'
+    implementation 'dev.langchain4j:langchain4j-http-client-jdk:1.19.4'
+    implementation 'dev.langchain4j:langchain4j-mcp:1.19.4-beta29'
+    implementation 'dev.langchain4j:langchain4j-open-ai:1.19.4'
+    implementation platform('com.aallam.openai:openai-client-bom:4.2.0')
 
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.30.0"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.30.0"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.30.0"
+    implementation "org.commonmark:commonmark:0.32.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.32.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.32.0"
 
-//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
-    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-ui:4.0.0'
+    implementation 'io.github.vpelikh:springdoc-openapi-starter-webmvc-ui:5.1.0'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.13'
+    implementation 'org.postgresql:postgresql:42.7.14'
     implementation "org.hibernate.orm:hibernate-core"
 
     implementation "de.ingrid:ingrid-codelist-service:8.5.0"
@@ -194,7 +199,7 @@ dependencies {
     testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
     testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
     testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_client"
-    testImplementation 'io.mockk:mockk:1.14.7'
+    testImplementation 'io.mockk:mockk:1.14.11'
     testImplementation "com.ninja-squad:springmockk:5.0.1"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -207,7 +212,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-postgresql'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.8.7")
+    implementation("com.jillesvangurp:search-client:2.9.0")
     implementation("io.ktor:ktor-client-core:$ktor_client")
     implementation("io.ktor:ktor-client-auth:$ktor_client")
     implementation("io.ktor:ktor-client-logging:$ktor_client")
@@ -364,7 +369,6 @@ tasks.named('compileKotlin') {
 
 
 test {
-    ignoreFailures = true
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
     jvmArgs("-XX:+EnableDynamicAgentLoading")

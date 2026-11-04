@@ -19,12 +19,14 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.exceptions.IsReferencedException
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
+import de.ingrid.igeserver.profiles.ingrid_baw.BawIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.convertToIngridOptionsWithStructuralChildren
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -62,7 +64,27 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawPublication"
     override fun parentClassName() = super.className
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = BawIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        onlyInCoupledResources = options.contains("onlyInCoupledResources"),
+        literatureReferences = options.contains("literatureReferences"),
+        addStructuralChildren = true,
+    )
+
+    override fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String = getBawIncomingRelationSubquery(doc, options) { super.getIncomingRelationSubquery(doc, options) }
+
+    override fun onDelete(doc: Document) {
+        super.onDelete(doc)
+        val uuids = this.getIncomingReferenceUUIDs(doc, BawIncomingReferenceOptions(docStateFilter = DocStateFilter.LATEST, literatureReferences = true))
+
+        if (uuids.isNotEmpty()) {
+            throw IsReferencedException.byDocuments(documentService.getReferencedDocuments(doc, uuids))
+        }
+    }
 }
 
 @Component

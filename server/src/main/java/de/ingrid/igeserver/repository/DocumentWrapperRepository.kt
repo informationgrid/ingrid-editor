@@ -66,10 +66,13 @@ interface DocumentWrapperRepository :
     @Query("SELECT d, dw.id as wrapperId FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND dw.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
     fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DocumentState): Array<Any>
 
+    @Deprecated("Is not secured")
+    @Query("SELECT d, dw.id as wrapperId FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND dw.catalog.identifier = ?1 AND d.uuid IN ?2 AND d.state = ?3")
+    fun getDocumentsByState(catalogIdentifier: String, uuids: Collection<String>, state: DocumentState): List<Array<Any>>
+
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
+    fun findAllByCatalog_IdentifierAndParentIsNullAndCategory(
         catalog_identifier: String,
-        parentUuid: Int?,
         category: String,
     ): List<DocumentWrapper>
 

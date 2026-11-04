@@ -5,7 +5,7 @@ plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
     id "org.jetbrains.changelog" version "1.1.2"
     id "com.diffplug.spotless" version "7.0.2" apply false
-    id 'org.cyclonedx.bom' version '3.2.4' apply false
+    id 'org.cyclonedx.bom' version '3.5.1' apply false
 }
 
 group = 'de.ingrid'

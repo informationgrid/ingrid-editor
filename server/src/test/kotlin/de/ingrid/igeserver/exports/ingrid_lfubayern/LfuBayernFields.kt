@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lfubayern
 
+import createMockCatalogCodelist
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -54,10 +55,23 @@ class LfuBayernFields : GeodatasetBase() {
                 this.documentWrapperRepository,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
-        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "2") } returns "intern zwei"
+
+        createMockCatalogCodelist(
+            codelistHandler,
+            "20000",
+            mapOf(
+                "1" to "geological eins",
+                "2" to "geological zwei",
+            ),
+        )
+        createMockCatalogCodelist(
+            codelistHandler,
+            "20001",
+            mapOf(
+                "1" to "intern eins",
+                "2" to "intern zwei",
+            ),
+        )
         every { documentService.getWrapperByCatalogAndDocumentUuid(any(), any(), any()) } returns DocumentWrapper()
     }
 

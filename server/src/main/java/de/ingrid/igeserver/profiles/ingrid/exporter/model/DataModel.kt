@@ -102,6 +102,7 @@ data class InGridDocumentProperties(
     val isHvd: Boolean?,
     val invekos: KeyValue?,
     val subType: KeyValue?,
+    val isIzg: Boolean? = null,
 )
 
 enum class InspireType(@get:JsonValue val value: String) {

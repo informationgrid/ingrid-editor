@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_krzn
 
+import createMockCatalogCodelist
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -46,7 +47,7 @@ class KrznFields : GeodatasetBase() {
         every { catalogService.getProfileFromCatalog(any()) } returns
             DummyCatalog("ingrid-krzn")
 
-        every { codelistHandler.getCatalogCodelistValue(any(), "10500", "1") } returns "https://www.my-map-link.com/maps?mid={ID}"
+        createMockCatalogCodelist(codelistHandler, "10500", mapOf("1" to "https://www.my-map-link.com/maps?mid={ID}"))
     }
 
     init {

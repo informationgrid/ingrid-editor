@@ -45,9 +45,7 @@ import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.runAsAdmin
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -56,7 +54,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionSynchronizationManager
+import org.springframework.transaction.support.TransactionTemplate
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.ArrayNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
@@ -72,6 +72,7 @@ class ImportService(
     val notifier: JobsNotifier,
     val factory: ImporterFactory,
     val documentService: DocumentService,
+    val transactionManager: PlatformTransactionManager,
 ) {
     private val log = logger()
 
@@ -391,7 +392,6 @@ class ImportService(
         null
     }
 
-    @Transactional
     fun importAnalyzedDatasets(
         principal: Authentication,
         catalogId: String,
@@ -401,37 +401,42 @@ class ImportService(
     ): ImportCounter {
         val counter = ImportCounter()
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
-        val jobs = mutableListOf<Deferred<DocumentData>>()
+        val overwriteTasks = mutableListOf<() -> DocumentData>()
 
-        analysis.references.forEachIndexed { index, ref ->
-            val progress = ((index + 1f) / analysis.references.size) * 100
-            notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-            handleParent(ref, options, catalogId)
-            importReference(principal, catalogId, ref, options, counter)?.let { job -> jobs.add(job) }
+        TransactionTemplate(transactionManager).executeWithoutResult {
+            analysis.references.forEachIndexed { index, ref ->
+                val progress = ((index + 1f) / analysis.references.size) * 100
+                notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
+                handleParent(ref, options, catalogId)
+                importReference(principal, catalogId, ref, options, counter)?.let(overwriteTasks::add)
+            }
         }
 
-        runBlocking {
-            try {
-                jobs.awaitAll()
-            } catch (ex: Exception) {
-                log.error("Error during import", ex)
-                message.errors.add(ex.message ?: "Unknown error")
-                throw ClientException.withReason("Import failed. ${ex.message}")
+        try {
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                overwriteTasks.forEach { it() }
+            } else {
+                runBlocking(Dispatchers.Default) {
+                    overwriteTasks.map { task -> async { task() } }.awaitAll()
+                }
             }
+        } catch (ex: Exception) {
+            log.error("Error during import", ex)
+            message.errors.add(ex.message ?: "Unknown error")
+            throw ClientException.withReason("Import failed. ${ex.message}")
         }
 
         log.info("Import result: $counter")
         return counter
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun importReference(
         principal: Authentication,
         catalogId: String,
         ref: DocumentAnalysis,
         options: ImportOptions,
         counter: ImportCounter,
-    ): Deferred<DocumentData>? {
+    ): (() -> DocumentData)? {
         handleAddressTitle(ref)
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
@@ -495,11 +500,8 @@ class ImportService(
                     ).id!!
                 setVersionInfo(catalogId, wrapperId, ref.document)
 
-                // run in parallel to greatly improve speed
-                // ATTENTION: remove parallel execution due to deadlock of multiple nested transactions in multiple threads
-                // in csw-t test this seemed to happen but could not be reproduced in production
-                val job = GlobalScope.async {
-                    // set same principal in new context
+                val task = {
+                    val previousContext = SecurityContextHolder.getContext()
                     val contextForThread = SecurityContextHolder.createEmptyContext()
                     contextForThread.authentication = principal
                     SecurityContextHolder.setContext(contextForThread)
@@ -516,12 +518,12 @@ class ImportService(
                             documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
                         }
                     } finally {
-                        SecurityContextHolder.clearContext()
+                        SecurityContextHolder.setContext(previousContext)
                     }
                 }
 
                 counter.overwritten++
-                return job
+                return task
             } else {
                 counter.skipped++
             }

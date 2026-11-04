@@ -57,8 +57,7 @@ class IngridIndexExporter(
 
         if (doc.type != "FOLDER") {
             val wrapper = idfExporter.documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, doc.uuid)
-            val idf = idfExporter.run(doc, catalogId, options)
-            val fingerprint = idfExporter.calculateFingerprint(idf)
+            val (idf, fingerprint) = idfExporter.runWithFingerprint(doc, catalogId, options)
             val previousFingerprintInfo = idfExporter.getPreviousFingerprint(wrapper, idfExporter.typeInfo)
 
             val dateStampDate = if (fingerprint != previousFingerprintInfo?.fingerprint) {

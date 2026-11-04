@@ -19,22 +19,50 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.types.InGridBaseType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
+import de.ingrid.igeserver.profiles.ingrid_baw.BawIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.convertToIngridOptionsWithStructuralChildren
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
+
+fun InGridBaseType.getBawIncomingRelationSubquery(
+    doc: Document,
+    options: IncomingReferenceOptions,
+    superSubquery: () -> String,
+): String {
+    val bawOptions = options as? BawIncomingReferenceOptions
+    if (bawOptions?.onlyInCoupledResources == true) {
+        return "( ${getCoupledResourceFilter(doc)} )"
+    }
+    if (bawOptions?.literatureReferences == true) {
+        return """( data->'literatureReferences' @> '[{"uuid": "${doc.uuid}"}]' )"""
+    }
+    return superSubquery()
+}
 
 @Component
 class InGridGeoDatasetTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/baw/geo-dataset_baw.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = BawIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        onlyInCoupledResources = options.contains("onlyInCoupledResources"),
+        literatureReferences = options.contains("literatureReferences"),
+        addStructuralChildren = true,
+    )
+
+    override fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String = getBawIncomingRelationSubquery(doc, options) { super.getIncomingRelationSubquery(doc, options) }
 }
 
 @Component
@@ -42,7 +70,18 @@ class InGridGeoServiceTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = BawIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        onlyInCoupledResources = options.contains("onlyInCoupledResources"),
+        literatureReferences = options.contains("literatureReferences"),
+        addStructuralChildren = true,
+    )
+
+    override fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String = getBawIncomingRelationSubquery(doc, options) { super.getIncomingRelationSubquery(doc, options) }
 }
 
 @Component
@@ -50,7 +89,18 @@ class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbc
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = BawIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        onlyInCoupledResources = options.contains("onlyInCoupledResources"),
+        literatureReferences = options.contains("literatureReferences"),
+        addStructuralChildren = true,
+    )
+
+    override fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String = getBawIncomingRelationSubquery(doc, options) { super.getIncomingRelationSubquery(doc, options) }
 }
 
 @Component
@@ -58,5 +108,16 @@ class BawProject(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
     // TODO: Add schema
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
-    override fun getIncomingReferenceQuery(doc: Document, options: IncomingReferenceOptions): String = super.getIncomingReferenceQuery(doc, convertToIngridOptionsWithStructuralChildren(options))
+
+    override fun createIncomingReferenceOptions(
+        options: List<String>,
+        docStateFilter: DocStateFilter,
+    ): IncomingReferenceOptions = BawIncomingReferenceOptions(
+        docStateFilter = docStateFilter,
+        onlyInCoupledResources = options.contains("onlyInCoupledResources"),
+        literatureReferences = options.contains("literatureReferences"),
+        addStructuralChildren = true,
+    )
+
+    override fun getIncomingRelationSubquery(doc: Document, options: IncomingReferenceOptions): String = getBawIncomingRelationSubquery(doc, options) { super.getIncomingRelationSubquery(doc, options) }
 }

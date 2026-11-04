@@ -28,6 +28,13 @@ interface IncomingReferenceOptions {
 }
 
 /**
+ * Interface for options that support including structural child references.
+ */
+interface StructuralChildrenOption : IncomingReferenceOptions {
+    val addStructuralChildren: Boolean
+}
+
+/**
  * Simple implementation of [IncomingReferenceOptions].
  */
 data class SimpleIncomingReferenceOptions(

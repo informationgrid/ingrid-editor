@@ -39,8 +39,6 @@ class KeycloakConfigTest {
             markInsteadOfDelete = false,
             appUrl = "http://192.168.0.228",
             externalHelp = null,
-            openAIHost = "",
-            openAIModel = "",
         )
 
         val failureHandler = KeycloakAuthenticationFailureHandler(
@@ -65,8 +63,6 @@ class KeycloakConfigTest {
             markInsteadOfDelete = false,
             appUrl = "http://192.168.0.228",
             externalHelp = null,
-            openAIHost = "",
-            openAIModel = "",
         )
 
         val failureHandler = KeycloakAuthenticationFailureHandler(
@@ -95,8 +91,6 @@ class KeycloakConfigTest {
             markInsteadOfDelete = false,
             appUrl = "http://192.168.0.228",
             externalHelp = null,
-            openAIHost = "",
-            openAIModel = "",
         )
 
         val failureHandler = KeycloakAuthenticationFailureHandler(
@@ -125,8 +119,6 @@ class KeycloakConfigTest {
             markInsteadOfDelete = false,
             appUrl = "http://192.168.0.228",
             externalHelp = null,
-            openAIHost = "",
-            openAIModel = "",
         )
 
         val failureHandler = KeycloakAuthenticationFailureHandler(
@@ -155,8 +147,6 @@ class KeycloakConfigTest {
             markInsteadOfDelete = false,
             appUrl = "http://192.168.0.228/",
             externalHelp = null,
-            openAIHost = "",
-            openAIModel = "",
         )
 
         val failureHandler = KeycloakAuthenticationFailureHandler(

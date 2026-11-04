@@ -38,6 +38,7 @@ export class InformationSystemDoctype extends IngridShared {
 
   documentFields = () => {
     this.handleDoiBehaviour();
+    this.handleIzgBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),

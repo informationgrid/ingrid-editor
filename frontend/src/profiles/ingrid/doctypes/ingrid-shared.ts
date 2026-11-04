@@ -207,6 +207,7 @@ export abstract class IngridShared extends BaseDoctype {
   );
 
   showInVeKoSField: boolean = false;
+  showIzgField: boolean = false;
   showInspireRelevant: boolean = false;
   showInspireConform: boolean = false;
   showHVD: boolean = false;
@@ -355,6 +356,25 @@ export abstract class IngridShared extends BaseDoctype {
                     contextHelpKey: "isAdVCompatible",
                     onClick: (field: FormlyFieldConfig) =>
                       this.handleAdvClick(field),
+                  },
+                ],
+              },
+            ],
+          }
+        : null,
+      this.showIzgField
+        ? {
+            label: "IZG",
+            typeOptions: [
+              {
+                multiple: true,
+                items: [
+                  {
+                    label: "relevant",
+                    completeLabel: "IZG-relevant",
+                    key: "isIzg",
+                    value: true,
+                    contextHelpKey: "isIzg",
                   },
                 ],
               },
@@ -2373,6 +2393,11 @@ export abstract class IngridShared extends BaseDoctype {
   protected handleDoiBehaviour() {
     const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
     this.showDoiFields = behaviour?.isActive() ?? behaviour?.defaultActive;
+  }
+
+  protected handleIzgBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.izg");
+    this.showIzgField = behaviour?.isActive() ?? behaviour?.defaultActive;
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {

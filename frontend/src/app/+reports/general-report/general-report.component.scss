@@ -10,6 +10,22 @@
   stroke: vars.$ige-background !important;
 }
 
+.report-header {
+  --mat-button-toggle-height: 36px;
+
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin: 0;
+    color: vars.$ige-primary;
+    font-weight: normal;
+  }
+}
+
 .chart-container {
   width: 100%;
   display: flex;

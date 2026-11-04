@@ -83,8 +83,6 @@ class Geodataservice : ShouldSpec() {
             val codelistId = secondArg<String>()
             val entryId = thirdArg<String>()
             when (codelistId + "_" + entryId) {
-                "1350_1" -> "Baugesetzbuch (BauGB)"
-                "1350_2" -> "Atomgesetz (AtG)"
                 "111_1" -> "Provider 1"
                 "111_2" -> "Provider 2"
                 "6250_7" -> "Hessen"

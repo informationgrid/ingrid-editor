@@ -277,7 +277,7 @@ class DocumentService(
         onlyPublished: Boolean = false,
     ): FindAllResults<DocumentData> {
         val wrappers = if (parentId == null) {
-            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+            docWrapperRepo.findAllByCatalog_IdentifierAndParentIsNullAndCategory(catalogId, docCat.value)
         } else {
             docWrapperRepo.findByParent_id(parentId)
         }
@@ -309,7 +309,7 @@ class DocumentService(
         docCat: DocumentCategory = DocumentCategory.DATA,
     ): FindAllResults<DocumentWrapper> {
         val docs = if (parentId == null) {
-            docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
+            docWrapperRepo.findAllByCatalog_IdentifierAndParentIsNullAndCategory(catalogId, docCat.value)
         } else {
             docWrapperRepo.findByParent_id(parentId)
         }
@@ -873,6 +873,19 @@ class DocumentService(
         entityManager.detach(finalDoc)
         finalDoc.wrapperId = result[1] as Int
         return finalDoc
+    }
+
+    fun getLastPublishedDocuments(catalogId: String, uuids: Collection<String>): Map<String, Document> {
+        val documents = mutableMapOf<String, Document>()
+        uuids.distinct().chunked(500).forEach { batch ->
+            docWrapperRepo.getDocumentsByState(catalogId, batch, DocumentState.PUBLISHED).forEach { result ->
+                val document = result[0] as Document
+                entityManager.detach(document)
+                document.wrapperId = result[1] as Int
+                documents.putIfAbsent(document.uuid, document)
+            }
+        }
+        return documents
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DocumentState.PENDING)

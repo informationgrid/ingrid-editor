@@ -63,6 +63,9 @@
         "isOpenData": {
           "type": ["null", "boolean"]
         },
+        "isIzg": {
+          "type": ["null", "boolean"]
+        },
         "isInspireIdentified": {
           "type": ["null", "string"]
         }

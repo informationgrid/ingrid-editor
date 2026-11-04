@@ -21,7 +21,11 @@ package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
+import de.ingrid.igeserver.exports.convertToDocument
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.opendata.exporter.OpenDataIDFExporter
+import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
@@ -38,6 +42,7 @@ import io.mockk.every
 import io.mockk.mockk
 import mockCatalog
 import mockCodelists
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class Address : ShouldSpec() {
 
@@ -77,6 +82,15 @@ class Address : ShouldSpec() {
 
         mockCatalog(catalogService)
         mockCodelists(codelistHandler)
+        every { codelistHandler.getCatalogCodelist(any(), any()) } returns null
+        val repo = mockk<CodelistRepository>()
+        val list = Codelist().apply {
+            identifier = "6250"
+            data = jacksonObjectMapper().readTree("""[{"id":"7","localisations":{"de":"Hessen"}}]""")
+        }
+        every { repo.findAllByCatalog_IdentifierAndIdentifier(any(), "6250") } returns listOf(list)
+        val catalogList = CodelistHandler(repo, mockk(), mockk(relaxed = true)).getCatalogCodelist("test-catalog", "6250")
+        every { codelistHandler.getCatalogCodelist(any(), "6250") } returns catalogList
 
         val addresses = listOf(
             MockDocument(
@@ -123,9 +137,22 @@ class Address : ShouldSpec() {
         )
 
         initDocumentMocks(addresses + datasets, documentService)
+        every { documentService.getLastPublishedDocuments(any(), any()) } answers {
+            val catalogId = firstArg<String>()
+            secondArg<Collection<String>>().associateWith { documentService.getLastPublishedDocument(catalogId, it, true) }
+        }
     }
 
     init {
+
+        should("export an open data address") {
+            val doc = convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
+            doc.type = "OpenDataAddressDoc"
+            doc.wrapperId = -1
+            val openDataExporter = OpenDataIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+
+            exportDocToXML(openDataExporter, doc) shouldContain "idf:idfResponsibleParty"
+        }
 
         should("personExport") {
             var result = exportJsonToXML(exporter, "/export/ingrid/address.person.sample.json")
