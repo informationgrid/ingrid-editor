@@ -1,4 +1,4 @@
-@use "sass:math";
+@use "sass:string";
 
 /* The four blues are CSS variables, so a catalog theme can recolor the UI at
    runtime (see app/services/config/catalog-theme.ts). The fallback is the
@@ -47,11 +47,11 @@ $ige-hint-color: rgba(0, 0, 0, 0.6);
 $ige-placeholder-color: rgba(0, 0, 0, 0.6);
 
 /* Lightens (positive) or darkens (negative) a color, replacement for
-   color.adjust($color, $lightness) that also works for CSS variables. */
+   color.adjust($color, $lightness) that also works for CSS variables.
+   In relative color syntax `l` is a number (0-100), so the amount must be
+   unitless: `calc(l + 5%)` is invalid and the browser drops the declaration.
+   Built as a string, because the IDE's CSS parser does not know the relative
+   color syntax yet ("unexpected term"); the output is the same. */
 @function shift($color, $lightness) {
-  $amount: math.abs($lightness) * 1.5;
-  @if $lightness >= 0 {
-    @return color-mix(in srgb, #{$color}, white #{$amount}#{"%"});
-  }
-  @return color-mix(in srgb, #{$color}, black #{$amount}#{"%"});
+  @return string.unquote("hsl(from #{$color} h s calc(l + #{$lightness}))");
 }
