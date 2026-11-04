@@ -1,9 +1,27 @@
-$ige-primary: #196ea2; /* Middle blue, i.e. title */
-$ige-secondary: #28225b; /* Dark blue, i.e. button / link text */
-$ige-secondary-dark: #161243; /* Darkest blue, background sidebar menu */
+@use "sass:string";
+
+/* The blues are CSS variables, so a catalog theme can recolor the UI at
+   runtime (see app/services/config/catalog-theme.ts). The fallback is the
+   default look. Derive shades with shift(), not with sass color functions. */
+$ige-primary: var(--ige-primary, #196ea2); /* Middle blue, i.e. title */
+$ige-secondary: var(
+  --ige-secondary,
+  #28225b
+); /* Dark blue, i.e. button / link text */
+$ige-secondary-dark: var(
+  --ige-secondary-dark,
+  #161243
+); /* Darkest blue, background sidebar menu */
+$ige-primary-light: var(
+  --ige-primary-light,
+  #4ba7d0
+); /* Light blue, i.e. active tab label on the dark tab bar */
 $ige-comment-color: #979797; /* Middle grey, i.e. input outlines, placeholder, icons */
 
-$ige-mark-color: #eef8ff; /* Light blue background of selected / highlighted */
+$ige-mark-color: var(
+  --ige-mark-color,
+  #eef8ff
+); /* Light blue background of selected / highlighted */
 
 $ige-background: #f3f3f3; /* Light grey background, i.e. toolbar */
 $ige-background-bar: #dfdfdf; /* Middle grey background, i.e. header data set */
@@ -31,3 +49,13 @@ $ige-hint-color: rgba(0, 0, 0, 0.6);
 
 /* placeholder, icons */
 $ige-placeholder-color: rgba(0, 0, 0, 0.6);
+
+/* Lightens (positive) or darkens (negative) a color, replacement for
+   color.adjust($color, $lightness) that also works for CSS variables.
+   In relative color syntax `l` is a number (0-100), so the amount must be
+   unitless: `calc(l + 5%)` is invalid and the browser drops the declaration.
+   Built as a string, because the IDE's CSS parser does not know the relative
+   color syntax yet ("unexpected term"); the output is the same. */
+@function shift($color, $lightness) {
+  @return string.unquote("hsl(from #{$color} h s calc(l + #{$lightness}))");
+}

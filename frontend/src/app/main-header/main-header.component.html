@@ -51,6 +51,7 @@
                             data-cy="action-switch-catalog"
                             mat-menu-item
                             class="menu-item"
+                            [style.color]="catalogAccent(catalog)"
                             (click)="chooseCatalog(catalog.id)"
                             matomoClickCategory="SwitchCatalog"
                             matomoClickAction="SwitchCatalog"

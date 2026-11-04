@@ -1,6 +1,8 @@
+@use "src/variables" as vars;
+
 .address-header-title {
   font-size: 48px;
-  color: #196ea2;
+  color: vars.$ige-primary;
   font-weight: 400;
   margin: 32px 0;
 }

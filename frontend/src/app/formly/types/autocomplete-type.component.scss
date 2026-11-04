@@ -1,5 +1,4 @@
 @use "src/variables" as vars;
-@use "sass:color";
 
 :host {
   display: flex;
@@ -10,10 +9,7 @@
 
   &:hover,
   &.mat-active {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 }
 

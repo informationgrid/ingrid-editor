@@ -39,7 +39,7 @@ a {
 
   &:hover {
     text-decoration: none;
-    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
+    color: vars.shift(vars.$ige-secondary, 20);
   }
 }
 
@@ -137,7 +137,7 @@ button.button-next-to-input {
   border-top-left-radius: 0;
 
   &:hover {
-    background-color: color.adjust(vars.$ige-secondary, $lightness: 8%);
+    background-color: vars.shift(vars.$ige-secondary, 8);
   }
 }
 
@@ -268,7 +268,7 @@ h1 {
   //font-weight: 500;
 
   &:hover {
-    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
+    color: vars.shift(vars.$ige-secondary, 20);
   }
 }
 
@@ -394,10 +394,7 @@ mat-list-option.selected {
   background-color: vars.$ige-mark-color !important;
 
   &:hover {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 }
 
@@ -1018,7 +1015,7 @@ mat-icon.mark-color .coloring {
     height: 56px !important;
 
     &:hover {
-      background: color.adjust(vars.$ige-secondary, $lightness: -8%);
+      background: vars.shift(vars.$ige-secondary, -8);
     }
 
     .mdc-tab__text-label {
@@ -1030,7 +1027,7 @@ mat-icon.mark-color .coloring {
 
     &.active-link .mdc-tab__text-label {
       opacity: 1;
-      color: #4ba7d0 !important;
+      color: vars.$ige-primary-light !important;
     }
   }
 
@@ -1063,7 +1060,7 @@ mat-icon.mark-color .coloring {
         opacity: 1;
         /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
         .mat-tab-label-content {
-          color: #4ba7d0;
+          color: vars.$ige-primary-light;
         }
       }
     }
@@ -1202,10 +1199,7 @@ mat-icon.wide-icon-26px {
   background-color: color.adjust(#ffffff, $lightness: -5%) !important;
 
   &.selected {
-    background-color: color.adjust(
-      vars.$ige-mark-color,
-      $lightness: -5%
-    ) !important;
+    background-color: vars.shift(vars.$ige-mark-color, -5) !important;
   }
 
   .menu-button {
@@ -1442,6 +1436,11 @@ table.big-font {
   &.mat-mdc-chip-selected {
     background-color: #eef7fe !important;
     box-shadow: 0 0 0 1px #7ea9ca;
+
+    body.catalog-accent & {
+      background-color: vars.$ige-mark-color !important;
+      box-shadow: 0 0 0 1px color-mix(in srgb, #{vars.$ige-primary} 56%, white);
+    }
 
     .mdc-evolution-chip__text-label {
       color: #000000 !important;

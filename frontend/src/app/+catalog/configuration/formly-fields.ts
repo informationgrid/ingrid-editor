@@ -22,6 +22,7 @@ import {
   CodelistService,
   SelectOption,
 } from "../../services/codelist/codelist.service";
+import { CATALOG_THEME_PRESETS } from "../../services/config/catalog-theme";
 
 export const fields = (codelistService: CodelistService) =>
   <FormlyFieldConfig[]>[
@@ -78,6 +79,22 @@ export const fields = (codelistService: CodelistService) =>
             label: "Englisch",
           },
         ],
+        simple: true,
+      },
+    },
+    {
+      key: "theme",
+      type: "ige-select",
+      wrappers: ["panel", "form-field"],
+      className: "width-100",
+      props: {
+        externalLabel: "Farbschema",
+        appearance: "outline",
+        options: <SelectOption[]>CATALOG_THEME_PRESETS.map((preset) => ({
+          value: preset.key,
+          label: preset.label,
+        })),
+        allowNoValue: true,
         simple: true,
       },
     },
