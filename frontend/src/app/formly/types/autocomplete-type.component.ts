@@ -102,22 +102,8 @@ export class AutocompleteTypeComponent
   constructor() {
     super();
     effect(() => {
-      // ensure it only runs when parameterOptions are set
-      if (this.props.dynamicCodelistId && this.parameterOptions().length > 0) {
-        // delay execution, otherwise destroy operation of a previously loaded dataset
-        // might lead to an error where the field is not defined anymore
-        // example: service with operations is selected and another service without operations
-        // is loaded next (also with different service type)
-        setTimeout(() => {
-          this.currentCodelistId = this.props.dynamicCodelistId();
-          if (this.formControl.value?._codelistId !== this.currentCodelistId) {
-            const id = this.formControl.value?.key;
-            const value =
-              this.parameterOptions().find((opt) => opt.key === id)?.value ??
-              this.formControl.value?.value;
-            this.formControl.setValue(value);
-          }
-        }, 100);
+      if (this.props.dynamicCodelistId) {
+        this.currentCodelistId = this.props.dynamicCodelistId();
       }
     });
   }
@@ -136,16 +122,18 @@ export class AutocompleteTypeComponent
 
           if (!this.props.simple) {
             if (typeof value === "string") {
-              const key =
-                this.parameterOptions().find((option) => option.value === value)
-                  ?.key ?? null;
+              const matchedOption = this.parameterOptions().find(
+                (option) =>
+                  option.value?.toLowerCase() === value?.toLowerCase(),
+              );
+              const key = matchedOption?.key ?? null;
 
               if (key === null && (!value || value.trim().length === 0)) {
                 this.formControl.setValue(null);
               } else {
                 this.formControl.setValue({
                   key: key,
-                  value: value,
+                  value: matchedOption?.value ?? value,
                   _codelistId: this.currentCodelistId ?? null,
                 });
               }
@@ -177,20 +165,63 @@ export class AutocompleteTypeComponent
   }
 
   private initInputListener(options: SelectOptionUi[]) {
-    this.parameterOptions.set(
-      options.map(
-        (option) =>
-          <BackendOption>{
-            key: option.value,
-            value: option.label,
-            _codelistId: this.currentCodelistId ?? null,
-            disabled: option.disabled,
-          },
-      ),
+    if (this.props.dynamicCodelistId) {
+      this.currentCodelistId = this.props.dynamicCodelistId();
+    }
+
+    const backendOptions = options.map(
+      (option) =>
+        <BackendOption>{
+          key: option.value,
+          value: option.label,
+          _codelistId: this.currentCodelistId ?? null,
+          disabled: option.disabled,
+        },
     );
+    this.parameterOptions.set(backendOptions);
+
+    // Reconcile current form value with the newly loaded options
+    const currentValue = this.formControl.value;
+    if (currentValue && !this.props.simple) {
+      const currentName =
+        typeof currentValue === "string" ? currentValue : currentValue.value;
+      const currentKey =
+        typeof currentValue === "object" ? currentValue.key : null;
+
+      // Find matching option by value/label first, or by key if matching codelist
+      const matched =
+        backendOptions.find(
+          (opt) => opt.value?.toLowerCase() === currentName?.toLowerCase(),
+        ) ?? backendOptions.find((opt) => opt.key === currentKey);
+
+      if (matched) {
+        if (
+          currentValue.key !== matched.key ||
+          currentValue.value !== matched.value ||
+          currentValue._codelistId !== this.currentCodelistId
+        ) {
+          this.formControl.setValue(
+            {
+              key: matched.key,
+              value: matched.value,
+              _codelistId: this.currentCodelistId ?? null,
+            },
+            { emitEvent: false },
+          );
+        }
+      } else if (currentValue._codelistId !== this.currentCodelistId) {
+        this.formControl.setValue(
+          {
+            ...currentValue,
+            _codelistId: this.currentCodelistId ?? null,
+          },
+          { emitEvent: false },
+        );
+      }
+    }
+
     const value = this.getFormValueLabel();
     this.filteredOptions.set(this.filterParameterByName(value));
-    this.formControl.setValue(this.formControl.value);
   }
 
   _filter(value: string): BackendOption[] {

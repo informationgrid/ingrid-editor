@@ -126,8 +126,11 @@ export class GetCapabilitiesService {
           };
         }
       }
-      if (key === "operations")
-        model.service.operations = this.mapOperations(value);
+      if (key === "operations") {
+        const serviceTypeKey =
+          values.dataServiceType ?? model.service?.type?.key;
+        model.service.operations = this.mapOperations(value, serviceTypeKey);
+      }
       if (key === "resourceLocators") urlReferences.push(...value);
       if (key === "serviceType") {
         model.service.classification = this.mapClassification(value);
@@ -242,10 +245,18 @@ export class GetCapabilitiesService {
     });
   }
 
-  private mapOperations(operations: Operation[]) {
+  private mapOperations(operations: Operation[], serviceTypeKey?: string) {
+    const codelistId =
+      GeoServiceDoctype.mapServiceTypeToOperationNameCodelist[
+        serviceTypeKey ?? ""
+      ] ?? "5110";
     return operations.map((op) => {
       return {
-        name: { key: op.name.key, value: op.name.value },
+        name: {
+          key: op.name.key,
+          value: op.name.value,
+          _codelistId: codelistId,
+        },
         methodCall: op.addressList[0],
       };
     });
