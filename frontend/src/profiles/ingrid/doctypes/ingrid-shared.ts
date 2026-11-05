@@ -540,7 +540,7 @@ export abstract class IngridShared extends BaseDoctype {
         const value = field.formControl.value;
         if (decision === "ok") {
           if (this.showHVD) {
-            field.formControl.setValue({ ...value, isHvd: false });
+            field.formControl.setValue({ ...value, isHvd: undefined });
           }
           return true;
         }
