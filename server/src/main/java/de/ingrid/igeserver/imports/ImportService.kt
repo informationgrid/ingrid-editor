@@ -23,6 +23,7 @@ import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -405,6 +406,7 @@ class ImportService(
                 }
             }
         } catch (ex: Exception) {
+            if (ex is ValidationException) throw ex
             log.error("Error during import", ex)
             message.errors.add(ex.message ?: "Unknown error")
             throw ClientException.withReason("Import failed. ${ex.message}")
