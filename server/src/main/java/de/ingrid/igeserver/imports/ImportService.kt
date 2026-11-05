@@ -33,7 +33,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DeleteOptions
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_CREATED

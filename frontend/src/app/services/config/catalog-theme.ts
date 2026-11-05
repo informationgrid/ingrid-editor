@@ -3,7 +3,7 @@
  * Copyright (C) 2023-2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
- * approved by the European Commission – subsequent versions of the
+ * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
  *
  * You may not use this work except in compliance with the Licence.
@@ -16,22 +16,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
- */
-/**
- * Per-catalog theme presets.
- *
- * An installation may host several catalogs with the same profile (e.g. two
- * BAW catalogs). To make them visually distinguishable, a catalog can select a
- * preset in the catalog settings (catalog configuration page, field "theme").
- * The preset colors are derived from the ingrid portal themes.
- *
- * Applying a theme recolors the UI palette: the `--ige-*` variables consumed
- * by src/variables.scss are overridden on :root. Catalogs without a theme keep
- * the default look.
- *
- * Additionally the accent color is published as CSS variable
- * `--catalog-accent` on :root and `catalog-accent` is set as body class (used
- * for the colored catalog name in the header).
  */
 export const CATALOG_ACCENT_VARIABLE = "--catalog-accent";
 export const CATALOG_ACCENT_BODY_CLASS = "catalog-accent";
