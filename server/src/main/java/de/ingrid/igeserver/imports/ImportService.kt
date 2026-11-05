@@ -45,17 +45,11 @@ import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.runAsAdmin
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.ArrayNode
@@ -401,23 +395,14 @@ class ImportService(
     ): ImportCounter {
         val counter = ImportCounter()
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
-        val overwriteTasks = mutableListOf<() -> DocumentData>()
-
-        TransactionTemplate(transactionManager).executeWithoutResult {
-            analysis.references.forEachIndexed { index, ref ->
-                val progress = ((index + 1f) / analysis.references.size) * 100
-                notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                handleParent(ref, options, catalogId)
-                importReference(principal, catalogId, ref, options, counter)?.let(overwriteTasks::add)
-            }
-        }
 
         try {
-            if (TransactionSynchronizationManager.isActualTransactionActive()) {
-                overwriteTasks.forEach { it() }
-            } else {
-                runBlocking(Dispatchers.Default) {
-                    overwriteTasks.map { task -> async { task() } }.awaitAll()
+            TransactionTemplate(transactionManager).executeWithoutResult {
+                analysis.references.forEachIndexed { index, ref ->
+                    val progress = ((index + 1f) / analysis.references.size) * 100
+                    notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
+                    handleParent(ref, options, catalogId)
+                    importReference(principal, catalogId, ref, options, counter)
                 }
             }
         } catch (ex: Exception) {
@@ -436,7 +421,7 @@ class ImportService(
         ref: DocumentAnalysis,
         options: ImportOptions,
         counter: ImportCounter,
-    ): (() -> DocumentData)? {
+    ) {
         handleAddressTitle(ref)
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
@@ -500,35 +485,23 @@ class ImportService(
                     ).id!!
                 setVersionInfo(catalogId, wrapperId, ref.document)
 
-                val task = {
-                    val previousContext = SecurityContextHolder.getContext()
-                    val contextForThread = SecurityContextHolder.createEmptyContext()
-                    contextForThread.authentication = principal
-                    SecurityContextHolder.setContext(contextForThread)
-                    try {
-                        if (publish) {
-                            documentService.publishDocument(
-                                principal,
-                                catalogId,
-                                wrapperId,
-                                ref.document,
-                                skipValidation = options.skipValidation,
-                            )
-                        } else {
-                            documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
-                        }
-                    } finally {
-                        SecurityContextHolder.setContext(previousContext)
-                    }
+                if (publish) {
+                    documentService.publishDocument(
+                        principal,
+                        catalogId,
+                        wrapperId,
+                        ref.document,
+                        skipValidation = options.skipValidation,
+                    )
+                } else {
+                    documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
                 }
 
                 counter.overwritten++
-                return task
             } else {
                 counter.skipped++
             }
         }
-        return null
     }
 
     private fun handleAddressTitle(ref: DocumentAnalysis) {
@@ -542,13 +515,13 @@ class ImportService(
         }
     }
 
-    private fun removeDeletedFlag(wrapperId: Int) {
-        documentService.recoverDocument(wrapperId)
-    }
-
     private fun setVersionInfo(catalogId: String, wrapperId: Int, document: Document) {
         document.version =
             documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
+    }
+
+    private fun removeDeletedFlag(wrapperId: Int) {
+        documentService.recoverDocument(wrapperId)
     }
 
     private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions, catalogId: String) {

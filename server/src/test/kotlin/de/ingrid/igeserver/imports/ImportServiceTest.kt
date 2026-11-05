@@ -23,8 +23,11 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DeleteOptions
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe
@@ -112,6 +115,40 @@ class ImportServiceTest : ShouldSpec() {
             val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
 
             result shouldBe ImportCounter(0, 0, 1, 0)
+        }
+
+        should("Publish overwritten address when publish option is true") {
+            val existingDoc = Document().apply {
+                state = DocumentState.DRAFT
+                version = 1
+            }
+            val existingData = DocumentData(DocumentWrapper(), existingDoc)
+            every { docService.getDocumentFromCatalog(any(), any()) } returns existingData
+
+            val options = ImportOptions(overwriteAddresses = true, publish = true)
+            val doc = DocumentAnalysis(docEntity, 1, isAddress = true, exists = true, deleted = false)
+            val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())
+            val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
+
+            result shouldBe ImportCounter(0, 0, 1, 0)
+            verify(exactly = 1) { docService.publishDocument(principal, any(), any(), any(), any(), any()) }
+        }
+
+        should("Update overwritten address without publishing when publish option is false") {
+            val existingDoc = Document().apply {
+                state = DocumentState.DRAFT
+                version = 1
+            }
+            val existingData = DocumentData(DocumentWrapper(), existingDoc)
+            every { docService.getDocumentFromCatalog(any(), any()) } returns existingData
+
+            val options = ImportOptions(overwriteAddresses = true, publish = false)
+            val doc = DocumentAnalysis(docEntity, 1, isAddress = true, exists = true, deleted = false)
+            val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())
+            val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
+
+            result shouldBe ImportCounter(0, 0, 1, 0)
+            verify(exactly = 1) { docService.updateDocument(principal, any(), any(), any()) }
         }
 
         should("Count documents when they have been deleted before") {
