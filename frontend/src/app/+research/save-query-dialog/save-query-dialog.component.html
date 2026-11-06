@@ -1,13 +1,20 @@
 <ige-dialog-template
-    label="Suche speichern"
+    [label]="query ? 'Neue Suche speichern' : 'Suche speichern'"
     [disabled]="!model.name"
     submitLabel="Speichern"
     (submit)="dlgRef.close(model)"
 >
     <ng-container content>
         <div class="description">
-            Sie können hier Ihre Suche mit den angegebenen Parametern speichern.
-            Sie finden sie unter dem Tab "Gespeicherte Suchen" wieder.
+            @if (query) {
+                Die bestehende Suche bleibt unverändert. Ihre Anpassungen werden
+                als neue Suche gespeichert und erscheinen unter dem Tab
+                "Gespeicherte Suchen".
+            } @else {
+                Sie können hier Ihre Suche mit den angegebenen Parametern
+                speichern. Sie finden sie unter dem Tab "Gespeicherte Suchen"
+                wieder.
+            }
         </div>
         <mat-form-field appearance="outline">
             <mat-label>Name</mat-label>
