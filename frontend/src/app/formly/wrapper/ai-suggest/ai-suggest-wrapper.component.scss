@@ -1,0 +1,54 @@
+@use "src/variables" as vars;
+
+:host {
+  display: block;
+}
+
+// the button floats over the field, so it takes no space from the input
+.field-container {
+  position: relative;
+}
+
+.ai-suggest-button {
+  --mat-button-outlined-container-height: 28px;
+  --mat-button-outlined-horizontal-padding: 0;
+  --mat-button-outlined-icon-spacing: 0;
+  --mat-button-outlined-icon-offset: 0;
+
+  z-index: 1;
+  position: absolute;
+  top: 6px;
+  right: 8px;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 150ms ease;
+  min-width: var(--mat-button-outlined-container-height);
+  color: vars.$ige-primary;
+  background-color: vars.$ige-background;
+
+  &[aria-expanded="true"] {
+    --mat-button-outlined-outline-color: #{vars.$ige-primary-border};
+
+    background-color: vars.$ige-mark-color;
+  }
+}
+
+:host:hover .ai-suggest-button,
+:host:focus-within .ai-suggest-button,
+:host.panel-open .ai-suggest-button {
+  opacity: 1;
+  visibility: visible;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    --mat-button-outlined-container-height: 32px;
+    --mat-button-outlined-label-text-size: 12px;
+
+    background-color: white;
+  }
+}

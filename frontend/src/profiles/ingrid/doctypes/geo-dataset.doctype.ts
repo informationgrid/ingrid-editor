@@ -150,6 +150,7 @@ export class GeoDatasetDoctype extends IngridShared {
               this.transloco.translate("form.statement"),
               this.id,
               {
+                wrappers: ["panel", "ai-suggest", "form-field"],
                 required: this.geodatasetOptions.required.statement,
                 expressions: {
                   "props.required":

@@ -17,26 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  computed,
-  input,
-  OnInit,
-  output,
-  signal,
-} from "@angular/core";
+import { Component, input, OnInit, output, signal } from "@angular/core";
 import { Evaluation } from "../../../../services/ai/ai.service";
 import { MatButton } from "@angular/material/button";
-import {
-  MatDivider,
-  MatListOption,
-  MatSelectionList,
-} from "@angular/material/list";
+import { MatDivider } from "@angular/material/list";
 import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { TextOptionComponent } from "./text-option/text-option.component";
-import { ListOptionComponent } from "./list-option/list-option.component";
-import { SpatialReferenceOptionComponent } from "./spatial-reference-option/spatial-reference-option.component";
+import { AiSuggestionListComponent } from "../../../ai-suggestion-list/ai-suggestion-list.component";
 
 @Component({
   selector: "ige-evaluation-entry",
@@ -46,12 +32,7 @@ import { SpatialReferenceOptionComponent } from "./spatial-reference-option/spat
     MatButton,
     ScoreIndicatorComponent,
     MatDivider,
-    MatListOption,
-    MatSelectionList,
-    ReactiveFormsModule,
-    TextOptionComponent,
-    ListOptionComponent,
-    SpatialReferenceOptionComponent,
+    AiSuggestionListComponent,
   ],
 })
 export class EvaluationEntryComponent implements OnInit {
@@ -60,24 +41,14 @@ export class EvaluationEntryComponent implements OnInit {
   onSuggestionApply = output<any>();
   onSuggestionReset = output<any>();
 
-  formControl: FormControl;
   isExpanded = signal<boolean>(false);
   selectedOption = signal<any>(null);
-
-  hasListOptions = computed(() =>
-    Array.isArray(this.evaluation().options?.at(0)),
-  );
-
-  hasSpatialReferenceOptions = computed(
-    () => this.evaluation().key === "spatial.references",
-  );
 
   constructor() {}
 
   ngOnInit(): void {
     if (this.evaluation().options?.length > 0) {
       this.selectedOption.set(this.evaluation().options.at(0));
-      this.formControl = new FormControl([this.selectedOption()]);
     }
   }
 

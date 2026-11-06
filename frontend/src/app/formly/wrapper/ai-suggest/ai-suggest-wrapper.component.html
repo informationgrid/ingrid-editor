@@ -1,0 +1,63 @@
+<div class="field-container">
+    <ng-container #fieldComponent></ng-container>
+
+    @if (isSupported()) {
+        <button
+            mat-stroked-button
+            class="ai-suggest-button"
+            [matTooltip]="
+                isPanelOpen() ? 'Vorschläge schließen' : 'Vorschläge generieren'
+            "
+            [attr.aria-label]="
+                isPanelOpen() ? 'Vorschläge schließen' : 'Vorschläge generieren'
+            "
+            [disabled]="isLoading()"
+            [attr.aria-expanded]="isPanelOpen()"
+            (click)="suggest($event)"
+        >
+            @if (isLoading()) {
+                <mat-progress-spinner
+                    mode="indeterminate"
+                    diameter="16"
+                    strokeWidth="2"
+                ></mat-progress-spinner>
+            } @else {
+                <mat-icon>auto_awesome</mat-icon>
+            }
+        </button>
+    }
+</div>
+
+@if (isPanelOpen()) {
+    <ige-ai-suggestion-panel
+        [isLoading]="isLoading()"
+        [hasError]="hasError()"
+        [hasNoSuggestion]="hasNoSuggestion()"
+        (closed)="closePanel()"
+    >
+        @if (!hasNoSuggestion()) {
+            <ige-ai-suggestion-list
+                [options]="evaluation().options"
+                [key]="evaluation().key"
+                [(selected)]="selectedOption"
+            />
+        }
+
+        @if (!hasNoSuggestion()) {
+            <div panelActions class="panel-actions">
+                @if (isApplied()) {
+                    <button matButton="outlined" (click)="reset()">
+                        Zurücksetzen
+                    </button>
+                }
+                <button
+                    matButton="outlined"
+                    [disabled]="!selectedOption() || isSelectionApplied()"
+                    (click)="apply()"
+                >
+                    Übernehmen
+                </button>
+            </div>
+        }
+    </ige-ai-suggestion-panel>
+}

@@ -77,6 +77,7 @@ import { bootstrapApplication, BrowserModule } from "@angular/platform-browser";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { InlineHelpWrapperComponent } from "./app/formly/wrapper/inline-help-wrapper/inline-help-wrapper.component";
 import { AddonsWrapperComponent } from "./app/formly/wrapper/addons/addons-wrapper.component";
+import { AiSuggestWrapperComponent } from "./app/formly/wrapper/ai-suggest/ai-suggest-wrapper.component";
 import { OneColumnWrapperComponent } from "./app/formly/wrapper/one-column-wrapper.component";
 import { FullWidthWrapperComponent } from "./app/formly/wrapper/full-width-wrapper.component";
 import { SectionWrapper } from "./app/formly/wrapper/section-wrapper.component";
@@ -377,6 +378,7 @@ bootstrapApplication(AppComponent, {
         wrappers: [
           { name: "inline-help", component: InlineHelpWrapperComponent },
           { name: "addons", component: AddonsWrapperComponent },
+          { name: "ai-suggest", component: AiSuggestWrapperComponent },
           { name: "panel", component: OneColumnWrapperComponent },
           { name: "full-panel", component: FullWidthWrapperComponent },
           { name: "section", component: SectionWrapper },

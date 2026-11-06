@@ -1,0 +1,90 @@
+@use "src/variables" as vars;
+
+:host {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: var(--mat-form-field-subscript-text-line-height, 20px);
+  animation: panel-in 150ms ease-out;
+}
+
+mat-card {
+  --mat-card-outlined-outline-color: #{vars.$ige-primary-border};
+  --mat-card-outlined-container-shape: 4px;
+
+  background: vars.$ige-mark-color;
+}
+
+mat-card-header {
+  align-items: center;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid #e3eef6;
+
+  ::ng-deep .mat-mdc-card-header-text {
+    flex: 1;
+  }
+}
+
+mat-card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+
+  mat-icon {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    color: vars.$ige-primary;
+  }
+}
+
+.close-button {
+  --mat-icon-button-state-layer-size: 32px;
+}
+
+mat-card-content {
+  padding: 16px;
+  background: white;
+}
+
+mat-card-actions {
+  border-top: 1px solid #e3eef6;
+}
+
+.no-suggestions {
+  color: vars.$ige-hint-color;
+}
+
+.error-message {
+  color: vars.$error-color;
+}
+
+.skeleton-line {
+  height: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e8edf2 25%, #f3f6f9 50%, #e8edf2 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

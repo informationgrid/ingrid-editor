@@ -437,7 +437,7 @@ export abstract class IngridShared extends BaseDoctype {
             "alternateTitle",
             this.transloco.translate("form.alternateTitle"),
             {
-              wrappers: ["panel", "form-field"],
+              wrappers: ["panel", "ai-suggest", "form-field"],
               className: "optional",
             },
           ),
@@ -448,6 +448,7 @@ export abstract class IngridShared extends BaseDoctype {
             {
               required: this.options.required.description,
               rows: 6,
+              wrappers: ["panel", "ai-suggest", "form-field"],
             },
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
@@ -695,6 +696,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect("6100", "themes"),
               codelistId: "6100",
+              wrappers: ["panel", "ai-suggest"],
               expressions: {
                 "props.required": this.options.dynamicRequired.inspireTopics,
                 className: (field: FormlyFieldConfig) =>
@@ -827,6 +829,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect("527", "topicCategories"),
               codelistId: "527",
+              wrappers: ["panel", "ai-suggest"],
               required: this.options.required.topicCategories,
               remove: (field, event) =>
                 this.checkConnectedIsoCategory(event, field),
@@ -917,6 +920,7 @@ export abstract class IngridShared extends BaseDoctype {
               hint: this.keywordFieldHint,
               convert: (val) => (val ? { label: val } : null),
               labelField: "label",
+              wrappers: ["panel", "ai-suggest"],
               expressions: {
                 className: (field: FormlyFieldConfig) =>
                   field.props.required ? "" : "optional",

@@ -4,6 +4,7 @@
    runtime (see app/services/config/catalog-theme.ts). The fallback is the
    default look. Derive shades with shift(), not with sass color functions. */
 $ige-primary: var(--ige-primary, #196ea2); /* Middle blue, i.e. title */
+$ige-primary-border: var(--ige-primary-border, #a5c3da);
 $ige-secondary: var(
   --ige-secondary,
   #28225b

@@ -1,0 +1,20 @@
+<mat-selection-list
+    [multiple]="false"
+    (selectionChange)="selected.set($event.options[0].value)"
+>
+    @for (option of visibleOptions(); track $index) {
+        <mat-list-option
+            class="no-wrap"
+            [value]="option"
+            [selected]="option === selected()"
+        >
+            @if (hasSpatialReferenceOptions()) {
+                <ige-spatial-reference-option [option]="option" />
+            } @else if (hasListOptions()) {
+                <ige-list-option [option]="option" />
+            } @else {
+                <ige-text-option [option]="option" />
+            }
+        </mat-list-option>
+    }
+</mat-selection-list>
