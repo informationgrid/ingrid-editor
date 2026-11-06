@@ -53,7 +53,7 @@ import {
     role: "region",
     "[attr.aria-busy]": "isLoading()",
     "aria-label": "KI-Vorschläge",
-    "(keydown.escape)": "closed.emit()",
+    "(keydown.escape)": "closed.emit($event)",
   },
 })
 export class AiSuggestionPanelComponent {
@@ -61,5 +61,6 @@ export class AiSuggestionPanelComponent {
   hasError = input<boolean>(false);
   hasNoSuggestion = input<boolean>(false);
 
-  closed = output<void>();
+  /** Emits the event that closed the panel, e.g. a click or the Escape key. */
+  closed = output<Event>();
 }

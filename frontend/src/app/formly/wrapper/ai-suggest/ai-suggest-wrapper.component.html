@@ -33,7 +33,7 @@
         [isLoading]="isLoading()"
         [hasError]="hasError()"
         [hasNoSuggestion]="hasNoSuggestion()"
-        (closed)="closePanel()"
+        (closed)="closePanel($event)"
     >
         @if (!hasNoSuggestion()) {
             <ige-ai-suggestion-list

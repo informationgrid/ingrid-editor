@@ -140,7 +140,7 @@ export class AiSuggestWrapperComponent
     event.stopPropagation();
     // the button toggles the panel
     if (this.isPanelOpen()) {
-      this.closePanel();
+      this.closePanel(event);
       return;
     }
 
@@ -213,19 +213,32 @@ export class AiSuggestWrapperComponent
     this.valueBeforeApply.set(null);
   }
 
-  closePanel() {
+  /**
+   * Close the panel. The focus returns to the field only when the panel was
+   * closed with the keyboard.
+   */
+  closePanel(event?: Event) {
     this.loadSubscription?.unsubscribe();
     this.isPanelOpen.set(false);
     this.isLoading.set(false);
     this.hasError.set(false);
 
-    // return focus to the field, so the user can continue editing
+    if (!isKeyboardEvent(event)) return;
+
     setTimeout(() =>
       this.host.nativeElement
         .querySelector<HTMLElement>("input, textarea, select")
         ?.focus(),
     );
   }
+}
+
+/**
+ * Check if the event is triggered by the keyboard.
+ */
+function isKeyboardEvent(event?: Event): boolean {
+  if (event instanceof KeyboardEvent) return true;
+  return event instanceof MouseEvent && event.detail === 0;
 }
 
 /** Compare plain JSON values, e.g. texts, lists or spatial references. */
