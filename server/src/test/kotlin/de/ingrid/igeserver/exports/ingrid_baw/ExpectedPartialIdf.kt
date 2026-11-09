@@ -49,36 +49,6 @@ const val BAW_KEYWORDS = """
                     </gmd:descriptiveKeywords>
 """
 
-const val SUBSOIL_KEYWORDS = """
-                    <gmd:descriptiveKeywords>
-                        <gmd:MD_Keywords>
-                            <gmd:keyword>
-                                <gco:CharacterString>3950007_Schlagwort2</gco:CharacterString>
-                            </gmd:keyword>
-                            <gmd:type>
-                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
-                            </gmd:type>
-                            <gmd:thesaurusName>
-                                <gmd:CI_Citation>
-                                    <gmd:title>
-                                        <gco:CharacterString>Baugrunddynamik-Schlagwortkatalog</gco:CharacterString>
-                                    </gmd:title>
-                                    <gmd:date>
-                                        <gmd:CI_Date>
-                                            <gmd:date>
-                                                <gco:Date>2012-01-01</gco:Date>
-                                            </gmd:date>
-                                            <gmd:dateType>
-                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
-                                            </gmd:dateType>
-                                        </gmd:CI_Date>
-                                    </gmd:date>
-                                </gmd:CI_Citation>
-                            </gmd:thesaurusName>
-                        </gmd:MD_Keywords>
-                    </gmd:descriptiveKeywords>
-"""
-
 const val BAW_ORDER_INFO = """
                     <gmd:aggregationInfo>
                         <gmd:MD_AggregateInformation>

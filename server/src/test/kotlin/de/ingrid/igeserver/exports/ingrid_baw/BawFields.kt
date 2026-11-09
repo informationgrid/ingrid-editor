@@ -91,25 +91,6 @@ class BawFields : GeodatasetBase() {
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain BAW_KEYWORDS
             }
-            should("export subsoilKeywords for: $docType") {
-                val context =
-                    jacksonObjectMapper()
-                        .readTree(
-                            """{
-                        "keywords": {
-                            "subsoilKeywords": [
-                                { "key": "Schlagwort2" }
-                            ]
-                        }
-                    }"""
-                                .trimIndent(),
-                        ) as ObjectNode
-
-                val result =
-                    exportJsonToXML(exporter, docSample, context)
-
-                result shouldContain SUBSOIL_KEYWORDS
-            }
 
             should("export bwastr spatial references for: $docType") {
                 val context =

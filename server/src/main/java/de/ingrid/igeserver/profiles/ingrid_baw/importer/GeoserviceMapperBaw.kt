@@ -31,7 +31,5 @@ class GeoserviceMapperBaw(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
     fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata, codeListService)
 
-    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata, codeListService)
-
     fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 }

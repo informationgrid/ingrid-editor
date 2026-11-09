@@ -64,8 +64,6 @@ class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata, codeListService)
 
-    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata, codeListService)
-
     fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 
     fun getDimensionality(): KeyValue? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords

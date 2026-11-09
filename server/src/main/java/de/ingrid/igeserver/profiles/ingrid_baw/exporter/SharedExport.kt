@@ -113,21 +113,6 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
         ?: emptyList(),
 )
 
-fun getSubsoilKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
-    "Baugrunddynamik-Schlagwortkatalog",
-    "2012-01-01",
-    showType = true,
-    type = "discipline",
-    keywords = transformer.doc.data.getPath("keywords.subsoilKeywords")
-        ?.mapNotNull { it.mapToKeyValue() }
-        ?.map {
-            KeywordIso(
-                name = transformer.codelists.getValue("3950007", it),
-            )
-        }
-        ?: emptyList(),
-)
-
 fun getOrderInfoValue(transformer: IngridModelTransformer): String? = transformer.doc.data.getPath("bawOrderInfo")?.mapToKeyValue()?.let { transformer.codelists.getValue("bawOrderInfo", it) }
 
 fun getOrderNumber(transformer: IngridModelTransformer): String? {
