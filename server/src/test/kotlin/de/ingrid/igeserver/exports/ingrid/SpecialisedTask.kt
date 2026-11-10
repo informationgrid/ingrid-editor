@@ -184,7 +184,8 @@ class SpecialisedTask : ShouldSpec() {
         }
 
         should("completeLuceneExport") {
-            var result = exportJsonToJson(luceneExporter, "/export/ingrid/specialisedTask-Document2.json")
+            every { documentService.docWrapperRepo } returns documentWrapperRepository
+            val result = exportJsonToJson(luceneExporter, "/export/ingrid/specialisedTask-Document2.json")
 
             result shouldNotBe null
             result.replace("\r\n", "\n").contains(

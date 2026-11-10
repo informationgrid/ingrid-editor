@@ -75,21 +75,14 @@ class IngridLuceneExporter(
 
     fun getModelTransformerClass(docType: String): KClass<out IngridModelTransformer>? = when (docType) {
         "InGridSpecialisedTask" -> IngridModelTransformer::class
-
         "InGridGeoDataset" -> GeodatasetModelTransformer::class
-
         "InGridPublication" -> PublicationModelTransformer::class
-
         "InGridGeoService" -> GeodataserviceModelTransformer::class
-
         "InGridProject" -> ProjectModelTransformer::class
-
         "InGridDataCollection" -> DataCollectionModelTransformer::class
-
         "InGridInformationSystem" -> InformationSystemModelTransformer::class
-
-        //        "InGridOrganisationDoc" -> AddressModelTransformer::class
-//        "InGridPersonDoc" -> AddressModelTransformer::class
+        "InGridOrganisationDoc" -> AddressModelTransformer::class
+        "InGridPersonDoc" -> AddressModelTransformer::class
         else -> null
     }
 

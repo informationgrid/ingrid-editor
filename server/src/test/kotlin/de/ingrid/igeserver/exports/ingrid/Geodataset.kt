@@ -166,10 +166,10 @@ open class Geodataset : GeodatasetBase() {
             every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
                 documentWrapperRepository
             }
+            every { documentService.docWrapperRepo } returns documentWrapperRepository
 
-            var result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")
-            // replace generated UUIDs
-            result = result
+            val result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")
+                // replace generated UUIDs
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null

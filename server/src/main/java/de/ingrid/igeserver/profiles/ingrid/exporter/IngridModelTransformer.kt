@@ -59,7 +59,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDateRange
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngrid
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneIngridSpatial
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyword
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLicense
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLicenseItem
@@ -1492,6 +1491,14 @@ open class IngridModelTransformer(
         )
     }
 
+    protected fun codelistRef(id: String?, key: String?): String? = if (id.isNullOrEmpty() || key.isNullOrEmpty()) null else "/codelist/$id/$key"
+
+    private fun metadataLanguageIso6391(): String? {
+        val language = metadataLanguage ?: return null
+        val code = mapOf("ger" to "deu", "fre" to "fra", "cze" to "ces", "gre" to "ell", "dut" to "nld", "rum" to "ron", "slo" to "slk")[language] ?: language
+        return Locale.getISOLanguages().firstOrNull { Locale.of(it).isO3Language == code } ?: language
+    }
+
     open fun toLuceneDocument(
         catalog: Catalog,
         partner: String,
@@ -1506,7 +1513,7 @@ open class IngridModelTransformer(
             issued = null,
             partner = partner,
             provider = provider,
-            language = metadataLanguage,
+            language = metadataLanguageIso6391(),
             datasource = LuceneDatasource(
                 id = catalog.identifier,
                 name = catalog.name,
@@ -1538,13 +1545,10 @@ open class IngridModelTransformer(
                     },
                 )
             },
-            status = data.temporal.status?.let { LuceneKeyValue(it.key, it.value) },
-            maintenanceFrequency = data.maintenanceInformation?.maintenanceAndUpdateFrequency?.let {
-                LuceneKeyValue(
-                    it.key,
-                    it.value,
-                )
-            },
+            status = codelists.getValue("523", data.temporal.status),
+            statusRefUri = codelistRef("523", data.temporal.status?.key),
+            maintenanceFrequency = codelists.getValue("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency),
+            maintenanceFrequencyRefUri = codelistRef("518", data.maintenanceInformation?.maintenanceAndUpdateFrequency?.key),
             userDefinedMaintenanceFrequencyInSec = data.maintenanceInformation?.userDefinedMaintenanceFrequency?.number?.toString(),
         ),
         keywords = getAllKeywords().flatMap { category ->
@@ -1561,7 +1565,8 @@ open class IngridModelTransformer(
                 internal = "url" != ref.referenceType,
                 url = ref.url,
                 uuidRef = ref.uuidRef,
-                type = LuceneKeyValue(ref.type.key, ref.type.value),
+                type = codelists.getValue("2000", ref.type) ?: ref.type.value,
+                typeRefUri = codelistRef("2000", ref.type.key),
                 title = ref.title,
                 explanation = ref.explanation,
             )
@@ -1590,8 +1595,19 @@ open class IngridModelTransformer(
                     type = lic.type,
                     items = lic.items.map { item ->
                         LuceneLicenseItem(
-                            key = item.key,
-                            value = item.value,
+                            name = when (lic.type) {
+                                "accessConstraints" -> codelists.getValue("6010", KeyValue(item.key, item.value))
+                                "useConstraints" -> codelists.getValue("6500", KeyValue(item.key, item.value))
+                                else -> item.value
+                            } ?: item.value ?: item.key,
+                            nameRefUri = codelistRef(
+                                when (lic.type) {
+                                    "accessConstraints" -> "6010"
+                                    "useConstraints" -> "6500"
+                                    else -> null
+                                },
+                                item.key,
+                            ),
                             source = item.source,
                         )
                     },
@@ -1603,7 +1619,8 @@ open class IngridModelTransformer(
             conformanceResult = data.conformanceResult?.map { conf ->
                 LuceneConformanceResult(
                     pass = getConformancePass(conf),
-                    specification = conf.specification?.let { LuceneKeyValue(it.key, it.value) },
+                    specification = mapConformanceResultTitle(conf),
+                    specificationRefUri = codelistRef(if (conf.isInspire == true) "6005" else "6006", conf.specification?.key),
                     publicationDate = conf.publicationDate,
                     explanation = conf.explanation,
                 )
@@ -1625,14 +1642,15 @@ open class IngridModelTransformer(
                     LuceneVerticalExtent(
                         minimum = it.minimumValue?.toDouble(),
                         maximum = it.maximumValue?.toDouble(),
-                        unit = it.unitOfMeasure?.let { u -> LuceneKeyValue(u.key, u.value) },
-                        vdatum = it.spatialSystem?.let { s -> LuceneKeyValue(s.key, s.value) },
+                        unit = codelists.getValue("102", it.unitOfMeasure),
+                        unitRefUri = codelistRef("102", it.unitOfMeasure?.key),
+                        vdatum = codelists.getValue("101", it.spatialSystem),
+                        vdatumRefUri = codelistRef("101", it.spatialSystem?.key),
                     )
                 },
             ),
-            characterSet = data.metadata?.characterSet?.let {
-                LuceneKeyValue(it.key, it.value)
-            },
+            characterSet = codelists.getValue("510", data.metadata?.characterSet),
+            characterSetRefUri = codelistRef("510", data.metadata?.characterSet?.key),
         ),
     )
 }

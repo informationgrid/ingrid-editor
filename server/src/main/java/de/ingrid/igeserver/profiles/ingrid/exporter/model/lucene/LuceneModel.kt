@@ -173,9 +173,13 @@ data class LuceneAdministrative(
 data class LuceneTemporal(
     @JsonProperty("data_temporal")
     val dataTemporal: List<LuceneDataTemporal> = emptyList(),
-    val status: LuceneKeyValue? = null,
+    val status: String? = null,
+    @JsonProperty("status_ref_uri")
+    val statusRefUri: String? = null,
     @JsonProperty("maintenance_frequency")
-    val maintenanceFrequency: LuceneKeyValue? = null,
+    val maintenanceFrequency: String? = null,
+    @JsonProperty("maintenance_frequency_ref_uri")
+    val maintenanceFrequencyRefUri: String? = null,
     @JsonProperty("user_defined_maintenance_frequency_in_sec")
     val userDefinedMaintenanceFrequencyInSec: String? = null,
 )
@@ -267,7 +271,9 @@ data class LuceneIngrid(
     val attributeDescription: List<String> = emptyList(),
     val spatial: LuceneIngridSpatial? = null,
     @JsonProperty("character_set")
-    val characterSet: LuceneKeyValue? = null,
+    val characterSet: String? = null,
+    @JsonProperty("character_set_ref_uri")
+    val characterSetRefUri: String? = null,
     val service: LuceneService? = null,
     val publication: LucenePublication? = null,
     val project: LuceneProject? = null,
@@ -324,8 +330,12 @@ data class LuceneIngridSpatial(
 data class LuceneVerticalExtent(
     val minimum: Double? = null,
     val maximum: Double? = null,
-    val unit: LuceneKeyValue? = null,
-    val vdatum: LuceneKeyValue? = null,
+    val unit: String? = null,
+    @JsonProperty("unit_ref_uri")
+    val unitRefUri: String? = null,
+    val vdatum: String? = null,
+    @JsonProperty("vdatum_ref_uri")
+    val vdatumRefUri: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -347,7 +357,9 @@ data class LucenePositionalAccuracy(
 data class LuceneQuality(
     val type: String? = null,
     @JsonProperty("measure_type")
-    val measureType: LuceneKeyValue? = null,
+    val measureType: String? = null,
+    @JsonProperty("measure_type_ref_uri")
+    val measureTypeRefUri: String? = null,
     val value: Double? = null,
     val parameter: String? = null,
 )
@@ -401,9 +413,11 @@ data class SpatialRepresentationGrid(
     @JsonProperty("number_dimensions")
     val numberDimensions: Int? = null,
     @JsonProperty("cell_geometry")
-    val cellGeometry: LuceneKeyValue? = null,
+    val cellGeometry: String? = null,
     val rectified: SpatialRepresentationGridRectified? = null,
     val referenced: SpatialRepresentationGridReferenced? = null,
+    @JsonProperty("cell_geometry_ref_uri")
+    val cellGeometryRefUri: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -411,7 +425,10 @@ data class SpatialRepresentationGridRectified(
     val checkPointAvailability: Boolean,
     val checkPointDescription: String?,
     val cornerPoints: String?,
-    val pointInPixel: LuceneKeyValue?,
+    @JsonProperty("point_in_pixel")
+    val pointInPixel: String?,
+    @JsonProperty("point_in_pixel_ref_uri")
+    val pointInPixelRefUri: String? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -462,7 +479,9 @@ data class LuceneReference(
     val url: String? = null,
     @JsonProperty("uuid_ref")
     val uuidRef: String? = null,
-    val type: LuceneKeyValue? = null,
+    val type: String? = null,
+    @JsonProperty("type_ref_uri")
+    val typeRefUri: String? = null,
     val title: String? = null,
     val explanation: String? = null,
 )
@@ -475,15 +494,19 @@ data class LuceneLicense(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneLicenseItem(
-    val key: String?,
-    val value: String?,
+    val name: String?,
+    @JsonProperty("name_ref_uri")
+    val nameRefUri: String?,
     val source: String?,
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneConformanceResult(
     val pass: String?,
-    val specification: LuceneKeyValue?,
+    val specification: String?,
+    @JsonProperty("specification_ref_uri")
+    val specificationRefUri: String?,
+    @JsonProperty("publication_date")
     val publicationDate: String?,
     val explanation: String?,
 )
@@ -505,7 +528,9 @@ data class LucenePublication(
     @JsonProperty("publishing_house")
     val publishingHouse: String? = null,
     @JsonProperty("document_type")
-    val documentType: LuceneKeyValue? = null,
+    val documentType: String? = null,
+    @JsonProperty("document_type_ref_uri")
+    val documentTypeRefUri: String? = null,
     @JsonProperty("base_data_text")
     val baseDataText: String? = null,
     @JsonProperty("bibliographic_data")

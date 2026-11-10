@@ -29,7 +29,7 @@ class SchemaUtils {
     companion object {
         fun validate(json: String, schema: String) = PreJsonSchemaValidator().validate(schema, json)
 
-        fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
+        fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n").trim()
 
         fun createNegativeTestByAddingInvalidField(schema: String, jsonFile: String) {
             val json = getJsonFileContent(jsonFile)

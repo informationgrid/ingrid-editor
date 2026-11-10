@@ -86,7 +86,7 @@ class IngridIndexExporter(
         }
 
         val result = luceneDoc.toPrettyString()
-        if (!options.skipValidation) validateSchema(result)
+        if (!options.skipValidation) validateSchema(result, getSchema(doc))
         return result
     }
 

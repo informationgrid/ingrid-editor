@@ -175,6 +175,7 @@ class Geodataservice : ShouldSpec() {
         should("completeLuceneExport") {
             every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns emptySet()
             every { documentService.getParentWrapper(any()) } returns null
+            every { documentService.docWrapperRepo } returns documentWrapperRepository
 
             var result = exportJsonToJson(indexExporter, "/export/ingrid/geo-service.maximal.sample.json")
             // replace generated UUIDs and windows line endings

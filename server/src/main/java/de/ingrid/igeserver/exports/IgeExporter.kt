@@ -121,8 +121,9 @@ interface IgeExporter {
                 // Allow classpath and wemove schema prefix patterns through the library sandbox
                 .schemaLoader { loader ->
                     loader.allow { iri ->
-                        iri.toString().startsWith("classpath:") || iri.toString()
-                            .startsWith("https://wemove.com/schemas/")
+                        iri.toString().startsWith("classpath:") ||
+                            iri.toString()
+                                .startsWith("https://wemove.com/schemas/")
                     }
                 }
         }

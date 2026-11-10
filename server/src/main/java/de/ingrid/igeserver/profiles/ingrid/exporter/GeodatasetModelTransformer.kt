@@ -26,7 +26,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCatalogueReference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDataQuality
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneLineage
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePositionalAccuracy
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneQuality
@@ -350,7 +349,8 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                     qualities = data.qualities?.map {
                         LuceneQuality(
                             type = it._type,
-                            measureType = it.measureType?.let { m -> LuceneKeyValue(m.key, m.value) },
+                            measureType = codelists.getValue(qualitytypeCodelistMap.getOrDefault(it._type, ""), it.measureType),
+                            measureTypeRefUri = codelistRef(qualitytypeCodelistMap[it._type], it.measureType?.key),
                             value = it.value.toDouble(),
                             parameter = it.parameter,
                         )
@@ -388,17 +388,14 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                 } ?: emptyList(),
                 gridSpatialRepresentation?.transformationParameterAvailability ?: false,
                 gridSpatialRepresentation?.numberOfDimensions,
-                gridSpatialRepresentation?.cellGeometry?.let {
-                    LuceneKeyValue(it.key, codelists.getValue("509", it))
-                },
+                codelists.getValue("509", gridSpatialRepresentation?.cellGeometry),
                 gridSpatialRepresentation?.georectified?.let {
                     SpatialRepresentationGridRectified(
                         it.checkPointAvailability ?: false,
                         it.checkPointDescription,
                         it.cornerPoints,
-                        it.pointInPixel?.let { pointInPixel ->
-                            LuceneKeyValue(pointInPixel.key, codelists.getValue("2100", pointInPixel))
-                        },
+                        codelists.getValue("2100", it.pointInPixel),
+                        codelistRef("2100", it.pointInPixel?.key),
                     )
                 },
                 SpatialRepresentationGridReferenced(
@@ -406,6 +403,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                     gridSpatialRepresentation?.georeferenceable?.controlPointAvaliability ?: false,
                     gridSpatialRepresentation?.georeferenceable?.parameters,
                 ),
+                codelistRef("509", gridSpatialRepresentation?.cellGeometry?.key),
             ),
         )
     }

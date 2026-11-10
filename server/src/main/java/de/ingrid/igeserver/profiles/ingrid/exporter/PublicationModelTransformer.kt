@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentInGrid
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneKeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LucenePublication
 
 open class PublicationModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
@@ -53,9 +52,8 @@ open class PublicationModelTransformer(transformerConfig: TransformerConfig) : I
                         location = it.location,
                         isbn = it.isbn,
                         publishingHouse = it.publishingHouse,
-                        documentType = it.documentType?.let { dt ->
-                            LuceneKeyValue(dt.key, dt.value)
-                        },
+                        documentType = codelists.getValue("3385", it.documentType),
+                        documentTypeRefUri = codelistRef("3385", it.documentType?.key),
                         baseDataText = it.baseDataText,
                         bibliographicData = it.bibliographicData,
                         explanation = it.explanation,

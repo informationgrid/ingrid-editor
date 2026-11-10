@@ -1,0 +1,2179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InGrid Index - Adresse",
+  "$id": "https://schema.ingrid-oss.eu/index/draft/schema/index-ingrid-address.json",
+  "description": "Dies ist das JSON-Schema für Adressen (Personen und Organisationen) im InGrid-Index.\n\nAdressen nutzen die \"Root fields\", die für Metadatensätze entworfen sind. Wie ein Feld bei Adressen\nbefüllt wird, steht am Feld im Teil \"Address\"; Felder ohne Angabe dort werden wie beschrieben\nverwendet (z. B. `title`). Anschrift und Kommunikation der Adresse stehen in `contacts` im Eintrag mit\n`role` `self`; Angaben ohne Gegenstück in den \"Root fields\" in `address`.\n\nNicht befüllt werden `description`, `language`, `spatials`, `crs`, `temporal`, `keywords` und\n`references`.\n\nISO 19139:2007: Eine Adresse entspricht einem `gmd:CI_ResponsibleParty`. Die Pfade nennen es unter\n`gmd:identificationInfo/*/gmd:pointOfContact`; sie gelten ebenso für jedes andere\n`gmd:CI_ResponsibleParty` eines Metadatensatzes (z. B. `gmd:contact`).\n",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "title": "Root fields",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Die ID des Datensatzes. Die ID **muss** eindeutig im Index sein.",
+          "examples": [
+            "Für UMWELTNAVI <oid>-<part> i.e. 'nlwkn-dsk-4922-21000-0'",
+            "For InGrid Editor i.e. 'd43dad1f-a19f-4043-bca4-447cf5e7cabb'"
+          ]
+        },
+        "$schema": {
+          "type": "string",
+          "description": "Enthält die URL des JSON-Schemas, das für die Validierung verwendet wird.",
+          "examples": [
+            "https://example.com/schemas/order/v2.1.0/schema.json"
+          ]
+        },
+        "metadata": {
+          "description": "Enthält Metadaten über den Datensatz. Dies kann das Erstellungs- oder Änderungsdatum sein, oder aus welcher Quelle der Datensatz stammt.",
+          "type": "object",
+          "properties": {
+            "data_type": {
+              "type": "string",
+              "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+              "examples": [
+                "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                "InGrid Datensatz ['INGRID']",
+                "UVP Datensatz ['UVP']"
+              ]
+            },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
+              ]
+            },
+            "created": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "modified": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "issued": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+            },
+            "partner": {
+              "type": "string",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
+              "examples": [
+                "bb",
+                "st"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "description": "Der Anbieter der Datenquelle.",
+              "examples": [
+                "ni_gll",
+                "bw_mj"
+              ]
+            },
+            "language": {
+              "title": "language",
+              "type": "string",
+              "description": "Angabe der Sprache des Metadatensatzes im ISO 639-1 Format",
+              "examples": [
+                "de",
+                "en"
+              ]
+            },
+            "datasource": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Die ID der Datenquelle."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Der Name der Datenquelle."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Der Typ der Datenquelle.",
+                  "$comment": "Anforderung kommt aus Harvester.",
+                  "examples": [
+                    "csw",
+                    "wfs",
+                    "ckan",
+                    "json",
+                    "dcat",
+                    "dcatapplu",
+                    "GENESIS",
+                    "sparql",
+                    "oai_iso19139"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "data_type",
+            "created",
+            "modified"
+          ]
+        },
+        "sort_uuid": {
+          "description": "Sortier-UUID für die Sortierung von Datensätzen, die bei einer leeren Suche durchmischt angezeigt werden sollen. Außerdem wird hiermit gewährt, dass die Reihenfolge der Datensätze beim Paging erhalten bleibt. Hier wird eine UUID verwendet, die über alle Indizes einmalig sein sollte.",
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "description": "Der Titel des Datensatzes.\n"
+        },
+        "description": {
+          "description": "Die Beschreibung des Datensatzes.\n",
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "description": "Angabe der Sprache des Datensatzes im ISO 639-1 Format",
+          "examples": [
+            "de",
+            "en"
+          ]
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "role": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "communications": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "email",
+                        "phone",
+                        "fax",
+                        "website",
+                        "social",
+                        "other"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "street": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "pocode": {
+                "type": "string"
+              },
+              "pobox": {
+                "type": "string"
+              },
+              "locality": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "administrative_area": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "spatials": {
+          "type": "array",
+          "description": "Dieser Bereich enthält Informationen über den Raumbezug.",
+          "items": {
+            "type": "object",
+            "title": "Spatial Core",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Kann einen Namen oder eine ID gür eine Geometrie enthalten.",
+                "examples": [
+                  "<oid>-<geometrie-id> (für UMWELTNAVI)"
+                ]
+              },
+              "geometry": {
+                "type": "object",
+                "description": "Enthält die GeoJSON-Repräsentation, die für eine optimierte Suche benötigt wird. Siehe auch https://de.wikipedia.org/wiki/GeoJSON",
+                "oneOf": [
+                  {
+                    "title": "GeoJSON Point",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Point"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON LineString",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "LineString"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON Polygon",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Polygon"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 4,
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiPoint",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiPoint"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiLineString",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiLineString"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "title": "GeoJSON MultiPolygon",
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "coordinates"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "MultiPolygon"
+                        ]
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 4,
+                            "items": {
+                              "type": "array",
+                              "minItems": 2,
+                              "items": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "bbox": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "bbox": {
+                "type": "array",
+                "title": "Bounding Box",
+                "description": "Umschließende BBOX der Geometrie. Die Reihenfolge der Koordinaten ist `[min Longitude west, min Latitude south, max Longitude east, max Latitude north]`.",
+                "items": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180,
+                  "minItems": 4,
+                  "maxItems": 4
+                }
+              },
+              "wkt": {
+                "type": "string",
+                "title": "Well-known text",
+                "description": "Angabe eines Well-known text-Formats."
+              },
+              "toponym": {
+                "type": "array",
+                "title": "Toponym",
+                "items": {
+                  "type": "string",
+                  "description": "Textueller Raumbezug (wie Stadtnamen oder Flussnamen)",
+                  "examples": [
+                    "Frankfurt am Main",
+                    "Hamburg"
+                  ]
+                },
+                "minItems": 0
+              },
+              "administrative": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Land (z.B. ni, sh, rp)"
+                    },
+                    "minItems": 0
+                  },
+                  "regional_key": {
+                    "type": "string"
+                  }
+                },
+                "description": "Administrative Zuordnung"
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "bbox"
+                ]
+              },
+              {
+                "required": [
+                  "wkt"
+                ]
+              },
+              {
+                "required": [
+                  "toponym"
+                ]
+              },
+              {
+                "required": [
+                  "administrative"
+                ]
+              }
+            ]
+          },
+          "$comment": "Ehemaliges Indexfeld: layer"
+        },
+        "crs": {
+          "type": "array",
+          "title": "Referenzsystem",
+          "description": "Koordinatenreferenzsystem(e) des Datensatzes.",
+          "items": {
+            "type": "string",
+            "examples": [
+              "EPSG:25832"
+            ]
+          }
+        },
+        "temporal": {
+          "description": "Gültigkeitsdatumsbereich der beschriebenen Daten",
+          "$comment": "Ehemaliges Indexfeld: object_date",
+          "type": "object",
+          "properties": {
+            "data_temporal": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Datum des Ereignisses"
+                  },
+                  "date_range": {
+                    "type": "object",
+                    "title": "Zeitabschnitt",
+                    "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
+                    "properties": {
+                      "gte": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Startdatum der Zeitangabe"
+                      },
+                      "lte": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Enddatum der Zeitangabe"
+                      }
+                    }
+                  },
+                  "date_text": {
+                    "type": "string",
+                    "description": "Wird verwendet, wenn der Wert nicht in eine gültige DateRange Übertragbar ist",
+                    "examples": [
+                      "Sommer 2010"
+                    ]
+                  },
+                  "date_type": {
+                    "type": "string",
+                    "description": "Typ der Zeitangabe",
+                    "enum": [
+                      "created",
+                      "last_updated",
+                      "first_published"
+                    ]
+                  }
+                },
+                "oneOf": [
+                  {
+                    "required": [
+                      "date"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "date_range"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "date_text"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "item",
+            "properties": {
+              "term": {
+                "type": "string",
+                "description": "Name des Keywords"
+              },
+              "id": {
+                "type": "string",
+                "description": "Eindeutiger Identifier des Keywords bezüglich der Quelle oder auch  URL-freundliche Form des Keywords (Slug)",
+                "examples": [
+                  "wk000680"
+                ]
+              },
+              "source": {
+                "type": "string",
+                "description": "Quelle des Keywords",
+                "examples": [
+                  "gemet",
+                  "umthes",
+                  "iso_topic"
+                ]
+              }
+            },
+            "required": [
+              "term"
+            ]
+          }
+        },
+        "references": {
+          "type": "array",
+          "description": "Enthält Verweise zu externen Ressourcen oder Downloads, die mit dem Datensatz verbunden sind. Hier können auch URLs zu getCapabilities-Anfragen angegeben werden.",
+          "items": {
+            "type": "object",
+            "title": "item",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "Die URL zur externen Ressource oder Download."
+              },
+              "type": {
+                "type": "string",
+                "title": "type",
+                "description": "Gibt den Typ der externen Ressource oder Download an.",
+                "examples": [
+                  "3600 - Gekoppelte Daten",
+                  "5304 - Bestellung",
+                  "3535 - Schlüsselkatalog"
+                ]
+              },
+              "type_ref_uri": {
+                "type": "string",
+                "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+                "examples": [
+                  "/codelist/1234/3"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "description": "Ein Titel der externen Ressource oder Download."
+              },
+              "explanation": {
+                "type": "string",
+                "description": "Eine Beschreibung der externen Ressource oder Download."
+              }
+            }
+          }
+        },
+        "fulltext": {
+          "type": "array",
+          "description": "Für Full Text Suche. Signifikanz von genauen Treffern kann hier geboostet werden. Entsprechende Felder sollten mit copy_to-Operation in Elasticsearch kopiert werden.",
+          "$comment": "Früher content-Feld",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exports": {
+          "type": "object",
+          "description": "Hier werden die zusätzlichen Export-Formate gehalten, die mit dem Datensatz ausgeliefert werden. Die Export-Formate können z.B. CSV, JSON oder andere Formate sein."
+        }
+      },
+      "required": [
+        "id",
+        "$schema",
+        "metadata",
+        "title"
+      ],
+      "$defs": {
+        "SpatialItem": {
+          "title": "Spatial Core",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Kann einen Namen oder eine ID gür eine Geometrie enthalten.",
+              "examples": [
+                "<oid>-<geometrie-id> (für UMWELTNAVI)"
+              ]
+            },
+            "geometry": {
+              "type": "object",
+              "description": "Enthält die GeoJSON-Repräsentation, die für eine optimierte Suche benötigt wird. Siehe auch https://de.wikipedia.org/wiki/GeoJSON",
+              "oneOf": [
+                {
+                  "title": "GeoJSON Point",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Point"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON LineString",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "LineString"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON Polygon",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Polygon"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiPoint",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiPoint"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiLineString",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiLineString"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "GeoJSON MultiPolygon",
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "coordinates"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "MultiPolygon"
+                      ]
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 4,
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "bbox": {
+                      "type": "array",
+                      "minItems": 4,
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "bbox": {
+              "type": "array",
+              "title": "Bounding Box",
+              "description": "Umschließende BBOX der Geometrie. Die Reihenfolge der Koordinaten ist `[min Longitude west, min Latitude south, max Longitude east, max Latitude north]`.",
+              "items": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180,
+                "minItems": 4,
+                "maxItems": 4
+              }
+            },
+            "wkt": {
+              "type": "string",
+              "title": "Well-known text",
+              "description": "Angabe eines Well-known text-Formats."
+            },
+            "toponym": {
+              "type": "array",
+              "title": "Toponym",
+              "items": {
+                "type": "string",
+                "description": "Textueller Raumbezug (wie Stadtnamen oder Flussnamen)",
+                "examples": [
+                  "Frankfurt am Main",
+                  "Hamburg"
+                ]
+              },
+              "minItems": 0
+            },
+            "administrative": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "Land (z.B. ni, sh, rp)"
+                  },
+                  "minItems": 0
+                },
+                "regional_key": {
+                  "type": "string"
+                }
+              },
+              "description": "Administrative Zuordnung"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "bbox"
+              ]
+            },
+            {
+              "required": [
+                "wkt"
+              ]
+            },
+            {
+              "required": [
+                "toponym"
+              ]
+            },
+            {
+              "required": [
+                "administrative"
+              ]
+            }
+          ]
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "data_type": {
+              "type": "string",
+              "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+              "examples": [
+                "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                "InGrid Datensatz ['INGRID']",
+                "UVP Datensatz ['UVP']"
+              ]
+            },
+            "document_type": {
+              "type": "string",
+              "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+              "examples": [
+                "InGridGeoDataset",
+                "InGridGeoService"
+              ]
+            },
+            "created": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "modified": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+              "examples": [
+                "2026-04-22T12:00:00Z",
+                "2026-04-22T12:00:00+01:00"
+              ]
+            },
+            "issued": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+            },
+            "partner": {
+              "type": "string",
+              "description": "Der Partner der Datenquelle als Kürzel.\n",
+              "examples": [
+                "bb",
+                "st"
+              ]
+            },
+            "provider": {
+              "type": "string",
+              "description": "Der Anbieter der Datenquelle.",
+              "examples": [
+                "ni_gll",
+                "bw_mj"
+              ]
+            },
+            "language": {
+              "title": "language",
+              "type": "string",
+              "description": "Angabe der Sprache des Metadatensatzes im ISO 639-1 Format",
+              "examples": [
+                "de",
+                "en"
+              ]
+            },
+            "datasource": {
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Die ID der Datenquelle."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Der Name der Datenquelle."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Der Typ der Datenquelle.",
+                  "$comment": "Anforderung kommt aus Harvester.",
+                  "examples": [
+                    "csw",
+                    "wfs",
+                    "ckan",
+                    "json",
+                    "dcat",
+                    "dcatapplu",
+                    "GENESIS",
+                    "sparql",
+                    "oai_iso19139"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "data_type",
+            "created",
+            "modified"
+          ]
+        },
+        "ReferenceItem": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Die URL zur externen Ressource oder Download."
+            },
+            "type": {
+              "type": "string",
+              "title": "type",
+              "description": "Gibt den Typ der externen Ressource oder Download an.",
+              "examples": [
+                "3600 - Gekoppelte Daten",
+                "5304 - Bestellung",
+                "3535 - Schlüsselkatalog"
+              ]
+            },
+            "type_ref_uri": {
+              "type": "string",
+              "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+              "examples": [
+                "/codelist/1234/3"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "description": "Ein Titel der externen Ressource oder Download."
+            },
+            "explanation": {
+              "type": "string",
+              "description": "Eine Beschreibung der externen Ressource oder Download."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "title": "Address",
+      "required": [
+        "contacts"
+      ],
+      "properties": {
+        "metadata": {
+          "description": "Angaben zur Adresse statt zum Metadatensatz.",
+          "required": [
+            "document_type"
+          ],
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+                  "examples": [
+                    "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                    "InGrid Datensatz ['INGRID']",
+                    "UVP Datensatz ['UVP']"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+                  "examples": [
+                    "InGridGeoDataset",
+                    "InGridGeoService"
+                  ]
+                },
+                "created": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "modified": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "issued": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel.\n",
+                  "examples": [
+                    "bb",
+                    "st"
+                  ]
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle.",
+                  "examples": [
+                    "ni_gll",
+                    "bw_mj"
+                  ]
+                },
+                "language": {
+                  "title": "language",
+                  "type": "string",
+                  "description": "Angabe der Sprache des Metadatensatzes im ISO 639-1 Format",
+                  "examples": [
+                    "de",
+                    "en"
+                  ]
+                },
+                "datasource": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Die ID der Datenquelle."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Der Name der Datenquelle."
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Der Typ der Datenquelle.",
+                      "$comment": "Anforderung kommt aus Harvester.",
+                      "examples": [
+                        "csw",
+                        "wfs",
+                        "ckan",
+                        "json",
+                        "dcat",
+                        "dcatapplu",
+                        "GENESIS",
+                        "sparql",
+                        "oai_iso19139"
+                      ]
+                    }
+                  }
+                }
+              },
+              "required": [
+                "data_type",
+                "created",
+                "modified"
+              ]
+            },
+            {
+              "type": "object",
+              "title": "Address Metadata",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "const": "ADDRESS",
+                  "description": "Definiert das Index-Dokument als Adresse."
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt, ob die Adresse eine Person oder eine Organisation ist.",
+                  "enum": [
+                    "InGridPersonDoc",
+                    "InGridOrganisationDoc"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "contacts": {
+          "description": "Anschrift und Kommunikation der Adresse selbst stehen in genau einem Eintrag mit `role` `self`\n(Pflicht).\n",
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "self"
+              },
+              "communications": {
+                "contains": {
+                  "properties": {
+                    "type": {
+                      "const": "email"
+                    },
+                    "value": {
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "value"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "role",
+              "communications"
+            ]
+          },
+          "items": {
+            "properties": {
+              "role": {
+                "description": "`self` für den Eintrag der Adresse selbst.",
+                "examples": [
+                  "self"
+                ]
+              },
+              "name": {
+                "description": "Im Eintrag `self` wie `title`."
+              },
+              "communications": {
+                "title": "Kommunikation",
+                "description": "Alle Kommunikationsmittel außer der Post. `type` nach InGrid-Codeliste 4430: `E-Mail` → `email`,\n`Telefon` → `phone`, `Fax` → `fax`, `URL` → `website`, andere → `other`. `value` ist die\nzugehörige Verbindung (E-Mail-Adresse, Telefon- oder Faxnummer, URL). Pflicht ist im Eintrag\n`self` mindestens ein Eintrag mit `type` `email` und `value` (INSPIRE).\n"
+              },
+              "street": {
+                "title": "Straße/Hausnummer",
+                "description": "Hausadresse der Zentrale bzw. des Hauptgebäudes. Pflicht, sofern kein Postfach angegeben ist.\n",
+                "$comment": "InGrid-Domain 381",
+                "examples": [
+                  "Meyersgrund 14"
+                ]
+              },
+              "code": {
+                "title": "PLZ",
+                "description": "Postleitzahl der Hausadresse (`street`).",
+                "$comment": "InGrid-Domain 384",
+                "examples": [
+                  "30169"
+                ]
+              },
+              "pocode": {
+                "title": "PLZ (Postfach)",
+                "description": "Postleitzahl des Postfachs (`pobox`).",
+                "$comment": "InGrid-Domain 384",
+                "examples": [
+                  "8977"
+                ]
+              },
+              "pobox": {
+                "title": "Postfach",
+                "description": "Nummer des Postfachs. Pflicht, sofern keine Hausadresse angegeben ist.",
+                "$comment": "InGrid-Domain 381",
+                "examples": [
+                  "30151"
+                ]
+              },
+              "locality": {
+                "title": "Ort",
+                "description": "Ort der Zentrale bzw. des Hauptgebäudes. Unterscheidet sich der Ort von Haus- und Postadresse,\nwird nur eine der beiden Adressen vollständig angegeben.\n",
+                "$comment": "InGrid-Domain 382",
+                "examples": [
+                  "Bruchsal"
+                ]
+              },
+              "country": {
+                "title": "Staat",
+                "description": "Wert der InGrid-Codeliste 6200.",
+                "examples": [
+                  "Deutschland"
+                ]
+              },
+              "administrative_area": {
+                "title": "Verwaltungsgebiet",
+                "description": "Wert der InGrid-Codeliste 6250, z. B. ein Bundesland. Dient der Recherche nach Ressourcen eines\nbestimmten Bundeslandes. Pflicht im Eintrag `self`.\n",
+                "examples": [
+                  "Niedersachsen"
+                ]
+              }
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "description": "Der Inhalt hängt von dem verwendeten `document_type` ab."
+        }
+      },
+      "if": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "document_type": {
+                "const": "InGridPersonDoc"
+              }
+            },
+            "required": [
+              "document_type"
+            ]
+          }
+        },
+        "required": [
+          "metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "address": {
+            "unevaluatedProperties": false,
+            "allOf": [
+              {
+                "type": "object",
+                "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name`, `last_name` und `hide_address` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                "properties": {
+                  "position_name": {
+                    "type": "string",
+                    "title": "Aufgaben",
+                    "description": "Angabe der Zuständigkeiten und Aufgaben einer Institution. In knapper, aussagekräftiger Form\nsollen die Aufgaben und Zuständigkeiten der eingetragenen Institution dargestellt werden.\n",
+                    "$comment": "InGrid-Domain 377",
+                    "examples": [
+                      "Erarbeitung von fachlichen Grundlagen für Entscheidungen der Bezirksregierungen im Bereich des Naturschutzes sowie Erstellung von Gutachten in besonderen Fällen gemäß NNatG"
+                    ]
+                  },
+                  "hours_of_service": {
+                    "type": "string",
+                    "title": "Servicezeiten",
+                    "description": "Zeitraum inklusive der Zeitzone, wann die verantwortliche Person oder Organisation erreicht werden\nkann.\n"
+                  },
+                  "cross_references": {
+                    "type": "array",
+                    "title": "Verknüpfungen",
+                    "description": "Interne InGrid-Verknüpfungen der Adresse:\n\n* Übergeordnete Adresse: ein Eintrag mit `direction` `OUT`, ohne `reference_type`.\n* Zugeordnete Datensätze (Datensätze, die die Adresse verwenden): je Datensatz ein Eintrag mit\n  `direction` `IN`; `reference_type` ist die Rolle, in der der Datensatz die Adresse verwendet\n  (z. B. `pointOfContact`).\n",
+                    "items": {
+                      "type": "object",
+                      "title": "Verknüpfung",
+                      "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "description": "UUID des verknüpften Dokuments."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Titel des verknüpften Dokuments."
+                        },
+                        "document_type": {
+                          "type": "string",
+                          "description": "`metadata.document_type` des verknüpften Dokuments."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Beschreibung des verknüpften Dokuments."
+                        },
+                        "reference_type": {
+                          "type": "string",
+                          "description": "Art der Verknüpfung."
+                        },
+                        "direction": {
+                          "type": "string",
+                          "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
+                          "enum": [
+                            "IN",
+                            "OUT"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "salutation": {
+                    "type": "string",
+                    "title": "Anrede",
+                    "description": "Anrede der Person, um eine korrekte Korrespondenz zu ermöglichen. Hier wird die Codeliste 4300\nverwendet (`1` Frau, `2` Herr); freie Einträge (z. B. Mrs, Mr) sind möglich, dann ist `key` `null`.\n",
+                    "examples": [
+                      "1 - Frau"
+                    ]
+                  },
+                  "salutation_ref_uri": {
+                    "type": "string",
+                    "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+                    "examples": [
+                      "/codelist/1234/3"
+                    ]
+                  },
+                  "academic_title": {
+                    "type": "string",
+                    "title": "Titel",
+                    "description": "Dem Namen vorangestellter akademischer Titel der Person. Hier wird die Codeliste 4305 verwendet\n(`1` Dr., `2` Prof., `3` Prof. Dr.). Amtstitel (z. B. MinD, OAR) werden aus Datenschutzgründen\nnicht angegeben.\n",
+                    "examples": [
+                      "3 - Prof. Dr."
+                    ]
+                  },
+                  "academic_title_ref_uri": {
+                    "type": "string",
+                    "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+                    "examples": [
+                      "/codelist/1234/3"
+                    ]
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "title": "Vorname",
+                    "description": "Vorname der Person, um Verwechslungen von Trägern gleicher Nachnamen zu vermeiden. Auf\nVollständigkeit der Vornamen wird kein Wert gelegt.\n",
+                    "$comment": "InGrid-Domain 374",
+                    "examples": [
+                      "Rosemarie"
+                    ]
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Vollständiger Nachname der Person.\n",
+                    "$comment": "InGrid-Domain 374",
+                    "examples": [
+                      "vom Busche"
+                    ]
+                  }
+                },
+                "required": [
+                  "last_name"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "address": {
+            "type": "object",
+            "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name`, `last_name` und `hide_address` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+            "properties": {
+              "position_name": {
+                "type": "string",
+                "title": "Aufgaben",
+                "description": "Angabe der Zuständigkeiten und Aufgaben einer Institution. In knapper, aussagekräftiger Form\nsollen die Aufgaben und Zuständigkeiten der eingetragenen Institution dargestellt werden.\n",
+                "$comment": "InGrid-Domain 377",
+                "examples": [
+                  "Erarbeitung von fachlichen Grundlagen für Entscheidungen der Bezirksregierungen im Bereich des Naturschutzes sowie Erstellung von Gutachten in besonderen Fällen gemäß NNatG"
+                ]
+              },
+              "hours_of_service": {
+                "type": "string",
+                "title": "Servicezeiten",
+                "description": "Zeitraum inklusive der Zeitzone, wann die verantwortliche Person oder Organisation erreicht werden\nkann.\n"
+              },
+              "cross_references": {
+                "type": "array",
+                "title": "Verknüpfungen",
+                "description": "Interne InGrid-Verknüpfungen der Adresse:\n\n* Übergeordnete Adresse: ein Eintrag mit `direction` `OUT`, ohne `reference_type`.\n* Zugeordnete Datensätze (Datensätze, die die Adresse verwenden): je Datensatz ein Eintrag mit\n  `direction` `IN`; `reference_type` ist die Rolle, in der der Datensatz die Adresse verwendet\n  (z. B. `pointOfContact`).\n",
+                "items": {
+                  "type": "object",
+                  "title": "Verknüpfung",
+                  "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                  "properties": {
+                    "uuid": {
+                      "type": "string",
+                      "description": "UUID des verknüpften Dokuments."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Titel des verknüpften Dokuments."
+                    },
+                    "document_type": {
+                      "type": "string",
+                      "description": "`metadata.document_type` des verknüpften Dokuments."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Beschreibung des verknüpften Dokuments."
+                    },
+                    "reference_type": {
+                      "type": "string",
+                      "description": "Art der Verknüpfung."
+                    },
+                    "direction": {
+                      "type": "string",
+                      "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
+                      "enum": [
+                        "IN",
+                        "OUT"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "title": "Address",
+      "required": [
+        "contacts"
+      ],
+      "properties": {
+        "metadata": {
+          "description": "Angaben zur Adresse statt zum Metadatensatz.",
+          "required": [
+            "document_type"
+          ],
+          "unevaluatedProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "description": "Beschreibt den Typ des Metadatensatzes im Index. Jeder Eintrag beschreibt eine bestimmte Eigenschaft des Datensatzes. Die Eigenschaften z.B. im Portal verwendet, um eine bestimmte Darstellung des Metadatensatzes zu steuern. Der Wert muss vom Profil bestimmt werden.\n",
+                  "examples": [
+                    "UmweltNAVI Datensatz ['UMWELTNAVI']",
+                    "InGrid Datensatz ['INGRID']",
+                    "UVP Datensatz ['UVP']"
+                  ]
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt den genauen Typ des Metadatensatzes. Dies kann als Unterkategorie im Profil definiert werden.",
+                  "examples": [
+                    "InGridGeoDataset",
+                    "InGridGeoService"
+                  ]
+                },
+                "created": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der Erstellung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "modified": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der letzten Änderung des Metadatensatzes. ISO 8601 Format.\n",
+                  "examples": [
+                    "2026-04-22T12:00:00Z",
+                    "2026-04-22T12:00:00+01:00"
+                  ]
+                },
+                "issued": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time",
+                  "description": "Das Datum der ersten Veröffentlichung des Metadatensatzes. ISO 8601 Format.\n"
+                },
+                "partner": {
+                  "type": "string",
+                  "description": "Der Partner der Datenquelle als Kürzel.\n",
+                  "examples": [
+                    "bb",
+                    "st"
+                  ]
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "Der Anbieter der Datenquelle.",
+                  "examples": [
+                    "ni_gll",
+                    "bw_mj"
+                  ]
+                },
+                "language": {
+                  "title": "language",
+                  "type": "string",
+                  "description": "Angabe der Sprache des Metadatensatzes im ISO 639-1 Format",
+                  "examples": [
+                    "de",
+                    "en"
+                  ]
+                },
+                "datasource": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Die ID der Datenquelle."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Der Name der Datenquelle."
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Der Typ der Datenquelle.",
+                      "$comment": "Anforderung kommt aus Harvester.",
+                      "examples": [
+                        "csw",
+                        "wfs",
+                        "ckan",
+                        "json",
+                        "dcat",
+                        "dcatapplu",
+                        "GENESIS",
+                        "sparql",
+                        "oai_iso19139"
+                      ]
+                    }
+                  }
+                }
+              },
+              "required": [
+                "data_type",
+                "created",
+                "modified"
+              ]
+            },
+            {
+              "type": "object",
+              "title": "Address Metadata",
+              "properties": {
+                "data_type": {
+                  "type": "string",
+                  "const": "ADDRESS",
+                  "description": "Definiert das Index-Dokument als Adresse."
+                },
+                "document_type": {
+                  "type": "string",
+                  "description": "Beschreibt, ob die Adresse eine Person oder eine Organisation ist.",
+                  "enum": [
+                    "InGridPersonDoc",
+                    "InGridOrganisationDoc"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "contacts": {
+          "description": "Anschrift und Kommunikation der Adresse selbst stehen in genau einem Eintrag mit `role` `self`\n(Pflicht).\n",
+          "contains": {
+            "properties": {
+              "role": {
+                "const": "self"
+              },
+              "communications": {
+                "contains": {
+                  "properties": {
+                    "type": {
+                      "const": "email"
+                    },
+                    "value": {
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "value"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "role",
+              "communications"
+            ]
+          },
+          "items": {
+            "properties": {
+              "role": {
+                "description": "`self` für den Eintrag der Adresse selbst.",
+                "examples": [
+                  "self"
+                ]
+              },
+              "name": {
+                "description": "Im Eintrag `self` wie `title`."
+              },
+              "communications": {
+                "title": "Kommunikation",
+                "description": "Alle Kommunikationsmittel außer der Post. `type` nach InGrid-Codeliste 4430: `E-Mail` → `email`,\n`Telefon` → `phone`, `Fax` → `fax`, `URL` → `website`, andere → `other`. `value` ist die\nzugehörige Verbindung (E-Mail-Adresse, Telefon- oder Faxnummer, URL). Pflicht ist im Eintrag\n`self` mindestens ein Eintrag mit `type` `email` und `value` (INSPIRE).\n"
+              },
+              "street": {
+                "title": "Straße/Hausnummer",
+                "description": "Hausadresse der Zentrale bzw. des Hauptgebäudes. Pflicht, sofern kein Postfach angegeben ist.\n",
+                "$comment": "InGrid-Domain 381",
+                "examples": [
+                  "Meyersgrund 14"
+                ]
+              },
+              "code": {
+                "title": "PLZ",
+                "description": "Postleitzahl der Hausadresse (`street`).",
+                "$comment": "InGrid-Domain 384",
+                "examples": [
+                  "30169"
+                ]
+              },
+              "pocode": {
+                "title": "PLZ (Postfach)",
+                "description": "Postleitzahl des Postfachs (`pobox`).",
+                "$comment": "InGrid-Domain 384",
+                "examples": [
+                  "8977"
+                ]
+              },
+              "pobox": {
+                "title": "Postfach",
+                "description": "Nummer des Postfachs. Pflicht, sofern keine Hausadresse angegeben ist.",
+                "$comment": "InGrid-Domain 381",
+                "examples": [
+                  "30151"
+                ]
+              },
+              "locality": {
+                "title": "Ort",
+                "description": "Ort der Zentrale bzw. des Hauptgebäudes. Unterscheidet sich der Ort von Haus- und Postadresse,\nwird nur eine der beiden Adressen vollständig angegeben.\n",
+                "$comment": "InGrid-Domain 382",
+                "examples": [
+                  "Bruchsal"
+                ]
+              },
+              "country": {
+                "title": "Staat",
+                "description": "Wert der InGrid-Codeliste 6200.",
+                "examples": [
+                  "Deutschland"
+                ]
+              },
+              "administrative_area": {
+                "title": "Verwaltungsgebiet",
+                "description": "Wert der InGrid-Codeliste 6250, z. B. ein Bundesland. Dient der Recherche nach Ressourcen eines\nbestimmten Bundeslandes. Pflicht im Eintrag `self`.\n",
+                "examples": [
+                  "Niedersachsen"
+                ]
+              }
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "description": "Der Inhalt hängt von dem verwendeten `document_type` ab."
+        }
+      },
+      "if": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "document_type": {
+                "const": "InGridPersonDoc"
+              }
+            },
+            "required": [
+              "document_type"
+            ]
+          }
+        },
+        "required": [
+          "metadata"
+        ]
+      },
+      "then": {
+        "properties": {
+          "address": {
+            "unevaluatedProperties": false,
+            "allOf": [
+              {
+                "type": "object",
+                "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name`, `last_name` und `hide_address` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                "properties": {
+                  "position_name": {
+                    "type": "string",
+                    "title": "Aufgaben",
+                    "description": "Angabe der Zuständigkeiten und Aufgaben einer Institution. In knapper, aussagekräftiger Form\nsollen die Aufgaben und Zuständigkeiten der eingetragenen Institution dargestellt werden.\n",
+                    "$comment": "InGrid-Domain 377",
+                    "examples": [
+                      "Erarbeitung von fachlichen Grundlagen für Entscheidungen der Bezirksregierungen im Bereich des Naturschutzes sowie Erstellung von Gutachten in besonderen Fällen gemäß NNatG"
+                    ]
+                  },
+                  "hours_of_service": {
+                    "type": "string",
+                    "title": "Servicezeiten",
+                    "description": "Zeitraum inklusive der Zeitzone, wann die verantwortliche Person oder Organisation erreicht werden\nkann.\n"
+                  },
+                  "cross_references": {
+                    "type": "array",
+                    "title": "Verknüpfungen",
+                    "description": "Interne InGrid-Verknüpfungen der Adresse:\n\n* Übergeordnete Adresse: ein Eintrag mit `direction` `OUT`, ohne `reference_type`.\n* Zugeordnete Datensätze (Datensätze, die die Adresse verwenden): je Datensatz ein Eintrag mit\n  `direction` `IN`; `reference_type` ist die Rolle, in der der Datensatz die Adresse verwendet\n  (z. B. `pointOfContact`).\n",
+                    "items": {
+                      "type": "object",
+                      "title": "Verknüpfung",
+                      "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "description": "UUID des verknüpften Dokuments."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Titel des verknüpften Dokuments."
+                        },
+                        "document_type": {
+                          "type": "string",
+                          "description": "`metadata.document_type` des verknüpften Dokuments."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Beschreibung des verknüpften Dokuments."
+                        },
+                        "reference_type": {
+                          "type": "string",
+                          "description": "Art der Verknüpfung."
+                        },
+                        "direction": {
+                          "type": "string",
+                          "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
+                          "enum": [
+                            "IN",
+                            "OUT"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "salutation": {
+                    "type": "string",
+                    "title": "Anrede",
+                    "description": "Anrede der Person, um eine korrekte Korrespondenz zu ermöglichen. Hier wird die Codeliste 4300\nverwendet (`1` Frau, `2` Herr); freie Einträge (z. B. Mrs, Mr) sind möglich, dann ist `key` `null`.\n",
+                    "examples": [
+                      "1 - Frau"
+                    ]
+                  },
+                  "salutation_ref_uri": {
+                    "type": "string",
+                    "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+                    "examples": [
+                      "/codelist/1234/3"
+                    ]
+                  },
+                  "academic_title": {
+                    "type": "string",
+                    "title": "Titel",
+                    "description": "Dem Namen vorangestellter akademischer Titel der Person. Hier wird die Codeliste 4305 verwendet\n(`1` Dr., `2` Prof., `3` Prof. Dr.). Amtstitel (z. B. MinD, OAR) werden aus Datenschutzgründen\nnicht angegeben.\n",
+                    "examples": [
+                      "3 - Prof. Dr."
+                    ]
+                  },
+                  "academic_title_ref_uri": {
+                    "type": "string",
+                    "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+                    "examples": [
+                      "/codelist/1234/3"
+                    ]
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "title": "Vorname",
+                    "description": "Vorname der Person, um Verwechslungen von Trägern gleicher Nachnamen zu vermeiden. Auf\nVollständigkeit der Vornamen wird kein Wert gelegt.\n",
+                    "$comment": "InGrid-Domain 374",
+                    "examples": [
+                      "Rosemarie"
+                    ]
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Vollständiger Nachname der Person.\n",
+                    "$comment": "InGrid-Domain 374",
+                    "examples": [
+                      "vom Busche"
+                    ]
+                  }
+                },
+                "required": [
+                  "last_name"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "address": {
+            "type": "object",
+            "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name`, `last_name` und `hide_address` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+            "properties": {
+              "position_name": {
+                "type": "string",
+                "title": "Aufgaben",
+                "description": "Angabe der Zuständigkeiten und Aufgaben einer Institution. In knapper, aussagekräftiger Form\nsollen die Aufgaben und Zuständigkeiten der eingetragenen Institution dargestellt werden.\n",
+                "$comment": "InGrid-Domain 377",
+                "examples": [
+                  "Erarbeitung von fachlichen Grundlagen für Entscheidungen der Bezirksregierungen im Bereich des Naturschutzes sowie Erstellung von Gutachten in besonderen Fällen gemäß NNatG"
+                ]
+              },
+              "hours_of_service": {
+                "type": "string",
+                "title": "Servicezeiten",
+                "description": "Zeitraum inklusive der Zeitzone, wann die verantwortliche Person oder Organisation erreicht werden\nkann.\n"
+              },
+              "cross_references": {
+                "type": "array",
+                "title": "Verknüpfungen",
+                "description": "Interne InGrid-Verknüpfungen der Adresse:\n\n* Übergeordnete Adresse: ein Eintrag mit `direction` `OUT`, ohne `reference_type`.\n* Zugeordnete Datensätze (Datensätze, die die Adresse verwenden): je Datensatz ein Eintrag mit\n  `direction` `IN`; `reference_type` ist die Rolle, in der der Datensatz die Adresse verwendet\n  (z. B. `pointOfContact`).\n",
+                "items": {
+                  "type": "object",
+                  "title": "Verknüpfung",
+                  "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                  "properties": {
+                    "uuid": {
+                      "type": "string",
+                      "description": "UUID des verknüpften Dokuments."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Titel des verknüpften Dokuments."
+                    },
+                    "document_type": {
+                      "type": "string",
+                      "description": "`metadata.document_type` des verknüpften Dokuments."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Beschreibung des verknüpften Dokuments."
+                    },
+                    "reference_type": {
+                      "type": "string",
+                      "description": "Art der Verknüpfung."
+                    },
+                    "direction": {
+                      "type": "string",
+                      "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
+                      "enum": [
+                        "IN",
+                        "OUT"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "unevaluatedProperties": false
+          }
+        }
+      }
+    },
+    "GeneralAddress": {
+      "type": "object",
+      "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name`, `last_name` und `hide_address` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+      "properties": {
+        "position_name": {
+          "type": "string",
+          "title": "Aufgaben",
+          "description": "Angabe der Zuständigkeiten und Aufgaben einer Institution. In knapper, aussagekräftiger Form\nsollen die Aufgaben und Zuständigkeiten der eingetragenen Institution dargestellt werden.\n",
+          "$comment": "InGrid-Domain 377",
+          "examples": [
+            "Erarbeitung von fachlichen Grundlagen für Entscheidungen der Bezirksregierungen im Bereich des Naturschutzes sowie Erstellung von Gutachten in besonderen Fällen gemäß NNatG"
+          ]
+        },
+        "hours_of_service": {
+          "type": "string",
+          "title": "Servicezeiten",
+          "description": "Zeitraum inklusive der Zeitzone, wann die verantwortliche Person oder Organisation erreicht werden\nkann.\n"
+        },
+        "cross_references": {
+          "type": "array",
+          "title": "Verknüpfungen",
+          "description": "Interne InGrid-Verknüpfungen der Adresse:\n\n* Übergeordnete Adresse: ein Eintrag mit `direction` `OUT`, ohne `reference_type`.\n* Zugeordnete Datensätze (Datensätze, die die Adresse verwenden): je Datensatz ein Eintrag mit\n  `direction` `IN`; `reference_type` ist die Rolle, in der der Datensatz die Adresse verwendet\n  (z. B. `pointOfContact`).\n",
+          "items": {
+            "type": "object",
+            "title": "Verknüpfung",
+            "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "description": "UUID des verknüpften Dokuments."
+              },
+              "name": {
+                "type": "string",
+                "description": "Titel des verknüpften Dokuments."
+              },
+              "document_type": {
+                "type": "string",
+                "description": "`metadata.document_type` des verknüpften Dokuments."
+              },
+              "description": {
+                "type": "string",
+                "description": "Beschreibung des verknüpften Dokuments."
+              },
+              "reference_type": {
+                "type": "string",
+                "description": "Art der Verknüpfung."
+              },
+              "direction": {
+                "type": "string",
+                "description": "`OUT`: dieses Dokument verweist auf das verknüpfte. `IN`: das verknüpfte Dokument verweist auf\ndieses.\n",
+                "enum": [
+                  "IN",
+                  "OUT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "salutation": {
+          "type": "string",
+          "title": "Anrede",
+          "description": "Anrede der Person, um eine korrekte Korrespondenz zu ermöglichen. Hier wird die Codeliste 4300\nverwendet (`1` Frau, `2` Herr); freie Einträge (z. B. Mrs, Mr) sind möglich, dann ist `key` `null`.\n",
+          "examples": [
+            "1 - Frau"
+          ]
+        },
+        "salutation_ref_uri": {
+          "type": "string",
+          "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+          "examples": [
+            "/codelist/1234/3"
+          ]
+        },
+        "academic_title": {
+          "type": "string",
+          "title": "Titel",
+          "description": "Dem Namen vorangestellter akademischer Titel der Person. Hier wird die Codeliste 4305 verwendet\n(`1` Dr., `2` Prof., `3` Prof. Dr.). Amtstitel (z. B. MinD, OAR) werden aus Datenschutzgründen\nnicht angegeben.\n",
+          "examples": [
+            "3 - Prof. Dr."
+          ]
+        },
+        "academic_title_ref_uri": {
+          "type": "string",
+          "description": "Beschreibt eine URI, die auf eine Codeliste aus dem InGrid-Codelist-Repository verweist.",
+          "examples": [
+            "/codelist/1234/3"
+          ]
+        },
+        "first_name": {
+          "type": "string",
+          "title": "Vorname",
+          "description": "Vorname der Person, um Verwechslungen von Trägern gleicher Nachnamen zu vermeiden. Auf\nVollständigkeit der Vornamen wird kein Wert gelegt.\n",
+          "$comment": "InGrid-Domain 374",
+          "examples": [
+            "Rosemarie"
+          ]
+        },
+        "last_name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Vollständiger Nachname der Person.\n",
+          "$comment": "InGrid-Domain 374",
+          "examples": [
+            "vom Busche"
+          ]
+        }
+      },
+      "required": [
+        "last_name"
+      ]
+    }
+  }
+}
