@@ -10,6 +10,9 @@
       "type": "text",
       "store": true,
       "fields": {
+        "keyword": {
+          "type": "keyword"
+        },
         "decomp_german": {
           "type": "text",
           "analyzer": "decomp_german",

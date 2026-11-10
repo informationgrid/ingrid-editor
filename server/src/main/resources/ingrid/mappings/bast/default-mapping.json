@@ -6,12 +6,12 @@
     "collection": {
       "properties": {
         "id": {
-      "type": "keyword",
-      "store": true
-    },
+          "type": "keyword",
+          "store": true
+        },
         "name": {
-      "type": "keyword",
-      "store": true
+          "type": "keyword",
+          "store": true
         }
       }
     },
@@ -285,6 +285,9 @@
       "analyzer": "german",
       "store": true,
       "fields": {
+        "keyword": {
+          "type": "keyword"
+        },
         "ngram": {
           "type": "text",
           "analyzer": "ngram",
