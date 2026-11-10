@@ -134,10 +134,10 @@ class DataCollection : ShouldSpec() {
          * address has an organization assigned.
          **/
         should("maximalExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
-            // replace generated UUIDs
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
+                // replace generated UUIDs
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.expected.maximal.idf.xml"))

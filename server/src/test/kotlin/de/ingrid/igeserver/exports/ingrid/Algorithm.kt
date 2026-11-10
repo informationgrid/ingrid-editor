@@ -78,6 +78,7 @@ class Algorithm : ShouldSpec() {
         every { SpringContext.getBean(DocumentWrapperRepository::class.java) } answers {
             documentWrapperRepository
         }
+        every { documentService.docWrapperRepo } returns documentWrapperRepository
 
         every { codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
             val codelistId = this.secondArg<String>()
@@ -204,7 +205,7 @@ class Algorithm : ShouldSpec() {
         should("completeLuceneExport") {
             val result = exportJsonToJson(indexExporter, "/export/ingrid/algorithm.minimal.sample.json")
             result shouldNotBe null
-            result shouldContain """"t01_object.obj_class" : "7""""
+            result shouldContain """"document_type" : "InGridAlgorithm""""
         }
     }
 

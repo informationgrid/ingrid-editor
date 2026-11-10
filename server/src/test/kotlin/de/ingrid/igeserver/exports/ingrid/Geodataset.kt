@@ -171,9 +171,10 @@ open class Geodataset : GeodatasetBase() {
             val result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")
                 // replace generated UUIDs
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
-            result shouldEqualJson SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.json")
+            result shouldEqualJson updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.json"))
         }
     }
 }

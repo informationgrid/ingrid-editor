@@ -128,10 +128,10 @@ class Address : ShouldSpec() {
     init {
 
         should("personExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/address.person.sample.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/address.person.sample.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.expected.idf.xml"))
@@ -139,10 +139,10 @@ class Address : ShouldSpec() {
         }
 
         should("person2Export") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/address.person2.sample.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/address.person2.sample.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml"))
@@ -150,10 +150,10 @@ class Address : ShouldSpec() {
         }
 
         should("organisationExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/address.organisation.sample.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/address.organisation.sample.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml"))

@@ -5,6 +5,7 @@
     "data_type" : "INGRID",
     "created" : "2023-02-21T11:16:50.000+01:00",
     "modified" : "2023-02-21T11:35:51.009+01:00",
+    "document_type": "InGridGeoDataset",
     "language" : "de",
     "datasource" : {
       "id" : "test-catalog",

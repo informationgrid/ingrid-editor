@@ -177,12 +177,12 @@ class Geodataservice : ShouldSpec() {
             every { documentService.getParentWrapper(any()) } returns null
             every { documentService.docWrapperRepo } returns documentWrapperRepository
 
-            var result = exportJsonToJson(indexExporter, "/export/ingrid/geo-service.maximal.sample.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToJson(indexExporter, "/export/ingrid/geo-service.maximal.sample.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
                 .replace("\r\n", "\n")
                 .replace("\" : ", "\": ")
+                .trim()
 
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")

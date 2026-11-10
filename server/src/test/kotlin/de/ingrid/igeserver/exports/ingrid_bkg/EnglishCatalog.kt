@@ -52,10 +52,10 @@ class EnglishCatalog : GeodatasetBase() {
     init {
 
         should("export geoservice to ISO with English codelist values") {
-            var result = exportJsonToXML(this@EnglishCatalog.exporter, "/export/bkg/geo-service.english.json")
-            // replace generated UUIDs
-            result = result
+            val result = exportJsonToXML(this@EnglishCatalog.exporter, "/export/bkg/geo-service.english.json")
+                // replace generated UUIDs
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedResultWithTodayDatestamp = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/bkg/geo-service.english.expected.xml"))
@@ -63,10 +63,10 @@ class EnglishCatalog : GeodatasetBase() {
         }
 
         should("export geodataset to ISO with English codelist values") {
-            var result = exportJsonToXML(this@EnglishCatalog.exporter, "/export/bkg/geo-dataset.english.json")
-            // replace generated UUIDs
-            result = result
+            val result = exportJsonToXML(this@EnglishCatalog.exporter, "/export/bkg/geo-dataset.english.json")
+                // replace generated UUIDs
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedResultWithTodayDatestamp = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/bkg/geo-dataset.english.expected.xml"))

@@ -148,10 +148,10 @@ class SpecialisedTask : ShouldSpec() {
     init {
 
         should("minimalExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml =
@@ -160,10 +160,10 @@ class SpecialisedTask : ShouldSpec() {
         }
 
         should("maximalExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml =
@@ -172,10 +172,10 @@ class SpecialisedTask : ShouldSpec() {
         }
 
         should("completeExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
-            // replace generated UUIDs and windows line endings
-            result = result
+            val result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
+                // replace generated UUIDs and windows line endings
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .trim()
 
             result shouldNotBe null
             val expectedXml =

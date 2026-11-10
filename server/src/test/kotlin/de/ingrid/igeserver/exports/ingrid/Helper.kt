@@ -40,6 +40,7 @@ fun updateDatestampInExpectedXml(xml: String): String {
 
     // Pattern to match only the date content within the datestamp in the XML
     val datePattern = Pattern.compile("(<gmd:dateStamp>\\s*<gco:Date>)(.*?)(</gco:Date>\\s*</gmd:dateStamp>)")
+    val datePatternBreak = Pattern.compile("(<gmd:dateStamp>\\\\n\\s*<gco:Date>)(.*?)(</gco:Date>\\\\n\\s*</gmd:dateStamp>)")
     val dateTimePattern = Pattern.compile("(<gmd:dateStamp>\\s*<gco:DateTime>)(.*?)(</gco:DateTime>\\s*</gmd:dateStamp>)")
 
     var result = xml
@@ -48,6 +49,10 @@ fun updateDatestampInExpectedXml(xml: String): String {
     val dateMatcher = datePattern.matcher(result)
     if (dateMatcher.find()) {
         result = dateMatcher.replaceAll("$1$currentDate$3")
+    }
+    val dateMatcherBreak = datePatternBreak.matcher(result)
+    if (dateMatcherBreak.find()) {
+        result = dateMatcherBreak.replaceAll("$1$currentDate$3")
     }
 
     // Replace only the datetime content, preserving the original XML structure
@@ -61,7 +66,7 @@ fun updateDatestampInExpectedXml(xml: String): String {
 
 fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val result = exportJsonToString(exporter, file, additional)
-    return prettyFormatXml(result, 4).replace("\r\n", "\n")
+    return prettyFormatXml(result, 4).replace("\r\n", "\n").trim()
 }
 
 fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run(doc, "test-catalog") as String).let {
@@ -69,7 +74,7 @@ fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run
         .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }.also { println(it) }
 
-fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String = prettyFormatJson(exportJsonToString(exporter, file, additional))
+fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String = prettyFormatJson(exportJsonToString(exporter, file, additional)).trim()
 
 private fun exportJsonToString(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val input = SchemaUtils.getJsonFileContent(file)
