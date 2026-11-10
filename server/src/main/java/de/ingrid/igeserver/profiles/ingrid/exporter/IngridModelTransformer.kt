@@ -1508,6 +1508,7 @@ open class IngridModelTransformer(
         schema = "https://schema.ingrid-oss.eu/index/draft/index-ingrid.html",
         metadata = LuceneMetadata(
             dataType = "INGRID",
+            documentType = model.type,
             created = formatDate(formatterISO, model._created),
             modified = formatDate(formatterISO, model._contentModified),
             issued = null,

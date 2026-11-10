@@ -1303,7 +1303,8 @@
                       "InGridInformationSystem",
                       "InGridPublication",
                       "InGridProject",
-                      "InGridSpecialisedTask"
+                      "InGridSpecialisedTask",
+                      "InGridAlgorithm"
                     ]
                   }
                 }
@@ -2364,7 +2365,8 @@
                       "InGridInformationSystem",
                       "InGridPublication",
                       "InGridProject",
-                      "InGridSpecialisedTask"
+                      "InGridSpecialisedTask",
+                      "InGridAlgorithm"
                     ]
                   }
                 }
