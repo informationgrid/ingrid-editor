@@ -68,12 +68,26 @@ class IngridLuceneExporter(
             CodelistTransformer(codelistHandler, catalog.identifier, catalog.settings.config.language ?: "de")
         val data =
             TransformerData(IngridDocType.DOCUMENT, catalog.identifier, codelistTransformer, doc, options.tags)
-        val luceneDoc = transformer.constructors.first().call(getTransformerConfig(data))
-            .toLuceneDocument(catalog, partner, provider)
+        val luceneDoc = if (transformer == AddressModelTransformer::class) {
+            val addressConfig = AddressTransformerConfig(
+                data.catalogIdentifier,
+                data.codelistTransformer,
+                null,
+                data.doc,
+                documentService = documentService,
+                uploadConfig = uploadConfig,
+                data.tags,
+            )
+            (transformer.constructors.first().call(addressConfig) as AddressModelTransformer)
+                .toLuceneDocument(catalog, partner, provider)
+        } else {
+            (transformer.constructors.first().call(getTransformerConfig(data)) as IngridModelTransformer)
+                .toLuceneDocument(catalog, partner, provider)
+        }
         return objectMapper.valueToTree(luceneDoc)
     }
 
-    fun getModelTransformerClass(docType: String): KClass<out IngridModelTransformer>? = when (docType) {
+    fun getModelTransformerClass(docType: String): KClass<*>? = when (docType) {
         "InGridSpecialisedTask" -> IngridModelTransformer::class
         "InGridGeoDataset" -> GeodatasetModelTransformer::class
         "InGridPublication" -> PublicationModelTransformer::class

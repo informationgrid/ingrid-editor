@@ -108,6 +108,55 @@ data class LuceneDocumentOpenData(
 )
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneDocumentAddress(
+    val id: String?,
+    @JsonProperty("\$schema")
+    val schema: String = "https://schema.ingrid-oss.eu/index/draft/schema/index-ingrid-address.json",
+    val metadata: LuceneMetadata,
+    val title: String?,
+    @JsonProperty("sort_uuid")
+    val sortUuid: String = "",
+    val contacts: List<LuceneAddressContact>,
+    val address: LuceneAddress,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneAddressContact(
+    val role: String = "self",
+    val communications: List<LuceneCommunication> = emptyList(),
+    val street: String? = null,
+    val code: String? = null,
+    val pocode: String? = null,
+    val pobox: String? = null,
+    val locality: String? = null,
+    val country: String? = null,
+    @JsonProperty("administrative_area")
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    val administrativeArea: String = "",
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+data class LuceneAddress(
+    @JsonProperty("position_name")
+    val positionName: String? = null,
+    @JsonProperty("hours_of_service")
+    val hoursOfService: String? = null,
+    @JsonProperty("cross_references")
+    val crossReferences: List<LuceneCrossReference> = emptyList(),
+    val salutation: String? = null,
+    @JsonProperty("salutation_ref_uri")
+    val salutationRefUri: String? = null,
+    @JsonProperty("academic_title")
+    val academicTitle: String? = null,
+    @JsonProperty("academic_title_ref_uri")
+    val academicTitleRefUri: String? = null,
+    @JsonProperty("first_name")
+    val firstName: String? = null,
+    @JsonProperty("last_name")
+    val lastName: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneOpenData(
     val distributions: List<Distribution> = emptyList(),
     @JsonProperty("landing_page")

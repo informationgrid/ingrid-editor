@@ -22,7 +22,15 @@ package de.ingrid.igeserver.exporter
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneAddress
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneAddressContact
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCommunication
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneCrossReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDatasource
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneDocumentAddress
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.LuceneMetadata
 import de.ingrid.igeserver.profiles.ingrid.getISO3166v1Alpha3FromNumericLanguageCode
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
@@ -302,6 +310,77 @@ open class AddressModelTransformer(
         ?.filter { it.get("type")?.getString("key") == type }
         ?.mapNotNull { it.getString("connection") }
         ?: emptyList()
+
+    fun toLuceneDocument(
+        catalog: Catalog,
+        partner: String,
+        provider: String,
+    ): LuceneDocumentAddress {
+        val crossReferences = buildList {
+            parentAddresses.forEach { parent ->
+                add(
+                    LuceneCrossReference(
+                        uuid = parent.document.uuid,
+                        name = parent.document.title,
+                        documentType = parent.document.type,
+                        direction = "OUT",
+                    ),
+                )
+            }
+            getObjectReferences().forEach { reference ->
+                add(
+                    LuceneCrossReference(
+                        uuid = reference.uuid,
+                        name = reference.name,
+                        documentType = reference.type,
+                        description = reference.description,
+                        referenceType = relationType?.value,
+                        direction = "IN",
+                    ),
+                )
+            }
+        }
+
+        return LuceneDocumentAddress(
+            id = uuid,
+            metadata = LuceneMetadata(
+                dataType = "ADDRESS",
+                created = displayAddress.created?.let { formatDate(formatterISO, it) } ?: lastModified,
+                modified = lastModified,
+                documentType = displayAddress.type,
+                partner = partner,
+                provider = provider,
+                language = null,
+                datasource = LuceneDatasource(catalog.identifier, catalog.name),
+            ),
+            title = title,
+            contacts = listOf(
+                LuceneAddressContact(
+                    communications = allCommunications.map { LuceneCommunication(type = it.key, value = it.value) },
+                    street = street,
+                    code = zipCode,
+                    pocode = zipPoBox,
+                    pobox = poBox,
+                    locality = city,
+                    country = country?.let { codelist.getValue("6200", it) ?: it.value },
+                    administrativeArea = administrativeArea.orEmpty(),
+                ),
+            ),
+            address = LuceneAddress(
+                positionName = getPositionName(),
+                hoursOfService = hoursOfService,
+                crossReferences = crossReferences,
+                salutation = if (isPerson) codelist.getValue("4300", salutation) else null,
+                salutationRefUri = if (isPerson) codelistRef("4300", salutation?.key) else null,
+                academicTitle = if (isPerson) codelist.getValue("4305", academicTitle) else null,
+                academicTitleRefUri = if (isPerson) codelistRef("4305", academicTitle?.key) else null,
+                firstName = if (isPerson) firstName else null,
+                lastName = if (isPerson) lastName else null,
+            ),
+        )
+    }
+
+    private fun codelistRef(id: String, key: String?): String? = key?.takeIf { it.isNotEmpty() }?.let { "/codelist/$id/$it" }
 
     fun getSortHash(): String = DigestUtils.sha1Hex(title)
 

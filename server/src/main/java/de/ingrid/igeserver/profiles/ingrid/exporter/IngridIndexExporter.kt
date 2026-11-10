@@ -90,6 +90,12 @@ class IngridIndexExporter(
         return result
     }
 
+    private fun getSchema(doc: Document): String = if (doc.type == "InGridOrganisationDoc" || doc.type == "InGridPersonDoc") {
+        "/templates/export/ingrid/schemes/index-ingrid-address.json"
+    } else {
+        "/templates/export/ingrid/schemes/index-ingrid.json"
+    }
+
     private fun calculateTimestamp(
         isoDoc: String,
         wrapper: DocumentWrapper,

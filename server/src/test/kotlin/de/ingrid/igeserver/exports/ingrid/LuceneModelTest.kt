@@ -27,6 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.lucene.*
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class LuceneModelTest : GeodatasetBase() {
@@ -75,7 +76,7 @@ class LuceneModelTest : GeodatasetBase() {
                             date = "2026-09-15T12:00:00Z",
                         ),
                     ),
-                    status = LuceneKeyValue("1", "abgeschlossen"),
+                    status = "abgeschlossen",
                 ),
                 keywords = listOf(
                     LuceneKeyword(
@@ -162,6 +163,9 @@ class LuceneModelTest : GeodatasetBase() {
             result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/index-ingrid.html\""
             result shouldContain """"data_type":"INGRID""""
             result shouldContain """"title":"Test-Datensatz Minimal""""
+            result shouldContain """"language":"de""""
+            result shouldContain """"name_ref_uri":"/codelist/6500/20""""
+            SchemaUtils.validate(result, SchemaUtils.getJsonFileContent("/templates/export/ingrid/schemes/index-ingrid.json"))
         }
 
         should("export publication using Jackson-based IngridLuceneExporter") {
@@ -183,7 +187,7 @@ class LuceneModelTest : GeodatasetBase() {
             result shouldContain """"location":"Standort""""
             result shouldContain """"isbn":"3-456-7889-X""""
             result shouldContain """"publishing_house":"Verlag""""
-            result shouldContain """"document_type":{"key":"1"}"""
+            result shouldContain """"document_type_ref_uri":"/codelist/3385/1""""
             result shouldContain """"base_data_text":"Basisdaten""""
             result shouldContain """"bibliographic_data":"Weitere bibliographische Angaben""""
             result shouldContain """"explanation":"Erläuterungen""""
@@ -220,6 +224,33 @@ class LuceneModelTest : GeodatasetBase() {
             result shouldContain """"more_info":"Blei / in Trinkwasser, Nachweisgrenze""""
             result shouldContain """"method":"Ionenchromatographie nach DIN 38405-D20 (Sept. 91)""""
             result shouldContain """"explanation":"Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.""""
+        }
+
+        should("export person address using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.json")
+            val doc = convertToDocument(input)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
+
+            result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/schema/index-ingrid-address.json\""
+            result shouldContain "\"data_type\":\"ADDRESS\""
+            result shouldContain "\"document_type\":\"InGridPersonDoc\""
+            result shouldContain "\"last_name\":\"Mustermann\""
+            result shouldContain "\"role\":\"self\""
+            result shouldContain "\"direction\":\"OUT\""
+            result shouldContain "\"uuid\":\"25d56d6c-ed8d-4589-8c14-f8cfcb669115\""
+            SchemaUtils.validate(result, SchemaUtils.getJsonFileContent("/templates/export/ingrid/schemes/index-ingrid-address.json"))
+        }
+
+        should("export organisation address using Jackson-based IngridLuceneExporter") {
+            val input = SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json")
+            val doc = convertToDocument(input)
+            val result = luceneExporter.run(doc, "test-catalog", ExportOptions(includeDraft = false)).toString()
+
+            result shouldContain "\"document_type\":\"InGridOrganisationDoc\""
+            result shouldContain "\"role\":\"self\""
+            result shouldNotContain "\"salutation\""
+            result shouldNotContain "\"last_name\""
+            SchemaUtils.validate(result, SchemaUtils.getJsonFileContent("/templates/export/ingrid/schemes/index-ingrid-address.json"))
         }
 
         should("export information-system using Jackson-based IngridLuceneExporter") {
