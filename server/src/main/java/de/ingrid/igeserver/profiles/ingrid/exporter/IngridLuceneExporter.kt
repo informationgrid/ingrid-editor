@@ -104,34 +104,33 @@ class IngridLuceneExporter(
         }
     }
 
-    fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> =
-        when (doc.type) {
-            "InGridSpecialisedTask" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+    fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> = when (doc.type) {
+        "InGridSpecialisedTask" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridGeoDataset" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridGeoDataset" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridPublication" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridPublication" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridGeoService" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridGeoService" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridProject" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridProject" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridDataCollection" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridDataCollection" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridInformationSystem" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridInformationSystem" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridAlgorithm" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+        "InGridAlgorithm" -> getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
 
-            "InGridOrganisationDoc" -> getMapper(IngridDocType.ADDRESS, doc, catalog, options)
+        "InGridOrganisationDoc" -> getMapper(IngridDocType.ADDRESS, doc, catalog, options)
 
-            "InGridPersonDoc" -> getMapper(IngridDocType.ADDRESS, doc, catalog, options)
+        "InGridPersonDoc" -> getMapper(IngridDocType.ADDRESS, doc, catalog, options)
 
-            "FOLDER" -> getMapper(IngridDocType.FOLDER, doc, catalog, options)
+        "FOLDER" -> getMapper(IngridDocType.FOLDER, doc, catalog, options)
 
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: ${doc.type}")
-            }
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: ${doc.type}")
         }
+    }
 
     fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
         val codelistTransformer =
