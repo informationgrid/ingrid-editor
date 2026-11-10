@@ -111,6 +111,7 @@ export class UploadComponent implements AfterViewInit {
     testChunks: false,
     forceChunkSize: false,
     maxChunkRetries: 2,
+    permanentErrors: [400, 404, 413, 415, 500, 501],
     // Flow.js calls this for each chunk before sending it. The callback resumes
     // the upload explicitly through preprocessFinished()
     preprocess: (chunk: FlowChunk) => void this.prepareChecksums(chunk),
@@ -120,14 +121,17 @@ export class UploadComponent implements AfterViewInit {
   // The FlowFile itself can cause stale chunks
   private checksumCache = new WeakMap<
     readonly FlowChunk[],
-    Map<number, string> // <chunkOrder, checksum>
+    { checksums: Map<number, string>; uploadAttempt: string }
   >();
 
   private getChecksumCache(chunks: readonly FlowChunk[]) {
     let cache = this.checksumCache.get(chunks);
 
     if (!cache) {
-      cache = new Map<number, string>();
+      cache = {
+        checksums: new Map<number, string>(),
+        uploadAttempt: crypto.randomUUID(),
+      };
       this.checksumCache.set(chunks, cache);
     }
 
@@ -145,11 +149,13 @@ export class UploadComponent implements AfterViewInit {
     chunk: FlowChunk,
     chunkChecksum: string,
     combinedChecksum?: string,
+    uploadAttempt?: string,
   ) {
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
       ...getParams(),
       chunkChecksum,
+      uploadAttempt,
       ...(combinedChecksum !== undefined && { combinedChecksum }), // add combinedChecksum only if present
     });
   }
@@ -175,17 +181,17 @@ export class UploadComponent implements AfterViewInit {
     }
 
     const cache = this.getChecksumCache(chunks);
-    cache.set(chunk.offset, checksum);
+    cache.checksums.set(chunk.offset, checksum);
 
-    if (cache.size > chunks.length) {
+    if (cache.checksums.size > chunks.length) {
       throw new Error("More checksums than chunks");
     }
 
     let combinedChecksum: string;
 
-    if (cache.size === chunks.length) {
+    if (cache.checksums.size === chunks.length) {
       const orderedChecksums = chunks.map((fileChunk) => {
-        const checksum = cache.get(fileChunk.offset);
+        const checksum = cache.checksums.get(fileChunk.offset);
 
         if (checksum === undefined) {
           throw new Error(`Missing checksum for chunk ${fileChunk.offset}`);
@@ -199,7 +205,12 @@ export class UploadComponent implements AfterViewInit {
       );
     }
 
-    this.addChecksumParams(chunk, checksum, combinedChecksum);
+    this.addChecksumParams(
+      chunk,
+      checksum,
+      combinedChecksum,
+      cache.uploadAttempt,
+    );
     this.finishPreprocessing(chunk);
   }
 

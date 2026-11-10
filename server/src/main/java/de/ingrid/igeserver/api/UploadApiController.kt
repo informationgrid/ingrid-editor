@@ -79,7 +79,13 @@ class UploadApiController(
         flowFilename: String,
         chunkChecksum: String,
         combinedChecksum: String?,
+        uploadAttempt: String?,
     ): ResponseEntity<UploadResponse> {
+        if (uploadAttempt != null && !uploadAttempt.matches(Regex("[A-Za-z0-9-]{1,64}"))) {
+            return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Invalid upload attempt")), HttpStatus.BAD_REQUEST)
+        }
+        val uploadKey = if (uploadAttempt == null) flowIdentifier else "$flowIdentifier-$uploadAttempt"
+
         log.info("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
@@ -114,16 +120,14 @@ class UploadApiController(
         // can be updated/created in parallel. This can lead to problem determining the end of an upload,
         // when we do not have the latest state of the already uploaded chunks.
         synchronized(this) {
-            var fileInfo: FileInfo? = this.fileInfos[flowIdentifier]
-            if (fileInfo == null) {
-                fileInfo = FileInfo(flowTotalChunks)
-                this.fileInfos[flowIdentifier] = fileInfo
+            val checkSum = FileInfo.sha256(file.inputStream)
+            if (checkSum != chunkChecksum) {
+                return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Chunk checksum mismatch")), HttpStatus.UNPROCESSABLE_CONTENT)
             }
 
-            val checkSum = FileInfo.sha256(file.inputStream)
-            require(checkSum == chunkChecksum) { "Checksum mismatch" }
+            val fileInfo = this.fileInfos[uploadKey] ?: FileInfo(flowTotalChunks).also { this.fileInfos[uploadKey] = it }
 
-            storage.writePart(flowIdentifier, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
+            storage.writePart(uploadKey, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
             fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
             if (combinedChecksum != null) {
@@ -131,16 +135,21 @@ class UploadApiController(
             }
 
             if (fileInfo.isUploadFinished()) {
-                fileInfo.validateCombinedChecksum()
-                log.info("Merging parts of uploaded file: $flowFilename")
-                // store file
                 try {
+                    try {
+                        fileInfo.validateCombinedChecksum()
+                    } catch (ex: Exception) {
+                        log.warn("Combined checksum validation failed for file $flowFilename", ex)
+                        return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.BAD_REQUEST)
+                    }
+                    log.info("Merging parts of uploaded file: $flowFilename")
+                    // store file
                     files = storage.combineParts(
                         catalogId,
                         userID,
                         docUuid,
                         flowFilename,
-                        flowIdentifier,
+                        uploadKey,
                         flowTotalChunks,
                         flowTotalSize,
                         replace,
@@ -150,7 +159,7 @@ class UploadApiController(
                     log.error("Error uploading file $flowFilename", ex)
                     return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
                 } finally {
-                    this.fileInfos.remove(flowIdentifier)
+                    this.fileInfos.remove(uploadKey)
                 }
             }
         }

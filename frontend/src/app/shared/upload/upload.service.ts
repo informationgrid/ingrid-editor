@@ -43,7 +43,7 @@ export class UploadError {
         return "Sie haben keine Berechtigung, die Datei hochzuladen.";
     }
     if (message === "Chunk checksum mismatch") {
-      ("Die Prüfsumme eines Chunks stimmt nicht überein. Bitte laden Sie die Datei erneut hoch.");
+      return "Die Prüfsumme eines Chunks stimmt nicht überein. Bitte laden Sie die Datei erneut hoch.";
     }
     if (
       message ===
