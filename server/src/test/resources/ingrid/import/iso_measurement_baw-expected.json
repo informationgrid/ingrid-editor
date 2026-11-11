@@ -251,18 +251,18 @@
           "_codelistId": "3950012"
         },
         "measuringDepth": {
-          "value": 1.11111111e8,
+          "value": 1.11111111E8,
           "verticalSpatialSystems": {
             "key": null,
             "value": "EPSG:5783 DHHN92 Höhe",
             "_codelistId": "verticalSpatialSystems"
           }
         },
-        "timestep": 2.222222222e9,
-        "frequency": 3.333333333e9,
+        "timestep": 2.222222222E9,
+        "frequency": 3.333333333E9,
         "averageWaterLevel": [
           {
-            "value": 4.444444444e9,
+            "value": 4.444444444E9,
             "unitOfMeasurement": {
               "key": null,
               "value": "A",
@@ -270,7 +270,7 @@
             }
           },
           {
-            "value": 5.555555555e9,
+            "value": 5.555555555E9,
             "unitOfMeasurement": {
               "key": null,
               "value": "customWasserEinheit",
@@ -280,7 +280,7 @@
         ],
         "zeroLevel": [
           {
-            "value": 6.666666666e9,
+            "value": 6.666666666E9,
             "unitOfMeasurement": {
               "key": null,
               "value": "cd",
@@ -294,7 +294,7 @@
             "description": "beschrPegel1"
           },
           {
-            "value": 7.77777777e8,
+            "value": 7.77777777E8,
             "unitOfMeasurement": {
               "key": null,
               "value": "customPegelEinheit",
@@ -309,8 +309,8 @@
           }
         ],
         "drain": {
-          "min": 8.8888888888e10,
-          "max": 9.9999999e7
+          "min": 8.8888888888E10,
+          "max": 9.9999999E7
         },
         "dataQualityDescription": "Beschr Datenqualität"
       }
