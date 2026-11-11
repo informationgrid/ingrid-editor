@@ -33,8 +33,10 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -43,6 +45,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException
 import java.net.URLDecoder
 import java.security.Principal
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -57,11 +61,39 @@ class UploadApiController(
 
     // Keyed by uploadKey (flowIdentifier + upload attempt). Entries are removed when an upload
     // finished (successfully or not). Attempts that are abandoned before their last chunk arrives
-    // keep their entry and their chunk parts, since nothing tells us that they will never continue.
-    // Chunk parts are written to the parts directory, which is not swept by UploadCleanupTask
-    // either, so leftovers of such attempts have to be removed manually.
+    // keep their entry, since nothing tells us that they will never continue, and are removed by
+    // evictStaleUploads() after upload.attempt.retentionTime.
+    // Their chunk parts are written to the parts directory, which is not swept by
+    // UploadCleanupTask, so those leftovers still have to be removed manually.
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
     private val log = logger()
+
+    // Minimum age (hours) of an upload attempt without any new chunk to be evicted, 0=Never
+    @Value("\${upload.attempt.retentionTime:24}")
+    internal var attemptRetentionTime: Int = 24
+
+    @Scheduled(cron = "\${upload.cleanup.schedule}")
+    fun evictStaleUploads() = evictStaleUploads(Instant.now())
+
+    /**
+     * Removes the state of upload attempts that did not receive a chunk for a while. Without this
+     * every aborted attempt would keep its entry for the lifetime of the process, since each
+     * attempt gets its own key and therefore no longer overwrites the state of the previous one.
+     */
+    fun evictStaleUploads(now: Instant) {
+        if (attemptRetentionTime <= 0) return
+
+        val threshold = now.minus(attemptRetentionTime.toLong(), ChronoUnit.HOURS)
+        // Same monitor as uploadFile: a chunk reads, updates and checks its FileInfo within the
+        // lock, so removing entries concurrently could drop a chunk of a still running upload.
+        synchronized(this) {
+            val staleKeys = fileInfos.filterValues { it.lastTouched.isBefore(threshold) }.keys
+            staleKeys.forEach { fileInfos.remove(it) }
+            if (staleKeys.isNotEmpty()) {
+                log.info("Evicted the state of ${staleKeys.size} abandoned upload attempt(s)")
+            }
+        }
+    }
 
     // Resume of interrupted uploads is neither needed nor supported: the client sets
     // testChunks: false, so this endpoint is never called. It therefore ignores the upload

@@ -35,6 +35,8 @@ import io.mockk.mockk
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.core.Authentication
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 class UploadApiControllerTest : AnnotationSpec() {
 
@@ -225,6 +227,91 @@ class UploadApiControllerTest : AnnotationSpec() {
         )
 
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
+    }
+
+    @Test
+    fun `eviction should remove the state of abandoned uploads`() {
+        val flowIdentifier = "test-flow-evict"
+        val chunk1Bytes = "part1".toByteArray()
+        val chunk2Bytes = "part2".toByteArray()
+        val chunk1Checksum = FileInfo.sha256(chunk1Bytes.inputStream())
+        val chunk2Checksum = FileInfo.sha256(chunk2Bytes.inputStream())
+        val combinedChecksum = FileInfo.sha256((chunk1Checksum + chunk2Checksum).byteInputStream())
+
+        val combinedUploadKeys = mutableListOf<String>()
+        every {
+            storage.combineParts(any(), any(), any(), any(), capture(combinedUploadKeys), any(), any(), any())
+        } returns arrayOf(mockk<FileSystemItem>(relaxed = true))
+
+        uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk1Bytes),
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = chunk1Checksum,
+        ).statusCode shouldBe HttpStatus.CREATED
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+
+        uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
+
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
+
+        // the state is really gone: the last chunk alone does not finish the upload anymore
+        uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk2Bytes),
+            flowChunkNumber = 2,
+            flowTotalChunks = 2,
+            chunkChecksum = chunk2Checksum,
+            combinedChecksum = combinedChecksum,
+        ).statusCode shouldBe HttpStatus.CREATED
+        combinedUploadKeys shouldBe emptyList()
+
+        uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
+    }
+
+    @Test
+    fun `eviction should keep the state of running uploads`() {
+        val flowIdentifier = "test-flow-evict-running"
+        val chunkBytes = "part1".toByteArray()
+
+        uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunkBytes),
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = FileInfo.sha256(chunkBytes.inputStream()),
+        ).statusCode shouldBe HttpStatus.CREATED
+
+        uploadApiController.evictStaleUploads(Instant.now())
+
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+
+        uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
+    }
+
+    @Test
+    fun `eviction should be disabled by a retention time of zero`() {
+        val flowIdentifier = "test-flow-evict-disabled"
+        val chunkBytes = "part1".toByteArray()
+
+        uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunkBytes),
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = FileInfo.sha256(chunkBytes.inputStream()),
+        ).statusCode shouldBe HttpStatus.CREATED
+
+        uploadApiController.attemptRetentionTime = 0
+        try {
+            uploadApiController.evictStaleUploads(Instant.now().plus(365, ChronoUnit.DAYS))
+            uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+        } finally {
+            uploadApiController.attemptRetentionTime = 24
+        }
+
+        uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
     }
 
     @Test

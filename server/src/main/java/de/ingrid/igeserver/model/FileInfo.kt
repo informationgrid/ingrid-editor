@@ -21,11 +21,16 @@ package de.ingrid.igeserver.model
 
 import java.io.InputStream
 import java.security.MessageDigest
+import java.time.Instant
 import java.util.*
 
 class FileInfo(val flowTotalChunks: Int) {
     private val uploadedChunkChecksums = mutableMapOf<Int, String>()
     private var combinedChecksum: String? = null
+
+    /** Time of the last activity of this upload, used to evict abandoned uploads. */
+    var lastTouched: Instant = Instant.now()
+        private set
 
     fun setCombinedChecksum(combinedChecksum: String?) {
         this.combinedChecksum = combinedChecksum
@@ -37,6 +42,7 @@ class FileInfo(val flowTotalChunks: Int) {
 
     fun addUploadedChunkChecksum(flowChunkNumber: Int, checksum: String) {
         uploadedChunkChecksums[flowChunkNumber] = checksum
+        lastTouched = Instant.now()
     }
 
     /**
