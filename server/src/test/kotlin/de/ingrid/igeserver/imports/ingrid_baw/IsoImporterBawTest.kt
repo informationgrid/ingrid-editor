@@ -53,8 +53,6 @@ class IsoImporterBawTest : AnnotationSpec() {
         mockCodelists(codelistService)
         every { codelistService.getCodeListEntryId("3950005", "3950005_Schlagwort1", "de") } returns "Schlagwort1"
         every { codelistService.getCodelistValue("3950005", "Schlagwort1", "de") } returns "Schlagwort1"
-        every { codelistService.getCodeListEntryId("3950007", "3950007_Schlagwort2", "de") } returns "Schlagwort2"
-        every { codelistService.getCodelistValue("3950007", "Schlagwort2", "de") } returns "Schlagwort2"
         every { codelistService.getCodeListEntryId("bawOrderInfo", "12345 - BAW Order Title", "de") } returns "bawOrderInfo"
         every { codelistService.getCodelistValue("bawOrderInfo", "bawOrderInfo", "de") } returns "12345 - BAW Order Title"
         every { codelistService.getCodeListEntryId("2000", "download", "iso") } returns "9900"

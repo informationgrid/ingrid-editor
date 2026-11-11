@@ -65,7 +65,7 @@ class M107MigrateBawSubsoilKeywords(
         val keywords = data.get("keywords") as? ObjectNode ?: return false
         val subsoilKeywords = keywords.get("subsoilKeywords") ?: return false
 
-        if (subsoilKeywords !is ArrayNode) {
+        if (subsoilKeywords !is ArrayNode || subsoilKeywords.isEmpty) {
             keywords.remove("subsoilKeywords")
             return false
         }
@@ -76,7 +76,10 @@ class M107MigrateBawSubsoilKeywords(
         // iterate through all subsoil Keywords, migrate and handle invalid and duplicate values
         subsoilKeywords.forEach { entry ->
             val oldKey = entry.getString("key")
-            if (oldKey !in SUBSOIL_KEYWORDS) return@forEach // ignore any invalid values
+            if (oldKey !in SUBSOIL_KEYWORDS) {
+                log.info("Skipping invalid subsoil keyword: '$oldKey'")
+                return@forEach
+            } // ignore any invalid values
 
             val mapped = SUBSOIL_KEYWORDS[oldKey]
             val value = mapped!!.second
