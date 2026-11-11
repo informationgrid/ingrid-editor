@@ -16,14 +16,19 @@
 - Specs must run through `ng test`, not `vitest run` directly — the Angular
   builder wires the jsdom environment (bare vitest fails with
   "window is not defined").
+- Runner options (timeouts raised to 20s) live in
+  `frontend/vitest-base.config.mts`, wired via `runnerConfig` in `angular.json`.
+- Elements with a `:leave` animation stay in the DOM ~300ms after the state
+  change — poll with `vi.waitFor` instead of sleeping (see
+  `form-message.component.spec.ts`), and never sleep through a production
+  timeout.
 - `matSort` on a table does NOT connect sorting: wire
   `dataSource.sort = this.sort()` in `ngAfterViewInit` — and write a test
   that actually re-orders rows, not just sort-state assertions.
-- `upload-checksum.spec.ts` is known-flaky under full-suite load and passes
-  in isolation. Verify there before blaming your change.
-- Export/transformer fixtures must mirror what the frontend actually saves,
-  not the shape you assume: form, schema, exporter and test all written
-  from one unchecked assumption cross-check nothing. This shipped the
-  algorithm doctype export crash (real documents with the field set threw,
-  tests stayed green). Select shapes: see frontend-conventions.md. Derive
-  the fixture `data` section from a document saved in the dev instance.
+- Spectator overwrites global matchers (`toHaveLength`, `toExist`, `toHaveText`,
+  `toHaveClass`, …) with DOM-selector variants, and vitest shares one
+  environment across spec files — so `expect(someString).toHaveLength(n)` passes
+  alone and silently matches 0 elements in a full run. Use `.length).toBe(n)`.
+- Derive the `data` section of export/transformer fixtures from a document
+  actually saved in the dev instance, not from the shape you assume (select
+  shapes: see frontend-conventions.md).

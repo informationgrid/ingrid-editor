@@ -45,7 +45,10 @@ describe("Checksum Calculation (SHA-256)", () => {
 
   it("should generate hashes that are exactly 64 characters long", async () => {
     const checksum = await calculateChecksum(file("abcdef", [0, 6]).chunks[0]);
-    expect(checksum).toHaveLength(64);
+    // not toHaveLength(): spectator overwrites that matcher globally with a
+    // DOM selector variant, which resolves the checksum to zero elements as
+    // soon as another spec of the run has pulled spectator in
+    expect(checksum.length).toBe(64);
     expect(checksum).toMatch(/^[a-f0-9]{64}$/); // check if hexadecimal
   });
 
