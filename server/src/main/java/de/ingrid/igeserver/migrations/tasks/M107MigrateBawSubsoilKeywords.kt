@@ -49,8 +49,11 @@ class M107MigrateBawSubsoilKeywords(
                 "doc.state != 'ARCHIVED' AND doc.catalog.type = 'ingrid-baw'",
             ) { doc ->
                 try {
-                    if (migrateKeywords(doc.data)) log.info("Migrated BAW subsoil keywords for doc with dbID ${doc.id}")
-                    else log.debug("No subsoil keywords migrated for doc with dbID ${doc.id}")
+                    if (migrateKeywords(doc.data)) {
+                        log.info("Migrated BAW subsoil keywords for doc with dbID ${doc.id}")
+                    } else {
+                        log.debug("No subsoil keywords migrated for doc with dbID ${doc.id}")
+                    }
                 } catch (e: Exception) {
                     log.error("Error during migration", e)
                 }
