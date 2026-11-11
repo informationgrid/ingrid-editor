@@ -55,9 +55,17 @@ class UploadApiController(
     private val documentService: DocumentService,
 ) : UploadApi {
 
+    // Keyed by uploadKey (flowIdentifier + upload attempt). Entries are removed when an upload
+    // finished (successfully or not). Attempts that are abandoned before their last chunk arrives
+    // keep their entry and their chunk parts, since nothing tells us that they will never continue.
+    // Chunk parts are written to the parts directory, which is not swept by UploadCleanupTask
+    // either, so leftovers of such attempts have to be removed manually.
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
     private val log = logger()
 
+    // Resume of interrupted uploads is neither needed nor supported: the client sets
+    // testChunks: false, so this endpoint is never called. It therefore ignores the upload
+    // attempt and only looks at the flowIdentifier.
     override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
         val fileInfo = this.fileInfos[flowIdentifier]
         if (fileInfo != null && fileInfo.containsChunk(flowChunkNumber)) {

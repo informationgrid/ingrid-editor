@@ -157,6 +157,77 @@ class UploadApiControllerTest : AnnotationSpec() {
     }
 
     @Test
+    fun `uploads of different attempts should not share chunk state`() {
+        val flowIdentifier = "test-flow-attempts"
+        val chunk1Bytes = "part1".toByteArray()
+        val chunk2Bytes = "part2".toByteArray()
+        val chunk1Checksum = FileInfo.sha256(chunk1Bytes.inputStream())
+        val chunk2Checksum = FileInfo.sha256(chunk2Bytes.inputStream())
+        val combinedChecksum = FileInfo.sha256((chunk1Checksum + chunk2Checksum).byteInputStream())
+
+        val mockFile1 = MockMultipartFile("file", "test.txt", "text/plain", chunk1Bytes)
+        val mockFile2 = MockMultipartFile("file", "test.txt", "text/plain", chunk2Bytes)
+
+        val combinedUploadKeys = mutableListOf<String>()
+        every {
+            storage.combineParts(any(), any(), any(), any(), capture(combinedUploadKeys), any(), any(), any())
+        } returns arrayOf(mockk<FileSystemItem>(relaxed = true))
+
+        // first attempt is aborted after the first of two chunks
+        val abortedResponse = uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = mockFile1,
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = chunk1Checksum,
+            uploadAttempt = "attempt-1",
+        )
+        abortedResponse.statusCode shouldBe HttpStatus.CREATED
+
+        // the last chunk of the retry must not complete the state of the aborted attempt
+        val retryLastChunkResponse = uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = mockFile2,
+            flowChunkNumber = 2,
+            flowTotalChunks = 2,
+            chunkChecksum = chunk2Checksum,
+            combinedChecksum = combinedChecksum,
+            uploadAttempt = "attempt-2",
+        )
+        retryLastChunkResponse.statusCode shouldBe HttpStatus.CREATED
+        combinedUploadKeys shouldBe emptyList()
+
+        // only the complete retry is merged, using its own parts
+        val retryResponse = uploadChunk(
+            flowIdentifier = flowIdentifier,
+            file = mockFile1,
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = chunk1Checksum,
+            uploadAttempt = "attempt-2",
+        )
+        retryResponse.statusCode shouldBe HttpStatus.CREATED
+        combinedUploadKeys shouldBe listOf("$flowIdentifier-attempt-2")
+    }
+
+    @Test
+    fun `upload with invalid upload attempt should be rejected`() {
+        val chunk1Bytes = "chunk-1-content".toByteArray()
+        val mockFile = MockMultipartFile("file", "test.txt", "text/plain", chunk1Bytes)
+
+        val response = uploadChunk(
+            flowIdentifier = "test-flow-invalid-attempt",
+            file = mockFile,
+            flowChunkNumber = 1,
+            flowTotalChunks = 1,
+            chunkChecksum = FileInfo.sha256(chunk1Bytes.inputStream()),
+            uploadAttempt = "../../etc/passwd",
+        )
+
+        response.statusCode shouldBe HttpStatus.BAD_REQUEST
+    }
+
+    @Test
     fun `multi chunk upload should track chunks until finished and clean up`() {
         val flowIdentifier = "test-flow-multi"
         val chunk1Bytes = "part1".toByteArray()
@@ -210,4 +281,28 @@ class UploadApiControllerTest : AnnotationSpec() {
         uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
         uploadApiController.chunkExists(2, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
     }
+
+    private fun uploadChunk(
+        flowIdentifier: String,
+        file: MockMultipartFile,
+        flowChunkNumber: Int,
+        flowTotalChunks: Int,
+        chunkChecksum: String,
+        combinedChecksum: String? = null,
+        uploadAttempt: String? = null,
+    ) = uploadApiController.uploadFile(
+        principal = principal,
+        docUuid = "doc-1",
+        file = file,
+        replace = false,
+        flowChunkNumber = flowChunkNumber,
+        flowTotalChunks = flowTotalChunks,
+        flowCurrentChunkSize = file.size,
+        flowTotalSize = file.size,
+        flowIdentifier = flowIdentifier,
+        flowFilename = "test.txt",
+        chunkChecksum = chunkChecksum,
+        combinedChecksum = combinedChecksum,
+        uploadAttempt = uploadAttempt,
+    )
 }

@@ -139,17 +139,19 @@ export class UploadComponent implements AfterViewInit {
   }
 
   /**
-   * Extend chunk.getParams function by adding the chunkChecksum and combinedChecksum if present.
+   * Extend chunk.getParams function by adding the chunkChecksum, the uploadAttempt and the
+   * combinedChecksum if present.
    * @param chunk
    * @param chunkChecksum
+   * @param uploadAttempt
    * @param combinedChecksum
    * @private
    */
   private addChecksumParams(
     chunk: FlowChunk,
     chunkChecksum: string,
+    uploadAttempt: string,
     combinedChecksum?: string,
-    uploadAttempt?: string,
   ) {
     const getParams = chunk.getParams.bind(chunk);
     chunk.getParams = () => ({
@@ -208,8 +210,8 @@ export class UploadComponent implements AfterViewInit {
     this.addChecksumParams(
       chunk,
       checksum,
-      combinedChecksum,
       cache.uploadAttempt,
+      combinedChecksum,
     );
     this.finishPreprocessing(chunk);
   }
