@@ -20,8 +20,15 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
-import { Observable } from "rxjs";
-import { removeEmptyValuesFromAnObject } from "../../shared/utils";
+import {
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from "rxjs";
 
 export interface EvaluationResult {
   uuid: string;
@@ -51,6 +58,9 @@ export interface AiSettings {
 })
 export class AiService {
   private configuration: Configuration;
+
+  /** Running evaluation result requests per dataset uuid. */
+  private pendingResults = new Map<string, Observable<EvaluationResult>>();
 
   constructor(
     private http: HttpClient,
@@ -92,5 +102,30 @@ export class AiService {
     return this.http.get<EvaluationResult[]>(
       this.configuration.backendUrl + "ai/dataset/latestReport",
     );
+  }
+
+  /**
+   * Returns the evaluation result of a dataset. An existing result from the
+   * latest report is used, otherwise the dataset is evaluated.
+   *
+   * Callers asking for the same dataset while a request is still running
+   * share that request, so the dataset is not evaluated several times. The
+   * request is canceled only when all callers have unsubscribed.
+   */
+  getEvaluationResult(uuid: string): Observable<EvaluationResult> {
+    const pending = this.pendingResults.get(uuid);
+    if (pending) return pending;
+
+    const request = this.getLatestReport().pipe(
+      map((report) => report?.find((entry) => entry.uuid === uuid) ?? null),
+      // a missing or failing report should not prevent the evaluation
+      catchError(() => of(null)),
+      switchMap((result) => (result ? of(result) : this.evaluateDataset(uuid))),
+      // runs on success, error or when all callers have unsubscribed
+      finalize(() => this.pendingResults.delete(uuid)),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.pendingResults.set(uuid, request);
+    return request;
   }
 }

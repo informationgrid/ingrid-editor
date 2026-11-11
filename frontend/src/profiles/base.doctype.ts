@@ -384,7 +384,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       delete field.validation;
 
       field.wrappers = field.wrappers?.filter(
-        (wrapper) => wrapper !== "form-field",
+        (wrapper) => wrapper !== "form-field" && wrapper !== "ai-suggest",
       );
 
       if (

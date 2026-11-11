@@ -3,18 +3,6 @@
 :host {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-
-  --mat-list-list-item-label-text-size: 14px;
-  --mat-list-list-item-hover-state-layer-opacity: 0.02;
-  --mat-list-list-item-container-shape: 4px;
-
-  ::ng-deep .mdc-list-item__end {
-    margin-left: 8px;
-  }
-
-  ::ng-deep .mdc-radio {
-    --mat-radio-selected-icon-color: #{vars.$ige-primary};
-  }
 }
 
 .text-box {
@@ -24,19 +12,8 @@
   gap: 12px;
 }
 
-.mdc-list {
-  padding: 0;
+ige-ai-suggestion-list {
   margin: 16px;
-}
-
-.mdc-list-item {
-  padding-left: 12px;
-
-  &[aria-selected="true"] {
-    background-color: vars.$ige-mark-color;
-    outline: 1px solid #{vars.$ige-primary};
-    outline-offset: -1px;
-  }
 }
 
 .action-box {

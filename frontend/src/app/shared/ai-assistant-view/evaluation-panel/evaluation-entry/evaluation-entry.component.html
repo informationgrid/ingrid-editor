@@ -14,25 +14,12 @@
 @if (evaluation().options && evaluation().options.length) {
     <mat-divider></mat-divider>
 
-    <mat-selection-list
-        [multiple]="false"
-        [formControl]="formControl"
-        (selectionChange)="selectedOption.set($event.options[0].value)"
-    >
-        @for (option of evaluation().options; track $index) {
-            @if (isExpanded() || option === selectedOption()) {
-                <mat-list-option class="no-wrap" [value]="option">
-                    @if (hasSpatialReferenceOptions()) {
-                        <ige-spatial-reference-option [option]="option" />
-                    } @else if (hasListOptions()) {
-                        <ige-list-option [option]="option" />
-                    } @else {
-                        <ige-text-option [option]="option" />
-                    }
-                </mat-list-option>
-            }
-        }
-    </mat-selection-list>
+    <ige-ai-suggestion-list
+        [options]="evaluation().options"
+        [key]="evaluation().key"
+        [expanded]="isExpanded()"
+        [(selected)]="selectedOption"
+    />
 
     <div class="action-box">
         @if (evaluation().options.length > 1) {
