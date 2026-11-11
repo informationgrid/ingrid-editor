@@ -137,6 +137,8 @@ data class LuceneAddressContact(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneAddress(
+    @JsonProperty("document_type")
+    val documentType: String,
     @JsonProperty("position_name")
     val positionName: String? = null,
     @JsonProperty("hours_of_service")
@@ -183,8 +185,6 @@ data class LuceneMetadata(
     val created: String?,
     val modified: String?,
     val issued: String? = null,
-    @JsonProperty("document_type")
-    val documentType: String? = null,
     val partner: String?,
     val provider: String?,
     val language: Any?,
@@ -287,6 +287,8 @@ data class LuceneKeyValue(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneIngrid(
+    @JsonProperty("document_type")
+    val documentType: String,
     @JsonProperty("alternate_title")
     val alternateTitle: String? = null,
     val licenses: List<LuceneLicense> = emptyList(),

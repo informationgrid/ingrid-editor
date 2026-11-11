@@ -98,6 +98,7 @@ class LuceneModelTest : GeodatasetBase() {
                     ),
                 ),
                 ingrid = LuceneIngrid(
+                    documentType = "InGridDataset",
                     alternateTitle = "Alt Title",
                     licenses = emptyList(),
                     parentIdentifier = null,
@@ -116,6 +117,7 @@ class LuceneModelTest : GeodatasetBase() {
             json shouldContain """"type":"Polygon""""
             json shouldContain """"term":"Umwelt""""
             json shouldContain """"ingrid""""
+            json shouldContain """"ingrid":{"document_type":"InGridDataset""""
         }
 
         should("serialize LuceneDocumentOpenData to valid JSON with Jackson") {
@@ -233,6 +235,7 @@ class LuceneModelTest : GeodatasetBase() {
 
             result shouldContain "\"${'$'}schema\":\"https://schema.ingrid-oss.eu/index/draft/schema/index-ingrid-address.json\""
             result shouldContain "\"data_type\":\"ADDRESS\""
+            result shouldContain "\"address\":{\"document_type\":\"InGridPersonDoc\""
             result shouldContain "\"document_type\":\"InGridPersonDoc\""
             result shouldContain "\"last_name\":\"Mustermann\""
             result shouldContain "\"role\":\"self\""

@@ -347,7 +347,6 @@ open class AddressModelTransformer(
                 dataType = "ADDRESS",
                 created = displayAddress.created?.let { formatDate(formatterISO, it) } ?: lastModified,
                 modified = lastModified,
-                documentType = displayAddress.type,
                 partner = partner,
                 provider = provider,
                 language = null,
@@ -367,6 +366,7 @@ open class AddressModelTransformer(
                 ),
             ),
             address = LuceneAddress(
+                documentType = displayAddress.type,
                 positionName = getPositionName(),
                 hoursOfService = hoursOfService,
                 crossReferences = crossReferences,
