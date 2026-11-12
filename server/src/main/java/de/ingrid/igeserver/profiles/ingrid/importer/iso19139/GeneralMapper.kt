@@ -561,8 +561,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         bwastr_name = bwastr.bwastr_name,
                         strecken_name = bwastr.strecken_name,
                         concat_name = bwastr.concat_name,
-                        start = end,
-                        end = start,
+                        start = start,
+                        end = end,
                     ),
                     title = bwastr.concat_name,
                 )
