@@ -41,6 +41,8 @@ abstract class UvpBaseType : EntityType() {
             "reportsRecommendationDocs",
             "applicationDocs",
             "announcementDocs",
+            "scopingDateDocs",
+            "scopingGeneralDocs",
         )
 
         // special case as negative decision docs are not part of any processingSteps
