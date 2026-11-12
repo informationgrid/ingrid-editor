@@ -35,7 +35,10 @@ export class BwastrLocatorService {
   private http = inject(HttpClient);
   private codelistService = inject(CodelistService);
 
-  private bwaStrIds = toSignal(this.codelistService.observeRaw("bwastrids"));
+  // special BWaStr IDs (e.g. 7000 - Nordsee) that are unknown to the BWaStr-Locator
+  private bwaStrIds = toSignal(
+    this.codelistService.observeRaw("BAW_bwastrIds"),
+  );
 
   search(query: string): Observable<BwastrLocatorSearchResponse[]> {
     const entry = this.searchInCodelist(query);

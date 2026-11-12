@@ -526,7 +526,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 start = it[1].toDoubleOrNull()
                 end = it[2].toDoubleOrNull()
             }
-        } else if (title.matches("\\[[0-9]{4}]$".toRegex())) {
+        } else if (title.matches(".*\\[[0-9]{4}]$".toRegex())) {
             // like: "Main, Hauptstrecke - [0108]"  (Name, Streckenname - [ID])
             extractedBwastrId = title.substringAfterLast("[").substringBeforeLast("]")
         } else {
@@ -536,19 +536,20 @@ open class GeneralMapper(val isoData: IsoImportData) {
         // remove leading zero
         extractedBwastrId = extractedBwastrId.removePrefix("0")
 
-        return if (bwastrLocatorService.customBWASTRMap.containsKey(extractedBwastrId)) {
-            val bwastr = bwastrLocatorService.customBWASTRMap[extractedBwastrId]!!
+        // special BWaStr (e.g. 7000 - Nordsee) are unknown to the BWaStr-Locator
+        val special = bwastrLocatorService.getSpecial(extractedBwastrId)
+        return if (special != null) {
             SpatialReference(
                 type = "bwastr",
                 bwastr = Bwastr(
-                    bwastrid = bwastr.bwastrid,
-                    bwastr_name = bwastr.bwastr_name,
-                    strecken_name = bwastr.strecken_name,
-                    concat_name = bwastr.concat_name,
+                    bwastrid = special.bwastrid,
+                    bwastr_name = special.bwastr_name,
+                    strecken_name = special.strecken_name,
+                    concat_name = special.concat_name,
                     start = null,
                     end = null,
                 ),
-                title = bwastr.concat_name,
+                title = special.concat_name,
             )
         } else {
             val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId

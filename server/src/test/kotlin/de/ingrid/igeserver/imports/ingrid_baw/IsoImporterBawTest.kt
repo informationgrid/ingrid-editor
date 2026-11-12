@@ -72,7 +72,7 @@ class IsoImporterBawTest : AnnotationSpec() {
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
 
-        every { bwastrLocatorService.customBWASTRMap } returns emptyMap()
+        every { bwastrLocatorService.getSpecial(any()) } returns null
         every { bwastrLocatorService.search("815") } returns listOf(
             BwastrLocatorSearchResponse(
                 bwastrid = "815",
