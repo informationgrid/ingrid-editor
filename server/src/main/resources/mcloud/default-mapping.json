@@ -11,7 +11,8 @@
       "store": true,
       "fields": {
         "keyword": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer": "lowercase"
         },
         "decomp_german": {
           "type": "text",

@@ -286,7 +286,8 @@
       "store": true,
       "fields": {
         "keyword": {
-          "type": "keyword"
+          "type": "keyword",
+          "normalizer": "lowercase"
         },
         "ngram": {
           "type": "text",
