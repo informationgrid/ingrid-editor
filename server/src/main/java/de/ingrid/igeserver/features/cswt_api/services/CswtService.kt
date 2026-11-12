@@ -114,7 +114,7 @@ class CswtService(
                 importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile)
             } else {
                 log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
-                throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+                throw ClientException.withReason("Constraint not supported with PropertyName: $propName and Literal: $propValue")
             }
         }
         /*
@@ -132,6 +132,9 @@ class CswtService(
             if ("uuid" == propName || patternIdentifier.matcher(propName).matches()) {
                 val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
                 wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
+            } else {
+                log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+                throw ClientException.withReason("Constraint not supported with PropertyName: $propName and Literal: $propValue")
             }
         }
 
