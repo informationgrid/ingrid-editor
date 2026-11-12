@@ -1,5 +1,24 @@
 # Changelog
 
+## 8.5.2 (12.11.2026)
+
+### Features
+
+* Mailbenachrichtigung bei Fehler in Indizierung (#9625)
+
+### Bugfixes
+
+* Fehler beim Upload von Dokumenten im Verfahrensschritt "Unterrichtung über den Untersuchungsrahmen" (#9720)
+* JSON-Schema Validierung: property 'isHvd' is not evaluated (#9676)
+* Import mit Adressreferenzen schlägt fehl (#9654)
+* Migrationen im Editor können zu OutOfMemory führen (#9633)
+* Daten-Dienste-Kopplung bleibt nach Geodatensatz-Löschung als „???“ bestehen (#9624)
+* Heilquellenschutzgebietszone nicht veröffentlichbar (#9623)
+* NPE in OGC API bei PUT von existierendem Dokument (#9621)
+* Export von Ordnern: Adressreferenzen werden nicht mit exportiert (#9590)
+* Anchor-Elemente für INSPIRE-Themen (#9481)
+* [iPLug SE] [WARN] No URLs generated for fetch process. All urls fetched? (#163)
+    
 ## 8.5.1 (21.10.2026)
 
 
