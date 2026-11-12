@@ -32,6 +32,7 @@ import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.core.Authentication
@@ -156,6 +157,8 @@ class UploadApiControllerTest : AnnotationSpec() {
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
 
         uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
+        // parts of the failed attempt are never combined, so they have to be removed right away
+        verify(exactly = 1) { storage.deleteParts(flowIdentifier, 1) }
     }
 
     @Test

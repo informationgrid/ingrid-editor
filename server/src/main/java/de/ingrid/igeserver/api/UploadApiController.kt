@@ -63,8 +63,8 @@ class UploadApiController(
     // finished (successfully or not). Attempts that are abandoned before their last chunk arrives
     // keep their entry, since nothing tells us that they will never continue, and are removed by
     // evictStaleUploads() after upload.attempt.retentionTime.
-    // Their chunk parts are written to the parts directory, which is not swept by
-    // UploadCleanupTask, so those leftovers still have to be removed manually.
+    // Their chunk parts in the parts directory are removed after the same retention time by
+    // FileSystemStorage.deleteStaleParts(), which also catches parts left over from before a restart.
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
     private val log = logger()
 
@@ -126,7 +126,7 @@ class UploadApiController(
         }
         val uploadKey = if (uploadAttempt == null) flowIdentifier else "$flowIdentifier-$uploadAttempt"
 
-        log.info("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
+        log.debug("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
@@ -180,6 +180,12 @@ class UploadApiController(
                         fileInfo.validateCombinedChecksum()
                     } catch (ex: Exception) {
                         log.warn("Combined checksum validation failed for file $flowFilename", ex)
+                        // the client retries with a new upload attempt, so these parts are never used again
+                        try {
+                            storage.deleteParts(uploadKey, flowTotalChunks)
+                        } catch (deleteEx: IOException) {
+                            log.warn("Could not delete parts of failed upload $uploadKey", deleteEx)
+                        }
                         return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.BAD_REQUEST)
                     }
                     log.info("Merging parts of uploaded file: $flowFilename")

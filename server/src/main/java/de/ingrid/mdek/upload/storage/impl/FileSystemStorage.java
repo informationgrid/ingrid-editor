@@ -111,6 +111,7 @@ public class FileSystemStorage implements Storage {
 
     private int trashRetentionTime = 0;
     private int unsavedRetentionTime = 0;
+    private int partsRetentionTime = 0;
 
     private List<Validator> validators = new ArrayList<>();
 
@@ -229,6 +230,17 @@ public class FileSystemStorage implements Storage {
      */
     public void setUnsavedRetentionTime(final int unsavedRetentionTime) {
         this.unsavedRetentionTime = unsavedRetentionTime;
+    }
+
+    /**
+     * Set the limit after how many hours without a new part the parts of an abandoned upload
+     * are removed from the parts directory.
+     * Parts will never be removed for values of 0 or below
+     *
+     * @param partsRetentionTime minimum age in hours of an upload's newest part before all its parts are deleted
+     */
+    public void setPartsRetentionTime(final int partsRetentionTime) {
+        this.partsRetentionTime = partsRetentionTime;
     }
 
     /**
@@ -434,6 +446,13 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
+    public void deleteParts(final String id, final Integer totalParts) throws IOException {
+        for (int i = 1; i <= totalParts; i++) {
+            Files.deleteIfExists(this.getRealPath(id + "-" + i, this.partsDir));
+        }
+    }
+
+    @Override
     public void deleteUnsavedFile(final String catalog, final String userID, final String path, final String file) throws IOException {
         final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
         Files.deleteIfExists(realPath);
@@ -612,8 +631,51 @@ public class FileSystemStorage implements Storage {
         // Delete old Trash Files
         deleteTrashFiles(trashPath);
 
+        // Delete parts of abandoned uploads
+        deleteStaleParts();
+
         // run as long as there are empty directories
         deleteEmptyDirs(trashPath, archivePath, unsavedPath, unpublishedPath);
+    }
+
+    /**
+     * Delete the parts of uploads that did not receive a new part within the parts retention time.
+     * Parts are grouped by their upload (file name without the trailing "-<index>"), and a group is
+     * only removed if its newest part is old enough, so a slow but still running upload keeps
+     * its early parts.
+     */
+    public void deleteStaleParts() throws IOException {
+        if (this.partsRetentionTime <= 0 || this.partsDir == null) {
+            return;
+        }
+        final Path partsPath = Paths.get(this.partsDir);
+        if (!Files.isDirectory(partsPath)) {
+            return;
+        }
+        final long threshold = OffsetDateTime.now().minusHours(this.partsRetentionTime).toInstant().toEpochMilli();
+        final Map<String, List<Path>> partsByUpload;
+        try (Stream<Path> stream = Files.list(partsPath)) {
+            partsByUpload = stream
+                    .filter(Files::isRegularFile)
+                    .collect(Collectors.groupingBy(p -> {
+                        final String name = p.getFileName().toString();
+                        final int idx = name.lastIndexOf('-');
+                        return idx > 0 ? name.substring(0, idx) : name;
+                    }));
+        }
+        int deleted = 0;
+        for (final List<Path> parts : partsByUpload.values()) {
+            final long newest = parts.stream().mapToLong(p -> p.toFile().lastModified()).max().orElse(Long.MAX_VALUE);
+            if (newest < threshold) {
+                for (final Path part : parts) {
+                    Files.deleteIfExists(part);
+                    deleted++;
+                }
+            }
+        }
+        if (deleted > 0) {
+            log.info("Deleted {} part(s) of abandoned uploads", deleted);
+        }
     }
 
     public void deleteEmptyDirs(Path trashPath, Path archivePath, Path unsavedPath, Path unpublishedPath) throws IOException {

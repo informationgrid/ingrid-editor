@@ -116,6 +116,16 @@ public interface Storage {
     StorageItem[] combineParts(String catalog, String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace) throws IOException;
 
     /**
+     * Delete the parts of a file that will not be combined, e.g. because the upload failed.
+     * Parts that do not exist are ignored.
+     *
+     * @param id The id of the file
+     * @param totalParts The number of parts of the file
+     * @throws IOException
+     */
+    void deleteParts(String id, Integer totalParts) throws IOException;
+
+    /**
      * Delete a file
      *
      * @param userID The ID of the current User, relevant for unsaved Scope
