@@ -206,6 +206,9 @@ describe("RepeatListComponent", () => {
       await waitSomeTime(15);
       await auto.selectOption({ text: "Eins" });
 
+      expect(await auto.isOpen()).toBe(false);
+      expect(document.querySelector(".mat-mdc-autocomplete-panel")).toBeNull();
+
       await checkItemCount(1);
       await checkItemContent(0, "Eins");
       expect(form.value.repeatListCodelist).toEqual([
@@ -213,6 +216,18 @@ describe("RepeatListComponent", () => {
       ]);
 
       checkDisabledOptions([true, false, false]);
+    });
+
+    it("should remove the autocomplete panel on destroy", async () => {
+      await auto.enterText("E");
+      expect(
+        document.querySelector(".mat-mdc-autocomplete-panel"),
+      ).not.toBeNull();
+
+      spectator.fixture.destroy();
+      await waitSomeTime(300);
+
+      expect(document.querySelector(".mat-mdc-autocomplete-panel")).toBeNull();
     });
 
     it("should remove an item", async () => {

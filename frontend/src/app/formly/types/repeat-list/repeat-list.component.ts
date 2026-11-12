@@ -200,6 +200,7 @@ export class RepeatListComponent
   private destroyRef = inject(DestroyRef);
   private externalResultsCache: ExternalResultsCache;
   readonly selector = viewChild(MatSelect);
+  readonly autocompleteTrigger = viewChild(MatAutocompleteTrigger);
 
   paginationState = signal<PaginationState>({
     page: 0,
@@ -508,16 +509,11 @@ export class RepeatListComponent
 
     this.inputControl.setValue(null);
 
-    if (this.type() === "autocomplete") {
-      // element successfully added when input was blurred
-      // this.autoCompleteEl?.nativeElement?.blur();
-      // this.autoComplete?.closePanel();
-      // setTimeout(() => this.autoCompleteEl?.nativeElement?.focus());
-    } else if (this.type() === "select") {
+    if (this.type() === "select") {
       if (this._filter(null)?.length === 0) {
         this.inputControl.disable();
       }
-      setTimeout(() => this.inputControl.setValue(""));
+      this.inputControl.setValue("");
     }
 
     // update validation message
@@ -674,6 +670,7 @@ export class RepeatListComponent
   }
 
   async addFreeEntry(value: string) {
+    this.autocompleteTrigger()?.closePanel();
     if (!value || value.trim() === "") return;
 
     // check if really free entry

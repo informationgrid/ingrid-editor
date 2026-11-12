@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Directive, EventEmitter, Input, Output } from "@angular/core";
+import {
+  DestroyRef,
+  Directive,
+  EventEmitter,
+  Input,
+  Output,
+} from "@angular/core";
 import { tap } from "rxjs/operators";
 import { MatAutocomplete } from "@angular/material/autocomplete";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -34,21 +40,30 @@ export class OptionsScrollDirective {
   @Input() thresholdPercent = 0.95;
   @Output("optionsScroll") scroll =
     new EventEmitter<IAutoCompleteScrollEvent>();
+  private panelElement?: HTMLElement;
+  private openedPanelTimeout?: ReturnType<typeof setTimeout>;
+  private readonly boundOnScroll = this.onScroll.bind(this);
 
-  constructor(public autoComplete: MatAutocomplete) {
+  constructor(
+    public autoComplete: MatAutocomplete,
+    destroyRef: DestroyRef,
+  ) {
+    destroyRef.onDestroy(() => {
+      clearTimeout(this.openedPanelTimeout);
+      this.removeScrollEventListener();
+    });
+
     this.autoComplete.opened
       .pipe(
         tap(() => {
           // Note: When autocomplete raises opened, panel is not yet created (by Overlay)
           // Note: The panel will be available on next tick
           // Note: The panel wil NOT open if there are no options to display
-          setTimeout(() => {
+          this.openedPanelTimeout = setTimeout(() => {
             // Note: remove listner just for safety, in case the close event is skipped.
             this.removeScrollEventListener();
-            this.autoComplete.panel?.nativeElement?.addEventListener(
-              "scroll",
-              this.onScroll.bind(this),
-            );
+            this.panelElement = this.autoComplete.panel?.nativeElement;
+            this.panelElement?.addEventListener("scroll", this.boundOnScroll);
           });
         }),
         takeUntilDestroyed(),
@@ -64,10 +79,8 @@ export class OptionsScrollDirective {
   }
 
   private removeScrollEventListener() {
-    this.autoComplete.panel?.nativeElement?.removeEventListener(
-      "scroll",
-      this.onScroll,
-    );
+    this.panelElement?.removeEventListener("scroll", this.boundOnScroll);
+    this.panelElement = undefined;
   }
 
   onScroll(event: Event) {
