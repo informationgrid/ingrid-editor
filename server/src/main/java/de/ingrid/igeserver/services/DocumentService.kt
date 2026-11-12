@@ -1165,10 +1165,9 @@ class DocumentService(
         findChildrenWrapper(catalogId, id).hits
             .forEach {
                 it.path = path + id
-                // FIXME: what about the path of person under an institution???
-                if (it.type == "FOLDER") {
-                    updatePathForAllChildren(catalogId, it.path, it.id!!)
-                }
+                // recurse into every child, since not only folders but also datasets
+                // (and institutions in addresses) can have children
+                updatePathForAllChildren(catalogId, it.path, it.id!!)
                 docWrapperRepo.save(it)
             }
     }
