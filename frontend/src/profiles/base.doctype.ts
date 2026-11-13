@@ -48,6 +48,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
+  iconClass = "dataset";
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return fieldConfig;
   };
