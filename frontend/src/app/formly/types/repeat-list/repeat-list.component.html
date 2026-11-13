@@ -136,7 +136,7 @@
     <mat-form-field appearance="outline" class="width-100">
         <mat-select
             [placeholder]="props.placeholder"
-            (valueChange)="addToList($event)"
+            (selectionChange)="addToList($event.value)"
             [required]="showError && props.required && formControl.invalid"
             [formControl]="inputControl"
             (keydown)="handleKeydown($event)"

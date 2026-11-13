@@ -308,6 +308,21 @@ describe("RepeatListComponent", () => {
       ]);
     });
 
+    it("should keep a selected value as disabled option", async () => {
+      await waitSomeTime();
+
+      await select.open();
+      await select.clickOptions({ text: "Zwei" });
+      await checkItemCount(1);
+      await waitSomeTime();
+
+      await select.open();
+      const options = await select.getOptions();
+      expect(options.length).toBe(3);
+      expect(await options[1].getText()).toBe("Zwei");
+      expect(await options[1].isDisabled()).toBe(true);
+    });
+
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
       fieldConfig[0].props.placeholder = placeholder;
