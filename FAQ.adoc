@@ -65,7 +65,7 @@ echo "$ELASTICSEARCH_KEYSTORE_PASSWORD" | /usr/share/elasticsearch/bin/elasticse
 
 == Apache Configuration
 
-When the IGE-NG is installed there are two options how to access the application.
+When the InGrid-Editor is installed there are two options how to access the application.
 
 - directly on a domain/sub-domain (e.g. https://ige-ng.informationgrid.eu)
 - under a context path on a domain (e.g. https://informationgrid.eu/ige-ng)
@@ -461,7 +461,7 @@ cron.codelist.expression=0 */30 * * * *
 
 == Add a new SVG icon
 
-New Icons added to IGE-NG should be integrated the following way:
+New Icons added to InGrid-Editor should be integrated the following way:
 
 - clean SVG file with online tool: https://jakearchibald.github.io/svgomg/
 - choose an appropriate symbol catalog in `src/assets/icons`
