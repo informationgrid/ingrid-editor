@@ -270,6 +270,7 @@ export class ConfigService {
   }
 
   hasPermission(neededPermission: string | string[]): boolean {
+    if (this.isSuperAdministrator) return true;
     const user = this.$userInfo.getValue();
     return this.hasExplicitPermission(neededPermission, user);
   }
