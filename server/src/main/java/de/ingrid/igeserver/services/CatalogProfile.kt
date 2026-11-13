@@ -60,10 +60,10 @@ interface CatalogProfile {
     fun initIndices(): Unit = Unit
 
     @JsonIgnore
-    fun getElasticsearchMapping(format: String): String
+    fun getElasticsearchMapping(format: String): String = ""
 
     @JsonIgnore
-    fun getElasticsearchSetting(format: String): String
+    fun getElasticsearchSetting(format: String): String = ""
 
     @JsonIgnore
     fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> = permissions

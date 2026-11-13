@@ -75,11 +75,13 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     }
 
     override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean = runBlocking {
+        val indexConfiguration = buildList {
+            if (esMapping.isNotBlank()) add("\"mappings\": $esMapping")
+            if (esSettings.isNotBlank()) add("\"settings\": $esSettings")
+        }.joinToString(", ")
         val response = elastic.client.createIndex(
             name,
-            """
-                { "mappings": $esMapping, "settings": $esSettings }
-            """.trimIndent(),
+            if (indexConfiguration.isEmpty()) "{}" else "{ $indexConfiguration }",
         )
         response.acknowledged
     }
