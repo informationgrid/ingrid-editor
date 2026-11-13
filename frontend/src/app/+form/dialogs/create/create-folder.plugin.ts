@@ -31,6 +31,7 @@ import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { DocumentTreeStore } from "../../../store/tree/document-tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { ProfileService } from "../../../services/profile.service";
 
 @Injectable()
 export class CreateFolderPlugin extends Plugin {
@@ -43,6 +44,7 @@ export class CreateFolderPlugin extends Plugin {
 
   private documentTreeStore = inject(DocumentTreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private doctypes = inject(ProfileService).getDoctypes();
 
   eventCreateFolderId = "CREATE_FOLDER";
 
@@ -62,6 +64,9 @@ export class CreateFolderPlugin extends Plugin {
   }
 
   registerForm() {
+    // return if folder doctype was not registered for this profile
+    if (!this.doctypes().some((d) => d.id === "FOLDER")) return;
+
     super.registerForm();
 
     // add button to toolbar for publish action
