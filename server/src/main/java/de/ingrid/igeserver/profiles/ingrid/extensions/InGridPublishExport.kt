@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.extensions
 
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -91,6 +92,7 @@ class InGridPublishExport(
                 )
             }
         } catch (ex: Exception) {
+            if (ex is ValidationException) throw ex
             throw ClientException.withReason("Problem during indexing to Elasticsearch: ${ex.cause?.message}", ex)
         }
 
