@@ -29,6 +29,7 @@
         "metadata": {
           "description": "Enthält Metadaten über den Datensatz. Dies kann das Erstellungs- oder Änderungsdatum sein, oder aus welcher Quelle der Datensatz stammt.",
           "type": "object",
+          "unevaluatedProperties": false,
           "properties": {
             "data_type": {
               "type": "string",
@@ -97,6 +98,7 @@
               ]
             },
             "datasource": {
+              "unevaluatedProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -154,6 +156,7 @@
         "contacts": {
           "type": "array",
           "items": {
+            "unevaluatedProperties": false,
             "properties": {
               "role": {
                 "type": "string"
@@ -164,6 +167,7 @@
               "communications": {
                 "type": "array",
                 "items": {
+                  "unevaluatedProperties": false,
                   "properties": {
                     "type": {
                       "type": "string",
@@ -212,6 +216,7 @@
           "items": {
             "type": "object",
             "title": "Spatial Core",
+            "unevaluatedProperties": false,
             "properties": {
               "name": {
                 "type": "string",
@@ -468,6 +473,7 @@
               },
               "administrative": {
                 "type": "object",
+                "unevaluatedProperties": false,
                 "properties": {
                   "state": {
                     "type": "array",
@@ -524,11 +530,13 @@
           "description": "Gültigkeitsdatumsbereich der beschriebenen Daten",
           "$comment": "Ehemaliges Indexfeld: object_date",
           "type": "object",
+          "unevaluatedProperties": false,
           "properties": {
             "data_temporal": {
               "type": "array",
               "items": {
                 "type": "object",
+                "unevaluatedProperties": false,
                 "properties": {
                   "date": {
                     "type": "string",
@@ -539,6 +547,7 @@
                     "type": "object",
                     "title": "Zeitabschnitt",
                     "description": "Zeitabschnitt des Ereignis. Diese Angabe ist optimiert für die Verwendung in Elasticsearch, welches den Typ \"date_range\" unterstützt und optimiert abgefragt werden kann.",
+                    "unevaluatedProperties": false,
                     "properties": {
                       "gte": {
                         "type": "string",
@@ -595,6 +604,7 @@
           "items": {
             "type": "object",
             "title": "item",
+            "unevaluatedProperties": false,
             "properties": {
               "term": {
                 "type": "string",
@@ -628,6 +638,7 @@
           "items": {
             "type": "object",
             "title": "item",
+            "unevaluatedProperties": false,
             "properties": {
               "url": {
                 "type": "string",
@@ -684,6 +695,7 @@
         "SpatialItem": {
           "title": "Spatial Core",
           "type": "object",
+          "unevaluatedProperties": false,
           "properties": {
             "name": {
               "type": "string",
@@ -940,6 +952,7 @@
             },
             "administrative": {
               "type": "object",
+              "unevaluatedProperties": false,
               "properties": {
                 "state": {
                   "type": "array",
@@ -981,6 +994,7 @@
         },
         "Metadata": {
           "type": "object",
+          "unevaluatedProperties": false,
           "properties": {
             "data_type": {
               "type": "string",
@@ -1049,6 +1063,7 @@
               ]
             },
             "datasource": {
+              "unevaluatedProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -1085,6 +1100,7 @@
         },
         "ReferenceItem": {
           "type": "object",
+          "unevaluatedProperties": false,
           "properties": {
             "url": {
               "type": "string",
@@ -1126,6 +1142,7 @@
         "contacts",
         "address"
       ],
+      "unevaluatedProperties": false,
       "properties": {
         "metadata": {
           "description": "Angaben zur Adresse statt zum Metadatensatz.",
@@ -1133,6 +1150,7 @@
           "allOf": [
             {
               "type": "object",
+              "unevaluatedProperties": false,
               "properties": {
                 "data_type": {
                   "type": "string",
@@ -1201,6 +1219,7 @@
                   ]
                 },
                 "datasource": {
+                  "unevaluatedProperties": false,
                   "properties": {
                     "id": {
                       "type": "string",
@@ -1278,6 +1297,7 @@
             ]
           },
           "items": {
+            "unevaluatedProperties": false,
             "properties": {
               "role": {
                 "description": "`self` für den Eintrag der Adresse selbst.",
@@ -1367,6 +1387,7 @@
                   {
                     "type": "object",
                     "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name` und `last_name` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                    "unevaluatedProperties": false,
                     "properties": {
                       "document_type": {
                         "type": "string",
@@ -1398,6 +1419,7 @@
                           "type": "object",
                           "title": "Verknüpfung",
                           "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                          "unevaluatedProperties": false,
                           "properties": {
                             "uuid": {
                               "type": "string",
@@ -1437,6 +1459,7 @@
                   },
                   {
                     "type": "object",
+                    "unevaluatedProperties": false,
                     "properties": {
                       "salutation": {
                         "type": "string",
@@ -1500,6 +1523,7 @@
               "address": {
                 "type": "object",
                 "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name` und `last_name` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                "unevaluatedProperties": false,
                 "properties": {
                   "document_type": {
                     "type": "string",
@@ -1531,6 +1555,7 @@
                       "type": "object",
                       "title": "Verknüpfung",
                       "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                      "unevaluatedProperties": false,
                       "properties": {
                         "uuid": {
                           "type": "string",
@@ -1566,8 +1591,7 @@
                 },
                 "required": [
                   "document_type"
-                ],
-                "unevaluatedProperties": false
+                ]
               }
             }
           }
@@ -1583,6 +1607,7 @@
         "contacts",
         "address"
       ],
+      "unevaluatedProperties": false,
       "properties": {
         "metadata": {
           "description": "Angaben zur Adresse statt zum Metadatensatz.",
@@ -1590,6 +1615,7 @@
           "allOf": [
             {
               "type": "object",
+              "unevaluatedProperties": false,
               "properties": {
                 "data_type": {
                   "type": "string",
@@ -1658,6 +1684,7 @@
                   ]
                 },
                 "datasource": {
+                  "unevaluatedProperties": false,
                   "properties": {
                     "id": {
                       "type": "string",
@@ -1735,6 +1762,7 @@
             ]
           },
           "items": {
+            "unevaluatedProperties": false,
             "properties": {
               "role": {
                 "description": "`self` für den Eintrag der Adresse selbst.",
@@ -1824,6 +1852,7 @@
                   {
                     "type": "object",
                     "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name` und `last_name` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                    "unevaluatedProperties": false,
                     "properties": {
                       "document_type": {
                         "type": "string",
@@ -1855,6 +1884,7 @@
                           "type": "object",
                           "title": "Verknüpfung",
                           "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                          "unevaluatedProperties": false,
                           "properties": {
                             "uuid": {
                               "type": "string",
@@ -1894,6 +1924,7 @@
                   },
                   {
                     "type": "object",
+                    "unevaluatedProperties": false,
                     "properties": {
                       "salutation": {
                         "type": "string",
@@ -1957,6 +1988,7 @@
               "address": {
                 "type": "object",
                 "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name` und `last_name` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+                "unevaluatedProperties": false,
                 "properties": {
                   "document_type": {
                     "type": "string",
@@ -1988,6 +2020,7 @@
                       "type": "object",
                       "title": "Verknüpfung",
                       "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+                      "unevaluatedProperties": false,
                       "properties": {
                         "uuid": {
                           "type": "string",
@@ -2023,8 +2056,7 @@
                 },
                 "required": [
                   "document_type"
-                ],
-                "unevaluatedProperties": false
+                ]
               }
             }
           }
@@ -2034,6 +2066,7 @@
     "GeneralAddress": {
       "type": "object",
       "description": "Angaben zur Adresse ohne Gegenstück in den \"Root fields\". `salutation`, `academic_title`,\n`first_name` und `last_name` nur bei `InGridPersonDoc`; dort ist `last_name` Pflicht.\n",
+      "unevaluatedProperties": false,
       "properties": {
         "document_type": {
           "type": "string",
@@ -2065,6 +2098,7 @@
             "type": "object",
             "title": "Verknüpfung",
             "description": "Interne InGrid-Verknüpfung mit einem anderen Datensatz oder einer Adresse.",
+            "unevaluatedProperties": false,
             "properties": {
               "uuid": {
                 "type": "string",
@@ -2104,6 +2138,7 @@
     },
     "Person": {
       "type": "object",
+      "unevaluatedProperties": false,
       "properties": {
         "salutation": {
           "type": "string",

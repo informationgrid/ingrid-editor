@@ -1562,9 +1562,7 @@ open class IngridModelTransformer(
         },
         references = getAllReferences().map { ref ->
             LuceneReference(
-                internal = "url" != ref.referenceType,
                 url = ref.url,
-                uuidRef = ref.uuidRef,
                 type = codelists.getValue("2000", ref.type) ?: ref.type.value,
                 typeRefUri = codelistRef("2000", ref.type.key),
                 title = ref.title,

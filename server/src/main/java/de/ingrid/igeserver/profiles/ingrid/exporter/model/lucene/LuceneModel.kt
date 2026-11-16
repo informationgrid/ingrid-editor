@@ -473,8 +473,11 @@ data class SpatialRepresentationGrid(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentationGridRectified(
+    @JsonProperty("check_point_availability")
     val checkPointAvailability: Boolean,
+    @JsonProperty("check_point_description")
     val checkPointDescription: String?,
+    @JsonProperty("corner_points")
     val cornerPoints: String?,
     @JsonProperty("point_in_pixel")
     val pointInPixel: String?,
@@ -484,7 +487,9 @@ data class SpatialRepresentationGridRectified(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentationGridReferenced(
+    @JsonProperty("orientation_parameter_availability")
     val orientationParameterAvailability: Boolean,
+    @JsonProperty("control_point_availability")
     val controlPointAvaliability: Boolean,
     val parameters: String?,
 )
@@ -526,10 +531,7 @@ enum class SpatialRepresentationType {
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class LuceneReference(
-    val internal: Boolean = false,
     val url: String? = null,
-    @JsonProperty("uuid_ref")
-    val uuidRef: String? = null,
     val type: String? = null,
     @JsonProperty("type_ref_uri")
     val typeRefUri: String? = null,
