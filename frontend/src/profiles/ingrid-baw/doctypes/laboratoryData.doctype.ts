@@ -66,15 +66,6 @@ export class LaboratoryDataDoctypeBaw extends GeoDatasetDoctypeBaw {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
 
-    // remove keywords (Baugrunddynamik)
-    const subsoilKeywordsPos = IngridShared.findFieldElementWithId(
-      fieldConfig,
-      "subsoilKeywords",
-    );
-    if (subsoilKeywordsPos) {
-      subsoilKeywordsPos.fieldConfig.splice(subsoilKeywordsPos.index, 1);
-    }
-
     // remove sections (Fachbezug, Raumbezug, Zeitbezug)
     const sectionsToRemove = ["Fachbezug", "Raumbezug", "Zeitbezug"];
     sectionsToRemove.forEach((label) => {

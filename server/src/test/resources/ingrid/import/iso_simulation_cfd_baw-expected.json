@@ -41,8 +41,7 @@
     "openDataCategories": [],
     "keywords": {
       "free": [],
-      "bawKeywords": [],
-      "subsoilKeywords": []
+      "bawKeywords": []
     },
     "spatial": {
       "references": [
@@ -162,9 +161,7 @@
     },
     "qualities": [],
     "dataset": {
-      "languages": [
-        "150"
-      ]
+      "languages": ["150"]
     },
     "vectorSpatialRepresentation": [],
     "bawOrderInfo": {
@@ -197,14 +194,8 @@
       "value": "NCANALYSE",
       "_codelistId": "3950001"
     },
-    "version": [
-      "v1",
-      "v2"
-    ],
-    "extension": [
-      "e1",
-      "e2"
-    ],
+    "version": ["v1", "v2"],
+    "extension": ["e1", "e2"],
     "simulationPhases": [
       {
         "type": "cfdSimulation",

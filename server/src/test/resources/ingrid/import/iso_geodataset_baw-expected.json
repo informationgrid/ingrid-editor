@@ -39,13 +39,6 @@
           "value": "Schlagwort1",
           "_codelistId": "3950005"
         }
-      ],
-      "subsoilKeywords": [
-        {
-          "key": "Schlagwort2",
-          "value": "Schlagwort2",
-          "_codelistId": "3950007"
-        }
       ]
     },
     "spatial": {
@@ -153,9 +146,7 @@
     },
     "qualities": [],
     "dataset": {
-      "languages": [
-        "150"
-      ]
+      "languages": ["150"]
     },
     "vectorSpatialRepresentation": [],
     "bawOrderInfo": {

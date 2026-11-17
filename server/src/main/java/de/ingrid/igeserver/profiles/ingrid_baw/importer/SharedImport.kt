@@ -26,7 +26,6 @@ import de.ingrid.igeserver.services.CodelistHandler
 
 val BAW_THESAURI = listOf(
     "BAW-Schlagwortkatalog",
-    "Baugrunddynamik-Schlagwortkatalog",
     "de.baw.codelist.model.dimensionality",
     "de.baw.codelist.model.method",
     "de.baw.codelist.model.type",
@@ -56,11 +55,6 @@ fun getBawKeywords(metadata: Metadata, codeListService: CodelistHandler): List<K
     ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "BAW-Schlagwortkatalog" }
     ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
     ?.map { createOrGetCodelistEntry(it, "3950005", codeListService) } ?: emptyList()
-
-fun getSubsoilKeywords(metadata: Metadata, codeListService: CodelistHandler): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-    ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Baugrunddynamik-Schlagwortkatalog" }
-    ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-    ?.map { createOrGetCodelistEntry(it, "3950007", codeListService) } ?: emptyList()
 
 fun getLiteratureReferences(identificationInfo: MDDataIdentification?): List<String> = identificationInfo?.aggregationInfo?.mapNotNull { it.mdAggregateInformation?.aggregateDataSetName?.uuidref }
     ?: emptyList()

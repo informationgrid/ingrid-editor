@@ -35,7 +35,6 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderNumber
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getOrderTitle
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getSubsoilKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getDouble
@@ -54,12 +53,10 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun getGeographicElements(): List<GeographicElement> = super.getGeographicElements() + getBwastrGeographicElements(this)
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() +
         getBawKeywords(this).keywords.mapNotNull { it.name } +
-        getSubsoilKeywords(this).keywords.mapNotNull { it.name } +
         getSimulationKeywordThesauri().flatMap { t -> t.keywords.mapNotNull { it.name } }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() +
         getBawKeywords(this) +
-        getSubsoilKeywords(this) +
         getSimulationKeywordThesauri()
 
     override val spatialSystems = super.spatialSystems + (

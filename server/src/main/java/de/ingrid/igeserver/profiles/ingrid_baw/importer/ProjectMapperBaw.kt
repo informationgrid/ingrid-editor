@@ -32,8 +32,6 @@ class ProjectMapperBaw(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     fun getBawKeywords(): List<KeyValue> = getBawKeywords(metadata, codeListService)
 
-    fun getSubsoilKeywords(): List<KeyValue> = getSubsoilKeywords(metadata, codeListService)
-
     fun getLiteratureReferences(): List<String> = getLiteratureReferences(identificationInfo)
 
     fun getOrderNumber(): String? = identificationInfo?.citation?.citation?.identifier?.firstOrNull()?.mdIdentifier?.code?.value

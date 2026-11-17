@@ -28,7 +28,6 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicEleme
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLfsReferences
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getSubsoilKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformUrlForDatenrepository
 import de.ingrid.igeserver.utils.getBoolean
@@ -45,9 +44,9 @@ open class SoftwareModelTransformerBaw(transformerConfig: TransformerConfig) : I
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
     override fun getGeographicElements(): List<GeographicElement> = super.getGeographicElements() + getBwastrGeographicElements(this)
-    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name } + getSubsoilKeywords(this).keywords.mapNotNull { it.name }
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this) + getSubsoilKeywords(this)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
     override val spatialSystems =
         super.spatialSystems + (
