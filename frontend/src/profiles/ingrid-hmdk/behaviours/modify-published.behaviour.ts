@@ -26,7 +26,6 @@ import {
   IgeEventResultType,
 } from "../../../app/services/event/event.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ResearchService } from "../../../app/+research/research.service";
 import { DocumentDataService } from "../../../app/services/document/document-data.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
@@ -36,8 +35,8 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { firstValueFrom } from "rxjs";
-import { map } from "rxjs/operators";
 import { GeneralStore } from "../../../app/store/general.store";
+import { HmdkDocumentSearchService } from "../hmdk-document-search.service";
 
 @Injectable({ providedIn: "root" })
 export class ModifyPublishedBehaviour extends Plugin {
@@ -50,7 +49,7 @@ export class ModifyPublishedBehaviour extends Plugin {
 
   eventService = inject(EventService);
   dialog = inject(MatDialog);
-  researchService = inject(ResearchService);
+  documentSearchService = inject(HmdkDocumentSearchService);
   documentDataService = inject(DocumentDataService);
   docEvents = inject(DocEventsService);
   generalStore = inject(GeneralStore);
@@ -70,6 +69,13 @@ export class ModifyPublishedBehaviour extends Plugin {
     );
   }
 
+  /**
+   * Handles the update event for published documents.
+   *
+   * Shows an information dialog when a published document with HmbTG publication
+   * is being updated, informing the user that changes will create a new version
+   * in the transparency portal while the old version remains published.
+   */
   private handleUpdate() {
     // ignore addresses
     if (this.forAddress()) return;
@@ -94,6 +100,15 @@ export class ModifyPublishedBehaviour extends Plugin {
       });
   }
 
+  /**
+   * Handles the delete event for published documents.
+   *
+   * When documents are being deleted, checks if any are published with HmbTG publication.
+   * If so, shows a confirmation dialog informing the user that these documents will remain
+   * published in the transparency portal for 10 years even after deletion from HMDK.
+   *
+   * @param eventResponder The event responder containing the documents to delete
+   */
   private async handleDeleteEvent(eventResponder: EventResponder) {
     let success = false;
     const docs = eventResponder.data as DocumentAbstract[];
@@ -123,6 +138,12 @@ export class ModifyPublishedBehaviour extends Plugin {
     }
   }
 
+  /**
+   * Builds the response data for the event.
+   *
+   * @param isSuccess Whether the operation was successful
+   * @returns EventData with the appropriate result type
+   */
   private buildResponse(isSuccess: boolean): EventData {
     return {
       result: isSuccess ? IgeEventResultType.SUCCESS : IgeEventResultType.FAIL,
@@ -130,27 +151,19 @@ export class ModifyPublishedBehaviour extends Plugin {
     };
   }
 
+  /**
+   * Retrieves titles of documents that have HmbTG publication.
+   *
+   * @param publishedDocs Array of published documents
+   * @returns Promise resolving to array of document titles
+   */
   private async getHmbTGDocTitles(
     publishedDocs: DocumentAbstract[],
-  ): Promise<String[]> {
+  ): Promise<string[]> {
     return firstValueFrom(
-      this.researchService
-        .searchBySQL(this.prepareSQL(publishedDocs.map((d) => d._uuid)))
-        .pipe(map((response) => response.hits.map((doc) => doc.title))),
-    );
-  }
-
-  private prepareSQL(uuids: string[]): string {
-    return `SELECT document1.*, document_wrapper.category
-                 FROM document_wrapper
-                        JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                 WHERE document1.uuid = ANY(('{<uuids>}'))
-                   AND document1.is_latest = true
-                   AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.properties.publicationHmbTG')
-                   AND data->'properties'->>'publicationHmbTG' = 'true'`.replace(
-      "<uuids>",
-      uuids.join(", "),
+      this.documentSearchService.getHmbtgDocumentTitles(
+        publishedDocs.map((d) => d._uuid),
+      ),
     );
   }
 }

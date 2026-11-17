@@ -19,12 +19,10 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.model.Authority
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.GeoElementType
 import de.ingrid.igeserver.exporter.model.GeographicElement
-import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
@@ -32,7 +30,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
-import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.AddressModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
@@ -41,10 +38,12 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationM
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SoftwareModelTransformerBaw
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
+import de.ingrid.igeserver.utils.getInteger
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.igeserver.utils.prefixIfNot
+import tools.jackson.databind.JsonNode
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -281,11 +280,11 @@ fun getLaboratoryData(transformer: IngridModelTransformer): LaboratoryDataBaw? {
     if (transformer.doc.type != "BawLaboratoryData") return null
     val data = transformer.doc.data
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.stringValue()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
-    val testProcedures = data.getPath("testProcedures")?.map { tp ->
+    val testProcedures = data.getPath("testProcedures")?.values()?.map { tp ->
         TestProcedure(
             testMethod = tp.getString("testMethod") ?: tp.getString("testMethod.value"),
             instrument = tp.getString("instrument"),
@@ -310,14 +309,15 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     if (transformer.doc.type != "BawSimulation") return null
     val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "bautechnikSimulation" } ?: return null
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.stringValue()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     val softwareNode = data.getPath("software")
     val software = if (softwareNode != null) {
         SoftwareBaw(
-            name = softwareNode.getString("name"),
+            name = softwareNode.getPath("name")?.mapToKeyValue()
+                ?.let { transformer.codelists.getValue("BAW_simulationSoftware", it) },
             version = softwareNode.getString("version"),
         )
     } else {
@@ -338,9 +338,15 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
     val matParamsNode = data.getPath("materialParameters")
     val materialParameters = if (matParamsNode != null) {
         MaterialParametersBaw(
-            reinforcement = matParamsNode.getPath("reinforcement")?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            steel = matParamsNode.getPath("steel")?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
-            concrete = matParamsNode.getPath("concrete")?.map { ConcreteBaw(it.getDouble("compressiveStrength"), it.getString("unitOfMeasure.value")) } ?: emptyList(),
+            reinforcement = matParamsNode.getPath("reinforcement")?.values()?.map { ReinforcementBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            steel = matParamsNode.getPath("steel")?.values()?.map { SteelBaw(it.getDouble("yieldLimit")) } ?: emptyList(),
+            concrete = matParamsNode.getPath("concrete")?.values()?.map {
+                ConcreteBaw(
+                    it.getDouble("compressiveStrength"),
+                    it.getPath("unitOfMeasure")?.mapToKeyValue()
+                        ?.let { unit -> transformer.codelists.getValue("BAW_simulationConcreteUnit", unit) },
+                )
+            } ?: emptyList(),
         )
     } else {
         null
@@ -351,7 +357,8 @@ fun getBautechnikSimulation(transformer: IngridModelTransformer): BautechnikSimu
         objects = getList("object"),
         objectParts = getList("objectPart"),
         researchGoals = getList("researchGoal"),
-        spatialDimension = data.getString("dimension.spatialDimension"),
+        spatialDimension = data.getPath("dimension.spatialDimension")?.mapToKeyValue()
+            ?.let { transformer.codelists.getValue("BAW_simulationSpatialDimension", it) },
         timeDimension = data.getBoolean("dimension.timeDimension"),
         levels = getList("level"),
         phases = getList("phase"),
@@ -370,18 +377,18 @@ fun getCfdSimulation(transformer: IngridModelTransformer): CfdSimulationBaw? {
     if (transformer.doc.type != "BawSimulation") return null
     val data = transformer.doc.data.getPath("simulationPhases")?.find { it.getString("type") == "cfdSimulation" } ?: return null
 
-    fun getList(path: String): List<String> = data.getPath(path)?.map { node ->
-        node.getString("value") ?: node.asText()
+    fun getList(path: String): List<String> = data.getPath(path)?.values()?.map { node ->
+        node.getString("value") ?: node.stringValue()
     }?.filter { it.isNotBlank() } ?: emptyList()
 
     return CfdSimulationBaw(
         shipNames = getList("shipName"),
-        physics = data.getString("physics"),
-        constantCrossSection = data.getBoolean("constantCrossSection"),
-        propulsion = data.getBoolean("propulsion"),
-        movementType = data.getString("movementType"),
-        trajectory = data.getString("trajectory"),
-        cellCount = data.getString("cellCount"),
+        physics = data.getPath("physics")?.mapToKeyValue()?.value,
+        constantCrossSection = data.getBoolean("properties.constantCrossSection"),
+        propulsion = data.getBoolean("properties.propulsion"),
+        movementType = data.getPath("movementType")?.mapToKeyValue()?.value,
+        trajectory = data.getPath("trajectory")?.mapToKeyValue()?.value,
+        cellCount = data.getInteger("cellCount"),
     )
 }
 
@@ -441,7 +448,7 @@ data class CfdSimulationBaw(
     val propulsion: Boolean?,
     val movementType: String?,
     val trajectory: String?,
-    val cellCount: String?,
+    val cellCount: Int?,
 )
 
 data class BautechnikMeasurementBaw(
@@ -542,10 +549,4 @@ fun transformUrlForDatenrepository(url: String?): String? {
     // Only allow URLs that are in the domain whitelist. Return null for other URLs.
     val whitelist = BawPropertiesHolder.domainWhitelist
     return if (whitelist.any { cleanUrl.contains(it) }) cleanUrl else null
-}
-
-fun convertToIngridOptionsWithStructuralChildren(options: IncomingReferenceOptions): IngridIncomingReferenceOptions {
-    val ingridOptions = options as? IngridIncomingReferenceOptions
-        ?: IngridIncomingReferenceOptions(docStateFilter = options.docStateFilter)
-    return ingridOptions.copy(addStructuralChildren = true)
 }

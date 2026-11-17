@@ -28,14 +28,20 @@ import { MatButtonModule } from "@angular/material/button";
 import { waitSomeTime } from "../../../../profiles/ingrid/utils/time";
 
 describe("FormMessageComponent", () => {
+  // a short duration keeps the specs fast and well below the test timeout,
+  // the component applies the same logic for the default duration of 3s
+  const DURATION = 100;
+
   const INFO_MESSAGE: FormMessageType = {
     severity: "info",
     message: "Dies ist eine Infonachricht",
+    duration: DURATION,
   };
 
   const ERROR_MESSAGE: FormMessageType = {
     severity: "error",
     message: "Dies ist eine Fehlernachricht",
+    duration: DURATION,
   };
 
   let spectator: Spectator<FormMessageComponent>;
@@ -71,13 +77,21 @@ describe("FormMessageComponent", () => {
     expect(wrapper.classList.contains("info")).toBe(true);
   });
 
-  it("should hide an info message after 3s", async () => {
+  it("should hide an info message after the given duration", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(INFO_MESSAGE);
-    await waitSomeTime(3010);
+    await spectator.fixture.whenStable();
+    expect(spectator.query(".wrapper")).not.toBe(null);
 
-    const wrapper = spectator.query(".wrapper");
-    expect(wrapper).toBe(null);
+    // the message is removed from the DOM only after the leave animation,
+    // so poll instead of waiting for a fixed amount of time
+    await vi.waitFor(
+      () => {
+        spectator.detectChanges();
+        expect(spectator.query(".wrapper")).toBe(null);
+      },
+      { timeout: 3000, interval: 20 },
+    );
   });
 
   it("should show an error message", async () => {
@@ -91,14 +105,15 @@ describe("FormMessageComponent", () => {
     expect(wrapper.classList.contains("error")).toBe(true);
   });
 
-  it("should not hide an error message after 3s", async () => {
+  it("should not hide an error message after the given duration", async () => {
     const service = spectator.inject(FormMessageService);
     service.message$.next(ERROR_MESSAGE);
     await spectator.fixture.whenStable();
 
-    const wrapper = spectator.query(".wrapper");
-    await waitSomeTime(3010);
-    expect(wrapper).not.toBe(null);
+    await waitSomeTime(DURATION * 4);
+    spectator.detectChanges();
+
+    expect(spectator.query(".wrapper")).not.toBe(null);
   });
 
   it.skip("should jump to next and previous error", () => {});

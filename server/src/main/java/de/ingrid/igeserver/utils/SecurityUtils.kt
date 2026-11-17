@@ -55,7 +55,7 @@ fun <T> runAsAdmin(
 ): T {
     val originalContext = SecurityContextHolder.getContext()
     if (originalContext.authentication != null) {
-        log.debug("Temporarily replacing authentication '${originalContext.authentication.name}' with admin '$principal'")
+        log.debug("Temporarily replacing authentication '${originalContext.authentication?.name}' with admin '$principal'")
     }
     try {
         val auth = setAdminAuthentication(principal, credentials)
@@ -63,7 +63,7 @@ fun <T> runAsAdmin(
     } finally {
         SecurityContextHolder.setContext(originalContext)
         if (originalContext.authentication != null) {
-            log.debug("Restored original authentication '${originalContext.authentication.name}'")
+            log.debug("Restored original authentication '${originalContext.authentication?.name}'")
         }
     }
 }

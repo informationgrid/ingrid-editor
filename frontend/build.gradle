@@ -17,9 +17,11 @@ group = 'de.ingrid'
 description = 'IGE-NG Frontend'
 
 node {
-  version = '22.16.0'
+  version = '24.17.0'
   download = true
 }
+
+def yarnVersion = '4.17.0'
 
 def buildArgs = ['run', 'prod']
 if (hasProperty('baseHref')) {
@@ -28,19 +30,48 @@ if (hasProperty('baseHref')) {
 
 tasks.register('yarnUpgrade', YarnTask) {
   dependsOn 'yarnSetup'
-  args = ['set', 'version', '4.17.0']
+  inputs.property('version', yarnVersion)
+  outputs.file(".yarn/releases/yarn-${yarnVersion}.cjs")
+  outputs.file('.yarnrc.yml')
+  args = ['set', 'version', yarnVersion]
 }
 
 tasks.register('yarnInstall', YarnTask) {
   dependsOn 'yarnUpgrade'
+  inputs.files('package.json', 'yarn.lock', '.yarnrc.yml', '.npmrc')
+  inputs.file(".yarn/releases/yarn-${yarnVersion}.cjs")
+  outputs.dir('node_modules')
+  outputs.file('.yarn/install-state.gz')
   args = ['install', '--immutable']
+}
+
+tasks.register('cyclonedxBom', YarnTask) {
+  dependsOn 'yarnInstall'
+  inputs.files('package.json', 'yarn.lock', '.yarnrc.yml')
+  inputs.dir(fileTree("node_modules").exclude(".cache"))
+  outputs.file('build/reports/sbom.json')
+  if (project.hasProperty('devSBOM')) {
+    args = ['cyclonedx-yarn', '--output-file', 'build/reports/sbom-dev.json']
+  } else {
+    args = ['cyclonedx-yarn', '--prod', '--output-file', 'build/reports/sbom.json']
+  }
 }
 
 tasks.register('bundle', YarnTask) {
   dependsOn 'yarnInstall'
+  inputs.property('buildArgs', buildArgs)
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
-  inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
+  inputs.files(
+    'package.json',
+    'yarn.lock',
+    'angular.json',
+    'tsconfig.json',
+    'tsconfig.app.json',
+    'transloco.config.js',
+    '.browserslistrc',
+    '.yarnrc.yml'
+  )
 
   outputs.dir('build/dist/browser')
 

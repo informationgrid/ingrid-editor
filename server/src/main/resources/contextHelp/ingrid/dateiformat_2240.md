@@ -9,6 +9,7 @@ docType:
   - InGridInformationSystem
   - InGridPublication
   - InGridProject
+  - InGridAlgorithm
 # title, used as window title
 title: Dateiformat
 ---

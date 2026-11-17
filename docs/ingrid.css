@@ -4,3 +4,7 @@
 h1 {
   /*background-color: red;*/
 }
+
+#content {
+    max-width: 66em;
+}

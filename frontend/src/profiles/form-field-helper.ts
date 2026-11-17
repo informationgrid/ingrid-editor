@@ -348,6 +348,7 @@ export class FormFieldHelper {
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        description: options?.hintStart,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
@@ -1109,6 +1110,7 @@ export class FormFieldHelper {
       wrappers: ["panel"],
       defaultValue: options?.defaultValue ?? [],
       className: options?.className,
+      expressions: options?.expressions,
       props: {
         codelistId: options?.codelistId,
         externalLabel: label,

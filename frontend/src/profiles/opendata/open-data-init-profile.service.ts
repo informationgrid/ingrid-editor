@@ -37,33 +37,10 @@ export class OpenDataInitProfile {
   private codelists$ = toObservable(this.codelistStore.entityMap);
 
   initProfile() {
-    // rename codelist entry (should be done in codelist repo!?)
-    this.codelists$
-      .pipe(
-        filter((map) => map["505"] !== undefined),
-        take(1),
-      )
-      .subscribe((data) => this.modifyAddressTypeCodelist(data));
-
     this.pluginService.registerPlugin(this.opendataPlugin);
 
     this.opendata.showOpendata = this.behaviourService
       .getBehaviour("plugin.opendata.flexibleDoctype")
       .isActive();
-  }
-
-  private modifyAddressTypeCodelist(data) {
-    const modified505 = {
-      ...data["505"],
-      entries: data["505"].entries.map((item) =>
-        item.id === "10"
-          ? {
-              ...item,
-              fields: { ...item.fields, de: "Veröffentlichende Stelle" },
-            }
-          : item,
-      ),
-    };
-    this.codelistStore.updateCodelist(modified505);
   }
 }

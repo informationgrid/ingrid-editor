@@ -40,6 +40,13 @@ class ReadPermissionTests : IntegrationTest() {
     private val excludedUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
 
     @Test
+    fun getRootDocuments() {
+        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndParentIsNullAndCategory("test_catalog", "data")
+        docs.size shouldNotBe 0
+        docs.any { it.uuid == rootUuid } shouldBe true
+    }
+
+    @Test
     fun readAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         doc shouldNotBe null

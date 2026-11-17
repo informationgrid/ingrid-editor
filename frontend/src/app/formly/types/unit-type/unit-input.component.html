@@ -4,6 +4,7 @@
     [errorStateMatcher]="errorStateMatcher"
     [placeholder]="props.placeholder"
     type="number"
+    [attr.data-cy]="'unit-' + key"
     [formControl]="$any(field.fieldGroup[0].formControl)"
 />
 @if (field.fieldGroup[0].formControl.value != null) {

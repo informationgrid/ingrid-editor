@@ -43,4 +43,5 @@ export interface CatalogSettingsConfig {
   spatialReference: any;
   codelistFavorites: { [x: string]: string[] };
   language: string;
+  theme?: string;
 }

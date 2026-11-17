@@ -24,6 +24,7 @@ import {
   OnInit,
   output,
   Signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import {
@@ -43,6 +44,7 @@ import { MatIconButton } from "@angular/material/button";
   selector: "ige-codelist-presenter",
   templateUrl: "./codelist-presenter.component.html",
   styleUrls: ["./codelist-presenter.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatAccordion,
     MatExpansionPanel,

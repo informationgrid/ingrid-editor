@@ -20,13 +20,9 @@
 import { Component, input, OnInit, output, signal } from "@angular/core";
 import { Evaluation } from "../../../../services/ai/ai.service";
 import { MatButton } from "@angular/material/button";
-import {
-  MatDivider,
-  MatListOption,
-  MatSelectionList,
-} from "@angular/material/list";
+import { MatDivider } from "@angular/material/list";
 import { ScoreIndicatorComponent } from "../../../score-indicator/score-indicator.component";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { AiSuggestionListComponent } from "../../../ai-suggestion-list/ai-suggestion-list.component";
 
 @Component({
   selector: "ige-evaluation-entry",
@@ -34,11 +30,9 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
   styleUrls: ["./evaluation-entry.component.scss"],
   imports: [
     MatButton,
-    MatListOption,
-    MatSelectionList,
     ScoreIndicatorComponent,
-    ReactiveFormsModule,
     MatDivider,
+    AiSuggestionListComponent,
   ],
 })
 export class EvaluationEntryComponent implements OnInit {
@@ -47,14 +41,14 @@ export class EvaluationEntryComponent implements OnInit {
   onSuggestionApply = output<any>();
   onSuggestionReset = output<any>();
 
-  formControl: FormControl;
   isExpanded = signal<boolean>(false);
+  selectedOption = signal<any>(null);
 
   constructor() {}
 
   ngOnInit(): void {
-    if (this.evaluation().suggestions?.length > 0) {
-      this.formControl = new FormControl([this.evaluation().suggestions.at(0)]);
+    if (this.evaluation().options?.length > 0) {
+      this.selectedOption.set(this.evaluation().options.at(0));
     }
   }
 

@@ -17,21 +17,51 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 import { OpenDataComponent } from "./profile-opendata";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { filter, take } from "rxjs/operators";
 
 @Component({
   template: "bmi",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgxFlowModule],
 })
 class BmiComponent extends OpenDataComponent {
+  private codelistStore = inject(CodelistStore);
+  private codelists$ = toObservable(this.codelistStore.entityMap);
+
   constructor() {
     super();
     this.reportsService.setFilter((route) => route.path != "url-check");
     this.opendata.options.spatialTypes = ["free", "wkt"];
     this.opendata.options.temporalLegacy = true;
+
+    // rename codelist entry (should be done in codelist repo!?)
+    this.codelists$
+      .pipe(
+        filter((map) => map["505"] !== undefined),
+        take(1),
+      )
+      .subscribe((data) => this.modifyAddressTypeCodelist(data));
+  }
+
+  private modifyAddressTypeCodelist(data) {
+    const modified505 = {
+      ...data["505"],
+      entries: data["505"].entries.map((item) =>
+        item.id === "10"
+          ? {
+              ...item,
+              fields: { ...item.fields, de: "Veröffentlichende Stelle" },
+            }
+          : item,
+      ),
+    };
+    this.codelistStore.updateCodelist(modified505);
   }
 }
 

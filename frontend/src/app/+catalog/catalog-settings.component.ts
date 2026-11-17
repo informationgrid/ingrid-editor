@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, viewChild } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
@@ -29,6 +35,7 @@ import { BehaviourService } from "../services/behavior/behaviour.service";
   selector: "ige-catalog-settings",
   templateUrl: "./catalog-settings.component.html",
   styleUrls: ["./catalog-settings.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTabNav,
     MatTabLink,

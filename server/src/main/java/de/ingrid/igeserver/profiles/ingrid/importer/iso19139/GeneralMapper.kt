@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Address
 import de.ingrid.igeserver.exports.iso.CIContact
@@ -41,6 +37,10 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.databind.JsonNode
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.util.*
 
 open class GeneralMapper(val isoData: IsoImportData) {
@@ -59,7 +59,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val bwastrLocatorService: BwastrLocatorService = isoData.bwastrLocatorService
     val importSettings = isoData.importSettings
 
-    val uuid = metadata.fileIdentifier?.value
+    val uuid = metadata.fileIdentifier?.value?.trim()
     open val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
@@ -70,6 +70,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isHvd = getHvdCategories().isNotEmpty()
     val isOpenData = containsKeyword("opendata")
+    val isIzg = containsKeyword("izg-relevant")
     val parentUuid = metadata.parentIdentifier?.value
 
     fun getDescription(): String {
@@ -432,7 +433,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "IACS data",
             "High-value dataset categories",
         ) + ignoreAdditional
-        val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
+        val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS", "izg-relevant")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
             ?.filter {
@@ -505,8 +506,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 // TODO: handle bounding polygons
                 it.boundingPolygon?.polygon?.let { _ ->
                     val xmlMapper = XmlMapper()
-                    val xml = xmlMapper.writer().withoutRootName().writeValueAsString(it.boundingPolygon.polygon)
-                    val convertedWKT = convertGml32ToWkt(xml.substring(2, xml.length - 3))
+                    val xml = xmlMapper.writeValueAsString(it.boundingPolygon.polygon)
+                    val convertedWKT = convertGml32ToWkt(xml)
                     references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
                 }
             }
@@ -525,7 +526,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 start = it[1].toDoubleOrNull()
                 end = it[2].toDoubleOrNull()
             }
-        } else if (title.matches("\\[[0-9]{4}]$".toRegex())) {
+        } else if (title.matches(".*\\[[0-9]{4}]$".toRegex())) {
             // like: "Main, Hauptstrecke - [0108]"  (Name, Streckenname - [ID])
             extractedBwastrId = title.substringAfterLast("[").substringBeforeLast("]")
         } else {
@@ -535,19 +536,20 @@ open class GeneralMapper(val isoData: IsoImportData) {
         // remove leading zero
         extractedBwastrId = extractedBwastrId.removePrefix("0")
 
-        return if (bwastrLocatorService.customBWASTRMap.containsKey(extractedBwastrId)) {
-            val bwastr = bwastrLocatorService.customBWASTRMap[extractedBwastrId]!!
+        // special BWaStr (e.g. 7000 - Nordsee) are unknown to the BWaStr-Locator
+        val special = bwastrLocatorService.getSpecial(extractedBwastrId)
+        return if (special != null) {
             SpatialReference(
                 type = "bwastr",
                 bwastr = Bwastr(
-                    bwastrid = bwastr.bwastrid,
-                    bwastr_name = bwastr.bwastr_name,
-                    strecken_name = bwastr.strecken_name,
-                    concat_name = bwastr.concat_name,
+                    bwastrid = special.bwastrid,
+                    bwastr_name = special.bwastr_name,
+                    strecken_name = special.strecken_name,
+                    concat_name = special.concat_name,
                     start = null,
                     end = null,
                 ),
-                title = bwastr.concat_name,
+                title = special.concat_name,
             )
         } else {
             val idForSearch = if (extractedBwastrId.endsWith("00")) extractedBwastrId.dropLast(2) + "01" else extractedBwastrId
@@ -560,8 +562,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         bwastr_name = bwastr.bwastr_name,
                         strecken_name = bwastr.strecken_name,
                         concat_name = bwastr.concat_name,
-                        start = end,
-                        end = start,
+                        start = start,
+                        end = end,
                     ),
                     title = bwastr.concat_name,
                 )
@@ -914,10 +916,10 @@ open class GeneralMapper(val isoData: IsoImportData) {
             val value = otherConstraints[index]
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
-                val text = node.get("name").asText()
+                val text = node.get("name").asString()
                 val keyValue = convertUserConstraintToKeyValue(text)
                 val note = getUseConstraintNoteWhenJsonExists(otherConstraints, index, groupStartIndex)
-                result.add(UseConstraint(keyValue, node.get("quelle").asText(), note))
+                result.add(UseConstraint(keyValue, node.get("quelle").asString(), note))
                 index++
                 continue
             }

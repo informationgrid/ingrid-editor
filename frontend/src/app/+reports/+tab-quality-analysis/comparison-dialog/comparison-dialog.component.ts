@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -42,6 +49,7 @@ import { EvaluationResult } from "../../../services/ai/ai.service";
   selector: "ige-comparison-dialog",
   templateUrl: "./comparison-dialog.component.html",
   styleUrls: ["./comparison-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogTitle,
     MatDialogContent,
@@ -61,7 +69,7 @@ import { EvaluationResult } from "../../../services/ai/ai.service";
 export class ComparisonDialogComponent implements OnInit {
   result = signal<EvaluationResult>(undefined);
   evaluations = computed(() =>
-    this.result().evaluations.filter((e) => e.suggestions?.length > 0),
+    this.result().evaluations.filter((e) => e.options?.length > 0),
   );
 
   formGroup = new FormGroup({});
@@ -75,7 +83,7 @@ export class ComparisonDialogComponent implements OnInit {
     this.evaluations().forEach((evaluation) => {
       this.formGroup.addControl(
         evaluation.key,
-        new FormControl([evaluation.suggestions[0]]),
+        new FormControl([evaluation.options[0]]),
       );
       this.isExpanded.update((state) => ({
         ...state,

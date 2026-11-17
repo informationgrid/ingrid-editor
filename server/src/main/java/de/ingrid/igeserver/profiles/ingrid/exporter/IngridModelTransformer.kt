@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressExport
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -57,8 +55,11 @@ import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertBoundingBoxToGeoJson
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -69,9 +70,11 @@ import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.text.StringEscapeUtils.escapeJson
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.Date
 
 class TransformerCache {
     val documents = mutableMapOf<String, Document>()
@@ -116,7 +119,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map {
+    open val digitalTransferOptions: List<DigitalTransferOption> = doc.data.get("digitalTransferOptions")?.values()?.map {
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(
@@ -240,7 +243,7 @@ open class IngridModelTransformer(
         UseConstraintTemplate(
             CharacterStringModel(
                 codelists.getValue("6500", constraint.title)
-                    ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
+                    ?: constraint.title?.value ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
                 link,
             ),
             constraint.source,
@@ -333,7 +336,6 @@ open class IngridModelTransformer(
             geoElements.add(
                 GeographicElement(
                     type = GeoElementType.DESCRIPTION,
-                    hasExtentTypeCode = false,
                     geographicIdentifier = CharacterStringModel(
                         padARS(ref.ars),
                         "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}",
@@ -412,7 +414,7 @@ open class IngridModelTransformer(
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
 
     fun getGeometryContexts(): List<GeometryContext> = doc.data.get("geometryContext")
-        ?.map { convertToGeometryContext(it) } ?: emptyList()
+        ?.values()?.map { convertToGeometryContext(it) } ?: emptyList()
 
     open val spatialSystems = data.spatial.spatialSystems?.map { mapToCharacterStringModel("100", it) } ?: emptyList()
 
@@ -475,7 +477,7 @@ open class IngridModelTransformer(
         name = "GEMET - INSPIRE themes, version 1.0",
     )
 
-    private fun mapToInspireLink(key: String?): String? = when (key) {
+    protected open fun mapToInspireLink(key: String?): String? = when (key) {
         // land use
         "304" -> "http://inspire.ec.europa.eu/theme/lu"
 
@@ -483,6 +485,37 @@ open class IngridModelTransformer(
         "202" -> "http://inspire.ec.europa.eu/theme/lc"
 
         else -> null
+    }
+
+    val mobilithekKeywords = Thesaurus(
+        keywords =
+        listOfNotNull(
+            // only single category allowed, so we can use firstOrNull() here
+            data.keywords?.mobilithek?.firstOrNull()?.let {
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                KeywordIso(
+                    name = "mobilithek_category_$categoryIso",
+                    link = transformToMobilithekLink(categoryIso!!),
+                )
+            },
+        ) + (
+            data.keywords?.mobilithek?.mapNotNull {
+                val iso = codelists.getValue("mobilithek", it, "iso")!!
+                val categoryIso = codelists.getValue("mobilithek", it, "iso_category")
+                // is not a subcategory so it already gets added above
+                if (iso == categoryIso) return@mapNotNull null
+
+                KeywordIso(
+                    name = "mobilithek_subcategory_$iso",
+                    link = transformToMobilithekLink(iso),
+                )
+            } ?: emptyList()
+            ),
+    )
+
+    private fun transformToMobilithekLink(value: String): String {
+        val extractedCategory = value.replace("_", "-").lowercase()
+        return "https://w3id.org/mobilitydcat-ap/mobility-theme/$extractedCategory"
     }
 
     open fun getFreeKeywords(): Thesaurus {
@@ -617,11 +650,18 @@ open class IngridModelTransformer(
         if (data.properties?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
+    val izgKeyword =
+        if (data.properties?.isIzg == true) {
+            Thesaurus(keywords = listOf(KeywordIso("izg-relevant")))
+        } else {
+            Thesaurus()
+        }
 
     open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOfNotNull(
             inspireRelevantKeyword,
             advCompatibleKeyword,
+            izgKeyword,
             opendataCategoryKeywords,
             getFreeKeywords(),
             invekosKeywords,
@@ -631,6 +671,7 @@ open class IngridModelTransformer(
             umthesKeywords,
             inspireKeywords,
             hvdCategories,
+            mobilithekKeywords,
         )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
@@ -645,11 +686,13 @@ open class IngridModelTransformer(
         opendataCategoryKeywords,
         advCompatibleKeyword,
         inspireRelevantKeyword,
+        izgKeyword,
         furtherLegalBasisKeywords,
         umthesKeywords,
         gemetKeywords,
         invekosKeywords,
         hvdCategories,
+        mobilithekKeywords,
     )
 
     val specificUsage = data.resource?.specificUsage
@@ -683,6 +726,7 @@ open class IngridModelTransformer(
         "InGridProject" -> InGridDocType.InGridProject.typeId
         "InGridDataCollection" -> InGridDocType.InGridDataCollection.typeId
         "InGridInformationSystem" -> InGridDocType.InGridInformationSystem.typeId
+        "InGridAlgorithm" -> InGridDocType.InGridAlgorithm.typeId
         "OpenDataDoc" -> "OpenDataDoc"
         else -> throw ServerException.withReason("Could not map document type: $type")
     }
@@ -932,6 +976,26 @@ open class IngridModelTransformer(
     open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
 
+    /**
+     * Get all published children (sub-datasets) of this document.
+     * The UUIDs are exported to the index field "children.object_node.obj_uuid" so that
+     * the catalog hierarchy in the portal knows that this dataset can be expanded.
+     * @return List of UUIDs of published children
+     */
+    fun getSubordinatedObjectUuids(): List<String> = getPublishedChildren(doc.wrapperId).map { it.wrapper.uuid }
+
+    private fun getPublishedChildren(parentWrapperId: Int?): List<DocumentData> {
+        if (parentWrapperId == null) return emptyList()
+        return documentService.findChildren(catalogIdentifier, parentWrapperId, DocumentCategory.DATA, true)
+            .hits
+            .filter { childData ->
+                kotlin.runCatching {
+                    checkPublicationTags(childData.wrapper.tags, tags)
+                    true
+                }.getOrElse { false }
+            }
+    }
+
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getPointOfContactWithEmail() = pointOfContact.filter { addressHasEmail(it) }
@@ -1146,7 +1210,7 @@ open class IngridModelTransformer(
     private fun getRefTypeFromIncomingReference(data: JsonNode): KeyValue? {
         val asCoupledResource = data.get("service")?.get("coupledResources")
             ?.filter { !it.get("isExternalRef").asBoolean() }
-            ?.find { it.get("uuid").asText() == this.model.uuid }
+            ?.find { it.get("uuid").asString() == this.model.uuid }
 
         if (asCoupledResource != null) return KeyValue("3600", null)
 
@@ -1275,7 +1339,7 @@ open class IngridModelTransformer(
             if (featureType == "OtherFeature") "attributeContent" else "attributeCode",
             item.getStringOrEmpty("dataType"),
             item.getStringOrEmpty("description"),
-            item.get("attributes")?.asIterable()?.map {
+            item.get("attributes")?.values()?.map {
                 GeometryContextAttribute(it.getStringOrEmpty("key"), it.getStringOrEmpty("value"))
             } ?: emptyList(),
             item.getDouble("min"),

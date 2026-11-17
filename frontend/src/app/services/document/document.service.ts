@@ -121,24 +121,13 @@ export class DocumentService {
     address = false,
     excludeFolders = false,
   ): Observable<SearchResult> {
-    const categorySQL = ` AND document_wrapper.category = ${
-      address ? "'address'" : "'data'"
-    }`;
-    const excludeFoldersSQL = excludeFolders
-      ? " AND document1.type != 'FOLDER'"
-      : "";
-    const archivedTagSQL = " AND 'archived' NOT IN (SELECT UNNEST(tags))";
     return this.researchService
-      .searchBySQL(
-        `SELECT DISTINCT document1.*, document_wrapper.category
-         FROM document_wrapper
-
-                JOIN document document1 ON document_wrapper.uuid = document1.uuid
-         WHERE (title ILIKE '%${query}%' OR document1.uuid = '${query}')
-           ${categorySQL} ${excludeFoldersSQL} ${archivedTagSQL}`,
-        1,
-        size,
-      )
+      .searchByTitleOrUuid({
+        term: query,
+        category: address ? "address" : "data",
+        excludeFolders,
+        pageSize: size,
+      })
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 

@@ -19,13 +19,12 @@
  */
 package de.ingrid.igeserver.services.geothesaurus
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.dataformat.xml.XmlMapper
 
 @Service
 class WfsGndeGeoThesaurus : GeoThesaurusService() {
@@ -84,7 +83,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
 //        val adaptedTerm = convertType(options.searchType, term)
         val response = sendRequest("POST", searchUrlTemplate, template(term))
-        val mapper = XmlMapper(JacksonXmlModule())
+        val mapper = XmlMapper()
         val featureMember = mapper.readTree(response).get("featureMember")
 
         val result = if (featureMember is ObjectNode) {
@@ -92,6 +91,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         } else {
             val maxReached = featureMember?.size() == maxResults
             featureMember
+                ?.values()
                 ?.mapNotNull { mapToSpatial(it.get("GnObjekt"), maxReached) }
                 ?.toSet()?.toList() ?: emptyList()
         }
@@ -110,7 +110,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
         val (typeName, typeId) = getType(featureMember)
         return SpatialResponse(
-            featureMember.get("nnid").asText(),
+            featureMember.get("nnid").asString(),
             typeName,
             typeId,
             mapName(featureMember),
@@ -120,22 +120,22 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         )
     }
 
-    private fun getARS(featureMember: JsonNode): String? = featureMember.get("hatArs")?.get("Ars")?.get("ars")?.asText()
+    private fun getARS(featureMember: JsonNode): String? = featureMember.get("hatArs")?.get("Ars")?.get("ars")?.asString()
 
     private fun getType(featureMember: JsonNode): Pair<String, String?> {
-        val href = featureMember.get("hatObjektart")?.get("href")?.asText()
+        val href = featureMember.get("hatObjektart")?.get("href")?.asString()
         return if (href != null) {
             Pair(href, null)
         } else {
-            val type = featureMember.get("hatObjektart")?.get("Objektart")?.get("objektart")?.asText()!!
-            val typeId = featureMember.get("hatObjektart")?.get("Objektart")?.get("id")?.asText()!!
+            val type = featureMember.get("hatObjektart")?.get("Objektart")?.get("objektart")?.asString()!!
+            val typeId = featureMember.get("hatObjektart")?.get("Objektart")?.get("id")?.asString()!!
             Pair(type, typeId)
         }
     }
 
     private fun mapBoundingBox(featureMember: JsonNode): BoundingBox {
-        val posListLower = featureMember.get("boundedBy")?.get("Envelope")?.get("lowerCorner")?.asText()?.split(" ")
-        val posListUpper = featureMember.get("boundedBy")?.get("Envelope")?.get("upperCorner")?.asText()?.split(" ")
+        val posListLower = featureMember.get("boundedBy")?.get("Envelope")?.get("lowerCorner")?.asString()?.split(" ")
+        val posListUpper = featureMember.get("boundedBy")?.get("Envelope")?.get("upperCorner")?.asString()?.split(" ")
         return getBBoxFromBoundedByElement(posListLower!!, posListUpper!!)
     }
 
@@ -146,21 +146,21 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         return when (endonyms?.size()) {
             null -> null
 
-            1 -> endonyms.get("Endonym").get("name").asText()
+            1 -> endonyms.get("Endonym").get("name").asString()
 
             else -> {
                 getGermanName(featureMember)?.let { return it }
 
                 val endo = endonyms.get(0)?.get("Endonym")
-                "${endo?.get("name")?.asText()} (${endonyms.get(1)?.get("Endonym")?.get("name")?.asText()})"
+                "${endo?.get("name")?.asString()} (${endonyms.get(1)?.get("Endonym")?.get("name")?.asString()})"
             }
         }
     }
 
-    private fun getGermanName(featureMember: JsonNode) = featureMember.get("hatEndonym").find {
+    private fun getGermanName(featureMember: JsonNode) = featureMember.get("hatEndonym").values().find {
         val hatSprache = it?.get("Endonym")?.get("hatSprache")
-        hatSprache?.get("Sprache")?.get("sprache_ID")?.asText() == "1" || hatSprache?.get("href")?.asText() == "#Spr_1"
-    }?.get("Endonym")?.get("name")?.asText()
+        hatSprache?.get("Sprache")?.get("sprache_ID")?.asString() == "1" || hatSprache?.get("href")?.asString() == "#Spr_1"
+    }?.get("Endonym")?.get("name")?.asString()
 }
 
 private fun convertType(searchType: ThesaurusSearchType, term: String): String = when (searchType) {

@@ -27,6 +27,7 @@ import {
 } from "@angular/router";
 import { inject } from "@angular/core";
 import { AuthGuard } from "./security/auth.guard";
+import { CatalogMismatchGuard } from "./security/catalog-mismatch.guard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { ConfigService } from "./services/config/config.service";
 import { filter } from "rxjs/operators";
@@ -36,6 +37,7 @@ export const routes: Routes = [
   {
     path: ":catalog",
     component: InitCatalogComponent,
+    canActivateChild: [CatalogMismatchGuard],
     children: [
       {
         path: "dashboard",

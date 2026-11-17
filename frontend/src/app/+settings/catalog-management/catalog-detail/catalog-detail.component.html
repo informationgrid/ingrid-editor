@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        data-cy="dlg-close"
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>Katalog bearbeiten</h1>
@@ -34,10 +39,24 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button color="primary" matDialogClose>Abbrechen</button>
-    <button mat-button color="warn" (click)="deleteCatalog()">Löschen</button>
+    <button data-cy="cancel" mat-button color="primary" matDialogClose>
+        Abbrechen
+    </button>
+    <button
+        data-cy="action-delete"
+        mat-button
+        color="warn"
+        (click)="deleteCatalog()"
+    >
+        Löschen
+    </button>
     <div class="flex-1"></div>
-    <button mat-flat-button color="primary" (click)="submit()">
+    <button
+        data-cy="form-dialog-confirm"
+        mat-flat-button
+        color="primary"
+        (click)="submit()"
+    >
         Aktualisieren
     </button>
 </mat-dialog-actions>

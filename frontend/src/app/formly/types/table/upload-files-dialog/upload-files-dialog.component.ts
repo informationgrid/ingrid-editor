@@ -27,6 +27,7 @@ import {
   OnInit,
   signal,
   WritableSignal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -51,6 +52,7 @@ import { UploadComponent } from "../../../../shared/upload/upload.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { MatButton } from "@angular/material/button";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { SessionTimeoutInterceptor } from "../../../../services/session-timeout.interceptor";
 
 export interface LinkInfo {
   file: string;
@@ -62,6 +64,7 @@ export interface LinkInfo {
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DialogTemplateComponent,
     UploadComponent,
@@ -71,6 +74,7 @@ export interface LinkInfo {
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
+  private sessionTimeoutInterceptor = inject(SessionTimeoutInterceptor);
 
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: WritableSignal<string> = signal("");
@@ -138,10 +142,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // refresh token to in this dialog to prevent auto-save, since this might lead to
     // a removal of uploaded files (#6386)
-    // TODO: ADAPT if necessary
-    /*this.refreshTimer$ = window.setInterval(() => {
-      return this.authFactory.refreshToken();
-    }, 60000);*/
+    this.refreshTimer$ = window.setInterval(() => {
+      return this.sessionTimeoutInterceptor.refreshSession();
+    }, 60000);
   }
 
   ngOnDestroy(): void {

@@ -1,0 +1,118 @@
+/*
+ * ==================================================
+ * Copyright (C) 2023-2026 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+package de.ingrid.igeserver.schema.ingrid_hmdk
+
+import de.ingrid.igeserver.api.ValidationException
+import de.ingrid.igeserver.schema.SchemaUtils
+import de.ingrid.igeserver.schema.SchemaUtils.Companion.validate
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
+
+class InGridAlgorithmHmdkSchema : AnnotationSpec() {
+
+    private val schema = "/ingrid/schemes/hmdk/algorithm_hmdk.schema.json"
+
+    @Test
+    fun minimal() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst(
+            "{",
+            """{
+                "informationHmbTG": [{"key": "1"}],
+                "openDataCategories": [{"key": "5"}],
+            """.trimMargin(),
+        )
+        // the link in "additionalUrls" satisfies the publication requirement
+        val result = validate(json, schema)
+        result.size shouldBe 0
+    }
+
+    @Test
+    fun minimalWithFileInsteadOfLink() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst(
+            "{",
+            """{
+                "informationHmbTG": [{"key": "1"}],
+                "openDataCategories": [{"key": "5"}],
+                "fileReferences": [
+                    {
+                        "title": "File name",
+                        "link": {
+                            "asLink": false,
+                            "value": "filename.pdf",
+                            "uri": "filename.pdf",
+                            "lastModified": "2025-06-26T08:13:26.284Z",
+                            "sizeInBytes": 429866
+                        },
+                        "format": {
+                            "key": "21",
+                            "value": "PDF",
+                            "_codelistId": "1320"
+                        },
+                        "description": ""
+                    }
+                ],
+            """.trimMargin(),
+        ).replaceFirst(
+            "\"url\": \"https://example.org\"",
+            "\"url\": null",
+        )
+        val result = validate(json, schema)
+        result.size shouldBe 0
+    }
+
+    @Test
+    fun negativeTest() = SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/algorithm.minimal.json")
+
+    @Test
+    fun negativeTestWrongProperty() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTGXXX": true, """,
+        ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)
+        val exception = shouldThrow<ValidationException> { validate(json, schema) }
+        (exception.data?.get("error") as List<*>).size shouldBe 1
+    }
+
+    @Test
+    fun negativeTestNoLinkAndNoFile() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst(
+            "{",
+            """{
+                "informationHmbTG": [{"key": "1"}],
+                "openDataCategories": [{"key": "5"}],
+            """.trimMargin(),
+        ).replaceFirst(
+            "\"url\": \"https://example.org\"",
+            "\"url\": null",
+        )
+        // neither a link in "Verweise" nor a file in "Dateien" -> publication requirement violated
+        shouldThrow<ValidationException> { validate(json, schema) }
+    }
+}

@@ -9,7 +9,7 @@ docType:
   - InGridInformationSystem
   - InGridPublication
   - InGridProject
- profile: ingrid
+profile: ingrid
 
 
 # title, used as window title

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.services.geothesaurus.BoundingBox
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.node.ArrayNode
 import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpClient
@@ -58,21 +58,28 @@ data class BwastrSection(
 )
 
 @Service
-class BwastrLocatorService {
+class BwastrLocatorService(
+    private val codelistHandler: CodelistHandler,
+) {
 
     private val searchBaseUrl = "https://via.bund.de/wsv/bwastr-locator/rest/bwastrinfo/query?searchfield=all&searchterm="
     private val coordinateSearchURL = "https://via.bund.de/wsv/bwastr-locator/rest/geokodierung/query"
 
-    val customBWASTRMap = mapOf(
-        "7000" to BwastrLocatorSearchResponse("7000", "Nordsee", "Haupt- und Nebenstrecken", "7000 Nordsee Haupt- und Nebenstrecken", -1.0, -1.0),
-        "8000" to BwastrLocatorSearchResponse("8000", "Ostsee", "Haupt- und Nebenstrecken", "8000 Ostsee Haupt- und Nebenstrecken", -1.0, -1.0),
-        "8300" to BwastrLocatorSearchResponse("8300", "Ryck", "Haupt- und Nebenstrecken", "8300 Ryck Haupt- und Nebenstrecken", -1.0, -1.0),
-        "9600" to BwastrLocatorSearchResponse("9600", "Binnenwasserstraßen", "", "9600 Binnenwasserstraßen", -1.0, -1.0),
-        "9700" to BwastrLocatorSearchResponse("9700", "Seewasserstraßen", "", "9700 Seewasserstraßen", -1.0, -1.0),
-        "9800" to BwastrLocatorSearchResponse("9800", "Bundeswasserstraßen", "", "9800 Bundeswasserstraßen", -1.0, -1.0),
-        "9900" to BwastrLocatorSearchResponse("9900", "Sonstige Gewässer", "", "9900 Sonstige Gewässer", -1.0, -1.0),
-        "9999" to BwastrLocatorSearchResponse("9999", "Sonstiger Ortsbezug", "", "9999 Sonstiger Ortsbezug", -1.0, -1.0),
-    )
+    companion object {
+        /** General codelist with BWaStr IDs that are unknown to the BWaStr-Locator (e.g. 7000 - Nordsee). */
+        const val CODELIST_SPECIAL_IDS = "BAW_bwastrIds"
+    }
+
+    /**
+     * Get a special BWaStr from the codelist BAW_bwastrIds or null if the ID is not special.
+     * Leading zeros of the ID are ignored.
+     */
+    fun getSpecial(bwastrId: String): BwastrLocatorSearchResponse? {
+        val id = bwastrId.trim().trimStart('0')
+        if (id.isEmpty()) return null
+        val name = codelistHandler.getCodelistValue(CODELIST_SPECIAL_IDS, id) ?: return null
+        return BwastrLocatorSearchResponse(id, name, "", "$id $name", -1.0, -1.0)
+    }
 
     @Cacheable(value = ["bwastrSearchCache"], key = "#term")
     fun search(term: String): List<BwastrLocatorSearchResponse> {
@@ -81,7 +88,7 @@ class BwastrLocatorService {
         val mapper = JsonMapper()
         val result = mapper.readTree(response).get("result")
         return if (result is ArrayNode) {
-            result.map {
+            result.values().map {
                 BwastrLocatorSearchResponse(
                     bwastrid = it.getString("bwastrid") ?: throw Exception("no bwastrid found in response"),
                     bwastr_name = it.getStringOrEmpty("bwastr_name"),
@@ -127,8 +134,8 @@ class BwastrLocatorService {
         val result = mapper.readTree(response).getPath("result")?.get(0) ?: throw Exception("no result found in BWaStr-Locator response")
         val coordinates = result.getPath("geometry.coordinates") ?: throw Exception("no coordinates found in BWaStr-Locator response")
         // combine  the coordinate arrays for each line in MultiLineString geometry
-        return coordinates.map { line ->
-            line.map { pair -> pair.map { it.asDouble() } }
+        return coordinates.values().map { line ->
+            line.values().map { pair -> pair.values().map { it.asDouble() } }
         }
     }
 

@@ -20,7 +20,10 @@
             role="menuitem"
             tabindex="0"
         >
-            <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
+            <mat-icon
+                matListItemIcon
+                [svgIcon]="$safeNavigationMigration(item.data?.icon)"
+            ></mat-icon>
             <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
         </a>
     }

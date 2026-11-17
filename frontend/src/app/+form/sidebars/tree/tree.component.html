@@ -10,11 +10,17 @@
             [showMultiSelectButton]="hasData() && showMultiSelectButton()"
             [showSearch]="hasData()"
             [emptySearchResults]="emptySearchResults()"
-            [checkToggleAll]="selection?.allNodesSelected()"
-            [indeterminateToggleAll]="
-                selection?.atLeastOneButNotAllNodesSelected()
+            [checkToggleAll]="
+                $safeNavigationMigration(selection?.allNodesSelected())
             "
-            [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled()"
+            [indeterminateToggleAll]="
+                $safeNavigationMigration(
+                    selection?.atLeastOneButNotAllNodesSelected()
+                )
+            "
+            [multiSelectionModeEnabled]="
+                $safeNavigationMigration(selection?.multiSelectionModeEnabled())
+            "
             (toggleAllSelection)="selection?.toggleAllSelection($event)"
             (toggleWriteAccess)="toggleWriteAccess($event)"
             (edit)="toggleSelectionMode($event)"
@@ -73,6 +79,7 @@
         [class.disabled]="disabledCondition()(node)"
         cdkMonitorElementFocus
         [attr.tabindex]="!disabledCondition()(node) ? 0 : null"
+        data-cy="tree-node"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div class="width-100">
@@ -81,6 +88,7 @@
                     mat-icon-button
                     class="toggle"
                     matTreeNodeToggle
+                    data-cy="tree-node-toggle"
                     [disabled]="!isExpandable()(node)"
                     [attr.aria-label]="
                         node.title +
@@ -107,6 +115,7 @@
                         [checked]="selection.isSelected(node)"
                         (click)="$event.stopImmediatePropagation()"
                         (change)="selection.nodeSelectionToggle(node, $event)"
+                        data-cy="tree-node-checkbox"
                         [aria-label]="
                             node.title +
                             ' ' +
@@ -148,6 +157,7 @@
         [class]="node.tags?.join(' ') ?? ''"
         cdkMonitorElementFocus
         [attr.tabindex]="!disabledCondition()(node) ? 0 : null"
+        data-cy="tree-node"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div class="width-100">
@@ -156,6 +166,7 @@
                     mat-icon-button
                     class="toggle"
                     matTreeNodeToggle
+                    data-cy="tree-node-toggle"
                     tabindex="-1"
                     [disabled]="!isExpandable()(node)"
                     [attr.aria-label]="
@@ -182,6 +193,7 @@
                         (change)="selection.nodeSelectionToggle(node, $event)"
                         (click)="$event.stopImmediatePropagation()"
                         [checked]="selection.isSelected(node)"
+                        data-cy="tree-node-checkbox"
                         [aria-label]="
                             node.title +
                             ' ' +

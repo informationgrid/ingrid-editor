@@ -26,6 +26,7 @@ import {
   OnInit,
   signal,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer, Title } from "@angular/platform-browser";
@@ -50,11 +51,13 @@ import { SectionSkipperComponent } from "./section-skipper/section-skipper.compo
 import { UiStore } from "./store/ui.store";
 import { SessionService } from "./services/session.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { SessionTimeoutInterceptor } from "./services/session-timeout.interceptor";
 
 @Component({
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDrawerContainer,
     SideMenuComponent,
@@ -67,6 +70,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class AppComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private sessionTimeoutInterceptor = inject(SessionTimeoutInterceptor);
 
   sessionRefresher$ = new Subject<void>();
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
@@ -97,19 +101,22 @@ export class AppComponent implements OnInit {
 
     this.loadIcons();
 
-    // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
-    //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
-    //       loaded and replaced in store overwriting catalog codelists
-    //       Catalog Codelists should be loaded initially into the correct store!
-    codelistService.fetchCatalogCodelists();
-
     this.showTestBadge =
       this.configService.getConfiguration().featureFlags?.showTestBadge;
     if (this.showTestBadge)
       titleService.setTitle(titleService.getTitle() + " TEST");
     this.configService.$userInfo
       .pipe(map((info) => ProfileService.userHasAnyCatalog(info)))
-      .subscribe((isAssigned) => this.userHasCatalog.set(isAssigned));
+      .subscribe((isAssigned) => {
+        this.userHasCatalog.set(isAssigned);
+        if (isAssigned) {
+          // TODO: requested codelists by document types are stored in codelist store, however catalog codelists
+          //       are found in a separate part. Moreover when opening the codelist admin page, all codelists are
+          //       loaded and replaced in store, overwriting catalog codelists
+          //       Catalog Codelists should be loaded initially into the correct store!
+          codelistService.fetchCatalogCodelists();
+        }
+      });
   }
 
   private updateStoreFromLocalStorage() {
@@ -170,13 +177,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // TODO: ADAPT
     this.sessionRefresher$
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         throttleTime(10000), // allow token refresh only every 10s once
       )
-      .subscribe(/*() => this.authFactory.refreshToken()*/);
+      .subscribe(() => this.sessionTimeoutInterceptor.refreshSession());
 
     combineLatest([
       this.transloco.selectTranslation(),

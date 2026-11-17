@@ -25,7 +25,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ChangeDetectionStrategy } from "@angular/core";
 import { CookieService } from "../../services/cookie.service";
 import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -67,6 +67,7 @@ export interface ConfirmDialogButton {
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

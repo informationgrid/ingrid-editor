@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.exports.ingrid
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.convertToDocument
@@ -28,6 +27,7 @@ import de.ingrid.igeserver.exports.prettyFormatXml
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.schema.SchemaUtils
+import tools.jackson.databind.node.ObjectNode
 import java.time.LocalDate
 import java.util.regex.Pattern
 
@@ -76,7 +76,7 @@ private fun exportJsonToString(exporter: IgeExporter, file: String, additional: 
     val doc = convertToDocument(input)
 
     if (additional != null) {
-        doc.data.setAll<ObjectNode>(additional)
+        doc.data.setAll(additional)
         doc.catalog = Catalog().apply { identifier = "test-catalog" }
     }
 

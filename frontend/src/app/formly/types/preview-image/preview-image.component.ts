@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatButtonModule } from "@angular/material/button";
 import {
@@ -61,6 +68,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-repeat",
   templateUrl: "./preview-image.component.html",
   styleUrls: ["./preview-image.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButtonModule,
     CdkDropList,

@@ -107,6 +107,12 @@ class CswtApiController(
                 errorMessage = ogcCswtService.prepareException(e),
             )
             log.error("Error in CSW transaction", e)
+        } catch (e: Exception) {
+            transactionResult = CSWTransactionResult(
+                successful = false,
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage = e.message,
+            )
         }
         val xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
         val statusCode = if (transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode

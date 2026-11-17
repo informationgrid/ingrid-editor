@@ -52,6 +52,8 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     };
     this.options.dynamicRequired.spatialReferences = () => false;
     this.options.dynamicRequired.events = undefined;
+
+    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {

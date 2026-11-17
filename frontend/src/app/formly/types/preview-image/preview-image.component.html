@@ -8,19 +8,29 @@
         @for (field of field.fieldGroup; track field; let i = $index) {
             <mat-card
                 cdkDrag
-                (mousedown)="prepareForDrag(model[i]?.fileName, i)"
+                (mousedown)="
+                    prepareForDrag(
+                        $safeNavigationMigration(model[i]?.fileName),
+                        i
+                    )
+                "
             >
                 <!-- when switching between same datasets, the model might not be initialized for a short time -->
                 @if (model) {
                     <div class="content">
                         <img
                             [src]="imageLinks()[model[i]?.fileName?.uri]"
-                            [alt]="model[i]?.fileName?.uri"
+                            [alt]="
+                                $safeNavigationMigration(
+                                    model[i]?.fileName?.uri
+                                )
+                            "
                             [class]="'preview-image-' + i"
                         />
                         @if (!formControl.disabled) {
                             <button
                                 type="button"
+                                data-cy="btn-edit"
                                 mat-icon-button
                                 class="btn-edit"
                                 matTooltip="Bearbeiten"
@@ -32,6 +42,7 @@
                         @if (!formControl.disabled) {
                             <button
                                 type="button"
+                                data-cy="btn-remove"
                                 mat-icon-button
                                 class="btn-close"
                                 matTooltip="Entfernen"
@@ -59,6 +70,7 @@
         @if (!disableUpload) {
             <button
                 type="button"
+                data-cy="btn-upload-files"
                 mat-stroked-button
                 color="primary"
                 (click)="showUploadFilesDialog()"
@@ -69,6 +81,7 @@
         }
         <button
             type="button"
+            data-cy="btn-add-link"
             mat-stroked-button
             color="primary"
             (click)="showAddLinkDialog()"

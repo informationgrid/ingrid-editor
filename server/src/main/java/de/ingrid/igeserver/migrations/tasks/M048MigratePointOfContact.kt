@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -54,13 +54,9 @@ class M048MigratePointOfContact : MigrationBase("0.48") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery(
-                "SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'",
-                Document::class.java,
-            ).resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
+            entityManager.forEachDocumentInBatches("doc.catalog.type = 'uvp'") { doc ->
                 try {
                     migratePointOfContact(doc)
                     docRepo.save(doc)
@@ -75,7 +71,7 @@ class M048MigratePointOfContact : MigrationBase("0.48") {
         val publisher = doc?.data?.remove("publisher")
 
         if (publisher != null) {
-            doc.data.set<JsonNode>("pointOfContact", publisher)
+            doc.data.set("pointOfContact", publisher)
         }
     }
 }

@@ -26,7 +26,13 @@ import org.springframework.http.HttpStatus
  */
 open class ServerException : IgeException {
 
-    protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
+    protected constructor(
+        statusCode: HttpStatus,
+        errorCode: String,
+        errorText: String,
+        data: Map<String, Any?>? = null,
+        cause: Throwable? = null,
+    ) :
         super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
@@ -38,6 +44,6 @@ open class ServerException : IgeException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): ServerException = ServerException(STATUS_CODE, ERROR_CODE, reason, null, cause)
+        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): ServerException = ServerException(STATUS_CODE, ERROR_CODE, reason, data, cause)
     }
 }

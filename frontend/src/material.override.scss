@@ -1,5 +1,4 @@
 @use "src/variables" as vars;
-@use "sass:color";
 
 // TODO: temporary fix.
 // Issue caused by upgrading to angular/material 17, that this variable becomes undefined.
@@ -29,11 +28,11 @@ ige-side-menu .mat-mdc-list-item {
   }
 
   &:hover {
-    background: color.adjust(vars.$ige-secondary, $lightness: 8%) !important;
+    background: vars.shift(vars.$ige-secondary, 8) !important;
   }
 
   &.active:hover {
-    background: color.adjust(vars.$ige-primary, $lightness: 8%) !important;
+    background: vars.shift(vars.$ige-primary, 8) !important;
   }
 }
 

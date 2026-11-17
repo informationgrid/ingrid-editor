@@ -61,7 +61,7 @@
   button.btnPublish,
   button.btnPublishMore {
     &:not([disabled]):hover {
-      background-color: color.adjust(vars.$ige-secondary, $lightness: 5%);
+      background-color: vars.shift(vars.$ige-secondary, 5);
     }
   }
 

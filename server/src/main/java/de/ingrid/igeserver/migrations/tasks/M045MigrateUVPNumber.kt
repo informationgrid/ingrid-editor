@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -31,6 +30,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M045MigrateUVPNumber : MigrationBase("0.45") {
@@ -48,11 +48,9 @@ class M045MigrateUVPNumber : MigrationBase("0.45") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'").resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
-                doc as Document
+            entityManager.forEachDocumentInBatches("doc.catalog.type = 'uvp'") { doc ->
                 try {
                     migrateUvpNumber(doc)
                     docRepo.save(doc)
@@ -67,7 +65,7 @@ class M045MigrateUVPNumber : MigrationBase("0.45") {
         val value = doc.data.get("eiaNumber")
         if (value != null && !value.isNull) {
             val array = jacksonObjectMapper().createArrayNode().add(value)
-            doc.data.set<ArrayNode>("eiaNumber", array)
+            doc.data.set("eiaNumber", array)
         }
     }
 }

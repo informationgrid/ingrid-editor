@@ -1,9 +1,17 @@
 @use "src/variables" as vars;
-@use "sass:color";
 
 :host {
   overflow-y: hidden;
   position: relative;
+}
+
+/* Catalog name in the accent color of the catalog theme (see
+   app/services/config/catalog-theme.ts). */
+:host-context(body.catalog-accent) .catalog-button {
+  font-weight: 600;
+  --mat-button-text-label-text-color: var(--catalog-accent);
+  --mat-button-text-disabled-label-text-color: var(--catalog-accent);
+  color: var(--catalog-accent);
 }
 
 .header-row {
@@ -125,7 +133,7 @@
     color: #ffffff;
 
     &:hover {
-      background-color: color.adjust(vars.$ige-primary, $lightness: 8%);
+      background-color: vars.shift(vars.$ige-primary, 8);
     }
 
     ::ng-deep path {

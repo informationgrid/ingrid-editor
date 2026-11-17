@@ -24,6 +24,7 @@ import {
   Inject,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
@@ -67,6 +68,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
   styleUrls: ["./get-capabilities-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DialogTemplateComponent,
     MatFormField,

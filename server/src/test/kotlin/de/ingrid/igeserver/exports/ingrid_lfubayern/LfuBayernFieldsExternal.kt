@@ -19,8 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lfubayern
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import createMockCatalogCodelist
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -30,6 +29,8 @@ import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import io.mockk.every
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class LfuBayernFieldsExternal : GeodatasetBase() {
 
@@ -54,10 +55,22 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 this.documentWrapperRepository,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
-        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"
-        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "2") } returns "intern zwei"
+        createMockCatalogCodelist(
+            codelistHandler,
+            "20000",
+            mapOf(
+                "1" to "geological eins",
+                "2" to "geological zwei",
+            ),
+        )
+        createMockCatalogCodelist(
+            codelistHandler,
+            "20001",
+            mapOf(
+                "1" to "intern eins",
+                "2" to "intern zwei",
+            ),
+        )
         every { behaviourService.get(any(), "plugin.lfubayern.anonymous.address") } answers {
             Behaviour().apply {
                 active = true
@@ -150,7 +163,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                             "resource": {
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 
@@ -172,7 +185,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },
+                       }
                     """.trimIndent(),
                 ) as ObjectNode
 

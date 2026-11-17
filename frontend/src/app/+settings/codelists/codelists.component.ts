@@ -24,6 +24,7 @@ import {
   OnInit,
   signal,
   Signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   CodelistService,
@@ -42,6 +43,7 @@ import { CodelistStore } from "../../store/codelist/codelist.store";
   selector: "ige-codelists",
   templateUrl: "./codelists.component.html",
   styleUrls: ["./codelists.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     MatButton,

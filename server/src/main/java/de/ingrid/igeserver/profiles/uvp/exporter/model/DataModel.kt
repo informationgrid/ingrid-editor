@@ -21,8 +21,6 @@ package de.ingrid.igeserver.profiles.uvp.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.RangeModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -31,6 +29,8 @@ import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import org.springframework.web.util.UriUtils
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.ZoneId
@@ -61,8 +61,8 @@ data class DataModel(
                 val data = jacksonObjectMapper().readTree(entry.data)
                 UVPNumber(
                     codeValue,
-                    data.get("type").textValue(),
-                    data.get("cat").textValue(),
+                    data.get("type").stringValue(),
+                    data.get("cat").stringValue(),
                 )
             } else {
                 null
@@ -75,7 +75,7 @@ data class DataModel(
     // TODO: check if this can be removed safely
     private fun setProcessingSteps(nodeSteps: List<JsonNode>) {
         steps = nodeSteps.mapNotNull { step ->
-            val type = step.get("type").textValue()
+            val type = step.get("type").stringValue()
             when (type) {
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,

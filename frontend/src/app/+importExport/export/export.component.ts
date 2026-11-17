@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal, viewChild } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FormControl,
   ReactiveFormsModule,
@@ -63,6 +70,7 @@ import { rxResource, toSignal } from "@angular/core/rxjs-interop";
   selector: "ige-export",
   templateUrl: "./export.component.html",
   styleUrls: ["./export.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,
@@ -212,13 +220,7 @@ export class ExportComponent implements OnInit {
 
   private async handleError(error: HttpErrorResponse): Promise<any> {
     const jsonError = await this.getErrorFromBlob(error);
-    let message = jsonError.errorText;
-    if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
-      message = "Es können nur veröffentlichte Versionen exportiert werden.";
-    } else if (jsonError.errorCode === "NO_EXPORTER_ERROR") {
-      message = `Für den Dokumenttyp '${jsonError.data.documentType}' ist kein Exporter im '${jsonError.data.exporterClassName}' definiert.`;
-    }
-    throw new IgeError(message);
+    throw new HttpErrorResponse({ error: jsonError });
   }
 
   private getErrorFromBlob(error: HttpErrorResponse) {

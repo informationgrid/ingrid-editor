@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, input, output } from "@angular/core";
+import {
+  Component,
+  Input,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Subscription } from "rxjs";
 import {
   AbstractControl,
@@ -55,6 +61,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   selector: "ige-search-input",
   templateUrl: "./search-input.component.html",
   styleUrls: ["./search-input.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatInputModule,
     ReactiveFormsModule,

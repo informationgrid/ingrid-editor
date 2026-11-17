@@ -18,10 +18,12 @@
  * limitations under the Licence.
  */
 import { HttpErrorResponse } from "@angular/common/http";
+import { DocumentAbstract } from "../store/document/document.model";
 
 export class IgeError {
   message: string;
   items?: string[];
+  links?: DocumentAbstract[];
   status?: number;
   stacktrace?: any;
   detail?: string;

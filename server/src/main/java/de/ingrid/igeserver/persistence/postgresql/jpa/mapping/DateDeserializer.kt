@@ -19,17 +19,16 @@
  */
 package de.ingrid.igeserver.persistence.postgresql.jpa.mapping
 
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.deser.std.StdDeserializer
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDeserializer<OffsetDateTime?>(vc) {
+class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDeserializer<OffsetDateTime?>(vc ?: OffsetDateTime::class.java) {
 
     companion object {
         private val DATE_FORMATS = arrayOf(
@@ -42,9 +41,9 @@ class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDese
         )
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext?): OffsetDateTime {
-        val node: JsonNode = jp.codec.readTree(jp)
-        val date: String = node.textValue()
+    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): OffsetDateTime {
+        val node: JsonNode = ctxt.readTree(jp)
+        val date: String = node.asString()
         for (format in DATE_FORMATS) {
             try {
                 return OffsetDateTime.parse(date, DateTimeFormatter.ofPattern(format))
@@ -55,6 +54,6 @@ class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDese
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneOffset.UTC)
             return LocalDate.parse(date, formatter).atStartOfDay().atZone(ZoneOffset.systemDefault()).toOffsetDateTime()
         } catch (_: Exception) {}
-        throw JsonParseException(jp, "Unparseable date: '$date'. Supported formats: ${DATE_FORMATS.contentToString()}.")
+        throw ctxt.instantiationException(OffsetDateTime::class.java, "Unparseable date: '$date'. Supported formats: ${DATE_FORMATS.contentToString()}.")
     }
 }

@@ -40,16 +40,27 @@ import {
 } from "./get-capabilities.model";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
-import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
+import {
+  KeywordAnalysis,
+  Thesaurus,
+} from "../../../../../profiles/ingrid/utils/keywords";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { GeoServiceDoctype } from "../../../../../profiles/ingrid/doctypes/geo-service.doctype";
+import { GeoDatasetDoctype } from "../../../../../profiles/ingrid/doctypes/geo-dataset.doctype";
+import { FormArray, FormControl, FormGroup } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
   private codelistStore = inject(CodelistStore);
+  private snack = inject(MatSnackBar);
 
   private backendUrl: string;
+
+  private geoserviceThesauri: Thesaurus[];
+  private geodatasetThesauri: Thesaurus[];
 
   constructor(
     private http: HttpClient,
@@ -60,6 +71,9 @@ export class GetCapabilitiesService {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
+    // FIXME possible not the intended ones if profile specific
+    this.geoserviceThesauri = new GeoServiceDoctype().keywordThesauri;
+    this.geodatasetThesauri = new GeoDatasetDoctype().keywordThesauri;
   }
 
   analyze(url: string, username?: string, password?: string) {
@@ -73,6 +87,7 @@ export class GetCapabilitiesService {
     model: any,
     values: GetCapabilitiesAnalysis,
     parentFolder: number,
+    form?: FormGroup | FormArray,
   ) {
     const urlReferences: Url[] = [];
     for (const [key, value] of Object.entries(values)) {
@@ -84,7 +99,12 @@ export class GetCapabilitiesService {
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
       if (key === "keywords") {
-        await this.addKeywordsToModel(value, model);
+        await this.addKeywordsToModel(
+          value,
+          model,
+          this.geoserviceThesauri,
+          form,
+        );
       }
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
@@ -106,8 +126,11 @@ export class GetCapabilitiesService {
           };
         }
       }
-      if (key === "operations")
-        model.service.operations = this.mapOperations(value);
+      if (key === "operations") {
+        const serviceTypeKey =
+          values.dataServiceType ?? model.service?.type?.key;
+        model.service.operations = this.mapOperations(value, serviceTypeKey);
+      }
       if (key === "resourceLocators") urlReferences.push(...value);
       if (key === "serviceType") {
         model.service.classification = this.mapClassification(value);
@@ -131,23 +154,66 @@ export class GetCapabilitiesService {
     this.handleDefaultTemporalEvent(model);
   }
 
-  private async addKeywordsToModel(value: string[], model: any) {
-    const response = await this.keywordAnalysis.analyzeKeywords(value, false);
-    response.forEach((item) => {
-      switch (item.thesaurus) {
-        case "INSPIRE-Themen":
-          model.themes.push(item.value);
-          break;
-        case "Gemet-Schlagworte":
-          model.keywords.gemet.push(item.value);
-          break;
-        case "Umthes-Schlagworte":
-          model.keywords.umthes.push(item.value);
-          break;
-        case "Freie Schlagworte":
-          model.keywords.free.push(item.value);
-          break;
-      }
+  private async addKeywordsToModel(
+    value: string[],
+    model: any,
+    keywordTheasuri: Thesaurus[],
+    form?: FormGroup | FormArray,
+  ) {
+    // new documents do not have form yet, so we create a minimal form from the model for isEnabled validation
+    const analysisForm = form ?? this.createFormFromModel(model);
+    try {
+      const response = await this.keywordAnalysis.analyzeKeywords(
+        value,
+        keywordTheasuri,
+        analysisForm,
+      );
+      response.forEach((item) => {
+        const keys = item.thesaurus.modelPath.split(".");
+        let target = model;
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!target[keys[i]]) target[keys[i]] = {};
+          target = target[keys[i]];
+        }
+        const lastKey = keys[keys.length - 1];
+        if (!target[lastKey]) target[lastKey] = [];
+        target[lastKey].push(item.value);
+      });
+    } catch (error) {
+      console.error(
+        "Error analyzing keywords. Adding keywords to free:",
+        error,
+      );
+      this.snack.open("Fehler bei der Verbindung zum Thesaurus");
+      value.forEach((val) => model.keywords.free.push({ label: val }));
+    }
+  }
+
+  /**
+   * Creates the minimal form needed by the Ingrid thesaurus `isEnabled`
+   * predicates while a newly created document has no Formly form yet.
+   * This is intentionally not a complete document form; when an `isEnabled`
+   * predicate starts reading another path, that path must be added here.
+   */
+  private createFormFromModel(model: any): FormGroup {
+    // currently supports mobilithek and inspire keywords
+
+    const keywords = new FormGroup({});
+    if (model?.keywords && "mobilithek" in model.keywords) {
+      keywords.addControl(
+        "mobilithek",
+        new FormControl(model.keywords.mobilithek),
+      );
+    }
+
+    return new FormGroup({
+      themes: new FormControl(model?.themes),
+      properties: new FormGroup({
+        isInspireIdentified: new FormControl(
+          model?.properties?.isInspireIdentified,
+        ),
+      }),
+      keywords,
     });
   }
 
@@ -179,10 +245,18 @@ export class GetCapabilitiesService {
     });
   }
 
-  private mapOperations(operations: Operation[]) {
+  private mapOperations(operations: Operation[], serviceTypeKey?: string) {
+    const codelistId =
+      GeoServiceDoctype.mapServiceTypeToOperationNameCodelist[
+        serviceTypeKey ?? ""
+      ] ?? "5110";
     return operations.map((op) => {
       return {
-        name: { key: op.name.key, value: op.name.value },
+        name: {
+          key: op.name.key,
+          value: op.name.value,
+          _codelistId: codelistId,
+        },
         methodCall: op.addressList[0],
       };
     });
@@ -301,7 +375,11 @@ export class GetCapabilitiesService {
         }),
       },
     };
-    await this.addKeywordsToModel(resource.keywords, doc);
+    await this.addKeywordsToModel(
+      resource.keywords,
+      doc,
+      this.geodatasetThesauri,
+    );
     return doc;
   }
 

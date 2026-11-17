@@ -1,0 +1,14 @@
+{
+  "pageTitle": {
+    "default": "Editor"
+  },
+  "menu": {
+    "application": "INGRID",
+    "logo": "assets/icons/logo.svg",
+    "logo-text": "Logo InGrid Framework"
+  },
+  "dashboard": {
+    "welcome": "Guten Tag! Willkommen zurück.",
+    "application": "INGRID"
+  }
+}

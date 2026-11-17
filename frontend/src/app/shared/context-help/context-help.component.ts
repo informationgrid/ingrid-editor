@@ -24,6 +24,7 @@ import {
   OnDestroy,
   OnInit,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -42,6 +43,7 @@ import { AsyncPipe } from "@angular/common";
   selector: "ige-context-help",
   templateUrl: "./context-help.component.html",
   styleUrls: ["./context-help.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

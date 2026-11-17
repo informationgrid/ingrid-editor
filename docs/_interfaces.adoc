@@ -5,7 +5,7 @@ This section describes the supported API endpoints and their authentications.
 Swagger-UI can help to visualize and interact with the API’s resources.
 
 * http://localhost:8550/swagger-ui/index.html
-* https://ige-ng.informationgrid.eu/swagger-ui/index.html
+* https://editor.informationgrid.eu/swagger-ui/index.html
 
 To test an API endpoint via the Swagger UI, remember to select the responsible server (Servers drop-down) and enter a valid Bearer Token (Authorise button).
 
@@ -25,10 +25,10 @@ Overview of the necessary variables and credentials:
 | Set the Keycloak realm that manages a set of users, credentials, roles, and groups (e.g. "InGrid").
 
 | *$CLIENTID*
-| Keycloak client ID  (e.g. "ige-ng-frontend")
+| Keycloak client ID  (e.g. "editor-api")
 
 | *$USERNAME*
-| Username of InGird Editor Login
+| Username of InGrid Editor Login
 
 | *$PASSWORD*
 | Password of InGrid Editor Login

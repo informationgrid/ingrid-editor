@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.persistence.filter.publish
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.networknt.schema.Error
 import com.networknt.schema.InputFormat
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.SpecVersion.VersionFlag
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.serialization.JsonNodeReader
+import com.networknt.schema.SchemaLocation
+import com.networknt.schema.SchemaRegistry
+import com.networknt.schema.SchemaRegistryConfig
+import com.networknt.schema.dialect.Dialects
+import com.networknt.schema.path.PathType
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
@@ -33,6 +33,7 @@ import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
+import tools.jackson.databind.node.ObjectNode
 
 data class JsonErrorEntry(
     val error: String,
@@ -81,7 +82,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         return json.toString().substringBeforeLast("}") + extraFields + "}"
     }
 
-    fun validate(schemaFile: String, json: String): Set<ValidationMessage> {
+    fun validate(schemaFile: String, json: String): Set<Error> {
         val resource = PreJsonSchemaValidator::class.java.getResource(schemaFile)
 
         if (resource == null) {
@@ -89,31 +90,34 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
             return emptySet()
         }
 
-        val factory = JsonSchemaFactory.getInstance(
-            VersionFlag.V202012,
-        ) { builder: JsonSchemaFactory.Builder ->
-            builder.jsonNodeReader(JsonNodeReader.builder().locationAware().build())
-            builder.schemaMappers { schemaMappers ->
-                schemaMappers.mapPrefix(
-                    "https://wemove.com/schemas/",
-                    "classpath:/",
-                )
-            }
-        }
-//        val config = SchemaValidatorsConfig.builder().build()
-        val schema1: JsonSchema = factory.getSchema(resource.toURI())
+        val schemaLocation = SchemaLocation.of("classpath:$schemaFile")
 
-        val assertions: Set<ValidationMessage> = schema1.validate(json, InputFormat.JSON) { executionContext ->
-            // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
-            executionContext.executionConfig.formatAssertionsEnabled = true
+        val schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft202012()) { builder ->
+            builder.schemaIdResolvers { resolvers ->
+                resolvers.mapPrefix("https://wemove.com/schemas/", "classpath:/")
+            }
+            builder.schemaRegistryConfig(
+                SchemaRegistryConfig.builder().pathType(PathType.JSON_PATH).build(),
+            )
+            builder
+                .nodeReader { reader -> reader.locationAware() }
+                // Allow classpath and wemove schema prefix patterns through the library sandbox
+                .schemaLoader { loader ->
+                    loader.allow { iri ->
+                        iri.toString().startsWith("classpath:") || iri.toString().startsWith("https://wemove.com/schemas/")
+                    }
+                }
         }
+
+        val schema1 = schemaRegistry.getSchema(schemaLocation)
+        val assertions: List<Error> = schema1.validate(json, InputFormat.JSON)
 
         if (assertions.isNotEmpty()) {
             // map to prevent leaking of information about server in absoluteKeywordLocation (#5772)
             log.error("JSON-Schema validation errors: ${assertions.joinToString { it.message }}")
-            val error = assertions.map { JsonErrorEntry(it.error, it.instanceLocation.toString()) }
+            val error = assertions.map { JsonErrorEntry(it.toString(), it.instanceLocation.toString()) }
             throw ValidationException.withReason(error)
         }
-        return assertions
+        return assertions.toSet()
     }
 }

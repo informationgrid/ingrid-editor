@@ -25,6 +25,7 @@ import {
   output,
   signal,
   DestroyRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
@@ -55,6 +56,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     "../free-spatial/free-spatial.component.scss",
     "./geothesaurus-wfsgnde.component.scss",
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDividerModule,
     MatListModule,

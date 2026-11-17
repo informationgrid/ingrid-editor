@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, viewChild } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -34,11 +39,13 @@ import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.compo
 import { MatTooltip } from "@angular/material/tooltip";
 import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
 import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
 
 @Component({
   selector: "zabbix-report",
   templateUrl: "./zabbix-report.component.html",
   styleUrls: ["./zabbix-report.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DatePipe,
     MatMenuModule,
@@ -51,6 +58,7 @@ import { MatIcon } from "@angular/material/icon";
     MatTooltip,
     DateAgoPipe,
     MatIcon,
+    MatIconButton,
   ],
 })
 export class ZabbixReportComponent implements AfterViewInit {

@@ -56,6 +56,7 @@ import {
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { ErrorStateMatcher } from "@angular/material/core";
 import { MatTooltip } from "@angular/material/tooltip";
+import { AngularSplitModule } from "angular-split";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: CategorizedSelectComponent) {}
@@ -97,6 +98,7 @@ export interface CategorizedSelectProps extends InputOptions {
     AriaLabelPipe,
     TranslocoDirective,
     MatTooltip,
+    AngularSplitModule,
   ],
 })
 export class CategorizedSelectComponent
@@ -124,17 +126,9 @@ export class CategorizedSelectComponent
 
   filteredCategories = computed(() => {
     const query = this.filterQuery().toLowerCase();
-    const selectedOption = this.selectedOptions()[0];
-    const restrictToSingleCategory = this.props.restrictToSingleCategory;
 
     return this.categories()
-      .filter((category) =>
-        this.isCategoryAllowed(
-          category,
-          selectedOption,
-          restrictToSingleCategory,
-        ),
-      )
+      .filter((category) => this.isCategoryAllowed(category))
       .map((category) => ({
         ...category,
         // filter options by query
@@ -147,9 +141,11 @@ export class CategorizedSelectComponent
 
   // Uncategorized options with the query filter.
   filteredOptions = computed(() => {
-    const options = this.categories().reduce((acc, cat) => {
-      return [...acc, ...cat.options];
-    }, []);
+    const options = this.categories()
+      .filter((category) => this.isCategoryAllowed(category))
+      .reduce((acc, cat) => {
+        return [...acc, ...cat.options];
+      }, []);
     const query = this.filterQuery().toLowerCase();
     if (!query) return options;
     return options
@@ -163,16 +159,35 @@ export class CategorizedSelectComponent
     super();
     // Change the selected category when filtered categories change
     effect(() => {
-      if (this.filteredCategories().length > 0) {
-        untracked(() => {
-          const selectedCategory = this.filteredCategories().find(
-            (cat) => cat.title == this.selectedCategory()?.title,
-          );
-          this.selectedCategory.set(selectedCategory);
-        });
-      } else {
-        untracked(() => this.selectedCategory.set(null));
-      }
+      const filtered = this.filteredCategories();
+      untracked(() => {
+        if (filtered.length === 0) {
+          this.selectedCategory.set(null);
+          return;
+        }
+
+        // keep the currently selected category if it is still available
+        const current = filtered.find(
+          (cat) => cat.title === this.selectedCategory()?.title,
+        );
+        if (current) {
+          this.selectedCategory.set(current);
+          return;
+        }
+
+        // When the categories are restricted to a single one, because an
+        // option has been selected from it, select it automatically.
+        if (
+          this.props.restrictToSingleCategory &&
+          this.selectedOptions().length > 0 &&
+          filtered.length === 1
+        ) {
+          this.selectedCategory.set(filtered[0]);
+          return;
+        }
+
+        this.selectedCategory.set(null);
+      });
     });
   }
 
@@ -210,6 +225,13 @@ export class CategorizedSelectComponent
 
   onSelectedCategoryToggled(cat: SelectCategory) {
     const isSame = this.selectedCategory()?.title === cat.title;
+
+    // When options are already selected, the list is restricted to a single
+    // category, so it must not be toggled off into the "Alle Optionen" view.
+    if (isSame && this.isRestrictedToSelectedCategory()) {
+      return;
+    }
+
     this.selectedCategory.set(isSame ? null : cat);
   }
 
@@ -240,18 +262,21 @@ export class CategorizedSelectComponent
     return values.has(option.value);
   }
 
-  private isCategoryAllowed(
-    category: SelectCategory,
-    selectedOption: SelectOption | undefined,
-    restrictToSingleCategory: boolean | undefined,
-  ): boolean {
-    // if not restricting to single category, or no selected option, allow all categories
-    if (!restrictToSingleCategory || !selectedOption) {
+  private isRestrictedToSelectedCategory(): boolean {
+    const singleCategoryOnly = this.props.restrictToSingleCategory ?? false;
+    const hasSelectedOptions = this.selectedOptions().length > 0;
+    return singleCategoryOnly && hasSelectedOptions;
+  }
+
+  private isCategoryAllowed(category: SelectCategory): boolean {
+    // if not restricting to single category, or no selected options, allow all categories
+    if (!this.isRestrictedToSelectedCategory()) {
       return true;
     }
 
+    // only allow category if it contains the first selected option
     return category.options.some(
-      (option) => option.value === selectedOption.value,
+      (option) => option.value === this.selectedOptions()[0].value,
     );
   }
 

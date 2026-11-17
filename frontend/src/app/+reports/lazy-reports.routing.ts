@@ -50,14 +50,14 @@ const routes: Routes = [
           title: "URL-Pflege",
         },
       },
-      {
-        path: "ai-quality-analysis",
-        component: TabQualityAnalysisComponent,
-        canActivate: [AiAssistantGuard],
-        data: {
-          title: "KI Qualitätsanalyse",
-        },
-      },
+      // {
+      //   path: "ai-quality-analysis",
+      //   component: TabQualityAnalysisComponent,
+      //   canActivate: [AiAssistantGuard],
+      //   data: {
+      //     title: "KI Qualitätsanalyse",
+      //   },
+      // },
     ],
   },
 ];

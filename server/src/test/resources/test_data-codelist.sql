@@ -531,7 +531,7 @@ VALUES (1002, 100, 'uuid-2', 'InGridGeoDataset', 'Test Geodataset', '{
       }
     }
   },
-  "vectorSpatialRepresentation": {
+  "vectorSpatialRepresentation": [{
     "topologyLevel": {
       "key": "8"
     },
@@ -539,7 +539,7 @@ VALUES (1002, 100, 'uuid-2', 'InGridGeoDataset', 'Test Geodataset', '{
       "key": "6"
     },
     "geometricObjectCount": 2
-  }
+  }]
 }',
         0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
 ;

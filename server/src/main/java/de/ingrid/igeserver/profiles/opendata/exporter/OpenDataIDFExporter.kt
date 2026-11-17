@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.AddressTransformerConfig
@@ -46,6 +44,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 
 @Service
@@ -75,8 +74,6 @@ class OpenDataIDFExporter(
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
 
-        val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
-
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
@@ -100,7 +97,7 @@ class OpenDataIDFExporter(
         }
     }
 
-    private val mapper = ObjectMapper().registerKotlinModule()
+    private val mapper = jacksonObjectMapper()
 
     private fun getModelTransformer(json: Document, catalogId: String, options: ExportOptions): Any {
         val ingridModel: IngridModel?
@@ -114,7 +111,7 @@ class OpenDataIDFExporter(
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress) {
-            transformerClass.constructors.first().call(
+            AddressModelTransformer(
                 AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, options.tags),
             )
         } else {

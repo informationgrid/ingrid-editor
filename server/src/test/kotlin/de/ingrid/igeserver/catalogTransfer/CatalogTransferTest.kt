@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.catalogTransfer
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.CatalogApiController
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
 import de.ingrid.igeserver.imports.CatalogImportService
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.FileUploadHandler
 import io.kotest.assertions.throwables.shouldThrow
@@ -43,6 +43,8 @@ import io.mockk.verify
 import jakarta.persistence.EntityManager
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -51,8 +53,9 @@ class CatalogTransferTest : ShouldSpec() {
     private val entityManager = mockk<EntityManager>(relaxed = true)
     private val transactionManager = mockk<PlatformTransactionManager>(relaxed = true)
     private val groupService = mockk<GroupService>(relaxed = true)
+    private val userService = mockk<UserManagementService>(relaxed = true)
     private val catalogService = mockk<CatalogService>(relaxed = true)
-    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk(), mockk())
+    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, userService, mockk())
     private val catalogExportService = CatalogExportService(entityManager, transactionManager, catalogService)
     private val authUtils = mockk<AuthUtils>(relaxed = true)
     private val fileUploadHandler = mockk<FileUploadHandler>(relaxed = true)
@@ -63,6 +66,7 @@ class CatalogTransferTest : ShouldSpec() {
         mockEntityManagerTupleResults(entityManager)
         every { authUtils.isSuperAdmin(any()) } returns true
         every { catalogService.getAllCatalogUsers(any<String>()) } returns users
+        every { userService.createUser(any<User>()) } returns "OK"
     }
 
     init {
@@ -83,11 +87,14 @@ class CatalogTransferTest : ShouldSpec() {
 
         should("import catalog correctly") {
             every { catalogService.getCatalogById(any()) } throws EmptyResultDataAccessException(1)
+            val query = mockk<jakarta.persistence.Query>(relaxed = true)
+            every { entityManager.createNativeQuery(any<String>()) } returns query
+
             val file = getFile("export/catalog/testexport.json")
             val data = jacksonObjectMapper().readValue<ExportedCatalog>(file)
 
             catalogImportService.importCatalog(data)
-            verify(exactly = 7) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
+            verify(exactly = 7) { query.executeUpdate() }
         }
 
         should("not import catalog with wrong version") {

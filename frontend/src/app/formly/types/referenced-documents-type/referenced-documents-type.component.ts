@@ -26,6 +26,7 @@ import {
   OnInit,
   signal,
   ViewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
@@ -47,6 +48,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-referenced-documents-type",
   templateUrl: "./referenced-documents-type.component.html",
   styleUrls: ["./referenced-documents-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButton,
     MatProgressSpinner,

@@ -1,5 +1,59 @@
 # Changelog
 
+## 8.5.0 (06.10.2026)
+
+### Features
+
+* Fehlermeldung keycloak-Server bei Anmeldung im Editor (#9444)
+* Erstellung von RPM Paketen für RHEL 10 für InGrid Komponenten (#9371)
+* Löschen einer Verbindung vorher prüfen (#9299)
+* Merkmal "AdV" und Schlagwort "AdV-Produktgruppe" (Auswahlliste) aus Objektklasse Geodatendienst entfernen (#9265)
+* Anzahl (Summe) der ausgewählten Datensätze beim Export anzeigen (#9220)
+* Portal LUBW: Sachattribute mit Übermittlungsstufen 0 und 1 sollen im Portal angezeigt werden. (#9003)
+* Codelist: Feld "AdV-Produktgruppe" - Codelist-Wert "INSPIRE Boden" entfernen (#8935)
+* Neuer Verfahrensschritt: „Unterrichtung über den Untersuchungsrahmen“ (#8934)
+* Schlagwörter für die Abgabe von MD an die Mobilithek angeben können (#8906)
+* Beschreibungselement "Herstellungsprozess" sollte in ein normales editierbares Textfeld geändert werden (#8890)
+* ISO Erweiterung für BAW-spezifische Felder (#8814)
+* Update Java 17 LTS auf Java 25 LTS (#8697)
+*  Checkbox "Erst mit Beginn des Auslegungszeitraumes veröffentlichen" überarbeiten (#7890)
+* Automatisierte Archivierung (#7712)
+* Angaben der Geokoordinaten vereinheitlichen (#7223)
+* Anbindung keycloak an Active Directory - Anpassungen Editor (MVP) (#6545)
+* applicationProfile - Anzeige im Editor (#6393)
+* Umstellung von docker-registry.wemove.com auf registry.opencode.de (#2419)
+
+### Bugfixes
+
+* Zabbix Trigger feuern zu früh (#9541)
+* Hochgeladene Dateien werden gelöscht durch automatische Speicherung (Regression) (#9540)
+* Aktions-Button in UVP Monitoring hat falschen Stil (#9535)
+* Korrekturen Simulationsdatenfelder Bautechnik (#9527)
+* ingrid-with-opendata: Bezeichnung des Editors korrigieren (#9517)
+* Fehlende CodelistId Info in LUBW-spezifischen Feldern (#9503)
+* Editor leitet nicht korrekt weiter, wenn nicht eingeloggt (#9494)
+* Fragen und Korrekturwünsche zu Export- und CSW-Varianten (#9490)
+* Passwort ändern leitet falsch weiter (#9467)
+* Export "Datensatz" nach IGE enthält Periodicity obwohl nicht definiert (#9465)
+* Neu angelegter Benutzer hat nicht alle vorgesehenen Rechte (#9463)
+* Einlieferung von Datensätzen via CSW-T erlaubt keine DateTime-Angaben ohne Zeitzone (#9452)
+* IGE: automatisches Ausloggen funktioniert nicht (#9448)
+* CSW-T Update leakt interne SQL Query (#9430)
+* CSW-T Validierung: Fehlermeldung wird unhilfreich getrimmt (#9429)
+* Fehler beim User Erstellung Fehler Dialog (#9428)
+* CSW-T Update leakt stacktrace (#9356)
+* ISO-Schemenvalidierungsfehler in der GDI-DE Testsuite schlägt bei Datengrundlage/Herkunft fehl (#9351)
+* Layout von Versionshistorie verbessern (#9281)
+* IGE: Veröffentlichungsdatum von Literaturverweise fehlen im ISO und Portal (#9269)
+* Timeouts beim Harvesten einer CSW-Datenquelle werden nicht geloggt/führen nicht zum Abbruch (#9225)
+* Details-Header von Objekten und Adressen schließt sich beim Wechsel zwischen unterschiedlichen Objektklassen (#9151)
+* Ausgabe des Identifikators des CRS84 in ISO-XML korrigieren (#9004)
+* Code-Liste 2000 - Mapping für deutsche Verweis-Typen korrigieren (#8783)
+* ISO-XML-Ausgabe extentTypeCode fehlt bei Regionalschlüssel (#8691)
+* Validierung Verweise für Pflichtfelder (#8648)
+* Refactoring des Zabbix-Aufräumjobs und Dokumentation (#8319)
+* Adresse ersetzen einschränken für Literatur-Adresse (#8078)
+    
 ## 8.4.0 (03.07.2026)
 
 ### Features

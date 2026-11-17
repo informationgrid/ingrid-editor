@@ -24,6 +24,7 @@ import {
   input,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
@@ -46,6 +47,7 @@ import { FullNamePipe } from "../../../directives/full-name.pipe";
   selector: "ige-expiration-table",
   templateUrl: "./expiration-table.component.html",
   styleUrls: ["./expiration-table.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTableModule,
     MatSortModule,

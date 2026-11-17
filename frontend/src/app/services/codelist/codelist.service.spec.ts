@@ -19,6 +19,11 @@
  */
 import { CodelistService, SelectOptionUi } from "./codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
+import { TestBed } from "@angular/core/testing";
+import { CodelistDataService } from "./codelist-data.service";
+import { ConfigService } from "../config/config.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { of } from "rxjs";
 
 describe("CodelistService", () => {
   // let spectator: SpectatorService<CodelistService>;
@@ -154,6 +159,29 @@ describe("CodelistService", () => {
       { value: "3", label: "Drei", sortkey: "1" },
     ]);
   });
+
+  it("should request a codelist id only once", async () => {
+    const { service, spy } = createSpiedService();
+
+    service.byId("5152");
+    service.byId("5152");
+
+    await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
+  });
+
+  function createSpiedService() {
+    TestBed.configureTestingModule({
+      providers: [
+        CodelistService,
+        CodelistDataService,
+        { provide: ConfigService, useValue: { getConfiguration: () => ({}) } },
+        { provide: MatSnackBar, useValue: {} },
+      ],
+    });
+    const dataService = TestBed.inject(CodelistDataService);
+    const spy = vi.spyOn(dataService, "byIds").mockReturnValue(of([]) as any);
+    return { service: TestBed.inject(CodelistService), spy };
+  }
 
   function convert(options: SelectOptionUi[]): any {
     return options.map((option) => ({

@@ -17,11 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "ige-section-skipper",
   templateUrl: "./section-skipper.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./section-skipper.component.scss"],
 })
 export class SectionSkipperComponent {

@@ -10,6 +10,10 @@
       "type": "text",
       "store": true,
       "fields": {
+        "keyword": {
+          "type": "keyword",
+          "normalizer": "lowercase"
+        },
         "decomp_german": {
           "type": "text",
           "analyzer": "decomp_german",

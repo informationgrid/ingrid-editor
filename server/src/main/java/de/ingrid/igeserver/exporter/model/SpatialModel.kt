@@ -100,7 +100,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     fun getTitleWithArs(): String? {
         if (this.title != null && !this.ars.isNullOrEmpty()) {
-            return "${this.title} (${this.ars})"
+            return "${this.title} (ARS: ${this.ars})"
         }
         return this.title
     }
@@ -114,7 +114,6 @@ enum class GeoElementType {
 
 data class GeographicElement(
     val type: GeoElementType,
-    val hasExtentTypeCode: Boolean = true,
     val geographicIdentifier: CharacterStringModel? = null,
     val authority: Authority? = null,
     val boundingBox: BoundingBoxModel? = null,

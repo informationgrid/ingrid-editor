@@ -27,6 +27,7 @@ import {
   output,
   inject,
   DestroyRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FormControl,
@@ -47,6 +48,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-coordinates-spatial",
   templateUrl: "./coordinates-spatial.component.html",
   styleUrls: ["./coordinates-spatial.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput],
 })
 export class CoordinatesSpatialComponent

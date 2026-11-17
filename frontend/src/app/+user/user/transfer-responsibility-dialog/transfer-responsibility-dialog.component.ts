@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -40,6 +45,7 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
   selector: "ige-transfer-responsibility-dialog",
   templateUrl: "./transfer-responsibility-dialog.component.html",
   styleUrls: ["./transfer-responsibility-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     UserTableComponent,
     CdkDrag,

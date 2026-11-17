@@ -17,20 +17,26 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, input, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
 
 import { TimePipe } from "../../directives/time.pipe";
-import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "../../services/config/config.service";
+import { SessionTimeoutInterceptor } from "../../services/session-timeout.interceptor";
 
 @Component({
   selector: "ige-session-timeout-info",
   templateUrl: "./session-timeout-info.component.html",
   styleUrls: ["./session-timeout-info.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     A11yModule,
     MatButtonModule,
@@ -40,8 +46,7 @@ import { ConfigService } from "../../services/config/config.service";
   ],
 })
 export class SessionTimeoutInfoComponent implements OnInit {
-  private http = inject(HttpClient);
-  private configService = inject(ConfigService);
+  private sessionTimeoutInterceptor = inject(SessionTimeoutInterceptor);
 
   timeout = input.required<number>();
   readonly autoHide = input<boolean>(true);
@@ -49,11 +54,6 @@ export class SessionTimeoutInfoComponent implements OnInit {
   ngOnInit(): void {}
 
   refreshSession() {
-    this.http
-      .get(
-        this.configService.getConfiguration().backendUrl +
-          "info/refreshSession",
-      )
-      .subscribe();
+    this.sessionTimeoutInterceptor.refreshSession();
   }
 }

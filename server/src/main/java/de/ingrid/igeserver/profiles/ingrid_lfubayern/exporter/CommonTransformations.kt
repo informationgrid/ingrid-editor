@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.model.KeyValue
@@ -37,6 +36,7 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.Informati
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.prefixIfNot
+import tools.jackson.databind.JsonNode
 import kotlin.reflect.KClass
 
 fun lfubUseConstraints(
@@ -78,7 +78,7 @@ fun lfubGetDescriptiveKeywords(
     val lfuInternalKeywords = Thesaurus(
         "LfU Bayern Internal Keywords",
         "2024-07-01",
-        keywords = docData.get("keywords").get("internalKeywords")?.map { keyword: JsonNode? ->
+        keywords = docData.get("keywords")?.get("internalKeywords")?.values()?.map { keyword: JsonNode? ->
             val value = keyword?.getString("key")
                 ?.let { codelistHandler.getCatalogCodelistValue("20001", KeyValue(it)) }
                 ?: keyword?.getString("value")
@@ -90,7 +90,7 @@ fun lfubGetDescriptiveKeywords(
         "2018-08-01",
         type = "stratum",
         dateType = "revision",
-        keywords = docData.get("keywords").get("geologicalKeywords")?.map { keyword: JsonNode? ->
+        keywords = docData.get("keywords")?.get("geologicalKeywords")?.values()?.map { keyword: JsonNode? ->
             val value = keyword?.getString("key")
                 ?.let { codelistHandler.getCatalogCodelistValue("20000", KeyValue(it)) }
                 ?: keyword?.getString("value")

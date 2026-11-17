@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
@@ -26,6 +26,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridBastComponent extends InGridComponent {

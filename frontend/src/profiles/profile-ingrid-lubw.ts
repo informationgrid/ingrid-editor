@@ -17,13 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { FormMenuService } from "../app/+form/form-menu.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../app/services/config/config.service";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
+import { GeoServiceDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-service.doctype";
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
@@ -32,10 +33,12 @@ import { IngridShared } from "./ingrid/doctypes/ingrid-shared";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridLUBWComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
+  geoService = inject(GeoServiceDoctypeLubwSkdvOk);
   behaviourService = inject(BehaviourService);
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);

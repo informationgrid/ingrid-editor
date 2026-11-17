@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
@@ -26,6 +26,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-explanation-text",
   imports: [MatButton],
   templateUrl: "./explanation-text.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./explanation-text.component.scss",
 })
 export class ExplanationTextComponent extends FieldType<FieldTypeConfig> {}

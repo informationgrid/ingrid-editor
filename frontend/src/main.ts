@@ -69,6 +69,7 @@ import { RxStompService } from "./app/rx-stomp.service";
 import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, provideFormlyCore } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
+import { dataCyExtension } from "./app/formly/data-cy.extension";
 import { pluginProvider } from "./app/plugin.provider";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -76,6 +77,7 @@ import { bootstrapApplication, BrowserModule } from "@angular/platform-browser";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { InlineHelpWrapperComponent } from "./app/formly/wrapper/inline-help-wrapper/inline-help-wrapper.component";
 import { AddonsWrapperComponent } from "./app/formly/wrapper/addons/addons-wrapper.component";
+import { AiSuggestWrapperComponent } from "./app/formly/wrapper/ai-suggest/ai-suggest-wrapper.component";
 import { OneColumnWrapperComponent } from "./app/formly/wrapper/one-column-wrapper.component";
 import { FullWidthWrapperComponent } from "./app/formly/wrapper/full-width-wrapper.component";
 import { SectionWrapper } from "./app/formly/wrapper/section-wrapper.component";
@@ -376,6 +378,7 @@ bootstrapApplication(AppComponent, {
         wrappers: [
           { name: "inline-help", component: InlineHelpWrapperComponent },
           { name: "addons", component: AddonsWrapperComponent },
+          { name: "ai-suggest", component: AiSuggestWrapperComponent },
           { name: "panel", component: OneColumnWrapperComponent },
           { name: "full-panel", component: FullWidthWrapperComponent },
           { name: "section", component: SectionWrapper },
@@ -394,6 +397,7 @@ bootstrapApplication(AppComponent, {
         extras: {
           lazyRender: true,
         },
+        extensions: [{ name: "data-cy", extension: dataCyExtension }],
       },
       ...withFormlyMaterial(),
       withFormlyFieldToggle(),
@@ -444,7 +448,7 @@ bootstrapApplication(AppComponent, {
     // handle session timeouts
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: SessionTimeoutInterceptor,
+      useExisting: SessionTimeoutInterceptor,
       multi: true,
     },
     // overwrite global error handler

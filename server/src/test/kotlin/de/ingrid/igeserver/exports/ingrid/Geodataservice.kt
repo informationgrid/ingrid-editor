@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
@@ -48,6 +47,7 @@ import io.mockk.mockkObject
 import mockBehaviours
 import mockCatalog
 import mockCodelists
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class Geodataservice : ShouldSpec() {
 
@@ -83,8 +83,6 @@ class Geodataservice : ShouldSpec() {
             val codelistId = secondArg<String>()
             val entryId = thirdArg<String>()
             when (codelistId + "_" + entryId) {
-                "1350_1" -> "Baugesetzbuch (BauGB)"
-                "1350_2" -> "Atomgesetz (AtG)"
                 "111_1" -> "Provider 1"
                 "111_2" -> "Provider 2"
                 "6250_7" -> "Hessen"

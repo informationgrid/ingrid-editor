@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -32,16 +39,20 @@ import { NgClass } from "@angular/common";
 import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
-import { KeywordAnalysis } from "../../../utils/keywords";
 import {
-  ThesaurusResult,
-  ThesaurusType,
-} from "../../../components/thesaurus-result";
+  FREE_THESAURUS,
+  KeywordAnalysis,
+  Thesaurus,
+} from "../../../utils/keywords";
+import { ProfileService } from "../../../../../app/services/profile.service";
+import { ThesaurusResult } from "../../../components/thesaurus-result";
 import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 import { UntypedFormGroup } from "@angular/forms";
 import { BackendOption } from "../../../../../app/store/codelist/codelist.model";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
+import { GeneralStore } from "../../../../../app/store/general.store";
+import { IngridShared } from "../../../doctypes/ingrid-shared";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -58,8 +69,8 @@ export class Keywords {
   free?: Keyword[];
 }
 
-interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
-  0: any;
+export interface ThesaurusTypeInfo extends Array<any[] | ThesaurusResult[]> {
+  0: any[];
   1: ThesaurusResult[];
 }
 
@@ -67,6 +78,7 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
   selector: "consolidate-keywords-dialog",
   templateUrl: "./consolidate-dialog.component.html",
   styleUrls: ["./consolidate-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogModule,
     MatButtonModule,
@@ -79,6 +91,9 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
   ],
 })
 export class ConsolidateDialogComponent implements OnInit {
+  private profileService = inject(ProfileService);
+  private generalStore = inject(GeneralStore);
+
   private codelistStore = inject(CodelistStore);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConsolidateDialogData,
@@ -91,36 +106,24 @@ export class ConsolidateDialogComponent implements OnInit {
   doc: IgeDocument;
   form: UntypedFormGroup;
   metadata: Metadata;
-  keywords: Keywords;
   isInspireIdentified: boolean;
-
-  keywordCategories: { [x: string]: ThesaurusType } = {
-    gemet: "Gemet-Schlagworte",
-    umthes: "Umthes-Schlagworte",
-    free: "Freie Schlagworte",
-    themes: "INSPIRE-Themen",
-  };
 
   hasKeywords: boolean;
   canHaveIsoCategories: boolean;
+  enabledThesauri: Thesaurus[] = [];
 
-  inspireTopics: any[] = [];
   isoCategories: any[] = [];
-  gemetKeywords: any[] = [];
-  umthesKeywords: any[] = [];
-  freeKeywords: any[] = [];
 
   timedOut: boolean;
 
-  keywordHierarchyMap: Map<ThesaurusType, ThesaurusTypeInfo>;
+  keywordHierarchyMap: Map<Thesaurus, ThesaurusTypeInfo>;
 
   keywordDialogData = [];
   isLoading = signal<boolean>(false);
   isSaving = signal<boolean>(false);
 
   async ngOnInit() {
-    this.doc = this.formStateService.getForm().value;
-    this.metadata = this.formStateService.metadata();
+    this.doc = this.generalStore.getOpenedDocument(false);
     const hasKeywords = this.initKeywords();
     if (!hasKeywords) {
       this.isLoading.set(false);
@@ -133,35 +136,39 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading.set(true);
 
     this.form = this.formStateService.getForm();
-    this.keywords = this.form.get("keywords").value;
+    const doctype = this.profileService.getDoctype(
+      this.doc._type,
+    ) as IngridShared;
+    if (doctype && "keywordThesauri" in doctype) {
+      this.enabledThesauri = doctype.keywordThesauri.filter(
+        (thesaurus) => thesaurus.isEnabled?.(this.form) ?? true,
+      );
+    }
 
     this.isInspireIdentified = this.form.value.properties?.isInspireIdentified;
-    this.inspireTopics = this.isInspireIdentified
-      ? this.form.get("themes")?.value || []
-      : []; // INSPIRE-Themen
     this.canHaveIsoCategories =
       this.isInspireIdentified && this.form.get("topicCategories") !== null;
     this.isoCategories = this.form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
     this.hasKeywords =
-      Object.values(this.keywords).some((keywords) => keywords.length > 0) ||
-      this.inspireTopics.length > 0 ||
+      this.enabledThesauri
+        .map(
+          (thesaurus) =>
+            this.form.get(thesaurus.modelPath.split("."))?.value || [],
+        )
+        .some((keywords) => keywords.length > 0) ||
       this.isoCategories.length > 0;
 
     if (!this.hasKeywords) {
       return false;
     }
 
-    this.gemetKeywords = this.keywords?.gemet || [];
-    this.umthesKeywords = this.keywords?.umthes || [];
-    this.freeKeywords = this.keywords?.free || [];
-
-    this.keywordHierarchyMap = new Map([
-      [this.keywordCategories.themes, [this.inspireTopics, []]],
-      [this.keywordCategories.gemet, [this.gemetKeywords, []]],
-      [this.keywordCategories.umthes, [this.umthesKeywords, []]],
-      [this.keywordCategories.free, [this.freeKeywords, []]],
-    ]);
+    this.keywordHierarchyMap = new Map();
+    this.enabledThesauri.forEach((thesaurus) => {
+      const keywords =
+        this.form.get(thesaurus.modelPath.split("."))?.value || [];
+      this.keywordHierarchyMap.set(thesaurus, [keywords, []]);
+    });
 
     return true;
   }
@@ -171,15 +178,20 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOut = false;
 
     try {
+      const allKeywordsToAnalyze = Array.from(
+        this.keywordHierarchyMap.entries(),
+      ).flatMap(([thesaurus, [keywords]]) => {
+        return keywords.map((keyword) =>
+          thesaurus.type === "codelist" ? keyword.value : keyword.label,
+        );
+      });
+
       let analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
-        [
-          ...this.gemetKeywords,
-          ...this.umthesKeywords,
-          ...this.freeKeywords,
-          ...this.inspireTopics.map((keyword) => this.getInspireLabel(keyword)),
-        ].map((keyword) => keyword.label),
-        this.isInspireIdentified,
+        allKeywordsToAnalyze,
+        this.enabledThesauri,
+        this.form,
       );
+
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
@@ -199,19 +211,23 @@ export class ConsolidateDialogComponent implements OnInit {
     for (let [thesaurus, [oldKeywords, _]] of this.keywordHierarchyMap) {
       this.keywordHierarchyMap.set(thesaurus, [
         oldKeywords,
-        analyzedKeywords?.filter((keyword) => keyword.thesaurus === thesaurus),
+        analyzedKeywords?.filter((keyword) => {
+          if (thesaurus.type === "free") {
+            return keyword.thesaurus.type === "free";
+          }
+          return keyword.thesaurus?.id === thesaurus.id;
+        }),
       ]);
     }
   }
 
   private addKeywordStatuses(
-    oldKeywords: any,
+    oldKeywords: any[],
     newKeywords: ThesaurusResult[],
-    thesaurus: ThesaurusResult["thesaurus"],
+    thesaurus: Thesaurus,
   ) {
     const results: any[] = [];
-    const isInspire = thesaurus === this.keywordCategories.themes;
-    if (isInspire) {
+    if (thesaurus.type === "codelist") {
       newKeywords.forEach((keyword) => {
         if (!oldKeywords.some((item) => item.key === keyword.value.key)) {
           results.push({ ...keyword, status: "added" });
@@ -223,7 +239,7 @@ export class ConsolidateDialogComponent implements OnInit {
         if (!newKeywords.some((k) => k.value.key === keyword.key)) {
           results.push({
             found: false,
-            label: this.getInspireLabel(keyword).label,
+            label: keyword.value,
             value: { key: keyword.key },
             thesaurus: thesaurus,
             status: "removed",
@@ -280,11 +296,11 @@ export class ConsolidateDialogComponent implements OnInit {
     let otherThesauriNewKeywords: ThesaurusResult[] = [];
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      if (thesaurus === this.keywordCategories.themes) {
+      if (thesaurus.type === "codelist") {
         continue;
       }
       otherThesauriNewKeywords = Array.from(this.keywordHierarchyMap)
-        .filter(([key]) => key !== thesaurus)
+        .filter(([key]) => key.id !== thesaurus.id)
         .flatMap(([_, [, keywords]]) => keywords);
       const keywords = newKeywords;
       oldKeywords.map((keyword: ThesaurusResult) => {
@@ -336,7 +352,7 @@ export class ConsolidateDialogComponent implements OnInit {
   private removeAllDuplicateKeywords() {
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      if (thesaurus === this.keywordCategories.themes) {
+      if (thesaurus.type !== "external") {
         continue;
       }
       // Remove duplicates case-insensitively
@@ -348,7 +364,7 @@ export class ConsolidateDialogComponent implements OnInit {
   private setKeywordDialogData() {
     this.keywordDialogData = Array.from(this.keywordHierarchyMap.keys()).map(
       (thesaurus) => ({
-        label: thesaurus,
+        label: thesaurus.label,
         keywords: this.keywordHierarchyMap.get(thesaurus)[1],
       }),
     );

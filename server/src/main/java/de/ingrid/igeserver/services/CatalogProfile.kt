@@ -35,6 +35,12 @@ interface CatalogProfile {
     val linkedProfiles: List<String>
         get() = emptyList()
 
+    /*
+        Definition of profiles that should be excluded from export and not appear in the export list
+     */
+    val excludeExportProfiles: List<String>
+        get() = emptyList()
+
     @get:JsonIgnore
     val indexIdField: IndexIdFieldConfig
 
@@ -54,10 +60,10 @@ interface CatalogProfile {
     fun initIndices(): Unit = Unit
 
     @JsonIgnore
-    fun getElasticsearchMapping(format: String): String
+    fun getElasticsearchMapping(format: String): String = ""
 
     @JsonIgnore
-    fun getElasticsearchSetting(format: String): String
+    fun getElasticsearchSetting(format: String): String = ""
 
     @JsonIgnore
     fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> = permissions

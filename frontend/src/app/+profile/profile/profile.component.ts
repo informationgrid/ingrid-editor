@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
 import {
@@ -40,6 +40,7 @@ import { TranslocoDirective } from "@jsverse/transloco";
   selector: "ige-profile",
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateNoHeaderComponent,
     MatIcon,

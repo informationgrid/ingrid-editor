@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogClose,
@@ -40,6 +45,7 @@ export interface ListDatasetsDialogData {
   selector: "ige-list-datasets-dialog",
   templateUrl: "./list-datasets-dialog.component.html",
   styleUrls: ["./list-datasets-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

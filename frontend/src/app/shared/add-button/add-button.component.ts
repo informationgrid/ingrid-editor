@@ -25,6 +25,7 @@ import {
   OnInit,
   output,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
 import { MatButton } from "@angular/material/button";
@@ -44,6 +45,7 @@ export interface AddButtonOptions {
   selector: "ige-add-button",
   templateUrl: "./add-button.component.html",
   styleUrls: ["./add-button.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButton,
     NgTemplateOutlet,

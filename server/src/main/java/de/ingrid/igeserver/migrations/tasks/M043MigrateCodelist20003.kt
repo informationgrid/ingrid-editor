@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -31,6 +30,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
 
 @Service
 class M043MigrateCodelist20003 : MigrationBase("0.43") {
@@ -53,11 +54,9 @@ class M043MigrateCodelist20003 : MigrationBase("0.43") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc WHERE doc.type='mCloudDoc'").resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
-                doc as Document
+            entityManager.forEachDocumentInBatches("doc.type = 'mCloudDoc'") { doc ->
                 try {
                     migrateDistributionType(doc)
                     docRepo.save(doc)
@@ -83,12 +82,12 @@ class M043MigrateCodelist20003 : MigrationBase("0.43") {
             val value = fieldElement.get("key")
             if (value.isNull) return
 
-            fieldElement.put("key", convertType(value.textValue()))
+            fieldElement.put("key", convertType(value.stringValue()))
         }
     }
 
     private fun convertType(value: String): String {
         val index = source.indexOf(value)
-        return target.get(index)
+        return target[index]
     }
 }

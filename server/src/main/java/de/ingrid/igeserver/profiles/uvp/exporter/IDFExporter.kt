@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -36,6 +34,9 @@ import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 @Service
 class IDFExporter(val uploadConfig: UploadConfig) : IgeExporter {
@@ -85,7 +86,10 @@ class IDFExporter(val uploadConfig: UploadConfig) : IgeExporter {
     override fun toString(exportedObject: Any): String = exportedObject.toString()
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        val mapper = ObjectMapper().registerKotlinModule()
+        val mapper = JsonMapper.builder()
+            .addModule(kotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },

@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
@@ -29,10 +26,10 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.profiles.ingrid.types.IngridIncomingReferenceOptions
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.AuditLogger
@@ -45,7 +42,6 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.igeserver.services.PermissionInfo
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.convertToDocument
@@ -61,6 +57,9 @@ import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.Principal
 import java.util.*
 
@@ -75,7 +74,6 @@ class DatasetsApiController(
     private val groupService: GroupService,
     private val aclService: IgeAclService,
     private val storage: Storage,
-    private val researchService: ResearchService,
     val auditLog: AuditLogger,
 ) : DatasetsApi {
 
@@ -224,21 +222,9 @@ class DatasetsApiController(
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
         val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.linkedProfiles)
-        // TODO: Handle options parameter properly per profile/doctype. For now only used in ingrid (and basic address) context
-        val refQuery = docType.getIncomingReferenceQuery(doc, IngridIncomingReferenceOptions(onlyInCoupledResources = options.contains("onlyInCoupledResources"), literatureReferences = options.contains("literatureReferences")))
-
-        if (refQuery.isEmpty()) {
-            return ResponseEntity.ok(ResearchResponse(0, emptyList()))
-        }
-
-        val paging = if (page != null && pageSize != null) {
-            ResearchPaging(page, pageSize)
-        } else {
-            ResearchPaging()
-        }
-
-        val result = researchService.querySql(principal, catalogIdentifier, refQuery, paging)
-        return ResponseEntity.ok(result)
+        val incomingReferenceOptions = docType.createIncomingReferenceOptions(options, DocStateFilter.LATEST)
+        val paging = if (page != null && pageSize != null) ResearchPaging(page, pageSize) else ResearchPaging()
+        return ResponseEntity.ok(documentService.queryAccessibleReferences(principal, doc, incomingReferenceOptions, paging))
     }
 
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
@@ -381,7 +367,7 @@ class DatasetsApiController(
         }
 
         val childDocs = childrenInfo.hits
-            .map { mapToDocumentInfo(it, isAddress) }
+            .map { documentService.mapToDocumentInfo(it, isAddress) }
         return ResponseEntity.ok(childDocs)
     }
 
@@ -393,23 +379,6 @@ class DatasetsApiController(
     private fun hasRootWritePermission(principal: Principal): Boolean = checkForRootPermissions(
         sidRetrievalStrategy.getSids(principal as Authentication),
         listOf(BasePermission.WRITE),
-    )
-
-    private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo = DocumentInfo(
-        data.wrapper.id!!,
-        data.document.title ?: "???",
-        data.document.uuid,
-        data.document.state.getState(),
-        data.wrapper.countChildren > 0,
-        data.wrapper.parent?.id,
-        data.wrapper.type,
-        data.document.modified!!,
-        data.document.contentmodified!!,
-        data.wrapper.pending_date,
-        data.wrapper.tags,
-        data.wrapper.hasWritePermission,
-        data.wrapper.hasOnlySubtreeWritePermission,
-        isAddress,
     )
 
     private fun getRootDocsFromGroup(

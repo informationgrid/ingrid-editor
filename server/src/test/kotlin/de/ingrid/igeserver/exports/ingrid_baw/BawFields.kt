@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.exports.ingrid_baw
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
@@ -33,6 +31,8 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.IngridIdfExporterBaw
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class BawFields : GeodatasetBase() {
 
@@ -70,6 +70,9 @@ class BawFields : GeodatasetBase() {
 
         every { documentService.findChildren(any(), any(), any(), any()) } returns FindAllResults(0, emptyList())
         every { documentService.getLastPublishedDocument(any(), any(), any()) } returns Document()
+
+        every { codelistHandler.getCodelistValue("3950005", "Schlagwort1", any()) } returns "3950005_Schlagwort1"
+        every { codelistHandler.getCodelistValue("3950007", "Schlagwort2", any()) } returns "3950007_Schlagwort2"
     }
 
     init {
@@ -258,8 +261,7 @@ class BawFields : GeodatasetBase() {
                             .trimIndent(),
                     ) as ObjectNode
 
-            // Mock codelist for bawOrderInfo
-            every { codelistHandler.getCatalogCodelistValue(any(), "bawOrderInfo", any()) } returns "12345 - BAW Order Title"
+            every { codelistHandler.getCodelistValue("bawOrderInfo", "12345 - BAW Order Title", any()) } returns "12345 - BAW Order Title"
 
             val result =
                 exportJsonToXML(exporter, docSamples["GeoDataset"]!!, context)

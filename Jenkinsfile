@@ -18,24 +18,33 @@ pipeline {
 
 
     stages {
-        // normal build if it's not the master branch and not the support branch, except if it's a SNAPSHOT-version
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Plock -Djib.console=plain clean build -x test -x check'
             }
         }
 
+        // license header, ktlint and prettier violations only warn (yellow) and do not fail the build
+        stage ('Code Style') {
+            when { not { buildingTag() } }
+            steps {
+                warnError('Code style violations found (license headers, ktlint, prettier)') {
+                    sh './gradlew --no-daemon :frontend:testFormatting :server:spotlessCheck'
+                }
+            }
+        }
+
+        // test failures only warn (yellow) and do not block later stages;
+        // separate warnError blocks so the server tests still run when the frontend tests fail
         stage ('Tests') {
             when { not { buildingTag() } }
             steps {
-                script {
-                    try {
-                        sh './gradlew :frontend:test :frontend:testFormatting :server:spotlessCheck'
-                    } catch(error) {
-                        currentBuild.result = 'UNSTABLE'
-                    }
+                warnError('Frontend tests failed') {
+                    sh './gradlew --no-daemon :frontend:test'
+                }
 
+                warnError('Server tests failed') {
                     sh './gradlew :server:test'
                 }
             }
@@ -44,10 +53,173 @@ pipeline {
         stage ('Base-Image Update') {
             when { buildingTag() }
             steps {
-                sh './gradlew -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
             }
         }
 
+        stage ('Create SBOMs') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
+            steps {
+                sh "./gradlew cyclonedxBom"
+                sh "./gradlew cyclonedxBom -PdevSBOM"
+                script {
+                    def imageToScan = "bellsoft/liberica-openjre-alpine:25"
+
+                    docker.withRegistry('https://registry.opencode.de', 'registry-opencode') {
+                        sh """
+                            docker run --rm --pull=always --volumes-from jenkins anchore/syft:latest ${imageToScan} --output cyclonedx-json=${WORKSPACE}/build/reports/sbom-docker-image.json
+                        """
+                    }
+                }
+            }
+        }
+
+        stage ('Merge SBOMs') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
+            agent {
+                docker {
+                    image 'cyclonedx/cyclonedx-cli:latest'
+                    // CRITICAL: Overrides the entrypoint so Jenkins can run it as a regular shell agent
+                    args '-u root --entrypoint=""'
+                    reuseNode true
+                }
+            }
+            steps {
+                script {
+                    sh """
+                        mkdir -p build/reports
+                        cyclonedx merge --input-files server/build/reports/sbom-prod.json frontend/build/reports/sbom.json --output-file build/reports/sbom.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                        cyclonedx merge --input-files server/build/reports/sbom-dev.json frontend/build/reports/sbom-dev.json --output-file build/reports/sbom-dev.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                        cyclonedx merge --input-files server/build/reports/sbom-prod.json frontend/build/reports/sbom.json build/reports/sbom-docker-image.json --output-file build/reports/sbom-docker.json --output-format json --output-version v1_6 --hierarchical --group de.ingrid --name ingrid-editor --version ${determineVersion()}
+                    """
+                }
+
+                // store all generated SBOMs (merged and partial ones) as build artifacts
+                archiveArtifacts artifacts: 'build/reports/sbom*.json, server/build/reports/sbom*.json, frontend/build/reports/sbom*.json', fingerprint: true, allowEmptyArchive: true
+            }
+        }
+
+        stage ('Upload SBOM') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
+            steps {
+                script {
+                    def parentId = '76a51c03-ab22-42ca-acf7-d51ac0361f0e'
+                    def componentName = 'ingrid-editor'
+
+                    // Attach SBOM to Docker Image
+                    withCredentials([
+                            file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY_FILE'),
+                            string(credentialsId: 'cosign-key-password', variable: 'COSIGN_PASSWORD'),
+                            usernamePassword(credentialsId: 'registry-opencode', usernameVariable: 'REG_USER', passwordVariable: 'REG_PASS')
+                        ]) {
+                        def imageDigest = readFile('server/build/jib-image.digest').trim()
+                        def imageToScan = "registry.opencode.de/informationgrid/${componentName}@${imageDigest}"
+                        sh """
+                            docker run -u 0:0 --rm \
+                              -e COSIGN_PASSWORD \
+                              --volumes-from jenkins \
+                              ghcr.io/sigstore/cosign/cosign:v3.1.3 attest \
+                              --type cyclonedx \
+                              --predicate \${WORKSPACE}/build/reports/sbom-docker.json \
+                              --key "\$COSIGN_KEY_FILE" \
+                              --registry-username "\$REG_USER" \
+                              --registry-password "\$REG_PASS" \
+                              ${imageToScan}
+                        """
+                    }
+
+                    // Dependency Track
+                    withCredentials([string(credentialsId: 'api-token-dependency-track', variable: 'API_KEY')]) {
+                        def baseVersion = determineVersion()
+                        def sbomConfigs = [
+                            [artifact: 'build/reports/sbom.json',        suffix: '',              tag: 'ingrid_deps_prod'],
+                            [artifact: 'build/reports/sbom-dev.json',    suffix: '-dev',          tag: 'ingrid_deps_dev'],
+                            [artifact: 'build/reports/sbom-docker.json', suffix: '-docker-image', tag: 'ingrid_deps_docker']
+                        ]
+
+                        sbomConfigs.each { cfg ->
+                            def props = [group: 'InGrid', parentId: parentId, tags: ['ingrid', cfg.tag], isLatest: cfg.suffix == '']
+                            dependencyTrackPublisher(artifact: cfg.artifact, projectName: componentName, projectVersion: baseVersion + cfg.suffix, synchronous: true, dependencyTrackApiKey: API_KEY, projectProperties: props)
+                        }
+                    }
+
+                    // NEXUS
+                    def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
+                    sh "mv build/reports/sbom.json build/reports/ingrid-editor-${determineRpmVersion()}.sbom.json"
+                    withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh '''
+                            curl -f --user $USERNAME:$PASSWORD --upload-file build/reports/*.sbom.json https://nexus.informationgrid.eu/repository/''' + repoType + '''/
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage ('Build RPM') {
+            when { expression { return shouldBuildDevOrRelease() } }
+            agent {
+                docker {
+                    image 'docker-registry.wemove.com/ingrid-rpmbuilder'
+                    reuseNode true
+                }
+            }
+            steps {
+                script {
+                    sh "sed -i 's/^Version:.*/Version: ${determineRpmVersion()}/' rpm/ingrid-editor.spec"
+                    sh "sed -i 's/^Release:.*/Release: ${determineRpmReleasePart()}/' rpm/ingrid-editor.spec"
+
+                    // Prepare build
+                    sh "mkdir -p ./build/rpms /root/rpmbuild/SPECS"
+                    sh """
+                        cp ${WORKSPACE}/rpm/ingrid-editor.spec /root/rpmbuild/SPECS/ingrid-editor.spec &&
+                        rpmbuild -bb /root/rpmbuild/SPECS/ingrid-editor.spec
+                    """
+
+                    withCredentials([
+                            file(credentialsId: 'ingrid-rpm-public', variable: 'RPM_PUBLIC_KEY'),
+                            file(credentialsId: 'ingrid-rpm-private', variable: 'RPM_PRIVATE_KEY'),
+                            string(credentialsId: 'ingrid-rpm-passphrase', variable: 'RPM_SIGN_PASSPHRASE')
+                        ]) {
+                        sh 'gpg --batch --import $RPM_PUBLIC_KEY'
+                        sh 'gpg --batch --import $RPM_PRIVATE_KEY'
+                        sh "mkdir -p ./build/rpms/ingrid"
+                        sh "cp -r /root/rpmbuild/RPMS/noarch/* ${WORKSPACE}/build/rpms/ingrid/"
+                        sh "expect /rpm-sign.exp ${WORKSPACE}/build/rpms/ingrid/*.rpm"
+
+                        archiveArtifacts artifacts: 'build/rpms/ingrid/ingrid-editor-*.rpm', fingerprint: true
+                    }
+                }
+            }
+        }
+
+        stage('Deploy RPM') {
+            when { expression { return shouldBuildDevOrRelease() } }
+            steps {
+                script {
+                    def repoType = env.TAG_NAME ? "rpm-ingrid-releases" : "rpm-ingrid-snapshots"
+                    withCredentials([usernamePassword(credentialsId: '9623a365-d592-47eb-9029-a2de40453f68', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh '''
+                            curl -f --user $USERNAME:$PASSWORD --upload-file build/rpms/ingrid/*.rpm https://nexus.informationgrid.eu/repository/''' + repoType + '''/
+                        '''
+                    }
+                }
+            }
+        }
 
     }
     post {
@@ -59,9 +231,9 @@ pipeline {
             // send Email with Jenkins' default configuration
             script {
                 emailext (
-                        body: '${DEFAULT_CONTENT}',
-                        subject: '${DEFAULT_SUBJECT}',
-                        to: '${DEFAULT_RECIPIENTS}')
+                    body: '${DEFAULT_CONTENT}',
+                    subject: '${DEFAULT_SUBJECT}',
+                    to: '${DEFAULT_RECIPIENTS}')
             }
         }
     }
@@ -83,5 +255,38 @@ def getCronParams() {
     }
     else {
         return ''
+    }
+}
+
+def shouldBuildDevOrRelease() {
+    // If no tag is being built OR it is the first build of a tag
+    boolean isTag = env.TAG_NAME != null && env.TAG_NAME.trim() != ''
+    return !isTag || (isTag && currentBuild.number == 1)
+}
+
+def determineVersion() {
+    if (env.TAG_NAME) {
+        if (env.TAG_NAME.startsWith("RPM-")) { // e.g. RPM-8.0.0-0.1SNAPSHOT
+            def lastDashIndex = env.TAG_NAME.lastIndexOf("-")
+            return env.TAG_NAME.substring(4, lastDashIndex)
+        }
+        return env.TAG_NAME
+    } else {
+        return env.BRANCH_NAME.replaceAll('/', '_')
+    }
+}
+
+def determineRpmVersion() {
+    return determineVersion().replaceAll('-', '_')
+}
+
+def determineRpmReleasePart() {
+    if (env.TAG_NAME) {
+        if (env.TAG_NAME.startsWith("RPM-")) {
+            return env.TAG_NAME.substring(env.TAG_NAME.lastIndexOf("-") + 1)
+        }
+        return '1'
+    } else {
+        return 'SNAPSHOT'
     }
 }

@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 class Migrate150 {
 
@@ -51,7 +51,7 @@ class Migrate150 {
                     val docType = docVersion.getString("_type") ?: return@let
                     if (includedTypes.contains(docType)) {
                         val migratedData = getTemporalOfDocument(docVersion)
-                        docVersion.set<JsonNode>("temporal", migratedData)
+                        docVersion.set("temporal", migratedData)
                     }
                 }
             }
@@ -66,14 +66,14 @@ class Migrate150 {
 
             // preserve status (even if null)
             temporal.get("status")?.let { statusNode ->
-                this.set<JsonNode>("status", statusNode)
+                this.set("status", statusNode)
             }
 
             // migrate events -> event
             val eventNode = jacksonObjectMapper().createObjectNode()
-            eventNode.set<JsonNode>("created", null)
-            eventNode.set<JsonNode>("firstPublished", null)
-            eventNode.set<JsonNode>("lastModified", null)
+            eventNode.set("created", null)
+            eventNode.set("firstPublished", null)
+            eventNode.set("lastModified", null)
 
             val events = temporal.get("events") as? ArrayNode
             var createdDate: String? = null
@@ -81,27 +81,27 @@ class Migrate150 {
             var lastModified: String? = null
             events?.forEach { e ->
                 val date = e.get("referenceDate")
-                val typeKey = e.get("referenceDateType")?.get("key")?.asText()
+                val typeKey = e.get("referenceDateType")?.get("key")?.asString()
                 if (!date.isNull && date != null && typeKey != null) {
                     when (typeKey) {
                         "1" -> {
-                            if (createdDate == null || (date.asText() < createdDate)) {
-                                createdDate = date.asText()
-                                eventNode.set<JsonNode>("created", date)
+                            if (createdDate == null || (date.asString() < createdDate)) {
+                                createdDate = date.asString()
+                                eventNode.set("created", date)
                             }
                         }
 
                         "2" -> {
-                            if (firstPublished == null || (date.asText() < firstPublished)) {
-                                firstPublished = date.asText()
-                                eventNode.set<JsonNode>("firstPublished", date)
+                            if (firstPublished == null || (date.asString() < firstPublished)) {
+                                firstPublished = date.asString()
+                                eventNode.set("firstPublished", date)
                             }
                         }
 
                         "3" -> {
-                            if (lastModified == null || (date.asText() > lastModified)) {
-                                lastModified = date.asText()
-                                eventNode.set<JsonNode>("lastModified", date)
+                            if (lastModified == null || (date.asString() > lastModified)) {
+                                lastModified = date.asString()
+                                eventNode.set("lastModified", date)
                             }
                         }
                     }
@@ -109,35 +109,35 @@ class Migrate150 {
                     log.warn("Found event without referenceDateType: $date in document ${doc.getString("_uuid")}")
                 }
             }
-            this.set<JsonNode>("event", eventNode)
+            this.set("event", eventNode)
 
             val resourceDate = temporal.get("resourceDate")
 
             val dataNode = jacksonObjectMapper().createObjectNode().apply {
-                val typeFrom = temporal.get("resourceDateType")?.get("key")?.asText()
-                val typeSince = temporal.get("resourceDateTypeSince")?.get("key")?.asText()
+                val typeFrom = temporal.get("resourceDateType")?.get("key")?.asString()
+                val typeSince = temporal.get("resourceDateTypeSince")?.get("key")?.asString()
                 if (typeFrom == null) {
                     put("type", "none")
                 } else if (typeFrom == "at") {
                     put("type", "at")
-                    set<JsonNode>("resourceDate", resourceDate)
+                    set("resourceDate", resourceDate)
                 } else {
                     val resourceRange = temporal.get("resourceRange")
                     put("type", "range")
                     put("intervalFrom", determineIntervalFrom(typeFrom))
                     put("intervalTo", determineIntervalTo(typeFrom, typeSince))
                     if (resourceDate != null && !resourceDate.isNull) {
-                        set<JsonNode>("resourceDate", resourceDate)
+                        set("resourceDate", resourceDate)
                     }
                     if (resourceRange != null && !resourceRange.isNull) {
-                        set<JsonNode>("resourceRange", resourceRange)
+                        set("resourceRange", resourceRange)
                     }
                 }
 
                 // add timezone if existing
-                temporal.get("resourceTimezone")?.get("key")?.asText()?.let { put("timezone", it) }
+                temporal.get("resourceTimezone")?.get("key")?.asString()?.let { put("timezone", it) }
             }
-            this.set<JsonNode>("data", dataNode)
+            this.set("data", dataNode)
         }
 
         private fun determineIntervalFrom(type: String): String = when (type) {

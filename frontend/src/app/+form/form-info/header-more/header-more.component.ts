@@ -42,11 +42,11 @@ import { UiStore } from "../../../store/ui.store";
   animations: [
     trigger("slideDown", [
       transition(":enter", [
-        style({ height: 0, opacity: 0 }),
-        animate("300ms", style({ height: 134, opacity: 1 })),
+        style({ height: 0, opacity: 0, overflow: "hidden" }),
+        animate("300ms", style({ height: "*", opacity: 1 })),
       ]),
       transition(":leave", [
-        style({ height: 134, opacity: 1 }),
+        style({ height: "*", opacity: 1, overflow: "hidden" }),
         animate("300ms", style({ height: 0, opacity: 0 })),
       ]),
     ]),
@@ -65,6 +65,7 @@ export class HeaderMoreComponent implements OnInit {
   readonly showMore = input(false);
   hideFields: any;
   migrated: boolean;
+  animationsDisabled = true;
 
   private contextHelpService = inject(ContextHelpService);
   private configService = inject(ConfigService);
@@ -84,6 +85,10 @@ export class HeaderMoreComponent implements OnInit {
       this.configService.$userInfo.getValue()?.currentCatalog?.created;
     // compare the creation dates of document and catalog
     this.migrated = new Date(this.metadata().created) < new Date(catCreateDate);
+
+    setTimeout(() => {
+      this.animationsDisabled = false;
+    });
   }
 
   showHelp() {

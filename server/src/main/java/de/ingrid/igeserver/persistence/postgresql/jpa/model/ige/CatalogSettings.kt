@@ -52,7 +52,11 @@ data class CatalogConfig(
     val expiredDatasetConfig: ExpiredDatasetConfig? = null,
     var codelistFavorites: MutableMap<String, List<String>>? = null,
     val language: String? = null,
+    /** key of a color preset (see [CATALOG_THEMES]) to visually distinguish catalogs, null = default look */
+    val theme: String? = null,
 )
+
+val CATALOG_THEMES = setOf("teal", "blue", "petrol", "navy", "green", "violet")
 
 data class ExpiredDatasetConfig(
     val emailEnabled: Boolean = false,

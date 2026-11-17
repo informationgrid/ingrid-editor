@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
@@ -31,6 +29,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
 
 @Service
 class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
@@ -75,7 +75,7 @@ class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
 
         do {
             log.info("Handling page $page")
-            val queries = entityManager.createQuery("SELECT savedQuery FROM Query savedQuery  ")
+            val queries = entityManager.createQuery("SELECT savedQuery FROM Query savedQuery ORDER BY savedQuery.id")
                 .setFirstResult((page - 1) * pageSize).setMaxResults(pageSize).resultList
 
             queries.map { it as Query }.forEach {
@@ -93,6 +93,9 @@ class M080UpdateInGridLiteratureName : MigrationBase("0.80") {
                     log.error("Error migrating query with dbID ${it.id}", ex)
                 }
             }
+            // detach the processed page so memory stays constant
+            entityManager.flush()
+            entityManager.clear()
             page++
         } while (queries.size == pageSize)
     }

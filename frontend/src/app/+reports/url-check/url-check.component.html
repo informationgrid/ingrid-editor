@@ -23,11 +23,21 @@
         >
             <div class="report-btn">
                 @if (!isRunning()) {
-                    <button mat-flat-button color="primary" (click)="start()">
+                    <button
+                        data-cy="btn-start-check"
+                        mat-flat-button
+                        color="primary"
+                        (click)="start()"
+                    >
                         Prüfung starten
                     </button>
                 } @else {
-                    <button mat-flat-button color="primary" (click)="stop()">
+                    <button
+                        data-cy="btn-stop-check"
+                        mat-flat-button
+                        color="primary"
+                        (click)="stop()"
+                    >
                         Prüfung stoppen
                     </button>
                 }
@@ -68,7 +78,7 @@
     @if (dataSource.data?.length > 0) {
         <div main-content class="flex-col">
             <ige-result-table-header
-                [totalHits]="dataSource.data?.length"
+                [totalHits]="$safeNavigationMigration(dataSource.data?.length)"
                 (download)="downloadTable()"
             />
             <mat-divider aria-hidden="true"></mat-divider>
@@ -144,6 +154,7 @@
                         <td mat-cell *matCellDef="let element">
                             @if (element.datasets.length > 1) {
                                 <button
+                                    data-cy="btn-show-datasets"
                                     matTooltip="Datensätze anzeigen"
                                     mat-icon-button
                                     (click)="showDatasets($event, element)"
@@ -200,6 +211,7 @@
                     >
                         <input
                             #url
+                            data-cy="input-replacement-url"
                             matInput
                             placeholder="URL"
                             [disabled]="selection.isEmpty()"
@@ -211,6 +223,7 @@
                         }
                     </mat-form-field>
                     <button
+                        data-cy="btn-replace-url"
                         class="replace-btn"
                         mat-stroked-button
                         color="primary"

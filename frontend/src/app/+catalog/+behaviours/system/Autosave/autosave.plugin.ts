@@ -52,7 +52,7 @@ export class AutosavePlugin extends Plugin {
   }
 
   register() {
-    const sessionDuration = 1800;
+    const sessionDuration = this.generalStore.sessionDuration();
 
     this.timeout$
       .pipe(

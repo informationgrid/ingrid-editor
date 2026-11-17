@@ -53,8 +53,8 @@
                 step="0.1"
                 matInput
                 data-cy="bwastr-start"
-                [min]="selectedSection?.start"
-                [max]="selectedSection?.end"
+                [min]="$safeNavigationMigration(selectedSection?.start)"
+                [max]="$safeNavigationMigration(selectedSection?.end)"
             />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -65,8 +65,8 @@
                 step="0.1"
                 matInput
                 data-cy="bwastr-end"
-                [min]="selectedSection?.start"
-                [max]="selectedSection?.end"
+                [min]="$safeNavigationMigration(selectedSection?.start)"
+                [max]="$safeNavigationMigration(selectedSection?.end)"
             />
         </mat-form-field>
     </div>

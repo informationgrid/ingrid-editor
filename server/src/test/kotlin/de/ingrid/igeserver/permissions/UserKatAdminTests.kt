@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.permissions
 
 import IntegrationTest
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
@@ -39,6 +38,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Suppress("ktlint:standard:function-naming")
 class UserKatAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
@@ -214,6 +214,32 @@ class UserKatAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             get("/api/internalUsers").principal(mockPrincipal),
         ).andExpect(status().isOk)
+    }
+
+    @Test
+    fun `cat-admin can get dataset by uuid`() {
+        mockMvc.perform(
+            get("/api/datasetsByUuid/4e91e8f8-1e16-c4d2-6689-02adc03fb352").principal(mockPrincipal),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.document.company").value("LWL-Schulverwaltung Münster"))
+            .andExpect(jsonPath("$.document.title").value("Test Document"))
+            .andExpect(jsonPath("$.document._children").doesNotExist())
+            .andExpect(jsonPath("$.document.array").doesNotExist())
+            .andExpect(jsonPath("$.metadata.uuid").value("4e91e8f8-1e16-c4d2-6689-02adc03fb352"))
+            .andExpect(jsonPath("$.metadata.docType").value("AddressDoc"))
+    }
+
+    @Test
+    fun `cat-admin can get children with underscore fields`() {
+        mockMvc.perform(
+            get("/api/tree/children").principal(mockPrincipal),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].id").value(2000))
+            .andExpect(jsonPath("$[0].title").value("Test Folder Other"))
+            .andExpect(jsonPath("$[0]._uuid").value("5d2ff598-45fd-4516-b843-0b1787bd8264"))
+            .andExpect(jsonPath("$[0]._state").value("W"))
+            .andExpect(jsonPath("$[0]._type").value("FOLDER"))
+            .andExpect(jsonPath("$[0]._hasChildren").value(true))
     }
 
     @Test

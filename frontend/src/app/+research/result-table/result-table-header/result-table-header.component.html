@@ -17,6 +17,7 @@
     <div class="result-buttons">
         @if (showDownloadButton) {
             <button
+                data-cy="btn-export-csv"
                 mat-button
                 color="primary"
                 (click)="download.emit()"

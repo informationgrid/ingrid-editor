@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.output.JsonStringOutput
@@ -32,6 +30,9 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import org.springframework.stereotype.Service
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 
 @Service
 class LuceneExporter(
@@ -51,7 +52,10 @@ class LuceneExporter(
     }
 
     private fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
-        val mapper = ObjectMapper().registerKotlinModule()
+        val mapper = JsonMapper.builder()
+            .addModule(kotlinModule())
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },

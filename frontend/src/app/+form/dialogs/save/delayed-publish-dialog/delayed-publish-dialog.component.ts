@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormControl,
@@ -50,6 +50,7 @@ import { IgeError } from "../../../../models/ige-error";
 @Component({
   selector: "delayed-publish-dialog",
   templateUrl: "./delayed-publish-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

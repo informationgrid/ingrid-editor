@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -53,6 +59,7 @@ export interface ReplaceAddressDialogData {
   selector: "ige-replace-address-dialog",
   templateUrl: "./replace-address-dialog.component.html",
   styleUrls: ["./replace-address-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TranslocoDirective,
     CdkDrag,

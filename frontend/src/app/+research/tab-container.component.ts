@@ -19,9 +19,16 @@
  */
 import { SessionService, Tab, TabPage } from "../services/session.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: "",
 })
 export abstract class TabContainerComponent implements OnInit {

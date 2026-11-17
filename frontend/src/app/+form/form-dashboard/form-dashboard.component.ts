@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, signal } from "@angular/core";
+import {
+  Component,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../services/config/config.service";
 import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
@@ -32,6 +37,7 @@ import { DashboardService } from "../../+dashboard/dashboard.service";
   selector: "ige-form-dashboard",
   templateUrl: "./form-dashboard.component.html",
   styleUrls: ["./form-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DashboardAddressHeaderComponent,
     DashboardDocsHeaderComponent,

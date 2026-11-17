@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
@@ -36,6 +41,7 @@ export interface PasteDialogOptions {
 @Component({
   templateUrl: "./paste-dialog.component.html",
   styleUrls: ["./paste-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, DestinationSelectionComponent],
 })
 export class PasteDialogComponent implements OnInit {

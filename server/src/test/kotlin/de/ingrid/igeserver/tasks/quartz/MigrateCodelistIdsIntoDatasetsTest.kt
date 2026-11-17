@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import IntegrationTest
-import com.fasterxml.jackson.databind.JsonNode
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -37,6 +36,7 @@ import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import tools.jackson.databind.JsonNode
 
 @Sql(scripts = ["/test_data-codelist.sql"], config = SqlConfig(encoding = "UTF-8"))
 class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
@@ -139,8 +139,8 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("featureCatalogueDescription.featureTypes")!!.get(0).getString("_codelistId") shouldBe null
                 it.getPath("qualities")!!.get(0).getString("measureType._codelistId") shouldBe "7109"
                 it.getPath("qualities")!!.get(1).getString("measureType._codelistId") shouldBe "7127"
-                it.getString("vectorSpatialRepresentation.topologyLevel._codelistId") shouldBe "528"
-                it.getString("vectorSpatialRepresentation.geometricObjectType._codelistId") shouldBe "515"
+                it.getPath("vectorSpatialRepresentation")!!.get(0).getString("topologyLevel._codelistId") shouldBe "528"
+                it.getPath("vectorSpatialRepresentation")!!.get(0).getString("geometricObjectType._codelistId") shouldBe "515"
                 it.getPath("gridSpatialRepresentation.axesDimensionProperties")!!.get(0)
                     .getString("name._codelistId") shouldBe "514"
                 it.getString("gridSpatialRepresentation.cellGeometry._codelistId") shouldBe "509"

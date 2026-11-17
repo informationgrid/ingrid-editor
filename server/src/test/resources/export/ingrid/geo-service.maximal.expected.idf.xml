@@ -516,10 +516,10 @@
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
-                                <gco:CharacterString>Baugesetzbuch (BauGB)</gco:CharacterString>
+                                <gco:CharacterString>Atomgesetz (AtG)</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:keyword>
-                                <gco:CharacterString>Atomgesetz (AtG)</gco:CharacterString>
+                                <gco:CharacterString>Baugesetzbuch (BauGB)</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:thesaurusName>
                                 <gmd:CI_Citation>
@@ -645,7 +645,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Berlin (11)</gco:CharacterString>
+                                                <gco:CharacterString>Berlin (ARS: 11)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -672,6 +672,9 @@
                             </gmd:geographicElement>
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
@@ -689,7 +692,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Hamburg (02)</gco:CharacterString>
+                                                <gco:CharacterString>Hamburg (ARS: 02)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -716,6 +719,9 @@
                             </gmd:geographicElement>
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>

@@ -17,13 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 
 @Component({
   selector: "ige-init-catalog",
   templateUrl: "./init-catalog.component.html",
   styleUrls: ["./init-catalog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [RouterOutlet],
 })
 export class InitCatalogComponent {}

@@ -24,6 +24,7 @@ import {
   inject,
   input,
   OnInit,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   ControlValueAccessor,
@@ -50,6 +51,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ReactiveFormsModule,
     MatSlideToggleModule,

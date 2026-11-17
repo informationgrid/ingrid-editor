@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.imports.internal
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.imports.internal.migrations.Migrate001
@@ -38,6 +34,10 @@ import de.ingrid.igeserver.services.MapperService
 import de.ingrid.igeserver.utils.getString
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class InternalImporter : IgeImporter {

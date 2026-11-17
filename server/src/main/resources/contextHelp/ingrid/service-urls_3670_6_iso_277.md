@@ -1,7 +1,8 @@
 ---
 # ID des GUI Elements
 id: serviceUrls
-docType: InGridInformationSystem
+docType:
+  - InGridInformationSystem
 profile: ingrid
 
 # title, used as window title

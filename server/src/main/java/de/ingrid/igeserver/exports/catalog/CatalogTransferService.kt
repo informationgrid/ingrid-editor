@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.exports.catalog
 
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import jakarta.persistence.EntityManager
@@ -138,14 +140,23 @@ class CatalogTransferService(
 
     data class ExportedCatalog(
         var version: String,
+        @JsonSetter(contentNulls = Nulls.SET)
         var catalog: MutableMap<String?, Any?>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var behaviour: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var codelist: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var userInfo: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var query: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var documentWrapper: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         var document: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         val permissionGroup: List<MutableMap<String?, Any?>>,
+        @JsonSetter(contentNulls = Nulls.SET)
         val userGroup: List<MutableMap<String?, Any?>>,
         val users: List<User>,
     )

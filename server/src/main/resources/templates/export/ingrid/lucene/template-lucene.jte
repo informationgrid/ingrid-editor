@@ -56,7 +56,11 @@
     "sort_hash": "${page.getSortHash()}",
     "lang": "de",
     "boost": 1,
-    "children.object_node.obj_uuid": [],
+    "children.object_node.obj_uuid": [
+    @for(var entry : ForSupport.of(page.getSubordinatedObjectUuids()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "capabilities_url_with_client": "${page.getMapLinkUrl()}",
     "organisation": "",
     "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",

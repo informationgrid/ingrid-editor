@@ -73,7 +73,7 @@
 
     &:hover,
     &:focus {
-      background-color: #352d79;
+      background-color: vars.shift(vars.$ige-secondary, 8);
     }
 
     &.has-error {

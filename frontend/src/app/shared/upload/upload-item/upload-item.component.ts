@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, output } from "@angular/core";
+import {
+  Component,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FlowConfig, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
@@ -31,6 +36,7 @@ import { SizePipe } from "../../../directives/size.pipe";
   selector: "ige-upload-item",
   templateUrl: "./upload-item.component.html",
   styleUrls: ["./upload-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatProgressSpinner,
     MatIcon,

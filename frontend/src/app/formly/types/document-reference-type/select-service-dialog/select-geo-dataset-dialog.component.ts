@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  Inject,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
@@ -48,6 +53,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectGeoDatasetDialog {

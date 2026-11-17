@@ -1,4 +1,5 @@
 @use "@angular/material" as mat;
+@use "./variables" as vars;
 @include mat.elevation-classes();
 @include mat.app-background();
 
@@ -12,9 +13,9 @@ html {
 }
 
 $mat-ige-purple: (
-  100: #3a3184,
-  500: #28225b,
-  700: #1c1840,
+  100: vars.shift(var(--ige-secondary, #28225b), 11),
+  500: var(--ige-secondary, #28225b),
+  700: vars.shift(var(--ige-secondary, #28225b), -7),
   contrast: (
     100: rgba(black, 0.87),
     500: rgba(white, 0.87),

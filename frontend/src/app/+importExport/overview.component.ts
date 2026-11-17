@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, viewChild } from "@angular/core";
+import { Component, viewChild, ChangeDetectionStrategy } from "@angular/core";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { TabContainerComponent } from "../+research/tab-container.component";
@@ -26,6 +26,7 @@ import { TabPage } from "../services/session.service";
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatTabNav,
     MatTabLink,

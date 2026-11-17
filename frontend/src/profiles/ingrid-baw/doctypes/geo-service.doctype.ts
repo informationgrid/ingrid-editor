@@ -28,6 +28,16 @@ import { CommonFieldsBaw } from "./common-fields";
 export class GeoServiceDoctypeBaw extends GeoServiceDoctype {
   common = inject(CommonFieldsBaw);
 
+  constructor() {
+    super();
+    this.keywordThesauri.splice(-1, 0, CommonFieldsBaw.BawKeywordThesaurus);
+    this.coupledResourcesDocTypeFilter = [
+      "InGridGeoDataset",
+      "BawSimulation",
+      "BawMeasurement",
+    ];
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);
     return fieldConfig;

@@ -48,6 +48,8 @@ import { DatePipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MatomoTrackClickDirective } from "ngx-matomo-client";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { getCatalogAccent } from "../services/config/catalog-theme";
+import { Catalog } from "../+catalog/services/catalog.model";
 
 @Component({
   selector: "ige-main-header",
@@ -135,13 +137,7 @@ export class MainHeaderComponent implements OnInit {
       return;
     }
 
-    // TODO: The 'emit' function requires a mandatory void argument
     this.onLogout.emit();
-
-    setTimeout(() => {
-      // TODO: ADAPT
-      // this.authFactory.logout();
-    }, 1000);
   }
 
   getInitials(user: UserInfo) {
@@ -155,5 +151,10 @@ export class MainHeaderComponent implements OnInit {
 
   chooseCatalog(id: string) {
     this.catalogService.switchCatalog(id);
+  }
+
+  /** Accent color of a catalog's theme, null if it has no theme. */
+  catalogAccent(catalog: Catalog): string | null {
+    return getCatalogAccent(catalog.settings?.config?.theme);
   }
 }

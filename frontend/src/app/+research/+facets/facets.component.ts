@@ -30,6 +30,7 @@ import {
   Output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FacetGroup, Facets } from "../research.service";
 import { GeoJSON, Map, Polyline } from "leaflet";
@@ -82,6 +83,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
       useExisting: forwardRef(() => FacetsComponent),
     },
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ReactiveFormsModule,
     MatIconButton,

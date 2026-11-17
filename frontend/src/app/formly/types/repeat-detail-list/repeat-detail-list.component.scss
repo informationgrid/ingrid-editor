@@ -38,10 +38,10 @@ ige-add-button {
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    color: #352d79;
+    color: vars.shift(vars.$ige-secondary, 8);
   }
   .url:hover {
-    color: #196ea2;
+    color: vars.$ige-primary;
   }
 
   .url,

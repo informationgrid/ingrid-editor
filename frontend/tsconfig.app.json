@@ -22,5 +22,13 @@
     "src/profiles/profile-opendata.ts",
     "src/profiles/profile-ingrid-with-opendata.ts",
     "src/profiles/profile-bmi.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

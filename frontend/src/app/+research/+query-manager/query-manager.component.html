@@ -33,6 +33,7 @@
                         @if (query.canDelete) {
                             <button
                                 #editButton
+                                data-cy="btn-more"
                                 mat-icon-button
                                 class="menu-button"
                                 matTooltip="Bearbeiten"
@@ -43,6 +44,7 @@
                             </button>
                             <mat-menu #spatialRef="matMenu">
                                 <button
+                                    data-cy="action-edit"
                                     mat-menu-item
                                     (click)="
                                         editButton.focus(); editQuery(query.id)
@@ -51,6 +53,7 @@
                                     Bearbeiten
                                 </button>
                                 <button
+                                    data-cy="action-delete"
                                     mat-menu-item
                                     (click)="
                                         editButton.focus();

@@ -13,6 +13,7 @@
 
     <div main-header>
         <button
+            data-cy="btn-start-analysis"
             matButton="filled"
             color="primary"
             [disabled]="isLoading()"
@@ -80,6 +81,7 @@
                     <th mat-header-cell *matHeaderCellDef></th>
                     <td mat-cell *matCellDef="let element">
                         <button
+                            data-cy="btn-more"
                             matIconButton
                             [matMenuTriggerFor]="menu"
                             (click)="$event.stopPropagation()"
@@ -88,12 +90,14 @@
                         </button>
                         <mat-menu #menu="matMenu">
                             <button
+                                data-cy="action-open"
                                 mat-menu-item
                                 (click)="openDataset(element)"
                             >
                                 Datensatz öffnen
                             </button>
                             <button
+                                data-cy="action-show-details"
                                 mat-menu-item
                                 (click)="openComparisonDialog(element)"
                             >

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.bmi.exporter
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.AddressRefModel
@@ -32,6 +31,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.logging.log4j.kotlin.logger
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*

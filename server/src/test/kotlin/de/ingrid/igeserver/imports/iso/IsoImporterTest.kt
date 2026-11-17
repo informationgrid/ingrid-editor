@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.imports.iso
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.imports.expectedOrganisationAsPointOfContact
@@ -50,6 +49,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import mockCodelists
+import tools.jackson.databind.JsonNode
 import java.nio.file.Files
 import java.nio.file.Paths
 

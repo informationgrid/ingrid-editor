@@ -28,7 +28,10 @@ import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { of } from "rxjs";
-import { SelectOptionUi } from "../../../services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatSelectModule } from "@angular/material/select";
@@ -43,12 +46,15 @@ import { delay } from "rxjs/operators";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
+import { By } from "@angular/platform-browser";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 import { RepeatListComponent } from "./repeat-list.component";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { waitSomeTime } from "../../../../profiles/ingrid/utils/time";
 
 describe("RepeatListComponent", () => {
+  const LIST_ITEM_SELECTOR = "[data-cy=list-item]";
+
   let spectator: SpectatorHost<FormlyForm>;
   let form: FormGroup;
 
@@ -108,13 +114,12 @@ describe("RepeatListComponent", () => {
     });
 
     it("should add a simple value", async () => {
-      checkItemCount(0);
+      await checkItemCount(0);
       await input.setValue("test-simple");
       await (await input.host()).sendKeys(TestKey.ENTER);
 
-      await waitSomeTime(10);
-      checkItemCount(1);
-      checkItemContent(0, "test-simple");
+      await checkItemCount(1);
+      await checkItemContent(0, "test-simple");
       expect(form.value.repeatListSimple).toEqual(["test-simple"]);
     });
 
@@ -122,34 +127,30 @@ describe("RepeatListComponent", () => {
       spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListSimple: ["item 1"] });
 
-      await waitSomeTime();
-      checkItemCount(1);
+      await checkItemCount(1);
 
-      removeItem(0);
+      await removeItem(0);
 
-      await waitSomeTime();
-      checkItemCount(0);
+      await checkItemCount(0);
       expect(form.value.repeatListSimple).toEqual([]);
     });
 
     it("should show multiple items", async () => {
       spectator.fixture.changeDetectorRef.markForCheck();
-      // await spectator.fixture.whenStable();
       spectator.setHostInput("model", {
         repeatListSimple: ["item 1", "item 2", "item 3"],
       });
-      // await spectator.fixture.whenStable();
 
-      await waitSomeTime(10);
-      checkItemCount(3);
-      checkItemContent(0, "item 1");
-      checkItemContent(1, "item 2");
-      checkItemContent(2, "item 3");
-      removeItem(1);
-      await waitSomeTime(30);
-      checkItemCount(2);
-      checkItemContent(0, "item 1");
-      checkItemContent(1, "item 3");
+      await checkItemCount(3);
+      await checkItemContent(0, "item 1");
+      await checkItemContent(1, "item 2");
+      await checkItemContent(2, "item 3");
+
+      await removeItem(1);
+
+      await checkItemCount(2);
+      await checkItemContent(0, "item 1");
+      await checkItemContent(1, "item 3");
     });
 
     it("should show a defined placeholder", async () => {
@@ -199,15 +200,17 @@ describe("RepeatListComponent", () => {
     });
 
     it("should add a codelist value", async () => {
-      checkItemCount(0);
+      await checkItemCount(0);
 
       spectator.dispatchFakeEvent("input", "focusin");
       await waitSomeTime(15);
       await auto.selectOption({ text: "Eins" });
 
-      await waitSomeTime();
-      checkItemCount(1);
-      checkItemContent(0, "Eins");
+      expect(await auto.isOpen()).toBe(false);
+      expect(document.querySelector(".mat-mdc-autocomplete-panel")).toBeNull();
+
+      await checkItemCount(1);
+      await checkItemContent(0, "Eins");
       expect(form.value.repeatListCodelist).toEqual([
         { key: "1", value: "Eins", _codelistId: null },
       ]);
@@ -215,15 +218,26 @@ describe("RepeatListComponent", () => {
       checkDisabledOptions([true, false, false]);
     });
 
+    it("should remove the autocomplete panel on destroy", async () => {
+      await auto.enterText("E");
+      expect(
+        document.querySelector(".mat-mdc-autocomplete-panel"),
+      ).not.toBeNull();
+
+      spectator.fixture.destroy();
+      await waitSomeTime(300);
+
+      expect(document.querySelector(".mat-mdc-autocomplete-panel")).toBeNull();
+    });
+
     it("should remove an item", async () => {
       spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
 
-      await waitSomeTime(10);
-      removeItem(0);
+      await removeItem(0);
 
+      await checkItemCount(0);
       await waitSomeTime();
-      checkItemCount(0);
       expect(form.value.repeatListCodelist).toEqual([]);
       checkDisabledOptions([false, false, false]);
     });
@@ -287,12 +301,26 @@ describe("RepeatListComponent", () => {
       expect(options.length).toBe(3);
 
       await select.clickOptions({ text: "Drei" });
-      await waitSomeTime();
-      checkItemCount(1);
-      checkItemContent(0, "Drei");
+      await checkItemCount(1);
+      await checkItemContent(0, "Drei");
       expect(form.value.repeatListCodelist).toEqual([
         { key: "3", value: "Drei", _codelistId: null },
       ]);
+    });
+
+    it("should keep a selected value as disabled option", async () => {
+      await waitSomeTime();
+
+      await select.open();
+      await select.clickOptions({ text: "Zwei" });
+      await checkItemCount(1);
+      await waitSomeTime();
+
+      await select.open();
+      const options = await select.getOptions();
+      expect(options.length).toBe(3);
+      expect(await options[1].getText()).toBe("Zwei");
+      expect(await options[1].isDisabled()).toBe(true);
     });
 
     it("should show a defined placeholder", async () => {
@@ -355,9 +383,8 @@ describe("RepeatListComponent", () => {
 
       await auto.selectOption({ text: "remote 2" });
 
-      await waitSomeTime(10);
-      checkItemCount(1);
-      checkItemContent(0, "remote 2");
+      await checkItemCount(1);
+      await checkItemContent(0, "remote 2");
       expect(form.value.repeatListCodelist).toEqual([
         { label: "remote 2", other: "b" },
       ]);
@@ -370,11 +397,9 @@ describe("RepeatListComponent", () => {
         repeatListCodelist: [{ label: "remote 2", other: "b" }],
       });
 
-      await waitSomeTime(10);
-      removeItem(0);
+      await removeItem(0);
 
-      await waitSomeTime();
-      checkItemCount(0);
+      await checkItemCount(0);
 
       expect(form.value.repeatListCodelist).toEqual([]);
       // checkDisabledOptions([false, false, false]);
@@ -424,25 +449,120 @@ describe("RepeatListComponent", () => {
     });
 
     it("should show an added value", async () => {
-      checkItemCount(0);
+      await checkItemCount(0);
 
       spectator.dispatchFakeEvent("input", "focusin");
       await waitSomeTime(15);
       await auto.selectOption({ text: "Eins" });
 
-      await waitSomeTime(10);
-      checkItemCount(1);
-      checkItemContent(0, "Eins");
+      await checkItemCount(1);
+      await checkItemContent(0, "Eins");
     });
 
     it("should remove a chip", async () => {
       spectator.fixture.changeDetectorRef.markForCheck();
       spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
 
-      await waitSomeTime(10);
-      removeChip(0);
-      await waitSomeTime();
-      checkItemCount(0);
+      await removeChip(0);
+      await checkItemCount(0);
+    });
+  });
+
+  describe("External Options", () => {
+    let fieldConfig: FormlyFieldConfig[];
+    let auto: MatAutocompleteHarness = null;
+    let fetchCount = 0;
+
+    beforeEach(async () => {
+      fetchCount = 0;
+      fieldConfig = [
+        {
+          key: "repeatListExternal",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            options: of([{ label: "EPSG:31467", value: "31467" }]),
+            externalOptions: {
+              fetchCodelist: (query: string, page: number) => {
+                fetchCount++;
+                return of({
+                  page: 0,
+                  totalPages: 1,
+                  results: ["EPSG:4326", "EPSG:3857"],
+                });
+              },
+              deduplicate: (
+                options: SelectOption[],
+                externalOptions: SelectOption[],
+              ) => {
+                const existingLabels = (options || []).map((o) => o.label);
+                return [
+                  ...(options || []),
+                  ...(externalOptions || []).filter(
+                    (ext) => !existingLabels.includes(ext.label),
+                  ),
+                ];
+              },
+              threshold: 3,
+            },
+          },
+        },
+      ];
+      form = new FormGroup({});
+
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: fieldConfig,
+          },
+        },
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
+    });
+
+    it("should debounce external requests during rapid input", async () => {
+      await spectator.fixture.whenStable();
+      await auto.focus();
+      await auto.enterText("EPS");
+      await waitSomeTime(100);
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      expect(fetchCount).toBe(1);
+    });
+
+    it("should immediately re-enable an external option when removed", async () => {
+      await spectator.fixture.whenStable();
+      await auto.focus();
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      const component = spectator.debugElement.query(
+        By.directive(RepeatListComponent),
+      ).componentInstance as RepeatListComponent;
+      expect(component.filteredOptions().length).toBe(3);
+
+      await auto.selectOption({ text: "EPSG:4326" });
+      await checkItemCount(1);
+
+      await auto.enterText("EPSG");
+      await waitSomeTime(350);
+
+      expect(
+        component.filteredOptions().find((opt) => opt.label === "EPSG:4326")
+          ?.disabled,
+      ).toBe(true);
+
+      await removeItem(0);
+      await checkItemCount(0);
+
+      expect(
+        component.filteredOptions().find((opt) => opt.label === "EPSG:4326")
+          ?.disabled,
+      ).toBe(false);
     });
   });
 
@@ -454,27 +574,36 @@ describe("RepeatListComponent", () => {
     });
   }
 
-  function checkItemCount(count: number) {
-    let listItemSelector = "[data-cy=list-item]";
-    let elements = spectator.queryAll(listItemSelector);
-    expect(elements.length).toBe(count);
+  // these specs run zoneless: a model change is rendered by an asynchronously
+  // scheduled change detection run, so poll for the expected DOM instead of
+  // asserting once after a fixed amount of time
+  function listItems() {
+    spectator.detectChanges();
+    return spectator.queryAll(LIST_ITEM_SELECTOR);
   }
 
-  function checkItemContent(index: number, text: string) {
-    let listItemSelector = "[data-cy=list-item]";
-    let elements = spectator.queryAll(listItemSelector);
-    expect(elements[index].textContent).contains(text);
+  async function checkItemCount(count: number) {
+    await vi.waitFor(() => expect(listItems().length).toBe(count));
   }
 
-  function removeChip(index: number) {
+  async function checkItemContent(index: number, text: string) {
+    await vi.waitFor(() =>
+      expect(listItems()[index]?.textContent ?? "").contains(text),
+    );
+  }
+
+  async function removeChip(index: number) {
     // since a chip contains of two buttons, we need to use the latter one
-    removeItem(index * 2 + 1);
+    await removeItem(index * 2 + 1);
   }
 
-  function removeItem(index: number) {
-    const removeButton = spectator.queryAll("[data-cy=list-item] button")[
-      index
-    ] as HTMLElement;
+  async function removeItem(index: number) {
+    const removeButton = await vi.waitFor(() => {
+      spectator.detectChanges();
+      const button = spectator.queryAll(`${LIST_ITEM_SELECTOR} button`)[index];
+      expect(button).toBeTruthy();
+      return button as HTMLElement;
+    });
 
     removeButton.click();
   }

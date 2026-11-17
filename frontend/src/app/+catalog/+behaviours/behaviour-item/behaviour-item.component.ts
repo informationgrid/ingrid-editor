@@ -25,9 +25,10 @@ import {
   input,
   OnInit,
   output,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
-import { delay, filter } from "rxjs/operators";
+import { debounceTime, delay, filter } from "rxjs/operators";
 import {
   MatCard,
   MatCardContent,
@@ -43,6 +44,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-behaviour-item",
   templateUrl: "./behaviour-item.component.html",
   styleUrls: ["./behaviour-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatCard,
     MatCardHeader,
@@ -70,7 +72,7 @@ export class BehaviourItemComponent implements OnInit {
     form.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        delay(0), // add tiny delay to get updated form state
+        debounceTime(100),
         filter(() => form.dirty && form.valid),
       )
       .subscribe(() => this.update.emit());

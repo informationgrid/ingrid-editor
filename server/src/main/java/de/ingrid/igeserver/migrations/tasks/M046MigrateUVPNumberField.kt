@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -50,11 +50,9 @@ class M046MigrateUVPNumberField : MigrationBase("0.46") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'").resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
-                doc as Document
+            entityManager.forEachDocumentInBatches("doc.catalog.type = 'uvp'") { doc ->
                 try {
                     migrateUvpNumber(doc)
                     docRepo.save(doc)
@@ -69,7 +67,7 @@ class M046MigrateUVPNumberField : MigrationBase("0.46") {
         val value = doc.data.get("eiaNumber")
         if (value != null && !value.isNull) {
             doc.data.remove("eiaNumber")
-            doc.data.set<ArrayNode>("eiaNumbers", value)
+            doc.data.set("eiaNumbers", value)
         }
     }
 }

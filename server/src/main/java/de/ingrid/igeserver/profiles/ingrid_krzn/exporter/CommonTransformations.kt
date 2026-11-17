@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.AlgorithmTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.DataCollectionTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeodatasetTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeoserviceTransformerKrzn
@@ -34,6 +34,7 @@ import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.ProjectTran
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.PublicationTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.SpecializedTaskTransformerKrzn
 import de.ingrid.igeserver.utils.getString
+import tools.jackson.databind.JsonNode
 import java.net.URI
 import kotlin.reflect.KClass
 
@@ -48,6 +49,7 @@ fun getKrznTransformer(docType: String): KClass<out Any>? {
         InGridDocType.InGridPublication -> PublicationTransformerKrzn::class
         InGridDocType.InGridProject -> ProjectTransformerKrzn::class
         InGridDocType.InGridSpecialisedTask -> SpecializedTaskTransformerKrzn::class
+        InGridDocType.InGridAlgorithm -> AlgorithmTransformerKrzn::class
     }
 }
 

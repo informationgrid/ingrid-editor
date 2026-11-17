@@ -26,6 +26,7 @@ import {
   viewChild,
   inject,
   DestroyRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
@@ -49,6 +50,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-document-list-item",
   templateUrl: "./document-list-item.component.html",
   styleUrls: ["./document-list-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatSelectionList,
     MatListOption,

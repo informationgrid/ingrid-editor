@@ -19,11 +19,13 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CATALOG_THEMES
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -32,6 +34,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
@@ -40,6 +43,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -50,6 +54,7 @@ class CatalogService(
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
+    private val queryRepo: QueryRepository,
     private val authUtils: AuthUtils,
     @Lazy private val igeAclService: IgeAclService,
     private val keycloakService: UserManagementService,
@@ -180,12 +185,25 @@ class CatalogService(
         catalogRepo.save(catalog)
     }
 
+    @Transactional
     fun removeCatalog(name: String) {
         if (!catalogExists(name)) {
             throw PersistenceException.withReason("Failed to delete non-existing catalog with name '$name'.")
         }
 
         val catalog = getCatalogById(name)
+
+        // remove catalog from users
+        val usersOfCatalog = userRepo.findAllByCatalogId(name)
+        for (user in usersOfCatalog) {
+            user.catalogs = user.catalogs.filter { it.identifier != name }.toMutableSet()
+            user.groups = user.groups.filter { it.catalog?.identifier != name }.toMutableSet()
+            if (user.curCatalog?.identifier == name) {
+                user.curCatalog = user.catalogs.firstOrNull()
+            }
+            userRepo.save(user)
+        }
+
         catalogRepo.delete(catalog)
     }
 
@@ -233,15 +251,25 @@ class CatalogService(
         return merge
     }
 
+    @Transactional
     fun deleteUser(catalogId: String, userId: String): Boolean {
         val user = userRepo.findByUserId(userId)!!
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val queriesToDelete = queryRepo.findAllByCatalogAndUser(catalog, user).filter { !it.global }
+        queryRepo.deleteAll(queriesToDelete)
+
         user.catalogs = user.catalogs.filter { it.identifier != catalogId }.toMutableSet()
 
         // only remove user if not connected to any catalog
-        if (user.catalogs.size == 0) {
+        if (user.catalogs.isEmpty()) {
+            val allRemainingQueries = queryRepo.findAllByUser(user).filter { !it.global }
+            queryRepo.deleteAll(allRemainingQueries)
             userRepo.deleteByUserId(userId)
             return true
         } else {
+            if (user.curCatalog?.identifier == catalogId) {
+                user.curCatalog = user.catalogs.firstOrNull()
+            }
             userRepo.save(user)
             return false
         }
@@ -357,7 +385,7 @@ class CatalogService(
 
         val isFolder = entry["isFolder"]?.asBoolean() ?: false
         val hasAnyWritePermission =
-            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
+            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asString())
 
         isFolder && hasAnyWritePermission
     }
@@ -461,6 +489,9 @@ class CatalogService(
         description: String? = null,
         config: CatalogConfig,
     ) {
+        if (config.theme != null && config.theme !in CATALOG_THEMES) {
+            throw ValidationException.withInvalidFields(listOf(InvalidField("theme", "INVALID_THEME")))
+        }
         val catalog = catalogRepo.findByIdentifier(identifier)
         catalog.apply {
             if (name != null) this.name = name

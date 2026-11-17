@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, inject, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
@@ -38,6 +44,7 @@ import { FormDialogData } from "../../../../app/formly/types/table/form-dialog/f
     ReactiveFormsModule,
   ],
   templateUrl: "./object-attributes-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./object-attributes-dialog.component.scss",
 })
 export class ObjectAttributesDialogComponent {

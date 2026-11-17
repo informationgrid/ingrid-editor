@@ -20,8 +20,6 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -43,6 +41,8 @@ import io.mockk.mockkObject
 import mockBehaviours
 import mockCatalog
 import mockCodelists
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 open class GeodatasetBase : ShouldSpec() {
     protected val documentService = mockk<DocumentService>()

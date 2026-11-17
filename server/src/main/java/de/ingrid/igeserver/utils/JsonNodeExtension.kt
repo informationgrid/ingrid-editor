@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.utils
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
+import tools.jackson.databind.JsonNode
 
 /**
  * Get the text value of a given path in a JsonNode. The path is delimited by a "."
@@ -28,7 +28,7 @@ import de.ingrid.igeserver.model.KeyValue
 fun JsonNode.getString(path: String): String? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
         node?.get(fieldName)
-    }?.let { if (it.isNull) null else it.asText() }
+    }?.let { if (it.isNull) null else it.asString() }
 
 fun JsonNode.getBoolean(path: String): Boolean? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
@@ -38,7 +38,21 @@ fun JsonNode.getBoolean(path: String): Boolean? = path.split(".")
 fun JsonNode.getDouble(path: String): Double? = path.split(".")
     .fold<String, JsonNode?>(this) { node, fieldName ->
         node?.get(fieldName)
-    }?.let { if (it.isNull) null else it.asDouble() }
+    }?.let {
+        when {
+            it.isNull -> null
+
+            // string values like "NaN" cannot be coerced by asDouble() and would abort the export
+            it.isString -> it.asString().trim().toDoubleOrNull()?.takeIf { d -> d.isFinite() }
+
+            else -> it.asDouble().takeIf { d -> d.isFinite() }
+        }
+    }
+
+fun JsonNode.getInteger(path: String): Int? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }?.let { if (it.isNull) null else it.asInt() }
 
 fun JsonNode.getStringOrEmpty(path: String): String = this.getString(path) ?: ""
 

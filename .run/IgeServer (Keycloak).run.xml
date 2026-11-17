@@ -8,6 +8,7 @@
         <env name="KEYCLOAK_CLIENT_SECRET" value="SECRET"/>
       <env name="KEYCLOAK_URL" value="https://keycloak.informationgrid.eu" />
       <env name="MAIL_HOST" value="localhost" />
+      <env name="SHOW_SWAGGER_UI" value="true" />
     </envs>
     <module name="ige-ng.server.main" />
     <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />

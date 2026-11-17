@@ -23,6 +23,7 @@ import {
   Inject,
   OnInit,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -60,6 +61,7 @@ import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
   selector: "zabbix-report-dialog",
   templateUrl: "./zabbix-report-dialog.component.html",
   styleUrls: ["./zabbix-report-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatButton,
     MatDialogClose,

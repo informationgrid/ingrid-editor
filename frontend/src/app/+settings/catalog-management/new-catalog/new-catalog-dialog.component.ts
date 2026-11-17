@@ -25,7 +25,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ChangeDetectionStrategy } from "@angular/core";
 import { Profile } from "../../../+catalog/services/catalog.service";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -44,6 +44,7 @@ export interface CatalogSettings {
 
 @Component({
   templateUrl: "new-catalog-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

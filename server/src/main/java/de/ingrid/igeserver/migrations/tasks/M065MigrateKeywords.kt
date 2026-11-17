@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -31,6 +30,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M065MigrateKeywords : MigrationBase("0.65") {
@@ -48,7 +49,6 @@ class M065MigrateKeywords : MigrationBase("0.65") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
             val docTypesToMigrate = listOf(
                 "InGridGeoDataset",
                 "InGridDataCollection",
@@ -60,19 +60,16 @@ class M065MigrateKeywords : MigrationBase("0.65") {
             )
             setAdminAuthentication("Migration", "Task")
 
-            docs
-                .map { it as Document }
-                .filter { docTypesToMigrate.contains(it.type) }
-                .forEach {
-                    try {
-                        if (migrateKeywords(it)) {
-                            log.info("Migrated doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    } catch (ex: Exception) {
-                        log.error("Error migrating document with dbID ${it.id}", ex)
+            entityManager.forEachDocumentInBatches("doc.type IN :types", parameters = mapOf("types" to docTypesToMigrate)) {
+                try {
+                    if (migrateKeywords(it)) {
+                        log.info("Migrated doc with dbID ${it.id}")
+                        docRepo.save(it)
                     }
+                } catch (ex: Exception) {
+                    log.error("Error migrating document with dbID ${it.id}", ex)
                 }
+            }
         }
     }
 
@@ -87,16 +84,16 @@ class M065MigrateKeywords : MigrationBase("0.65") {
                 simpleKeywords.forEach {
                     add(
                         jacksonObjectMapper().createObjectNode().apply {
-                            put("label", it.asText())
+                            put("label", it.asString())
                         },
                     )
                 }
             }
-            set<ArrayNode>("free", simpleConverted)
-            set<ArrayNode>("umthes", umthesKeywords)
+            set("free", simpleConverted)
+            set("umthes", umthesKeywords)
         }
 
-        doc.data.set<ArrayNode>("keywords", newStructure)
+        doc.data.set("keywords", newStructure)
         doc.data.remove("keywordsUmthes")
         return true
     }

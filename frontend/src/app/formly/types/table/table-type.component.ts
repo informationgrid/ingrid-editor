@@ -25,6 +25,7 @@ import {
   inject,
   OnInit,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { debounceTime, filter, startWith, tap } from "rxjs/operators";
@@ -105,6 +106,7 @@ export interface TableProps {
   selector: "ige-table-type",
   templateUrl: "table-type.component.html",
   styleUrls: ["table-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormLabelComponent,
     NgTemplateOutlet,

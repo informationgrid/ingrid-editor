@@ -1,0 +1,7 @@
+<mat-chip-set>
+    @for (value of values(); track $index) {
+        @if (value) {
+            <mat-chip>{{ value }}</mat-chip>
+        }
+    }
+</mat-chip-set>

@@ -127,6 +127,7 @@ export class GeoDatasetDoctype extends IngridShared {
   documentFields = () => {
     this.handleInVeKoSBehaviour();
     this.handleDoiBehaviour();
+    this.handleIzgBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
@@ -137,6 +138,7 @@ export class GeoDatasetDoctype extends IngridShared {
         spatialScope: true,
         thesaurusTopics: true,
         inspireTopics: true,
+        mobilithekTopics: true,
       }),
 
       this.addSection(
@@ -148,6 +150,7 @@ export class GeoDatasetDoctype extends IngridShared {
               this.transloco.translate("form.statement"),
               this.id,
               {
+                wrappers: ["panel", "ai-suggest", "form-field"],
                 required: this.geodatasetOptions.required.statement,
                 expressions: {
                   "props.required":
@@ -525,9 +528,11 @@ export class GeoDatasetDoctype extends IngridShared {
               this.addGroupSimple("source", [
                 dataOrigin(this, this.documentService),
                 this.addGroupSimple("processStep", [
-                  this.addRepeatList("description", "Herstellungsprozess", {
+                  this.addRepeat("description", "Herstellungsprozess", {
                     className: "optional flex-1",
-                    asAutocomplete: true,
+                    fields: [
+                      this.addTextAreaInline("value", null, "processStep"),
+                    ],
                     contextHelpId: "processStep",
                   }),
                 ]),

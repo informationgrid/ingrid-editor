@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input, output } from "@angular/core";
+import {
+  Component,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
@@ -32,6 +37,7 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-dialog-template",
   templateUrl: "./dialog-template.component.html",
   styleUrls: ["./dialog-template.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkDrag,
     CdkDragHandle,

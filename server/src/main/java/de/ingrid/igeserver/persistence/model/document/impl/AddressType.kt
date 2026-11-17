@@ -45,15 +45,6 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     val referenceFieldsInDocuments = listOf("addresses")
 
-    override fun onDelete(doc: Document) {
-        super.onDelete(doc)
-        val result = this.getIncomingReferenceUUIDs(doc, SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ALL_STATES))
-
-        if (result.isNotEmpty()) {
-            throw IsReferencedException.byUuids(result)
-        }
-    }
-
     override fun onUnpublish(doc: Document) {
         super.onUnpublish(doc)
         val result = getIncomingReferenceUUIDs(doc, SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.PENDING_OR_PUBLISHED))

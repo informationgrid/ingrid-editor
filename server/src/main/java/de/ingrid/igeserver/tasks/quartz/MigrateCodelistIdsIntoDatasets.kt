@@ -105,8 +105,8 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("portrayalCatalogueInfo.citation", "title", "3555"),
         FieldToCodelist(null, "properties.subType", "525"),
         FieldToCodelist("spatialRepresentationType", null, "526"),
-        FieldToCodelist(null, "vectorSpatialRepresentation.topologyLevel", "528"),
-        FieldToCodelist(null, "vectorSpatialRepresentation.geometricObjectType", "515"),
+        FieldToCodelist("vectorSpatialRepresentation", "topologyLevel", "528"),
+        FieldToCodelist("vectorSpatialRepresentation", "geometricObjectType", "515"),
         FieldToCodelist("gridSpatialRepresentation.axesDimensionProperties", "name", "514"),
         FieldToCodelist(null, "gridSpatialRepresentation.cellGeometry", "509"),
         FieldToCodelist(null, "gridSpatialRepresentation.georectified.pointInPixel", "2100"),
@@ -146,6 +146,20 @@ class MigrateCodelistIdsIntoDatasets(
     )
     val fieldsLfUBayern = fieldsAddress + fieldsInGrid.filter { it.arrayField == "references" && it.subField == "urlDataType" } +
         listOf(FieldToCodelist("references", "urlDataType", "20002"))
+
+    val fieldsLubw = fieldsAddress + fieldsInGrid +
+        listOf(
+            FieldToCodelist(null, "dataManagement", "30000"),
+            FieldToCodelist(null, "environmentDescription", "30001"),
+            FieldToCodelist("featureCatalogueDescription.objectAttributes", "group", "30002"),
+            FieldToCodelist("featureCatalogueDescription.objectAttributes", "category", "30003"),
+            FieldToCodelist("featureCatalogueDescription.objectAttributes", "transmissionLevel", "30004"),
+            FieldToCodelist("featureCatalogueDescription.geometries", "category", "30003"),
+            FieldToCodelist("featureCatalogueDescription.geometries", "type", "30005"),
+            FieldToCodelist("featureCatalogueDescription.geometries", "scale", "30006"),
+            FieldToCodelist("featureCatalogueDescription.geometries", "transmissionLevel", "30004"),
+            FieldToCodelist(null, "responsibleDepartment", "30007"),
+        )
 
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: MigrateCodelistIdsIntoDatasets")
@@ -217,6 +231,7 @@ class MigrateCodelistIdsIntoDatasets(
         if (profile.identifier == "ingrid-krzn") return fieldsKrzn
         if (profile.identifier == "ingrid-hmdk") return fieldsHmdk
         if (profile.identifier == "ingrid-lfubayern") return fieldsLfUBayern
+        if (profile.identifier == "ingrid-lubw") return fieldsLubw
         if (profile.identifier == "uvp" || profile.linkedProfiles.contains("uvp")) return fieldsUvp
         if (profile.identifier == "opendata" || profile.linkedProfiles.contains("opendata")) return fieldsOpendata
         if (profile.identifier == "test" || profile.linkedProfiles.contains("test")) return fieldsTest

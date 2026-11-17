@@ -19,11 +19,11 @@
  */
 package de.ingrid.igeserver.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.getISO3166v1Alpha3FromNumericLanguageCode
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentData
@@ -34,7 +34,8 @@ import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
-import org.springframework.dao.EmptyResultDataAccessException
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -51,6 +52,7 @@ data class AddressTransformerConfig(
 
 open class AddressModelTransformer(
     val transformerConfig: AddressTransformerConfig,
+    knownAncestors: List<DocumentData>? = null,
 ) {
     val catalogIdentifier = transformerConfig.catalogIdentifier
     val codelist = transformerConfig.codelist
@@ -66,7 +68,8 @@ open class AddressModelTransformer(
     val ancestorAddressesIncludingSelf: MutableList<DocumentData>
 
     init {
-        ancestorAddressesIncludingSelf = if (doc.wrapperId == -1) mutableListOf() else getAncestorAddressesIncludingSelf(doc.wrapperId)
+        ancestorAddressesIncludingSelf = knownAncestors?.toMutableList()
+            ?: if (doc.wrapperId == -1) mutableListOf() else getAncestorAddressesIncludingSelf(doc.wrapperId)
         displayAddress = determineDisplayAddress()
     }
 
@@ -100,15 +103,18 @@ open class AddressModelTransformer(
     private fun determineDisplayAddress(): Document {
         val nonHiddenAddress = ancestorAddressesIncludingSelf
 
-        return if (nonHiddenAddress.size > 0) {
+        return if (nonHiddenAddress.isNotEmpty()) {
             nonHiddenAddress.last().document
         } else {
             doc
         }
     }
 
-    fun getHierarchy(): List<AddressModelTransformer> = ancestorAddressesIncludingSelf.map {
-        AddressModelTransformer(AddressTransformerConfig(catalogIdentifier, codelist, null, it.document, documentService, config, transformerConfig.tags))
+    fun getHierarchy(): List<AddressModelTransformer> = ancestorAddressesIncludingSelf.mapIndexed { index, it ->
+        AddressModelTransformer(
+            AddressTransformerConfig(catalogIdentifier, codelist, null, it.document, documentService, config, transformerConfig.tags),
+            ancestorAddressesIncludingSelf.subList(0, index + 1),
+        )
     }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
@@ -121,7 +127,7 @@ open class AddressModelTransformer(
         return ancestorsWithoutEldest
             .filter {
                 it.document.data.getStringOrEmpty("organization").isNotEmpty()
-            }.joinToString(", ") { it.document.data.get("organization").asText() }
+            }.joinToString(", ") { it.document.data.get("organization").asString() }
     }
 
     val id = displayAddress.id
@@ -187,7 +193,7 @@ open class AddressModelTransformer(
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
-    val allCommunications = displayAddress.data.get("contact")?.map {
+    val allCommunications: List<KeyValue> = displayAddress.data.get("contact")?.values()?.map {
         KeyValue(
             it.get("type")?.getString("key"),
             it.getString("connection"),
@@ -202,12 +208,14 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferenceUUIDs(
+        val uuids = documentService.getIncomingReferenceUUIDs(
             addressDoc,
             catalogIdentifier,
             SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ONLY_PUBLISHED),
-        ).map { uuid ->
-            val doc = getLastPublishedDocument(catalogIdentifier, uuid) ?: return@map null
+        )
+        val documents = documentService.getLastPublishedDocuments(catalogIdentifier, uuids)
+        return uuids.map { uuid ->
+            val doc = documents[uuid] ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 
@@ -215,13 +223,13 @@ open class AddressModelTransformer(
                 doc.uuid,
                 doc.title ?: "",
                 doc.type,
-                doc.data.get("description")?.textValue(),
+                doc.data.get("description")?.asString(),
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
-                    if (fileName?.get("asLink")?.booleanValue() == true) {
-                        fileName.get("uri")?.textValue()?.let { transformUrl(it) } // TODO encode uri
+                    if (fileName?.get("asLink")?.asBoolean() == true) {
+                        fileName.get("uri")?.asString()?.let { transformUrl(it) } // TODO encode uri
                     } else {
-                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
+                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.asString()}"
                     }
                 } else {
                     null
@@ -264,30 +272,26 @@ open class AddressModelTransformer(
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
         if (id == null) return mutableListOf()
 
-        val wrapper = documentService.getWrapperById(id)
-        if (wrapper.type == "FOLDER") return mutableListOf()
-
-        val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid)
-            DocumentData(wrapper, publishedDoc)
-        } catch (_: EmptyResultDataAccessException) {
-            // no published document found
-            null
+        val wrappers = mutableListOf<DocumentWrapper>()
+        var currentId: Int? = id
+        while (currentId != null) {
+            val wrapper = documentService.getWrapperById(currentId)
+            if (wrapper.type == "FOLDER") break
+            wrappers.add(wrapper)
+            currentId = wrapper.parent?.let { it.id!! }
         }
-
-        return if (wrapper.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(wrapper.parent!!.id!!)
-            // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
-            if (convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) {
-                convertedDoc?.let { ancestors.add(it) }
+        val documents = documentService.getLastPublishedDocuments(catalogIdentifier, wrappers.map { it.uuid })
+        val ancestors = mutableListOf<DocumentData>()
+        for (wrapper in wrappers.asReversed()) {
+            val document = documents[wrapper.uuid] ?: continue
+            if (document.data.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) {
+                ancestors.add(DocumentData(wrapper, document))
             }
-            ancestors
-        } else {
-            if (convertedDoc != null) mutableListOf(convertedDoc) else mutableListOf()
         }
+        return ancestors
     }
 
-    private fun contactType(type: String): List<String> = displayAddress.data.get("contact")
+    private fun contactType(type: String): List<String> = (displayAddress.data.get("contact") as? ArrayNode)
         ?.filter { it.get("type")?.getString("key") == type }
         ?.mapNotNull { it.getString("connection") }
         ?: emptyList()

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -28,6 +26,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class IngridIndexExporter(
@@ -57,8 +57,7 @@ class IngridIndexExporter(
 
         if (doc.type != "FOLDER") {
             val wrapper = idfExporter.documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, doc.uuid)
-            val idf = idfExporter.run(doc, catalogId, options)
-            val fingerprint = idfExporter.calculateFingerprint(idf)
+            val (idf, fingerprint) = idfExporter.runWithFingerprint(doc, catalogId, options)
             val previousFingerprintInfo = idfExporter.getPreviousFingerprint(wrapper, idfExporter.typeInfo)
 
             val dateStampDate = if (fingerprint != previousFingerprintInfo?.fingerprint) {

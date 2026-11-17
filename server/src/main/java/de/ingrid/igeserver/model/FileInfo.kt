@@ -19,16 +19,53 @@
  */
 package de.ingrid.igeserver.model
 
+import java.io.InputStream
+import java.security.MessageDigest
 import java.util.*
 
-class FileInfo {
-    private val uploadedChunks: MutableSet<Int> = Collections.synchronizedSet(HashSet())
+class FileInfo(val flowTotalChunks: Int) {
+    private val uploadedChunkChecksums = mutableMapOf<Int, String>()
+    private var combinedChecksum: String? = null
 
-    fun isUploadFinished(flowTotalChunks: Int): Boolean = uploadedChunks.size == flowTotalChunks
+    fun setCombinedChecksum(combinedChecksum: String?) {
+        this.combinedChecksum = combinedChecksum
+    }
 
-    fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunks.contains(flowChunkNumber)
+    fun isUploadFinished(): Boolean = uploadedChunkChecksums.size == flowTotalChunks
 
-    fun addUploadedChunk(flowChunkNumber: Int) {
-        uploadedChunks.add(flowChunkNumber)
+    fun containsChunk(flowChunkNumber: Int): Boolean = uploadedChunkChecksums.contains(flowChunkNumber)
+
+    fun addUploadedChunkChecksum(flowChunkNumber: Int, checksum: String) {
+        uploadedChunkChecksums[flowChunkNumber] = checksum
+    }
+
+    /**
+     * Creates a checksum out of all chunk checksums in order and compares
+     * it to the one provided by the frontend
+     */
+    fun validateCombinedChecksum() {
+        require(combinedChecksum != null) { "Combined checksum is null" }
+        // Build the combined checksum from the individual chunk checksums
+        // in their original file order.
+        val orderedChunkChecksums = (1..flowTotalChunks)
+            .map { chunkNumber -> uploadedChunkChecksums.getValue(chunkNumber) }
+        val combinedChecksumInput = orderedChunkChecksums.joinToString("")
+        // compare checksum over ordered checksums
+        require(sha256(combinedChecksumInput.byteInputStream()) == combinedChecksum) { "Combined checksum mismatch: chunk order or content is incorrect" }
+    }
+
+    companion object {
+        fun sha256(input: InputStream): String {
+            val digest = MessageDigest.getInstance("SHA-256")
+            input.use {
+                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                var count = it.read(buffer)
+                while (count != -1) {
+                    digest.update(buffer, 0, count)
+                    count = it.read(buffer)
+                }
+            }
+            return HexFormat.of().formatHex(digest.digest())
+        }
     }
 }

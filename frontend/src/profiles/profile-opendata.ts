@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { ProfileService } from "../app/services/profile.service";
 import { ReportsService } from "../app/+reports/reports.service";
@@ -27,6 +27,7 @@ import { OpenDataInitProfile } from "./opendata/open-data-init-profile.service";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class OpenDataComponent {

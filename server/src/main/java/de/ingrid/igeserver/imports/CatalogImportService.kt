@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService
 import de.ingrid.igeserver.model.User
@@ -37,6 +34,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.collections.sorted
 
 data class CatalogImportOptions(
@@ -337,7 +337,7 @@ class CatalogImportService(
         permission as ObjectNode
         if (permission.has("uuid")) {
             val catalogIdentifier = catalogService.getCatalogs().find { it.id == catalogId }?.identifier!!
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asText()).let {
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asString()).let {
                 permission.put("id", it.id!!)
             }
         } else {

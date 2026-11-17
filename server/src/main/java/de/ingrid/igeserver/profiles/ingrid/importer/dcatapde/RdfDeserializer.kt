@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.ServerException.Companion.withReason
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.TransformUtils.getRdfModel
@@ -53,6 +50,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
 import java.io.IOException
 import java.net.URISyntaxException
 import java.time.Instant
@@ -64,11 +63,6 @@ import java.util.function.Function
 class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val validationUtils: ValidationUtils) : Deserializer {
 
     val uuidPattern = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
-
-    init {
-        // make sure we don't get an XmlMapper
-        require(mapper !is XmlMapper) { "XmlMapper cannot be used to deserialize GeoJson." }
-    }
 
     @Throws(ServerException::class)
     override fun deserializeRecord(serializedRecordProperties: String?): RecordPLUProperties? {
@@ -203,6 +197,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             record.geometry = createGeoShape(model, location, "locn", "geometry")
             val geoPointMap = createGeoShape(model, location, "dcat", "centroid")
             if (geoPointMap != null) {
+                @Suppress("UNCHECKED_CAST")
                 val geoPoint = geoPointMap["coordinates"] as List<Double>?
                 record.centroid = geoPoint!!.toTypedArray<Double>()
             }
@@ -333,6 +328,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                     }
                     propMap[localName] = periodOfTime
                 } else if (localName == "distribution") {
+                    @Suppress("UNCHECKED_CAST")
                     var distributions = propMap["distributions"] as MutableSet<Map<String, Any>?>?
                     if (distributions == null) {
                         distributions = HashSet()
@@ -363,7 +359,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                 val jsonNode = mapper.readTree(nodeValue)
                 val typeNode = jsonNode["type"]
                     ?: throw withReason("GeoJSON must contain \"type\" property", null)
-                val type = typeNode.textValue()
+                val type = typeNode.asString()
                 if ("FeatureCollection" == type) {
                     val featuresNode = jsonNode["features"]
                         ?: throw withReason("FeatureCollection must contain \"features\" property", null)
@@ -376,17 +372,20 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                         },
                     )
                     val objectNode = mapper.createObjectNode()
-                    objectNode.set<JsonNode>(
+                    objectNode.set(
                         "type",
                         mapper.convertValue("GeometryCollection", JsonNode::class.java),
                     )
-                    objectNode.set<JsonNode>("geometries", geometries)
+                    objectNode.set("geometries", geometries)
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(objectNode.toString(), Map::class.java) as Map<String, Any>
                 } else if ("Feature" == type) {
                     val geometryNode = jsonNode["geometry"]
                         ?: throw withReason("Feature must contain \"geometry\" property", null)
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(jsonNode["geometry"].toString(), MutableMap::class.java) as Map<String, Any>
                 } else if (legalGeometries.contains(type)) {
+                    @Suppress("UNCHECKED_CAST")
                     return mapper.readValue(nodeValue, MutableMap::class.java) as Map<String, Any>
                 } else {
                     throw withReason("GeoJSON must contain a valid type, was \"$type\"", null)
@@ -461,15 +460,15 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
     private fun cleanURL(accessURL: Any?, format: String?): String? {
         val replaceableParams: List<String> = mutableListOf("request", "service", "version")
         // only clean WMS URLs
-        if ("WMS" != format) {
+        if ("WMS" != format || accessURL !is String) {
             return accessURL as String?
         }
         try {
-            val uriComponentsBuilder = UriComponentsBuilder.fromUriString(accessURL as String?)
+            val uriComponentsBuilder = UriComponentsBuilder.fromUriString(accessURL)
             val uriBuilder = URIBuilder(accessURL)
             for (entry in uriBuilder.queryParams) {
                 if (replaceableParams.contains(entry.name.lowercase(Locale.getDefault()))) {
-                    uriComponentsBuilder.replaceQueryParam(entry.name, null as Array<Any?>?)
+                    uriComponentsBuilder.replaceQueryParam(entry.name)
                 }
             }
             return uriComponentsBuilder.build().toUriString()
@@ -489,6 +488,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             processStep.temporal = processStepAsMap["temporal"] as PeriodOfTime?
             processStep.title = processStepAsMap["title"] as String?
             if (processStepAsMap.containsKey("distributions")) {
+                @Suppress("UNCHECKED_CAST")
                 processStep.distributions =
                     mapsToDistributions(processStepAsMap["distributions"] as Set<Map<String, Any>>?)
             }

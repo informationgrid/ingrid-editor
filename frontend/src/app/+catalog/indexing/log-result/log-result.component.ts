@@ -37,6 +37,19 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 })
 export class LogResultComponent implements OnInit {
   log = input.required<LogResult>();
+  protected readonly duration = computed(() => {
+    const { startTime, endTime } = this.log();
+    if (!startTime || !endTime) return null;
+
+    const seconds = Math.floor(
+      (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000,
+    );
+    if (!Number.isFinite(seconds) || seconds < 0) return null;
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours} h ${minutes} min ${seconds % 60} s`;
+  });
   protected readonly skippedDatasets = computed<number>(() => {
     return (
       this.log().targets?.reduce((sum, target) => sum + target.numSkipped, 0) ??

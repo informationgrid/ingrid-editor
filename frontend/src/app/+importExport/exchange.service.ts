@@ -82,6 +82,8 @@ export interface ExportOptions {
   exportFormat: string;
   useDraft: boolean;
   addressReferences?: boolean;
+  /** whether to export the sub-documents of the selected datasets (default: true) */
+  includeSubDocuments?: boolean;
 }
 
 export interface ExportFormOptions {
@@ -91,6 +93,7 @@ export interface ExportFormOptions {
 }
 
 export interface ExportTypeInfo {
+  category?: string;
   type: string;
   name: string;
   description: string;

@@ -26,21 +26,43 @@
             [refreshView]="facetViewRefresher"
         ></ige-facets>
     </div>
+
     <div main-content class="flex-col gap-36">
+        <div class="flex-col gap-12">
+            <div class="report-header">
+                <h2>
+                    {{
+                        form.get("type").value === "selectAddresses"
+                            ? "Adressen"
+                            : t("form")
+                    }}
+                </h2>
+                <mat-button-toggle-group
+                    hideSingleSelectionIndicator="true"
+                    [value]="analysis()"
+                    (change)="setAnalysis($event.value)"
+                    name="analysis"
+                    aria-label="Analyse"
+                >
+                    <mat-button-toggle value="status"
+                        >Veröffentlichungsstatus
+                    </mat-button-toggle>
+                    <mat-button-toggle value="rights"
+                        >Veröffentlichungsrecht
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <mat-divider></mat-divider>
+        </div>
+
         <div class="chart-container">
             <ige-chart
-                [data]="chartDataPublished()"
+                [segments]="chartSegments()"
                 [showPercentages]="true"
             ></ige-chart>
         </div>
-        <ige-card-box
-            class="flex-1"
-            label="{{
-                form.get('type').value === 'selectAddresses'
-                    ? 'Adressen'
-                    : t('form')
-            }}"
-        >
+
+        <ige-card-box class="flex-1">
             <table
                 mat-table
                 [dataSource]="dataSource"
@@ -78,28 +100,52 @@
                         {{ element.count }}
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="published">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                        veröffentlicht
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{ element.published }}
-                    </td>
-                </ng-container>
                 <ng-container matColumnDef="working">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                        unveröffentlicht
+                        {{ docStateLabels.W }}
                     </th>
                     <td mat-cell *matCellDef="let element">
                         {{ element.working }}
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="allWorking">
+                <ng-container matColumnDef="published">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                        in Bearbeitung
+                        {{ docStateLabels.P }}
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        {{ element.allWorking }}
+                        {{ element.published }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="publishedWithDraft">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ docStateLabels.PW }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.publishedWithDraft }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="internet">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ tagLabels.internet }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.internet }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="intranet">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ tagLabels.intranet }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.intranet }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="amtsintern">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ tagLabels.amtsintern }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.amtsintern }}
                     </td>
                 </ng-container>
 
@@ -109,7 +155,7 @@
                     cdkMonitorElementFocus
                     tabindex="0"
                     *matRowDef="let row; columns: displayedColumns()"
-                    [attr.aria-label]="row.ariaLabel"
+                    [attr.aria-label]="getAriaLabel(row)"
                 ></tr>
             </table>
         </ige-card-box>

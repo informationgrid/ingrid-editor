@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  ViewContainerRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { MatDivider } from "@angular/material/divider";
 
@@ -32,6 +37,7 @@ import { MatDivider } from "@angular/material/divider";
     <mat-divider aria-hidden="true"></mat-divider>
   `,
   styleUrls: ["./section-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatDivider],
 })
 export class SectionWrapper extends FieldWrapper {

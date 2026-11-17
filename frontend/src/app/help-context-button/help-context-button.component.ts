@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, input } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { of } from "rxjs";
 import { ContextHelpService } from "../services/context-help/context-help.service";
 import { ConfigService } from "../services/config/config.service";
@@ -38,6 +38,7 @@ import { MatIcon } from "@angular/material/icon";
       <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
     </button>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIconButton, MatTooltip, MatIcon],
 })
 export class HelpContextButtonComponent {

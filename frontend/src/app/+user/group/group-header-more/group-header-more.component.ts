@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit, input } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { Group } from "../../../models/user-group";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -39,6 +45,7 @@ import { DatePipe } from "@angular/common";
       ]),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatTooltip, DatePipe],
 })
 export class GroupHeaderMoreComponent implements OnInit {

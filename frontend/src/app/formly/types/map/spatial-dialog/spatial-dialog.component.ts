@@ -27,6 +27,7 @@ import {
   OnInit,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { LeafletService } from "../leaflet.service";
 import {
@@ -69,6 +70,7 @@ interface LocationType {
   selector: "ige-spatial-dialog",
   templateUrl: "./spatial-dialog.component.html",
   styleUrls: ["./spatial-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatIconButton,
     MatDialogClose,

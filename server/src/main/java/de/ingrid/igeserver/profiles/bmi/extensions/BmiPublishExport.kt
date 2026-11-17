@@ -76,7 +76,7 @@ class BmiPublishExport(
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexBmiDoc(context, it) }
+        docsWithReferences.filterNotNull().forEach { indexBmiDoc(context, it) }
     }
 
     private fun indexBmiDoc(context: Context, docId: String) {

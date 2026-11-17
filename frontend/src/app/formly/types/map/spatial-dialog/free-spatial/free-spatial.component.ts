@@ -26,6 +26,7 @@ import {
   signal,
   inject,
   DestroyRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   FormControl,
@@ -63,6 +64,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-free-spatial",
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     SearchInputComponent,
     MatList,

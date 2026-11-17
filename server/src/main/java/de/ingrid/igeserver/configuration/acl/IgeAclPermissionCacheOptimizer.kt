@@ -40,7 +40,7 @@ class IgeAclPermissionCacheOptimizer(private val aclService: AclService) : AclPe
 
     private val oidRetrievalStrategy: ObjectIdentityRetrievalStrategy = ObjectIdentityRetrievalStrategyImpl()
 
-    override fun cachePermissionsFor(authentication: Authentication?, objects: Collection<*>) {
+    override fun cachePermissionsFor(authentication: Authentication, objects: Collection<*>) {
         if (objects.isEmpty()) {
             return
         }

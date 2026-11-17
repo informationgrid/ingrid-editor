@@ -27,19 +27,15 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { catchError, map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 import { GeneralStore } from "../../store/general.store";
+import { applyCatalogTheme } from "./catalog-theme";
 
 export class Configuration {
   constructor(
-    public keycloakUrl: string,
-    public keycloakRealm: string,
-    public keycloakClientId: string,
-    public keycloakEnabled: boolean,
     public contextPath: string,
     public backendUrl: string,
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public sessionTimeout: number,
     public mapTileUrl: string,
     public mapWMSUrl: string,
     public mapWMSLayers: string,
@@ -60,6 +56,7 @@ export interface Version {
   version: string;
   date: string;
   commitId: string;
+  commitTime: string;
 }
 
 export interface UserInfo {
@@ -147,6 +144,14 @@ export class ConfigService {
 
   private config: Configuration;
 
+  get isRedirectingToLogin(): boolean {
+    return this._isRedirectingToLogin;
+  }
+
+  set isRedirectingToLogin(value: boolean) {
+    this._isRedirectingToLogin = value;
+  }
+
   defaultConfig: Partial<Configuration> = {
     contextPath: "/",
     featureFlags: {},
@@ -162,6 +167,7 @@ export class ConfigService {
   private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
   profileModule: Type<any>;
+  private _isRedirectingToLogin = false;
 
   constructor(
     private http: HttpClient,
@@ -193,6 +199,7 @@ export class ConfigService {
     this.generalStore.updateFavorites(
       userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
     );
+    applyCatalogTheme(userInfo.currentCatalog.settings?.config?.theme);
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";
@@ -263,6 +270,7 @@ export class ConfigService {
   }
 
   hasPermission(neededPermission: string | string[]): boolean {
+    if (this.isSuperAdministrator) return true;
     const user = this.$userInfo.getValue();
     return this.hasExplicitPermission(neededPermission, user);
   }

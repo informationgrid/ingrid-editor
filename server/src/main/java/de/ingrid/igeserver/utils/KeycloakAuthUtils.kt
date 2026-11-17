@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.oauth2.jwt.Jwt
@@ -45,19 +46,24 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     override fun getUsernameFromPrincipal(principal: Principal): String = when (principal) {
         is JwtAuthenticationToken -> {
-            (principal.principal as Jwt).getClaimAsString("preferred_username")
+            (principal.principal as Jwt).getClaimAsString("preferred_username") ?: "???"
         }
 
         is OAuth2AuthenticationToken -> {
             val oidcUser = principal.principal as? OidcUser
             oidcUser?.getClaim<String>("preferred_username")
                 ?: oidcUser?.email
-                ?: oidcUser?.name
                 ?: "???"
         }
 
         is UsernamePasswordAuthenticationToken -> {
-            principal.principal as String
+            if (principal.principal is String) {
+                principal.principal as String
+            } else if (principal.principal is User) {
+                (principal.principal as User).username
+            } else {
+                "???"
+            }
         }
 
         else -> {
@@ -68,7 +74,7 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     override fun getFullNameFromPrincipal(principal: Principal): String {
         return try {
             when (principal) {
-                is JwtAuthenticationToken -> ((principal.principal as Jwt).getClaimAsString("name"))
+                is JwtAuthenticationToken -> ((principal.principal as Jwt).getClaimAsString("name")) ?: getUsernameFromPrincipal(principal)
 
                 is OAuth2AuthenticationToken -> (principal.principal as? OidcUser)?.fullName
                     ?: (principal.principal as? OidcUser)?.name
@@ -87,7 +93,7 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
         return roles.contains(SimpleGrantedAuthority(role)) || roles.contains(SimpleGrantedAuthority("ROLE_$role"))
     }
 
-    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> = principal.authorities ?: emptyList()
+    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> = principal.authorities
 
     override fun isAdmin(principal: Principal): Boolean = containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
 
@@ -96,8 +102,8 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     override fun isAuthor(principal: Principal): Boolean = containsRole(principal, "author")
 
     override fun getCurrentUserRoles(catalogId: String): Set<Group> {
-        val authentication: Authentication = SecurityContextHolder.getContext().authentication
-        val userName: String = getUsernameFromPrincipal(authentication)
+        val authentication: Authentication? = SecurityContextHolder.getContext().authentication
+        val userName: String = if (authentication != null) getUsernameFromPrincipal(authentication) else "???"
         return catalogService.getUser(userName)?.getGroupsForCatalog(catalogId) ?: emptySet()
     }
 

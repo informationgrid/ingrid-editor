@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnDestroy, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   FormlyFieldConfig,
   FormlyForm,
@@ -38,6 +45,7 @@ export interface FormDialogData {
   selector: "ige-form-dialog",
   templateUrl: "./form-dialog.component.html",
   styleUrls: ["./form-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, FormlyForm],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {

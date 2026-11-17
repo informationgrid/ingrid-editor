@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, input, Signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  Signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   MetadataOption,
@@ -37,6 +44,7 @@ interface PropertyItem {
   selector: "ige-metadata-type-short",
   imports: [MatChipOption, MatChipListbox],
   templateUrl: "./metadata-type-short.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./metadata-type-short.component.scss",
 })
 export class MetadataTypeShortComponent {

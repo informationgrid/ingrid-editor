@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.opendata.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -45,6 +42,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class OpenDataExporterClassic(
@@ -92,9 +92,9 @@ class OpenDataExporterClassic(
 
         val additionalLuceneJson = getAdditionalLuceneJsonForDCATExporter(doc, catalogId)
         // apply all bmi fields to ingrid lucene document
-        additionalLuceneJson.fieldNames().forEach {
-            if (luceneJson.has(it)) log.error("Conflict between BMI export document and InGrid on field: $it")
-            luceneJson.set<JsonNode>(it, additionalLuceneJson.get(it))
+        additionalLuceneJson.properties().forEach { (field, value) ->
+            if (luceneJson.has(field)) log.error("Conflict between BMI export document and InGrid on field: $field")
+            luceneJson.set(field, value)
         }
 
         // TODO: support fingerprint in this profile for additionalIDF
@@ -160,13 +160,13 @@ class OpenDataExporterClassic(
             data.apply {
                 val outer = this
 
-                set<JsonNode>("pointOfContact", get("addresses"))
+                set("pointOfContact", get("addresses"))
                 put("alternateTitle", getString("landingPage"))
-                set<JsonNode>("openDataCategories", get("openDataCategories"))
-                set<JsonNode>(
+                set("openDataCategories", get("openDataCategories"))
+                set(
                     "spatial",
                     mapper.createObjectNode().apply {
-                        set<JsonNode>(
+                        set(
                             "references",
                             if (outer.get("spatial") == null || outer.get("spatial").isEmpty) {
                                 mapper.createArrayNode()
@@ -176,21 +176,21 @@ class OpenDataExporterClassic(
                                 )
                             },
                         )
-                        set<JsonNode>("spatialSystems", null)
+                        set("spatialSystems", null)
                     },
                 )
                 get("keywords")?.let {
-                    set<JsonNode>(
+                    set(
                         "keywords",
                         mapper.createObjectNode().apply {
-                            set<JsonNode>(
+                            set(
                                 "free",
                                 mapper.createArrayNode().apply {
-                                    it.forEach {
+                                    it.values().forEach {
                                         add(
                                             mapper.createObjectNode().apply {
                                                 put("id", null as String?)
-                                                put("label", it.asText())
+                                                put("label", it.asString())
                                             },
                                         )
                                     }
@@ -199,10 +199,10 @@ class OpenDataExporterClassic(
                         },
                     )
                 }
-                set<JsonNode>(
+                set(
                     "metadata",
                     mapper.createObjectNode().apply {
-                        set<JsonNode>(
+                        set(
                             "language",
                             mapper.createObjectNode().apply {
                                 put("key", 150)
@@ -211,26 +211,26 @@ class OpenDataExporterClassic(
                     },
                 )
                 put("isOpenData", true)
-                set<JsonNode>("openDataCategories", get("DCATThemes"))
-                set<JsonNode>(
+                set("openDataCategories", get("DCATThemes"))
+                set(
                     "resource",
                     mapper.createObjectNode().apply {
                         put("purpose", outer.getString("legalBasis"))
                         put("specificUsage", outer.getString("specificUsage"))
                     },
                 )
-                set<JsonNode>(
+                set(
                     "temporal",
                     mapper.createObjectNode().apply {
-                        set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
-                        set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
-                        set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
+                        set("resourceDateType", outer.getPath("temporal.rangeType"))
+                        set("resourceDate", outer.getPath("temporal.timeSpanDate"))
+                        set("resourceRange", outer.getPath("temporal.timeSpanRange"))
                     },
                 )
-                set<JsonNode>(
+                set(
                     "maintenanceInformation",
                     mapper.createObjectNode().apply {
-                        set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
+                        set("maintenanceAndUpdateFrequency", outer.get("periodicity"))
                     },
                 )
             }

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.exporter
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -34,6 +32,8 @@ import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class IndexExporterAddress(
@@ -74,16 +74,16 @@ class IndexExporterAddress(
             put("title", doc.title)
             put("iPlugId", "ige-ng_$catalogId")
             put("dataSourceName", "iPlug IGE-NG ($catalogId)")
-            set<ArrayNode>("partner", jacksonObjectMapper().createArrayNode().add(partner))
-            set<ArrayNode>("provider", jacksonObjectMapper().createArrayNode().add(provider))
+            set("partner", jacksonObjectMapper().createArrayNode().add(partner))
+            set("provider", jacksonObjectMapper().createArrayNode().add(provider))
             put("title", doc.title)
             put("t02_address.typ", addressType)
             put("is_top_level", isTopLevelNode(wrapperDoc.parent))
-            set<ArrayNode>("t02_address.parents.title", getParentTitleAsArrayNode(wrapperDoc.parent))
-            set<ArrayNode>("t021_communication.commtype_key", commTypeKeys)
-            set<ArrayNode>("t021_communication.commtype_value", commTypeValues)
-            set<ArrayNode>("t021_communication.comm_value", commValues)
-            set<ArrayNode>(
+            set("t02_address.parents.title", getParentTitleAsArrayNode(wrapperDoc.parent))
+            set("t021_communication.commtype_key", commTypeKeys)
+            set("t021_communication.commtype_value", commTypeValues)
+            set("t021_communication.comm_value", commValues)
+            set(
                 "datatype",
                 jacksonObjectMapper().createArrayNode()
                     .add("dsc_ecs_address")
@@ -114,21 +114,24 @@ class IndexExporterAddress(
 
     private fun getCommTypeKeys(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
         doc.data.get("contact")
-            .map { it.get("type").get("key").textValue() }
-            .forEach { add(it) }
+            ?.values()
+            ?.mapNotNull { it.get("type")?.get("key")?.asString() }
+            ?.forEach { add(it) }
     }
 
     private fun getCommTypeValues(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
         doc.data.get("contact")
-            .map { it.get("type").get("key").textValue() }
-            .map { codelistService.getCodeListValue("4430", it, "de") }
-            .forEach { add(it) }
+            ?.values()
+            ?.mapNotNull { it.get("type")?.get("key")?.asString() }
+            ?.mapNotNull { codelistService.getCodeListValue("4430", it, "de") }
+            ?.forEach { add(it) }
     }
 
     private fun getCommValues(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
         doc.data.get("contact")
-            .map { it.get("connection").textValue() }
-            .forEach { add(it) }
+            ?.values()
+            ?.mapNotNull { it.get("connection")?.asString() }
+            ?.forEach { add(it) }
     }
 
     override fun toString(exportedObject: Any): String = exportedObject.toString()

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { InGridComponent, InGridDoctype } from "./profile-ingrid";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
@@ -27,6 +27,7 @@ import { FormFieldHelper } from "./form-field-helper";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridLFUBayernComponent extends InGridComponent {

@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, input, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { interval } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -26,6 +33,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-hint-loading-view",
   templateUrl: "./hint-loading-view.component.html",
   styleUrls: ["./hint-loading-view.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatProgressSpinner],
 })
 export class HintLoadingViewComponent {

@@ -19,10 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -32,6 +30,9 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M066MigrateGeoNames : MigrationBase("0.66") {
@@ -49,7 +50,6 @@ class M066MigrateGeoNames : MigrationBase("0.66") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
             val docTypesToMigrate = listOf(
                 "InGridGeoDataset",
                 "InGridDataCollection",
@@ -61,26 +61,23 @@ class M066MigrateGeoNames : MigrationBase("0.66") {
             )
             setAdminAuthentication("Migration", "Task")
 
-            docs
-                .map { it as Document }
-                .filter { docTypesToMigrate.contains(it.type) }
-                .forEach {
-                    try {
-                        if (migrateGeoName(it)) {
-                            log.info("Migrated doc with dbID ${it.id}")
-                            docRepo.save(it)
-                        }
-                    } catch (ex: Exception) {
-                        log.error("Error migrating document with dbID ${it.id}", ex)
+            entityManager.forEachDocumentInBatches("doc.type IN :types", parameters = mapOf("types" to docTypesToMigrate)) {
+                try {
+                    if (migrateGeoName(it)) {
+                        log.info("Migrated doc with dbID ${it.id}")
+                        docRepo.save(it)
                     }
+                } catch (ex: Exception) {
+                    log.error("Error migrating document with dbID ${it.id}", ex)
                 }
+            }
         }
     }
 
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
             (doc.data.get("spatial")?.get("references") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-                .filter { it.get("type")?.asText() == "geo-name" }
+                .filter { it.get("type")?.asString() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
 

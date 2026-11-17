@@ -41,7 +41,7 @@ class KeycloakMockService(val config: DevelopmentProperties) : UserManagementSer
 
     override fun getLatestLoginDate(login: String): Date? = Date()
 
-    override fun getRoles(principal: Authentication): Set<String> = principal.authorities.map { it.authority }.toSet()
+    override fun getRoles(principal: Authentication): Set<String> = principal.authorities.mapNotNull { it.authority }.toSet()
 
     override fun getName(principal: Principal): String = principal.name
 

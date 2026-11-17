@@ -25,6 +25,7 @@ import {
   OnInit,
   TemplateRef,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
@@ -40,6 +41,7 @@ import { AriaLabelPipe } from "../../../directives/aria-label.pipe";
   selector: "ige-inline-help-wrapper",
   templateUrl: "./inline-help-wrapper.component.html",
   styleUrls: ["./inline-help-wrapper.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     NgTemplateOutlet,
     MatIconButton,

@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.mcloud
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
@@ -40,6 +39,7 @@ import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class MCloudProfile(

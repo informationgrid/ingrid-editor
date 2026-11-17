@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -50,6 +57,7 @@ interface DocumentReference {
   selector: "ige-document-reference-selector",
   templateUrl: "./document-reference-selector.component.html",
   styleUrl: "./document-reference-selector.component.scss",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     DocumentIconComponent,

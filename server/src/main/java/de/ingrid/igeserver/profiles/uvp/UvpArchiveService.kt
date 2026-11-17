@@ -70,12 +70,10 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         }
     }
 
-    fun mapType(type: String?): String {
-        return when (type) {
-            "hideAll" -> return ArchiveType.HIDE_ALL.name
-            "showOnlyDecision" -> return ArchiveType.SHOW_ONLY_DECISION.name
-            else -> return ArchiveType.SHOW_ALL.name
-        }
+    fun mapType(type: String?): String = when (type) {
+        "hideAll" -> ArchiveType.HIDE_ALL.name
+        "showOnlyDecision" -> ArchiveType.SHOW_ONLY_DECISION.name
+        else -> ArchiveType.SHOW_ALL.name
     }
 
     private fun handleShowOnlyDecision(datasets: List<WrapperAndDocId>) {

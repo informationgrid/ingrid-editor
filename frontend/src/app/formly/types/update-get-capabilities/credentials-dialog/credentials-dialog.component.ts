@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, inject, signal } from "@angular/core";
+import {
+  Component,
+  Inject,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { MatInput } from "@angular/material/input";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
@@ -46,6 +52,7 @@ export interface CredentialsDialogData {
     FocusDirective,
   ],
   templateUrl: "./credentials-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./credentials-dialog.component.scss",
 })
 export class CredentialsDialogComponent {

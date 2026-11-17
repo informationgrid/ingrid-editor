@@ -1,16 +1,20 @@
 <mat-card appearance="outlined" class="no-box-shadow">
-    <mat-card-title>
-        <div class="wrapper">
-            <h2>
-                {{ label() }}
-            </h2>
-            @if (nameOfToggle()) {
-                <mat-slide-toggle (change)="toggle.emit($event.checked)">{{
-                    nameOfToggle()
-                }}</mat-slide-toggle>
-            }
-        </div>
-    </mat-card-title>
+    @if (label() || nameOfToggle()) {
+        <mat-card-title>
+            <div class="wrapper">
+                @if (label()) {
+                    <h2>
+                        {{ label() }}
+                    </h2>
+                }
+                @if (nameOfToggle()) {
+                    <mat-slide-toggle (change)="toggle.emit($event.checked)">{{
+                        nameOfToggle()
+                    }}</mat-slide-toggle>
+                }
+            </div>
+        </mat-card-title>
+    }
     <mat-card-content>
         <mat-divider aria-hidden="true"></mat-divider>
         <ng-content></ng-content>

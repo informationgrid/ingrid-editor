@@ -88,11 +88,11 @@ interface CodelistApi {
     ): ResponseEntity<Unit>
 
     @Operation
-    @GetMapping(value = ["/external/{id}/{filter}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/external/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getExternalCodelist(
         @Parameter() @PathVariable id: String,
-        @Parameter() @PathVariable filter: String,
-        @Parameter() @RequestParam page: Int,
+        @Parameter() @RequestParam(defaultValue = "") filter: String,
+        @Parameter() @RequestParam(defaultValue = "0") page: Int,
     ): ResponseEntity<PagedSearchResult>
 
     @Operation

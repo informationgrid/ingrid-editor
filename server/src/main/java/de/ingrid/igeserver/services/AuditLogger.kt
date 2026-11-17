@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AuditLogRecord
 import de.ingrid.igeserver.repository.AuditLogRepository
@@ -28,6 +26,8 @@ import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.security.Principal
 import java.time.LocalDate
 

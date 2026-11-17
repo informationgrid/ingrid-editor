@@ -49,8 +49,8 @@ class GetCapabilitiesApiController(
         value = ["/analyzeGetRecordUrl"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
-    fun analyzeGetRecordUrl(@Parameter(required = true) @RequestBody url: String): ResponseEntity<GetRecordUrlAnalysis> {
-        val response = capabilitiesService.analyzeGetRecordUrl(url)
+    fun analyzeGetRecordUrl(@Parameter(required = true) @RequestBody body: GetRecordUrlAnalyze): ResponseEntity<GetRecordUrlAnalysis> {
+        val response = capabilitiesService.analyzeGetRecordUrl(body.url)
         return ResponseEntity.ok(response)
     }
 
@@ -73,3 +73,5 @@ class GetCapabilitiesApiController(
 }
 
 data class GetCapabilitiesAnalyze(val url: String, val username: String? = null, val password: String? = null)
+
+data class GetRecordUrlAnalyze(val url: String)

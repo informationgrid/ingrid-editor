@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.AlgorithmModelTransformerHmdk
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.DataCollectionModelTransformerHmdk
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdk
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdkMetaver
@@ -37,6 +37,7 @@ import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.Publication
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
+import tools.jackson.databind.JsonNode
 import kotlin.reflect.KClass
 
 fun amendHMDKDescriptiveKeywords(
@@ -114,5 +115,6 @@ fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? = when (docT
     "InGridProject" -> ProjectModelTransformerHmdk::class
     "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
     "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
+    "InGridAlgorithm" -> AlgorithmModelTransformerHmdk::class
     else -> null
 }

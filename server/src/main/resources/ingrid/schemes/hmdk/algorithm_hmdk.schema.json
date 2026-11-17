@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/AlgorithmHmdk",
+  "allOf": [
+    { "$ref": "../algorithm-base.schema.json" },
+    { "$ref": "../constraints/if_publicationHmbTG-hmdk-algorithm.schema.json" }
+  ],
+  "properties": {
+    "properties": {
+      "unevaluatedProperties": false,
+      "$ref": "../algorithm-base.schema.json#/definitions/propertiesAlgorithm",
+      "properties": {
+        "publicationHmbTG": {
+          "type": ["null", "boolean"]
+        }
+      }
+    },
+    "informationHmbTG": {
+      "type": ["null", "array"],
+      "items": {
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

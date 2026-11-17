@@ -24,17 +24,24 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.core.convert.converter.Converter
+import org.springframework.http.HttpStatus
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
@@ -43,12 +50,17 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
@@ -57,6 +69,8 @@ import org.springframework.web.client.RestTemplate
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URI
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 @Profile("!dev")
@@ -66,14 +80,12 @@ internal class KeycloakConfig(
     val generalProperties: GeneralProperties,
     val userRepository: UserRepository,
     val roleRepository: RoleRepository,
+    private val oauth2Properties: OAuth2ClientProperties,
 ) {
     val log = logger()
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
-
-    @Value("\${spring.security.oauth2.client.provider.keycloak.jwk-set-uri:#{null}}")
-    private val jwkSetUri: String? = null
 
     @Bean
     fun authorizedClientManager(
@@ -116,8 +128,7 @@ internal class KeycloakConfig(
             }
             // For API/BFF style flows we want 401 on unauthenticated requests instead of 302 redirects during XHR
             exceptionHandling {
-                authenticationEntryPoint =
-                    org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                authenticationEntryPoint = HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
             }
             authorizeHttpRequests {
                 // secure api-routes except a few necessary ones
@@ -143,19 +154,20 @@ internal class KeycloakConfig(
                 authorize(anyRequest, permitAll)
             }
             oauth2Login {
-                // After successful OAuth2 login, send the browser to the SPA root
-                authenticationSuccessHandler =
-                    org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler(
-                        generalProperties.appUrl,
-                    )
-                authenticationFailureHandler =
-                    org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler("/login-error")
+                // After successful OAuth2 login, redirect to target URL or SPA root
+                authenticationSuccessHandler = KeycloakAuthenticationSuccessHandler(
+                    generalProperties,
+                )
+                authenticationFailureHandler = KeycloakAuthenticationFailureHandler(
+                    loginErrorUrl = "${generalProperties.appUrl.trimEnd('/')}/login-error",
+                    loginUrl = "${generalProperties.appUrl.trimEnd('/')}/auth/login",
+                )
                 userInfoEndpoint {
                     userAuthoritiesMapper = OidcRealmRoleMapper(userRepository, roleRepository)
                 }
             }
             sessionManagement {
-                sessionCreationPolicy = org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED
+                sessionCreationPolicy = SessionCreationPolicy.IF_REQUIRED
             }
             oauth2ResourceServer {
                 jwt {
@@ -181,25 +193,26 @@ internal class KeycloakConfig(
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
+        val jwkSetUri = oauth2Properties.provider["keycloak"]?.jwkSetUri
         if (keycloakProxyUrl != null) {
             with(URI(keycloakProxyUrl)) {
                 val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
                 val requestFactory = SimpleClientHttpRequestFactory()
                 requestFactory.setProxy(proxy) // should already work with system properties: http.proxyHost
                 return NimbusJwtDecoder
-                    .withJwkSetUri(jwkSetUri)
+                    .withJwkSetUri(jwkSetUri!!)
                     .restOperations(RestTemplate(requestFactory)).build()
             }
         } else {
             return NimbusJwtDecoder
-                .withJwkSetUri(jwkSetUri)
+                .withJwkSetUri(jwkSetUri!!)
                 .build()
         }
     }
 
     private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken> {
         val jwtConverter = JwtAuthenticationConverter()
-        jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter(userRepository, roleRepository))
+        jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter(userRepository, roleRepository, oauth2Properties))
         return jwtConverter
     }
 
@@ -228,16 +241,18 @@ internal class KeycloakConfig(
 class KeycloakRealmRoleConverter(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
+    private val oauth2Properties: OAuth2ClientProperties,
 ) : Converter<Jwt, Collection<GrantedAuthority>> {
     override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
         val realmAccess = jwt.claims["realm_access"] as Map<*, *>
         val roles = realmAccess["roles"] as List<*>
+        val clientRoles = getClientRoles(jwt.claims)
 
         // add roles from Keycloak
         val grantedAuthorities = roles.map { "ROLE_$it" } // prefix to map to a Spring Security "role"
             .map { SimpleGrantedAuthority(it) }
 
-        val isSuperAdmin = roles.contains("ige-super-admin")
+        val isSuperAdmin = roles.contains("ige-super-admin") || clientRoles.contains("${getClientId()}-admin")
 
         val username = jwt.getClaimAsString("preferred_username")
         val dbUserRoles = KeycloakAuthorityEnricher.getDbUserAuthorities(
@@ -247,8 +262,11 @@ class KeycloakRealmRoleConverter(
             roleRepository,
         )
 
-        return (grantedAuthorities + dbUserRoles).distinct()
+        val clientSecurityRoles = clientRoles.map { SimpleGrantedAuthority("ROLE_$it") }
+
+        return (grantedAuthorities + dbUserRoles + clientSecurityRoles).distinct()
     }
+    private fun getClientId() = oauth2Properties.registration["keycloak"]?.clientId
 }
 
 /**
@@ -320,31 +338,22 @@ class OidcRealmRoleMapper(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
 ) : GrantedAuthoritiesMapper {
-    override fun mapAuthorities(authorities: MutableCollection<out GrantedAuthority>?): MutableCollection<out GrantedAuthority> {
+    override fun mapAuthorities(authorities: Collection<GrantedAuthority>): Collection<GrantedAuthority> {
         val result = mutableSetOf<GrantedAuthority>()
 
         // Keep any already-present authorities
-        if (authorities != null) result.addAll(authorities)
+        result.addAll(authorities)
 
         // Extract realm roles from OIDC id token and userInfo
-        val oidcAuth = authorities?.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority
-        val idTokenClaims = oidcAuth?.idToken?.claims ?: emptyMap<String, Any>()
+        val oidcAuth = authorities.firstOrNull { it is OidcUserAuthority } as? OidcUserAuthority
+        val idTokenClaims = oidcAuth?.idToken?.claims ?: emptyMap()
 
         // Try both ID token and UserInfo claims (Keycloak might put them in either or both)
         fun extractRoles(claims: Map<String, Any>): List<String> {
             val realmAccess = claims["realm_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
             val realmRoles = (realmAccess["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
 
-            val authoritiesList = mutableListOf<String>()
-            val resourceAccess = claims["resource_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
-            resourceAccess.forEach { (clientName, access) ->
-                if (access is Map<*, *>) {
-                    val clientRoles = (access["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
-                    clientRoles.forEach { role ->
-                        authoritiesList.add("${clientName}_$role")
-                    }
-                }
-            }
+            val authoritiesList = getClientRoles(claims)
 
             return realmRoles + authoritiesList
         }
@@ -375,5 +384,166 @@ class OidcRealmRoleMapper(
         result.addAll(dbUserRoles)
 
         return result
+    }
+}
+
+private fun getClientRoles(
+    claims: Map<String, Any>,
+): MutableList<String> {
+    val authoritiesList: MutableList<String> = mutableListOf()
+    val resourceAccess = claims["resource_access"] as? Map<*, *> ?: emptyMap<Any, Any>()
+    resourceAccess.forEach { (clientName, access) ->
+        if (access is Map<*, *>) {
+            val clientRoles = (access["roles"] as? Collection<*>)?.filterIsInstance<String>() ?: emptyList()
+            clientRoles.forEach { role ->
+                authoritiesList.add("${clientName}_$role")
+            }
+        }
+    }
+    return authoritiesList
+}
+
+/**
+ * Authentication failure handler for OAuth2 login.
+ * When authentication fails due to an expired or missing state ID (e.g. from an old login page
+ * left open overnight), redirects the user to /auth/login so the authentication flow is
+ * automatically re-initiated with a fresh state ID. Since the user was already authenticated
+ * in Keycloak, Keycloak immediately redirects back and logs the user in seamlessly.
+ * Other errors fall back to redirecting to the login error page.
+ */
+class KeycloakAuthenticationFailureHandler(
+    loginErrorUrl: String,
+    loginUrl: String,
+) : AuthenticationFailureHandler {
+    private val defaultFailureHandler = SimpleUrlAuthenticationFailureHandler(loginErrorUrl)
+    private val loginRedirectHandler = SimpleUrlAuthenticationFailureHandler(loginUrl)
+
+    override fun onAuthenticationFailure(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        exception: AuthenticationException,
+    ) {
+        if (isStateError(exception)) {
+            loginRedirectHandler.onAuthenticationFailure(request, response, exception)
+        } else {
+            defaultFailureHandler.onAuthenticationFailure(request, response, exception)
+        }
+    }
+
+    private fun isStateError(exception: AuthenticationException): Boolean {
+        if (exception is OAuth2AuthenticationException) {
+            val errorCode = exception.error.errorCode
+            if (errorCode == "authorization_request_not_found" || errorCode == "invalid_state_parameter") {
+                return true
+            }
+        }
+        val message = exception.message ?: ""
+        return message.contains("authorization_request_not_found", ignoreCase = true) ||
+            message.contains("invalid_state_parameter", ignoreCase = true)
+    }
+}
+
+/**
+ * Authentication success handler for OAuth2 login.
+ * Redirects the user to the requested page (if stored in the session under REDIRECT_URI)
+ * or falls back to the default target URL (generalProperties.appUrl).
+ */
+class KeycloakAuthenticationSuccessHandler(
+    private val generalProperties: GeneralProperties,
+) : SavedRequestAwareAuthenticationSuccessHandler() {
+
+    init {
+        defaultTargetUrl = generalProperties.appUrl
+    }
+
+    override fun onAuthenticationSuccess(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authentication: Authentication,
+    ) {
+        val session = request.getSession(false)
+        val redirectUri = session?.getAttribute("REDIRECT_URI") as? String
+        if (redirectUri != null) {
+            session.removeAttribute("REDIRECT_URI")
+            val targetUrl = resolveRedirectUrl(redirectUri, generalProperties.appUrl)
+            clearAuthenticationAttributes(request)
+            redirectStrategy.sendRedirect(request, response, targetUrl)
+            return
+        }
+
+        super.onAuthenticationSuccess(request, response, authentication)
+    }
+
+    companion object {
+        fun resolveRedirectUrl(target: String?, appUrl: String): String {
+            if (target.isNullOrBlank()) {
+                return appUrl
+            }
+            var cleanTarget = target.trim()
+            if (cleanTarget.contains("from=")) {
+                val fromParam = cleanTarget.substringAfter("from=").substringBefore("&")
+                if (fromParam.isNotBlank()) {
+                    val decoded = try {
+                        URLDecoder.decode(fromParam, StandardCharsets.UTF_8)
+                    } catch (_: Exception) {
+                        fromParam
+                    }
+                    val decodedPath = decoded.substringBefore("?").substringBefore("#")
+                    if (decoded.isNotBlank() && !isIgnoredPath(decodedPath)) {
+                        cleanTarget = decoded
+                    }
+                }
+            }
+            val baseUri = try {
+                URI(appUrl)
+            } catch (_: Exception) {
+                return appUrl
+            }
+
+            // Check if target is a full URL
+            if (cleanTarget.startsWith("http://", ignoreCase = true) || cleanTarget.startsWith("https://", ignoreCase = true)) {
+                try {
+                    val targetUri = URI(cleanTarget)
+                    val sameScheme = targetUri.scheme.equals(baseUri.scheme, ignoreCase = true)
+                    val sameHost = targetUri.host.equals(baseUri.host, ignoreCase = true)
+                    val samePort = targetUri.port == baseUri.port
+                    if (sameHost && (sameScheme || baseUri.scheme == null) && samePort) {
+                        if (isIgnoredPath(targetUri.path)) {
+                            return appUrl
+                        }
+                        return cleanTarget
+                    }
+                } catch (_: Exception) {
+                    return appUrl
+                }
+                return appUrl
+            }
+
+            // Relative path check: must start with "/" and not "//" or "/\"
+            if (cleanTarget.startsWith("/") && !cleanTarget.startsWith("//") && !cleanTarget.startsWith("/\\")) {
+                val pathOnly = cleanTarget.substringBefore("?").substringBefore("#")
+                if (isIgnoredPath(pathOnly)) {
+                    return appUrl
+                }
+                val appPath = baseUri.path?.trimEnd('/') ?: ""
+                val origin = "${baseUri.scheme}://${baseUri.rawAuthority}"
+                return if (appPath.isNotEmpty() && cleanTarget.startsWith(appPath)) {
+                    "$origin$cleanTarget"
+                } else {
+                    "${appUrl.trimEnd('/')}$cleanTarget"
+                }
+            }
+
+            return appUrl
+        }
+
+        fun isIgnoredPath(path: String?): Boolean {
+            if (path == null) return false
+            val normalized = path.trimEnd('/')
+            return normalized.endsWith("/session-expired") ||
+                normalized.endsWith("/auth/login") ||
+                normalized.endsWith("/login-error") ||
+                normalized.endsWith("/access-denied")
+        }
     }
 }

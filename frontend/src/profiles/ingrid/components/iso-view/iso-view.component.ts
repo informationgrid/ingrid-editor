@@ -24,6 +24,7 @@ import {
   inject,
   Inject,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -40,7 +41,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { saveAs } from "file-saver-es";
 import { copyToClipboardFn } from "../../../../app/services/utils";
 
-import { catchError, filter, map, tap } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { combineLatest, of } from "rxjs";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
@@ -49,10 +50,12 @@ import {
   ExchangeService,
   ExportTypeInfo,
 } from "../../../../app/+importExport/exchange.service";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   templateUrl: "./iso-view.component.html",
   styleUrls: ["./iso-view.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatDialogModule,
     MatIconModule,
@@ -70,6 +73,8 @@ export class IsoViewComponent {
   isLoading = signal<boolean>(true);
   compareView = signal<boolean>(false);
   exportNotSupported = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
+  validationError = signal<string | null>(null);
 
   private exchangeService: ExchangeService = inject(ExchangeService);
   exportFormats = toSignal(
@@ -110,6 +115,8 @@ export class IsoViewComponent {
     this.exportedText.set(undefined);
     this.isoTextPublished.set(undefined);
     this.exportNotSupported.set(false);
+    this.errorMessage.set(null);
+    this.validationError.set(null);
     const diffView = document.getElementById("diffView");
     if (diffView) {
       diffView.innerHTML = "";
@@ -120,11 +127,13 @@ export class IsoViewComponent {
       ids: [currentDocument.id as number],
       useDraft: true,
       exportFormat: format.type,
+      includeSubDocuments: false,
     };
     const optionsOnlyPublished = {
       ids: [currentDocument.id as number],
       useDraft: false,
       exportFormat: format.type,
+      includeSubDocuments: false,
     };
 
     combineLatest([
@@ -136,10 +145,17 @@ export class IsoViewComponent {
       .pipe(
         tap(() => this.isLoading.set(false)),
         takeUntilDestroyed(this.destroyRef),
-        catchError((err) => {
+        catchError((err: any) => {
           this.isLoading.set(false);
-          console.error("Error loading export", err);
-          this.exportNotSupported.set(true);
+          this.getErrorFromBlob(err).then((error) => {
+            console.error("Error loading export", error);
+            if (error.errorCode === "VALIDATION_ERROR") {
+              this.validationError.set(error?.data?.error);
+            } else {
+              this.exportNotSupported.set(true);
+              this.errorMessage.set(error?.errorText ?? null);
+            }
+          });
           return of([null, null]);
         }),
       )
@@ -152,6 +168,25 @@ export class IsoViewComponent {
           this.calculateDiff();
         }
       });
+  }
+
+  // TODO: move to utility class/function
+  private getErrorFromBlob(error: HttpErrorResponse) {
+    return new Promise<any>((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = (e: Event) => {
+        try {
+          const error = JSON.parse((<any>e.target).result);
+          resolve(error);
+        } catch (e) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => {
+        reject(error);
+      };
+      reader.readAsText(error.error);
+    });
   }
 
   onFormatChange(format: ExportTypeInfo) {

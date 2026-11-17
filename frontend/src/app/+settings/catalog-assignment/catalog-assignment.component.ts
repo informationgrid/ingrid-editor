@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { UserService } from "../../services/user/user.service";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
@@ -33,6 +33,7 @@ import { Catalog } from "../../+catalog/services/catalog.model";
   selector: "ige-catalog-assignment",
   templateUrl: "./catalog-assignment.component.html",
   styleUrls: ["./catalog-assignment.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [PageTemplateComponent, FilterSelectComponent, MatButton],
 })
 export class CatalogAssignmentComponent {

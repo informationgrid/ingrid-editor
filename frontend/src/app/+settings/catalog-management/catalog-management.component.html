@@ -68,6 +68,7 @@
                     <div class="profile">{{ cat.type }}</div>
                     <div class="flex-1"></div>
                     <button
+                        data-cy="btn-more"
                         mat-icon-button
                         class="menu dark menu-button"
                         matTooltip="Bearbeiten"
@@ -76,13 +77,25 @@
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #catMenu>
-                        <button mat-menu-item (click)="showCatalogDetail(cat)">
+                        <button
+                            data-cy="action-edit"
+                            mat-menu-item
+                            (click)="showCatalogDetail(cat)"
+                        >
                             Bearbeiten
                         </button>
-                        <button mat-menu-item (click)="chooseCatalog(cat.id)">
+                        <button
+                            data-cy="action-activate"
+                            mat-menu-item
+                            (click)="chooseCatalog(cat.id)"
+                        >
                             Aktivieren
                         </button>
-                        <button mat-menu-item (click)="exportCatalog(cat.id)">
+                        <button
+                            data-cy="action-export"
+                            mat-menu-item
+                            (click)="exportCatalog(cat.id)"
+                        >
                             Exportieren
                         </button>
                     </mat-menu>

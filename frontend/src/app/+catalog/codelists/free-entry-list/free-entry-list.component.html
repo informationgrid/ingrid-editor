@@ -13,6 +13,7 @@
 
             <div matListItemMeta class="flex-row align-items-center">
                 <button
+                    data-cy="btn-more"
                     matIconButton
                     [matMenuTriggerFor]="menu"
                     aria-label="Mehr"
@@ -21,6 +22,7 @@
                 </button>
                 <mat-menu #menu="matMenu" xPosition="before">
                     <button
+                        data-cy="action-replace"
                         mat-menu-item
                         (click)="onReplaceClicked.emit(entry)"
                     >
@@ -28,6 +30,7 @@
                     </button>
                     @if (isCatalog()) {
                         <button
+                            data-cy="action-add-to-codelist"
                             mat-menu-item
                             (click)="onAddClicked.emit(entry)"
                         >

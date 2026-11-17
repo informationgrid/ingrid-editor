@@ -48,6 +48,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
+  iconClass = "dataset";
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return fieldConfig;
   };
@@ -384,7 +386,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       delete field.validation;
 
       field.wrappers = field.wrappers?.filter(
-        (wrapper) => wrapper !== "form-field",
+        (wrapper) => wrapper !== "form-field" && wrapper !== "ai-suggest",
       );
 
       if (

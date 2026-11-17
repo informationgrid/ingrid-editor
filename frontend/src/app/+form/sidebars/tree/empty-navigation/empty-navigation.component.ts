@@ -17,11 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "ige-empty-navigation",
   templateUrl: "./empty-navigation.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./empty-navigation.component.scss"],
 })
 export class EmptyNavigationComponent {}

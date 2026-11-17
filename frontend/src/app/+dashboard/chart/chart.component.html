@@ -1,69 +1,104 @@
-@if (dataMap) {
+<ng-template #labelBox let-segment>
+    <div class="box color-{{ segment.color }}">
+        <div class="count" [attr.data-cy]="segment.cy">{{ segment.value }}</div>
+        <div class="label">{{ segment.label }}</div>
+        @if (showPercentages() && total() > 0) {
+            <div class="percent">{{ segment.percent | number: "1.0-0" }}%</div>
+        }
+    </div>
+</ng-template>
+@if (segmentViews().length > 0) {
     <div class="flex-1 flex-col justify-content-center" role="figure">
-        <svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
-            @if (dataMap.first != null) {
-                <path
-                    class="circle circle-1"
-                    [attr.stroke-dasharray]="
-                        strokeDash[0][0] + ', ' + strokeDash[0][1]
-                    "
-                    d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"
-                ></path>
-            }
-            @if (dataMap.second != null) {
-                <path
-                    class="circle circle-2"
-                    [attr.stroke-dasharray]="
-                        '0, ' + strokeDash[1][0] + ', ' + strokeDash[1][1]
-                    "
-                    d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"
-                ></path>
-            }
-            <path
-                class="circle circle-3"
-                stroke-dasharray="0.4, 99.2, 0.4"
-                d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"
-            ></path>
-            <text
-                class="text"
-                x="18.5"
-                y="19"
-                dominant-baseline="middle"
-                text-anchor="middle"
-            >
-                {{ total }}
-            </text>
-        </svg>
-        <div
-            id="status"
-            class="wrapper flex-row justify-content-space-between align-items-stretch"
-        >
-            <div class="box working">
-                <div data-cy="editModeDocument" class="count">
-                    {{ dataMap.first }}
-                </div>
-                <div>Unveröffentlicht</div>
-                @if (showPercentages() && total > 0) {
-                    <div class="count">
-                        {{ (dataMap.first / total) * 100 | number: "1.0-0" }}%
-                    </div>
+        <div class="chart-row">
+            <div class="labels">
+                @for (segment of leftLabels(); track $index) {
+                    <ng-container
+                        [ngTemplateOutlet]="labelBox"
+                        [ngTemplateOutletContext]="{ $implicit: segment }"
+                    ></ng-container>
                 }
             </div>
-            <div class="box">
-                <div data-cy="publishModeDocument" class="count">
-                    {{ dataMap.second }}
-                </div>
-                <div>Veröffentlicht</div>
-                @if (showPercentages() && total > 0) {
-                    <div class="count">
-                        {{ (dataMap.second / total) * 100 | number: "1.0-0" }}%
-                    </div>
+            <svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
+                <defs>
+                    <pattern
+                        [attr.id]="hatchPatternId"
+                        width="0.9"
+                        height="0.9"
+                        patternUnits="userSpaceOnUse"
+                        patternTransform="rotate(45)"
+                    >
+                        <line
+                            class="hatch-line"
+                            x1="0.45"
+                            y1="0"
+                            x2="0.45"
+                            y2="0.9"
+                        ></line>
+                    </pattern>
+                </defs>
+                @for (segment of segmentViews(); track segment.label) {
+                    @if (segment.color === "hatched") {
+                        <!-- base arc in the working color: hatching on top
+                             represents "published with working version" -->
+                        <path
+                            class="circle color-orange hatch-base"
+                            [attr.stroke-dasharray]="
+                                '0, ' +
+                                segment.offset +
+                                ', ' +
+                                segment.dash +
+                                ', 100'
+                            "
+                            d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        ></path>
+                    }
+                    <path
+                        class="circle color-{{ segment.color }}"
+                        [attr.stroke]="
+                            segment.color === 'hatched'
+                                ? 'url(#' + hatchPatternId + ')'
+                                : null
+                        "
+                        [attr.stroke-dasharray]="
+                            '0, ' +
+                            segment.offset +
+                            ', ' +
+                            segment.dash +
+                            ', 100'
+                        "
+                        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                    ></path>
+                }
+                <path
+                    class="circle circle-3"
+                    stroke-dasharray="0.4, 99.2, 0.4"
+                    d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+                ></path>
+                <text
+                    class="text"
+                    [class.compact]="centerDigits() === 4"
+                    [class.compact-abbrev]="centerDigits() > 4"
+                    x="18.5"
+                    y="19"
+                    dominant-baseline="middle"
+                    text-anchor="middle"
+                >
+                    {{ abbreviatedTotal() }}
+                    <title>{{ total() }}</title>
+                </text>
+            </svg>
+            <div class="labels">
+                @for (segment of rightLabels(); track $index) {
+                    <ng-container
+                        [ngTemplateOutlet]="labelBox"
+                        [ngTemplateOutletContext]="{ $implicit: segment }"
+                    ></ng-container>
                 }
             </div>
         </div>

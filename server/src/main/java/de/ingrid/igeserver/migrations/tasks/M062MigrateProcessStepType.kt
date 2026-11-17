@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
+import de.ingrid.igeserver.migrations.forEachDocumentInBatches
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -31,6 +30,8 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class M062MigrateProcessStepType : MigrationBase("0.62") {
@@ -48,17 +49,13 @@ class M062MigrateProcessStepType : MigrationBase("0.62") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList
             setAdminAuthentication("Migration", "Task")
 
-            docs.forEach { doc ->
-                doc as Document
+            entityManager.forEachDocumentInBatches("doc.type = 'InGridGeoDataset'") { doc ->
                 try {
-                    if (doc.type == "InGridGeoDataset") {
-                        if (migrateProcessStep(doc)) {
-                            log.info("Migrated doc with dbID ${doc.id}")
-                            docRepo.save(doc)
-                        }
+                    if (migrateProcessStep(doc)) {
+                        log.info("Migrated doc with dbID ${doc.id}")
+                        docRepo.save(doc)
                     }
                 } catch (ex: Exception) {
                     log.error("Error migrating document with dbID ${doc.id}", ex)
@@ -69,7 +66,7 @@ class M062MigrateProcessStepType : MigrationBase("0.62") {
 
     private fun migrateProcessStep(doc: Document): Boolean {
         val processStep: ObjectNode = doc.data.get("dataQualityInfo")?.get("lineage")?.get("source")?.get("processStep") as ObjectNode? ?: return false
-        val description = processStep.get("description")?.textValue() ?: return false
+        val description = processStep.get("description")?.asString() ?: return false
 
         val newStructure = jacksonObjectMapper().createArrayNode().apply {
             add(
@@ -80,7 +77,7 @@ class M062MigrateProcessStepType : MigrationBase("0.62") {
             )
         }
 
-        processStep.set<ObjectNode>("description", newStructure)
+        processStep.set("description", newStructure)
         return true
     }
 }

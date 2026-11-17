@@ -23,6 +23,7 @@ import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
+import de.ingrid.igeserver.tasks.quartz.CodelistSyncTask
 import de.ingrid.igeserver.tasks.quartz.MigrateCodelistIdsIntoDatasets
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -50,6 +51,18 @@ class M095MigrateCodelistValues(val scheduler: SchedulerService, val catalogServ
                 jobKey,
                 jobDataMap,
             )
+
+            // make sure the job is running before waiting for it to finish
+            while (scheduler.getNextFireTime(jobKey) != null) {
+                Thread.sleep(1000)
+            }
+            while (scheduler.isRunning(jobKey)) {
+                Thread.sleep(1000)
+            }
+            val codelistSyncTask = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalog.identifier)
+            while (scheduler.isRunning(codelistSyncTask)) {
+                Thread.sleep(1000)
+            }
         }
     }
 }

@@ -59,6 +59,14 @@
         </ul>
     }
 
+    @if (error.links) {
+        <ige-document-list-item
+            [docs]="docsByError().get(error)"
+            [removeSelectionAfter]="true"
+            (select)="openDocument($any($event))"
+        ></ige-document-list-item>
+    }
+
     @if (error.detail || error.stacktrace) {
         <button
             mat-button

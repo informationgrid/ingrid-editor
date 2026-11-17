@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { UploadCheckService } from "./upload-check.service";
 import { tap } from "rxjs/operators";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -29,6 +29,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-upload-check",
   templateUrl: "./upload-check.component.html",
   styleUrls: ["./upload-check.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatCheckboxModule, KeyValuePipe, RouterLink, MatButton],
 })
 export class UploadCheckComponent implements OnInit {

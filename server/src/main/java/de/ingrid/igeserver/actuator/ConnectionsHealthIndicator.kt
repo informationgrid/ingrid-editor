@@ -21,8 +21,8 @@ package de.ingrid.igeserver.actuator
 
 import de.ingrid.igeserver.services.ConnectionService
 import de.ingrid.igeserver.services.SettingsService
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.HealthIndicator
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.HealthIndicator
 import org.springframework.stereotype.Component
 
 @Component

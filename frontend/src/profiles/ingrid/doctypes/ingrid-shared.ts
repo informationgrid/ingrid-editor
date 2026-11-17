@@ -43,7 +43,12 @@ import { ThesaurusReportComponent } from "../components/thesaurus-report.compone
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
+import {
+  FREE_THESAURUS,
+  KeywordAnalysis,
+  KeywordSectionOptions,
+  Thesaurus,
+} from "../utils/keywords";
 import {
   MetadataOption,
   MetadataOptionItems,
@@ -78,6 +83,7 @@ export enum IngridClass {
   "InGridProject" = "4",
   "InGridDataCollection" = "5",
   "InGridInformationSystem" = "6",
+  "InGridAlgorithm" = "7",
 }
 
 export abstract class IngridShared extends BaseDoctype {
@@ -98,6 +104,52 @@ export abstract class IngridShared extends BaseDoctype {
   protected codelistStore = inject(CodelistStore);
   protected generalStore = inject(GeneralStore);
   protected codelistService = inject(CodelistService);
+
+  gemetThesaurus: Thesaurus = {
+    id: "gemet",
+    label: "Gemet-Schlagworte",
+    modelPath: "keywords.gemet",
+    type: "external",
+  };
+
+  umthesThesaurus: Thesaurus = {
+    id: "umthes",
+    label: "Umthes-Schlagworte",
+    modelPath: "keywords.umthes",
+    type: "external",
+  };
+
+  inspireThesaurus: Thesaurus = {
+    codelistId: "6100",
+    id: "inspireTopics",
+    label: "INSPIRE-Themen",
+    modelPath: "themes",
+    type: "codelist",
+    isEnabled: (form) =>
+      // only enable if isInspireIdentified and themes available in form
+      form.get("themes") != undefined &&
+      form.value?.properties?.isInspireIdentified,
+  };
+
+  readonly mobilithekModelPath = "keywords.mobilithek";
+  mobilithekThesaurus: Thesaurus = {
+    codelistId: "mobilithek",
+    id: "mobilithekTopics",
+    label: "Mobilithek-Themen",
+    modelPath: this.mobilithekModelPath,
+    type: "codelist",
+    isEnabled: (form) =>
+      this.isMobilithekBehaviourActive() &&
+      form.get(this.mobilithekModelPath) != undefined,
+  };
+
+  keywordThesauri: Thesaurus[] = [
+    this.gemetThesaurus,
+    this.umthesThesaurus,
+    this.inspireThesaurus,
+    this.mobilithekThesaurus,
+    FREE_THESAURUS,
+  ];
 
   options = {
     dynamicRequired: {
@@ -155,6 +207,7 @@ export abstract class IngridShared extends BaseDoctype {
   );
 
   showInVeKoSField: boolean = false;
+  showIzgField: boolean = false;
   showInspireRelevant: boolean = false;
   showInspireConform: boolean = false;
   showHVD: boolean = false;
@@ -309,6 +362,25 @@ export abstract class IngridShared extends BaseDoctype {
             ],
           }
         : null,
+      this.showIzgField
+        ? {
+            label: "IZG",
+            typeOptions: [
+              {
+                multiple: true,
+                items: [
+                  {
+                    label: "relevant",
+                    completeLabel: "IZG-relevant",
+                    key: "isIzg",
+                    value: true,
+                    contextHelpKey: "isIzg",
+                  },
+                ],
+              },
+            ],
+          }
+        : null,
     ].filter(Boolean);
   }
 
@@ -365,7 +437,7 @@ export abstract class IngridShared extends BaseDoctype {
             "alternateTitle",
             this.transloco.translate("form.alternateTitle"),
             {
-              wrappers: ["panel", "form-field"],
+              wrappers: ["panel", "ai-suggest", "form-field"],
               className: "optional",
             },
           ),
@@ -376,6 +448,7 @@ export abstract class IngridShared extends BaseDoctype {
             {
               required: this.options.required.description,
               rows: 6,
+              wrappers: ["panel", "ai-suggest", "form-field"],
             },
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
@@ -491,7 +564,7 @@ export abstract class IngridShared extends BaseDoctype {
         const value = field.formControl.value;
         if (decision === "ok") {
           if (this.showHVD) {
-            field.formControl.setValue({ ...value, isHvd: false });
+            field.formControl.setValue({ ...value, isHvd: undefined });
           }
           return true;
         }
@@ -623,6 +696,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect("6100", "themes"),
               codelistId: "6100",
+              wrappers: ["panel", "ai-suggest"],
               expressions: {
                 "props.required": this.options.dynamicRequired.inspireTopics,
                 className: (field: FormlyFieldConfig) =>
@@ -755,6 +829,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect("527", "topicCategories"),
               codelistId: "527",
+              wrappers: ["panel", "ai-suggest"],
               required: this.options.required.topicCategories,
               remove: (field, event) =>
                 this.checkConnectedIsoCategory(event, field),
@@ -780,68 +855,79 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addGroupSimple("keywords", [
-          this.addRepeatList("gemet", "Gemet-Schlagworte", {
-            view: "chip",
-            className: "optional",
-            placeholder: "Im Gemet suchen",
-            restCall: (query: string) =>
-              this.http.get<any[]>(
-                `${ConfigService.backendApiUrl}keywords/gemet?q=${query}`,
-              ),
-            labelField: "label",
-            selectLabelField: (item) => {
-              return item.alternativeLabel
-                ? `${item.label} (${item.alternativeLabel})`
-                : item.label;
-            },
-            validators: {
-              ...(this.showInVeKoSField && {
-                invekos: {
-                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
-                    const invekosValue =
-                      field.options.formState.mainModel?.properties?.invekos
-                        ?.key;
-                    if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                      return true;
+        this.addGroupSimple(
+          "keywords",
+          [
+            this.addRepeatList("gemet", "Gemet-Schlagworte", {
+              view: "chip",
+              className: "optional",
+              placeholder: "Im Gemet suchen",
+              restCall: (query: string) =>
+                this.http.get<any[]>(
+                  `${ConfigService.backendApiUrl}keywords/gemet?q=${query}`,
+                ),
+              labelField: "label",
+              selectLabelField: (item) => {
+                return item.alternativeLabel
+                  ? `${item.label} (${item.alternativeLabel})`
+                  : item.label;
+              },
+              validators: {
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
 
-                    return ctrl.value?.some(
-                      (item: any) => item.label === "Gemeinsame Agrarpolitik",
-                    );
+                      return ctrl.value?.some(
+                        (item: any) => item.label === "Gemeinsame Agrarpolitik",
+                      );
+                    },
+                    message:
+                      "Das Schlagwort 'Gemeinsame Agrarpolitik' ist verpflichtend",
                   },
-                  message:
-                    "Das Schlagwort 'Gemeinsame Agrarpolitik' ist verpflichtend",
-                },
-              }),
-            },
-          }),
-          this.addRepeatList("umthes", "Umthes-Schlagworte", {
-            view: "chip",
-            className: "optional",
-            placeholder: "Im Umweltthesaurus suchen",
-            restCall: (query: string) =>
-              this.http.get<any[]>(
-                `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`,
-              ),
-            labelField: "label",
-            selectLabelField: (item) => {
-              return item.alternativeLabel
-                ? `${item.label} (${item.alternativeLabel})`
-                : item.label;
-            },
-          }),
-          this.addRepeatList("free", "Freie Schlagworte", {
-            view: "chip",
-            required: this.options.required.freeKeywords,
-            hint: this.keywordFieldHint,
-            convert: (val) => (val ? { label: val } : null),
-            labelField: "label",
-            expressions: {
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
-            },
-          }),
-        ]),
+                }),
+              },
+            }),
+            this.addRepeatList("umthes", "Umthes-Schlagworte", {
+              view: "chip",
+              className: "optional",
+              placeholder: "Im Umweltthesaurus suchen",
+              restCall: (query: string) =>
+                this.http.get<any[]>(
+                  `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`,
+                ),
+              labelField: "label",
+              selectLabelField: (item) => {
+                return item.alternativeLabel
+                  ? `${item.label} (${item.alternativeLabel})`
+                  : item.label;
+              },
+            }),
+            // The field is always part of the form but only visible while the
+            // corresponding behaviour is active (see createMobilithekSelect).
+            // This way toggling the behaviour does not require a page reload.
+            options.mobilithekTopics ? this.createMobilithekSelect() : null,
+            this.addRepeatList("free", "Freie Schlagworte", {
+              view: "chip",
+              required: this.options.required.freeKeywords,
+              hint: this.keywordFieldHint,
+              convert: (val) => (val ? { label: val } : null),
+              labelField: "label",
+              wrappers: ["panel", "ai-suggest"],
+              expressions: {
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
+            }),
+          ].filter(Boolean),
+        ),
         this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
           wrappers: ["panel", "button", "form-field"],
@@ -852,7 +938,7 @@ export abstract class IngridShared extends BaseDoctype {
           buttonConfig: {
             text: "Analysieren",
             onClick: async (_, field) => {
-              await this.analyzeKeywords(field, options);
+              await this.analyzeKeywords(field);
             },
           },
           validators: {
@@ -872,31 +958,60 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private async analyzeKeywords(
-    field: FormlyFieldConfig,
-    options: KeywordSectionOptions,
-  ) {
-    const value = field.formControl.value;
+  private createMobilithekSelect() {
+    return this.addCategorizedSelect("mobilithek", "Mobilithek", {
+      categories: this.getCodelistForCategorizedSelect("mobilithek"),
+      codelistId: "mobilithek",
+      showHeader: true,
+      restrictToSingleCategory: true,
+      expressions: {
+        // keep the field in sync with the behaviour without requiring a reload
+        hide: () => !this.isMobilithekBehaviourActive(),
+        "props.required": () => this.isMobilithekBehaviourRequired(),
+        className: (field) => (field.props.required ? "" : "optional"),
+      },
+    });
+  }
+
+  private isMobilithekBehaviourActive(): boolean {
+    return (
+      this.behaviourService
+        .getBehaviour("plugin.ingrid.mobilithek")
+        ?.isActive() ?? false
+    );
+  }
+
+  private isMobilithekBehaviourRequired(): boolean {
+    const behaviour = this.behaviourService.getBehaviour(
+      "plugin.ingrid.mobilithek",
+    );
+    return this.isMobilithekBehaviourActive() && !!behaviour?.data?.required;
+  }
+
+  private async analyzeKeywords(fieldConfig: FormlyFieldConfig) {
+    const value = fieldConfig.formControl.value;
     if (!value) return;
 
-    field.formControl.setValue("Schlagworte werden analysiert ...");
-    field.formControl.disable();
+    fieldConfig.formControl.setValue("Schlagworte werden analysiert ...");
+    fieldConfig.formControl.disable();
     this.snack.dismiss();
 
-    const formState = field.options.formState;
-    const checkThemes =
-      options.inspireTopics &&
-      formState.mainModel?.["properties"]?.isInspireIdentified;
+    // // filter with enabled
+    // const filteredThesauri = this.keywordThesauri.filter(
+    //   (t) => t.isEnabled === undefined || t.isEnabled(fieldConfig),
+    // );
+
     try {
       const response = await this.keywordAnalysis.analyzeKeywords(
         value.split(","),
-        checkThemes,
+        this.keywordThesauri,
+        fieldConfig.form,
       );
       if (response.length == 0) return;
 
       this.keywordAnalysis.updateForm(
         response,
-        field.form,
+        fieldConfig.form,
         this.thesaurusTopics,
       );
       this.informUserAboutThesaurusAnalysis(response);
@@ -906,8 +1021,8 @@ export abstract class IngridShared extends BaseDoctype {
         error.stack,
       );
     } finally {
-      field.formControl.enable();
-      field.formControl.setValue("");
+      fieldConfig.formControl.enable();
+      fieldConfig.formControl.setValue("");
     }
   }
 
@@ -1711,6 +1826,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ((row.url?.length > 0 && row.uuidRef == null) ||
                     (row.url == null && row.uuidRef?.length > 0)) &&
                   (row.type?.key !== "9990" ||
+                    row.referenceType !== "url" ||
                     row.urlDataType?.key?.length > 0 ||
                     row.urlDataType?.value?.length > 0),
               ),
@@ -2281,6 +2397,11 @@ export abstract class IngridShared extends BaseDoctype {
   protected handleDoiBehaviour() {
     const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
     this.showDoiFields = behaviour?.isActive() ?? behaviour?.defaultActive;
+  }
+
+  protected handleIzgBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.izg");
+    this.showIzgField = behaviour?.isActive() ?? behaviour?.defaultActive;
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {

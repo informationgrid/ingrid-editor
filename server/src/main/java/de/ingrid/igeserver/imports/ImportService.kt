@@ -19,12 +19,11 @@
  */
 package de.ingrid.igeserver.imports
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -34,7 +33,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DeleteOptions
-import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_CREATED
@@ -45,18 +44,16 @@ import de.ingrid.igeserver.services.FIELD_MODIFIED_BY
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
+import de.ingrid.igeserver.utils.runAsAdmin
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.OffsetDateTime
@@ -69,6 +66,7 @@ class ImportService(
     val notifier: JobsNotifier,
     val factory: ImporterFactory,
     val documentService: DocumentService,
+    val transactionManager: PlatformTransactionManager,
 ) {
     private val log = logger()
 
@@ -120,7 +118,7 @@ class ImportService(
         if (fileContent[0] is ArrayNode) {
             val publishedVersion = fileContent[0][0]
             val draftVersion = fileContent[0][1]
-            val result = mutableListOf(
+            val result: MutableList<DocumentAnalysis?> = mutableListOf(
                 if (!publishedVersion.isNull) {
                     analyzeDoc(
                         catalogId,
@@ -154,7 +152,7 @@ class ImportService(
             }
             result
         } else {
-            fileContent.map { analyzeDoc(catalogId, it) }
+            fileContent.map<JsonNode, DocumentAnalysis?> { analyzeDoc(catalogId, it) }
         }
     } else {
         listOf(analyzeDoc(catalogId, fileContent))
@@ -260,7 +258,7 @@ class ImportService(
 
         if (pointOfContact?.size() == filteredContacts?.size) return analysis
 
-        analysis.document.data.set<JsonNode>(
+        analysis.document.data.set(
             "pointOfContact",
             jacksonObjectMapper().createArrayNode().apply {
                 filteredContacts?.map { add(it) }
@@ -315,6 +313,8 @@ class ImportService(
         isDraftAndPublished: Boolean = false,
     ): DocumentAnalysis {
         val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
+        val isAddress = documentService.isAddress(document.type)
+
         document.state = if (forcePublish) {
             DocumentState.PUBLISHED
         } else if (isDraftAndPublished) {
@@ -325,11 +325,26 @@ class ImportService(
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
+        // Check for duplicate UUIDs across categories
+        documentWrapper?.let { wrapper ->
+            if (wrapper.category == DocumentCategory.DATA.value && isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the address ${document.title} is already used as a data document.",
+                )
+            }
+
+            if (wrapper.category == DocumentCategory.ADDRESS.value && !isAddress) {
+                throw ServerException.withReason(
+                    "The UUID of the data document ${document.title} is already used as an address.",
+                )
+            }
+        }
+
         return DocumentAnalysis(
             document,
             documentWrapper?.id,
-            documentService.isAddress(document.type),
-            documentWrapper != null && documentWrapper.deleted == 0,
+            isAddress,
+            documentWrapper?.deleted == 0,
             documentWrapper?.deleted == 1,
             emptyList(),
             forcePublish,
@@ -371,7 +386,6 @@ class ImportService(
         null
     }
 
-    @Transactional
     fun importAnalyzedDatasets(
         principal: Authentication,
         catalogId: String,
@@ -381,37 +395,34 @@ class ImportService(
     ): ImportCounter {
         val counter = ImportCounter()
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
-        val jobs = mutableListOf<Deferred<DocumentData>>()
 
-        analysis.references.forEachIndexed { index, ref ->
-            val progress = ((index + 1f) / analysis.references.size) * 100
-            notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-            handleParent(ref, options, catalogId)
-            importReference(principal, catalogId, ref, options, counter)?.let { job -> jobs.add(job) }
-        }
-
-        runBlocking {
-            try {
-                jobs.awaitAll()
-            } catch (ex: Exception) {
-                log.error("Error during import", ex)
-                message.errors.add(ex.message ?: "Unknown error")
-                throw ClientException.withReason("Import failed. ${ex.message}")
+        try {
+            TransactionTemplate(transactionManager).executeWithoutResult {
+                analysis.references.forEachIndexed { index, ref ->
+                    val progress = ((index + 1f) / analysis.references.size) * 100
+                    notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
+                    handleParent(ref, options, catalogId)
+                    importReference(principal, catalogId, ref, options, counter)
+                }
             }
+        } catch (ex: Exception) {
+            if (ex is ValidationException) throw ex
+            log.error("Error during import", ex)
+            message.errors.add(ex.message ?: "Unknown error")
+            throw ClientException.withReason("Import failed. ${ex.message}")
         }
 
         log.info("Import result: $counter")
         return counter
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun importReference(
         principal: Authentication,
         catalogId: String,
         ref: DocumentAnalysis,
         options: ImportOptions,
         counter: ImportCounter,
-    ): Deferred<DocumentData>? {
+    ) {
         handleAddressTitle(ref)
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
@@ -449,9 +460,11 @@ class ImportService(
             )
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
-            // undelete first to completely delete afterwards
-            removeDeletedFlag(ref.wrapperId!!)
-            documentService.deleteDocument(principal, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            // undelete first to completely delete afterward
+            runAsAdmin("REAL_DELETE_IMPORT", "Import") { admin ->
+                removeDeletedFlag(ref.wrapperId!!)
+                documentService.deleteDocument(admin, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            }
             documentService.createDocument(
                 principal,
                 catalogId,
@@ -473,56 +486,43 @@ class ImportService(
                     ).id!!
                 setVersionInfo(catalogId, wrapperId, ref.document)
 
-                // run in parallel to greatly improve speed
-                val job = GlobalScope.async {
-                    // set same principal in new context
-                    val contextForThread = SecurityContextHolder.createEmptyContext()
-                    contextForThread.authentication = principal
-                    SecurityContextHolder.setContext(contextForThread)
-                    try {
-                        if (publish) {
-                            documentService.publishDocument(
-                                principal,
-                                catalogId,
-                                wrapperId,
-                                ref.document,
-                                skipValidation = options.skipValidation,
-                            )
-                        } else {
-                            documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
-                        }
-                    } finally {
-                        SecurityContextHolder.clearContext()
-                    }
+                if (publish) {
+                    documentService.publishDocument(
+                        principal,
+                        catalogId,
+                        wrapperId,
+                        ref.document,
+                        skipValidation = options.skipValidation,
+                    )
+                } else {
+                    documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
                 }
 
                 counter.overwritten++
-                return job
             } else {
                 counter.skipped++
             }
         }
-        return null
     }
 
     private fun handleAddressTitle(ref: DocumentAnalysis) {
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
             ref.document.title = if (data.has("organization")) {
-                data.get("organization").asText()
+                data.get("organization").asString()
             } else {
-                "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
+                "${data.get("lastName").asString()}, ${data.get("firstName").asString()}"
             }
         }
-    }
-
-    private fun removeDeletedFlag(wrapperId: Int) {
-        documentService.recoverDocument(wrapperId)
     }
 
     private fun setVersionInfo(catalogId: String, wrapperId: Int, document: Document) {
         document.version =
             documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
+    }
+
+    private fun removeDeletedFlag(wrapperId: Int) {
+        documentService.recoverDocument(wrapperId)
     }
 
     private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions, catalogId: String) {

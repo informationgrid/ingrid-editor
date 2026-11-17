@@ -24,4 +24,6 @@ data class ExportRequestParameter(
     val exportFormat: String,
     val useDraft: Boolean = false,
     val addressReferences: Boolean = false,
+    /** whether to export the sub-documents of the selected datasets (default: true) */
+    val includeSubDocuments: Boolean = true,
 )

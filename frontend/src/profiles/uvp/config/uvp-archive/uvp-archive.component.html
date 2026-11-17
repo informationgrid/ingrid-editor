@@ -1,4 +1,42 @@
 <page-template-no-header label="Archivierung">
+    <!-- Template for displaying errors -->
+    <ng-template #errorTemplate let-errors="errors">
+        @if (errors?.length > 0) {
+            <div class="errors-section">
+                <strong>Fehler:</strong>
+                <ul>
+                    @for (error of errors; track error) {
+                        <li>{{ error }}</li>
+                    }
+                </ul>
+            </div>
+        }
+    </ng-template>
+
+    <!-- Template for displaying archived datasets -->
+    <ng-template #archivedDatasetsTemplate let-datasets="datasets">
+        @if (datasets?.length > 0) {
+            <div class="archived-datasets">
+                <p class="report-title">Archivierte Datensätze:</p>
+                <mat-action-list>
+                    @for (dataset of datasets; track dataset.id) {
+                        <button
+                            mat-list-item
+                            [disabled]="!dataset.uuid"
+                            (click)="openDataset(dataset)"
+                        >
+                            <div class="dataset-item">
+                                <span class="dataset-title">{{
+                                    dataset.title || "Ohne Titel"
+                                }}</span>
+                            </div>
+                        </button>
+                    }
+                </mat-action-list>
+            </div>
+        }
+    </ng-template>
+
     <ng-container left-side>
         <p>
             Hier können Sie Verfahren archivieren lassen, dessen Datum der
@@ -16,71 +54,368 @@
             Sie sicher, dass die Option "archivierte Datensätze im Portal
             anzeigen" ausgewählt ist.
         } @else {
-            <p class="comment-field">
-                Wählen Sie ein Datum aus, um alle Verfahren zu archivieren,
-                deren Entscheidungsdatum vor oder an diesem Datum liegt.
-            </p>
+            <div class="archive-section">
+                <h3>Manuelle Archivierung</h3>
+                <p class="comment-field">
+                    Wählen Sie ein Datum aus, um alle Verfahren zu archivieren,
+                    deren Entscheidungsdatum vor oder an diesem Datum liegt.
+                </p>
 
-            <div class="flex-row gap-12">
-                <mat-form-field appearance="outline" class="white-bg">
-                    <mat-label>Datum auswählen</mat-label>
-                    <input
-                        matInput
-                        [matDatepicker]="picker"
-                        [formControl]="dateControl"
-                    />
-                    <mat-datepicker-toggle
-                        matIconSuffix
-                        [for]="picker"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                    <mat-hint>{{ numOfDatasetsHint() }}</mat-hint>
-                </mat-form-field>
+                <div class="flex-row gap-12">
+                    <mat-form-field appearance="outline" class="white-bg">
+                        <mat-label>Datum auswählen</mat-label>
+                        <input
+                            matInput
+                            [matDatepicker]="picker"
+                            [formControl]="dateControl"
+                        />
+                        <mat-datepicker-toggle
+                            matIconSuffix
+                            [for]="picker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-hint>{{ numOfDatasetsHint() }}</mat-hint>
+                    </mat-form-field>
 
-                <button
-                    mat-flat-button
-                    color="primary"
-                    (click)="archiveNow()"
-                    [disabled]="!dateControl.valid"
-                >
-                    Jetzt archivieren
-                </button>
-            </div>
-
-            <div class="border flex-col gap-12">
-                <div>
-                    <span class="section-title">Hinweis:</span> Das folgende
-                    konfigurierte Verhalten wird angewendet:
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="archiveNow()"
+                        [disabled]="!dateControl.valid"
+                    >
+                        Jetzt archivieren
+                    </button>
                 </div>
-                <div class="explanation" [innerHTML]="explanation()"></div>
+
+                <div class="border flex-col gap-12">
+                    <div>
+                        <span class="section-title">Hinweis:</span> Das folgende
+                        konfigurierte Verhalten wird angewendet:
+                    </div>
+                    <div class="explanation" [innerHTML]="explanation()"></div>
+                </div>
+
+                @if (status() != null) {
+                    <div class="status">
+                        <div>
+                            Start:
+                            {{
+                                status().startTime | date: "dd.LL.yyyy HH:mm:ss"
+                            }}
+                        </div>
+                        <div>
+                            &nbsp;Ende:
+                            {{ status().endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                        </div>
+                        <div>
+                            Archivierte Verfahren: {{ status().progress }}
+                        </div>
+                        @if (status().errors?.length > 0) {
+                            <div>
+                                Fehler:
+                                <span data-cy="count-errors">{{
+                                    status().errors.length
+                                }}</span>
+                                <ul>
+                                    @for (
+                                        error of status().errors;
+                                        track error
+                                    ) {
+                                        <li>{{ error }}</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
 
-            @if (status() != null) {
-                <div class="status">
+            <mat-divider class="my-24" aria-hidden="true"></mat-divider>
+
+            <div class="archive-section">
+                <h3>Automatische Archivierung</h3>
+                <div class="config-info">
                     <div>
-                        Start:
-                        {{ status().startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                        Nächste geplante Ausführung:
+                        {{
+                            (nextExecution() | date: "dd.LL.yyyy HH:mm:ss") ||
+                                "Keine geplante Ausführung"
+                        }}
                     </div>
                     <div>
-                        &nbsp;Ende:
-                        {{ status().endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                        Entscheidungsdatum älter als:
+                        {{ archiveAfterMonths() }}
+                        {{ archiveAfterMonths() === 1 ? "Monat" : "Monate" }}
                     </div>
-                    <div>Archivierte Verfahren: {{ status().progress }}</div>
-                    @if (status().errors?.length > 0) {
-                        <div>
-                            Fehler:
-                            <span data-cy="count-errors">{{
-                                status().errors.length
-                            }}</span>
-                            <ul>
-                                @for (error of status().errors; track error) {
-                                    <li>{{ error }}</li>
-                                }
-                            </ul>
+                </div>
+
+                <!-- Last Run - Prominently Displayed -->
+                <div class="last-run-section">
+                    <h4>Letzter Durchlauf</h4>
+                    @if (
+                        archiveHistory().length > 0 &&
+                        archiveHistory()[0].report?.length > 0
+                    ) {
+                        <div
+                            class="last-run-card prominent clickable"
+                            (click)="toggleHistoryEntry(0)"
+                        >
+                            <div class="flex-row gap-24">
+                                <div class="run-date">
+                                    <strong>Datum:</strong>
+                                    {{
+                                        archiveHistory()[0].startTime
+                                            | date: "dd.LL.yyyy HH:mm:ss"
+                                    }}
+                                    @if (archiveHistory()[0].endTime) {
+                                        <span>
+                                            -
+                                            {{
+                                                archiveHistory()[0].endTime
+                                                    | date: "HH:mm:ss"
+                                            }}</span
+                                        >
+                                    }
+                                    @if (archiveHistory()[0].isManual) {
+                                        <span class="manual-badge"
+                                            >Manuell</span
+                                        >
+                                    }
+                                </div>
+                                <div class="run-stats">
+                                    <span class="stat-badge success">
+                                        {{ archiveHistory()[0].archivedCount }}
+                                        archiviert
+                                    </span>
+                                </div>
+                                <div class="expand-icon">
+                                    @if (isHistoryEntryExpanded(0)) {
+                                        ▼
+                                    } @else {
+                                        ▶
+                                    }
+                                </div>
+                            </div>
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    errorTemplate;
+                                    context: {
+                                        errors: archiveHistory()[0].errors,
+                                    }
+                                "
+                            ></ng-container>
+                            @if (isHistoryEntryExpanded(0)) {
+                                <ng-container
+                                    *ngTemplateOutlet="
+                                        archivedDatasetsTemplate;
+                                        context: {
+                                            datasets:
+                                                archiveHistory()[0].report,
+                                        }
+                                    "
+                                ></ng-container>
+                            }
+                        </div>
+                    } @else if (archiveHistory().length > 0) {
+                        <div class="last-run-card prominent">
+                            <div class="flex-row gap-24">
+                                <div class="run-date">
+                                    <strong>Datum:</strong>
+                                    {{
+                                        archiveHistory()[0].startTime
+                                            | date: "dd.LL.yyyy HH:mm:ss"
+                                    }}
+                                    @if (archiveHistory()[0].endTime) {
+                                        <span>
+                                            -
+                                            {{
+                                                archiveHistory()[0].endTime
+                                                    | date: "HH:mm:ss"
+                                            }}</span
+                                        >
+                                    }
+                                    @if (archiveHistory()[0].isManual) {
+                                        <span class="manual-badge"
+                                            >Manuell</span
+                                        >
+                                    }
+                                </div>
+                                <div class="run-stats">
+                                    <span class="stat-badge success">
+                                        {{ archiveHistory()[0].archivedCount }}
+                                        archiviert
+                                    </span>
+                                </div>
+                            </div>
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    errorTemplate;
+                                    context: {
+                                        errors: archiveHistory()[0].errors,
+                                    }
+                                "
+                            ></ng-container>
+                        </div>
+                    } @else if (autoArchiveStatus() != null) {
+                        <div class="last-run-card prominent">
+                            <div class="flex-row gap-24">
+                                <div class="run-date">
+                                    <strong>Datum:</strong>
+                                    {{
+                                        autoArchiveStatus().startTime
+                                            | date: "dd.LL.yyyy HH:mm:ss"
+                                    }}
+                                    @if (autoArchiveStatus().endTime) {
+                                        <span>
+                                            -
+                                            {{
+                                                autoArchiveStatus().endTime
+                                                    | date: "HH:mm:ss"
+                                            }}</span
+                                        >
+                                    }
+                                </div>
+                                <div class="run-stats">
+                                    <span class="stat-badge success">
+                                        {{ autoArchiveStatus().progress }}
+                                        archiviert
+                                    </span>
+                                    @if (
+                                        autoArchiveStatus().errors?.length > 0
+                                    ) {
+                                        <span class="stat-badge error">
+                                            {{
+                                                autoArchiveStatus().errors
+                                                    .length
+                                            }}
+                                            Fehler
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    errorTemplate;
+                                    context: {
+                                        errors: autoArchiveStatus().errors,
+                                    }
+                                "
+                            ></ng-container>
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    archivedDatasetsTemplate;
+                                    context: {
+                                        datasets: autoArchiveStatus().report,
+                                    }
+                                "
+                            ></ng-container>
+                        </div>
+                    } @else {
+                        <div class="last-run-card">
+                            <p>
+                                Bisher kein Durchlauf der automatischen
+                                Archivierung vorhanden.
+                            </p>
                         </div>
                     }
                 </div>
-            }
+
+                <!-- History Toggle -->
+                @if (archiveHistory().length >= 1) {
+                    <div class="history-toggle">
+                        <button
+                            mat-flat-button
+                            (click)="toggleHistory()"
+                            [attr.aria-expanded]="showHistory()"
+                        >
+                            @if (showHistory()) {
+                                Verlauf ausblenden
+                            } @else {
+                                Verlauf anzeigen (max. 30)
+                            }
+                        </button>
+                    </div>
+                }
+
+                <!-- History Table -->
+                @if (showHistory()) {
+                    <div class="history-section">
+                        @if (archiveHistory().length > 1) {
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Datum</th>
+                                        <th>Archiviert</th>
+                                        <th>Fehler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (
+                                        entry of archiveHistory().slice(1);
+                                        track entry.startTime;
+                                        let i = $index
+                                    ) {
+                                        <tr
+                                            [class.expanded]="
+                                                isHistoryEntryExpanded(i + 1)
+                                            "
+                                            (click)="toggleHistoryEntry(i + 1)"
+                                        >
+                                            <td>
+                                                {{
+                                                    entry.startTime
+                                                        | date: "dd.LL.yyyy"
+                                                }}<br />
+                                                <small>{{
+                                                    entry.startTime
+                                                        | date: "HH:mm:ss"
+                                                }}</small>
+                                                @if (entry.isManual) {
+                                                    <br /><small
+                                                        class="manual-badge"
+                                                        >Manuell</small
+                                                    >
+                                                }
+                                            </td>
+                                            <td class="count-success">
+                                                {{ entry.archivedCount }}
+                                            </td>
+                                            <td class="count-error">
+                                                {{ entry.errors?.length || 0 }}
+                                            </td>
+                                        </tr>
+                                        @if (isHistoryEntryExpanded(i + 1)) {
+                                            <tr class="dataset-row">
+                                                <td colspan="3">
+                                                    <ng-container
+                                                        *ngTemplateOutlet="
+                                                            errorTemplate;
+                                                            context: {
+                                                                errors: entry.errors,
+                                                            }
+                                                        "
+                                                    ></ng-container>
+                                                    <ng-container
+                                                        *ngTemplateOutlet="
+                                                            archivedDatasetsTemplate;
+                                                            context: {
+                                                                datasets:
+                                                                    entry.report,
+                                                            }
+                                                        "
+                                                    ></ng-container>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        } @else {
+                            <p>Keine historischen Daten verfügbar.</p>
+                        }
+                    </div>
+                }
+            </div>
         }
     </div>
 </page-template-no-header>

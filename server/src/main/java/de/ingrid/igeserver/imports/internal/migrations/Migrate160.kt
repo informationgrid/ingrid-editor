@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.imports.internal.migrations
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ObjectNode
 
 class Migrate160 {
 
@@ -39,7 +39,7 @@ class Migrate160 {
             val spatial = doc.get("spatial") as? ObjectNode ?: return
             val verticalExtent = spatial.get("verticalExtent") as? ObjectNode ?: return
             if (verticalExtent.has("Datum")) {
-                verticalExtent.set<JsonNode>("spatialSystem", verticalExtent.get("Datum"))
+                verticalExtent.set("spatialSystem", verticalExtent.get("Datum"))
                 verticalExtent.remove("Datum")
             }
         }

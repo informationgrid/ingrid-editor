@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ChangeDetectionStrategy } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormsModule } from "@angular/forms";
 import { MatCheckbox } from "@angular/material/checkbox";
@@ -31,6 +31,7 @@ export interface ExportCatalogOptionsModel {
 @Component({
   selector: "ige-export-catalog-dialog",
   templateUrl: "./export-catalog-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DialogTemplateComponent, MatCheckbox, FormsModule],
 })
 export class ExportCatalogDialogComponent {

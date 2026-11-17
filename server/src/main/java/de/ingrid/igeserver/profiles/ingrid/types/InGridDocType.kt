@@ -27,4 +27,5 @@ enum class InGridDocType(val typeId: String) {
     InGridProject("4"),
     InGridDataCollection("5"),
     InGridInformationSystem("6"),
+    InGridAlgorithm("7"),
 }

@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MAT_SNACK_BAR_DATA,
   MatSnackBarAction,
@@ -54,6 +59,7 @@ import { MatButton } from "@angular/material/button";
       </span>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction],
 })
 export class ThesaurusReportComponent implements OnInit {
@@ -62,7 +68,7 @@ export class ThesaurusReportComponent implements OnInit {
   report: string[];
 
   ngOnInit(): void {
-    const groupedByThesaurus = groupBy(this.data, (i) => i.thesaurus);
+    const groupedByThesaurus = groupBy(this.data, (i) => i.thesaurus.label);
 
     this.report = Object.keys(groupedByThesaurus)
       .filter((key) => groupedByThesaurus[key].length > 0)

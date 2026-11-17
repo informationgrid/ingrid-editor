@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, inject, OnInit, Signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ResearchService } from "../research.service";
 import {
   ConfirmDialogComponent,
@@ -44,6 +51,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   selector: "ige-query-manager",
   templateUrl: "./query-manager.component.html",
   styleUrls: ["./query-manager.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageTemplateComponent,
     CardBoxComponent,

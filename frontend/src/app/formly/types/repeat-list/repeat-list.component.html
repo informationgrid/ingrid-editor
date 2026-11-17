@@ -81,7 +81,7 @@
                 class="clickable list-item"
                 data-cy="list-item"
                 tabindex="0"
-                (click)="this.onItemClick(item?.key)"
+                (click)="this.onItemClick($safeNavigationMigration(item?.key))"
                 (keyup.enter)="removeItem(i, $event)"
                 role="listitem"
                 [attr.aria-labelledby]="field | ariaLabel"
@@ -136,7 +136,7 @@
     <mat-form-field appearance="outline" class="width-100">
         <mat-select
             [placeholder]="props.placeholder"
-            (valueChange)="addToList($event)"
+            (selectionChange)="addToList($event.value)"
             [required]="showError && props.required && formControl.invalid"
             [formControl]="inputControl"
             (keydown)="handleKeydown($event)"
@@ -206,7 +206,7 @@
                     </mat-option>
                 }
             }
-            @if (paginationState.isLoading) {
+            @if (paginationState().isLoading) {
                 <mat-option [disabled]="true" class="loading-spinner-option">
                     <div class="spinner-container">
                         <mat-progress-spinner

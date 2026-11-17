@@ -19,8 +19,10 @@
  */
 package de.ingrid.igeserver.persistence.model
 
-import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exceptions.IsReferencedException
+import de.ingrid.igeserver.persistence.model.document.DocStateFilter
 import de.ingrid.igeserver.persistence.model.document.IncomingReferenceOptions
+import de.ingrid.igeserver.persistence.model.document.SimpleIncomingReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
@@ -28,6 +30,7 @@ import de.ingrid.igeserver.services.InitiatorAction
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import tools.jackson.databind.JsonNode
 
 /**
  * Base interface for all entity types
@@ -94,9 +97,18 @@ abstract class EntityType {
     open fun onPublish(doc: Document) {}
 
     /**
-     * Persistence hook called when an instance of this type is deleted
+     * Persistence hook called when an instance of this type is deleted.
+     * By default it ensures that the document is not referenced by other
+     * documents in any state, so referenced documents cannot be deleted.
+     * This only has an effect for types implementing
+     * [getIncomingReferenceUUIDs].
      */
-    open fun onDelete(doc: Document) {}
+    open fun onDelete(doc: Document) {
+        val uuids = getIncomingReferenceUUIDs(doc, SimpleIncomingReferenceOptions(docStateFilter = DocStateFilter.ALL_STATES))
+        if (uuids.isNotEmpty()) {
+            throw IsReferencedException.byDocuments(documentService.getReferencedDocuments(doc, uuids))
+        }
+    }
 
     /**
      * Persistence hook called when an instance of this type is deleted
@@ -107,6 +119,14 @@ abstract class EntityType {
      * Get all referenced document UUIDs
      */
     open fun getReferenceUUIDs(doc: Document): List<String> = emptyList()
+
+    /**
+     * Create incoming reference options suitable for this entity type based on requested option names.
+     */
+    open fun createIncomingReferenceOptions(
+        options: List<String> = emptyList(),
+        docStateFilter: DocStateFilter = DocStateFilter.LATEST,
+    ): IncomingReferenceOptions = SimpleIncomingReferenceOptions(docStateFilter = docStateFilter)
 
     /**
      * Get all document UUIDs which reference this document
@@ -123,6 +143,6 @@ abstract class EntityType {
 
     protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> = fileList
         ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
-        ?.map { it.get(field).get("uri").textValue() }
+        ?.map { it.get(field).get("uri").stringValue() }
         ?: emptyList()
 }

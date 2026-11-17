@@ -182,6 +182,7 @@ class ExpiredDatasetsTask(
         query.setParameter("date", date)
         if (limitDate != null) query.setParameter("beginDate", beginDate)
         if (expiryState != null) query.setParameter("expiryState", expiryState.value)
+        @Suppress("UNCHECKED_CAST")
         return (query.resultList as List<Array<Any?>>).map { mapToDataset(it) }
     }
 

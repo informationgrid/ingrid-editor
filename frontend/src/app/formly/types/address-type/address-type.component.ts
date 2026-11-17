@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   AddressCardComponent,
@@ -73,6 +80,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   selector: "ige-address-type",
   templateUrl: "./address-type.component.html",
   styleUrls: ["./address-type.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormErrorComponent,
     CdkDropList,

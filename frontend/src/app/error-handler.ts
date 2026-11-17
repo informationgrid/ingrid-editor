@@ -17,12 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ErrorHandler, Injectable } from "@angular/core";
+import { ErrorHandler, inject, Injectable } from "@angular/core";
 import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
+import {
+  createDocument,
+  DocumentAbstract,
+} from "./store/document/document.model";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeException } from "./server-validation.util";
 import { TranslocoService } from "@jsverse/transloco";
+import { ConfigService } from "./services/config/config.service";
 
 export interface IgeValidationError {
   errorCode: string;
@@ -34,6 +39,7 @@ export interface IgeValidationError {
   providedIn: "root",
 })
 export class GlobalErrorHandler implements ErrorHandler {
+  private configService = inject(ConfigService);
   constructor(
     private modalService: ModalService,
     private translocoService: TranslocoService,
@@ -41,6 +47,9 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error) {
     console.debug("HANDLE ERROR", error);
+    // prevent showing error modal when redirecting to login page
+    if (this.configService.isRedirectingToLogin) return;
+
     if (error instanceof IgeError) {
       this.modalService.showIgeError(error);
     } else if (error instanceof HttpErrorResponse) {
@@ -49,7 +58,6 @@ export class GlobalErrorHandler implements ErrorHandler {
           "Not logged in, redirecting to login page should be already initiated by bff-interceptor",
         );
         return;
-        // window.location.href = "/auth/logout";
       }
       if (error.error?.errorCode) {
         const e = new IgeError();
@@ -61,6 +69,7 @@ export class GlobalErrorHandler implements ErrorHandler {
           error.error?.stacktrace,
           unHandledException,
         );
+        e.links = this.extractReferencedDocuments(error.error);
         this.modalService.showIgeError(e);
       } else {
         const e = new IgeError();
@@ -93,6 +102,7 @@ export class GlobalErrorHandler implements ErrorHandler {
         error.rejection.error?.errorText ?? error.rejection.message;
       const detail = error.rejection.error?.stacktrace;
       e.setMessage(message, detail);
+      e.links = this.extractReferencedDocuments(error.rejection.error);
       this.modalService.showIgeError(e);
     } else {
       const igeError = new IgeError(error);
@@ -104,9 +114,11 @@ export class GlobalErrorHandler implements ErrorHandler {
   private translateMessage(error: IgeException) {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
-        return this.translocoService.translate(
-          "replace-address.reference-error-multiple-files",
-        );
+        return error.data?.documents
+          ? "Der Datensatz wird von anderen Datensätzen referenziert und kann nicht gelöscht werden. Bitte entfernen Sie zuerst die Referenzen in den folgenden Datensätzen:"
+          : this.translocoService.translate(
+              "replace-address.reference-error-multiple-files",
+            );
       case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
         return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
       case "IS_REFERENCED_ERROR_LITERATURE":
@@ -144,8 +156,40 @@ export class GlobalErrorHandler implements ErrorHandler {
         }
       case "USER_NOT_FOUND":
         return `Der Benutzer '${error.data.user}' wurde nicht gefunden.`;
+      case "PUBLISHED_VERSION_NOT_FOUND":
+        return "Es können nur veröffentlichte Versionen exportiert werden.";
+      case "NO_EXPORTER_ERROR":
+        return `Für den Dokumenttyp '${error.data.documentType}' ist kein Exporter im '${error.data.exporterClassName}' definiert.`;
+      case "INDEXING_ERROR":
+        return error.errorText === "RDF-Export not supported"
+          ? `Der RDF-Export für den Dokumenttyp von ${error.data?.uuid} wird nicht unterstützt.`
+          : error.errorText;
+      case "INTERNAL_ERROR":
+        if (
+          error.errorText.indexOf(
+            "Document was not exported since it might not have a published version",
+          ) !== -1
+        )
+          return `Es scheint keine veröffentlichte Version für ${error.data?.uuid} zu existieren.`;
+        if (error.errorText.indexOf("Document could not be exported") !== -1)
+          return "Der Datensatz konnte nicht exportiert werden";
+        else return error.errorText;
       default:
-        return null;
+        return error.errorText ?? null;
     }
+  }
+
+  /**
+   * Extract the referencing documents (partial documents as returned by the
+   * backend) from an IS_REFERENCED_ERROR exception, so that the error dialog
+   * can show them as list items.
+   */
+  private extractReferencedDocuments(
+    error: IgeException,
+  ): DocumentAbstract[] | undefined {
+    const documents = error?.data?.documents;
+    return Array.isArray(documents)
+      ? documents.map((doc) => createDocument(doc))
+      : undefined;
   }
 }

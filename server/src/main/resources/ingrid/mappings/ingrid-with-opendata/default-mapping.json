@@ -360,6 +360,10 @@
       "analyzer": "german",
       "store": true,
       "fields": {
+        "keyword": {
+          "type": "keyword",
+          "normalizer": "lowercase"
+        },
         "ngram": {
           "type": "text",
           "analyzer": "ngram",

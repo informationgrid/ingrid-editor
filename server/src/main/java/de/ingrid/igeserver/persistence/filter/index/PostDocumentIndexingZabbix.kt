@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.persistence.filter.index
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.index.ElasticIndexer.Companion.convertToElasticDocument
@@ -38,6 +37,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.StringReader
 import javax.xml.parsers.DocumentBuilderFactory
 

@@ -17,12 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { GeoDatasetDoctypeKrzn } from "./ingrid-krzn/doctypes/geo-dataset.doctype";
 import { InGridWithOpendataComponent } from "./profile-ingrid-with-opendata";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridKrznComponent extends InGridWithOpendataComponent {

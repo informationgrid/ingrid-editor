@@ -24,6 +24,7 @@ import {
   input,
   Signal,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
@@ -61,6 +62,7 @@ import { Router } from "@angular/router";
     },
     DynamicDatabase,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PermissionLegendsComponent,
     MatTableModule,

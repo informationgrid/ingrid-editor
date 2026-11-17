@@ -30,7 +30,9 @@
         >
             <div>Adresstyp zuordnen für:</div>
             <div class="chosen-address">
-                <mat-icon [svgIcon]="selection()?.icon"></mat-icon>
+                <mat-icon
+                    [svgIcon]="$safeNavigationMigration(selection()?.icon)"
+                ></mat-icon>
                 <span>{{ selection()?.title }}</span>
             </div>
             <ige-document-list-item

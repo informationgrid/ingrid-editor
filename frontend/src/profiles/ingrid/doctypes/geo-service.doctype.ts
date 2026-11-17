@@ -51,6 +51,9 @@ export class GeoServiceDoctype extends IngridShared {
   showUpdateGetCapabilities = true;
   showHasAccessConstraints = true;
 
+  /** Doc types selectable as coupled resources ("Dargestellte Daten") */
+  coupledResourcesDocTypeFilter: string[] = ["InGridGeoDataset"];
+
   geoServiceOptions = {
     required: {
       classification: true,
@@ -67,18 +70,18 @@ export class GeoServiceDoctype extends IngridShared {
     this.options.required.useConstraints = true;
   }
 
-  private mapServiceTypeToVersionCodelist = {
+  static mapServiceTypeToVersionCodelist: Record<string, string> = {
     "1": "5151",
     "2": "5152",
     "3": "5153",
     "4": "5154",
   };
 
-  private mapServiceTypeToOperationNameCodelist = {
-    "1": "5105",
-    "2": "5110",
-    "3": "5120",
-    "4": "5130",
+  static mapServiceTypeToOperationNameCodelist: Record<string, string> = {
+    "1": "5105", // CSW
+    "2": "5110", // WMS
+    "3": "5120", // WFS
+    "4": "5130", // WCTS
   };
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
@@ -94,6 +97,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   documentFields = () => {
     this.handleDoiBehaviour();
+    this.handleIzgBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.showUpdateGetCapabilities
@@ -110,6 +114,7 @@ export class GeoServiceDoctype extends IngridShared {
         priorityDataset: true,
         spatialScope: true,
         inspireTopics: true,
+        mobilithekTopics: true,
       }),
 
       this.addSection(
@@ -256,6 +261,7 @@ export class GeoServiceDoctype extends IngridShared {
                     className: "flex-1",
                     props: {
                       label: "Dargestellte Daten",
+                      docTypeFilter: this.coupledResourcesDocTypeFilter,
                       showLayernames:
                         this.showLayernamesForCoupledResources === true,
                       change: (field) => {
@@ -372,7 +378,8 @@ export class GeoServiceDoctype extends IngridShared {
   }
 
   private updateServiceVersionField(value) {
-    const codelistId = this.mapServiceTypeToVersionCodelist[value.key];
+    const codelistId =
+      GeoServiceDoctype.mapServiceTypeToVersionCodelist[value.key];
     if (codelistId === undefined) {
       this.getServiceVersionOptions.next([]);
     } else {
@@ -387,7 +394,8 @@ export class GeoServiceDoctype extends IngridShared {
 
   private updateOperationNameField(value) {
     const codelistId =
-      this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
+      GeoServiceDoctype.mapServiceTypeToOperationNameCodelist[value.key] ??
+      "5110";
     this.currentServiceOperationNameCodelist.set(codelistId);
     this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
       this.getServiceOperationNameOptions.next(value);

@@ -37,5 +37,6 @@ class DocumentTypes : QuickFilter() {
         "InGridProject",
         "InGridDataCollection",
         "InGridInformationSystem",
+        "InGridAlgorithm",
     )
 }

@@ -24,6 +24,7 @@ import {
   input,
   output,
   viewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
@@ -42,6 +43,7 @@ import { MatOption } from "@angular/material/core";
   selector: "ige-filter-select",
   templateUrl: "./filter-select.component.html",
   styleUrls: ["./filter-select.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatFormField,
     MatInput,

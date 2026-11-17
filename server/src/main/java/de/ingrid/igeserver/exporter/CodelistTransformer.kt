@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exporter
 
+import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 
@@ -27,15 +28,18 @@ open class CodelistTransformer(
     val catalogIdentifier: String,
     val catalogLanguage: String,
 ) {
+    private val catalogCodelists = mutableMapOf<String, CodeList?>()
+
+    private fun catalogValue(codelistId: String, key: String, field: String): String? {
+        if (!catalogCodelists.containsKey(codelistId)) {
+            catalogCodelists[codelistId] = codelistHandler.getCatalogCodelist(catalogIdentifier, codelistId)
+        }
+        return catalogCodelists[codelistId]?.entries?.find { it.id == key }?.fields?.get(field)
+    }
 
     fun getCatalogCodelistValue(codelistId: String, entry: KeyValue?): String? = if (entry?.key != null) {
-        codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, catalogLanguage)
-            ?: codelistHandler.getCatalogCodelistValue(
-                catalogIdentifier,
-                codelistId,
-                entry.key,
-                "de",
-            )
+        catalogValue(codelistId, entry.key, catalogLanguage)
+            ?: catalogValue(codelistId, entry.key, "de")
     } else {
         entry?.value
     }
@@ -48,8 +52,8 @@ open class CodelistTransformer(
         val value = codelistHandler.getCodelistValue(codelistId, entry.key, field)
         if (restrictToField == true) return value
         value ?: codelistHandler.getCodelistValue(codelistId, entry.key, "de")
-            ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, field)
-            ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key, "de")
+            ?: catalogValue(codelistId, entry.key, field)
+            ?: catalogValue(codelistId, entry.key, "de")
     } else {
         if (restrictToField == true) return null
         entry?.value

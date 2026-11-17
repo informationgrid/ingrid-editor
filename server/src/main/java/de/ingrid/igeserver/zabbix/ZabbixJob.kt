@@ -19,14 +19,14 @@
  */
 package de.ingrid.igeserver.zabbix
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 @Component
 @Profile("zabbix")

@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, input, output, viewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  input,
+  output,
+  viewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -34,6 +41,7 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-emailform",
   templateUrl: "./emailform.component.html",
   styleUrls: ["./emailform.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatError, MatButton],
 })
 export class EmailformComponent implements OnInit {

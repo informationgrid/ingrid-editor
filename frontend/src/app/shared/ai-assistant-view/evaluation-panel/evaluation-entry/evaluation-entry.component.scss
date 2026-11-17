@@ -1,25 +1,26 @@
+@use "src/variables" as vars;
+
 :host {
-  padding: 16px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-
-  --mat-list-list-item-label-text-size: 14px;
-
-  ::ng-deep .mdc-list-item__end {
-    margin-left: 8px;
-  }
 }
 
-.mat-divider {
-  margin: 8px -16px 0px;
+.text-box {
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.mdc-list {
-  padding: 0;
+ige-ai-suggestion-list {
+  margin: 16px;
 }
 
-.mdc-list-item {
-  padding-left: 8px;
+.action-box {
+  margin: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 button {

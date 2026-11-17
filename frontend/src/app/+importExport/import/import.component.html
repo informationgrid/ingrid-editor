@@ -73,7 +73,11 @@
                                     </div>
                                     <mat-progress-spinner
                                         diameter="50"
-                                        [value]="message()?.progress"
+                                        [value]="
+                                            $safeNavigationMigration(
+                                                message()?.progress
+                                            )
+                                        "
                                     ></mat-progress-spinner>
                                     <button
                                         mat-flat-button
@@ -229,13 +233,20 @@
                 <mat-step>
                     <ng-template matStepLabel>Fertig</ng-template>
                     <div class="content text-center">
-                        @if (message() && message()?.endTime === null) {
+                        @if (
+                            message() &&
+                            $safeNavigationMigration(message()?.endTime) ===
+                                null
+                        ) {
                             <div class="section-title">
                                 Datensätze werden importiert
                             </div>
                             <mat-spinner diameter="50"></mat-spinner>
                         }
-                        @if (message()?.endTime !== null) {
+                        @if (
+                            $safeNavigationMigration(message()?.endTime) !==
+                            null
+                        ) {
                             <div class="flex-col">
                                 <div class="section-title">
                                     Import abgeschlossen

@@ -17,10 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: "",
 })
 export class LogoutComponent implements OnInit {

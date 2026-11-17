@@ -17,8 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
+import { AlgorithmDoctypeHMDK } from "./ingrid-hmdk/doctypes/algorithm.doctype";
 import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
 import { SpecialisedTaskDoctypeHMDK } from "./ingrid-hmdk/doctypes/specialisedTask.doctype";
 import { GeoDatasetDoctypeHMDK } from "./ingrid-hmdk/doctypes/geo-dataset.doctype";
@@ -34,6 +35,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class InGridHMDKComponent extends InGridComponent {
@@ -44,6 +46,7 @@ class InGridHMDKComponent extends InGridComponent {
   project = inject(ProjectDoctypeHMDK);
   dataCollection = inject(DataCollectionDoctypeHMDK);
   informationSystem = inject(InformationSystemDoctypeHMDK);
+  algorithm = inject(AlgorithmDoctypeHMDK);
   modifyPublishedBehaviour = inject(ModifyPublishedBehaviour);
 
   dialog = inject(MatDialog);
@@ -66,6 +69,7 @@ class InGridHMDKComponent extends InGridComponent {
       this.project,
       this.dataCollection,
       this.informationSystem,
+      this.algorithm,
     ].forEach((docType) => {
       // show open data for all types.
       docType.options.hide.openData = false;

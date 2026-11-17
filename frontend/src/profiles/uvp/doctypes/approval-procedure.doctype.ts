@@ -97,10 +97,10 @@ export class ApprovalProcedureDoctype extends UvpShared {
             type: "uvpPhases",
             fieldArray: {
               fieldGroup: [
+                this.addScopeOfInvestigation(),
                 this.addPublicDisclosure(),
                 this.addPublicHearing(),
                 this.addDecisionOfAdmission(),
-                this.addScopeOfInvestigation(),
               ],
             },
             validators: {

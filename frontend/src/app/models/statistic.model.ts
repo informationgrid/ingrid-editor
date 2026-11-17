@@ -21,6 +21,10 @@ export interface StatisticResponse {
   totalNum: number;
   numPublished: number;
   numDrafts: number;
-  numAllDrafts: number;
+  numPublishedWithDraft?: number;
+  /** documents classified by publication right (wrapper tags); no tag means "internet" */
+  numInternet?: number;
+  numIntranet?: number;
+  numAmtsintern?: number;
   statsPerType: Map<string, StatisticResponse>;
 }

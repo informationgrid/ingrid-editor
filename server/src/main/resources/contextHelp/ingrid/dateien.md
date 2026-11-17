@@ -6,6 +6,7 @@ docType:
   - InGridGeoDataset
   - InGridInformationSystem
   - InGridPublication
+  - InGridAlgorithm
 profile: ingrid
 
 # title, used as window title

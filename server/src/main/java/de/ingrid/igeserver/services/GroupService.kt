@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import de.ingrid.igeserver.model.User
@@ -43,6 +42,7 @@ import org.springframework.security.acls.model.Permission
 import org.springframework.security.acls.model.Sid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.JsonNode
 import java.security.Principal
 import java.util.*
 
@@ -72,7 +72,7 @@ class GroupService(
         return groupRepo.save(group)
 
         /*group.permissions?.documents?.forEach {
-            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asText())
+            val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("uuid").asString())
             val acl = aclService.createAcl(objIdentity)
             aclService.updateAcl(acl)
         }*/
@@ -176,19 +176,21 @@ class GroupService(
         aclService as JdbcMutableAclService
 
         getAllDocPermissions(group).forEach {
-            val objIdentity =
-                ObjectIdentityImpl(DocumentWrapper::class.java, if (it.get("id").isNull) null else it.get("id").asInt())
-            val acl: MutableAcl = try {
-                aclService.readAclById(objIdentity) as MutableAcl
-            } catch (_: org.springframework.security.acls.model.NotFoundException) {
-                log.warn("Created new ACL for already existing group: ${group.id}")
-                aclService.createAcl(objIdentity)
+            val docId = if (it.get("id").isNull) null else it.get("id").asInt()
+            if (docId != null) {
+                val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, docId)
+                val acl: MutableAcl = try {
+                    aclService.readAclById(objIdentity) as MutableAcl
+                } catch (_: org.springframework.security.acls.model.NotFoundException) {
+                    log.warn("Created new ACL for already existing group: ${group.id}")
+                    aclService.createAcl(objIdentity)
+                }
+
+                val sid = GrantedAuthoritySid("GROUP_${group.id}")
+
+                addACEs(acl, it, sid)
+                aclService.updateAcl(acl)
             }
-
-            val sid = GrantedAuthoritySid("GROUP_${group.id}")
-
-            addACEs(acl, it, sid)
-            aclService.updateAcl(acl)
         }
     }
 
@@ -203,7 +205,7 @@ class GroupService(
             }
     }
 
-    private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asText()) {
+    private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asString()) {
         "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
 
         "writeTreeExceptParent" -> listOf(

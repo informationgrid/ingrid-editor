@@ -68,29 +68,34 @@
                                 <p>
                                     L1:
                                     {{
-                                        location()?.value?.lat1
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lat1
+                                        ) | number: ".6" : "en-US"
                                     }}° B1:
                                     {{
-                                        location()?.value?.lon1
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lon1
+                                        ) | number: ".6" : "en-US"
                                     }}°
                                 </p>
                                 <p>
                                     L2:
                                     {{
-                                        location()?.value?.lat2
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lat2
+                                        ) | number: ".6" : "en-US"
                                     }}° B2:
                                     {{
-                                        location()?.value?.lon2
-                                            | number: ".6" : "en-US"
+                                        $safeNavigationMigration(
+                                            location()?.value?.lon2
+                                        ) | number: ".6" : "en-US"
                                     }}°
                                 </p>
                             </div>
                             <div class="flex-1"></div>
                             <div>
                                 <button
+                                    data-cy="btn-more"
                                     mat-icon-button
                                     class="menu-button"
                                     matTooltip="Bearbeiten"
@@ -100,12 +105,14 @@
                                 </button>
                                 <mat-menu #spatialRef="matMenu">
                                     <button
+                                        data-cy="action-edit"
                                         mat-menu-item
                                         (click)="showSpatialDialog(location())"
                                     >
                                         Bearbeiten
                                     </button>
                                     <button
+                                        data-cy="action-delete"
                                         mat-menu-item
                                         (click)="removeLocation()"
                                     >
@@ -138,6 +145,7 @@
                                     [matDatepickerFilter]="filterForStartDate"
                                 />
                                 <mat-datepicker-toggle
+                                    data-cy="datepicker-start"
                                     matSuffix
                                     [for]="startDate"
                                 ></mat-datepicker-toggle>
@@ -152,6 +160,7 @@
                                     [matDatepickerFilter]="filterForEndDate"
                                 />
                                 <mat-datepicker-toggle
+                                    data-cy="datepicker-end"
                                     matSuffix
                                     [for]="endDate"
                                 ></mat-datepicker-toggle>

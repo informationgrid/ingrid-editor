@@ -99,8 +99,10 @@ class ValidationUtils(@Autowired validatorFactory: ValidatorFactory) {
             val getter = record.javaClass.getDeclaredMethod("get" + StringUtils.capitalize(fieldName))
             var maps = getter.invoke(record)
             if (maps is Map<*, *>) {
+                @Suppress("UNCHECKED_CAST")
                 maps = setOf(maps as Map<String, Any>)
             }
+            @Suppress("UNCHECKED_CAST")
             return maps as Set<Map<String, Any>>
         }
     }

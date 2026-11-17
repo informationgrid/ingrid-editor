@@ -24,6 +24,7 @@ import {
   inject,
   input,
   signal,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
@@ -43,6 +44,7 @@ interface DataOriginItem {
 @Component({
   selector: "ige-data-origin-view",
   templateUrl: "./data-origin-view.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./data-origin-view.component.scss",
 })
 export class DataOriginViewComponent {
