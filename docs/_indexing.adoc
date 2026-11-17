@@ -1,0 +1,67 @@
+== Indexing and Export Formats
+
+=== Indexing flow
+
+Indexing exports published documents from a catalog to its configured index targets. The main orchestration is in `IndexingTask`; `IndexTargetWorker` queries the documents and invokes the selected exporter for each one.
+
+The task resolves exporter configurations as follows:
+
+. If indexing is disabled for the catalog (`catalog.settings.noIndexing`), it stops without processing documents.
+. If the catalog has explicit export configurations, those configurations determine the target, exporter ID, and tags.
+. Otherwise, it uses the profile's `indexExportFormatID` for every configured target. The default configuration uses the `internet` tag.
+. For each target category, it resolves the exporter and selects the corresponding document ID field from the profile's `indexIdField`.
+
+Targets are configured connections such as Elasticsearch, iBus, CSW-T, and Directus. Target implementations provide the `IIndexManager` interface and declare the categories they accept; the current categories are `DATA` and `ADDRESS`. The configured exporter ID must be available for the relevant category.
+
+`IndexTargetWorker` uses the exporter's `exportSql(catalogId)` when selecting publishable documents and passes the configured tags and category to the exporter. The default `IgeExporter.exportSql` selects published documents and draft folders; exporters can override it to apply additional filters. The exporter's `run(doc, catalogId, options)` produces the document sent to the target.
+
+=== Export format metadata
+
+An exporter implements `IgeExporter` and provides an `ExportTypeInfo`. Its fields describe:
+
+`category`:: The document category, `DocumentCategory.DATA` or `DocumentCategory.ADDRESS`.
+`type`:: The exporter ID used in catalog export configuration and profile defaults.
+`name` and `description`:: The display name and description.
+`dataType` and `fileExtension`:: The output MIME type and file extension.
+`profiles`:: The profiles for which the exporter is available.
+`isPublic`:: Whether the exporter is offered in the regular export process.
+`useForPublish`:: Whether the exporter is offered for indexing.
+
+`isPublic` and `useForPublish` are separate flags: an exporter can be available for indexing without being offered as a regular download format.
+
+=== Index formats in the InGrid profile
+
+The InGrid profile currently has two index export formats:
+
+* `indexInGridIDF` produces the current Lucene JSON model. Data documents include the ISO representation under `exports.iso`; address documents use the address schema.
+* `indexInGridIDFClassic` produces the legacy Lucene JSON representation using JTE templates and includes the IDF XML under `idf`.
+
+The current JSON model is represented by classes such as `LuceneDocumentInGrid` and `LuceneDocumentAddress`. Its schemas are in `server/src/main/resources/templates/export/ingrid/schemes/index-ingrid.json` and `index-ingrid-address.json`. The index exporter validates its JSON against the matching schema unless validation is explicitly skipped in `ExportOptions`.
+
+Exporters can calculate a SHA-256 fingerprint with `calculateFingerprint` and store it on a document wrapper using `updateDocumentFingerprint`. The InGrid index exporters use fingerprints of their ISO or IDF representation to retain the previous date stamp when that representation has not changed.
+
+The profile selects the default index exporter with `indexExportFormatID`. Catalog settings can override the default with explicit export configurations. `indexIdField` supplies separate document and address ID fields. For example, the InGrid profile uses `t01_object.obj_id` and `t02_address.adr_id`.
+
+=== Creating an exporter for indexing
+
+. Create a Spring service implementing `IgeExporter` in the relevant profile package. Ensure the package is scanned when that profile is active, following the profile's existing configuration.
+. Define an `ExportTypeInfo` with the correct category, a stable exporter ID, output type, supported profile, and `useForPublish = true` if it is to be used for indexing. Provide a separate exporter when a target needs a different category or output.
+. Implement `run(doc, catalogId, options)` to transform one document into the representation expected by the target. Reuse an existing model transformer or template where possible. If the default publication filter is not appropriate, override `exportSql(catalogId)`.
+. For JSON output, validate against a JSON Schema before returning it. `IgeExporter.validateSchema(json, schemaFile)` supports classpath schemas; the default schema is the InGrid dataset schema. Use the address schema for address documents or supply a profile-specific schema.
+. Set the profile's `indexExportFormatID` to the new exporter ID so it is selected when a catalog has no explicit export configuration. Check that the exporter ID is also available for the target category and any explicit catalog configurations.
+. Add tests for the document transformation and schema validation, and verify that the target receives the expected ID and tags.
+
+See `server/src/main/java/de/ingrid/igeserver/profiles/ingrid/exporter/IngridIndexExporter.kt` for the current format and `IngridIndexExporterClassic.kt` for the legacy format.
+
+=== Extending index formats in profiles
+
+Profile-specific index behavior is usually implemented by extending the existing profile and its exporter components:
+
+. Override `indexExportFormatID` in the profile when the profile needs a distinct index exporter. The value must match the exporter's `typeInfo.type`. Also provide the correct `indexIdField` values when the profile uses different document or address IDs.
+. Override `getElasticsearchMapping(format)` and `getElasticsearchSetting(format)` to load the profile's mapping and settings resources. Existing examples include the InGrid profile and `BmiProfile`; InGrid-derived profiles provide their own mapping resources.
+. For the classic format, extend `IngridIndexExporterClassic` and its `IngridLuceneExporterClassic` as needed. For the current format, extend `IngridIndexExporter` and the current `IngridLuceneExporter` or its transformer. Override `getTransformer(data)` and/or `getTemplateForDoctype(...)` when the profile needs a different transformer or JTE template. `IngridExporterBast` is an example of a classic exporter extension.
+. For fields in the current Lucene model, extend the relevant model transformer and override `toLuceneDocument(...)`. Build on the parent result and use `copy(ingrid = doc.ingrid.copy(...))` to add profile-specific fields without dropping common fields.
+. Update the relevant JSON Schema and Elasticsearch mapping together when adding or changing output fields. Ensure the exporter validates against the profile's schema; the schema selection in the standard InGrid exporter is internal, so a profile needing a different schema must provide the appropriate validation behavior in its exporter.
+. Add exporter tests that cover the new fields and validate representative output against the schema.
+
+InGrid schemas are under `server/src/main/resources/templates/export/ingrid/schemes/`; the base mapping is under `server/src/main/resources/ingrid/mappings/`. Profile-specific mapping examples are in subdirectories such as `bast` and `baw`.

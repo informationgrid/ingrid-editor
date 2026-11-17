@@ -1,6 +1,6 @@
 = Export Format
 
-The export format is defined by [ige_export_format.schema.json](ige_export_format.schema.json).
+The export format is defined by link:ige_export_format.schema.json[ige_export_format.schema.json].
 
 The export format requires the following properties:
 

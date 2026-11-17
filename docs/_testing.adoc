@@ -1,29 +1,63 @@
 == Testing
 
-=== Frontend
+=== Backend unit tests
 
-The tests can be run inside the `frontend`-directory with:
+Backend tests are Kotlin tests under `server/src/test/kotlin`.
+The project uses Kotest for test execution and assertions, with MockK and SpringMockK available for test doubles.
+Follow the style of nearby tests and prefer testing observable behavior rather than implementation details.
 
-[source,shellscript]
+Run the backend test suite from the repository root:
+
+[source,shell]
 ----
-yarn test
-# or
-ng test
-----
-
-This will start a `karma`-server where the tests are executed inside a browser. The tests are recognized by the file-ending `*.spec.ts`.
-
-The execution can be configured in the file `karma.conf.js`. 
-
-=== Backend
-
-The tests are found in the directory `server/src/test`. You can run the tests with your IntelliJ-IDE by right-clicking onto the folder and execute the `Run 'Tests in ...'`-command. 
-
-You can also run them from the command line by issuing the following command:
-
-[source,shellscript]
-----
-./gradlew server:test
+./gradlew :server:test
 ----
 
-For some integration-tests you need a running PostgreSQL database with a separate database (default is `test`). This can be configured in the file `application-test.properties`.
+To run one test class, use Gradle's test filter:
+
+[source,shell]
+----
+./gradlew :server:test --tests 'de.ingrid.igeserver.exports.ingrid.LuceneModelTest'
+----
+
+For exporter tests, use the existing export test fixtures and helpers where suitable. `server/src/test/kotlin/de/ingrid/igeserver/exports/ingrid/GeodatasetBase.kt` provides shared setup for InGrid exporter tests, and `LuceneModelTest.kt` demonstrates assertions on the serialized Lucene JSON model.
+Test both expected fields and important omissions; for index JSON, validate output against the schema as well.
+
+Run the backend style check with:
+
+[source,shell]
+----
+./gradlew :server:ktlintCheck
+----
+
+=== Backend integration tests
+
+Integration tests can load Spring components and use a real PostgreSQL database through Testcontainers.
+Extend the shared `IntegrationTest` base to inherit its Spring test configuration, active profiles, SQL fixture, and PostgreSQL container.
+The container requires a working Docker environment.
+Keep tests that need a full application context separate from fast unit tests.
+
+Run integration tests with the same `:server:test` task; use a test-class filter to narrow the run while developing.
+Add or reuse SQL and other fixtures under `server/src/test/resources` rather than depending on a developer's local database.
+
+=== Frontend tests
+
+Frontend specs use the Angular CLI test builder, Vitest, and jsdom.
+Component and service specs are generally colocated with the implementation and use the `.spec.ts` suffix.
+Spectator is available for creating component and service test contexts; see `frontend/src/app/+catalog/catalog.service.spec.ts` for an example.
+
+Run tests from `frontend/` through the Angular CLI (do not invoke `vitest` directly, because the Angular builder configures the test environment):
+
+[source,shell]
+----
+yarn ng test
+----
+
+For a CI-style non-watch run, the package script is:
+
+[source,shell]
+----
+yarn test-ci
+----
+
+When changing Angular templates, run the frontend build as well: tests do not type-check every template.

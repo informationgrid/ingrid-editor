@@ -878,7 +878,7 @@ class FeatureNameConfig
 
 === Export format
 
-The documentation of the export format is here: link:export-format.adoc#_export_format[Definition Export format]
+The export envelope is documented in xref:export-format.adoc[Export Format]. For indexing formats and exporter development, see <<indexing-and-export-formats,Indexing and Export Formats>>.
 
 === Migrations
 
@@ -900,6 +900,8 @@ include::../server/src/main/java/de/ingrid/igeserver/migrations/tasks/M020AddCod
 ----
 ====
 
+include::_indexing.adoc[]
+
 == Permissions
 
 The topic about handling permissions can be found here: link:permissions.adoc#_permissions_authorisation[Permission-Documentation]
@@ -911,5 +913,7 @@ include::_environment.adoc[]
 include::_testing.adoc[]
 
 include::_deployment.adoc[]
+
+include::_docker.adoc[]
 
 include::_interfaces.adoc[]

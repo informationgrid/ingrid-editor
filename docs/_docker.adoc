@@ -1,0 +1,27 @@
+== Building the Docker Image
+
+The application image is built with Jib from `server/build.gradle`; an application `Dockerfile` is not required. The Jib configuration uses `bellsoft/liberica-openjre-alpine:25` as its base image, packages the frontend distribution into the server image, and starts the application with `server/src/main/jib/run.sh`.
+
+From the repository root, build an image into the local Docker daemon:
+
+[source,shell]
+----
+./gradlew :server:jibDockerBuild -Pbranch_name=main
+----
+
+The task also prepares the frontend distribution. Ensure Docker is running and the frontend dependencies are available. The resulting image is tagged `registry.opencode.de/informationgrid/ingrid-editor:latest` for `main`. Other branch names are used as tags, with `/` replaced by `-`; release builds can also receive version tags.
+
+The Jib `jib` task publishes to the configured registry rather than building into the local Docker daemon. Registry credentials must be configured before using it. The optional Gradle property `buildDockerImage` makes the regular server `build` task finalize with `jib`, so use it only when a registry push is intended.
+
+=== Running the image
+
+The container listens on port `80` by default. Configure database access and the required authentication and application settings for the environment before starting it. Database settings are read from `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USERNAME`, and `DATABASE_PASSWORD`; `CONTEXT_PATH` configures the servlet context path. For example, the local port can be mapped to the development port with `-p 8550:80`.
+
+The startup script can wait for a dependency using `WAIT_FOR_PARAM` (and optionally `WAIT_FOR_PARAM_TIMEOUT`). It also applies frontend runtime configuration such as `BROKER_URL`, map settings, and `CONTEXT_PATH` before starting the Spring Boot application. See `server/src/main/jib/run.sh` and `server/src/main/resources/application.properties` for the supported environment variables.
+
+The root `docker-compose.yml` provides development dependencies such as PostgreSQL, Keycloak, Elasticsearch, and mail relay; it does not define the editor application service. The separate `postgres/Dockerfile` builds a PostgreSQL image initialized with `postgres/schema.sql`:
+
+[source,shell]
+----
+docker build -t ige-postgres:dev postgres/
+----
