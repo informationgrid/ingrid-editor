@@ -21,31 +21,45 @@ package de.ingrid.igeserver.services.ai.model
 
 import de.ingrid.igeserver.model.McpServer
 import de.ingrid.igeserver.services.ai.ChatAssistant
+import dev.langchain4j.http.client.jdk.JdkHttpClient
 import dev.langchain4j.mcp.McpToolProvider
 import dev.langchain4j.mcp.client.DefaultMcpClient
 import dev.langchain4j.mcp.client.McpClient
 import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.service.AiServices
+import java.net.http.HttpClient
 import java.time.Duration
 
 data class AssistantOptions(
     val clientUrl: String,
     val modelId: String,
     val apiKey: String,
+    val reasoningEffort: String?,
+    val maxOutputTokens: Int?,
     val instruction: String?,
     val input: String,
     val mcpServer: McpServer,
 )
 
 fun AssistantOptions.buildAssistant(): ChatAssistant {
+    val httpClientBuilder = JdkHttpClient.builder()
+        .httpClientBuilder(HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1))
+
     // Create the chat client.
-    val model = OpenAiChatModel.builder()
+    val modelBuilder = OpenAiChatModel.builder()
+        .httpClientBuilder(httpClientBuilder)
         .baseUrl(clientUrl)
         .apiKey(apiKey)
         .modelName(modelId)
-        .reasoningEffort("none")
-        .build()
+
+    // Use "none" as default reasoning effort if not configured.
+    modelBuilder.reasoningEffort(reasoningEffort ?: "none")
+
+    // Sent as "max_tokens", which is the most widely supported parameter.
+    maxOutputTokens?.let { modelBuilder.maxTokens(it) }
+
+    val model = modelBuilder.build()
 
     // Create the chat assistant.
     val assistant = AiServices.builder(ChatAssistant::class.java)

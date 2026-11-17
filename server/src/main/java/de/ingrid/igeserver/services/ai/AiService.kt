@@ -58,6 +58,8 @@ class AiService(
             }
             hostUrl = newSettings.hostUrl?.takeIf { it.isNotEmpty() }
             modelId = newSettings.modelId?.takeIf { it.isNotEmpty() }
+            reasoningEffort = newSettings.reasoningEffort?.trim()?.takeIf { it.isNotEmpty() }
+            maxOutputTokens = newSettings.maxOutputTokens?.takeIf { it > 0 }
             roleDefinition = newSettings.roleDefinition?.takeIf { it.isNotEmpty() }
             instruction = newSettings.instruction?.takeIf { it.isNotEmpty() }
         }
@@ -121,6 +123,8 @@ class AiService(
             clientUrl = clientUrl,
             modelId = modelId,
             apiKey = apiKey,
+            reasoningEffort = settings.reasoningEffort?.takeIf { it.isNotEmpty() },
+            maxOutputTokens = settings.maxOutputTokens?.takeIf { it > 0 },
             mcpServer = mcpServer,
             instruction = instruction,
             input = input,

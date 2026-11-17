@@ -35,6 +35,19 @@ export function aiConfigFields(): FormlyFieldConfig[] {
       wrappers: ["panel", "form-field"],
       hintStart: "Nur bei Eingabe wird der Key überschrieben.",
     }),
+    fieldHelper.addInput("reasoningEffort", "Reasoning Effort (optional)", {
+      wrappers: ["panel", "form-field"],
+      placeholder: "none",
+      hintStart:
+        "Steuert, wie intensiv das Modell nachdenkt, z.B. none, low, medium oder high. Ohne Eingabe wird none verwendet.",
+    }),
+    fieldHelper.addInput("maxOutputTokens", "Max Output Tokens (optional)", {
+      wrappers: ["panel", "form-field"],
+      type: "number",
+      min: 1,
+      hintStart:
+        "Maximale Anzahl der Tokens, die das Modell pro Antwort erzeugen darf, z.B. 4096. Zu kleine Werte können die Bewertung abschneiden. Leer lassen, um den Standardwert des Servers zu verwenden.",
+    }),
     fieldHelper.addTextArea("roleDefinition", "Rolle (optional)", "", {
       rows: 4,
       hintStart:

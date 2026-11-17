@@ -49,6 +49,8 @@ export interface AiSettings {
   hostUrl?: string;
   modelId?: string;
   apiKey?: string;
+  reasoningEffort?: string;
+  maxOutputTokens?: number;
   roleDefinition?: string;
   instruction?: string;
 }

@@ -27,6 +27,10 @@
   width: 160px;
 }
 
+:host-context(ige-ai-configuration) .label-wrapper {
+  width: 160px;
+}
+
 :host-context(ige-user-manager) .label-wrapper {
   width: 150px;
 }
