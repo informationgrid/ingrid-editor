@@ -23,6 +23,8 @@ data class AiSettings(
     var hostUrl: String? = null,
     var modelId: String? = null,
     var apiKey: String? = null,
+    var reasoningEffort: String? = null,
+    var maxOutputTokens: Int? = null,
     var roleDefinition: String? = null,
     var instruction: String? = null,
 )
