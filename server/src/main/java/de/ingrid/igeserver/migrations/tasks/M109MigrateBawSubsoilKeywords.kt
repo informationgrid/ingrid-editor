@@ -35,10 +35,10 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Profile("ingrid-baw")
 @Service
-class M107MigrateBawSubsoilKeywords(
+class M109MigrateBawSubsoilKeywords(
     private val entityManager: EntityManager,
     private val transactionManager: PlatformTransactionManager,
-) : MigrationBase("0.107") {
+) : MigrationBase("0.109") {
 
     private val log = logger()
 
