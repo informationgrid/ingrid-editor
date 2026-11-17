@@ -175,6 +175,13 @@ export class ConnectionForm extends FormFieldHelper {
           validation: ["urlAllowIpAlias"],
         },
       }),
+      this.addCheckboxInline(
+        "useCapabilities",
+        "getCapabilities Dokument verwenden",
+        {
+          defaultValue: true,
+        },
+      ),
       this.addCheckboxInline("isSecure", "ist abgesichert"),
       this.addGroupSimple(
         null,

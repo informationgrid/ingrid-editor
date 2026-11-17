@@ -71,6 +71,7 @@ class CSWService(val settingsService: SettingsService) : IConnection {
         },
         config.url,
         config.name,
+        config.useCapabilities,
     )
 
     fun getClient(index: String): CSWClient {

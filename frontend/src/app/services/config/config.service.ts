@@ -114,6 +114,7 @@ export interface ConnectionInfoCswt {
   id: number;
   name: string;
   url: string;
+  useCapabilities?: boolean;
   isSecure: boolean;
   username: string;
   password: string;

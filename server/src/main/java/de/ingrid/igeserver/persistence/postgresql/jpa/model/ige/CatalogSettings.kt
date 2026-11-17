@@ -100,4 +100,5 @@ data class CSWConfig(
     val url: String,
     val username: String? = null,
     val password: String? = null,
+    val useCapabilities: Boolean = true,
 ) : WithId

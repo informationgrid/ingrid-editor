@@ -50,13 +50,15 @@ class CSWClient(
     private val url: String,
     private val name: String,
     private val xslResourcePath: String,
+    useCapabilities: Boolean = true,
 ) {
 
-    constructor(client: HttpClient, url: String, name: String) : this(
+    constructor(client: HttpClient, url: String, name: String, useCapabilities: Boolean) : this(
         client,
         url,
         name,
         "idf_1_0_0_to_iso_metadata.xsl",
+        useCapabilities,
     )
 
     private val log = logger()
@@ -66,7 +68,11 @@ class CSWClient(
     private val operationEndpoints: Map<String, String>
 
     init {
-        operationEndpoints = getEndpointsFromCapabilities()
+        operationEndpoints = if (useCapabilities) {
+            getEndpointsFromCapabilities()
+        } else {
+            mapOf("Transaction-POST" to url)
+        }
     }
 
     fun insertOrUpdate(doc: ElasticDocument, catalogId: String, transactionId: String) {
@@ -154,12 +160,14 @@ class CSWClient(
 
     private fun recordExists(doc: ElasticDocument): Boolean = runBlocking {
         val uuid = doc["t01_object.id"]
+        val endpoint = getOperationEndpoint("GetRecordById", "GET")
+            ?: run {
+                log.debug("No GetRecordById-GET endpoint configured; treating record as not existing.")
+                return@runBlocking false
+            }
         try {
             val response: String = client.get(
-                getOperationEndpoint(
-                    "GetRecordById",
-                    "GET",
-                ) + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1",
+                "$endpoint?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1",
             ).bodyAsText()
             val cswResponse = documentBuilder.parse(InputSource(StringReader(response)))
             cswResponse.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "BriefRecord").length > 0
@@ -207,7 +215,7 @@ class CSWClient(
         }
     }
 
-    private fun executeCswXMLPostRequest(endpoint: String?, request: String): String? = runBlocking {
+    private fun executeCswXMLPostRequest(endpoint: String?, request: String): String = runBlocking {
         try {
             if (endpoint == null) throw Exception("Endpoint is null.")
             client.post(endpoint) {
