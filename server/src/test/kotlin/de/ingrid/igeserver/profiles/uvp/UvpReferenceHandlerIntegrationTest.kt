@@ -150,7 +150,8 @@ class UvpReferenceHandlerIntegrationTest : IntegrationTest() {
                 it.contains(document.uuid) && it.contains(document.title.orEmpty()) && it.contains("applicationDocs")
             } shouldBe true
             messages.any {
-                it.contains(document.uuid) && it.contains(document.title.orEmpty()) &&
+                it.contains(document.uuid) &&
+                    it.contains(document.title.orEmpty()) &&
                     it.contains("uvpNegativeDecisionDocs")
             } shouldBe true
         } finally {
