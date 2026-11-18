@@ -75,15 +75,19 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getProcessingStep(steps, "scopeOfInvestigation").has("announcementDocs") shouldBe false
+        getProcessingStep(steps, "publicDisclosure").has("scopingDateDocs") shouldBe false
+        getTableRows(steps, "scopeOfInvestigation", "scopingDateDocs").single().getString("validUntil") shouldBe expectedDate
+        getTableRows(steps, "scopeOfInvestigation", "scopingGeneralDocs").single().getString("validUntil") shouldBe expectedDate
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
-        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicHearing", "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
-        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "decisionOfAdmission", "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "decisionOfAdmission", "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
         checkIfArchived(1)
 
@@ -100,15 +104,17 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "scopeOfInvestigation", "scopingDateDocs").single().getString("validUntil") shouldBe expectedDate
+        getTableRows(steps, "scopeOfInvestigation", "scopingGeneralDocs").single().getString("validUntil") shouldBe expectedDate
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
-        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicHearing", "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
-        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "decisionOfAdmission", "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "decisionOfAdmission", "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
 
         checkIfArchived(1)
 
@@ -125,15 +131,17 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe null }
-        getTableRows(steps, 0, "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe null }
-        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "scopeOfInvestigation", "scopingDateDocs").single().getString("validUntil") shouldBe null
+        getTableRows(steps, "scopeOfInvestigation", "scopingGeneralDocs").single().getString("validUntil") shouldBe null
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "publicDisclosure", "reportsRecommendationDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "publicDisclosure", "furtherDocs").forEach { it.getString("validUntil") shouldBe null }
 
-        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "publicHearing", "considerationDocs").forEach { it.getString("validUntil") shouldBe null }
 
-        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe null }
-        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "decisionOfAdmission", "approvalDocs").forEach { it.getString("validUntil") shouldBe null }
+        getTableRows(steps, "decisionOfAdmission", "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
 
         checkIfArchived(1)
 
@@ -155,12 +163,15 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
                         data,
                         '{processingSteps}',
                         (SELECT jsonb_agg(
-                                        jsonb_set(
-                                                step,
-                                                '{reportsRecommendationDocs}',
-                                                '[]'::jsonb,
-                                                TRUE
-                                        )
+                                        CASE
+                                            WHEN step ->> 'type' = 'publicDisclosure' THEN jsonb_set(
+                                                    step,
+                                                    '{reportsRecommendationDocs}',
+                                                    '[]'::jsonb,
+                                                    TRUE
+                                            )
+                                            ELSE step
+                                        END
                                 )
                          FROM jsonb_array_elements(data -> 'processingSteps') step),
                         TRUE
@@ -190,15 +201,16 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
 
         val steps = getProcessingStepsFrom(1001)
 
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 0, "reportsRecommendationDocs").size() shouldBe 0
-        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "reportsRecommendationDocs").size() shouldBe 0
+        getTableRows(steps, "publicDisclosure", "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getProcessingStep(steps, "scopeOfInvestigation").has("reportsRecommendationDocs") shouldBe false
 
-        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicHearing", "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
-        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
-        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "decisionOfAdmission", "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "decisionOfAdmission", "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
         checkIfArchived(1)
 
@@ -220,7 +232,7 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
                 UPDATE document
                 SET data = jsonb_set(
                         data,
-                        '{processingSteps,0,announcementDocs,0,validUntil}',
+                        '{processingSteps,1,announcementDocs,0,validUntil}',
                         to_jsonb('$pastDate'::text)
                 )
                 WHERE id = 1001
@@ -233,9 +245,9 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
         val steps = getProcessingStepsFrom(1001)
 
         // Documents with past validUntil should not be updated
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe pastDate }
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe pastDate }
         // Documents with null validUntil should be updated to yesterday
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
     }
 
     @Test
@@ -253,7 +265,7 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
                 UPDATE document
                 SET data = jsonb_set(
                         data,
-                        '{processingSteps,0,announcementDocs,0,validUntil}',
+                        '{processingSteps,1,announcementDocs,0,validUntil}',
                         to_jsonb('$futureDate'::text)
                 )
                 WHERE id = 1001
@@ -266,12 +278,18 @@ class UvpAutomaticArchiveTaskTest : IntegrationTest() {
         val steps = getProcessingStepsFrom(1001)
 
         // Documents with future validUntil should be updated to yesterday
-        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
         // Documents with null validUntil should also be updated to yesterday
-        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, "publicDisclosure", "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
     }
 
-    private fun getTableRows(steps: ArrayNode, section: Int, tableId: String): ArrayNode = steps.get(section).get(tableId) as ArrayNode
+    private fun getProcessingStep(steps: ArrayNode, type: String): JsonNode = steps.first { it.getString("type") == type }
+
+    private fun getTableRows(
+        steps: ArrayNode,
+        stepType: String,
+        tableId: String,
+    ): ArrayNode = getProcessingStep(steps, stepType).get(tableId) as ArrayNode
 
     private fun getYesterdayDate(): String {
         return ZonedDateTime.now(ZoneId.of("Europe/Berlin"))

@@ -37,16 +37,6 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
 
     val log = logger()
 
-    private val tableIds = listOf(
-        "announcementDocs",
-        "applicationDocs",
-        "reportsRecommendationDocs",
-        "furtherDocs",
-        "considerationDocs",
-        "approvalDocs",
-    )
-    private val tableIdsDecision = listOf("decisionDocs")
-
     @Suppress("UNCHECKED_CAST")
     fun getDatasetsBeforeDecisionDate(catalogId: String, date: OffsetDateTime): List<WrapperAndDocId> = entityManager.createNativeQuery(
         sqlDecisionDateBefore(catalogId, date),
@@ -60,12 +50,13 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         ClosableTransaction(transactionManager).use {
             // modify valid date for documents according to selected option
             when (type) {
-                ArchiveType.HIDE_ALL -> handleHideAll(datasets)
+                ArchiveType.HIDE_ALL -> updateDocuments(datasets, UvpDocumentReferences.PROCESSING_STEP_TABLE_FIELDS)
 
                 ArchiveType.SHOW_ALL -> {}
 
                 // do nothing
-                ArchiveType.SHOW_ONLY_DECISION -> handleShowOnlyDecision(datasets)
+                ArchiveType.SHOW_ONLY_DECISION ->
+                    updateDocuments(datasets, UvpDocumentReferences.NON_DECISION_PROCESSING_STEP_TABLE_FIELDS)
             }
         }
     }
@@ -76,26 +67,17 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         else -> ArchiveType.SHOW_ALL.name
     }
 
-    private fun handleShowOnlyDecision(datasets: List<WrapperAndDocId>) {
-        datasets.forEach {
-            tableIds.forEach { tableId ->
-                log.debug("Updating valid date for table $tableId for document ${it.docId}")
-                entityManager.createNativeQuery(getQuery(it, tableId)).executeUpdate()
+    private fun updateDocuments(datasets: List<WrapperAndDocId>, tableIds: List<String>) {
+        datasets.forEach { dataset ->
+            if (dataset.docType == "UvpNegativePreliminaryAssessmentDoc") {
+                log.debug("Updating valid date for negative decision document ${dataset.docId}")
+                entityManager.createNativeQuery(sqlUpdateValidDateNegativeDoc(dataset.docId)).executeUpdate()
+            } else {
+                tableIds.forEach { tableId ->
+                    log.debug("Updating valid date for table $tableId for document ${dataset.docId}")
+                    entityManager.createNativeQuery(sqlUpdateValidDate(dataset.docId, tableId)).executeUpdate()
+                }
             }
         }
-    }
-
-    private fun handleHideAll(datasets: List<WrapperAndDocId>) {
-        datasets.forEach {
-            (tableIds + tableIdsDecision).forEach { tableId ->
-                log.debug("Updating valid date for table $tableId for document ${it.docId}")
-                entityManager.createNativeQuery(getQuery(it, tableId)).executeUpdate()
-            }
-        }
-    }
-
-    private fun getQuery(info: WrapperAndDocId, tableId: String): String = when (info.docType) {
-        "UvpNegativePreliminaryAssessmentDoc" -> sqlUpdateValidDateNegativeDoc(info.docId)
-        else -> sqlUpdateValidDate(info.docId, tableId)
     }
 }

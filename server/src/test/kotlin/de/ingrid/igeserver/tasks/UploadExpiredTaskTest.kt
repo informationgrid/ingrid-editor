@@ -25,6 +25,7 @@ import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -36,6 +37,7 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
+@Suppress("SqlSourceToSinkFlow")
 class UploadExpiredTaskTest :
     FunSpec({
         val tomorrow = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -45,13 +47,37 @@ class UploadExpiredTaskTest :
         val entityManager = mockk<EntityManager>()
         val task = UploadExpiredTask(fileSystemStorage, entityManager, UvpReferenceHandler(entityManager))
 
-        fun init(docs: String) {
+        fun init(
+            docs: String,
+            tableField: String = "applicationDocs",
+            negativeDocs: String? = null,
+        ) {
             clearAllMocks()
-            val input = jacksonObjectMapper().readValue("""{"applicationDocs": $docs}""", JsonNode::class.java)
+            val stepType = when (tableField) {
+                "scopingDateDocs", "scopingGeneralDocs" -> "scopeOfInvestigation"
+
+                "announcementDocs", "applicationDocs", "reportsRecommendationDocs", "furtherDocs" ->
+                    "publicDisclosure"
+
+                "considerationDocs" -> "publicHearing"
+
+                "approvalDocs", "decisionDocs" -> "decisionOfAdmission"
+
+                else -> error("Unknown UVP processing-step table: $tableField")
+            }
+            val input = jacksonObjectMapper().readValue(
+                """{"type":"$stepType","$tableField": $docs}""",
+                JsonNode::class.java,
+            )
+            val negativeInput = negativeDocs?.let {
+                jacksonObjectMapper().readValue("""{"uvpNegativeDecisionDocs": $it}""", JsonNode::class.java)
+            }
 
 //        every { fileSystemStorage.docsDir } returns ""
             every {
-                entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
+                entityManager.createNativeQuery(
+                    match { it.startsWith(sqlStepsPublished) },
+                ).unwrap(NativeQuery::class.java)
                     .addScalar("uuid")
                     .addScalar("catalogId")
                     .addScalar("step")
@@ -59,13 +85,15 @@ class UploadExpiredTaskTest :
                     .addScalar("type").resultList
             } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
             every {
-                entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
+                entityManager.createNativeQuery(
+                    match { it.startsWith(sqlNegativeDecisionDocsPublished) },
+                ).unwrap(NativeQuery::class.java)
                     .addScalar("uuid")
                     .addScalar("catalogId")
                     .addScalar("negativeDocs")
                     .addScalar("title")
                     .addScalar("type").resultList
-            } returns emptyList()
+            } returns negativeInput?.let { listOf(arrayOf("123", "test-cat", it, "title", "type")) }.orEmpty()
         }
 
         test("empty list") {
@@ -101,6 +129,92 @@ class UploadExpiredTaskTest :
 
             verify(exactly = 1) {
                 fileSystemStorage.archive("test-cat", "123", "abc")
+            }
+        }
+
+        test("expired scoping uploads without asLink are archived") {
+            init(
+                """[{"validUntil": "$yesterday", "downloadURL": { "uri": "scoping/date.pdf"}}]""",
+                tableField = "scopingDateDocs",
+            )
+
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "scoping/date.pdf")
+            }
+        }
+
+        test("expired scoping general uploads without asLink are archived") {
+            init(
+                """[{"validUntil": "$yesterday", "downloadURL": { "uri": "scoping/general.pdf"}}]""",
+                tableField = "scopingGeneralDocs",
+            )
+
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "scoping/general.pdf")
+            }
+        }
+
+        test("archived scoping uploads are restored when their validity is extended") {
+            init(
+                """[{"validUntil": "$tomorrow", "downloadURL": { "uri": "scoping/date.pdf"}}]""",
+                tableField = "scopingDateDocs",
+            )
+            every { fileSystemStorage.isArchived("test-cat", "123", "scoping/date.pdf") } returns true
+
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.restore("test-cat", "123", "scoping/date.pdf")
+            }
+        }
+
+        test("external links are not selected for upload expiry") {
+            init(
+                """[
+                    {"validUntil": "$yesterday", "downloadURL": { "asLink": true, "uri": "https://example.test/link"}},
+                    {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "upload.pdf"}}
+                ]""",
+            )
+
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "upload.pdf")
+            }
+            verify(exactly = 0) {
+                fileSystemStorage.archive("test-cat", "123", "https://example.test/link")
+            }
+        }
+
+        test("external link checks select only explicit external links") {
+            init(
+                """[
+                    {"downloadURL": { "asLink": true, "uri": "https://example.test/link"}},
+                    {"downloadURL": { "uri": "upload.pdf"}}
+                ]""",
+            )
+
+            val links = UvpReferenceHandler(entityManager).getURLsFromCatalog("test-cat", emptyList(), "uvp")
+
+            links.single().docs.map { it.uri } shouldBe listOf("https://example.test/link")
+        }
+
+        test("negative decision references merge with processing-step references") {
+            // Same-UUID query results are synthetic and intentionally exercise defensive merge behavior.
+            init(
+                """[{"validUntil": "$yesterday", "downloadURL": { "uri": "step.pdf"}}]""",
+                negativeDocs = """[{"validUntil": "$yesterday", "downloadURL": { "uri": "negative.pdf"}}]""",
+            )
+
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "step.pdf")
+                fileSystemStorage.archive("test-cat", "123", "negative.pdf")
             }
         }
 

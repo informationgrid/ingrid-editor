@@ -21,6 +21,15 @@ INSERT INTO document
 VALUES (1001, 100, 'uuid-1', 'UvpApprovalProcedureDoc', 'Anonymized Title', '{
   "processingSteps": [
     {
+      "type": "scopeOfInvestigation",
+      "scopingDateDocs": [
+        {"downloadURL": {"uri": "scoping-date.pdf"}}
+      ],
+      "scopingGeneralDocs": [
+        {"downloadURL": {"uri": "scoping-general.pdf"}}
+      ]
+    },
+    {
       "type": "publicDisclosure",
       "disclosureDate": {
         "end": "2020-07-09T22:00:00.000Z",
@@ -162,4 +171,3 @@ INSERT INTO behaviour VALUES (200, 100, 'plugin.session.timeout', true, '{
         "duration": 1200
     }'
 );
-
