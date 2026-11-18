@@ -90,11 +90,13 @@ fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> = (
         getUrlsFromJsonFieldTable(json, "furtherDocs") +
         getUrlsFromJsonFieldTable(json, "considerationDocs") +
         getUrlsFromJsonFieldTable(json, "approvalDocs") +
-        getUrlsFromJsonFieldTable(json, "decisionDocs")
+        getUrlsFromJsonFieldTable(json, "decisionDocs") +
+        getUrlsFromJsonFieldTable(json, "scopingDateDocs") +
+        getUrlsFromJsonFieldTable(json, "scopingGeneralDocs")
     )
 
 fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> = json.get(tableField)
-    ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
+    ?.filter { it.get("downloadURL").get("asLink")?.asBoolean() != true }
     ?.map { mapToUploadInfo(it) }
     ?: emptyList()
 

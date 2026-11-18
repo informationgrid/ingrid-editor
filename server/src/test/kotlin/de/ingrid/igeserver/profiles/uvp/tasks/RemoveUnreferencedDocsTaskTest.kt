@@ -49,6 +49,8 @@ class RemoveUnreferencedDocsTaskTest :
             approvalDocs: String = "null",
             decisionDocs: String = "null",
             negativeDocs: String = "null",
+            scopingDateDocs: String = "null",
+            scopingGeneralDocs: String = "null",
         ) {
             clearAllMocks()
             every { catalogRepo.findAllByType("uvp") } returns listOf(
@@ -57,8 +59,9 @@ class RemoveUnreferencedDocsTaskTest :
                 },
             )
             val input =
-                """{"applicationDocs": $applicationDocs, "announcementDocs": $announcementDocs, "reportsRecommendationDocs": $reportsRecommendationDocs, 
-                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }
+                """{"applicationDocs": $applicationDocs, "announcementDocs": $announcementDocs, "reportsRecommendationDocs": $reportsRecommendationDocs,
+                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs,
+                "scopingDateDocs": $scopingDateDocs, "scopingGeneralDocs": $scopingGeneralDocs }
                 """.trimMargin()
 
             val inputNegative = """{"uvpNegativeDecisionDocs": $negativeDocs}""".trimMargin()
@@ -128,15 +131,46 @@ class RemoveUnreferencedDocsTaskTest :
                 """[{"downloadURL": { "asLink": false, "uri": "f"}}]""",
                 """[{"downloadURL": { "asLink": false, "uri": "g"}}]""",
                 """[{"downloadURL": { "asLink": false, "uri": "h"}}]""",
+                """[{"downloadURL": { "asLink": false, "uri": "i"}}]""",
+                """[{"downloadURL": { "asLink": false, "uri": "j"}}]""",
             )
             var fileName = 'a'
-            val files = (1..8).map { fakeFile(fileSystemStorage, (fileName++).toString()) }
+            val files = (1..10).map { fakeFile(fileSystemStorage, (fileName++).toString()) }
 
             every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns files
             task.start()
 
             verify(exactly = 0) {
                 fileSystemStorage.delete("test-cat", any())
+            }
+        }
+
+        test("referenced scoping documents are kept while links and unrelated files are removed") {
+            init(
+                "[]",
+                scopingDateDocs = """[{"downloadURL": { "uri": "scoping/date/report.pdf"}}]""",
+                scopingGeneralDocs = """[
+                    {"downloadURL": { "asLink": false, "uri": "scoping-general.pdf"}},
+                    {"downloadURL": { "asLink": true, "uri": "linked.pdf"}}
+                ]""",
+            )
+            every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(
+                fakeFile(fileSystemStorage, "report.pdf", "123/scoping/date"),
+                fakeFile(fileSystemStorage, "scoping-general.pdf"),
+                fakeFile(fileSystemStorage, "linked.pdf"),
+                fakeFile(fileSystemStorage, "orphan.pdf"),
+            )
+
+            task.start()
+
+            verify(exactly = 0) {
+                fileSystemStorage.delete("test-cat", match { it.file == "report.pdf" || it.file == "scoping-general.pdf" })
+            }
+            verify(exactly = 1) {
+                fileSystemStorage.delete("test-cat", match { it.file == "linked.pdf" })
+            }
+            verify(exactly = 1) {
+                fileSystemStorage.delete("test-cat", match { it.file == "orphan.pdf" })
             }
         }
 
