@@ -79,3 +79,4 @@ server/server/build/tmp/
 /build/test-results
 # spring boot devtools restart trigger
 .restartTriggerFile
+/.mcp.json
