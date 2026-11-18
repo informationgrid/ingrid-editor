@@ -291,9 +291,10 @@ tasks.register('updateGitHooks', Copy) {
     }
 }
 
+def javaVersionProp = project.hasProperty('javaVersion') ? project.property('javaVersion').toInteger() : 21
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion = JavaLanguageVersion.of(javaVersionProp)
     }
 }
 
