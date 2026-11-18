@@ -50,11 +50,13 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         ClosableTransaction(transactionManager).use {
             // modify valid date for documents according to selected option
             when (type) {
+                // modify valid date for all documents
                 ArchiveType.HIDE_ALL -> updateDocuments(datasets, UvpDocumentReferences.PROCESSING_STEP_TABLE_FIELDS)
 
+                // do nothing
                 ArchiveType.SHOW_ALL -> {}
 
-                // do nothing
+                // modify valid date for all documents but decision docs
                 ArchiveType.SHOW_ONLY_DECISION ->
                     updateDocuments(datasets, UvpDocumentReferences.NON_DECISION_PROCESSING_STEP_TABLE_FIELDS)
             }
