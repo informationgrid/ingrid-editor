@@ -117,7 +117,7 @@ class DirectusIndexer(
 
     override fun indexExists(indexName: String): Boolean = true
 
-    override fun getCategories(): List<DocumentCategory> = listOf(DocumentCategory.DATA)
+    override fun getCategories(): List<DocumentCategory> = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
     private fun sendIfBatchFull() {
         if (upserts.size + deletes.size >= batchSize) sendOperations()

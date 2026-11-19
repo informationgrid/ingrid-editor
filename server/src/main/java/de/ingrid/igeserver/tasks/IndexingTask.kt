@@ -308,7 +308,12 @@ class IndexingTask(
         val directusDefinitions = directusConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
-        return iBusDefinitions + elasticDefinitions + cswtDefinitions + directusDefinitions
+        return buildList {
+            addAll(iBusDefinitions)
+            addAll(elasticDefinitions)
+            addAll(cswtDefinitions)
+            addAll(directusDefinitions)
+        }
     }
 
     private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {
