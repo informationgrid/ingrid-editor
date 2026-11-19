@@ -78,6 +78,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
 
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: WritableSignal<string> = signal("");
+  requireMergeConfirmation: boolean;
   docUuid = null;
   uploadComplete = signal<boolean>(false);
   allowedUploadTypes = signal<string[] | undefined>(undefined);
@@ -123,6 +124,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     },
   ) {
     this.docUuid = formStateService.metadata()?.uuid;
+    this.requireMergeConfirmation = data.targetUrl == null;
     this.targetUrl.set(
       data.targetUrl ??
         `${configService.getConfiguration().backendUrl}upload/${this.docUuid}`,
@@ -182,13 +184,15 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   private extractAndCloseDialog(option?: ExtractOption) {
     this.extractInProgress.set(true);
     forkJoin(
-      this.chosenFiles.map((file) => {
-        return this.uploadService.extractUploadedFilesOnServer(
-          this.docUuid,
-          file.transfer.name,
-          option,
-        );
-      }),
+      this.chosenFiles
+        .filter((file) => file.transfer.success)
+        .map((file) => {
+          return this.uploadService.extractUploadedFilesOnServer(
+            this.docUuid,
+            file.transfer.name,
+            option,
+          );
+        }),
     )
       .pipe(
         takeUntilDestroyed(this.destroyRef),

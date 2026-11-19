@@ -92,6 +92,7 @@ export class UploadComponent implements AfterViewInit {
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();
   enableFileUploadRename = input<boolean>();
+  requireMergeConfirmation = input(false);
 
   readonly complete = output<void>();
   readonly chosenFiles = output<TransfersWithErrorInfo[]>();
@@ -123,6 +124,7 @@ export class UploadComponent implements AfterViewInit {
     readonly FlowChunk[],
     { checksums: Map<number, string>; uploadAttempt: string }
   >();
+  private existingFiles = new WeakSet<flowjs.FlowFile>();
 
   private getChecksumCache(chunks: readonly FlowChunk[]) {
     let cache = this.checksumCache.get(chunks);
@@ -237,10 +239,24 @@ export class UploadComponent implements AfterViewInit {
         takeUntilDestroyed(this.destroyRef),
         skip(1), // do not use initial value
         map((result) =>
-          (result as any)[1].transfers.map(
-            (transfer) =>
-              new TransfersWithErrorInfo(result[0][transfer.id], transfer),
-          ),
+          (result as any)[1].transfers.map((transfer: Transfer) => {
+            let error = result[0][transfer.id];
+            const useExisting = this.existingFiles.has(transfer.flowFile);
+            if (this.requireMergeConfirmation() && !useExisting) {
+              if (
+                transfer.success &&
+                !this.getMergeResponse(transfer.flowFile)
+              ) {
+                error = error ?? this.unconfirmedUploadError();
+                transfer = { ...transfer, success: false };
+              } else if (error) {
+                transfer = { ...transfer, success: false };
+              }
+            } else if (useExisting) {
+              transfer = { ...transfer, success: true };
+            }
+            return new TransfersWithErrorInfo(error, transfer);
+          }),
         ),
       )
       .subscribe((result) => {
@@ -259,10 +275,18 @@ export class UploadComponent implements AfterViewInit {
           } else if (event.type === "fileError") {
             this.handleUploadError(event.event);
           } else if (event.type === "fileSuccess") {
-            const messageSuccess = this.getMessageFromResponse(
-              event.event[2].xhr,
-            );
+            const flowFile = <flowjs.FlowFile>event.event[0];
             const fileIdentifier = this.getFileIdentifier(event.event);
+            const mergeResponse = this.requireMergeConfirmation()
+              ? this.getMergeResponse(flowFile)
+              : null;
+            if (this.requireMergeConfirmation() && !mergeResponse) {
+              this._errors[fileIdentifier] = this.unconfirmedUploadError();
+              this.errors.next(this._errors);
+              return;
+            }
+            const messageSuccess =
+              mergeResponse ?? this.getMessageFromResponse(event.event[2].xhr);
             this._errors[fileIdentifier] = null;
             this.errors.next(this._errors);
             this.complete.emit(messageSuccess);
@@ -351,6 +375,7 @@ export class UploadComponent implements AfterViewInit {
 
   updateFileToUseExisting(transfer: Transfer) {
     this._errors[transfer.id] = null;
+    this.existingFiles.add(transfer.flowFile);
     transfer.success = true;
     this.errors.next(this._errors);
     this.complete.emit();
@@ -398,9 +423,49 @@ export class UploadComponent implements AfterViewInit {
     }
   }
 
+  private getMergeResponse(file: flowjs.FlowFile): any | null {
+    for (const chunk of file.chunks) {
+      const xhr = chunk.xhr;
+      if (
+        !xhr ||
+        xhr.readyState !== 4 ||
+        xhr.status < 200 ||
+        xhr.status >= 300
+      ) {
+        continue;
+      }
+      try {
+        const response = JSON.parse(xhr.responseText);
+        if (
+          response?.success === true &&
+          Array.isArray(response.files) &&
+          response.files.length > 0 &&
+          response.files.every(
+            (file: any) =>
+              typeof file?.file === "string" && file.file.length > 0,
+          )
+        ) {
+          return response;
+        }
+      } catch {
+        // A missing or malformed response cannot confirm assembly.
+      }
+    }
+    return null;
+  }
+
+  private unconfirmedUploadError(): UploadError {
+    return new UploadError(
+      0,
+      this.transloco.translate("upload.errorMessages.unconfirmed"),
+      null,
+    );
+  }
+
   async retryUpload(file: TransfersWithErrorInfo, parameter: any = {}) {
     this._errors[file.transfer.id] = null;
     const flowFile = file.transfer.flowFile;
+    this.existingFiles.delete(flowFile);
     if (parameter.rename) {
       flowFile.name = parameter.altName;
     } else {

@@ -4,7 +4,7 @@
         @if (currentFile.transfer.progress < 1) {
             <mat-spinner diameter="24"></mat-spinner>
         } @else {
-            @if (currentFile.error === null) {
+            @if (currentFile.transfer.success && currentFile.error === null) {
                 <mat-icon
                     class="green"
                     svgIcon="baseline-check-24px"

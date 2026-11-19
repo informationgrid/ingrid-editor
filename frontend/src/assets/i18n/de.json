@@ -189,7 +189,8 @@
   "upload": {
     "errorMessages": {
       "fileSize": "Die Dateigröße überschreitet die maximale Größe von {maxSize} Bytes.",
-      "directorySize": "Die Datensatzgröße überschreitet die maximale Größe von {maxSize} Bytes."
+      "directorySize": "Die Datensatzgröße überschreitet die maximale Größe von {maxSize} Bytes.",
+      "unconfirmed": "Der Abschluss des Uploads konnte nicht bestätigt werden. Bitte laden Sie die Datei erneut hoch."
     }
   }
 }
