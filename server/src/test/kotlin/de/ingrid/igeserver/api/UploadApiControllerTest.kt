@@ -30,6 +30,7 @@ import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -158,7 +159,7 @@ class UploadApiControllerTest : AnnotationSpec() {
 
         uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
         // parts of the failed attempt are never combined, so they have to be removed right away
-        verify(exactly = 1) { storage.deleteParts(flowIdentifier, 1) }
+        verify(exactly = 1) { storage.deleteParts(any(), setOf(1)) }
     }
 
     @Test
@@ -212,7 +213,7 @@ class UploadApiControllerTest : AnnotationSpec() {
             uploadAttempt = "attempt-2",
         )
         retryResponse.statusCode shouldBe HttpStatus.CREATED
-        combinedUploadKeys shouldBe listOf("$flowIdentifier-attempt-2")
+        combinedUploadKeys.single().matches(Regex("[a-f0-9]{64}")) shouldBe true
     }
 
     @Test
@@ -253,7 +254,7 @@ class UploadApiControllerTest : AnnotationSpec() {
             flowTotalChunks = 2,
             chunkChecksum = chunk1Checksum,
         ).statusCode shouldBe HttpStatus.CREATED
-        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
 
         uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
 
@@ -288,7 +289,7 @@ class UploadApiControllerTest : AnnotationSpec() {
 
         uploadApiController.evictStaleUploads(Instant.now())
 
-        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
 
         uploadApiController.evictStaleUploads(Instant.now().plus(25, ChronoUnit.HOURS))
     }
@@ -309,7 +310,7 @@ class UploadApiControllerTest : AnnotationSpec() {
         uploadApiController.attemptRetentionTime = 0
         try {
             uploadApiController.evictStaleUploads(Instant.now().plus(365, ChronoUnit.DAYS))
-            uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+            uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
         } finally {
             uploadApiController.attemptRetentionTime = 24
         }
@@ -349,7 +350,7 @@ class UploadApiControllerTest : AnnotationSpec() {
             combinedChecksum = null,
         )
         response1.statusCode shouldBe HttpStatus.CREATED
-        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.OK
+        uploadApiController.chunkExists(1, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
         uploadApiController.chunkExists(2, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
 
         // Upload chunk 2
@@ -372,6 +373,160 @@ class UploadApiControllerTest : AnnotationSpec() {
         uploadApiController.chunkExists(2, flowIdentifier).statusCode shouldBe HttpStatus.NO_CONTENT
     }
 
+    @Test
+    fun `upload should reject invalid chunk numbers and counts`() {
+        clearMocks(storage, answers = false)
+        val chunkBytes = "chunk-content".toByteArray()
+        val file = MockMultipartFile("file", "test.txt", "text/plain", chunkBytes)
+        val checksum = FileInfo.sha256(chunkBytes.inputStream())
+
+        listOf(1 to 0, 0 to 1, 2 to 1).forEach { (chunkNumber, totalChunks) ->
+            uploadChunk(
+                flowIdentifier = "invalid-$chunkNumber-$totalChunks",
+                file = file,
+                flowChunkNumber = chunkNumber,
+                flowTotalChunks = totalChunks,
+                chunkChecksum = checksum,
+            ).statusCode shouldBe HttpStatus.BAD_REQUEST
+        }
+
+        verify(exactly = 0) { storage.writePart(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `upload should reject metadata and chunk count changes within an attempt`() {
+        clearMocks(storage, answers = false)
+        val chunk1 = "part1".toByteArray()
+        val chunk2 = "part2".toByteArray()
+
+        uploadChunk(
+            flowIdentifier = "inconsistent-metadata",
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk1),
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            flowTotalSize = 10,
+            chunkChecksum = FileInfo.sha256(chunk1.inputStream()),
+        ).statusCode shouldBe HttpStatus.CREATED
+
+        uploadChunk(
+            flowIdentifier = "inconsistent-metadata",
+            file = MockMultipartFile("file", "other.txt", "text/plain", chunk2),
+            flowChunkNumber = 2,
+            flowTotalChunks = 2,
+            flowTotalSize = 10,
+            flowFilename = "other.txt",
+            chunkChecksum = FileInfo.sha256(chunk2.inputStream()),
+        ).statusCode shouldBe HttpStatus.BAD_REQUEST
+
+        uploadChunk(
+            flowIdentifier = "inconsistent-metadata",
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk2),
+            flowChunkNumber = 2,
+            flowTotalChunks = Int.MAX_VALUE,
+            flowTotalSize = 11,
+            chunkChecksum = FileInfo.sha256(chunk2.inputStream()),
+        ).statusCode shouldBe HttpStatus.BAD_REQUEST
+
+        uploadChunk(
+            flowIdentifier = "inconsistent-metadata",
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk2),
+            flowChunkNumber = 2,
+            flowTotalChunks = 2,
+            flowTotalSize = 10,
+            combinedChecksum = "wrong-combined-checksum",
+            chunkChecksum = FileInfo.sha256(chunk2.inputStream()),
+        ).statusCode shouldBe HttpStatus.BAD_REQUEST
+
+        verify(exactly = 2) { storage.writePart(any(), any(), any(), any()) }
+        verify(exactly = 1) { storage.deleteParts(any(), setOf(1, 2)) }
+    }
+
+    @Test
+    fun `upload keys should be safe and scoped to the complete upload identity`() {
+        clearMocks(storage, answers = false)
+        val keys = mutableListOf<String>()
+        val chunkBytes = "part1".toByteArray()
+        val file = MockMultipartFile("file", "test.txt", "text/plain", chunkBytes)
+        val checksum = FileInfo.sha256(chunkBytes.inputStream())
+        val anotherUser = mockk<Authentication>(relaxed = true)
+        every { anotherUser.name } returns "user2"
+        val anotherCatalog = mockk<Authentication>(relaxed = true)
+        every { anotherCatalog.name } returns "user1"
+        every { catalogService.getCurrentCatalogForPrincipal(anotherCatalog) } returns "catalog2"
+
+        listOf(
+            Triple("alpha", "beta-gamma", "doc-1"),
+            Triple("alpha-beta", "gamma", "doc-1"),
+            Triple("alpha-beta-gamma", null, "doc-1"),
+            Triple("../../outside", "attempt-1", "doc-1"),
+            Triple("alpha", "beta-gamma", "doc-2"),
+        ).forEach { (identifier, attempt, document) ->
+            uploadChunk(
+                flowIdentifier = identifier,
+                file = file,
+                flowChunkNumber = 1,
+                flowTotalChunks = 2,
+                chunkChecksum = checksum,
+                uploadAttempt = attempt,
+                docUuid = document,
+            ).statusCode shouldBe HttpStatus.CREATED
+        }
+        uploadChunk(
+            flowIdentifier = "alpha",
+            file = file,
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = checksum,
+            uploadAttempt = "beta-gamma",
+            requestPrincipal = anotherUser,
+        ).statusCode shouldBe HttpStatus.CREATED
+        uploadChunk(
+            flowIdentifier = "alpha",
+            file = file,
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            chunkChecksum = checksum,
+            uploadAttempt = "beta-gamma",
+            requestPrincipal = anotherCatalog,
+        ).statusCode shouldBe HttpStatus.CREATED
+
+        verify(exactly = 7) { storage.writePart(capture(keys), any(), any(), any()) }
+        keys.size shouldBe 7
+        keys.toSet().size shouldBe 7
+        keys.forEach { it.matches(Regex("[a-f0-9]{64}")) shouldBe true }
+    }
+
+    @Test
+    fun `upload should accept chunks out of order`() {
+        val chunk1 = "part1".toByteArray()
+        val chunk2 = "part2".toByteArray()
+        val combinedChecksum = FileInfo.sha256(
+            (FileInfo.sha256(chunk1.inputStream()) + FileInfo.sha256(chunk2.inputStream())).byteInputStream(),
+        )
+        every {
+            storage.combineParts(any(), any(), any(), any(), any(), any(), any(), any())
+        } returns arrayOf(mockk<FileSystemItem>(relaxed = true))
+
+        uploadChunk(
+            flowIdentifier = "out-of-order",
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk2),
+            flowChunkNumber = 2,
+            flowTotalChunks = 2,
+            flowTotalSize = 10,
+            chunkChecksum = FileInfo.sha256(chunk2.inputStream()),
+        ).statusCode shouldBe HttpStatus.CREATED
+
+        uploadChunk(
+            flowIdentifier = "out-of-order",
+            file = MockMultipartFile("file", "test.txt", "text/plain", chunk1),
+            flowChunkNumber = 1,
+            flowTotalChunks = 2,
+            flowTotalSize = 10,
+            chunkChecksum = FileInfo.sha256(chunk1.inputStream()),
+            combinedChecksum = combinedChecksum,
+        ).statusCode shouldBe HttpStatus.CREATED
+    }
+
     private fun uploadChunk(
         flowIdentifier: String,
         file: MockMultipartFile,
@@ -380,17 +535,21 @@ class UploadApiControllerTest : AnnotationSpec() {
         chunkChecksum: String,
         combinedChecksum: String? = null,
         uploadAttempt: String? = null,
+        docUuid: String = "doc-1",
+        requestPrincipal: Authentication = principal,
+        flowTotalSize: Long = file.size,
+        flowFilename: String = "test.txt",
     ) = uploadApiController.uploadFile(
-        principal = principal,
-        docUuid = "doc-1",
+        principal = requestPrincipal,
+        docUuid = docUuid,
         file = file,
         replace = false,
         flowChunkNumber = flowChunkNumber,
         flowTotalChunks = flowTotalChunks,
         flowCurrentChunkSize = file.size,
-        flowTotalSize = file.size,
+        flowTotalSize = flowTotalSize,
         flowIdentifier = flowIdentifier,
-        flowFilename = "test.txt",
+        flowFilename = flowFilename,
         chunkChecksum = chunkChecksum,
         combinedChecksum = combinedChecksum,
         uploadAttempt = uploadAttempt,

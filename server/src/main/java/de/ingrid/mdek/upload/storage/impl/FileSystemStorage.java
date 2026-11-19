@@ -108,6 +108,7 @@ public class FileSystemStorage implements Storage {
     private String docsDir = null;
     private String partsDir = null;
     private String tempDir = null;
+    private final Object partsLock = new Object();
 
     private int trashRetentionTime = 0;
     private int unsavedRetentionTime = 0;
@@ -354,101 +355,112 @@ public class FileSystemStorage implements Storage {
         // in order to allow multiple access to the streamed data
         Files.createDirectories(Paths.get(this.tempDir));
         final Path tmpFile = Files.createTempFile(Paths.get(this.tempDir), TMP_FILE_PREFIX, null);
-        Files.copy(data, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-
-        final String validatePath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir).toString();
-        final long datasetSize = getDatasetSize(catalog, userID, path);
         try {
+            Files.copy(data, tmpFile, StandardCopyOption.REPLACE_EXISTING);
+
+            final String validatePath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir).toString();
+            final long datasetSize = getDatasetSize(catalog, userID, path);
             for (final Validator validator : this.validators) {
                 validator.validate(validatePath, file, size, datasetSize, tmpFile, false);
             }
+            if (Files.size(tmpFile) != size) {
+                throw new IOException("The temporary file size is different to the expected size");
+            }
+
+            // copy file
+            final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
+            Files.createDirectories(realPath.getParent());
+
+            final List<CopyOption> copyOptionList = new ArrayList<>();
+            if (replace) {
+                copyOptionList.add(StandardCopyOption.REPLACE_EXISTING);
+            }
+            final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
+
+            log.info("Moving uploaded file '" + file + "' to target dir: " + realPath);
+            Files.move(tmpFile, realPath, copyOptions);
+            String[] files = new String[] { realPath.toString() };
+
+            // prepare result
+            final FileSystemItem[] result = new FileSystemItem[files.length];
+            for (int i = 0, count = files.length; i < count; i++) {
+                result[i] = this.getFileInfo(catalog, userID, path, file, this.docsDir, Scope.UNSAVED);
+            }
+            return result;
         }
         catch (final ValidationException ex) {
             log.error("Validation failed for file '" + file + "'");
-            // remove temporary file, if validation failed
-            Files.delete(tmpFile);
             throw ex;
-        }
-
-        // copy file
-        final Path realPath = this.getUnsavedPath(catalog, userID, path, file, this.docsDir);
-        Files.createDirectories(realPath.getParent());
-
-        final List<CopyOption> copyOptionList = new ArrayList<>();
-        if (replace) {
-            copyOptionList.add(StandardCopyOption.REPLACE_EXISTING);
-        }
-        final CopyOption[] copyOptions = copyOptionList.toArray(new CopyOption[copyOptionList.size()]);
-
-        try {
-            log.info("Moving uploaded file '" + file + "' to target dir: " + realPath);
-            Files.move(tmpFile, realPath, copyOptions);
         }
         catch (final FileAlreadyExistsException faex) {
             throw new ConflictException(faex.getMessage(), null, "");
         }
-        if (Files.size(realPath) != size) {
-            throw new IOException("The file size is different to the expected size");
+        finally {
+            Files.deleteIfExists(tmpFile);
         }
-        String[] files = new String[] { realPath.toString() };
-
-        // prepare result
-        final FileSystemItem[] result = new FileSystemItem[files.length];
-        for (int i = 0, count = files.length; i < count; i++) {
-            result[i] = this.getFileInfo(catalog, userID, path, file, this.docsDir, Scope.UNSAVED);
-        }
-        return result;
     }
 
     @Override
     public void writePart(final String id, final Integer index, final InputStream data, final Long size) throws IOException {
-        final String file = id + "-" + index;
-        final Path realPath = this.getRealPath(file, this.partsDir);
-        Files.createDirectories(realPath.getParent());
-        try {
-            Files.copy(data, realPath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (final FileAlreadyExistsException faex) {
-            final StorageItem[] items = null;//{ this.getFileInfo(faex.getFile()) };
-            throw new ConflictException(faex.getMessage(), items, "");
-        }
-        if (Files.size(realPath) != size) {
-            throw new IOException("The file size is different to the expected size");
+        synchronized (this.partsLock) {
+            final Path realPath = this.getPartPath(id, index);
+            Files.createDirectories(realPath.getParent());
+            this.rejectPartSymlink(realPath);
+            try (OutputStream output = Files.newOutputStream(realPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
+                data.transferTo(output);
+            }
+            if (Files.size(realPath) != size) {
+                throw new IOException("The file size is different to the expected size");
+            }
         }
     }
 
     @Override
     public FileSystemItem[] combineParts(final String catalog, final String userID, final String datasetID, final String file, final String id, final Integer totalParts, final Long size, final boolean replace) throws IOException {
+        synchronized (this.partsLock) {
+            // combine parts into stream
+            final List<InputStream> streams = new ArrayList<>();
+            final List<Path> parts = new ArrayList<>();
+            try {
+                for (long i = 1; i <= totalParts; i++) {
+                    final Path realPath = this.getPartPath(id, (int) i);
+                    this.rejectPartSymlink(realPath);
+                    streams.add(Files.newInputStream(realPath, LinkOption.NOFOLLOW_LINKS));
+                    parts.add(realPath);
+                }
 
-        // combine parts into stream
-        final Vector<InputStream> streams = new Vector<>();
-        final List<Path> parts = new ArrayList<>();
-        for (int i = 1; i <= totalParts; i++) {
-            final String part = id + "-" + i;
-            final Path realPath = this.getRealPath(part, this.partsDir);
-            streams.add(Files.newInputStream(realPath));
-            parts.add(realPath);
-        }
-
-        // delegate to write method
-        FileSystemItem[] result = null;
-        // this also closes InputStreams of streams
-        try (InputStream data = new SequenceInputStream(streams.elements())) {
-            result = this.write(catalog, userID, datasetID, file, data, size, replace);
-        }
-        finally {
-            for (final Path part : parts) {
-                Files.delete(part);
+                // delegate to write method
+                try (InputStream data = new SequenceInputStream(Collections.enumeration(streams))) {
+                    return this.write(catalog, userID, datasetID, file, data, size, replace);
+                }
+            }
+            finally {
+                for (final InputStream stream : streams) {
+                    try {
+                        stream.close();
+                    }
+                    catch (final IOException ex) {
+                        log.warn("Could not close an upload part stream", ex);
+                    }
+                }
+                for (final Path part : parts) {
+                    Files.deleteIfExists(part);
+                }
             }
         }
-
-        return result;
     }
 
     @Override
-    public void deleteParts(final String id, final Integer totalParts) throws IOException {
-        for (int i = 1; i <= totalParts; i++) {
-            Files.deleteIfExists(this.getRealPath(id + "-" + i, this.partsDir));
+    public void deleteParts(final String id, final Set<Integer> partNumbers) throws IOException {
+        synchronized (this.partsLock) {
+            if (partNumbers == null) {
+                throw new IOException("Part numbers must not be null");
+            }
+            for (final Integer partNumber : partNumbers) {
+                final Path part = this.getPartPath(id, partNumber);
+                this.rejectPartSymlink(part);
+                Files.deleteIfExists(part);
+            }
         }
     }
 
@@ -645,36 +657,38 @@ public class FileSystemStorage implements Storage {
      * its early parts.
      */
     public void deleteStaleParts() throws IOException {
-        if (this.partsRetentionTime <= 0 || this.partsDir == null) {
-            return;
-        }
-        final Path partsPath = Paths.get(this.partsDir);
-        if (!Files.isDirectory(partsPath)) {
-            return;
-        }
-        final long threshold = OffsetDateTime.now().minusHours(this.partsRetentionTime).toInstant().toEpochMilli();
-        final Map<String, List<Path>> partsByUpload;
-        try (Stream<Path> stream = Files.list(partsPath)) {
-            partsByUpload = stream
-                    .filter(Files::isRegularFile)
-                    .collect(Collectors.groupingBy(p -> {
-                        final String name = p.getFileName().toString();
-                        final int idx = name.lastIndexOf('-');
-                        return idx > 0 ? name.substring(0, idx) : name;
-                    }));
-        }
-        int deleted = 0;
-        for (final List<Path> parts : partsByUpload.values()) {
-            final long newest = parts.stream().mapToLong(p -> p.toFile().lastModified()).max().orElse(Long.MAX_VALUE);
-            if (newest < threshold) {
-                for (final Path part : parts) {
-                    Files.deleteIfExists(part);
-                    deleted++;
+        synchronized (this.partsLock) {
+            if (this.partsRetentionTime <= 0 || this.partsDir == null) {
+                return;
+            }
+            final Path partsPath = Paths.get(this.partsDir);
+            if (!Files.isDirectory(partsPath)) {
+                return;
+            }
+            final long threshold = OffsetDateTime.now().minusHours(this.partsRetentionTime).toInstant().toEpochMilli();
+            final Map<String, List<Path>> partsByUpload;
+            try (Stream<Path> stream = Files.list(partsPath)) {
+                partsByUpload = stream
+                        .filter(p -> Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS))
+                        .collect(Collectors.groupingBy(p -> {
+                            final String name = p.getFileName().toString();
+                            final int idx = name.lastIndexOf('-');
+                            return idx > 0 ? name.substring(0, idx) : name;
+                        }));
+            }
+            int deleted = 0;
+            for (final List<Path> parts : partsByUpload.values()) {
+                final long newest = parts.stream().mapToLong(p -> p.toFile().lastModified()).max().orElse(Long.MAX_VALUE);
+                if (newest < threshold) {
+                    for (final Path part : parts) {
+                        Files.deleteIfExists(part);
+                        deleted++;
+                    }
                 }
             }
-        }
-        if (deleted > 0) {
-            log.info("Deleted {} part(s) of abandoned uploads", deleted);
+            if (deleted > 0) {
+                log.info("Deleted {} part(s) of abandoned uploads", deleted);
+            }
         }
     }
 
@@ -1042,6 +1056,24 @@ public class FileSystemStorage implements Storage {
     Path getRealPath(final String catalog, final String path, final String file, final String basePath) {
         return FileSystems.getDefault().getPath(basePath,
                 this.sanitize(catalog, ILLEGAL_PATH_CHARS), this.sanitize(path, ILLEGAL_PATH_CHARS), this.sanitize(file, ILLEGAL_PATH_CHARS));
+    }
+
+    private Path getPartPath(final String id, final Integer index) throws IOException {
+        if (this.partsDir == null || id == null || !id.matches("[A-Za-z0-9_-]{1,255}") || index == null || index <= 0) {
+            throw new IOException("Invalid upload part identity");
+        }
+        final Path basePath = Paths.get(this.partsDir).toAbsolutePath().normalize();
+        final Path partPath = basePath.resolve(id + "-" + index).normalize();
+        if (!partPath.startsWith(basePath) || partPath.equals(basePath)) {
+            throw new IOException("Upload part path is outside the parts directory");
+        }
+        return partPath;
+    }
+
+    private void rejectPartSymlink(final Path partPath) throws IOException {
+        if (Files.isSymbolicLink(partPath)) {
+            throw new IOException("Upload part must not be a symbolic link");
+        }
     }
 
 

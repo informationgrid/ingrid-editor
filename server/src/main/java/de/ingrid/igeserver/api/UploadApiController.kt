@@ -44,6 +44,9 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.IOException
 import java.net.URLDecoder
+import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.security.Principal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -59,7 +62,7 @@ class UploadApiController(
     private val documentService: DocumentService,
 ) : UploadApi {
 
-    // Keyed by uploadKey (flowIdentifier + upload attempt). Entries are removed when an upload
+    // Keyed by a digest of the upload identity. Entries are removed when an upload
     // finished (successfully or not). Attempts that are abandoned before their last chunk arrives
     // keep their entry, since nothing tells us that they will never continue, and are removed by
     // evictStaleUploads() after upload.attempt.retentionTime.
@@ -95,16 +98,8 @@ class UploadApiController(
         }
     }
 
-    // Resume of interrupted uploads is neither needed nor supported: the client sets
-    // testChunks: false, so this endpoint is never called. It therefore ignores the upload
-    // attempt and only looks at the flowIdentifier.
-    override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
-        val fileInfo = this.fileInfos[flowIdentifier]
-        if (fileInfo != null && fileInfo.containsChunk(flowChunkNumber)) {
-            return ResponseEntity.ok().build()
-        }
-        return ResponseEntity.noContent().build()
-    }
+    // Resume probing cannot be scoped to a document and upload attempt, so it is unsupported.
+    override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> = ResponseEntity.noContent().build()
 
     override fun uploadFile(
         principal: Principal,
@@ -124,13 +119,18 @@ class UploadApiController(
         if (uploadAttempt != null && !uploadAttempt.matches(Regex("[A-Za-z0-9-]{1,64}"))) {
             return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Invalid upload attempt")), HttpStatus.BAD_REQUEST)
         }
-        val uploadKey = if (uploadAttempt == null) flowIdentifier else "$flowIdentifier-$uploadAttempt"
+        if (flowTotalChunks <= 0 || flowChunkNumber !in 1..flowTotalChunks ||
+            flowCurrentChunkSize < 0 || flowCurrentChunkSize != file.size || flowTotalSize < flowCurrentChunkSize
+        ) {
+            return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Invalid chunk metadata")), HttpStatus.BAD_REQUEST)
+        }
 
         log.debug("Uploading chunk $flowChunkNumber / $flowTotalChunks of file '$flowFilename' for document $docUuid")
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
 
         val userID = principal.getName()
+        val uploadKey = createUploadKey(catalogId, docUuid, userID, flowIdentifier, uploadAttempt)
 
         // TODO: remove validation, check if filename can be invalid
         // check filename
@@ -165,27 +165,38 @@ class UploadApiController(
                 return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Chunk checksum mismatch")), HttpStatus.UNPROCESSABLE_CONTENT)
             }
 
-            val fileInfo = this.fileInfos[uploadKey] ?: FileInfo(flowTotalChunks).also { this.fileInfos[uploadKey] = it }
+            val fileInfo = this.fileInfos[uploadKey]
+            if (fileInfo != null &&
+                (
+                    !fileInfo.matchesMetadata(flowTotalChunks, flowFilename, flowTotalSize, replace) ||
+                        !fileInfo.acceptsCombinedChecksum(combinedChecksum)
+                    )
+            ) {
+                return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Inconsistent upload metadata")), HttpStatus.BAD_REQUEST)
+            }
 
             storage.writePart(uploadKey, flowChunkNumber, file.inputStream, flowCurrentChunkSize)
 
-            fileInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
+            val attemptInfo = fileInfo ?: FileInfo(flowTotalChunks, flowFilename, flowTotalSize, replace)
+                .also { this.fileInfos[uploadKey] = it }
+            attemptInfo.addUploadedChunkChecksum(flowChunkNumber, checkSum)
             if (combinedChecksum != null) {
-                fileInfo.setCombinedChecksum(combinedChecksum)
+                attemptInfo.setCombinedChecksum(combinedChecksum)
             }
 
-            if (fileInfo.isUploadFinished()) {
+            if (attemptInfo.isUploadFinished()) {
                 try {
                     try {
-                        fileInfo.validateCombinedChecksum()
+                        attemptInfo.validateCombinedChecksum()
                     } catch (ex: Exception) {
                         log.warn("Combined checksum validation failed for file $flowFilename", ex)
                         // the client retries with a new upload attempt, so these parts are never used again
                         try {
-                            storage.deleteParts(uploadKey, flowTotalChunks)
+                            storage.deleteParts(uploadKey, attemptInfo.uploadedPartNumbers())
                         } catch (deleteEx: IOException) {
                             log.warn("Could not delete parts of failed upload $uploadKey", deleteEx)
                         }
+                        fileInfos.remove(uploadKey)
                         return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.BAD_REQUEST)
                     }
                     log.info("Merging parts of uploaded file: $flowFilename")
@@ -210,6 +221,19 @@ class UploadApiController(
             }
         }
         return this.createUploadResponse(files)
+    }
+
+    private fun createUploadKey(catalogId: String, docUuid: String, userID: String, flowIdentifier: String, uploadAttempt: String?): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        listOf(catalogId, docUuid, userID, flowIdentifier).forEach { value -> updateDigestWithField(digest, value) }
+        updateDigestWithField(digest, uploadAttempt)
+        return HexFormat.of().formatHex(digest.digest())
+    }
+
+    private fun updateDigestWithField(digest: MessageDigest, value: String?) {
+        val bytes = value?.toByteArray(StandardCharsets.UTF_8)
+        digest.update(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(bytes?.size ?: -1).array())
+        if (bytes != null) digest.update(bytes)
     }
 
     /**

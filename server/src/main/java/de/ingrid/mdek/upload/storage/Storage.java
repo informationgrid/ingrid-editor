@@ -27,6 +27,7 @@ import de.ingrid.mdek.upload.storage.impl.Scope;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Storage defines the interface for classes, that are responsible for storing and retrieving files.
@@ -120,10 +121,10 @@ public interface Storage {
      * Parts that do not exist are ignored.
      *
      * @param id The id of the file
-     * @param totalParts The number of parts of the file
+     * @param partNumbers The accepted part indices to delete
      * @throws IOException
      */
-    void deleteParts(String id, Integer totalParts) throws IOException;
+    void deleteParts(String id, Set<Integer> partNumbers) throws IOException;
 
     /**
      * Delete a file
