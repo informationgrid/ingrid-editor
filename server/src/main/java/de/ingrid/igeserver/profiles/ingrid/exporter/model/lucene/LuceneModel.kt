@@ -473,9 +473,9 @@ data class SpatialRepresentationGrid(
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class SpatialRepresentationGridRectified(
-    @JsonProperty("check_point_availability")
+    @JsonProperty("checkpoint_availability")
     val checkPointAvailability: Boolean,
-    @JsonProperty("check_point_description")
+    @JsonProperty("checkpoint_description")
     val checkPointDescription: String?,
     @JsonProperty("corner_points")
     val cornerPoints: String?,
