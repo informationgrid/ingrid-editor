@@ -530,7 +530,7 @@
           "description": "Gültigkeitsdatumsbereich der beschriebenen Daten",
           "$comment": "Ehemaliges Indexfeld: object_date",
           "type": "object",
-          "unevaluatedProperties": false,
+          "unevaluatedProperties": true,
           "properties": {
             "data_temporal": {
               "type": "array",
@@ -1295,11 +1295,11 @@
         "temporal": {
           "type": "object",
           "description": "Enthält zusätzliche Informationen zur Aktualität des Datensatzes, einschließlich Status, Pflegeintervall und benutzerdefinierten Pflegeintervall.",
-          "unevaluatedProperties": false,
+          "unevaluatedProperties": true,
           "allOf": [
             {
               "type": "object",
-              "unevaluatedProperties": false,
+              "unevaluatedProperties": true,
               "properties": {
                 "data_temporal": {
                   "type": "array",
@@ -2390,11 +2390,11 @@
         "temporal": {
           "type": "object",
           "description": "Enthält zusätzliche Informationen zur Aktualität des Datensatzes, einschließlich Status, Pflegeintervall und benutzerdefinierten Pflegeintervall.",
-          "unevaluatedProperties": false,
+          "unevaluatedProperties": true,
           "allOf": [
             {
               "type": "object",
-              "unevaluatedProperties": false,
+              "unevaluatedProperties": true,
               "properties": {
                 "data_temporal": {
                   "type": "array",
