@@ -119,8 +119,11 @@ class UploadApiController(
         if (uploadAttempt != null && !uploadAttempt.matches(Regex("[A-Za-z0-9-]{1,64}"))) {
             return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Invalid upload attempt")), HttpStatus.BAD_REQUEST)
         }
-        if (flowTotalChunks <= 0 || flowChunkNumber !in 1..flowTotalChunks ||
-            flowCurrentChunkSize < 0 || flowCurrentChunkSize != file.size || flowTotalSize < flowCurrentChunkSize
+        if (flowTotalChunks <= 0 ||
+            flowChunkNumber !in 1..flowTotalChunks ||
+            flowCurrentChunkSize < 0 ||
+            flowCurrentChunkSize != file.size ||
+            flowTotalSize < flowCurrentChunkSize
         ) {
             return ResponseEntity<UploadResponse>(UploadResponse(IllegalArgumentException("Invalid chunk metadata")), HttpStatus.BAD_REQUEST)
         }
