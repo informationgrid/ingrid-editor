@@ -65,6 +65,7 @@ interface UploadApi {
         @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
         @Parameter(description = "SHA-256 of the chunk") @RequestParam("chunkChecksum") chunkChecksum: String,
         @Parameter(description = "SHA-256 of concatenated chunk hashes in file order") @RequestParam("combinedChecksum") combinedChecksum: String?,
+        @Parameter(description = "Identifier for this upload attempt") @RequestParam(value = "uploadAttempt", required = false) uploadAttempt: String? = null,
     ): ResponseEntity<UploadResponse>
 
     @GetMapping(value = ["/upload/extract/{docId}/{file}"])

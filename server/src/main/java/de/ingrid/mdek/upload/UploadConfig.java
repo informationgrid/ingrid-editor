@@ -78,6 +78,9 @@ public class UploadConfig {
     @Value("${upload.unsaved.retentionTime:24}")
     public int uploadUnsavedRetentionTime;
 
+    @Value("${upload.attempt.retentionTime:24}")
+    public int uploadAttemptRetentionTime;
+
     @Value("${upload.virusscan.schedule:}")
     public String uploadVirusScanSchedule;
 

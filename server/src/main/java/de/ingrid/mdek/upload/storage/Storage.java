@@ -27,6 +27,7 @@ import de.ingrid.mdek.upload.storage.impl.Scope;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Storage defines the interface for classes, that are responsible for storing and retrieving files.
@@ -114,6 +115,16 @@ public interface Storage {
      * @throws IOException
      */
     StorageItem[] combineParts(String catalog, String userID, String datasetID, String file, String id, Integer totalParts, Long size, boolean replace) throws IOException;
+
+    /**
+     * Delete the parts of a file that will not be combined, e.g. because the upload failed.
+     * Parts that do not exist are ignored.
+     *
+     * @param id The id of the file
+     * @param partNumbers The accepted part indices to delete
+     * @throws IOException
+     */
+    void deleteParts(String id, Set<Integer> partNumbers) throws IOException;
 
     /**
      * Delete a file
