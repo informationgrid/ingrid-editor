@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import de.ingrid.igeserver.utils.UploadInfo
-import tools.jackson.databind.JsonNode
 import java.time.OffsetDateTime
 
 val sqlStepsPublished = """
@@ -38,12 +36,11 @@ val sqlStepsPublished = """
           AND doc.state = 'PUBLISHED'
 """.trimIndent()
 
-val sqlStepsWithDrafts = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
+val sqlUvpDocumentsWithDrafts = """
+        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as data, doc.title, doc.type
         FROM catalog,
              document_wrapper dw,
-             document doc,
-             jsonb_array_elements(doc.data -> 'processingSteps') elems
+             document doc
         WHERE dw.catalog_id = catalog.id
           AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
@@ -67,38 +64,6 @@ val sqlNegativeDecisionDocsPublished = """
           AND doc.state = 'PUBLISHED'
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
 """.trimIndent()
-
-val sqlNegativeDecisionDocsWithDraft = """
-        SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data as negativeDocs, doc.title, doc.type
-        FROM catalog,
-             document_wrapper dw,
-             document doc
-        WHERE dw.catalog_id = catalog.id
-          AND doc.catalog_id = catalog.id
-          AND catalog.type = 'uvp'
-          AND dw.deleted = 0
-          AND dw.category = 'data'
-          AND dw.uuid = doc.uuid
-          AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
-          AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
-""".trimIndent()
-
-fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> = (
-    getUrlsFromJsonFieldTable(json, "applicationDocs") +
-        getUrlsFromJsonFieldTable(json, "announcementDocs") +
-        getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs") +
-        getUrlsFromJsonFieldTable(json, "furtherDocs") +
-        getUrlsFromJsonFieldTable(json, "considerationDocs") +
-        getUrlsFromJsonFieldTable(json, "approvalDocs") +
-        getUrlsFromJsonFieldTable(json, "decisionDocs") +
-        getUrlsFromJsonFieldTable(json, "scopingDateDocs") +
-        getUrlsFromJsonFieldTable(json, "scopingGeneralDocs")
-    )
-
-fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> = json.get(tableField)
-    ?.filter { it.get("downloadURL").get("asLink")?.asBoolean() != true }
-    ?.map { mapToUploadInfo(it) }
-    ?: emptyList()
 
 fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
     SELECT DISTINCT dw.id, doc.id, doc.type
@@ -200,10 +165,3 @@ fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
            END
    WHERE id = $docId
 """
-
-private fun mapToUploadInfo(it: JsonNode): UploadInfo {
-    val validUntilDateField = it.get("validUntil")
-    val expiredDate =
-        if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
-    return UploadInfo("", it.get("downloadURL").get("uri").stringValue(), expiredDate)
-}

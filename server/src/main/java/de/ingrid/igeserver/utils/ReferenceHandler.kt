@@ -88,8 +88,9 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         extraJsonbFields: Array<String>? = null,
         groupDocIds: List<Int> = emptyList(),
     ): List<Array<Any?>> {
-        var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
-        if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
+        var query = sql
+        if (filterByDocId != null) query += " AND doc.id = $filterByDocId"
+        if (catalogId != null) query += " AND catalog.identifier = '$catalogId'"
 
         if (groupDocIds.isNotEmpty()) {
             val groupDocIdsString = groupDocIds.joinToString(",")

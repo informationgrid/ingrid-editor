@@ -22,6 +22,8 @@ import { Injectable } from "@angular/core";
 import { UvpShared } from "./uvp-shared";
 import { map } from "rxjs/operators";
 
+export const UVP_NEGATIVE_DECISION_DOCS_FIELD = "uvpNegativeDecisionDocs";
+
 @Injectable({
   providedIn: "root",
 })
@@ -91,7 +93,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               validators: { ...this.dateTooBigValidator },
             }),
             this.addTable(
-              "uvpNegativeDecisionDocs",
+              UVP_NEGATIVE_DECISION_DOCS_FIELD,
               "Ergebnis der UVP-Vorprüfung",
               {
                 required: true,

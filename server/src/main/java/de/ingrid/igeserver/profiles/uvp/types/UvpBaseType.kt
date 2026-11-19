@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.uvp.types
 
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.uvp.UvpDocumentReferences
 import org.springframework.stereotype.Component
 
 @Component
@@ -31,32 +32,8 @@ abstract class UvpBaseType : EntityType() {
         address.path("ref").asString()
     }
 
-    override fun getUploads(doc: Document): List<String> {
-        val uploads = mutableListOf<String>()
-        val fileFields = arrayOf(
-            "decisionDocs",
-            "approvalDocs",
-            "considerationDocs",
-            "furtherDocs",
-            "reportsRecommendationDocs",
-            "applicationDocs",
-            "announcementDocs",
-            "scopingDateDocs",
-            "scopingGeneralDocs",
-        )
-
-        // special case as negative decision docs are not part of any processingSteps
-        if (doc.data.get("uvpNegativeDecisionDocs") != null) {
-            uploads.addAll(getUploadsFromFileList(doc.data.get("uvpNegativeDecisionDocs")))
-        }
-
-        uploads.addAll(
-            doc.data.get("processingSteps")?.values()?.flatMap { step ->
-                fileFields.flatMap { fileField ->
-                    getUploadsFromFileList(step.get(fileField))
-                }
-            } ?: emptyList(),
-        )
-        return uploads
-    }
+    override fun getUploads(doc: Document): List<String> = UvpDocumentReferences.extractDocument(doc.data)
+        .references
+        .filterNot { it.isExternalLink }
+        .map { it.uri }
 }

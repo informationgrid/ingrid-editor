@@ -26,11 +26,12 @@ import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
-import tools.jackson.databind.JsonNode
 import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+
+    private val objectMapper = jacksonObjectMapper()
 
     override fun getProfile() = UvpProfile.ID
 
@@ -68,19 +69,25 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
 
     fun getPublishedDocumentsByCatalog(docId: Int? = null, catalogId: String? = null): List<DocumentLinks> {
         val result = queryDocs(sqlStepsPublished, "step", docId, catalogId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId, catalogId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
     fun getDraftAndPendingDocumentsByCatalog(docId: Int? = null, catalogId: String): List<DocumentLinks> {
         val result = queryDocs(sqlStepsDraftAndPending, "step", docId, catalogId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraftAndPending, "negativeDocs", docId)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraftAndPending, "negativeDocs", docId, catalogId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
     override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
         val result = queryDocs(sqlStepsPublished, "step", null, catalogId, groupDocIds = groupDocIds)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", null, catalogId, groupDocIds = groupDocIds)
+        val resultNegativeDocs = queryDocs(
+            sqlNegativeDecisionDocsPublished,
+            "negativeDocs",
+            null,
+            catalogId,
+            groupDocIds = groupDocIds,
+        )
         return mapQueryResults(result, resultNegativeDocs, true)
     }
 
@@ -89,91 +96,67 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
         resultNegativeDocs: List<Array<Any?>>,
         onlyLinks: Boolean = false,
     ): List<DocumentLinks> {
-        val uniqueList = mutableListOf<DocumentLinks>()
-        // TODO: logic in both forEachs almost the same
+        val uniqueDocuments = linkedMapOf<Pair<String, String>, DocumentLinks>()
         result.forEach {
-            val catalogId = it[1].toString()
-            val docUuid = it[0].toString()
-            val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
-            val data = jacksonObjectMapper().readTree(it[2].toString())
-            if (existingDoc == null) {
-                uniqueList.add(
-                    DocumentLinks(
-                        catalogId,
-                        docUuid,
-                        getUrlsFromJsonField(data, onlyLinks),
-                        it[3].toString(),
-                        it[4].toString(),
-                    ),
-                )
-            } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
-            }
+            val data = objectMapper.readTree(it[2].toString())
+            val extraction = UvpDocumentReferences.extractProcessingStep(data)
+            logDiagnostics(it, extraction)
+            mergeDocument(uniqueDocuments, it, selectReferences(extraction.references, onlyLinks))
         }
         resultNegativeDocs.forEach {
-            val catalogId = it[1].toString()
-            val docUuid = it[0].toString()
-            val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
-            val data = jacksonObjectMapper().readTree(it[2].toString())
-            if (existingDoc == null) {
-                uniqueList.add(
-                    DocumentLinks(
-                        catalogId,
-                        docUuid,
-                        getUrlsFromJsonFieldTable(
-                            data,
-                            "uvpNegativeDecisionDocs",
-                            onlyLinks,
-                        ).toMutableList(),
-                        it[3].toString(),
-                        it[4].toString(),
-                    ),
-                )
-            } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
-            }
+            val data = objectMapper.readTree(it[2].toString())
+            val extraction = UvpDocumentReferences.extractNegativeDecision(data)
+            logDiagnostics(it, extraction)
+            mergeDocument(uniqueDocuments, it, selectReferences(extraction.references, onlyLinks))
         }
 
-        return uniqueList
+        return uniqueDocuments.values.toList()
     }
 
-    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> = (
-        getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks) +
-            getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
-        ).toMutableList()
+    private fun logDiagnostics(row: Array<Any?>, extraction: UvpDocumentReferences.ExtractionResult) {
+        if (extraction.diagnostics.isEmpty()) return
 
-    private fun getUrlsFromJsonFieldTable(
-        json: JsonNode,
-        tableField: String,
-        onlyLinks: Boolean = false,
-    ): List<UploadInfo> = json.get(tableField)
-        ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
-        ?.mapNotNull { mapToUploadInfo(tableField, it) }
-        ?: emptyList()
-
-    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo? {
-        val validUntilDateField = it.get("validUntil")
-        val expiredDate =
-            if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asString()
-        val uri = it.get("downloadURL")?.get("uri")?.stringValue() ?: return null
-        return UploadInfo(field, uri, expiredDate)
+        log.warn(
+            "Could not fully extract UVP document references for catalog '${row[CATALOG_ID_COLUMN_INDEX]}' " +
+                "and document '${row[UUID_COLUMN_INDEX]}' ('${row[TITLE_COLUMN_INDEX]}'): " +
+                extraction.diagnostics.joinToString(),
+        )
     }
 
-    private data class UrlTableFields(
-        val applicationDocs: List<TableDef>?,
-        val announcementDocs: List<TableDef>?,
-        val reportsRecommendationDocs: List<TableDef>?,
-        val furtherDocs: List<TableDef>?,
-        val considerationDocs: List<TableDef>?,
-        val approvalDocs: List<TableDef>?,
-        val decisionDocs: List<TableDef>?,
-    )
+    private fun selectReferences(
+        references: List<UvpDocumentReferences.Reference>,
+        onlyLinks: Boolean,
+    ): MutableList<UploadInfo> = references
+        .filter { it.isExternalLink == onlyLinks }
+        .map { UploadInfo(it.tableField, it.uri, it.validUntil) }
+        .toMutableList()
 
-    private data class TableDef(val downloadUrl: UrlDef, val validUntil: String?)
-    private data class UrlDef(val asLink: Boolean, val uri: String)
+    private fun mergeDocument(
+        uniqueDocuments: MutableMap<Pair<String, String>, DocumentLinks>,
+        row: Array<Any?>,
+        references: List<UploadInfo>,
+    ) {
+        val catalogId = row[CATALOG_ID_COLUMN_INDEX].toString()
+        val docUuid = row[UUID_COLUMN_INDEX].toString()
+        val key = catalogId to docUuid
+        val existingDoc = uniqueDocuments[key]
+        if (existingDoc == null) {
+            uniqueDocuments[key] = DocumentLinks(
+                catalogId,
+                docUuid,
+                references.toMutableList(),
+                row[TITLE_COLUMN_INDEX].toString(),
+                row[TYPE_COLUMN_INDEX].toString(),
+            )
+        } else {
+            existingDoc.docs.addAll(references)
+        }
+    }
+
+    private companion object {
+        const val UUID_COLUMN_INDEX = 0
+        const val CATALOG_ID_COLUMN_INDEX = 1
+        const val TITLE_COLUMN_INDEX = 3
+        const val TYPE_COLUMN_INDEX = 4
+    }
 }
