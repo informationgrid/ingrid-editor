@@ -36,6 +36,45 @@ const val USE_CONSTRAINTS_COPYRIGHT = """
                             </gmd:useConstraints>
                         </gmd:MD_LegalConstraints>
 """
+const val USE_CONSTRAINTS_COPYRIGHT_AND_LICENSE = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="copyright"/>
+                            </gmd:useConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
+                            </gmd:useConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                            </gmd:useConstraints>
+                        </gmd:MD_LegalConstraints>
+"""
+const val USE_CONSTRAINTS_LICENSE_WITH_COMMENT_SOURCE = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
+                            </gmd:useConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                            </gmd:useConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>bkg use comment</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>Quellenvermerk: bkg use source</gco:CharacterString>
+                            </gmd:otherConstraints>
+                        </gmd:MD_LegalConstraints>
+"""
+const val USE_CONSTRAINTS_OTHER_WITH_COMMENT = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                            </gmd:useConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>bkg use comment</gco:CharacterString>
+                            </gmd:otherConstraints>
+                        </gmd:MD_LegalConstraints>
+"""
 const val USE_CONSTRAINTS_INTELLECTIONALPROPERTYRIGHTS = """
                         <gmd:MD_LegalConstraints>
                             <gmd:useConstraints>
@@ -171,6 +210,19 @@ const val ACCESS_CONSTRAINTS_BKG_TEMPLATE_LICENSE = """
                             </gmd:accessConstraints>
                         </gmd:MD_LegalConstraints>
 """
+const val ACCESS_CONSTRAINTS_BKG_TEMPLATE_LICENSE_WITH_COMMENT = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:accessConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>
+                            </gmd:accessConstraints>
+                            <gmd:accessConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                            </gmd:accessConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>access bkg comments</gco:CharacterString>
+                            </gmd:otherConstraints>
+                        </gmd:MD_LegalConstraints>
+"""
 
 const val ACCESS_CONSTRAINTS_BKG_TEMPLATE_COPYRIGHTANDLICENSE = """
                         <gmd:MD_LegalConstraints>
@@ -250,6 +302,17 @@ const val ACCESS_CONSTRAINTS_BKG_WITH_COMMENTS = """
                             <gmd:otherConstraints>
                                 <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Es gelten keine Zugriffsbeschränkungen</gmx:Anchor>
                             </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>access bkg comments</gco:CharacterString>
+                            </gmd:otherConstraints>
+                        </gmd:MD_LegalConstraints>
+"""
+
+const val ACCESS_CONSTRAINTS_BKG_COMMENT_ONLY = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:accessConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                            </gmd:accessConstraints>
                             <gmd:otherConstraints>
                                 <gco:CharacterString>access bkg comments</gco:CharacterString>
                             </gmd:otherConstraints>

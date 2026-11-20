@@ -24,7 +24,6 @@ import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.IngridIdfExporterBkg
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldNotContain
 import io.mockk.every
 
 class AccessConstraints : GeodatasetBase() {
@@ -81,12 +80,13 @@ class AccessConstraints : GeodatasetBase() {
         should("export only accessConstraint - template license") {
             val result = exportGeoDataset(
                 """{ "resource": {
-                        "accessConstraintsBkg": { "key": "6" }
+                        "accessConstraintsBkg": { "key": "6" },
+                        "accessConstraintsBkgComment": "access bkg comments"
                    } }
                 """,
             )
 
-            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_LICENSE
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_LICENSE_WITH_COMMENT
         }
 
         should("export only accessConstraint - template copyright & license") {
@@ -157,7 +157,7 @@ class AccessConstraints : GeodatasetBase() {
             result shouldContain ACCESS_CONSTRAINTS_BKG_WITH_COMMENTS
         }
 
-        should("not export accessConstraints when only comments") {
+        should("export accessConstraints when only comment is present") {
             val result = exportGeoDataset(
                 """{ "resource": {
                         "accessConstraintsBkgComment": "access bkg comments"
@@ -165,7 +165,7 @@ class AccessConstraints : GeodatasetBase() {
                 """,
             )
 
-            result shouldNotContain "access bkg comments"
+            result shouldContain ACCESS_CONSTRAINTS_BKG_COMMENT_ONLY
         }
     }
 }

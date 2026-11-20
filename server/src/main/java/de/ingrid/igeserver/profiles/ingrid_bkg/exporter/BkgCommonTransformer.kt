@@ -94,28 +94,25 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
 
     fun getAccessConstraints(defaultAccessConstraintsCodelistValues: List<String>): AccessConstraint {
         val title = getValueFromCodelistData("10001", bkgAccessConstraintsTitleKey, codelists.catalogLanguage)
-            ?: return AccessConstraint(
-                accessConstraintsCodelistValues ?: defaultAccessConstraintsCodelistValues,
-                emptyList(),
-            )
-
         val comment = doc.data.getString("resource.accessConstraintsBkgComment")
 
         return AccessConstraint(
             accessConstraintsCodelistValues ?: defaultAccessConstraintsCodelistValues,
             listOfNotNull(
-                CharacterStringModel(
-                    title,
-                    if (bkgAccessConstraintsTitleKey == "99") {
-                        "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations"
-                    } else {
-                        getValueFromCodelistData(
-                            "10001",
-                            bkgAccessConstraintsTitleKey,
-                            "url",
-                        )
-                    },
-                ),
+                title?.let {
+                    CharacterStringModel(
+                        it,
+                        if (bkgAccessConstraintsTitleKey == "99") {
+                            "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations"
+                        } else {
+                            getValueFromCodelistData(
+                                "10001",
+                                bkgAccessConstraintsTitleKey,
+                                "url",
+                            )
+                        },
+                    )
+                },
                 if (!comment.isNullOrEmpty()) CharacterStringModel(comment, null) else null,
             ),
         )
@@ -150,7 +147,8 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
     val useConstraintsCodelistValue =
         when (bkgUseConstraintsTitleKey) {
             "10" -> listOf("copyright", "otherRestrictions")
-            "12" -> listOf("copyright", "otherRestrictions")
+            "11" -> listOf("license", "otherRestrictions")
+            "12" -> listOf("copyright", "license", "otherRestrictions")
             "13" -> listOf("intellectualPropertyRights", "otherRestrictions")
             "14" -> listOf("restricted", "otherRestrictions")
             else -> null

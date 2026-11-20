@@ -63,7 +63,7 @@ class UseConstraints : GeodatasetBase() {
                 """,
             )
 
-            result shouldContain USE_CONSTRAINTS_COPYRIGHT
+            result shouldContain USE_CONSTRAINTS_COPYRIGHT_AND_LICENSE
         }
 
         should("export useConstraint - intellectualPropertyRights") {
@@ -80,12 +80,25 @@ class UseConstraints : GeodatasetBase() {
         should("export useConstraint - license") {
             val result = exportGeoDataset(
                 """{ "resource": {
-                        "useConstraintsBkg": { "key": "11" }
+                        "useConstraintsBkg": { "key": "11" },
+                        "useConstraintsBkgComment": "bkg use comment",
+                        "useConstraintsBkgSource": "bkg use source"
                    } }
                 """,
             )
 
-            result shouldContain USE_CONSTRAINTS_OTHER
+            result shouldContain USE_CONSTRAINTS_LICENSE_WITH_COMMENT_SOURCE
+        }
+
+        should("export useConstraint with just comment") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "useConstraintsBkgComment": "bkg use comment"
+                   } }
+                """,
+            )
+
+            result shouldContain USE_CONSTRAINTS_OTHER_WITH_COMMENT
         }
 
         should("export useConstraint - restricted") {
