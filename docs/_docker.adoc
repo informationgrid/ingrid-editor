@@ -6,7 +6,7 @@ From the repository root, build an image into the local Docker daemon:
 
 [source,shell]
 ----
-./gradlew :server:jibDockerBuild -Pbranch_name=main
+./gradlew :server:jibDockerBuild
 ----
 
 The task also prepares the frontend distribution. Ensure Docker is running and the frontend dependencies are available. The resulting image is tagged `registry.opencode.de/informationgrid/ingrid-editor:latest` for `main`. Other branch names are used as tags, with `/` replaced by `-`; release builds can also receive version tags.

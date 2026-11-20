@@ -17,7 +17,7 @@ To run one test class, use Gradle's test filter:
 
 [source,shell]
 ----
-./gradlew :server:test --tests 'de.ingrid.igeserver.exports.ingrid.LuceneModelTest'
+./gradlew :server:test --tests 'de.ingrid.igeserver.exports.ingrid.Geodataset'
 ----
 
 For exporter tests, use the existing export test fixtures and helpers where suitable. `server/src/test/kotlin/de/ingrid/igeserver/exports/ingrid/GeodatasetBase.kt` provides shared setup for InGrid exporter tests, and `LuceneModelTest.kt` demonstrates assertions on the serialized Lucene JSON model.

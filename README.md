@@ -40,13 +40,15 @@ The database gets initialized on startup. Afterward you can map your db data dir
 
 ### Start the client and server
 
-For IntelliJ configuration see the section below.
+For IntelliJ and VSCode configuration see the section below.
 
 #### Server
 
 You can also run the server from command line:
 
-> ./gradlew bootRun --args='--spring.profiles.active=dev,uvp,ingrid'
+> ./gradlew bootRun --args='--spring.profiles.active=dev,ingrid'
+
+If the current Java version on the host does not match the one defined in the project, you can adapt this version with the additional parameter `-PjavaVersion=25`. When the project uses Java 21, but we want to use the installed Java 25 version. 
 
 With the following command a jar is generated, which contains the whole server including
 optimized frontend application:
@@ -100,6 +102,15 @@ For the client just run `npm start` in the frontend directory.
 
 You are all set. Run server and frontend with the appropriate run configuration.
 
+### VSCode
+
+It is recommended to use the following addons for a better development experience:
+
+- Kotlin (fwcd) - needed for debugging
+- Kotlin by JetBrains
+
+The project already contains tasks to run the frontend and backend. Moreover, there is a launch configuration to connect the debugger to the application.
+
 ### Update dependencies
 
 To get a list for new versions of our dependencies, you can run the following command:
@@ -146,7 +157,7 @@ For end-to-end tests with Cypress check out the README.md inside `frontend/e2e` 
 
 ## Update changelog
 
-TBD
+The changelog is updated automatically during the release process by an internal tool. The commits are analyzed for ticket IDs and their titles are being used for the changelog.
 
 ## Release a new version
 
@@ -154,11 +165,13 @@ TBD
   - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
 - push tag (with commit) to remote, which will trigger a new build in Jenkins
 
+When doing a manual release, the Changelog will not be updated! It's recommended to use the internal tool for releases used by wemove.
+
 # Jenkins Setup
 
-The following behaviours for the Jenkins project have to be applied:
+The following behaviors for the Jenkins project have to be applied:
 
-- Advanced clone behaviours
+- Advanced clone behaviors
   - to fetch tags so that the correct version is calculated
 - Check out to matching local branch
   - to get branch information for creating correct tag for docker image
