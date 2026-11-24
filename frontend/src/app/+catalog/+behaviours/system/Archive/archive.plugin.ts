@@ -60,7 +60,7 @@ export class ArchivePlugin extends Plugin {
           wrappers: [],
           defaultValue: false,
           props: {
-            label: "Für Autoren nicht anzeigen",
+            label: "Funktionalität zur Archivierung für Autoren nicht anzeigen",
           },
         },
         {
@@ -69,7 +69,8 @@ export class ArchivePlugin extends Plugin {
           wrappers: [],
           defaultValue: false,
           props: {
-            label: "Für Metadaten-Administratoren nicht anzeigen",
+            label:
+              "Funktionalität zur Archivierung für Metadaten-Administratoren nicht anzeigen",
           },
         },
         {
