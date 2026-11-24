@@ -21,7 +21,8 @@
     "src/profiles/profile-ingrid-wsv.ts",
     "src/profiles/profile-opendata.ts",
     "src/profiles/profile-ingrid-with-opendata.ts",
-    "src/profiles/profile-bmi.ts"
+    "src/profiles/profile-bmi.ts",
+    "src/profiles/profile-sample.ts"
   ],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }
