@@ -841,13 +841,43 @@ If something does not work, check the ID and registration points first:
 
 ==== Profile inheritance
 
-Use profile inheritance when a customer variant should reuse an existing profile but change document fields, validation, permissions, facets, or exports.
+Use profile inheritance when a customer variant should reuse an existing profile but change document fields, validation, permissions, facets, or exports. You need to do the same steps as when you create a profile, but with the following differences:
 
-* In the child `CatalogProfile`, set a new `identifier`, a customer-specific `title`, and `linkedProfiles = listOf("parent")`. Override only the behavior that differs.
-* Create child `EntityType` implementations for types used by the child profile, even when their behavior is initially identical to the parent type. Keep each `className` stable if it is already used by stored data or exports; set the child type's `profiles` to the child profile ID. Override `jsonSchema` when validation differs.
-* Add a child config that scans its own package. Also include the child Spring profile name in the parent config's `@Profile` list when the child needs the parent package scanned. This is how the existing InGrid customer variants load the shared InGrid beans.
-* In the frontend, create a child standalone component that extends the parent profile component and overrides `getDocTypes()` to return the child doctypes. The child doctype classes can extend parent doctypes to customize fields and validation.
-* Add the child profile module to `ProfileMapper` and both frontend TypeScript `files` arrays, just as for a new profile.
+* Instead of extending your profile class from `CatalogProfile` you need to extend from the profile you want to inherit from like `InGridProfile`
+* set `linkedProfiles`- field, like for example `linkedProfiles = listOf("ingrid")` to use defaults defined in parent profile. Override only the behavior that differs.
+* Create document types only where it differs from the parent profile.
+* In the frontend, create a child standalone component that extends the parent profile component.
+* Adding a new form field to a document type:
+** create a new class extending the document type we want to modify
+** inject new document type class into profile definition (override the field from parent-profile, like `geodataset`)
+
+[source,typescript]
+----
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Injectable } from "@angular/core";
+import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
+
+@Injectable({
+  providedIn: "root",
+})
+export class GeoDatasetDoctypeSample extends GeoDatasetDoctype {
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    const section: any = this.findSectionWithLabel(fieldConfig, "Allgemeines");
+    section.fieldGroup.push(
+      this.addTextArea("sampleTextArea", "Neue Textarea"),
+    );
+    return fieldConfig;
+  };
+}
+----
+
+[source,typescript]
+----
+class SampleProfileComponent extends InGridComponent {
+  geoDataset = inject(GeoDatasetDoctypeSample);
+}
+----
+
 
 See `InGridBastConfig` and `profile-ingrid-bast.ts` for a concrete backend and frontend example.
 
