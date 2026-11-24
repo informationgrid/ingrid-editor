@@ -14,7 +14,7 @@
             matTooltipPosition="right"
             [matTooltipDisabled]="menuIsExpanded()"
             [class.active]="
-                currentRoute?.indexOf(catalogId + '/' + item.path) === 0
+                currentRoute()?.indexOf(catalogId + '/' + item.path) === 0
             "
             [attr.aria-label]="t(item.path)"
             role="menuitem"

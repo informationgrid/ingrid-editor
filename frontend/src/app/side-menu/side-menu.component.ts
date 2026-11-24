@@ -20,11 +20,14 @@
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   Signal,
+  signal,
   ChangeDetectionStrategy,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -76,6 +79,7 @@ import { UiStore } from "../store/ui.store";
 })
 export class SideMenuComponent implements OnInit {
   private uiStore = inject(UiStore);
+  private destroyRef = inject(DestroyRef);
   showDrawer: Observable<boolean>;
 
   menuItems: Signal<Route[]> = computed(() =>
@@ -84,7 +88,7 @@ export class SideMenuComponent implements OnInit {
 
   menuIsExpanded: Signal<boolean> = this.uiStore.sidebarExpanded;
 
-  currentRoute: string;
+  currentRoute = signal<string | undefined>(undefined);
   toggleState = "collapsed";
   catalogId = ConfigService.catalogId;
   configuration: Configuration;
@@ -98,7 +102,9 @@ export class SideMenuComponent implements OnInit {
   ngOnInit() {
     this.configuration = this.configService.getConfiguration();
 
-    this.router.events.subscribe((event) => this.handleCurrentRoute(event));
+    this.router.events
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
@@ -109,7 +115,7 @@ export class SideMenuComponent implements OnInit {
   private handleCurrentRoute(event: any) {
     if (event instanceof NavigationEnd) {
       const urlPath = event.urlAfterRedirects.split(";")[0].substring(1);
-      this.currentRoute = urlPath === "" ? "dashboard" : urlPath;
+      this.currentRoute.set(urlPath === "" ? "dashboard" : urlPath);
     }
   }
 
