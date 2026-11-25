@@ -42,8 +42,8 @@ export class AlgorithmDoctypeHMDK extends AlgorithmDoctype {
       fieldConfig,
     );
 
-    // at least one link in "Verweise" (or a file in "Dateien") is required when HmbTG
-    // is activated. formly does not apply validators to keyless sections, so the
+    // at least one link in "Verweise" (or a file in "Dateien") is required when Open Data
+    // or HmbTG is activated. formly does not apply validators to keyless sections, so the
     // validator is attached to the leaf fields of the section instead.
     const urlFields = [
       "apiUrl",

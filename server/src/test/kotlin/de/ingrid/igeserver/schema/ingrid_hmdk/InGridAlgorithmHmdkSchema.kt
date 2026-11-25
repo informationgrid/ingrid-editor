@@ -85,6 +85,64 @@ class InGridAlgorithmHmdkSchema : AnnotationSpec() {
     }
 
     @Test
+    fun openDataWithoutHmbTGRequiresLink() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"isOpenData\": null",
+            "\"isOpenData\": true",
+        ).replaceFirst(
+            "\"url\": \"https://example.org\"",
+            "\"url\": null",
+        )
+        shouldThrow<ValidationException> { validate(json, schema) }
+    }
+
+    @Test
+    fun openDataWithoutHmbTGAllowsLinkWithoutHmbTGFields() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"isOpenData\": null",
+            "\"isOpenData\": true",
+        )
+        validate(json, schema).size shouldBe 0
+    }
+
+    @Test
+    fun openDataWithoutHmbTGAllowsFileInsteadOfLink() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"isOpenData\": null",
+            "\"isOpenData\": true",
+        ).replaceFirst(
+            "{",
+            """{
+                "fileReferences": [{
+                    "title": "File name",
+                    "link": {
+                        "asLink": false,
+                        "value": "filename.pdf",
+                        "uri": "filename.pdf",
+                        "lastModified": "2025-06-26T08:13:26.284Z",
+                        "sizeInBytes": 429866
+                    },
+                    "format": {"key": "21", "value": "PDF", "_codelistId": "1320"},
+                    "description": ""
+                }],
+            """,
+        ).replaceFirst(
+            "\"url\": \"https://example.org\"",
+            "\"url\": null",
+        )
+        validate(json, schema).size shouldBe 0
+    }
+
+    @Test
+    fun neitherOpenDataNorHmbTGDoesNotRequireLink() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/algorithm.minimal.json").replaceFirst(
+            "\"url\": \"https://example.org\"",
+            "\"url\": null",
+        )
+        validate(json, schema).size shouldBe 0
+    }
+
+    @Test
     fun negativeTest() = SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/algorithm.minimal.json")
 
     @Test

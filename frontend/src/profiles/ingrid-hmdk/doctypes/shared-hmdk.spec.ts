@@ -101,11 +101,84 @@ describe("HmbTG validators", () => {
       expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(true);
     });
 
+    it("fails when Open Data is activated without HmbTG and no link or file is given", () => {
+      const field = createField(
+        { properties: { isOpenData: true, publicationHmbTG: false } },
+        {},
+      );
+      const ctrl = new UntypedFormControl(null);
+
+      expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(false);
+    });
+
+    it("passes when Open Data is activated without HmbTG and a URL is given", () => {
+      const field = createField(
+        { properties: { isOpenData: true, publicationHmbTG: false } },
+        { apiUrl: "https://www.hamburg.de" },
+      );
+      const ctrl = new UntypedFormControl(null);
+
+      expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(true);
+    });
+
+    it("passes when Open Data is activated without HmbTG and a file is uploaded", () => {
+      const field = createField(
+        { properties: { isOpenData: true, publicationHmbTG: false } },
+        { fileReferences: [{ filename: "data.csv" }] },
+      );
+      const ctrl = new UntypedFormControl(null);
+
+      expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(true);
+    });
+
+    it("passes when both Open Data and HmbTG are activated and a URL is given", () => {
+      const field = createField(
+        { properties: { isOpenData: true, publicationHmbTG: true } },
+        { websiteUrl: "https://www.hamburg.de" },
+      );
+      const ctrl = new UntypedFormControl(null);
+
+      expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(true);
+    });
+
     it("passes when HmbTG is not activated", () => {
       const field = createField({ properties: {} }, {});
       const ctrl = new UntypedFormControl(null);
 
       expect(sharedHmdk.urlOrFileWhenHmbtg.expression(ctrl, field)).toBe(true);
+    });
+  });
+
+  describe("Open Data revalidation", () => {
+    it("revalidates the URL/file validator when Open Data is deactivated", () => {
+      let revalidated = false;
+      const field = {
+        form: {
+          get: (key: string) => {
+            if (key === "resource.accessConstraints") {
+              return { value: [], setValue: () => {} };
+            }
+            if (key === "resource.useConstraints") {
+              return { clear: () => {} };
+            }
+            if (key === "openDataCategories") {
+              return { setValue: () => {} };
+            }
+            return undefined;
+          },
+        },
+        formControl: { value: {}, setValue: () => {} },
+        fieldGroup: [
+          {
+            formControl: { updateValueAndValidity: () => (revalidated = true) },
+            validators: { urlOrFileWhenHmbtg: {} },
+          },
+        ],
+      } as any;
+
+      sharedHmdk.hmdkHandleDeactivateOpenData(field);
+
+      expect(revalidated).toBe(true);
     });
   });
 

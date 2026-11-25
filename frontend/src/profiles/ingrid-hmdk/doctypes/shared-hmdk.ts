@@ -115,13 +115,16 @@ export class SharedHmdk {
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
   };
 
-  // at least one link in "Verweise" (or a file in "Dateien") is required when HmbTG is
-  // activated. For doctypes without typed references (e.g. "Algorithmus") the links are
-  // plain URL fields, so the check looks at those fields instead. Since formly does not
-  // apply validators to keyless sections, this validator is attached to each of them.
+  // at least one link in "Verweise" (or a file in "Dateien") is required when Open Data
+  // or HmbTG is activated. For doctypes without typed references (e.g. "Algorithmus") the
+  // links are plain URL fields, so the check looks at those fields instead. Since formly
+  // does not apply validators to keyless sections, this validator is attached to each of them.
   urlOrFileWhenHmbtg = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-      !this.getDocumentProperties(field)?.publicationHmbTG ||
+      !(
+        this.getDocumentProperties(field)?.isOpenData ||
+        this.getDocumentProperties(field)?.publicationHmbTG
+      ) ||
       field.form.value.apiUrl?.length > 0 ||
       field.form.value.sourceCodeUrl?.length > 0 ||
       field.form.value.websiteUrl?.length > 0 ||
@@ -132,7 +135,7 @@ export class SharedHmdk {
       ) ||
       field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
     message:
-      "Bei aktivierter 'Veröffentlichung gemäß HmbTG'-Checkbox muss mindestens ein Link im Abschnitt 'Verweise' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
+      "Bei aktivierter Open-Data- oder HmbTG-Veröffentlichung muss mindestens ein Link im Abschnitt 'Verweise' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
   };
 
   // The HmbTG flag is stored in the document properties. `field.model` cannot be used to
@@ -376,6 +379,7 @@ export class SharedHmdk {
     // remove all categories
     field.form.get("openDataCategories")?.setValue([]);
     field.formControl.setValue({ ...field.formControl.value, isHvd: false });
+    this.revalidateHmbtgFields(field);
     return of(true);
   }
 
