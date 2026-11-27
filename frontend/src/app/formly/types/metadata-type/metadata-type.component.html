@@ -55,29 +55,37 @@
                                         (typeOption.asyncItems | async);
                                     track item
                                 ) {
-                                    <mat-chip-listbox
-                                        [formControlName]="item.key"
-                                        [hideSingleSelectionIndicator]="true"
-                                        [required]="option.required"
-                                    >
-                                        <mat-chip-option
-                                            [value]="item.value"
-                                            [attr.data-cy]="item.key"
-                                            [disabled]="
-                                                props.disabledOptions[item.key]
+                                    @if (!item.hide) {
+                                        <mat-chip-listbox
+                                            [formControlName]="item.key"
+                                            [hideSingleSelectionIndicator]="
+                                                true
                                             "
-                                            (click)="handleOptionClick(item)"
+                                            [required]="option.required"
                                         >
-                                            <ng-container
-                                                [ngTemplateOutlet]="
-                                                    inlineContextHelp
+                                            <mat-chip-option
+                                                [value]="item.value"
+                                                [attr.data-cy]="item.key"
+                                                [disabled]="
+                                                    props.disabledOptions[
+                                                        item.key
+                                                    ]
                                                 "
-                                                [ngTemplateOutletContext]="{
-                                                    item: item,
-                                                }"
-                                            ></ng-container>
-                                        </mat-chip-option>
-                                    </mat-chip-listbox>
+                                                (click)="
+                                                    handleOptionClick(item)
+                                                "
+                                            >
+                                                <ng-container
+                                                    [ngTemplateOutlet]="
+                                                        inlineContextHelp
+                                                    "
+                                                    [ngTemplateOutletContext]="{
+                                                        item: item,
+                                                    }"
+                                                ></ng-container>
+                                            </mat-chip-option>
+                                        </mat-chip-listbox>
+                                    }
                                 }
                             } @else {
                                 @if (

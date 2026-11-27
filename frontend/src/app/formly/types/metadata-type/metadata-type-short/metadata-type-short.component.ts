@@ -106,6 +106,9 @@ export class MetadataTypeShortComponent {
     typeOption: MetadataOptionItems,
     item: MetadataOptionItem,
   ): PropertyItem {
+    if (item.hide) {
+      return null;
+    }
     const primitiveMatch =
       data[typeOption.key] === item.value || data[item.key] === item.value;
     const objectMatch = (data[typeOption.key]?.key ?? "?") === item.value?.key;
