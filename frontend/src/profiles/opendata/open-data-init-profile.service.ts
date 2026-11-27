@@ -28,13 +28,10 @@ import { filter, take } from "rxjs/operators";
 
 @Injectable({ providedIn: "root" })
 export class OpenDataInitProfile {
-  private codelistStore = inject(CodelistStore);
   private pluginService = inject(PluginService);
   private behaviourService = inject(BehaviourService);
   private opendataPlugin = inject(OpendataPlugin);
   private opendata = inject(OpenDataDoctype);
-
-  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   initProfile() {
     this.pluginService.registerPlugin(this.opendataPlugin);
@@ -42,5 +39,10 @@ export class OpenDataInitProfile {
     this.opendata.showOpendata = this.behaviourService
       .getBehaviour("plugin.opendata.flexibleDoctype")
       .isActive();
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.izg");
+    this.opendata.showIzgField =
+      this.behaviourService.getBehaviour("plugin.ingrid.izg")?.isActive() ??
+      behaviour?.defaultActive ??
+      false;
   }
 }

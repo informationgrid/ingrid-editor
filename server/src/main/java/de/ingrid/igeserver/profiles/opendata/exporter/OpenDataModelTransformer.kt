@@ -85,7 +85,7 @@ class OpenDataModelTransformer(
     fun getModified() = doc.modified.toString()
     val periodicityKey = doc.data.getString("accrualPeriodicity.key")
     fun getPeriodicity() = periodicityKey?.let { codelistTransformer.getValue("518", KeyValue(it)) } ?: ""
-    fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords() + handleOpendataKeyword()
+    fun getKeywords(): List<Keyword> = getThemes() + getFreeKeywords() + handleOpendataKeyword() + izgKeyword
     private fun handleOpendataKeyword(): List<Keyword> {
         val flexOpenData = transformerConfig.flexOpenData
         val isOpendata = doc.data.getBoolean("properties.isOpenData")
@@ -95,6 +95,12 @@ class OpenDataModelTransformer(
             emptyList()
         }
     }
+    private val izgKeyword =
+        if (doc.data.getBoolean("properties.isIzg") == true) {
+            listOf(Keyword(null, "izg-relevant", "FREE"))
+        } else {
+            emptyList()
+        }
     fun getAddresses() = doc.data.get("addresses")?.values()?.mapNotNull {
         addressExporter.toAddressModelTransformer(
             AddressRefModel(

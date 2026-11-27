@@ -27,6 +27,7 @@ import { of } from "rxjs";
 import { SpatialLocationType } from "../../../app/formly/types/map/spatial-list/spatial-list.component";
 import { FormControl } from "@angular/forms";
 import {
+  MetadataOption,
   MetadataOptionItems,
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
@@ -44,6 +45,7 @@ export class OpenDataDoctype extends BaseDoctype {
   iconClass = "dataset";
 
   showOpendata: boolean = false;
+  showIzgField: boolean = false;
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
@@ -54,46 +56,20 @@ export class OpenDataDoctype extends BaseDoctype {
   };
 
   documentFields = () => <FormlyFieldConfig[]>[
-      this.showOpendata
-        ? this.addSection("Merkmale", [
-            <FormlyFieldConfig>{
-              key: "properties",
-              type: "metadata",
-              defaultValue: { isOpenData: true },
-              props: <MetadataProps>{
-                availableOptions: [
-                  {
-                    label: "Open Data",
-                    typeOptions: [
-                      <MetadataOptionItems>{
-                        multiple: true,
-                        items: [
-                          {
-                            label: "Offene Lizenz",
-                            key: "isOpenData",
-                            value: true,
-                            contextHelpKey: "isOpenData",
-                            onClick: (field: FormlyFieldConfig) =>
-                              this.handleOpenDataClick(field),
-                          },
-                          {
-                            label: "High-Value-Dataset",
-                            key: "isHvd",
-                            value: true,
-                            contextHelpKey: "isHvd",
-                            onClick: (field: FormlyFieldConfig) =>
-                              this.handleHVDClick(field),
-                          },
-                        ].filter(Boolean),
-                      },
-                    ],
-                  },
-                ],
-                disabledOptions: {},
-              },
-            },
-          ])
-        : null,
+      this.addSection("Merkmale", [
+        <FormlyFieldConfig>{
+          key: "properties",
+          type: "metadata",
+          defaultValue: { isOpenData: true },
+          props: <MetadataProps>{
+            availableOptions: [
+              this.openDataMetadataOption(!this.showOpendata),
+              this.showIzgField ? this.izgMetadataOption() : null,
+            ].filter(Boolean),
+            disabledOptions: {},
+          },
+        },
+      ]),
       this.addSection("Allgemeines", [
         this.addTextArea("description", "Beschreibung", this.id, {
           required: true,
@@ -148,16 +124,6 @@ export class OpenDataDoctype extends BaseDoctype {
                   true,
             },
           }),
-          this.showOpendata
-            ? null
-            : this.addGroupSimple("properties", [
-                <FormlyFieldConfig>{ key: "isOpenData", defaultValue: true },
-                this.addCheckbox("isHvd", "High-Value-Dataset (HVD)", {
-                  className: "flex-1",
-                  click: (field: FormlyFieldConfig) =>
-                    this.handleHVDClick(field).subscribe(),
-                }),
-              ]),
           this.addRepeatList("hvdCategories", "HVD-Kategorien", {
             view: "chip",
             showSearch: true,
@@ -479,5 +445,55 @@ export class OpenDataDoctype extends BaseDoctype {
     } else {
       field.formControl.setValue({ ...field.formControl.value, isHvd: false });
     }
+  }
+
+  private openDataMetadataOption(forceOpendata: boolean): MetadataOption {
+    return {
+      label: "Open Data",
+      typeOptions: [
+        <MetadataOptionItems>{
+          multiple: true,
+          items: <FormlyFieldConfig[]>[
+            forceOpendata
+              ? { key: "isOpenData", defaultValue: true, hide: true }
+              : {
+                  label: "Offene Lizenz",
+                  key: "isOpenData",
+                  value: true,
+                  contextHelpKey: "isOpenData",
+                  onClick: (field: FormlyFieldConfig) =>
+                    this.handleOpenDataClick(field),
+                },
+            {
+              label: "High-Value-Dataset",
+              key: "isHvd",
+              value: true,
+              contextHelpKey: "isHvd",
+              onClick: (field: FormlyFieldConfig) => this.handleHVDClick(field),
+            },
+          ].filter(Boolean),
+        },
+      ],
+    };
+  }
+
+  private izgMetadataOption(): MetadataOption {
+    return {
+      label: "IZG",
+      typeOptions: [
+        {
+          multiple: true,
+          items: [
+            {
+              label: "relevant",
+              completeLabel: "IZG-relevant",
+              key: "isIzg",
+              value: true,
+              contextHelpKey: "isIzg",
+            },
+          ],
+        },
+      ],
+    };
   }
 }
